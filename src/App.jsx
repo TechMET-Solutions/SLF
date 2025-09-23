@@ -13,6 +13,7 @@ import PurityProfile from "./MasterPages/PurityProfile";
 import CustProfile from "./MasterPages/CustProfile";
 import AddCustProfile from "./MasterPages/AddCustProfile";
 import ChargesProfileList from "./MasterPages/ChargesProfileList";
+import PushGoldRateList from "./MasterPages/PushGoldRateList";
 function App() {
 
 
@@ -33,6 +34,7 @@ function App() {
           <Route path="/Add-Customer-Profile" element={<AddCustProfile />} />
           <Route path="/Product-Purity-profile" element={<PurityProfile />} />
           <Route path="/Charges-Profile-List" element={<ChargesProfileList />} />
+          <Route path="/Push-Gold-Rate-List" element={<PushGoldRateList />} />
           <Route path="*" element={<Navigate to="/" />} />
         </Routes>
       </Router>

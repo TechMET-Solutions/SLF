@@ -96,7 +96,7 @@ const ChargesProfileList = () => {
                                 <label className="text-[14px]">Code <span className="text-red-500">*</span></label>
                                 <input
                                     type="text"
-                                    placeholder="Interest Accrued on FDR"
+                                    placeholder="Bank Name"
                                     className="border border-gray-300 rounded w-[280px] h-[38px] px-3"
                                 />
                             </div>
@@ -104,23 +104,23 @@ const ChargesProfileList = () => {
                                 <label className="text-[14px]">Description <span className="text-red-500">*</span></label>
                                 <input
                                     type="text"
-                                    placeholder="Current Assets"
+                                    placeholder="Description"
                                     className="border border-gray-300 rounded w-[280px] h-[38px] px-3"
                                 />
                             </div>
                             <div>
-                                <label className="text-[12px] font-medium">Account*</label>
+                                <label className="text-[12px] font-medium">Amount</label>
                                 <input
                                     type="text"
-                                    placeholder="Test"
+                                    placeholder="Amount"
                                     className="border border-gray-300 rounded w-[280px] h-[38px] px-3"
                                 />
                             </div>
                             <div>
                                 <label className="text-[12px] font-medium">Account</label>
                                 <select className="border border-gray-300 rounded w-[280px] h-[38px] px-3">
-                                    <option>Balance Sheet</option>
-                                    <option>Income Statement</option>
+                                    <option>-- Select --</option>
+                                    <option>Bad Loan</option>
                                 </select>
                             </div>
                             

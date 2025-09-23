@@ -68,9 +68,11 @@ const Navbar = () => {
                         <button className="px-4 py-2 hover:bg-gray-100 text-left">
                           Employee Profile
                         </button>
-                        <button className="px-4 py-2 hover:bg-gray-100 text-left">
+                        <Link className="px-4 py-2 hover:bg-gray-100 text-left"
+                          to='/Push-Gold-Rate-List'
+                          onClick={() => setIsMasterOpen(prev => !prev)}>
                           Push Gold Rate
-                        </button>
+                        </Link>
                         <Link className="px-4 py-2 hover:bg-gray-100 text-left"
                           to='/Charges-Profile-List'
                           onClick={() => setIsMasterOpen(prev => !prev)}>
