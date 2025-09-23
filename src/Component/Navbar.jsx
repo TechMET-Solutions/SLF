@@ -5,7 +5,9 @@ import LogoutIcon from "../assets/logouticon.svg";
 
 const Navbar = () => {
   const [isMasterOpen, setIsMasterOpen] = useState(false);
+  // const [isMasterOpen, setIsMasterOpen] = useState(false);
   const [isMasterProfileOpen, setIsMasterProfileOpen] = useState(false);
+   const [isMasterSchemeMaster, setIsMasterSchemeMaster] = useState(false);
 
   return (
     <div className="flex justify-center">
@@ -84,9 +86,35 @@ const Navbar = () => {
                     )}
                   </div>
 
-                  <button className="w-full text-left px-4 py-2 hover:bg-gray-100">
+                  {/* <button className="w-full text-left px-4 py-2 hover:bg-gray-100">
                     Scheme Master
+                  </button> */}
+                  <div>
+
+<button
+                      className="w-full text-left px-4 py-2 hover:bg-gray-100 flex justify-between items-center "
+                      onClick={() => setIsMasterSchemeMaster(!isMasterSchemeMaster)}
+                    >
+                      Scheme Master
+                      <span>{isMasterSchemeMaster ? "▲" : "▶"}</span>
                   </button>
+
+
+                     {isMasterSchemeMaster && (
+                      <div className="absolute top-0 left-full ml-1 w-[200px] bg-white text-black rounded shadow-lg flex flex-col gap-1">
+                        <Link className="px-4 py-2 hover:bg-gray-100 text-left text-sm" to='' onClick={() => setIsMasterSchemeMaster(prev => !prev)}>
+                         Scheme Details
+                        </Link>
+                        <Link className="px-4 py-2 hover:bg-gray-100 text-left text-sm" to='' onClick={() => setIsMasterSchemeMaster(prev => !prev)}>
+                        Scheme Branch Mapping
+                        </Link>
+                        
+                      </div>
+                    )}
+                  </div>
+                   
+                  
+
                   <button className="w-full text-left px-4 py-2 hover:bg-gray-100">
                     Gold Loan
                   </button>
