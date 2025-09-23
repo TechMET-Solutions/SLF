@@ -12,7 +12,12 @@ import ItemProfileList from "./MasterPages/ItemProfileList";
 import PurityProfile from "./MasterPages/PurityProfile";
 import CustProfile from "./MasterPages/CustProfile";
 import AddCustProfile from "./MasterPages/AddCustProfile";
+<<<<<<< HEAD
 import SchemeDetailsList from "./MasterPages/SchemeDetailsList";
+=======
+import ChargesProfileList from "./MasterPages/ChargesProfileList";
+import PushGoldRateList from "./MasterPages/PushGoldRateList";
+>>>>>>> a37a0c34192f2b91a40cfd5e3f8f0e4fc5445fbc
 function App() {
 
 
@@ -21,6 +26,7 @@ function App() {
       {/* <AccountGroupList /> */}
       <Router>
         <Navbar />
+<<<<<<< HEAD
       <Routes>
         <Route path="/" element={<Dashboard />} /> 
           <Route path="/account-groups" element={<AccountGroupList />} /> 
@@ -36,6 +42,24 @@ function App() {
         <Route path="*" element={<Navigate to="/" />} /> 
       </Routes>
     </Router>
+=======
+        <Routes>
+          <Route path="/" element={<Dashboard />} />
+          <Route path="/account-groups" element={<AccountGroupList />} />
+          <Route path="/account-code-list" element={<AccountCodeList />} />
+          <Route path="/Branch-Profile-List" element={<BranchProfileList />} />
+          <Route path="/Item-profile-List" element={<ItemProfileList />} />
+          <Route path="/Item-profile-List" element={<ItemProfileList />} />
+          <Route path="/Document-Proof-List" element={<DocumentProof />} />
+          <Route path="/Customer-Profile-List" element={<CustProfile />} />
+          <Route path="/Add-Customer-Profile" element={<AddCustProfile />} />
+          <Route path="/Product-Purity-profile" element={<PurityProfile />} />
+          <Route path="/Charges-Profile-List" element={<ChargesProfileList />} />
+          <Route path="/Push-Gold-Rate-List" element={<PushGoldRateList />} />
+          <Route path="*" element={<Navigate to="/" />} />
+        </Routes>
+      </Router>
+>>>>>>> a37a0c34192f2b91a40cfd5e3f8f0e4fc5445fbc
     </>
   )
 }

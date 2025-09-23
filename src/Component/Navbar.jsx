@@ -48,32 +48,36 @@ const Navbar = () => {
                           Account Code
                         </Link>
                         <Link className="px-4 py-2 hover:bg-gray-100 text-left" to='/Branch-Profile-List' onClick={() => setIsMasterOpen(prev => !prev)}>
-                         Branch Details
+                          Branch Details
                         </Link>
                         <Link className="px-4 py-2 hover:bg-gray-100 text-left" to='/Item-Profile-List' onClick={() => setIsMasterOpen(prev => !prev)}>
-                       Item Profile
+                          Item Profile
                         </Link>
                         <Link className="px-4 py-2 hover:bg-gray-100 text-left" to='/Product-Purity-profile' onClick={() => setIsMasterOpen(prev => !prev)}>
-                         Product Purity Profile
+                          Product Purity Profile
                         </Link>
                         <Link className="px-4 py-2 hover:bg-gray-100 text-left" to='/Document-Proof-List' onClick={() => setIsMasterOpen(prev => !prev)}>
-                        Document Proof
+                          Document Proof
                         </Link>
                         <Link className="px-4 py-2 hover:bg-gray-100 text-left"
                           to='/Customer-Profile-List'
                           onClick={() => setIsMasterOpen(prev => !prev)}>
-                        Customer Profile
+                          Customer Profile
                         </Link>
-                       
+
                         <button className="px-4 py-2 hover:bg-gray-100 text-left">
                           Employee Profile
                         </button>
-                        <button className="px-4 py-2 hover:bg-gray-100 text-left">
+                        <Link className="px-4 py-2 hover:bg-gray-100 text-left"
+                          to='/Push-Gold-Rate-List'
+                          onClick={() => setIsMasterOpen(prev => !prev)}>
                           Push Gold Rate
-                        </button>
-                        <button className="px-4 py-2 hover:bg-gray-100 text-left">
+                        </Link>
+                        <Link className="px-4 py-2 hover:bg-gray-100 text-left"
+                          to='/Charges-Profile-List'
+                          onClick={() => setIsMasterOpen(prev => !prev)}>
                           Charges Profile
-                        </button>
+                        </Link>
                         <button className="px-4 py-2 hover:bg-gray-100 text-left">
                           Tax Master
                         </button>
