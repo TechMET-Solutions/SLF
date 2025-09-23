@@ -100,7 +100,7 @@ const Navbar = () => {
 
                      {isMasterSchemeMaster && (
                       <div className="absolute top-0 left-full ml-1 w-[200px] bg-white text-black rounded shadow-lg flex flex-col gap-1">
-                        <Link className="px-4 py-2 hover:bg-gray-100 text-left text-sm" to='' onClick={() => setIsMasterSchemeMaster(prev => !prev)}>
+                        <Link className="px-4 py-2 hover:bg-gray-100 text-left text-sm" to='Scheme-Details-List' onClick={() => setIsMasterSchemeMaster(prev => !prev)}>
                          Scheme Details
                         </Link>
                         <Link className="px-4 py-2 hover:bg-gray-100 text-left text-sm" to='' onClick={() => setIsMasterSchemeMaster(prev => !prev)}>

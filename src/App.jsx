@@ -12,6 +12,7 @@ import ItemProfileList from "./MasterPages/ItemProfileList";
 import PurityProfile from "./MasterPages/PurityProfile";
 import CustProfile from "./MasterPages/CustProfile";
 import AddCustProfile from "./MasterPages/AddCustProfile";
+import SchemeDetailsList from "./MasterPages/SchemeDetailsList";
 function App() {
 
 
@@ -31,6 +32,7 @@ function App() {
           <Route path="/Customer-Profile-List" element={<CustProfile />} /> 
            <Route path="/Add-Customer-Profile" element={<AddCustProfile />} /> 
              <Route path="/Product-Purity-profile" element={<PurityProfile />} /> 
+             <Route path="/Scheme-Details-List" element={<SchemeDetailsList />} />
         <Route path="*" element={<Navigate to="/" />} /> 
       </Routes>
     </Router>
