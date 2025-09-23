@@ -145,7 +145,7 @@ const CustProfile = () => {
           height: "24px",
           borderRadius: "3.75px",
         }}
-        onClick={navigate('/Add-Customer-Profile')}
+        onClick={()=>navigate('/Add-Customer-Profile')}
         className="bg-[#0A2478] text-white text-[11.25px] font-source font-normal flex items-center justify-center"
       >
         Add
