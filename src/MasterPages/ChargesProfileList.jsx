@@ -86,7 +86,7 @@ const ChargesProfileList = () => {
             {/* Modal */}
             {isModalOpen && (
                 <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-sm">
-                    <div className="bg-white w-[717px] rounded-lg shadow-lg h-[322px] p-10">
+                    <div className="bg-white w-[717px] rounded-lg shadow-lg h-[340px] p-10">
                         <h2 className="text-[#0A2478] text-[20px] font-semibold font-source mb-4">
                             Add Charges Profile
                         </h2>
@@ -123,13 +123,14 @@ const ChargesProfileList = () => {
                                     <option>Income Statement</option>
                                 </select>
                             </div>
-                            <div className="flex items-center gap-3">
+                            
+                        </div>
+                        <div className="flex justify-center gap-3 m-4">
                                 <input type="checkbox" name="isActive" id="isActive" className="w-5 h-5" />
                                 <label className="text-[12px] font-medium">is Active</label>
                             </div>
-                        </div>
 
-                        <div className="flex justify-end gap-3 my-6">
+                        <div className="flex justify-center  gap-3 my-6">
                             <button
                                 className="bg-[#0A2478] text-white w-[92px] h-[30px] rounded"
                                 onClick={() => setIsModalOpen(false)}
