@@ -1,1 +1,12 @@
+@import url('https://fonts.googleapis.com/css2?family=Source+Sans+3:ital,wght@0,200..900;1,200..900&display=swap');
 @import "tailwindcss";
+
+body{
+    @apply font-primary
+}
+
+/* Theme */
+@theme {
+  /* Fonts */
+  --font-primary: "Source Sans 3", sans-serif;
+}
