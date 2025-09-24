@@ -246,9 +246,7 @@ const Navbar = () => {
                                         )}
                                     </div>
 
-                                    <button className="w-full text-left px-4 py-2 hover:bg-gray-100">
-                                        User Management
-                                    </button><button className="w-full text-left px-4 py-2 hover:bg-gray-100 flex justify-between items-center"
+                                   <button className="w-full text-left px-4 py-2 hover:bg-gray-100 flex justify-between items-center"
                                         onClick={() => {
                                             setIsMasterSchemeUserManagement(!isMasterSchemeUserManagement);
                                             setIsMasterProfileOpen(false);
