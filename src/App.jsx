@@ -17,6 +17,7 @@ import SchemeDetailsList from "./MasterPages/SchemeDetailsList";
 
 import ChargesProfileList from "./MasterPages/ChargesProfileList";
 import PushGoldRateList from "./MasterPages/PushGoldRateList";
+import AddSchemeDetailsListform from "./MasterPages/AddSchemeDetailsListform";
 
 function App() {
 
@@ -41,6 +42,8 @@ function App() {
           <Route path="/Scheme-Details-List" element={<SchemeDetailsList />} />
            <Route path="/Charges-Profile-List" element={<ChargesProfileList />} />
           <Route path="/Push-Gold-Rate-List" element={<PushGoldRateList />} />
+           <Route path="/Add-Scheme-Details-Listform" element={<AddSchemeDetailsListform />} />
+          
           
         <Route path="*" element={<Navigate to="/" />} /> 
       </Routes>
