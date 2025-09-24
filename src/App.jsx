@@ -22,10 +22,9 @@ import MemberLoginPeriod from "./MasterPages/MemberLoginPeriod";
 import PushGoldRateList from "./MasterPages/PushGoldRateList";
 import SchemeRenewalList from "./MasterPages/SchemeRenewalList";
 import BranchSchemeMappingList from "./MasterPages/BranchSchemeMappingList";
+import RoleMapping from "./MasterPages/RoleMapping";
 import SchemeRoleMapping from "./MasterPages/SchemeRoleMapping";
-import EmployeeProfile from "./MasterPages/EmployeeProfile";
-import MemberBranchMapping from "./MasterPages/MemberBranchMapping";
-import AddMemberBranchMapping from "./MasterPages/AddMemberBranchMapping";
+
 
 function App() {
 
@@ -56,9 +55,7 @@ function App() {
           <Route path="/Scheme-Role-Mapping" element={<SchemeRoleMapping />} />
           <Route path="/Member-Login-Period" element={<MemberLoginPeriod />} />
           <Route path="/Member-Login-Details" element={<MemberLoginDetails />} />
-          <Route path="/Employee-Profile-list" element={<EmployeeProfile />} />
-          <Route path="/Member-Branch-Mapping" element={<MemberBranchMapping />} />
-          <Route path="/Add-Member-Branch-Mapping" element={<AddMemberBranchMapping />} />
+          <Route path="/Role-Mapping" element={<RoleMapping />} />
           <Route path="*" element={<Navigate to="/" />} />
         </Routes>
       </Router>

@@ -6,59 +6,82 @@ const formFields = [
   { name: "description", label: "Description", type: "text", required: true },
   { name: "product", label: "Product", type: "text"},
   { name: "applicableFrom", label: "Applicable From", type: "date", required: true },
-  { name: "applicableTo", label: "Applicable To", type: "date" },
-  { name: "calcBasisOn", label: "Cal. basis on", type: "select", options: ["Monthly", "Yearly", "Daily"], required: true },
+  { name: "applicableTo", label: "Applicable To", type: "date" ,required: true},
+  { name: "calcBasisOn", label: "Cal. basis on", type: "select", options: ["Monthly", "Daily"], required: true },
   { name: "calcMethod", label: "Calc. Method", type: "select", options: ["Simple", "Multiple"] },
-  { name: "paymentFrequency", label: "Payment Frequency", type: "text" },
-  { name: "compound", label: "Compound", type: "select", options: ["Yes", "No"] },
-  { name: "interestInAdvance", label: "Interest in Advance", type: "select", options: ["Yes", "No"] },
-  { name: "preCloseMinDays", label: "Pre Close Min Days", type: "number" },
-  { name: "penaltyType", label: "Penalty Type", type: "select", options: ["Percent", "Amount"] },
-  { name: "penalty", label: "Penalty", type: "number" },
-  { name: "minLoanAmount", label: "Min Loan Amount", type: "number" },
-  { name: "paymentBasisOn", label: "Payment Basis On", type: "select", options: ["Interest", "EMI"] },
-  { name: "loanPeriod", label: "Loan Period", type: "number" },
+  { name: "paymentFrequency", label: "Payment Frequency", type: "text" ,required: true},
+  { name: "compound", label: "Compound", type: "select", options: ["Yes", "No"],required: true },
+  { name: "interestInAdvance", label: "Interest in Advance", type: "select", options: ["Yes", "No"],required: true },
+  { name: "preCloseMinDays", label: "Pre Close Min Days", type: "number" ,required: true},
+  { name: "penaltyType", label: "Penalty Type", type: "select", options: ["Percent", "Amount"],required: true },
+  { name: "penalty", label: "Penalty", type: "number",required: true },
+  { name: "minLoanAmount", label: "Min Loan Amount", type: "number",required: true },
+  { name: "paymentBasisOn", label: "Payment Basis On", type: "select", options: ["Interest", "EMI"],required: true },
+  { name: "loanPeriod", label: "Loan Period", type: "text" },
   { name: "goldApproxPercent", label: "Gold approx %", type: "number" },
-  { name: "maxLoanAmount", label: "Max Loan Amount", type: "number" },
+  { name: "maxLoanAmount", label: "Max Loan Amount", type: "number",required: true },
   { name: "forPartyType", label: "For Party Type", type: "select", options: ["Individual", "Corporate"] },
 ];
 
-const FormField = ({ field, formData, errors, handleInputChange }) => (
- <div className="flex flex-col">
-  <label className="text-xs font-medium mb-1 whitespace-nowrap">
-    {field.label}
-    {field.required && <span className="text-red-600">*</span>}
-  </label>
-  {field.type === "select" ? (
-    <select
-      name={field.name}
-      value={formData[field.name] || ""}
-      onChange={handleInputChange}
-      className={`px-2 py-1 border rounded text-xs ${
-        errors[field.name] ? "border-red-500" : "border-gray-300"
-      }`}
-    >
-      <option value="">Select {field.label}</option>
-      {field.options.map((opt) => (
-        <option key={opt} value={opt.toLowerCase()}>
-          {opt}
-        </option>
-      ))}
-    </select>
-  ) : (
-    <input
-      type={field.type}
-      name={field.name}
-      value={formData[field.name] || ""}
-      onChange={handleInputChange}
-      className={`px-2 py-1 border rounded text-xs ${
-        errors[field.name] ? "border-red-500" : "border-gray-300"
-      }`}
-    />
-  )}
-</div>
+const FormField = ({ field, formData, errors, handleInputChange }) => {
+  const suffixFields = ["loanPeriod", "paymentFrequency"];
 
-);
+  // Dynamically decide suffix
+  const suffix = formData.calcBasisOn === "Daily" ? "D" : "M";
+
+  return (
+    <div className="flex flex-col">
+      <label className="text-xs font-medium mb-1 whitespace-nowrap">
+        {field.label}
+        {field.required && <span className="text-red-600">*</span>}
+      </label>
+
+      {field.type === "select" ? (
+        <select
+          name={field.name}
+          value={formData[field.name] || ""}
+          onChange={handleInputChange}
+          className={`px-2 py-1 border rounded text-xs ${
+            errors[field.name] ? "border-red-500" : "border-gray-300"
+          }`}
+        >
+          <option value="">Select {field.label}</option>
+          {field.options.map((opt) => (
+            <option key={opt} value={opt}>
+              {opt}
+            </option>
+          ))}
+        </select>
+      ) : (
+        <div className="relative">
+          <input
+            type={field.type}
+            name={field.name}
+            value={formData[field.name] || ""}
+            onChange={handleInputChange}
+            className={`px-2 py-1 border rounded text-xs w-full pr-10 ${
+              errors[field.name] ? "border-red-500" : "border-gray-300"
+            }`}
+          />
+          {suffixFields.includes(field.name) && (
+            <span
+              className="absolute right-0 top-0 bottom-0 
+                         flex items-center justify-center 
+                         bg-[#0A2478] text-white text-xs font-semibold 
+                         px-3 rounded-r"
+            >
+              {suffix}
+            </span>
+          )}
+          
+        </div>
+      )}
+      
+    </div>
+  );
+};
+
+
 
 const InterestRateTable = ({ interestRates, onChange, addRow, removeRows }) => (
   <div>
@@ -189,7 +212,7 @@ const AddSchemeDetailsListform = () => {
                         }}
                         className="text-red-600"
                     >
-                        Add Scheme Details List form
+                        Add Scheme Details form
                     </h2>
 
                     {/* Right section (search + buttons) */}

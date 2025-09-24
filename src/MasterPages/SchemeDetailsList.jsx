@@ -133,7 +133,8 @@ const SchemeDetailsList = () => {
                                 <th className="px-4 py-2 text-left border-r border-gray-300 text-[13px]">
                                     Action
                                 </th>
-                                <th className="px-4 py-2 text-left border-r border-gray-300 text-[13px]">
+                                <th className="px-4 py-2 text-left border-r border-gray-300 text-[13px]"
+                                >
                                     Role Mapping
                                 </th>
                                 <th className="px-4 py-2 text-left border-r border-gray-300 text-[13px]">
@@ -177,7 +178,9 @@ const SchemeDetailsList = () => {
                                         </div>
 
                                     </td>
-                                    <td className="px-4 py-2 text-[#1883EF] cursor-pointer">
+                                    <td className="px-4 py-2 text-[#1883EF] cursor-pointer"
+                                                                    onClick={() => navigate("/Role-Mapping")}
+>
                                         Role Mapping
                                     </td>
 
