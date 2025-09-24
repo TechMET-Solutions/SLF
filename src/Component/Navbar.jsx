@@ -8,7 +8,7 @@ const Navbar = () => {
   // const [isMasterOpen, setIsMasterOpen] = useState(false);
   const [isMasterProfileOpen, setIsMasterProfileOpen] = useState(false);
    const [isMasterSchemeMaster, setIsMasterSchemeMaster] = useState(false);
-
+ const [isMasterSchemeEmployeeProfile, setIsMasterSchemeEmployeeProfile] = useState(false);
   return (
     <div className="flex justify-center">
       <div className="bg-[#0A2478] text-white flex items-center justify-between  relative mt-5 p-5 w-[1360px] h-[50px] rounded-[10px]">
@@ -117,9 +117,36 @@ const Navbar = () => {
                    
                   
 
-                  <button className="w-full text-left px-4 py-2 hover:bg-gray-100">
-                    Gold Loan
+                  {/* <button className="w-full text-left px-4 py-2 hover:bg-gray-100">
+                   Employee Profile
+                  </button> */}
+
+                  <div>
+
+<button
+                      className="w-full text-left px-4 py-2 hover:bg-gray-100 flex justify-between items-center "
+                      onClick={() => setIsMasterSchemeEmployeeProfile(!isMasterSchemeEmployeeProfile)}
+                    >
+                      Employee Profile
+                      <span>{isMasterSchemeEmployeeProfile ? "▲" : "▶"}</span>
                   </button>
+
+
+                     {isMasterSchemeEmployeeProfile && (
+                      <div className="absolute top-0 left-full ml-1 w-[200px] bg-white text-black rounded shadow-lg flex flex-col gap-1">
+                        <Link className="px-4 py-2 hover:bg-gray-100 text-left text-sm" to='' onClick={() => setIsMasterSchemeEmployeeProfile(prev => !prev)}>
+Employee Profile
+                        </Link>
+                        <Link className="px-4 py-2 hover:bg-gray-100 text-left text-sm" to='' onClick={() => setIsMasterSchemeEmployeeProfile(prev => !prev)}>
+                       Member Login Period
+                        </Link>
+                          <Link className="px-4 py-2 hover:bg-gray-100 text-left text-sm" to='' onClick={() => setIsMasterSchemeEmployeeProfile(prev => !prev)}>
+                     Member Login Details
+                        </Link>
+                        
+                      </div>
+                    )}
+                  </div>
                   <button className="w-full text-left px-4 py-2 hover:bg-gray-100">
                     User Management
                   </button>
