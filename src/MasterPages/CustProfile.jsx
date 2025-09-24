@@ -377,10 +377,10 @@ const [checkedRows, setCheckedRows] = useState({}); // store checked state per r
       background: "#0101017A",
       backdropFilter: "blur(6.8px)",
     }}>
-          <div className="bg-white w-[396.2737731933594px]  rounded-lg shadow-lg h-[386px] p-10">
+          <div className="bg-white w-[396.2737731933594px]  rounded-lg shadow-lg h-[386px] p-5">
          
 
-            <div className="flex justify-center items-center">
+            <div className="flex justify-center items-center mt-2">
               <img src={blockimg} alt="action" className="w-[113px] h-[113px]" />
 </div>
             <div className="mt-10">
@@ -389,47 +389,51 @@ const [checkedRows, setCheckedRows] = useState({}); // store checked state per r
 <p className="font-[Source_Sans_3] font-normal text-[21.79px] leading-[100%] tracking-[0%] text-center">
   Are you sure to Block this Customer
 </p>
+<p className="font-[Source_Sans_3] font-normal text-[17.43px] leading-[100%] tracking-[0%] text-center text-[#7C7C7C] mt-2">
+  you won’t be able to revert this action
+</p>
 
 
            </div>
-            <div className="flex justify-center gap-5 items-center">
-
- <div className="flex justify-end gap-3 mt-6 item-center">
-             <button
-  className="bg-[#0A2478] text-white"
-  style={{
-    width: "92.66px",
-    height: "30.57px",
-    borderRadius: "4.67px",
-  
-    opacity: 1,
-  }}
+           
+            <div className="mt-5 grid justify-center">
+<div className="pl-3"><button
+  className="bg-[#F11717] text-white font-[Source_Sans_3] font-semibold text-[19.61px] leading-[100%] tracking-[0%] text-center w-[67.53px] h-[30.57px] rounded-[2.67px] "
   onClick={() => setIsModalOpenForblock(false)}
 >
-  Save
-</button>
+  Ok
+</button></div>
+ 
+
+              <div className="mt-4">
+
 
             <button
-  className="text-white"
+  className="text-white text-[19px]"
   style={{
-    backgroundColor: "#C1121F",
-    width: "92.66px",
+    backgroundColor: "#0A2478",
+    width: "100.66px",
     height: "30.57px",
-    borderRadius: "4.67px",
+    borderRadius: "2.67px",
   
     opacity: 1,
   }}
   onClick={() => setIsModalOpenForblock(false)}
 >
-  Exit
+ Cancel
 </button>
 
-            </div>
+                </div>
+              </div>
+ 
+       
+
+            
 
               </div>
 
            
-          </div>
+        
         </div>
       )}
       {/* Table */}
