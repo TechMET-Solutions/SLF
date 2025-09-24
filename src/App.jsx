@@ -24,6 +24,9 @@ import SchemeRenewalList from "./MasterPages/SchemeRenewalList";
 import BranchSchemeMappingList from "./MasterPages/BranchSchemeMappingList";
 import RoleMapping from "./MasterPages/RoleMapping";
 import SchemeRoleMapping from "./MasterPages/SchemeRoleMapping";
+import MemberBranchMapping from "./MasterPages/MemberBranchMapping";
+import AddMemberBranchMapping from "./MasterPages/AddMemberBranchMapping";
+import EmployeeProfile from "./MasterPages/EmployeeProfile";
 
 
 function App() {
@@ -53,9 +56,12 @@ function App() {
           <Route path="/Scheme-Renewal-List" element={<SchemeRenewalList />} />
           <Route path="/Branch-Scheme-Mapping-List" element={<BranchSchemeMappingList />} />
           <Route path="/Scheme-Role-Mapping" element={<SchemeRoleMapping />} />
+          <Route path="/Employee-Profile-list" element={<EmployeeProfile />} />
           <Route path="/Member-Login-Period" element={<MemberLoginPeriod />} />
           <Route path="/Member-Login-Details" element={<MemberLoginDetails />} />
           <Route path="/Role-Mapping" element={<RoleMapping />} />
+          <Route path="/Member-Branch-Mapping" element={<MemberBranchMapping />} />
+          <Route path="/Add-Member-Branch-Mapping" element={<AddMemberBranchMapping />} />
           <Route path="*" element={<Navigate to="/" />} />
         </Routes>
       </Router>

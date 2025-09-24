@@ -68,6 +68,8 @@ const Navbar = () => {
                                                 setIsMasterProfileOpen(!isMasterProfileOpen);
                                                 setIsMasterSchemeMaster(false);
                                                 setIsMasterSchemeEmployeeProfile(false);
+                                                setIsMasterSchemeUserManagement(false)
+
                                             }}
                                         >
                                             Master Profile
@@ -165,6 +167,7 @@ const Navbar = () => {
                                                 setIsMasterSchemeMaster(!isMasterSchemeMaster);
                                                 setIsMasterProfileOpen(false);
                                                 setIsMasterSchemeEmployeeProfile(false);
+                                                setIsMasterSchemeUserManagement(false)
                                             }}
                                         >
                                             Scheme Master
@@ -206,6 +209,7 @@ const Navbar = () => {
                                                 setIsMasterSchemeEmployeeProfile(!isMasterSchemeEmployeeProfile);
                                                 setIsMasterProfileOpen(false);
                                                 setIsMasterSchemeMaster(false);
+                                                setIsMasterSchemeUserManagement(false)
                                             }}
                                         >
                                             Employee Profile
@@ -246,16 +250,16 @@ const Navbar = () => {
                                         )}
                                     </div>
 
-                                   <button className="w-full text-left px-4 py-2 hover:bg-gray-100 flex justify-between items-center"
+                                    <button
+                                        className="w-full text-left px-4 py-2 hover:bg-gray-100 flex justify-between items-center"
                                         onClick={() => {
                                             setIsMasterSchemeUserManagement(!isMasterSchemeUserManagement);
                                             setIsMasterProfileOpen(false);
                                             setIsMasterSchemeMaster(false);
-                                            isMasterSchemeEmployeeProfile(false)
+                                            setIsMasterSchemeEmployeeProfile(false); // ✅ fixed
                                         }}
                                     >
                                         User Management
-
                                         <span>
                                             {isMasterSchemeUserManagement ? (
                                                 <FiChevronDown className="inline-block" />
@@ -263,8 +267,8 @@ const Navbar = () => {
                                                 <FiChevronRight className="inline-block" />
                                             )}
                                         </span>
-
                                     </button>
+
                                     {isMasterSchemeUserManagement && (
                                         <div className="absolute top-0 left-full ml-1 w-[200px] bg-white text-black rounded shadow-lg flex flex-col gap-1">
                                             <Link

@@ -3,28 +3,19 @@ import { Link } from "react-router-dom";
 
 
 const AddMemberBranchMapping = () => {
-    const [data] = useState([
-        {
-            id: 1,
-            name: "kundan",
-            mobile: "8805789654",
-            email: "ssl@slunawat.com",
-        },
-        {
-            id: 3,
-            name: "omkar",
-            mobile: "8805789654",
-            email: "ssl@slunawat.com",
-        },
-        {
-            id: 2,
-            name: "tejas",
-            mobile: "8805789654",
-            email: "ssl@slunawat.com",
-        },
 
-
-    ]);
+    const branches = [
+        "01 - Bhagur B1",
+        "02 - Nasikroad B2",
+        "03 - Nashik B3",
+        "999 - Head Office",
+        "V1 - Bhagur V1",
+        "V2 - Nasikroad V2",
+        "V3 - Nasikroad V3",
+        "01 - Bhagur B1",
+        "02 - Nasikroad B2",
+        
+    ];
 
     return (
         <div className="min-h-screen w-full">
@@ -34,6 +25,8 @@ const AddMemberBranchMapping = () => {
                     <h2 className="text-red-600 font-bold text-[20px] leading-[148%] font-source">
                         Member Branch Mapping
                     </h2>
+
+
 
                     {/* Search & Actions */}
                     <div className="flex items-center gap-6">
@@ -52,8 +45,33 @@ const AddMemberBranchMapping = () => {
             </div>
 
             {/* Table */}
-            <div className="flex justify-center">
-                {/* inputs and Checkbox using map */}
+            <div className="flex flex-col gap-9 p-8">
+
+                <div className="flex flex-col gap-2 w-[540px]">
+                    <label className="text-gray-700 font-medium">Password</label>
+                    <input
+                        type="password"
+                        placeholder="Password"
+                        className="border border-[#C4C4C4] rounded-md px-1 py-1 focus:outline-none focus:ring-1 focus:ring-blue-500"
+                    />
+                </div>
+                <div className="flex flex-col gap-2">
+                    <label className="text-gray-700 font-medium">Branch</label>
+                    <div className="flex flex-wrap gap-12">
+                        {branches.map((branch) => (
+                            <label
+                                key={branch}
+                                className="flex items-center gap-2 cursor-pointer"
+                            >
+                                <input
+                                    type="checkbox"
+                                    className="h-4 w-4 border-gray-300 rounded"
+                                />
+                                <span>{branch}</span>
+                            </label>
+                        ))}
+                    </div>
+                </div>
 
 
             </div>
