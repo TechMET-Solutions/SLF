@@ -15,19 +15,22 @@ import PurityProfile from "./MasterPages/PurityProfile";
 
 import SchemeDetailsList from "./MasterPages/SchemeDetailsList";
 
+import AddMemberBranchMapping from "./MasterPages/AddMemberBranchMapping";
 import AddSchemeDetailsListform from "./MasterPages/AddSchemeDetailsListform";
+import BranchSchemeMappingList from "./MasterPages/BranchSchemeMappingList";
 import ChargesProfileList from "./MasterPages/ChargesProfileList";
+import EmployeeProfile from "./MasterPages/EmployeeProfile";
+import MemberBranchMapping from "./MasterPages/MemberBranchMapping";
 import MemberLoginDetails from "./MasterPages/MemberLoginDetails";
 import MemberLoginPeriod from "./MasterPages/MemberLoginPeriod";
 import PushGoldRateList from "./MasterPages/PushGoldRateList";
-import SchemeRenewalList from "./MasterPages/SchemeRenewalList";
-import BranchSchemeMappingList from "./MasterPages/BranchSchemeMappingList";
 import RoleMapping from "./MasterPages/RoleMapping";
+import SchemeRenewalList from "./MasterPages/SchemeRenewalList";
 import SchemeRoleMapping from "./MasterPages/SchemeRoleMapping";
-import MemberBranchMapping from "./MasterPages/MemberBranchMapping";
-import AddMemberBranchMapping from "./MasterPages/AddMemberBranchMapping";
-import EmployeeProfile from "./MasterPages/EmployeeProfile";
 
+
+import UserPermissions from "./MasterPages/UserPermissions";
+import UserRolePermission from "./MasterPages/UserRolePermission";
 
 function App() {
 
@@ -62,7 +65,11 @@ function App() {
           <Route path="/Role-Mapping" element={<RoleMapping />} />
           <Route path="/Member-Branch-Mapping" element={<MemberBranchMapping />} />
           <Route path="/Add-Member-Branch-Mapping" element={<AddMemberBranchMapping />} />
+          
+          <Route path="/User-Role-List" element={<UserRolePermission />} />
+          <Route path="/User-Role-Permission" element={<UserPermissions />} />
           <Route path="*" element={<Navigate to="/" />} />
+
         </Routes>
       </Router>
 
