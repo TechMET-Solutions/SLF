@@ -8,8 +8,9 @@ const Navbar = () => {
     const [isMasterOpen, setIsMasterOpen] = useState(false);
     const [isMasterProfileOpen, setIsMasterProfileOpen] = useState(false);
     const [isMasterSchemeMaster, setIsMasterSchemeMaster] = useState(false);
-    const [isMasterSchemeEmployeeProfile, setIsMasterSchemeEmployeeProfile] =
-        useState(false);
+    const [isMasterSchemeEmployeeProfile, setIsMasterSchemeEmployeeProfile] = useState(false);
+    const [isMasterSchemeUserManagement, setIsMasterSchemeUserManagement] = useState(false);
+
 
     const dropdownRef = useRef(null);
 
@@ -247,7 +248,45 @@ const Navbar = () => {
 
                                     <button className="w-full text-left px-4 py-2 hover:bg-gray-100">
                                         User Management
+                                    </button><button className="w-full text-left px-4 py-2 hover:bg-gray-100 flex justify-between items-center"
+                                        onClick={() => {
+                                            setIsMasterSchemeUserManagement(!isMasterSchemeUserManagement);
+                                            setIsMasterProfileOpen(false);
+                                            setIsMasterSchemeMaster(false);
+                                            isMasterSchemeEmployeeProfile(false)
+                                        }}
+                                    >
+                                        User Management
+
+                                        <span>
+                                            {isMasterSchemeUserManagement ? (
+                                                <FiChevronDown className="inline-block" />
+                                            ) : (
+                                                <FiChevronRight className="inline-block" />
+                                            )}
+                                        </span>
+
                                     </button>
+                                    {isMasterSchemeUserManagement && (
+                                        <div className="absolute top-0 left-full ml-1 w-[200px] bg-white text-black rounded shadow-lg flex flex-col gap-1">
+                                            <Link
+                                                className="px-4 py-2 hover:bg-gray-100 text-left text-sm"
+                                                to=""
+                                                onClick={() => setIsMasterOpen(false)}
+                                            >
+                                                User Role List & Role Permission
+                                            </Link>
+                                            <Link
+                                                className="px-4 py-2 hover:bg-gray-100 text-left text-sm"
+                                                to="/Member-Branch-Mapping"
+                                                onClick={() => setIsMasterOpen(false)}
+                                            >
+                                                Member Branch Mapping
+                                            </Link>
+                                        </div>
+                                    )}
+
+
                                 </div>
                             )}
                         </div>
