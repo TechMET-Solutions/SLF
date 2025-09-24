@@ -1,12 +1,41 @@
 import { FaPaperclip } from "react-icons/fa";
 
+import GroupData from "../assets/Group 124.svg";
+import Vectorimg from "../assets/Vectorimg.png";
 import profileempty from "../assets/profileempty.png";
-
 import send from "../assets/send.svg";
 
+import JoditEditor from "jodit-react";
+import { useRef, useState } from "react";
 import righttick from "../assets/righttick.png";
 
 const AddCustProfile = () => {
+   const editor = useRef(null);
+  const [content, setContent] = useState("");
+ const bankData = [
+  {
+     bankName: "HDFC Bank",
+     Customer_Name: "sumit pathak",
+     Account_No: "323902010133409",
+     IFSC: "UBIN0532398",
+     
+    Bank_Address: "Bhagur",
+    Update_By: "rasika.gade@slunawat.com",
+    Update_On: "25-Jul-2025",
+    
+  },
+  {
+  bankName: "HDFC Bank",
+     Customer_Name: "sumit pathak",
+     Account_No: "323902010133409",
+     IFSC: "UBIN0532398",
+     
+    Bank_Address: "Bhagur",
+    Update_By: "rasika.gade@slunawat.com",
+    Update_On: "25-Jul-2025",
+  }
+];
+
   return (
     <div>
       <div className="flex justify-center ">
@@ -908,7 +937,120 @@ Address Proof
 
          
         </div>
+        <div className="flex gap-3 mt-5">
+<div>
+            <div className="">
+              <div>
+                <label className="text-[14px] font-medium">Reference 2</label>
+              </div>
+
+              <input
+                type="text"
+                placeholder="Country"
+                className="border border-gray-300 px-3 py-2 mt-1 w-[200px] rounded-[8px] bg-white"
+              />
+            </div>
+           
+
+          </div>
+          <div className="flex items-center space-x-2 mt-5">
+            <label htmlFor="terms" className="text-[14px] text-gray-700 font-semibold">
+    Bad Debtor
+  </label>
+  <input
+    id="terms"
+    type="checkbox"
+    className="h-4 w-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500"
+  />
+  
+</div>
+        </div>
       </div>
+
+
+
+
+      <div className="p-6 rounded-md w-full mx-auto pl-[120px] pr-[120px]">
+      <p className="font-[Source_Sans_3] font-bold text-[24px] leading-[100%] tracking-[0.03em] text-[#0A2478] mb-4 mt-5">
+        Remark
+      </p>
+
+      <JoditEditor
+        ref={editor}
+        value={content}
+        onChange={(newContent) => setContent(newContent)}
+      />
+      </div>
+      
+      <div className="flex justify-center">
+  <div className="overflow-x-auto mt-5 w-[1290px] h-[500px]">
+    <table className="w-full border-collapse">
+      <thead className="bg-[#0A2478] text-white text-sm">
+        <tr>
+          <th className="px-4 py-2 text-left border-r border-gray-300 text-[13px]">
+           Bank Name
+          </th>
+          <th className="px-4 py-2 text-left border-r border-gray-300 text-[13px]">
+            Customer Name
+          </th>
+          <th className="px-4 py-2 text-left border-r border-gray-300 text-[13px]">
+            Account No
+          </th>
+          <th className="px-4 py-2 text-left border-r border-gray-300 text-[13px]">
+           IFSC
+          </th>
+          <th className="px-4 py-2 text-left border-r border-gray-300 text-[13px]">
+           Cancelled Cheques
+          </th>
+          <th className="px-4 py-2 text-left border-r border-gray-300 text-[13px]">
+           Bank Address
+          </th>
+          <th className="px-4 py-2 text-left border-r border-gray-300 text-[13px]">
+           Update By
+                </th>
+                <th className="px-4 py-2 text-left border-r border-gray-300 text-[13px]">
+           Update On
+          </th>
+          <th className="px-4 py-2 text-left text-[13px]">Action</th>
+        </tr>
+      </thead>
+      <tbody className="text-[12px]">
+        {bankData.map((row, index) => (
+          <tr
+            key={index}
+            className={`border-b ${
+              index % 2 === 0 ? "bg-gray-50" : "bg-white"
+            }`}
+          >
+            <td className="px-4 py-2">{row.bankName}</td>
+            <td className="px-4 py-2">{row.Customer_Name}</td>
+            <td className="px-4 py-2">{row.Account_No}</td>
+            <td className="px-4 py-2">{row.IFSC}</td>
+            <td className="px-4 py-2">download</td>
+            <td className="px-4 py-2">{row.Bank_Address}</td>
+            <td className="px-4 py-2">{row.Update_By || "-"}</td>
+             <td className="px-4 py-2">{row.Update_On || "-"}</td>
+            <td className="px-4 py-2 text-[#1883EF] cursor-pointer">
+                         <div className="flex gap-2 justify-center">
+                           
+                             <div className="w-[17px] h-[17px] bg-[#56A869] rounded-[2.31px] flex items-center justify-center p-0.5">
+                               <img src={GroupData} alt="view" className="w-[18px] h-[18px]" />
+                             </div>
+                           
+                           
+                             <div className="w-[17px] h-[17px] bg-[#C5644E] rounded-[2.31px] flex items-center justify-center p-0.5">
+                               <img src={Vectorimg} alt="edit" />
+                             </div>
+                          
+                         </div>
+                       </td>
+          </tr>
+        ))}
+      </tbody>
+    </table>
+  </div>
+</div>
+
     </div>
   );
 };

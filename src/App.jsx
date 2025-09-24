@@ -15,9 +15,11 @@ import PurityProfile from "./MasterPages/PurityProfile";
 
 import SchemeDetailsList from "./MasterPages/SchemeDetailsList";
 
-import ChargesProfileList from "./MasterPages/ChargesProfileList";
-import PushGoldRateList from "./MasterPages/PushGoldRateList";
 import AddSchemeDetailsListform from "./MasterPages/AddSchemeDetailsListform";
+import ChargesProfileList from "./MasterPages/ChargesProfileList";
+import MemberLoginDetails from "./MasterPages/MemberLoginDetails";
+import MemberLoginPeriod from "./MasterPages/MemberLoginPeriod";
+import PushGoldRateList from "./MasterPages/PushGoldRateList";
 import SchemeRenewalList from "./MasterPages/SchemeRenewalList";
 
 function App() {
@@ -45,9 +47,9 @@ function App() {
           <Route path="/Push-Gold-Rate-List" element={<PushGoldRateList />} />
           <Route path="/Add-Scheme-Details-Listform" element={<AddSchemeDetailsListform />} />
           <Route path="/Scheme-Renewal-List" element={<SchemeRenewalList />} />
-
-
-
+          
+  <Route path="/Member-Login-Period" element={<MemberLoginPeriod />} /> 
+  <Route path="/Member-Login-Details" element={<MemberLoginDetails />} /> 
           <Route path="*" element={<Navigate to="/" />} />
         </Routes>
       </Router>

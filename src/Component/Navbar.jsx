@@ -137,10 +137,10 @@ const Navbar = () => {
                         <Link className="px-4 py-2 hover:bg-gray-100 text-left text-sm" to='' onClick={() => setIsMasterSchemeEmployeeProfile(prev => !prev)}>
 Employee Profile
                         </Link>
-                        <Link className="px-4 py-2 hover:bg-gray-100 text-left text-sm" to='' onClick={() => setIsMasterSchemeEmployeeProfile(prev => !prev)}>
+                        <Link className="px-4 py-2 hover:bg-gray-100 text-left text-sm" to='/Member-Login-Period' onClick={() => setIsMasterSchemeEmployeeProfile(prev => !prev)}>
                        Member Login Period
                         </Link>
-                          <Link className="px-4 py-2 hover:bg-gray-100 text-left text-sm" to='' onClick={() => setIsMasterSchemeEmployeeProfile(prev => !prev)}>
+                          <Link className="px-4 py-2 hover:bg-gray-100 text-left text-sm" to='/Member-Login-Details' onClick={() => setIsMasterSchemeEmployeeProfile(prev => !prev)}>
                      Member Login Details
                         </Link>
                         
