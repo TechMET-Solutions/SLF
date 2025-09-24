@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useNavigate } from "react-router-dom"; // Add this import
 import eyeIcon from "../assets/Vectorimg.png";
 import GroupData from "../assets/Group 124.svg";
 const SchemeDetailsList = () => {
@@ -39,6 +40,8 @@ const SchemeDetailsList = () => {
         },
     ]);
 
+    const navigate = useNavigate(); // Add this line
+
     return (
         <div className="min-h-screen w-full">
             {/* middletopbar */}
@@ -70,7 +73,8 @@ const SchemeDetailsList = () => {
                                     borderRadius: "3.75px",
                                 }}
                                 className="bg-[#129121] text-white text-[11.25px] font-source font-normal flex items-center justify-center"
-                            >
+                                onClick={() => navigate("/Scheme-Renewal-List")}
+                           >
                                 Renew
                             </button>
 
@@ -80,8 +84,9 @@ const SchemeDetailsList = () => {
                                     height: "24px",
                                     borderRadius: "3.75px",
                                 }}
-                                onClick={() => setIsModalOpen(true)}
                                 className="bg-[#0A2478] text-white text-[11.25px] font-source font-normal flex items-center justify-center"
+                                                               onClick={() => navigate("/Add-Scheme-Details-Listform")}
+
                             >
                                 Add
                             </button>
@@ -96,133 +101,7 @@ const SchemeDetailsList = () => {
                 </div>
             </div>
 
-            {/* modelforAdd */}
-            {isModalOpen && (
-                <div
-                    className="fixed inset-0 flex items-center justify-center z-50"
-                    style={{
-                        background: "#0101017A",
-                        backdropFilter: "blur(6.8px)",
-                    }}
-                >
-                    <div className="bg-white w-[717px] rounded-lg shadow-lg h-[322px] p-10">
-                        <h2
-                            className="text-[#0A2478] mb-4"
-                            style={{
-                                fontFamily: "Source Sans 3, sans-serif",
-                                fontWeight: 600,
-                                fontSize: "20px",
-                                lineHeight: "24px",
-                                letterSpacing: "0%",
-                            }}
-                        >
-                            Scheme Details List
-                        </h2>
-
-                        <div className="grid grid-cols-2 gap-4">
-                            <div>
-                                <label className="text-[14px] ">
-                                    Group Name <span className="text-red-500">*</span>
-                                </label>
-                                <input
-                                    type="text"
-                                    placeholder="Interest Accrued on FDR"
-                                    className="border border-gray-300 rounded"
-                                    style={{
-                                        width: "280px",
-                                        height: "38px",
-                                        padding: "10px 14px",
-                                        borderRadius: "5px",
-                                        borderWidth: "1px",
-                                        opacity: 1,
-                                    }}
-                                />
-                            </div>
-                            <div>
-                                <label className="text-[14px] ">
-                                    Account Type <span className="text-red-500">*</span>
-                                </label>
-                                <input
-                                    type="text"
-                                    placeholder="Current Assets"
-                                    className="border border-gray-300 rounded"
-                                    style={{
-                                        width: "280px",
-                                        height: "38px",
-                                        padding: "10px 14px",
-                                        borderRadius: "5px",
-                                        borderWidth: "1px",
-                                        opacity: 1,
-                                    }}
-                                />
-                            </div>
-                            <div>
-                                <label className="text-[12px] font-medium">Under</label>
-                                <select
-                                    className="border border-gray-300 rounded px-2 py-1 w-full mt-1 text-[12px]"
-                                    style={{
-                                        width: "280px",
-                                        height: "38px",
-                                        padding: "10px 14px",
-                                        borderRadius: "5px",
-                                        borderWidth: "1px",
-                                        opacity: 1,
-                                    }}
-                                >
-                                    <option>Balance Sheet</option>
-                                    <option>Income Statement</option>
-                                </select>
-                            </div>
-                            <div>
-                                <label className="text-[12px] font-medium">Comments</label>
-                                <input
-                                    type="text"
-                                    className="border border-gray-300 rounded px-2 py-1 w-full mt-1 text-[12px]"
-                                    placeholder="Test"
-                                    style={{
-                                        width: "280px",
-                                        height: "38px",
-                                        padding: "10px 14px",
-                                        borderRadius: "5px",
-                                        borderWidth: "1px",
-                                        opacity: 1,
-                                    }}
-                                />
-                            </div>
-                        </div>
-                        <div className="flex justify-center gap-5 items-center">
-                            <div className="flex justify-end gap-3 mt-6 items-center">
-                                <button
-                                    className="bg-[#0A2478] text-white"
-                                    style={{
-                                        width: "92.66px",
-                                        height: "30.57px",
-                                        borderRadius: "4.67px",
-                                        opacity: 1,
-                                    }}
-                                    onClick={() => setIsModalOpen(false)}
-                                >
-                                    Save
-                                </button>
-
-                                <button
-                                    className="text-white"
-                                    style={{
-                                        backgroundColor: "#C1121F",
-                                        width: "92.66px",
-                                        height: "30.57px",
-                                        borderRadius: "4.67px",
-                                        opacity: 1,
-                                    }}
-                                    onClick={() => setIsModalOpen(false)}
-                                >
-                                    Exit
-                                </button>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            )}
+            
 
             {/* Table */}
             <div className="flex justify-center ">
@@ -302,20 +181,30 @@ const SchemeDetailsList = () => {
                                         Role Mapping
                                     </td>
 
-                                     {/* Toggle */}
-            <td className="px-4 py-2 text-[#1883EF] cursor-pointer">
-              <button
-                className={`w-12 h-6 flex items-center rounded-full p-1 transition-colors ${
-                  row.active ? "bg-[#0A2478]" : "bg-gray-400"
-                }`}
-              >
-                <div
-                  className={`bg-white w-4 h-4 rounded-full shadow-md transform transition-transform ${
-                    row.active ? "translate-x-6" : "translate-x-0"
-                  }`}
-                />
-              </button>
-            </td>
+                                    {/* Toggle */}
+                                    <td className="px-4 py-2 text-[#1883EF] cursor-pointer">
+                                        <button
+                                            onClick={() => {
+                                                const newData = data.map((item) =>
+                                                    item.id === row.id
+                                                        ? { ...item, active: !item.active }
+                                                        : item
+                                                );
+                                                setData(newData);
+                                            }}
+                                            className={`w-12 h-6 flex items-center rounded-full p-1 transition-colors ${
+                                                row.active ? "bg-[#0A2478]" : "bg-gray-400"
+                                            }`}
+                                            style={{ border: "none", outline: "none", cursor: "pointer", padding: 0 }}
+                                            aria-label="Toggle Active"
+                                        >
+                                            <div
+                                                className={`bg-white w-4 h-4 rounded-full shadow-md transform transition-transform ${
+                                                    row.active ? "translate-x-6" : "translate-x-0"
+                                                }`}
+                                            />
+                                        </button>
+                                    </td>
 
                                 </tr>
                             ))}
