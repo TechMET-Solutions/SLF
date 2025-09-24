@@ -1041,7 +1041,7 @@ const AddCustProfile = () => {
             backdropFilter: "blur(6.8px)",
           }}
         >
-          <div className="bg-white w-[717px]  rounded-lg shadow-lg h-[322px] p-10">
+          <div className="bg-white w-[896px]  rounded-lg shadow-lg h-[322px] p-10">
             <h2
               className="text-[#0A2478] mb-4"
               style={{
@@ -1052,40 +1052,84 @@ const AddCustProfile = () => {
                 letterSpacing: "0%",
               }}
             >
-              Create New Account
+             Add Bank Details
             </h2>
 
-            <div className="grid grid-cols-2 gap-4">
-              <div>
+            <div className=" gap-4">
+              <div className="flex gap-2"> <div>
                 <label className="text-[14px] ">
-                  Account Group Name <span className="text-red-500">*</span>
+                 Bank Name* <span className="text-red-500">*</span>
                 </label>
                 <input
                   type="text"
-                  placeholder="Enter Group Name"
+                  placeholder="Bank Name"
                   className="border border-gray-300 rounded"
                   style={{
-                    width: "280px",
+                    width: "238px",
                     height: "38px",
                     padding: "10px 14px",
-                    borderRadius: "5px",
+                    borderRadius: "8px",
                     borderWidth: "1px",
                     opacity: 1,
                   }}
                 />
               </div>
-              <div>
+               <div>
+                <label className="text-[14px] ">
+                Account Holder Name <span className="text-red-500">*</span>
+                </label>
+                <input
+                  type="text"
+                  placeholder="Bank Name"
+                  className="border border-gray-300 rounded"
+                  style={{
+                    width: "300px",
+                    height: "38px",
+                    padding: "10px 14px",
+                    borderRadius: "8px",
+                    borderWidth: "1px",
+                    opacity: 1,
+                  }}
+                />
+              </div>
+               <div>
+                <label className="text-[14px] ">
+                Account No<span className="text-red-500">*</span>
+                </label>
+                <input
+                  type="text"
+                  placeholder="Bank Name"
+                  className="border border-gray-300 rounded"
+                  style={{
+                    width: "238px",
+                    height: "38px",
+                    padding: "10px 14px",
+                    borderRadius: "8px",
+                    borderWidth: "1px",
+                    opacity: 1,
+                  }}
+                />
+              </div></div>
+              <div className="flex mt-5 gap-2">
+                <div>
                 {/* <label className="text-[12px] font-medium">Account Type *</label> */}
                 <label className="text-[14px] ">
-                  Financial <span className="text-red-500">*</span>
+                 IFSC Code* <span className="text-red-500">*</span>
                 </label>
-                {/* <input
+                <input
                   type="text"
-                  className="border border-gray-300 rounded px-2 py-1 w-full mt-1 text-[12px]"
-                  placeholder="Enter Account Type"
-                /> */}
-
-                <select
+                  placeholder="IFSC Code"
+                  className="border border-gray-300 rounded"
+                  style={{
+                    width: "238px",
+                    height: "38px",
+                    padding: "10px 14px",
+                    borderRadius: "8px",
+                    borderWidth: "1px",
+                    opacity: 1,
+                  }}
+                />
+                {/* <select
                   className="border border-gray-300 rounded px-2 py-1 w-full mt-1 text-[12px]"
                   style={{
                     width: "280px",
@@ -1098,23 +1142,31 @@ const AddCustProfile = () => {
                 >
                   <option>Balance Sheet</option>
                   <option>Income Statement</option>
-                </select>
+                </select> */}
               </div>
               <div>
                 {/* <label className="text-[12px] font-medium">Account Type *</label> */}
                 <label className="text-[14px] ">
-                  Head <span className="text-red-500"></span>
+                 Bank Address<span className="text-red-500"></span>
                 </label>
-                {/* <input
+               <input
                   type="text"
-                  className="border border-gray-300 rounded px-2 py-1 w-full mt-1 text-[12px]"
-                  placeholder="Enter Account Type"
-                /> */}
+                  placeholder="Address"
+                  className="border border-gray-300 rounded"
+                  style={{
+                    width: "300px",
+                    height: "38px",
+                    padding: "10px 14px",
+                    borderRadius: "8px",
+                    borderWidth: "1px",
+                    opacity: 1,
+                  }}
+                />
 
-                <select
+                {/* <select
                   className="border border-gray-300 rounded px-2 py-1 w-full mt-1 text-[12px]"
                   style={{
-                    width: "280px",
+                    width: "300px",
                     height: "38px",
                     padding: "10px 14px",
                     borderRadius: "5px",
@@ -1124,34 +1176,38 @@ const AddCustProfile = () => {
                 >
                   <option>Balance Sheet</option>
                   <option>Income Statement</option>
-                </select>
+                </select> */}
               </div>
               <div>
                 {/* <label className="text-[12px] font-medium">Account Type *</label> */}
                 <label className="text-[14px] ">
-                  Type <span className="text-red-500"></span>
+                 Attached Cancel Cheque <span className="text-red-500"></span>
                 </label>
-                {/* <input
-                  type="text"
-                  className="border border-gray-300 rounded px-2 py-1 w-full mt-1 text-[12px]"
-                  placeholder="Enter Account Type"
-                /> */}
+                 <div className="flex items-center border border-gray-300 rounded mt-1 w-full">
+              <label
+  htmlFor="uploadFile"
+  className="bg-[#D9D9D9] px-4 py-2 cursor-pointer text-[12px] rounded-l border-r border w-[200px] text-black font-[Source_Sans_3] font-semibold leading-[100%] tracking-[0.03em]"
+>
+  Choose File
+</label>
 
-                <select
-                  className="border border-gray-300 rounded px-2 py-1 w-full mt-1 text-[12px]"
-                  style={{
-                    width: "280px",
-                    height: "38px",
-                    padding: "10px 14px",
-                    borderRadius: "5px",
-                    borderWidth: "1px",
-                    opacity: 1,
-                  }}
-                >
-                  <option>Balance Sheet</option>
-                  <option>Income Statement</option>
-                </select>
+              <input
+                id="uploadFile"
+                type="file"
+                className="hidden"
+                //   onChange={(e) =>
+                //     setFileName(e.target.files[0] ? e.target.files[0].name : "No file chosen")
+                //   }
+              />
+              <span className="px-3 py-2 text-sm text-gray-500 w-full truncate">
+                {/* {fileName || "No file chosen"} */}
+              </span>
+            </div>
+                
               </div>
+
+             </div>
+              
             </div>
             <div className="flex justify-center gap-5 items-center">
               <div className="flex justify-end gap-3 mt-6 item-center">

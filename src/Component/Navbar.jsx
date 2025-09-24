@@ -1,7 +1,7 @@
 // src/components/Navbar.jsx
-import React, { useState, useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
+import { FiChevronDown, FiChevronRight, FiChevronUp, FiLogOut } from "react-icons/fi";
 import { Link } from "react-router-dom";
-import { FiChevronRight, FiChevronDown, FiChevronUp, FiLogOut } from "react-icons/fi";
 
 
 const Navbar = () => {
@@ -222,7 +222,7 @@ const Navbar = () => {
                                             <div className="absolute top-0 left-full ml-1 w-[200px] bg-white text-black rounded shadow-lg flex flex-col gap-1">
                                                 <Link
                                                     className="px-4 py-2 hover:bg-gray-100 text-left text-sm"
-                                                    to="/Employee-Profile"
+                                                    to="/Employee-Profile-list"
                                                     onClick={() => setIsMasterOpen(false)}
                                                 >
                                                     Employee Profile

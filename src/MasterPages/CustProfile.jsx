@@ -9,15 +9,22 @@
 // }
 
 // export default CustProfile
-import { useState } from "react";
-
-import GroupData from "../assets/Group 124.svg";
-import print from "../assets/print.png";
-import msg from "../assets/msg.png";
+import JoditEditor from "jodit-react";
+import { useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import GroupData from "../assets/Group 124.svg";
+import msg from "../assets/msg.png";
+import print from "../assets/print.png";
+
+import blockimg from "../assets/blockimg.png";
 const CustProfile = () => {
       const navigate = useNavigate();
-    const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isModalOpenForRemark, setIsModalOpenForRemark] = useState(false);
+  const [isModalOpenForBlock, setIsModalOpenForblock] = useState(false);
+const [checkedRows, setCheckedRows] = useState({}); // store checked state per row
+  const editor = useRef(null);
+    const [content, setContent] = useState("");
  const [data] = useState([
   {
     customer: "Recoverable",
@@ -30,7 +37,8 @@ const CustProfile = () => {
     badDebtor: "No",
     addedOn: "22-09-2017",
     addedBy: "Admin",
-    block: "Active",
+     block: "Active",
+    
     action: "Edit",
   },
   {
@@ -294,6 +302,136 @@ const CustProfile = () => {
         </div>
       )}
 
+      
+
+       {isModalOpenForRemark && (
+        <div  className="fixed inset-0 flex items-center justify-center z-50"
+    style={{
+      background: "#0101017A",
+      backdropFilter: "blur(6.8px)",
+    }}>
+          <div className="bg-white w-[829px]  rounded-lg shadow-lg h-[356px] p-10">
+           <h2
+  className="text-[#0A2478] mb-4"
+  style={{
+    fontFamily: "Source Sans 3, sans-serif",
+    fontWeight: 600,
+    fontSize: "20px",
+    lineHeight: "24px",
+    letterSpacing: "0%",
+  }}
+>
+  Remark
+</h2>
+
+ <JoditEditor
+          ref={editor}
+          value={content}
+          onChange={(newContent) => setContent(newContent)}
+        />
+           
+            <div className="flex justify-center gap-5 items-center">
+
+ <div className="flex justify-end gap-3 mt-6 item-center">
+             <button
+  className="bg-[#0A2478] text-white"
+  style={{
+    width: "92.66px",
+    height: "30.57px",
+    borderRadius: "4.67px",
+  
+    opacity: 1,
+  }}
+  onClick={() => setIsModalOpenForRemark(false)}
+>
+  Save
+</button>
+
+            <button
+  className="text-white"
+  style={{
+    backgroundColor: "#C1121F",
+    width: "92.66px",
+    height: "30.57px",
+    borderRadius: "4.67px",
+  
+    opacity: 1,
+  }}
+  onClick={() => setIsModalOpenForRemark(false)}
+>
+  Exit
+</button>
+
+            </div>
+
+              </div>
+
+           
+          </div>
+        </div>
+      )}
+
+      {isModalOpenForBlock && (
+        <div  className="fixed inset-0 flex items-center justify-center z-50"
+    style={{
+      background: "#0101017A",
+      backdropFilter: "blur(6.8px)",
+    }}>
+          <div className="bg-white w-[396.2737731933594px]  rounded-lg shadow-lg h-[386px] p-10">
+         
+
+            <div className="flex justify-center items-center">
+              <img src={blockimg} alt="action" className="w-[113px] h-[113px]" />
+</div>
+            <div className="mt-10">
+              
+
+<p className="font-[Source_Sans_3] font-normal text-[21.79px] leading-[100%] tracking-[0%] text-center">
+  Are you sure to Block this Customer
+</p>
+
+
+           </div>
+            <div className="flex justify-center gap-5 items-center">
+
+ <div className="flex justify-end gap-3 mt-6 item-center">
+             <button
+  className="bg-[#0A2478] text-white"
+  style={{
+    width: "92.66px",
+    height: "30.57px",
+    borderRadius: "4.67px",
+  
+    opacity: 1,
+  }}
+  onClick={() => setIsModalOpenForblock(false)}
+>
+  Save
+</button>
+
+            <button
+  className="text-white"
+  style={{
+    backgroundColor: "#C1121F",
+    width: "92.66px",
+    height: "30.57px",
+    borderRadius: "4.67px",
+  
+    opacity: 1,
+  }}
+  onClick={() => setIsModalOpenForblock(false)}
+>
+  Exit
+</button>
+
+            </div>
+
+              </div>
+
+           
+          </div>
+        </div>
+      )}
       {/* Table */}
       <div className="flex justify-center ">
  <div className="overflow-x-auto mt-5 w-[1290px] h-[500px]">
@@ -315,7 +453,7 @@ Debtor</th>
                                <th className="px-4 py-2 text-center text-[13px]">Action</th>
               </tr>
             </thead>
-            <tbody className="text-[12px]">
+          <tbody className="text-[12px]">
   {data.map((row, index) => (
     <tr
       key={index}
@@ -331,35 +469,43 @@ Debtor</th>
       <td className="px-4 py-2">{row.badDebtor}</td>
       <td className="px-4 py-2">{row.addedOn}</td>
       <td className="px-4 py-2">{row.addedBy}</td>
-     <td className="px-4 py-2">
-  <input
-                  type="checkbox"
-                  className="w-[25px] h-[25px]"
-    // checked={row.block === "Blocked"} // ✅ checked if value is "Blocked"
-    onChange={() => {
-      // handle toggle logic here
-      console.log("Toggled:", row.customer);
-    }}
-  />
-</td>
 
-          <td className="px-4 py-2 text-[#1883EF] cursor-pointer">
-              <div className="flex gap-5">
-                   <div className="w-[17px] h-[17px] bg-[#6D5300] rounded-[2.31px] flex items-center justify-center">
-          <img src={msg} alt="action" className="w-[12px] h-[12px]" />
+      <td className="px-4 py-2">
+        <input
+          type="checkbox"
+          className="w-[25px] h-[25px]"
+          checked={checkedRows[row.customer] || false}
+          onChange={(e) => {
+            setCheckedRows((prev) => ({
+              ...prev,
+              [row.customer]: e.target.checked,
+            }));
+            if (e.target.checked) {
+              setIsModalOpenForblock(true); // open modal when checked
+            }
+          }}
+        />
+      </td>
+
+      <td className="px-4 py-2 text-[#1883EF] cursor-pointer">
+        <div className="flex gap-5">
+          <div className="w-[17px] h-[17px] bg-[#6D5300] rounded-[2.31px] flex items-center justify-center">
+            <img
+              src={msg}
+              alt="action"
+              className="w-[12px] h-[12px]"
+              onClick={() => setIsModalOpenForRemark(true)}
+            />
+          </div>
+
+          <div className="w-[17px] h-[17px] bg-[#56A869] rounded-[2.31px] flex items-center justify-center">
+            <img src={GroupData} alt="action" className="w-[12px] h-[12px]" />
+          </div>
+
+          <div className="w-[17px] h-[17px] bg-[#83090B] rounded-[2.31px] flex items-center justify-center">
+            <img src={print} alt="action" className="w-[12px] h-[12px]" />
+          </div>
         </div>
-                  
-                  
-                   <div className="w-[17px] h-[17px] bg-[#56A869] rounded-[2.31px] flex items-center justify-center">
-          <img src={GroupData} alt="action" className="w-[12px] h-[12px]" />
-              </div>
-              
-               <div className="w-[17px] h-[17px] bg-[#83090B] rounded-[2.31px] flex items-center justify-center">
-          <img src={print} alt="action" className="w-[12px] h-[12px]" />
-                  </div>
-              
-              </div>
-       
       </td>
     </tr>
   ))}
