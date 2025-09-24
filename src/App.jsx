@@ -21,6 +21,8 @@ import MemberLoginDetails from "./MasterPages/MemberLoginDetails";
 import MemberLoginPeriod from "./MasterPages/MemberLoginPeriod";
 import PushGoldRateList from "./MasterPages/PushGoldRateList";
 import SchemeRenewalList from "./MasterPages/SchemeRenewalList";
+import BranchSchemeMappingList from "./MasterPages/BranchSchemeMappingList";
+import SchemeRoleMapping from "./MasterPages/SchemeRoleMapping";
 
 function App() {
 
@@ -47,9 +49,10 @@ function App() {
           <Route path="/Push-Gold-Rate-List" element={<PushGoldRateList />} />
           <Route path="/Add-Scheme-Details-Listform" element={<AddSchemeDetailsListform />} />
           <Route path="/Scheme-Renewal-List" element={<SchemeRenewalList />} />
-          
-  <Route path="/Member-Login-Period" element={<MemberLoginPeriod />} /> 
-  <Route path="/Member-Login-Details" element={<MemberLoginDetails />} /> 
+          <Route path="/Branch-Scheme-Mapping-List" element={<BranchSchemeMappingList />} />
+          <Route path="/Scheme-Role-Mapping" element={<SchemeRoleMapping />} />
+          <Route path="/Member-Login-Period" element={<MemberLoginPeriod />} />
+          <Route path="/Member-Login-Details" element={<MemberLoginDetails />} />
           <Route path="*" element={<Navigate to="/" />} />
         </Routes>
       </Router>

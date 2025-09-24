@@ -188,7 +188,7 @@ const Navbar = () => {
                                                 </Link>
                                                 <Link
                                                     className="px-4 py-2 hover:bg-gray-100 text-left text-sm"
-                                                    to="/Scheme-Branch-Mapping"
+                                                    to="/Branch-Scheme-Mapping-List"
                                                     onClick={() => setIsMasterOpen(false)}
                                                 >
                                                     Scheme Branch Mapping
