@@ -23,6 +23,7 @@ import PushGoldRateList from "./MasterPages/PushGoldRateList";
 import SchemeRenewalList from "./MasterPages/SchemeRenewalList";
 import BranchSchemeMappingList from "./MasterPages/BranchSchemeMappingList";
 import SchemeRoleMapping from "./MasterPages/SchemeRoleMapping";
+import AddSchemeRenewalForm from "./MasterPages/AddSchemeRenewalForm";
 
 function App() {
 
@@ -53,6 +54,7 @@ function App() {
           <Route path="/Scheme-Role-Mapping" element={<SchemeRoleMapping />} />
           <Route path="/Member-Login-Period" element={<MemberLoginPeriod />} />
           <Route path="/Member-Login-Details" element={<MemberLoginDetails />} />
+          <Route path="/Add-Scheme-Renewal-Form" element={<AddSchemeRenewalForm />} />
           <Route path="*" element={<Navigate to="/" />} />
         </Routes>
       </Router>

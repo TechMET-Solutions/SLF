@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import GroupData from "../assets/Group 124.svg"; // make sure this exists
+import { useNavigate } from "react-router-dom";
 
 const SchemeRenewalList = () => {
   const [data, setData] = useState([
@@ -41,6 +42,7 @@ const SchemeRenewalList = () => {
     },
     // 👉 add more rows as needed (copied same structure)
   ]);
+const navigate = useNavigate();
 
   return (
     <div className="min-h-screen w-full">
@@ -70,6 +72,7 @@ const SchemeRenewalList = () => {
                   height: "24px",
                   borderRadius: "3.75px",
                 }}
+                    onClick={() => navigate("/Add-Scheme-Renewal-Form")}
                 className="bg-[#0A2478] text-white text-[11.25px] font-source font-normal flex items-center justify-center"
               >
                 Add
