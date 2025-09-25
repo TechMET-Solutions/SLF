@@ -15,23 +15,17 @@ import PurityProfile from "./MasterPages/PurityProfile";
 
 import SchemeDetailsList from "./MasterPages/SchemeDetailsList";
 
-import AddMemberBranchMapping from "./MasterPages/AddMemberBranchMapping";
 import AddSchemeDetailsListform from "./MasterPages/AddSchemeDetailsListform";
-import BranchSchemeMappingList from "./MasterPages/BranchSchemeMappingList";
 import ChargesProfileList from "./MasterPages/ChargesProfileList";
-import EmployeeProfile from "./MasterPages/EmployeeProfile";
-import MemberBranchMapping from "./MasterPages/MemberBranchMapping";
 import MemberLoginDetails from "./MasterPages/MemberLoginDetails";
 import MemberLoginPeriod from "./MasterPages/MemberLoginPeriod";
 import PushGoldRateList from "./MasterPages/PushGoldRateList";
-import RoleMapping from "./MasterPages/RoleMapping";
 import SchemeRenewalList from "./MasterPages/SchemeRenewalList";
+import BranchSchemeMappingList from "./MasterPages/BranchSchemeMappingList";
+import RoleMapping from "./MasterPages/RoleMapping";
 import SchemeRoleMapping from "./MasterPages/SchemeRoleMapping";
+import ViewSchemeDetailsform from "./MasterPages/ViewSchemeDetailsform";
 
-
-import UserPermissions from "./MasterPages/UserPermissions";
-import UserRolePermission from "./MasterPages/UserRolePermission";
-import AddSchemeRenewalForm from "./MasterPages/AddSchemeRenewalForm";
 
 function App() {
 
@@ -60,17 +54,11 @@ function App() {
           <Route path="/Scheme-Renewal-List" element={<SchemeRenewalList />} />
           <Route path="/Branch-Scheme-Mapping-List" element={<BranchSchemeMappingList />} />
           <Route path="/Scheme-Role-Mapping" element={<SchemeRoleMapping />} />
-          <Route path="/Employee-Profile-list" element={<EmployeeProfile />} />
           <Route path="/Member-Login-Period" element={<MemberLoginPeriod />} />
           <Route path="/Member-Login-Details" element={<MemberLoginDetails />} />
           <Route path="/Role-Mapping" element={<RoleMapping />} />
-          <Route path="/Member-Branch-Mapping" element={<MemberBranchMapping />} />
-          <Route path="/Add-Member-Branch-Mapping" element={<AddMemberBranchMapping />} />
-          <Route path="/Add-Scheme-Renewal-Form" element={<AddSchemeRenewalForm />} />
-          <Route path="/User-Role-List" element={<UserRolePermission />} />
-          <Route path="/User-Role-Permission" element={<UserPermissions />} />
+          <Route path="/View-Scheme-Details-form" element ={<ViewSchemeDetailsform />} />
           <Route path="*" element={<Navigate to="/" />} />
-
         </Routes>
       </Router>
 

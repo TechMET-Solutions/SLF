@@ -159,8 +159,9 @@ const SchemeDetailsList = () => {
                                     <td className="px-4 py-2 text-center cursor-pointer">
                                         <div className="flex items-center gap-2">
                                             {/* First colored div with eye icon */}
-                                            <div className="w-5 h-5 bg-[#646AD9] flex items-center justify-center rounded-[2px]">
+                                            <div className="w-5 h-5 bg-[#646AD9] flex items-center justify-center rounded-[2px] "onClick={() => navigate("/View-Scheme-Details-form")}>
                                                 <img
+                                                
                                                     src={eyeIcon}
                                                     alt="eye"
                                                     className="w-3.5 h-2.5"
