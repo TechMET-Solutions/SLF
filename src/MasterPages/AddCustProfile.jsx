@@ -22,7 +22,7 @@ const AddCustProfile = () => {
 
       Bank_Address: "Bhagur",
       Update_By: "rasika.gade@slunawat.com",
-      Update_On: "25-Jul-2025",
+      Update_On: "25-Jul-2025", 
     },
     {
       bankName: "HDFC Bank",

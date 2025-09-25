@@ -25,7 +25,7 @@ const AddSchemeRenewalForm = () => {
             </div>
 
             {/* Form */}
-            <div className="w-[1290px] bg-white p-6 rounded-lg space-y-4">
+            <div className="w-[1290px] bg-white p-1 rounded-lg space-y-4">
                 {/* Top Section */}
                 <div className="flex flex-wrap gap-6">
                     {/* Scheme Name */}
@@ -189,7 +189,7 @@ const AddSchemeRenewalForm = () => {
                 </div>
 
                 {/* Document Charges */}
-                <div className="mt-4">
+                <div className="mt-2">
                     <h2 className="text-[#0A2478] font-semibold mb-2">
                         Document Charges
                     </h2>
@@ -198,28 +198,28 @@ const AddSchemeRenewalForm = () => {
                             <label className="text-sm font-medium">% of Loan Amount</label>
                             <input
                                 type="text"
-                                className="w-[120px] border border-gray-300 rounded px-2 py-1"
+                                className="w-[120px] border border-gray-300 rounded-md px-2 py-1 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                             />
                         </div>
                         <div className="flex items-center gap-2">
-                            <label className="text-sm font-medium">Min</label>
+                            <label className="text-sm  font-medium ">Min</label>
                             <input
                                 type="text"
-                                className="w-[120px] border border-gray-300 rounded px-2 py-1"
+                                className="w-[120px] border  border-gray-300  rounded-md px-2 py-1 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                             />
                         </div>
                         <div className="flex items-center gap-2">
                             <label className="text-sm font-medium">Max</label>
                             <input
                                 type="text"
-                                className="w-[120px] border border-gray-300 rounded px-2 py-1"
+                                className="w-[120px] border border-gray-300 rounded-md px-2 py-1 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                             />
                         </div>
                     </div>
                 </div>
 
                 {/* Interest Rate Table */}
-                <div className="mt-6">
+                <div className="mt-2">
                     <div className="flex justify-between items-center mb-2">
                         <h2 className="font-semibold text-[#0A2478]">Interest Rate</h2>
                         <button className="bg-[#0A2478] text-white px-4 py-1 rounded text-sm">
@@ -263,8 +263,24 @@ const AddSchemeRenewalForm = () => {
                     <h3 className="font-semibold">Remark</h3>
                     <input
                         type="text"
-                        className="w-full border border-gray-300 rounded px-2 py-1"
+                        className="w-full border border-gray-300 rounded  focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                     />
+                </div>
+
+                  <div>
+                    <h3 className="font-semibold">Renewal List</h3>
+                   
+                   <table className="w-full border border-gray-300 text-sm">
+                    <thead className="bg-[#0A2478] text-white">
+                            <tr>
+                                <th className="px-4 py-2 border-r border-gray-200">App. From</th>
+                                <th className="px-4 py-2 border-r border-gray-200">App .To</th>
+                                <th className="px-4 py-2 border-r border-gray-200">Interest</th>
+                                <th className="px-4 py-2">Approval %age</th>
+                            </tr>
+                        </thead>
+
+                   </table>
                 </div>
             </div>
         </div>
