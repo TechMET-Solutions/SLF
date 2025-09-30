@@ -13,15 +13,15 @@
 import { useState } from "react";
 import GroupData from "../assets/Group 124.svg";
 
-import Rights from "../assets/Rights.png";
 import { useNavigate } from "react-router-dom";
+import Rights from "../assets/Rights.png";
 const UserRolePermission = () => {
     const [isModalOpen, setIsModalOpen] = useState(false);
      const navigate = useNavigate();
 const [data, setData] = useState([
   {
-    name: "Purity",
-    SystemName: "24K Gold",
+    name: "emp",
+    SystemName: "abc",
     addedBy: "John Doe",
     addedOn: "2025-09-20",
     modifiedBy: "Jane Smith",
@@ -31,8 +31,8 @@ const [data, setData] = useState([
     active: true,
   },
   {
-    name: "Purity",
-    SystemName: "22K Gold",
+    name: "emp",
+    SystemName: "abcd",
     addedBy: "Alice Johnson",
     addedOn: "2025-09-18",
     modifiedBy: "Bob Williams",
@@ -42,8 +42,8 @@ const [data, setData] = useState([
     active: false,
   },
   {
-    name: "Product",
-    SystemName: "Gold Ring",
+    name: "emp",
+    SystemName: "abcde",
     addedBy: "Chris Evans",
     addedOn: "2025-09-15",
     modifiedBy: "Tom Hardy",
@@ -204,7 +204,7 @@ User Role List & Role Permission
 
 
       {/* Table */}
-     <div className="flex  pl-[105px]">
+     <div className="flex  pl-[110px]">
   <div className="overflow-x-auto mt-5 w-[984px] h-[500px]">
     <table className="w-full border-collapse">
       <thead className="bg-[#0A2478] text-white text-sm">
@@ -258,7 +258,7 @@ User Role List & Role Permission
         src={Rights}
         alt="view"
         className="w-[18px] h-[18px] cursor-pointer"
-        onClick={() => navigate("/User-Role-Permission")}
+        onClick={() => navigate("/User-Role")}
       />
     </div>
                

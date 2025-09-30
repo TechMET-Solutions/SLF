@@ -28,6 +28,7 @@ import MemberBranchMapping from "./MasterPages/MemberBranchMapping";
 import AddMemberBranchMapping from "./MasterPages/AddMemberBranchMapping";
 import UserRolePermission from "./MasterPages/UserRolePermission";
 import AddSchemeRenewalForm from "./MasterPages/AddSchemeRenewalForm";
+import UserPermissions from "./MasterPages/UserPermissions";
 
 
 function App() {
@@ -72,6 +73,7 @@ function App() {
 
           {/* User Management */}
           <Route path="/User-Role-Permission" element={<UserRolePermission />} />
+             <Route path="/User-Role" element={<UserPermissions />} />
           {/* <Route path="/User-Role-Permission" element={<UserRolePermission />} /> */}
           <Route path="/Member-Branch-Mapping" element={<MemberBranchMapping />} />
           <Route path="/Add-Member-Branch-Mapping" element={<AddMemberBranchMapping />} />
