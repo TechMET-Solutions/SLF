@@ -48,10 +48,10 @@ const AddMemberBranchMapping = () => {
             <div className="flex flex-col gap-9 p-8">
 
                 <div className="flex flex-col gap-2 w-[540px]">
-                    <label className="text-gray-700 font-medium">Password</label>
+                    <label className="text-gray-700 font-medium">username</label>
                     <input
-                        type="password"
-                        placeholder="Password"
+                        type="text"
+                        placeholder="username"
                         className="border border-[#C4C4C4] rounded-md px-1 py-1 focus:outline-none focus:ring-1 focus:ring-blue-500"
                     />
                 </div>
