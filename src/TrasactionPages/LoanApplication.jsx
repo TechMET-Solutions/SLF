@@ -1,6 +1,54 @@
-import React from 'react'
+import { useState } from 'react';
+import DatePicker from "react-datepicker";
+import "react-datepicker/dist/react-datepicker.css";
 import { CiSearch } from "react-icons/ci";
+import print from "../assets/print.png";
+import upload from "../assets/upload.png";
+
+import calender from "../assets/calender.png";
+import msg from "../assets/msg.png";
+import printwithobject from "../assets/printwithobject.png";
+
+import text from "../assets/text.png";
+import { formatIndianDate } from '../utils/Helpers';
 const LoanApplication = () => {
+    const [isOpen, setIsOpen] = useState(false);
+  const [selected, setSelected] = useState("");
+  const [selectedDate, setSelectedDate] = useState(null);
+  const [open, setOpen] = useState(false);
+  const options = [
+    "01", "02", "03", "04", "11", "13",
+    "BGR-01", "BGR-02", "COR-01", "COR-02",
+    "IND-01", "IND-02", "IND-03", "IND-04"
+  ];
+
+ const [loanApplication, setLoanApplication] = useState([
+  {
+    loan_no: "LN001",
+    party_name: "John Doe",
+    loan_date: "2025-10-01",
+    loan_amount: 50000,
+    status: "1", // 1 = Active, 0 = Inactive
+    added_by: "Admin",
+    approved_by: "Manager",
+    action: "view", // you can customize this
+    loan_repayment: "Pending"
+  },
+  {
+    loan_no: "LN002",
+    party_name: "Mary Jane",
+    loan_date: "2025-09-25",
+    loan_amount: 75000,
+    status: "0",
+    added_by: "Staff",
+    approved_by: "Supervisor",
+    action: "edit",
+    loan_repayment: "Completed"
+  }
+]);
+
+  
+
   return (
     <div>
   <div className="flex justify-center">
@@ -64,50 +112,66 @@ placeholder='Search'
               </button>    
 </div>
              
- <select
-                  name="lead_person"
-                //   value={branchData.lead_person}
-                //   onChange={handleChange}
-                  className="border border-gray-300 rounded pl-2 w-[111px] h-[31px]"
-                >
-                  <option value="" >
-                   Scheme
-                  </option>
-                  <option value="john">John Doe</option>
-                  <option value="mary">Mary Smith</option>
-                  <option value="alex">Alex Johnson</option>
-                </select>
+ <div className="relative w-[111px]">
+      <button
+        className="border border-gray-300 rounded pl-2 h-[31px] w-full text-left"
+        onClick={() => setIsOpen(!isOpen)}
+      >
+        {selected || "Scheme"}
+      </button>
+
+      {isOpen && (
+        <ul className="absolute z-10 w-full max-h-40 overflow-y-auto border border-gray-300 bg-white mt-1 rounded">
+          {options.map((opt, index) => (
+            <li
+              key={index}
+              className="px-2 py-1 hover:bg-gray-100 cursor-pointer"
+              onClick={() => {
+                setSelected(opt);
+                setIsOpen(false);
+              }}
+            >
+              {opt}
+            </li>
+          ))}
+        </ul>
+      )}
+    </div>
             </div>
 
             <div className="flex gap-5 items-center">
-              <p
-                style={{
-                  fontFamily: "Source Sans 3, sans-serif",
-                  fontWeight: 400,
-                  fontStyle: "normal",
-                  fontSize: "11.25px",
-                  lineHeight: "15px",
-                  letterSpacing: "0em",
-                }}
-              >
-                Name
-              </p>
+             
+                       <div className='relative w-[134px]'>
+      <div className='border rounded-[8px] h-[31px] border-[#D0D5DD] p-2 flex justify-between items-center'>
+        <p className='text-[12px] font-semibold'>
+          {selectedDate ? selectedDate.toLocaleDateString() : "Loan Date"}
+        </p>
+        <img 
+          src={calender} 
+          alt="calendar" 
+          className="w-[18px] h-[18px] cursor-pointer" 
+          onClick={() => setOpen(!open)}
+        />
+      </div>
 
-              <input
-                type="text"
-
-                style={{
-                  width: "168.64px",
-                  height: "27.49px",
-                  borderRadius: "5px",
-                  borderWidth: "0.62px",
-                }}
-                className="border border-gray-400 px-3 py-1 text-[11.25px] font-source"
-              />
-              
-
+      {open && (
+        <div className="absolute top-10 right-0 z-50">
+          <DatePicker
+            selected={selectedDate}
+            onChange={(date) => {
+              setSelectedDate(date);
+              setOpen(false);
+            }}
+            inline
+          />
+        </div>
+      )}
+    </div>
             </div>
-            <div className="flex justify-center item-center gap-5">
+            
+
+                  </div>
+                  <div className="flex justify-center item-center gap-5">
               <button
                 style={{
                   width: "74px",
@@ -122,17 +186,112 @@ placeholder='Search'
                 Add
               </button>
 
-              <button
-                className="text-white px-[6.25px] py-[6.25px] rounded-[3.75px] bg-[#C1121F] w-[74px] h-[24px] opacity-100 text-[10px]"
-              >
-                Exit
-              </button>
 
             </div>
-
+        </div>
           </div>
+          
+ <div className="flex justify-center text-center">
+        <div className="overflow-x-auto mt-5 w-[1290px] h-[500px]">
+          <table className="w-full border-collapse">
+            <thead className="bg-[#0A2478] text-white text-sm ">
+              <tr>
+                <th className="px-4 py-2  border-r border-gray-300 text-[14px] w-[103px] ">Loan No</th>
+                <th className="px-4 py-2  border-r border-gray-300 text-[14px] w-[204px]">Party Name</th>
+                <th className="px-4 py-2  border-r border-gray-300 text-[14px] w-[101px]"> loan Date</th>
+
+                <th className="px-4 py-2  border-r border-gray-300 text-[14px] w-[104px]">Loan Amount</th>
+               <th className="px-4 py-2 border-r border-gray-300 text-[14px] w-[128px]">
+  <select
+    className=" rounded text-[13px] w-full"
+    defaultValue=""
+  >
+    <option value="" className='text-black'>
+      Status
+    </option>
+    <option value="approve" className='text-black'>Approve</option>
+    <option value="pending" className='text-black'>Pending</option>
+  </select>
+</th>
+
+                <th className="px-4 py-2  border-r border-gray-300 text-[14px] w-[187px]">Added By</th>
+                <th className="px-4 py-2  border-r border-gray-300 text-[14px] w-[176px]">Approved By</th>
+                              <th className="px-4 py-2  border-r border-gray-300 text-[14px] w-[156px]">Action</th>
+                               <th className="px-4 py-2  border-r border-gray-300 text-[14px] w-[156px]">Payment</th>
+                               <th className="px-4 py-2  border-r border-gray-300 text-[13px] w-[111px]">Loan Repayment</th>
+              </tr>
+            </thead>
+           <tbody className="text-[12px]">
+  {loanApplication.map((row, index) => (
+    <tr
+      key={index}
+      className={`border-b ${index % 2 === 0 ? "bg-gray-50" : "bg-white"}`}
+    >
+      <td className="px-4 py-2">{row.loan_no}</td>
+      <td className="px-4 py-2">{row.party_name}</td>
+      <td className="px-4 py-2">{formatIndianDate(row.loan_date)}</td>
+      <td className="px-4 py-2">₹{row.loan_amount.toLocaleString("en-IN")}</td>
+      <td className="px-4 py-2">{row.status === "1" ? "Active" : "Inactive"}</td>
+      <td className="px-4 py-2">{row.added_by}</td>
+      <td className="px-4 py-2">{row.approved_by}</td>
+      
+
+      {/* Action buttons */}
+    <td className="px-4 py-2 text-[#1883EF] cursor-pointer">
+  <div className="flex gap-2 justify-center">
+    <div className="w-[24px] h-[24px] bg-[#4A90E2] rounded flex items-center justify-center 
+                    transition-transform duration-200 hover:scale-110 cursor-pointer">
+      <img src={print} alt="print" className="w-[14px] h-[14px]" />
+    </div>
+    <div className="w-[24px] h-[24px] bg-[#28A745] rounded flex items-center justify-center 
+                    transition-transform duration-200 hover:scale-110 cursor-pointer">
+      <img src={upload} alt="upload" className="w-[14px] h-[14px]" />
+    </div>
+    <div className="w-[24px] h-[24px] bg-[#F5A623] rounded flex items-center justify-center 
+                    transition-transform duration-200 hover:scale-110 cursor-pointer">
+      <img src={msg} alt="message" className="w-[14px] h-[14px]" />
+    </div>
+    <div className="w-[24px] h-[24px] bg-[#50E3C2] rounded flex items-center justify-center 
+                    transition-transform duration-200 hover:scale-110 cursor-pointer">
+      <img src={printwithobject} alt="print object" className="w-[14px] h-[14px]" />
+    </div>
+    <div className="w-[24px] h-[24px] bg-[#8B572A] rounded flex items-center justify-center 
+                    transition-transform duration-200 hover:scale-110 cursor-pointer">
+      <img src={text} alt="text" className="w-[14px] h-[14px]" />
+    </div>
+  </div>
+</td>
+
+  <td className="px-4 py-2">view</td>
+
+      {/* Loan Repayment toggle */}
+      <td className="px-4 py-2">
+       
+              Repay
+      </td>
+    </tr>
+  ))}
+</tbody>
+
+
+          </table>
         </div>
       </div>
+
+
+      {/* Pagination */}
+      <div className="flex justify-center items-center px-6 py-3 border-t gap-2">
+        <button className="px-3 py-1 border rounded-md">Previous</button>
+        <div className="flex gap-2">
+          <button className="px-3 py-1 border bg-[#0b2c69] text-white rounded-md">1</button>
+          <button className="px-3 py-1 border rounded-md">2</button>
+          <button className="px-3 py-1 border rounded-md">3</button>
+          <button className="px-3 py-1 border rounded-md">...</button>
+          <button className="px-3 py-1 border rounded-md">10</button>
+        </div>
+        <button className="px-3 py-1 border rounded-md">Next</button>
+      </div>
+
     </div>
   )
 }
