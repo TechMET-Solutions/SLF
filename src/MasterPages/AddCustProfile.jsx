@@ -862,15 +862,6 @@ const AddCustProfile = () => {
       </div>
      
 
-    
-      
-
-     
-
-     
-
-     
-
       <div className="p-6 rounded-md w-full mx-auto pl-[120px] pr-[120px] bg-[#F7F7FF]">
         <p className="font-[Source_Sans_3] font-bold text-[24px] leading-[100%] tracking-[0.03em] text-[#0A2478] mb-4 mt-5">
           Remark

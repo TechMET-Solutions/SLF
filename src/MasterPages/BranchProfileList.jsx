@@ -10,11 +10,59 @@
 
 // export default BranchProfileList
 
-import { useState } from "react";
+import axios from "axios";
+import { useEffect, useState } from "react";
 import GroupData from "../assets/Group 124.svg";
 import Vectorimg from "../assets/Vectorimg.png";
+import Loader from "../Component/Loader";
+import { decryptData, encryptData } from "../utils/cryptoHelper";
+import { formatIndianDate } from "../utils/Helpers";
 const BranchProfileList = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
+
+   const [branchData, setBranchData] = useState({
+    branch_code: "",
+    branch_name: "",
+    print_name: "",
+    address_line1: "",
+    address_line3: "",
+    mobile_no: "",
+    lead_person: "",
+    is_main: false,
+    status: false,
+   });
+  
+  const handleChange = (e) => {
+    const { name, value, type, checked } = e.target;
+    setBranchData((prev) => ({
+      ...prev,
+      [name]: type === "checkbox" ? checked : value,
+    }));
+  };
+
+  // submit data
+  const handleSave = async () => {
+    debugger
+     setIsLoading(true); // show loader
+    try {
+      const encrypted = encryptData(branchData); // 🔒 encrypt before sending
+      await axios.post("http://localhost:5000/Master/Master_Profile/add_Branch", {
+        data: encrypted,
+      });
+       setIsLoading(false);
+       // hide loader
+      // alert("Branch saved successfully!");
+      setIsModalOpen(false);
+     
+      fetchBranches();
+
+    } catch (error) {
+      console.error(error);
+      alert("Error saving branch");
+       setIsLoading(false); // hide loader
+    }
+  };
   const [data] = useState([
     {
       "branchCode": "BR001",
@@ -40,8 +88,39 @@ const BranchProfileList = () => {
     }
   ]
   );
+  const [branches, setBranches] = useState([]);
+  console.log(branches,"branches")
+  const fetchBranches = async () => {
+    setIsLoading(true); // show loader
+  try {
+    const res = await axios.get(
+      "http://localhost:5000/Master/Master_Profile/get_Branches"
+    );
+
+    const decrypted = decryptData(res.data.data);
+
+    if (!decrypted) {
+      console.warn("Decryption failed or empty, returning empty array.");
+      setBranches([]);
+      return;
+    }
+
+    setBranches(decrypted);
+    setIsLoading(false); // hide loader
+  } catch (err) {
+    console.error("Error fetching branches:", err);
+    setIsLoading(false); // hide loader
+  }
+};
+
+
+   useEffect(() => {
+    fetchBranches();
+  }, []);
 
   return (
+
+    <>
     <div className=" min-h-screen w-full">
 
 
@@ -156,7 +235,7 @@ const BranchProfileList = () => {
       </div>
 
       {/* modelforAdd */}
-      {isModalOpen && (
+        {isModalOpen && (
         <div
           className="fixed inset-0 flex items-center justify-center z-50"
           style={{
@@ -181,74 +260,84 @@ const BranchProfileList = () => {
             {/* Modal Body */}
             <div className="grid grid-cols-3 gap-4">
               <div>
-                <label className="text-[14px]">
-                  Code <span className="text-red-500">*</span>
-                </label>
+                <label className="text-[14px]">Code *</label>
                 <input
                   type="text"
+                  name="branch_code"
+                  value={branchData.branch_code}
+                  onChange={handleChange}
                   placeholder="Branch Code"
                   className="border border-gray-300 rounded px-3 py-2 mt-1 w-full"
                 />
               </div>
+
               <div>
-                <label className="text-[14px]">
-                  Name <span className="text-red-500">*</span>
-                </label>
+                <label className="text-[14px]">Name *</label>
                 <input
                   type="text"
+                  name="branch_name"
+                  value={branchData.branch_name}
+                  onChange={handleChange}
                   placeholder="Branch Name"
                   className="border border-gray-300 rounded px-3 py-2 mt-1 w-full"
                 />
               </div>
+
               <div>
-                <label className="text-[14px]">
-                  Print Name <span className="text-red-500">*</span>
-                </label>
+                <label className="text-[14px]">Print Name *</label>
                 <input
                   type="text"
+                  name="print_name"
+                  value={branchData.print_name}
+                  onChange={handleChange}
                   placeholder="Print Name"
                   className="border border-gray-300 rounded px-3 py-2 mt-1 w-full"
                 />
               </div>
 
               <div>
-                <label className="text-[14px]">
-                  Address  <span className="text-red-500">*</span>
-                </label>
+                <label className="text-[14px]">Address *</label>
                 <input
                   type="text"
+                  name="address_line1"
+                  value={branchData.address_line1}
+                  onChange={handleChange}
                   placeholder="Address Line 1"
                   className="border border-gray-300 rounded px-3 py-2 mt-1 w-full"
                 />
               </div>
 
               <div>
-                <label className="text-[14px]">
-                  Address 3 <span className="text-red-500">*</span>
-                </label>
+                <label className="text-[14px]">Address 3 *</label>
                 <input
                   type="text"
+                  name="address_line3"
+                  value={branchData.address_line3}
+                  onChange={handleChange}
                   placeholder="Address Line 3"
                   className="border border-gray-300 rounded px-3 py-2 mt-1 w-full"
                 />
               </div>
 
-
               <div>
-                <label className="text-[14px]">
-                  Mobile No. <span className="text-red-500">*</span>
-                </label>
+                <label className="text-[14px]">Mobile No. *</label>
                 <input
                   type="text"
+                  name="mobile_no"
+                  value={branchData.mobile_no}
+                  onChange={handleChange}
                   placeholder="+91 8456645752"
                   className="border border-gray-300 rounded px-3 py-2 mt-1 w-full"
                 />
               </div>
+
               <div>
                 <label className="text-[14px]">Lead Person</label>
                 <select
+                  name="lead_person"
+                  value={branchData.lead_person}
+                  onChange={handleChange}
                   className="border border-gray-300 rounded px-3 py-2 mt-1 w-full"
-                  defaultValue=""
                 >
                   <option value="" disabled>
                     Select Lead Person
@@ -259,14 +348,26 @@ const BranchProfileList = () => {
                 </select>
               </div>
 
+              <div className="flex items-center mt-4">
+                <input
+                  type="checkbox"
+                  name="is_main"
+                  checked={branchData.is_main}
+                  onChange={handleChange}
+                  className="mr-2"
+                />
+                <label className="text-[14px]">Is Main *</label>
+              </div>
 
               <div className="flex items-center mt-4">
-                <input type="checkbox" className="mr-2" />
-                <label className="text-[14px]">Is Main <span className="text-red-500">*</span></label>
-              </div>
-              <div className="flex items-center mt-4">
-                <input type="checkbox" className="mr-2" />
-                <label className="text-[14px]">Status <span className="text-red-500">*</span></label>
+                <input
+                  type="checkbox"
+                  name="status"
+                  checked={branchData.status}
+                  onChange={handleChange}
+                  className="mr-2"
+                />
+                <label className="text-[14px]">Status *</label>
               </div>
             </div>
 
@@ -274,7 +375,7 @@ const BranchProfileList = () => {
             <div className="flex justify-center gap-4 mt-6">
               <button
                 className="bg-[#0A2478] text-white px-5 py-2 rounded"
-                onClick={() => setIsModalOpen(false)}
+                onClick={handleSave}
               >
                 Save
               </button>
@@ -307,15 +408,16 @@ const BranchProfileList = () => {
               </tr>
             </thead>
             <tbody className="text-[12px]">
-              {data.map((row, index) => (
+              {branches.map((row, index) => (
                 <tr key={index} className={`border-b ${index % 2 === 0 ? "bg-gray-50" : "bg-white"}`}>
-                  <td className="px-4 py-2">{row.branchCode}</td>
-                  <td className="px-4 py-2">{row.branchName}</td>
-                  <td className="px-4 py-2">{row.branchAddress1}</td>
+                  <td className="px-4 py-2">{row.branch_code}</td>
+                  <td className="px-4 py-2">{row.branch_name}</td>
+                  <td className="px-4 py-2">{row.address_line1}</td>
 
-                  <td className="px-4 py-2">{row.branchPhone}</td>
-                  <td className="px-4 py-2">{row.branchLead}</td>
-                  <td className="px-4 py-2">{row.branchAddon}</td>
+                  <td className="px-4 py-2">{row.mobile_no}</td>
+                  <td className="px-4 py-2">{row.lead_person}</td>
+                 <td className="px-4 py-2">{formatIndianDate(row.created_at)}</td>
+
                   <td className="px-4 py-2 text-[#1883EF] cursor-pointer">
 
                     <div className="flex gap-2 justify-center">
@@ -360,7 +462,19 @@ const BranchProfileList = () => {
         <button className="px-3 py-1 border rounded-md">Next</button>
       </div>
 
-    </div>
+      </div>
+      
+
+
+
+
+
+    <div className="min-h-screen w-full relative">
+    {isLoading && <Loader />}
+    
+    {/* rest of your BranchProfileList JSX */}
+  </div></>
+    
   );
 };
 
