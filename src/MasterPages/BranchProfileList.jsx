@@ -63,31 +63,7 @@ const BranchProfileList = () => {
        setIsLoading(false); // hide loader
     }
   };
-  const [data] = useState([
-    {
-      "branchCode": "BR001",
-      "branchName": "Main Branch",
-      "branchAddress1": "123 Main Street",
-      "branchAddress2": "Downtown",
-      "branchPhone": "123-456-7890",
-      "branchLead": "John Doe",
-      "branchAddon": "Addon Info",
-      "view": true,
-      "edit": true
-    },
-    {
-      "branchCode": "BR002",
-      "branchName": "Secondary Branch",
-      "branchAddress1": "456 Elm Street",
-      "branchAddress2": "Uptown",
-      "branchPhone": "987-654-3210",
-      "branchLead": "Jane Smith",
-      "branchAddon": "Addon Info",
-      "view": true,
-      "edit": false
-    }
-  ]
-  );
+ 
   const [branches, setBranches] = useState([]);
   console.log(branches,"branches")
   const fetchBranches = async () => {
@@ -408,42 +384,46 @@ const BranchProfileList = () => {
               </tr>
             </thead>
             <tbody className="text-[12px]">
-              {branches.map((row, index) => (
-                <tr key={index} className={`border-b ${index % 2 === 0 ? "bg-gray-50" : "bg-white"}`}>
-                  <td className="px-4 py-2">{row.branch_code}</td>
-                  <td className="px-4 py-2">{row.branch_name}</td>
-                  <td className="px-4 py-2">{row.address_line1}</td>
+  {branches.map((row, index) => (
+    <tr key={index} className={`border-b ${index % 2 === 0 ? "bg-gray-50" : "bg-white"}`}>
+      <td className="px-4 py-2">{row.branch_code}</td>
+      <td className="px-4 py-2">{row.branch_name}</td>
+      <td className="px-4 py-2">{row.address_line1}</td>
+      <td className="px-4 py-2">{row.mobile_no}</td>
+      <td className="px-4 py-2">{row.lead_person}</td>
+      <td className="px-4 py-2">{formatIndianDate(row.created_at)}</td>
 
-                  <td className="px-4 py-2">{row.mobile_no}</td>
-                  <td className="px-4 py-2">{row.lead_person}</td>
-                 <td className="px-4 py-2">{formatIndianDate(row.created_at)}</td>
+      <td className="px-4 py-2 text-[#1883EF] cursor-pointer">
+        <div className="flex gap-2 justify-center">
+          <div className="w-[17px] h-[17px] bg-[#56A869] rounded-[2.31px] flex items-center  p-0.5 justify-center">
+            <img src={GroupData} alt="logout" className="w-[18px] h-[18px]" />
+          </div>
 
-                  <td className="px-4 py-2 text-[#1883EF] cursor-pointer">
+          <div className="w-[17px] h-[17px] bg-[#646AD9] rounded-[2.31px] flex items-center  p-0.5 justify-center">
+            <img src={Vectorimg} alt="logout" className="" />
+          </div>
+        </div>
+      </td>
 
-                    <div className="flex gap-2 justify-center">
-                      <div className="w-[17px] h-[17px] bg-[#56A869] rounded-[2.31px] flex items-center  p-0.5 justify-center">
-                        <img src={GroupData} alt="logout" className="w-[18px] h-[18px]" />
-                      </div>
+      <td className="px-4 py-2 text-[#1883EF] cursor-pointer">
+        <button
+          // onClick={() => handleToggle(row.id)} // toggle handler if you want to change status
+          className={`w-12 h-6 flex items-center rounded-full p-1 transition-colors ${
+            row.status === "1" ? "bg-[#0A2478]" : "bg-gray-300"
+          }`}
+          disabled={row.status === "0"} // disable if status is "0"
+        >
+          <div
+            className={`bg-white w-4 h-4 rounded-full shadow-md transform transition-transform ${
+              row.status === "1" ? "translate-x-6" : "translate-x-0"
+            }`}
+          />
+        </button>
+      </td>
+    </tr>
+  ))}
+</tbody>
 
-                      <div className="w-[17px] h-[17px] bg-[#646AD9] rounded-[2.31px] flex items-center  p-0.5 justify-center">
-                        <img src={Vectorimg} alt="logout" className="" />
-                      </div>
-                    </div>
-
-                  </td>
-                  <td className="px-4 py-2 text-[#1883EF] cursor-pointer">
-                    <button
-                      // onClick={() => handleToggle(row.id)} // toggle handler
-                      className={`w-12 h-6 flex items-center rounded-full p-1 transition-colors bg-[#0A2478]`}
-                    >
-                      <div
-                        className={`bg-white w-4 h-4 rounded-full shadow-md transform transition-transform translate-x-6 `}
-                      />
-                    </button>
-                  </td>
-                </tr>
-              ))}
-            </tbody>
           </table>
         </div>
       </div>
