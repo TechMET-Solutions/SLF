@@ -31,7 +31,6 @@ import AddSchemeRenewalForm from "./MasterPages/AddSchemeRenewalForm";
 import UserPermissions from "./MasterPages/UserPermissions";
 
 import LoanApplication from "./TrasactionPages/LoanApplication";
-import LoanEnquiry from "./TrasactionPages/LoanEnquiry";
 
 function App() {
 
@@ -75,7 +74,7 @@ function App() {
 
           {/* User Management */}
           <Route path="/User-Role-Permission" element={<UserRolePermission />} />
-             <Route path="/User-Role" element={<UserPermissions />} />
+          <Route path="/User-Role" element={<UserPermissions />} />
           {/* <Route path="/User-Role-Permission" element={<UserRolePermission />} /> */}
           <Route path="/Member-Branch-Mapping" element={<MemberBranchMapping />} />
           <Route path="/Add-Member-Branch-Mapping" element={<AddMemberBranchMapping />} />
@@ -85,7 +84,6 @@ function App() {
 
           {/* loanApplication */}
              <Route path="/Loan-Application" element={<LoanApplication />} />
-<Route path="/Loan-Enquiry" element={<LoanEnquiry />} />
 
           <Route path="*" element={<Navigate to="/" />} />
         </Routes>
