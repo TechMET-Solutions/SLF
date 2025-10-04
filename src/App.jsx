@@ -29,8 +29,8 @@ import AddMemberBranchMapping from "./MasterPages/AddMemberBranchMapping";
 import UserRolePermission from "./MasterPages/UserRolePermission";
 import AddSchemeRenewalForm from "./MasterPages/AddSchemeRenewalForm";
 import UserPermissions from "./MasterPages/UserPermissions";
-import LoanApplication from "./TrasactionPages/LoanApplication";
 
+import LoanApplication from "./TrasactionPages/LoanApplication";
 
 function App() {
 
