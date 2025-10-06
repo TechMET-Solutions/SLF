@@ -32,6 +32,7 @@ import UserPermissions from "./MasterPages/UserPermissions";
 
 import LoanApplication from "./TrasactionPages/LoanApplication";
 import LoanEnquiry from "./TrasactionPages/LoanEnquiry";
+import CancelledLoan from "./TrasactionPages/CancelledLoan";
 function App() {
 
 
@@ -84,7 +85,9 @@ function App() {
 
           {/* loanApplication */}
              <Route path="/Loan-Application" element={<LoanApplication />} />
-             <Route path="/Loan-Enquiry" element={<LoanEnquiry />} />
+          <Route path="/Loan-Enquiry" element={<LoanEnquiry />} />
+             <Route path="/Cancelled-Loan" element={<CancelledLoan />} />
+          
           <Route path="*" element={<Navigate to="/" />} />
         </Routes>
       </Router>
