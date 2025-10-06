@@ -29,7 +29,7 @@ import AddMemberBranchMapping from "./MasterPages/AddMemberBranchMapping";
 import UserRolePermission from "./MasterPages/UserRolePermission";
 import AddSchemeRenewalForm from "./MasterPages/AddSchemeRenewalForm";
 import UserPermissions from "./MasterPages/UserPermissions";
-
+import LoanEnquiry from "./TrasactionPages/LoanEnquiry";
 import LoanApplication from "./TrasactionPages/LoanApplication";
 
 function App() {
@@ -84,6 +84,7 @@ function App() {
 
           {/* loanApplication */}
              <Route path="/Loan-Application" element={<LoanApplication />} />
+             <Route path="/Loan-Enquiry" element={<LoanEnquiry />} />
 
           <Route path="*" element={<Navigate to="/" />} />
         </Routes>
