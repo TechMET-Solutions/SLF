@@ -9,9 +9,11 @@ import calender from "../assets/calender.png";
 import msg from "../assets/msg.png";
 import printwithobject from "../assets/printwithobject.png";
 
+import { useNavigate } from 'react-router-dom';
 import text from "../assets/text.png";
 import { formatIndianDate } from '../utils/Helpers';
 const LoanApplication = () => {
+    const navigate = useNavigate();
     const [isOpen, setIsOpen] = useState(false);
   const [selected, setSelected] = useState("");
   const [selectedDate, setSelectedDate] = useState(null);
@@ -44,11 +46,28 @@ const LoanApplication = () => {
     approved_by: "Supervisor",
     action: "edit",
     loan_repayment: "Completed"
+   },
+  {
+    loan_no: "LN003",
+    party_name: "Mary Jane",
+    loan_date: "2025-09-25",
+    loan_amount: 75000,
+    status: "2",
+    added_by: "Staff",
+    approved_by: "Supervisor",
+    action: "edit",
+    loan_repayment: "Completed"
   }
 ]);
 
-  
-
+  const handleClick = (row) => {
+    if (row.status === "2") {
+      // 2 means Cancelled
+      navigate("/Cancelled-Loan");
+    } else {
+      navigate("/Loan-Enquiry");
+    }
+  };
   return (
     <div>
   <div className="flex justify-center">
@@ -227,11 +246,31 @@ placeholder='Search'
       key={index}
       className={`border-b ${index % 2 === 0 ? "bg-gray-50" : "bg-white"}`}
     >
-      <td className="px-4 py-2">{row.loan_no}</td>
+       <td
+            className="px-4 py-2 text-blue-600 cursor-pointer hover:underline"
+            onClick={() => handleClick(row)}
+          >
+            {row.loan_no}
+          </td>
       <td className="px-4 py-2">{row.party_name}</td>
       <td className="px-4 py-2">{formatIndianDate(row.loan_date)}</td>
       <td className="px-4 py-2">₹{row.loan_amount.toLocaleString("en-IN")}</td>
-      <td className="px-4 py-2">{row.status === "1" ? "Active" : "Inactive"}</td>
+<td
+  className={`px-4 py-2 font-semibold ${
+    row.status === "1"
+      ? "text-green-600" // Approved
+      : row.status === "0"
+      ? "text-orange-500" // Pending
+      : "text-red-600" // Cancelled
+  }`}
+>
+  {row.status === "1"
+    ? "Approved"
+    : row.status === "0"
+    ? "Pending"
+    : "Cancelled"}
+</td>
+
       <td className="px-4 py-2">{row.added_by}</td>
       <td className="px-4 py-2">{row.approved_by}</td>
       
