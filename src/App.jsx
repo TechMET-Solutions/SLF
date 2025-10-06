@@ -1,8 +1,13 @@
-import { Navigate, Route, BrowserRouter as Router, Routes } from "react-router-dom";
-import './App.css';
+import {
+  Navigate,
+  Route,
+  BrowserRouter as Router,
+  Routes,
+} from "react-router-dom";
+import "./App.css";
 import Navbar from "./Component/Navbar";
 import AccountCodeList from "./MasterPages/AccountCodeList";
-import AccountGroupList from './MasterPages/AccountGroupList';
+import AccountGroupList from "./MasterPages/AccountGroupList";
 import AddCustProfile from "./MasterPages/AddCustProfile";
 import BranchProfileList from "./MasterPages/BranchProfileList";
 import CustProfile from "./MasterPages/CustProfile";
@@ -33,8 +38,6 @@ import LoanEnquiry from "./TrasactionPages/LoanEnquiry";
 import LoanApplication from "./TrasactionPages/LoanApplication";
 
 function App() {
-
-
   return (
     <>
       {/* <AccountGroupList /> */}
@@ -53,48 +56,67 @@ function App() {
           <Route path="/Customer-Profile-List" element={<CustProfile />} />
           <Route path="/Add-Customer-Profile" element={<AddCustProfile />} />
           <Route path="/Product-Purity-profile" element={<PurityProfile />} />
-          <Route path="/Charges-Profile-List" element={<ChargesProfileList />} />
+          <Route
+            path="/Charges-Profile-List"
+            element={<ChargesProfileList />}
+          />
           <Route path="/Push-Gold-Rate-List" element={<PushGoldRateList />} />
-
 
           {/* Schema Mapping */}
           <Route path="/Scheme-Renewal-List" element={<SchemeRenewalList />} />
-          <Route path="/Add-Scheme-Renewal-Form" element={<AddSchemeRenewalForm />} />
+          <Route
+            path="/Add-Scheme-Renewal-Form"
+            element={<AddSchemeRenewalForm />}
+          />
           <Route path="/Role-Mapping" element={<RoleMapping />} />
           <Route path="/Scheme-Details-List" element={<SchemeDetailsList />} />
-          <Route path="/View-Scheme-Details-form" element={<ViewSchemeDetailsform />} />
-          <Route path="/Add-Scheme-Details-Listform" element={<AddSchemeDetailsListform />} />
+          <Route
+            path="/View-Scheme-Details-form"
+            element={<ViewSchemeDetailsform />}
+          />
+          <Route
+            path="/Add-Scheme-Details-Listform"
+            element={<AddSchemeDetailsListform />}
+          />
           <Route path="/Scheme-Role-Mapping" element={<SchemeRoleMapping />} />
-          <Route path="/Branch-Scheme-Mapping-List" element={<BranchSchemeMappingList />} />
+          <Route
+            path="/Branch-Scheme-Mapping-List"
+            element={<BranchSchemeMappingList />}
+          />
 
           {/* Employee Profile */}
           <Route path="/Employee-Profile-list" element={<EmployeeProfile />} />
           <Route path="/Member-Login-Period" element={<MemberLoginPeriod />} />
-          <Route path="/Member-Login-Details" element={<MemberLoginDetails />} />
+          <Route
+            path="/Member-Login-Details"
+            element={<MemberLoginDetails />}
+          />
 
           {/* User Management */}
-          <Route path="/User-Role-Permission" element={<UserRolePermission />} />
+          <Route
+            path="/User-Role-Permission"
+            element={<UserRolePermission />}
+          />
           <Route path="/User-Role" element={<UserPermissions />} />
           {/* <Route path="/User-Role-Permission" element={<UserRolePermission />} /> */}
-          <Route path="/Member-Branch-Mapping" element={<MemberBranchMapping />} />
-          <Route path="/Add-Member-Branch-Mapping" element={<AddMemberBranchMapping />} />
-
-
-
+          <Route
+            path="/Member-Branch-Mapping"
+            element={<MemberBranchMapping />}
+          />
+          <Route
+            path="/Add-Member-Branch-Mapping"
+            element={<AddMemberBranchMapping />}
+          />
 
           {/* loanApplication */}
-             <Route path="/Loan-Application" element={<LoanApplication />} />
-             <Route path="/Loan-Enquiry" element={<LoanEnquiry />} />
+          <Route path="/Loan-Application" element={<LoanApplication />} />
+          <Route path="/Loan-Enquiry" element={<LoanEnquiry />} />
 
           <Route path="*" element={<Navigate to="/" />} />
         </Routes>
       </Router>
-
-
-
-
     </>
-  )
+  );
 }
 
-export default App
+export default App;
