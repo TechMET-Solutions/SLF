@@ -36,7 +36,7 @@ import AddSchemeRenewalForm from "./MasterPages/AddSchemeRenewalForm";
 import UserPermissions from "./MasterPages/UserPermissions";
 import LoanEnquiry from "./TrasactionPages/LoanEnquiry";
 import LoanApplication from "./TrasactionPages/LoanApplication";
-
+import LoanEnquiry from "./TrasactionPages/LoanEnquiry";
 function App() {
   return (
     <>
@@ -109,9 +109,8 @@ function App() {
           />
 
           {/* loanApplication */}
-          <Route path="/Loan-Application" element={<LoanApplication />} />
-          <Route path="/Loan-Enquiry" element={<LoanEnquiry />} />
-
+             <Route path="/Loan-Application" element={<LoanApplication />} />
+             <Route path="/Loan-Enquiry" element={<LoanEnquiry />} />
           <Route path="*" element={<Navigate to="/" />} />
         </Routes>
       </Router>
