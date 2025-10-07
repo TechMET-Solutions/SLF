@@ -33,6 +33,9 @@ import UserPermissions from "./MasterPages/UserPermissions";
 import LoanApplication from "./TrasactionPages/LoanApplication";
 import LoanEnquiry from "./TrasactionPages/LoanEnquiry";
 import CancelledLoan from "./TrasactionPages/CancelledLoan";
+import AddGoldLoanApplication from "./TrasactionPages/AddGoldLoanApplication";
+import NOC from "./TrasactionPages/NOC";
+import Area from "./MasterPages/Area";
 function App() {
 
 
@@ -87,7 +90,9 @@ function App() {
              <Route path="/Loan-Application" element={<LoanApplication />} />
           <Route path="/Loan-Enquiry" element={<LoanEnquiry />} />
              <Route path="/Cancelled-Loan" element={<CancelledLoan />} />
-          
+          <Route path="/Add-Gold-Loan-Application" element={<AddGoldLoanApplication />} />
+           <Route path="/Area" element={<Area />} />
+          <Route path="/NOC" element={<NOC />} />
           <Route path="*" element={<Navigate to="/" />} />
         </Routes>
       </Router>

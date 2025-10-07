@@ -32,6 +32,7 @@ const BranchProfileList = () => {
     is_main: false,
     status: false,
    });
+  console.log(branchData,"branchData")
   
   const handleChange = (e) => {
     const { name, value, type, checked } = e.target;
@@ -42,29 +43,67 @@ const BranchProfileList = () => {
   };
 
   // submit data
-  const handleSave = async () => {
-    debugger
-     setIsLoading(true); // show loader
-    try {
-      const encrypted = encryptData(branchData); // 🔒 encrypt before sending
-      await axios.post("http://localhost:5000/Master/Master_Profile/add_Branch", {
-        data: encrypted,
-      });
-       setIsLoading(false);
-       // hide loader
-      // alert("Branch saved successfully!");
-      setIsModalOpen(false);
+  // const handleSave = async () => {
+  //   debugger
+  //    setIsLoading(true); // show loader
+  //   try {
+  //     const encrypted = encryptData(branchData); // 🔒 encrypt before sending
+  //     await axios.post("http://localhost:5000/Master/Master_Profile/add_Branch", {
+  //       data: encrypted,
+  //     });
+  //      setIsLoading(false);
+  //      // hide loader
+  //     // alert("Branch saved successfully!");
+  //     setIsModalOpen(false);
      
-      fetchBranches();
+  //     fetchBranches();
 
-    } catch (error) {
-      console.error(error);
-      alert("Error saving branch");
-       setIsLoading(false); // hide loader
-    }
-  };
- 
+  //   } catch (error) {
+  //     console.error(error);
+  //     alert("Error saving branch");
+  //      setIsLoading(false); // hide loader
+  //   }
+  // };
+ const handleSave = async () => {
+  setIsLoading(true);
+  try {
+    const encrypted = encryptData({
+      ...branchData,
+      id: editBranchId, // include id when editing
+    });
+
+    const url = isEditMode
+      ? "http://localhost:5000/Master/Master_Profile/update_Branch"
+      : "http://localhost:5000/Master/Master_Profile/add_Branch";
+
+    await axios.post(url, { data: encrypted });
+
+    setIsModalOpen(false);
+    setIsEditMode(false);
+    setBranchData({
+      branch_code: "",
+      branch_name: "",
+      print_name: "",
+      address_line1: "",
+      address_line3: "",
+      mobile_no: "",
+      lead_person: "",
+      is_main: false,
+      status: false,
+    });
+    fetchBranches();
+  } catch (error) {
+    console.error(error);
+    alert(isEditMode ? "Error updating branch" : "Error saving branch");
+  } finally {
+    setIsLoading(false);
+  }
+};
+
   const [branches, setBranches] = useState([]);
+
+ const [isEditMode, setIsEditMode] = useState(false);
+const [editBranchId, setEditBranchId] = useState(null);
   console.log(branches,"branches")
   const fetchBranches = async () => {
     setIsLoading(true); // show loader
@@ -93,6 +132,48 @@ const BranchProfileList = () => {
    useEffect(() => {
     fetchBranches();
   }, []);
+
+  const handleToggleStatus = async (id, currentStatus) => {
+    debugger
+  try {
+    // Flip between "1" and "0"
+    const newStatus = currentStatus === "1" ? "0" : "1";
+
+    const encrypted = encryptData({ id, status: newStatus });
+    const res = await axios.post(
+      "http://localhost:5000/Master/Master_Profile/update_Branch_Status",
+      { data: encrypted }
+    );
+
+    const decrypted = decryptData(res.data.data);
+    console.log("Status updated:", decrypted);
+
+    // Refresh branch list
+    fetchBranches();
+  } catch (error) {
+    console.error("Error updating status:", error);
+    alert("Error updating branch status");
+  }
+};
+
+  
+const handleEdit = (branch) => {
+  setBranchData({
+    branch_code: branch.branch_code || "",
+    branch_name: branch.branch_name || "",
+    print_name: branch.print_name || "",
+    address_line1: branch.address_line1 || "",
+    address_line3: branch.address_line3 || "",
+    mobile_no: branch.mobile_no || "",
+    lead_person: branch.lead_person || "",
+    is_main: branch.is_main === "1" || branch.is_main === true,
+    status: branch.status === "1" || branch.status === true,
+  });
+
+  setEditBranchId(branch.id); // or branch._id depending on your backend
+  setIsEditMode(true);
+  setIsModalOpen(true);
+};
 
   return (
 
@@ -222,16 +303,16 @@ const BranchProfileList = () => {
           <div className="bg-white w-[752px] rounded-lg shadow-lg p-5">
             {/* Modal Header */}
             <h2
-              className="text-[#0A2478] mb-6"
-              style={{
-                fontFamily: "Source Sans 3, sans-serif",
-                fontWeight: 600,
-                fontSize: "20px",
-                lineHeight: "24px",
-              }}
-            >
-              Add Branch Details
-            </h2>
+  className="text-[#0A2478] mb-6"
+  style={{
+    fontFamily: "Source Sans 3, sans-serif",
+    fontWeight: 600,
+    fontSize: "20px",
+    lineHeight: "24px",
+  }}
+>
+  {isEditMode ? "Edit Branch Details" : "Add Branch Details"}
+</h2>
 
             {/* Modal Body */}
             <div className="grid grid-cols-3 gap-4">
@@ -348,20 +429,23 @@ const BranchProfileList = () => {
             </div>
 
             {/* Modal Footer */}
-            <div className="flex justify-center gap-4 mt-6">
-              <button
-                className="bg-[#0A2478] text-white px-5 py-2 rounded"
-                onClick={handleSave}
-              >
-                Save
-              </button>
-              <button
-                className="bg-[#C1121F] text-white px-5 py-2 rounded"
-                onClick={() => setIsModalOpen(false)}
-              >
-                Exit
-              </button>
-            </div>
+           <div className="flex justify-center gap-4 mt-6">
+  <button
+    className="bg-[#0A2478] text-white px-5 py-2 rounded"
+    onClick={handleSave}
+  >
+    {isEditMode ? "Update" : "Save"}
+  </button>
+  <button
+    className="bg-[#C1121F] text-white px-5 py-2 rounded"
+    onClick={() => {
+      setIsModalOpen(false);
+      setIsEditMode(false);
+    }}
+  >
+    Exit
+  </button>
+</div>
           </div>
         </div>
       )}
@@ -395,31 +479,35 @@ const BranchProfileList = () => {
 
       <td className="px-4 py-2 text-[#1883EF] cursor-pointer">
         <div className="flex gap-2 justify-center">
-          <div className="w-[17px] h-[17px] bg-[#56A869] rounded-[2.31px] flex items-center  p-0.5 justify-center">
+          <div className="w-[17px] h-[17px] bg-[#56A869] rounded-[2.31px] flex items-center  p-0.5 justify-center"
+           onClick={() => handleEdit(row)}>
             <img src={GroupData} alt="logout" className="w-[18px] h-[18px]" />
           </div>
 
-          <div className="w-[17px] h-[17px] bg-[#646AD9] rounded-[2.31px] flex items-center  p-0.5 justify-center">
-            <img src={Vectorimg} alt="logout" className="" />
-          </div>
+          <div
+  className="w-[17px] h-[17px] bg-[#646AD9] rounded-[2.31px] flex items-center p-0.5 justify-center cursor-pointer"
+  // onClick={() => handleEdit(row)}
+>
+  <img src={Vectorimg} alt="edit" />
+</div>
+
         </div>
       </td>
 
-      <td className="px-4 py-2 text-[#1883EF] cursor-pointer">
-        <button
-          // onClick={() => handleToggle(row.id)} // toggle handler if you want to change status
-          className={`w-12 h-6 flex items-center rounded-full p-1 transition-colors ${
-            row.status === "1" ? "bg-[#0A2478]" : "bg-gray-300"
-          }`}
-          disabled={row.status === "0"} // disable if status is "0"
-        >
-          <div
-            className={`bg-white w-4 h-4 rounded-full shadow-md transform transition-transform ${
-              row.status === "1" ? "translate-x-6" : "translate-x-0"
-            }`}
-          />
-        </button>
-      </td>
+     <td className="px-4 py-2 text-[#1883EF] cursor-pointer">
+  <button
+    onClick={() => handleToggleStatus(row.id, row.status)}
+    className={`w-12 h-6 flex items-center rounded-full p-1 transition-colors ${
+      row.status === "1" ? "bg-[#0A2478]" : "bg-gray-300"
+    }`}
+  >
+    <div
+      className={`bg-white w-4 h-4 rounded-full shadow-md transform transition-transform ${
+        row.status === "1" ? "translate-x-6" : "translate-x-0"
+      }`}
+    />
+  </button>
+</td>
     </tr>
   ))}
 </tbody>

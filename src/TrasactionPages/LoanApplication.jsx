@@ -1,16 +1,17 @@
 import { useState } from 'react';
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
-import { CiSearch } from "react-icons/ci";
-import print from "../assets/print.png";
-import upload from "../assets/upload.png";
-
+import { CiEdit, CiSearch } from "react-icons/ci";
+import { MdOutlineCancel } from "react-icons/md";
+import { useNavigate } from 'react-router-dom';
 import calender from "../assets/calender.png";
+import goldlogo from "../assets/goldlogo.svg";
 import msg from "../assets/msg.png";
 import printwithobject from "../assets/printwithobject.png";
 
-import { useNavigate } from 'react-router-dom';
+import envImg from "../assets/envImg.jpg";
 import text from "../assets/text.png";
+import upload from "../assets/upload.png";
 import { formatIndianDate } from '../utils/Helpers';
 const LoanApplication = () => {
     const navigate = useNavigate();
@@ -23,7 +24,15 @@ const LoanApplication = () => {
     "BGR-01", "BGR-02", "COR-01", "COR-02",
     "IND-01", "IND-02", "IND-03", "IND-04"
   ];
+const [isRemarkOpen, setIsRemarkOpen] = useState(false);
 
+  const handleOpenRemark = () => {
+    setIsRemarkOpen(true);
+  };
+
+  const handleCloseRemark = () => {
+    setIsRemarkOpen(false);
+  };
  const [loanApplication, setLoanApplication] = useState([
   {
     loan_no: "LN001",
@@ -191,19 +200,18 @@ placeholder='Search'
 
                   </div>
                   <div className="flex justify-center item-center gap-5">
-              <button
-                style={{
-                  width: "74px",
-                  height: "24px",
-                  borderRadius: "3.75px",
-
-                  gap: "6.25px",
-                }}
-                // onClick={() => setIsModalOpen(true)}
-                className="bg-[#0A2478] text-white text-[11.25px] font-source font-normal flex items-center justify-center"
-              >
-                Add
-              </button>
+             <button
+      style={{
+        width: "74px",
+        height: "24px",
+        borderRadius: "3.75px",
+        gap: "6.25px",
+      }}
+      onClick={() => navigate("/Add-Gold-Loan-Application")}
+      className="bg-[#0A2478] text-white text-[11.25px] font-source font-normal flex items-center justify-center"
+    >
+      Add
+    </button>
 
 
             </div>
@@ -277,19 +285,23 @@ placeholder='Search'
 
       {/* Action buttons */}
     <td className="px-4 py-2 text-[#1883EF] cursor-pointer">
-  <div className="flex gap-2 justify-center">
-    <div className="w-[24px] h-[24px] bg-[#4A90E2] rounded flex items-center justify-center 
+        <div className="flex gap-2 justify-center">
+           <div className="w-[24px] h-[24px] bg-[#4A90E2] text-white rounded flex items-center justify-center 
                     transition-transform duration-200 hover:scale-110 cursor-pointer">
-      <img src={print} alt="print" className="w-[14px] h-[14px]" />
+      <CiEdit />
     </div>
+    <div
+        className="w-[24px] h-[24px] bg-[#F5A623] rounded flex items-center justify-center 
+                   transition-transform duration-200 hover:scale-110 cursor-pointer"
+        onClick={handleOpenRemark}
+      >
+        <img src={msg} alt="message" className="w-[14px] h-[14px]" />
+      </div>
     <div className="w-[24px] h-[24px] bg-[#28A745] rounded flex items-center justify-center 
                     transition-transform duration-200 hover:scale-110 cursor-pointer">
       <img src={upload} alt="upload" className="w-[14px] h-[14px]" />
     </div>
-    <div className="w-[24px] h-[24px] bg-[#F5A623] rounded flex items-center justify-center 
-                    transition-transform duration-200 hover:scale-110 cursor-pointer">
-      <img src={msg} alt="message" className="w-[14px] h-[14px]" />
-    </div>
+    
     <div className="w-[24px] h-[24px] bg-[#50E3C2] rounded flex items-center justify-center 
                     transition-transform duration-200 hover:scale-110 cursor-pointer">
       <img src={printwithobject} alt="print object" className="w-[14px] h-[14px]" />
@@ -297,6 +309,14 @@ placeholder='Search'
     <div className="w-[24px] h-[24px] bg-[#8B572A] rounded flex items-center justify-center 
                     transition-transform duration-200 hover:scale-110 cursor-pointer">
       <img src={text} alt="text" className="w-[14px] h-[14px]" />
+          </div>
+           <div className="w-[24px] h-[24px] border rounded flex items-center justify-center 
+                    transition-transform duration-200 hover:scale-110 cursor-pointer" style={{ border: "2px solid black" }}>
+      <img src={goldlogo} alt="print object" className="w-[14px] h-[14px]" />
+    </div>
+           <div className="w-[24px] h-[24px] bg-[#C72828] rounded flex items-center justify-center 
+                    transition-transform duration-200 hover:scale-110 cursor-pointer text-white">
+     <MdOutlineCancel />
     </div>
   </div>
 </td>
@@ -331,6 +351,41 @@ placeholder='Search'
         <button className="px-3 py-1 border rounded-md">Next</button>
       </div>
 
+      
+
+       {isRemarkOpen && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 "  style={{
+            background: "#0101017A",
+            backdropFilter: "blur(6.8px)",
+          }}>
+          <div className="bg-white w-[829px] h-[356px] p-6  shadow-lg relative rounded-[8px]">
+         <h2 className="font-semibold text-[24px] leading-[100%] tracking-[0.03em] mb-4 text-[#0A2478]" style={{ fontFamily: 'Source Sans 3' }}>
+  Remark
+</h2>
+            <div className="w-[728px] border border-gray-300  p-5 resize-none h-[183px] rounded-[16px] flex justify-between">
+              <div>
+                <p className='text-black font-bold text-[14px]'>Documents Pending</p>
+                <p className='text-[14px] mt-2 text-[#000000C7]'>Some required documents are missing from your application. To continue processing your<br></br> loan request, please upload the pending documents at the earliest. These may include<br></br> identity proof, address proof, income statements, or bank records, depending on your loan type. </p>
+              </div>
+              <div>
+                 <img src={envImg} alt="print object" className="w-[156px] h-[156px] rounded-[10px]" />
+                </div>
+              </div>
+            
+            <div className="flex justify-center mt-4 gap-2">
+              <button
+                className=" px-4 py-2 rounded w-[119px] h-[38px] bg-[#C1121F] text-white font-semibold cursor-pointer" 
+                onClick={handleCloseRemark}
+              >
+               Close
+              </button>
+              {/* <button className="bg-[#0A2478] text-white px-4 py-2 rounded">
+                Save
+              </button> */}
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   )
 }
