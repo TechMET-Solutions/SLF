@@ -94,46 +94,47 @@ const ItemProfileList = () => {
     setIsModalOpen(true);
   };
 
-  const handleSave = async () => {
-    if (!formData.code || !formData.name) {
-      return;
+const handleSave = async () => {
+  if (!formData.code || !formData.name) return;
+
+  try {
+    const payload = {
+      code: formData.code,
+      name: formData.name,
+      added_by: formData.addedBy,
+      add_on: new Date().toISOString(),
+      remark: formData.remark,
+      status: formData.status,
+      modified_by: isEditMode && formData.id ? formData.addedBy : "",
+      modified_on: isEditMode && formData.id ? new Date().toISOString() : "",
+    };
+
+    if (isEditMode && formData.id) {
+      payload.id = formData.id;
     }
 
-    try {
-      const payload = {
-        code: formData.code,
-        name: formData.name,
-        added_by: formData.addedBy,
-        add_on: new Date().toISOString(),
-        modified_by: formData.addedBy,
-        modified_on: new Date().toISOString(),
-        remark: formData.remark,
-        status: formData.status
-      };
+    const encryptedPayload = encryptData(payload);
+    const url = isEditMode ? `${API_BASE}/update_Item` : `${API_BASE}/add_Item`;
+    const method = isEditMode ? "put" : "post";
 
-      if (isEditMode && formData.id) {
-        payload.id = formData.id;
-      }
+    const response = await axios({
+      method: method,
+      url: url,
+      headers: { "Content-Type": "application/json" },
+      data: { data: encryptedPayload },
+    });
 
-      const encryptedPayload = encryptData(payload);
-      const url = isEditMode ? `${API_BASE}/update_Item` : `${API_BASE}/add_Item`;
-      const method = isEditMode ? 'put' : 'post';
-
-      const response = await axios({
-        method: method,
-        url: url,
-        headers: { "Content-Type": "application/json" },
-        data: { data: encryptedPayload }
-      });
-
-      if (response.status === 200) {
-        setIsModalOpen(false);
-        fetchAllItems();
-      }
-    } catch (error) {
-      console.error("Error saving item:", error.response || error);
+    if (response.status === 200) {
+      setIsModalOpen(false);
+      fetchAllItems();
     }
-  };
+  } catch (error) {
+    console.error("Error saving item:", error.response || error);
+  }
+};
+
+
+
 
   const handleToggleStatus = async (item) => {
     try {
