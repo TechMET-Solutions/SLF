@@ -31,9 +31,13 @@ const LoanEnquiry = () => {
       </div>
 
       {/* ===== FORM SECTIONS ===== */}
+<<<<<<< HEAD
       <div className="p-9 py-6   bg-gray-50 min-h-screen space-y-8">
+=======
+      <div className="p-9 py-6    min-h-screen space-y-8">
+>>>>>>> main
         <di className="flex justify-center mb-6">
-          <div className="w-[1290px] pt-3">
+          <div className="w-[1050px] pt-3">
             {/* Loan Details Section */}
             <h3 className="text-lg font-semibold mb-4 text-[#0A2478]">
               Loan Details

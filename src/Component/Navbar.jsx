@@ -115,6 +115,7 @@ const Navbar = () => {
                         },
                         { name: "Push Gold Rate", path: "/Push-Gold-Rate-List" },
                         { name: "Charges Profile", path: "/Charges-Profile-List" },
+                         { name: "Area", path: "/Area" },
                       ].map((item) => (
                         <Link
                           key={item.path}

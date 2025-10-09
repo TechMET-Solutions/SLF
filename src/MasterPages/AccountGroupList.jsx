@@ -248,7 +248,7 @@ const AccountGroupList = () => {
             background: "#0101017A",
             backdropFilter: "blur(6.8px)",
           }}>
-          <div className="bg-white w-[717px] p-6 rounded-lg shadow-lg h-[322px] p-10">
+          <div className="bg-white w-[717px] rounded-lg shadow-lg h-[322px] p-10">
             <h2
               className="text-[#0A2478] mb-4"
               style={{
@@ -315,6 +315,9 @@ const AccountGroupList = () => {
                   borderWidth: "1px",
                   opacity: 1,
                 }}>
+                  <option value="" disabled>
+                    Select Under
+                  </option>
                   <option>Balance Sheet</option>
                   <option>Income Statement</option>
                 </select>

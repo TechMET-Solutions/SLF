@@ -268,17 +268,6 @@ const AddCustProfile = () => {
       <option>Married</option>
     </select>
                 </div>
-  {/* Age */}
-  {/* <div className="flex flex-col">
-    <label className="text-[14px] font-medium">Age</label>
-    <input
-      type="number"
-      placeholder="Enter Age"
-      className="border border-gray-300 rounded px-3 py-2 mt-1 w-[120px] bg-white"
-    />
-  </div> */}
-
-  {/* GST */}
  
 </div>
 
