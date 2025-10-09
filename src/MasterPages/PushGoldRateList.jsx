@@ -2,19 +2,19 @@ import { useState, useEffect } from "react";
 import axios from "axios";
 import { encryptData, decryptData } from "../utils/cryptoHelper";
 import { formatIndianDate } from "../utils/Helpers";
+import { API } from "../api";
 
 const PushGoldRateList = () => {
   const [data, setData] = useState([]);
   const [pushDate, setPushDate] = useState("");
   const [goldRate, setGoldRate] = useState("");
 
-  const BASE_URL = "http://localhost:5000";
 
   // 🔹 Fetch gold rates
   const fetchGoldRates = async () => {
     try {
       const res = await axios.get(
-        `${BASE_URL}/Master/Master_Profile/get_gold_rate_list`
+        `${API}/Master/Master_Profile/get_gold_rate_list`
       );
       const decrypted = decryptData(res.data.data);
       if (decrypted) setData(decrypted);
@@ -37,7 +37,7 @@ const PushGoldRateList = () => {
     try {
       const encrypted = encryptData(payload);
       const res = await axios.post(
-        `${BASE_URL}/Master/Master_Profile/gold_rate`,
+        `${API}/Master/Master_Profile/gold_rate`,
         { data: encrypted },
         { headers: { "Content-Type": "application/json" } }
       );
