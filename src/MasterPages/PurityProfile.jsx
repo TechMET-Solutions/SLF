@@ -265,29 +265,7 @@ const PurityProfile = () => {
 
       {/* 🗑️ Delete Confirmation Modal */}
       {deleteModalOpen && (
-        // <div className="fixed inset-0 flex items-center justify-center z-50 bg-black/50 backdrop-blur-md">
-        //   <div className="bg-white w-[400px] rounded-lg shadow-lg p-6 text-center">
-        //     <h2 className="text-[#0A2478] text-[18px] font-semibold mb-4">
-        //       Are you sure you want to delete this record?
-        //     </h2>
-        //     <div className="flex justify-center gap-4">
-        //       <button
-        //         onClick={handleDeleteConfirm}
-        //         className="bg-[#0A2478] text-white px-5 py-2 rounded hover:bg-[#081b5c] transition"
-        //       >
-        //         OK
-        //       </button>
-        //       <button
-        //         onClick={() => setDeleteModalOpen(false)}
-        //         className="bg-[#C1121F] text-white px-5 py-2 rounded hover:bg-[#a50f19] transition"
-        //       >
-        //         Cancel
-        //       </button>
-        //     </div>
-        //   </div>
-        // </div>
-
-        <div className="fixed inset-0 flex items-center justify-center z-50 bg-[#0101017A] backdrop-blur-[6.8px]">
+         <div className="fixed inset-0 flex items-center justify-center z-50 bg-[#0101017A] backdrop-blur-[6.8px]">
           <div className="bg-white w-[396.27px] rounded-lg shadow-lg h-[386px] p-5">
 
             <div className="flex justify-center items-center mt-2">

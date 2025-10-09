@@ -1,338 +1,359 @@
-// import React from 'react'
+import { useEffect, useState } from "react";
+import axios from "axios";
+import { encryptData, decryptData } from "../utils/cryptoHelper";
+import { API } from "../api";
+import { FiEdit, FiTrash2 } from "react-icons/fi";
+import blockimg from "../assets/blockimg.png";
+import { useNavigate } from "react-router-dom"; // for Exit button navigation
 
-// const Area = () => {
-//   return (
-//     <div>
-//      <div className="flex justify-center ">
-//         <div className="flex items-center px-6 py-4 border-b mt-5 w-[1290px] h-[62px] border rounded-[11px] border-gray-200 justify-between shadow">
-//           {/* Left heading */}
-//           <h2
-//             style={{
-//               fontFamily: "Source Sans 3, sans-serif",
-//               fontWeight: 700,
-//               fontSize: "20px",
-//               lineHeight: "148%",
-//               letterSpacing: "0em",
-//             }}
-//             className="text-red-600"
-//           >
-//             Area
-//           </h2>
+const indianStatesAndUTs = [
+  // States
+  "Andhra Pradesh", "Arunachal Pradesh", "Assam", "Bihar", "Chhattisgarh",
+  "Goa", "Gujarat", "Haryana", "Himachal Pradesh", "Jharkhand",
+  "Karnataka", "Kerala", "Madhya Pradesh", "Maharashtra", "Manipur",
+  "Meghalaya", "Mizoram", "Nagaland", "Odisha", "Punjab",
+  "Rajasthan", "Sikkim", "Tamil Nadu", "Telangana", "Tripura",
+  "Uttar Pradesh", "Uttarakhand", "West Bengal",
 
-//           {/* Right section (search + buttons) */}
-//           <div className="flex items-center gap-6">
-//             {/* Search section */}
+  // Union Territories
+  "Andaman and Nicobar Islands", "Chandigarh",
+  "Dadra and Nagar Haveli and Daman and Diu", "Delhi",
+  "Jammu and Kashmir", "Ladakh", "Lakshadweep", "Puducherry"
+];
 
-//             {/* Buttons stuck to right */}
-//             <div className="flex gap-3">
-//               <button
-//                 style={{
-//                   width: "74px",
-//                   height: "24px",
-//                   borderRadius: "3.75px",
-//                 }}
-//                 // onClick={() => setIsModalOpen(true)}
-//                 className="bg-[#0A2478] text-white text-[11.25px] font-source font-normal flex items-center justify-center"
-//               >
-//                 Add
-//               </button>
 
-//               <button className="text-white px-[6.25px] py-[6.25px] rounded-[3.75px] bg-[#C1121F] w-[74px] h-[24px] opacity-100 text-[10px]">
-//                 Exit
-//               </button>
-//             </div>
-//           </div>
-//         </div>
-//       </div>
-//     </div>
-//   )
-// }
-
-// export default Area
-
-import { useState } from "react";
 const Area = () => {
-    const [isModalOpen, setIsModalOpen] = useState(false);
-   const [data, setData] = useState([
-    {
-      number: 1,
-      area: "MG Road",
-      city: "Pune",
-      state: "Maharashtra",
-      pincode: "411001",
-      landmark: "Near Bus Stand",
-    },
-    {
-      number: 2,
-      area: "Brigade Road",
-      city: "Bangalore",
-      state: "Karnataka",
-      pincode: "560001",
-      landmark: "Opposite Mall",
-    },
-    {
-      number: 3,
-      area: "Connaught Place",
-      city: "Delhi",
-      state: "Delhi",
-      pincode: "110001",
-      landmark: "Central Park",
-    },
-    {
-      number: 4,
-      area: "Marine Drive",
-      city: "Mumbai",
-      state: "Maharashtra",
-      pincode: "400002",
-      landmark: "Sea View",
-    },
-    {
-      number: 5,
-      area: "Park Street",
-      city: "Kolkata",
-      state: "West Bengal",
-      pincode: "700016",
-      landmark: "Near Church",
-    },
-  ]);
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [area, setArea] = useState([]);
+  const [isLoading, setIsLoading] = useState(false);
+  const [isEditMode, setIsEditMode] = useState(false);
+  const [deleteModalOpen, setDeleteModalOpen] = useState(false);
+  const [deleteId, setDeleteId] = useState(null);
+  const [formData, setFormData] = useState({
+    id: null,
+    area_locality: "",
+    city: "",
+    state: "",
+    pincode: "",
+    landmark: "",
+  });
+
+  const navigate = useNavigate();
+
+  // 🟢 Fetch Area Data
+  const fetchArea = async () => {
+    setIsLoading(true);
+    try {
+      const res = await axios.get(`${API}/Master/Master_Profile/get-area`);
+      const decrypted = decryptData(res.data.data);
+      setArea(decrypted || []);
+    } catch (err) {
+      console.error("❌ Error fetching area:", err);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    fetchArea();
+  }, []);
+
+  // 🟡 Open Modal for Add or Edit
+  const handleOpenModal = (area = null) => {
+    if (area) {
+      setIsEditMode(true);
+      setFormData({
+        id: area.id,
+        area_locality: area.area_locality,
+        city: area.city,
+        state: area.state,
+        pincode: area.pincode,
+        landmark: area.landmark,
+      });
+    } else {
+      setIsEditMode(false);
+      setFormData({
+        id: null,
+        area_locality: "",
+        city: "",
+        state: "",
+        pincode: "",
+        landmark: "",
+      });
+    }
+    setIsModalOpen(true);
+  };
+
+  // 💾 Save or Update
+  const handleSave = async () => {
+    if (!formData.area_locality || !formData.city || !formData.state || !formData.pincode) {
+      alert("Please fill all required fields");
+      return;
+    }
+
+    setIsLoading(true);
+    try {
+      const payload = {
+        area_locality: formData.area_locality,
+        city: formData.city,
+        state: formData.state,
+        pincode: formData.pincode,
+        landmark: formData.landmark,
+      };
+
+      let url;
+      let method;
+
+      if (isEditMode && formData.id) {
+        payload.id = formData.id;
+        url = `${API}/Master/Master_Profile/update-area`;
+        method = "put";
+      } else {
+        url = `${API}/Master/Master_Profile/add-area`;
+        method = "post";
+      }
+
+      const encryptedPayload = encryptData(payload);
+      const response = await axios({
+        method,
+        url,
+        headers: { "Content-Type": "application/json" },
+        data: { data: encryptedPayload },
+      });
+
+      if (response.status === 200) {
+        setIsModalOpen(false);
+        fetchArea();
+      }
+    } catch (error) {
+      console.error("❌ Error saving item:", error.response || error);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  // 🗑️ Show delete confirmation modal
+  const handleDeleteClick = (id) => {
+    setDeleteId(id);
+    setDeleteModalOpen(true);
+  };
+
+  // 🟥 Confirm delete
+  const handleDeleteConfirm = async () => {
+    try {
+      const payload = { id: deleteId };
+      const encryptedPayload = encryptData(payload);
+
+      const response = await axios.post(
+        `${API}/Master/Master_Profile/delete-area`, // ✅ fixed endpoint
+        { data: encryptedPayload },
+        { headers: { "Content-Type": "application/json" } }
+      );
+
+      if (response.status === 200) {
+        setDeleteModalOpen(false);
+        setDeleteId(null);
+        fetchArea();
+      }
+    } catch (error) {
+      console.error("❌ Error deleting area:", error.response || error);
+      alert("Error deleting area");
+    }
+  };
 
   return (
-    <div className=" min-h-screen w-full">
-
-     
-      
-     
+    <div className="min-h-screen w-full">
+      {/* Header */}
       <div className="flex justify-center">
-          <div className="flex  items-center px-6 py-4 border-b mt-5 w-[1290px] h-[62px] border rounded-[11px] border-gray-200 justify-between">
-         <h2
-  style={{
-    fontFamily: "Source Sans 3, sans-serif",
-    fontWeight: 700, // Bold
-    fontSize: "20px",
-    lineHeight: "148%",
-    letterSpacing: "0em",
-  }}
-  className="text-red-600"
->
-Area
-</h2>
-
+        <div className="flex items-center px-6 py-4 border-b mt-5 w-[1290px] h-[62px] border rounded-[11px] border-gray-200 justify-between">
+          <h2 className="text-red-600 font-bold text-[20px]">Area</h2>
           <div className="flex gap-3">
-            
-            <div className="flex justify-center item-center gap-5">
-<button
-  style={{
-    width: "74px",
-    height: "24px",
-    borderRadius: "3.75px",
-   
-    gap: "6.25px",
-                }}
-                  onClick={() => setIsModalOpen(true)}
-  className="bg-[#0A2478] text-white text-[11.25px] font-source font-normal flex items-center justify-center"
->
-  Add
-</button>
-
-           <button
-  className="text-white px-[6.25px] py-[6.25px] rounded-[3.75px] bg-[#C1121F] w-[74px] h-[24px] opacity-100 text-[10px]"
->
-  Exit
-</button>
-
-            </div>
-           
+            <button
+              className="bg-[#0A2478] text-white text-[11.25px] rounded px-3 py-1"
+              onClick={() => handleOpenModal(null)}
+            >
+              Add
+            </button>
+            <button
+              className="bg-[#C1121F] text-white text-[10px] rounded px-3 py-1"
+              onClick={() => navigate("/dashboard")}
+            >
+              Exit
+            </button>
           </div>
         </div>
-        </div>
-     
-      {/* modelforAdd */}
-       {isModalOpen && (
-        <div  className="fixed inset-0 flex items-center justify-center z-50"
-    style={{
-      background: "#0101017A",
-      backdropFilter: "blur(6.8px)",
-    }}>
-          <div className="bg-white w-[717px] p-6 rounded-lg shadow-lg h-[322px] p-10">
-           <h2
-  className="text-[#0A2478] mb-4"
-  style={{
-    fontFamily: "Source Sans 3, sans-serif",
-    fontWeight: 600,
-    fontSize: "20px",
-    lineHeight: "24px",
-    letterSpacing: "0%",
-  }}
->
- Add Area
-</h2>
+      </div>
 
+      {/* Modal for Add/Edit */}
+      {isModalOpen && (
+        <div className="fixed inset-0 flex items-center justify-center z-50 bg-[#0101017A] backdrop-blur-md">
+          <div className="bg-white w-[717px] rounded-lg shadow-lg h-[400px] p-10">
+            <h2 className="text-[#0A2478] font-semibold text-[20px] mb-4">
+              {isEditMode ? "Edit Area" : "Add Area"}
+            </h2>
 
             <div className="grid grid-cols-2 gap-4">
               <div>
-                <label className="text-[14px] ">Area / Locality <span className="text-red-500">*</span></label>
-               <input
-  type="text"
-  placeholder="Enter area or locality"
-  className="border border-gray-300 rounded"
-  style={{
-    width: "280px",
-    height: "38px",
-    padding: "10px 14px",
-    borderRadius: "5px",
-    borderWidth: "1px",
-    opacity: 1,
-  }}
-/>
-
-              </div>
-            <div>
-                <label className="text-[14px] ">City <span className="text-red-500">*</span></label>
-               <input
-  type="text"
-  placeholder="Eg.Nashik"
-  className="border border-gray-300 rounded"
-  style={{
-    width: "280px",
-    height: "38px",
-    padding: "10px 14px",
-    borderRadius: "5px",
-    borderWidth: "1px",
-    opacity: 1,
-  }}
-/>
-
-              </div>
-             <div>
-                {/* <label className="text-[12px] font-medium">Account Type *</label> */}
-                  <label className="text-[14px] ">State <span className="text-red-500"></span></label>
-                {/* <input
+                <label className="text-[14px]">Area / Locality <span className="text-red-500">*</span></label>
+                <input
                   type="text"
-                  className="border border-gray-300 rounded px-2 py-1 w-full mt-1 text-[12px]"
-                  placeholder="Enter Account Type"
-                /> */}
-
-                <select className="border border-gray-300 rounded px-2 py-1 w-full mt-1 text-[12px]" style={{
-    width: "280px",
-    height: "38px",
-    padding: "10px 14px",
-    borderRadius: "5px",
-    borderWidth: "1px",
-    opacity: 1,
-  }}>
-                  <option>Maharashtra</option>
-                  <option>Goa</option>
+                  placeholder="Enter area or locality"
+                  className="border border-gray-300 rounded px-3 py-2 w-[280px]"
+                  value={formData.area_locality}
+                  onChange={(e) => setFormData({ ...formData, area_locality: e.target.value })}
+                />
+              </div>
+              <div>
+                <label className="text-[14px]">City <span className="text-red-500">*</span></label>
+                <input
+                  type="text"
+                  placeholder="Eg. Nashik"
+                  className="border border-gray-300 rounded px-3 py-2 w-[280px]"
+                  value={formData.city}
+                  onChange={(e) => setFormData({ ...formData, city: e.target.value })}
+                />
+              </div>
+              <div>
+                <label className="text-[14px]">
+                  State <span className="text-red-500">*</span>
+                </label>
+                <select
+                  className="border border-gray-300 rounded px-3 py-2 w-[280px]"
+                  value={formData.state}
+                  onChange={(e) => setFormData({ ...formData, state: e.target.value })}
+                >
+                  <option value="">Select State</option>
+                  {indianStatesAndUTs.map((state) => (
+                    <option key={state} value={state}>
+                      {state}
+                    </option>
+                  ))}
                 </select>
-
               </div>
-             <div>
-                <label className="text-[14px] ">Pincode <span className="text-red-500">*</span></label>
-               <input
-  type="text"
-  placeholder="Pincode"
-  className="border border-gray-300 rounded"
-  style={{
-    width: "280px",
-    height: "38px",
-    padding: "10px 14px",
-    borderRadius: "5px",
-    borderWidth: "1px",
-    opacity: 1,
-  }}
-/>
 
+              <div>
+                <label className="text-[14px]">Pincode <span className="text-red-500">*</span></label>
+                <input
+                  type="text"
+                  placeholder="Pincode"
+                  className="border border-gray-300 rounded px-3 py-2 w-[280px]"
+                  value={formData.pincode}
+                  onChange={(e) => setFormData({ ...formData, pincode: e.target.value })}
+                />
+              </div>
+              <div>
+                <label className="text-[14px]">Landmark <span className="text-red-500">*</span></label>
+                <input
+                  type="text"
+                  placeholder="landmark"
+                  className="border border-gray-300 rounded px-3 py-2 w-[280px]"
+                  value={formData.landmark}
+                  onChange={(e) => setFormData({ ...formData, landmark: e.target.value })}
+                />
               </div>
             </div>
-            <div className="flex justify-center gap-5 items-center">
 
- <div className="flex justify-end gap-3 mt-6 item-center">
-             <button
-  className="bg-[#0A2478] text-white"
-  style={{
-    width: "92.66px",
-    height: "30.57px",
-    borderRadius: "4.67px",
-  
-    opacity: 1,
-  }}
-  onClick={() => setIsModalOpen(false)}
->
-Submit
-</button>
-
-            <button
-  className="text-white"
-  style={{
-    backgroundColor: "#C1121F",
-    width: "92.66px",
-    height: "30.57px",
-    borderRadius: "4.67px",
-  
-    opacity: 1,
-  }}
-  onClick={() => setIsModalOpen(false)}
->
-  Close
-</button>
-
+            <div className="flex justify-center items-center gap-4 mt-6">
+              <button
+                className="bg-[#0A2478] text-white px-4 py-2 rounded"
+                onClick={handleSave}
+              >
+                Submit
+              </button>
+              <button
+                className="bg-[#C1121F] text-white px-4 py-2 rounded"
+                onClick={() => setIsModalOpen(false)}
+              >
+                Close
+              </button>
             </div>
-
-              </div>
-
-           
           </div>
         </div>
       )}
 
-      {/* Table */}
+      {/* Delete Confirmation Modal */}
+      {deleteModalOpen && (
+        <div className="fixed inset-0 flex items-center justify-center z-50 bg-[#0101017A] backdrop-blur-md">
+          <div className="bg-white w-[396px] rounded-lg shadow-lg h-[386px] p-5">
+            <div className="flex justify-center mt-2">
+              <img src={blockimg} alt="block" className="w-[113px] h-[113px]" />
+            </div>
+            <div className="mt-10 text-center">
+              <p className="text-[22px] font-medium">Are you sure to delete this List?</p>
+              <p className="text-[17px] text-gray-600 mt-2">You won’t be able to revert this action.</p>
+            </div>
+            <div className="mt-6 flex flex-col items-center gap-4">
+              <button
+                className="bg-[#F11717] text-white px-5 py-2 rounded text-[18px]"
+                onClick={handleDeleteConfirm}
+              >
+                Ok
+              </button>
+              <button
+                className="bg-[#0A2478] text-white px-5 py-2 rounded text-[18px]"
+                onClick={() => setDeleteModalOpen(false)}
+              >
+                Cancel
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Area Table */}
       <div className="flex justify-center">
- <div className="overflow-x-auto mt-5 w-[1290px] h-[500px]">
+        <div className="overflow-x-auto mt-5 w-[1290px] h-[500px]">
           <table className="w-full border-collapse">
             <thead className="bg-[#0A2478] text-white text-sm">
               <tr>
-                <th className="px-4 py-2 text-left border-r border-gray-300 text-[13px]">Sr No</th>
-<th className="px-4 py-2 text-left border-r border-gray-300 text-[13px]">Area/Locality</th>
-                <th className="px-4 py-2 text-left border-r border-gray-300 text-[13px]"> City</th>
-                <th className="px-4 py-2 text-left border-r border-gray-300 text-[13px]">State</th>
-                <th className="px-4 py-2 text-left border-r border-gray-300 text-[13px]">Pin code</th>
-                <th className="px-4 py-2 text-left border-r border-gray-300 text-[13px]">Landmark</th>
-              
+                <th className="px-4 py-2 text-left">Sr No</th>
+                <th className="px-4 py-2 text-left">Area/Locality</th>
+                <th className="px-4 py-2 text-left">City</th>
+                <th className="px-4 py-2 text-left">State</th>
+                <th className="px-4 py-2 text-left">Pincode</th>
+                <th className="px-4 py-2 text-left">Landmark</th>
+                <th className="px-4 py-2 text-center">Action</th>
               </tr>
             </thead>
-            <tbody className="text-[12px]">
-              {data.map((row, index) => (
-                <tr
-      key={index}
-      className={`border-b ${index % 2 === 0 ? "bg-gray-50" : "bg-white"}`}
-    >
-      <td className="px-4 py-2">{row.number}</td>
-      <td className="px-4 py-2">{row.area}</td>
-      <td className="px-4 py-2">{row.city}</td>
-      <td className="px-4 py-2">{row.state}</td>
-      <td className="px-4 py-2">{row.pincode}</td>
-      <td className="px-4 py-2">{row.landmark}</td>
-      
-    </tr>
-              ))}
+            <tbody className="text-sm">
+              {area.length > 0 ? (
+                area.map((row, index) => (
+                  <tr key={index} className={index % 2 === 0 ? "bg-gray-50" : "bg-white"}>
+                    <td className="px-4 py-2">{index + 1}</td>
+                    <td className="px-4 py-2">{row.area_locality}</td>
+                    <td className="px-4 py-2">{row.city}</td>
+                    <td className="px-4 py-2">{row.state}</td>
+                    <td className="px-4 py-2">{row.pincode}</td>
+                    <td className="px-4 py-2">{row.landmark}</td>
+                    <td className="px-4 py-2 text-center">
+                      <div className="flex gap-2 justify-center">
+                        <button
+                          className="bg-green-500 p-1.5 text-white rounded"
+                          onClick={() => handleOpenModal(row)}
+                        >
+                          <FiEdit />
+                        </button>
+                        <button
+                          className="bg-red-600 p-1.5 text-white rounded"
+                          onClick={() => handleDeleteClick(row.id)}
+                        >
+                          <FiTrash2 />
+                        </button>
+                      </div>
+                    </td>
+                  </tr>
+                ))
+              ) : (
+                <tr>
+                  <td colSpan="7" className="text-center py-4 text-gray-500">
+                    No area found.
+                  </td>
+                </tr>
+              )}
             </tbody>
           </table>
         </div>
       </div>
-       
-
-        {/* Pagination */}
-        <div className="flex justify-center items-center px-6 py-3 border-t gap-2">
-          <button className="px-3 py-1 border rounded-md">Previous</button>
-          <div className="flex gap-2">
-            <button className="px-3 py-1 border bg-[#0b2c69] text-white rounded-md">1</button>
-            <button className="px-3 py-1 border rounded-md">2</button>
-            <button className="px-3 py-1 border rounded-md">3</button>
-            <button className="px-3 py-1 border rounded-md">...</button>
-            <button className="px-3 py-1 border rounded-md">10</button>
-          </div>
-          <button className="px-3 py-1 border rounded-md">Next</button>
-        </div>
-     
     </div>
   );
 };
