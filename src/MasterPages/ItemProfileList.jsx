@@ -3,6 +3,7 @@ import { useState, useEffect } from "react";
 import axios from "axios";
 import { encryptData, decryptData } from "../utils/cryptoHelper";
 import GroupData from "../assets/Group 124.svg";
+import { API } from "../api";
 
 const ItemProfileList = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -24,7 +25,7 @@ const ItemProfileList = () => {
     status: 1
   });
 
-  const API_BASE = "http://localhost:5000/Master/Master_Profile";
+  const API_BASE = `${API}/Master/Master_Profile`;
 
   // Fetch all items on component mount
   useEffect(() => {

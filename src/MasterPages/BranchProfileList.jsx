@@ -12,6 +12,7 @@
 
 import axios from "axios";
 import { useEffect, useState } from "react";
+import { API } from "../api";
 import GroupData from "../assets/Group 124.svg";
 import Vectorimg from "../assets/Vectorimg.png";
 import Loader from "../Component/Loader";
@@ -73,8 +74,8 @@ const BranchProfileList = () => {
       });
 
       const url = isEditMode
-        ? "http://localhost:5000/Master/Master_Profile/update_Branch"
-        : "http://localhost:5000/Master/Master_Profile/add_Branch";
+        ? `${API}/Master/Master_Profile/update_Branch`
+        : `${API}/Master/Master_Profile/add_Branch`  ;
 
       await axios.post(url, { data: encrypted });
 
@@ -109,7 +110,7 @@ const BranchProfileList = () => {
     setIsLoading(true); // show loader
     try {
       const res = await axios.get(
-        "http://localhost:5000/Master/Master_Profile/get_Branches"
+        `${API}/Master/Master_Profile/get_Branches`
       );
 
       const decrypted = decryptData(res.data.data);
@@ -141,7 +142,7 @@ const BranchProfileList = () => {
 
       const encrypted = encryptData({ id, status: newStatus });
       const res = await axios.post(
-        "http://localhost:5000/Master/Master_Profile/update_Branch_Status",
+        `${API}/Master/Master_Profile/update_Branch_Status`,
         { data: encrypted }
       );
 
@@ -533,13 +534,8 @@ const BranchProfileList = () => {
 
 
 
-
-
-
-      <div className="min-h-screen w-full relative">
+      <div className=" w-full relative">
         {isLoading && <Loader />}
-
-        {/* rest of your BranchProfileList JSX */}
       </div></>
 
   );
