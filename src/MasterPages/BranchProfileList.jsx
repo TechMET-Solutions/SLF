@@ -13,10 +13,11 @@
 import axios from "axios";
 import { useEffect, useState } from "react";
 import { API } from "../api";
+import { fetchBranchesApi, updateBranchApi, updateBranchStatusApi } from "../API/Master/Master_Profile/Branch_Details";
 import GroupData from "../assets/Group 124.svg";
 import Vectorimg from "../assets/Vectorimg.png";
 import Loader from "../Component/Loader";
-import { decryptData, encryptData } from "../utils/cryptoHelper";
+import { encryptData } from "../utils/cryptoHelper";
 import { formatIndianDate } from "../utils/Helpers";
 const BranchProfileList = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -34,7 +35,9 @@ const BranchProfileList = () => {
     status: false,
   });
   console.log(branchData, "branchData")
-
+ const [currentPage, setCurrentPage] = useState(1);
+  const [totalRecords, setTotalRecords] = useState(0);
+  const recordsPerPage = 10;
   const handleChange = (e) => {
     const { name, value, type, checked } = e.target;
     setBranchData((prev) => ({
@@ -43,28 +46,6 @@ const BranchProfileList = () => {
     }));
   };
 
-  // submit data
-  // const handleSave = async () => {
-  //   debugger
-  //    setIsLoading(true); // show loader
-  //   try {
-  //     const encrypted = encryptData(branchData); // 🔒 encrypt before sending
-  //     await axios.post("http://localhost:5000/Master/Master_Profile/add_Branch", {
-  //       data: encrypted,
-  //     });
-  //      setIsLoading(false);
-  //      // hide loader
-  //     // alert("Branch saved successfully!");
-  //     setIsModalOpen(false);
-
-  //     fetchBranches();
-
-  //   } catch (error) {
-  //     console.error(error);
-  //     alert("Error saving branch");
-  //      setIsLoading(false); // hide loader
-  //   }
-  // };
   const handleSave = async () => {
     setIsLoading(true);
     try {
@@ -106,48 +87,34 @@ const BranchProfileList = () => {
   const [isEditMode, setIsEditMode] = useState(false);
   const [editBranchId, setEditBranchId] = useState(null);
   console.log(branches, "branches")
-  const fetchBranches = async () => {
-    setIsLoading(true); // show loader
+   const fetchBranches = async (page = 1) => {
+    setIsLoading(true);
     try {
-      const res = await axios.get(
-        `${API}/Master/Master_Profile/get_Branches`
-      );
-
-      const decrypted = decryptData(res.data.data);
-
-      if (!decrypted) {
-        console.warn("Decryption failed or empty, returning empty array.");
-        setBranches([]);
-        return;
-      }
-
-      setBranches(decrypted);
-      setIsLoading(false); // hide loader
-    } catch (err) {
-      console.error("Error fetching branches:", err);
-      setIsLoading(false); // hide loader
+      const data = await fetchBranchesApi(page, recordsPerPage);
+      setBranches(data.branches);
+      setTotalRecords(data.total);
+    } catch (error) {
+      console.error("Error fetching branches:", error);
+    } finally {
+      setIsLoading(false);
     }
   };
 
-
   useEffect(() => {
-    fetchBranches();
-  }, []);
+    fetchBranches(currentPage);
+  }, [currentPage]);
 
-  const handleToggleStatus = async (id, currentStatus) => {
-    debugger
+
+   const totalPages = Math.ceil(totalRecords / recordsPerPage);
+
+  
+   const handleToggleStatus = async (id, currentStatus) => {
     try {
-      // Flip between "1" and "0"
       const newStatus = currentStatus === "1" ? "0" : "1";
 
-      const encrypted = encryptData({ id, status: newStatus });
-      const res = await axios.post(
-        `${API}/Master/Master_Profile/update_Branch_Status`,
-        { data: encrypted }
-      );
-
-      const decrypted = decryptData(res.data.data);
-      console.log("Status updated:", decrypted);
+      // 🔹 Use separated API function
+      const response = await updateBranchStatusApi(id, newStatus);
+      console.log("Status updated:", response);
 
       // Refresh branch list
       fetchBranches();
@@ -156,7 +123,6 @@ const BranchProfileList = () => {
       alert("Error updating branch status");
     }
   };
-
 
   const handleEdit = (branch) => {
     setBranchData({
@@ -176,14 +142,30 @@ const BranchProfileList = () => {
     setIsModalOpen(true);
   };
 
+  const handleUpdateBranch = async () => {
+  try {
+    const payload = {
+      id: editBranchId,  // ✅ using the stored id
+      ...branchData,
+    };
+
+    const response = await updateBranchApi(payload);
+    console.log("✅ Branch updated:", response);
+
+    alert("Branch updated successfully!");
+    setIsModalOpen(false);
+    setIsEditMode(false);
+    setEditBranchId(null);
+    fetchBranches(); // refresh list
+  } catch (error) {
+    console.error("Error updating branch:", error);
+    alert("Failed to update branch");
+  }
+};
   return (
 
     <>
-      <div className=" min-h-screen w-full">
-
-
-
-
+      <div className=" w-full">
         {/* middletopbar */}
         <div className="flex justify-center">
           <div className="flex  items-center px-6 py-4 border-b mt-5 w-[1290px] h-[62px] border rounded-[11px] border-gray-200 justify-around">
@@ -432,17 +414,43 @@ const BranchProfileList = () => {
 
               {/* Modal Footer */}
               <div className="flex justify-center gap-4 mt-6">
-                <button
+                {/* <button
                   className="bg-[#0A2478] text-white px-5 py-2 rounded"
                   onClick={handleSave}
                 >
                   {isEditMode ? "Update" : "Save"}
-                </button>
+                </button> */}
+                {isEditMode ? (
+  <button
+    onClick={handleUpdateBranch}
+    className="bg-blue-600 text-white px-4 py-2 rounded-md"
+  >
+    Update Branch
+  </button>
+) : (
+  <button
+    onClick={handleSave}
+    className="bg-green-600 text-white px-4 py-2 rounded-md"
+  >
+    Add Branch
+  </button>
+)}
                 <button
                   className="bg-[#C1121F] text-white px-5 py-2 rounded"
                   onClick={() => {
                     setIsModalOpen(false);
                     setIsEditMode(false);
+                     setBranchData({
+        branch_code: "",
+        branch_name: "",
+        print_name: "",
+        address_line1: "",
+        address_line3: "",
+        mobile_no: "",
+        lead_person: "",
+        is_main: false,
+        status: false,
+      });
                   }}
                 >
                   Exit
@@ -518,7 +526,7 @@ const BranchProfileList = () => {
 
 
         {/* Pagination */}
-        <div className="flex justify-center items-center px-6 py-3 border-t gap-2">
+        {/* <div className="flex justify-center items-center px-6 py-3 border-t gap-2">
           <button className="px-3 py-1 border rounded-md">Previous</button>
           <div className="flex gap-2">
             <button className="px-3 py-1 border bg-[#0b2c69] text-white rounded-md">1</button>
@@ -528,8 +536,44 @@ const BranchProfileList = () => {
             <button className="px-3 py-1 border rounded-md">10</button>
           </div>
           <button className="px-3 py-1 border rounded-md">Next</button>
-        </div>
+        </div> */}
+ {totalPages > 1 && (
+            <div className="flex justify-center items-center px-6 py-3 border-t gap-2 ">
+              <button
+                className={`px-3 py-1 border rounded-md ${
+                  currentPage === 1 ? "opacity-50 cursor-not-allowed" : ""
+                }`}
+                onClick={() => setCurrentPage((p) => Math.max(p - 1, 1))}
+                disabled={currentPage === 1}
+              >
+                Previous
+              </button>
 
+              <div className="flex gap-2">
+                {Array.from({ length: totalPages }, (_, i) => i + 1).map((page) => (
+                  <button
+                    key={page}
+                    onClick={() => setCurrentPage(page)}
+                    className={`px-3 py-1 border rounded-md ${
+                      currentPage === page ? "bg-[#0b2c69] text-white" : ""
+                    }`}
+                  >
+                    {page}
+                  </button>
+                ))}
+              </div>
+
+              <button
+                className={`px-3 py-1 border rounded-md ${
+                  currentPage === totalPages ? "opacity-50 cursor-not-allowed" : ""
+                }`}
+                onClick={() => setCurrentPage((p) => Math.min(p + 1, totalPages))}
+                disabled={currentPage === totalPages}
+              >
+                Next
+              </button>
+            </div>
+          )}
       </div>
 
 
