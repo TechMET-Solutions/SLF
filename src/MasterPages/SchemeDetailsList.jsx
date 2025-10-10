@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom"; // Add this import
-import eyeIcon from "../assets/Vectorimg.png";
 import GroupData from "../assets/Group 124.svg";
+import eyeIcon from "../assets/Vectorimg.png";
 const SchemeDetailsList = () => {
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [data, setData] = useState([
@@ -100,9 +100,6 @@ const SchemeDetailsList = () => {
                     </div>
                 </div>
             </div>
-
-            
-
             {/* Table */}
             <div className="flex justify-center ">
                 <div className="overflow-x-auto mt-5 w-[1290px] h-[500px]">
@@ -113,7 +110,7 @@ const SchemeDetailsList = () => {
                                     Scheme Name
                                 </th>
                                 <th className="px-4 py-2 text-left border-r border-gray-300 text-[13px]">
-                                    App From
+                                    App Form
                                 </th>
                                 <th className="px-4 py-2 text-left border-r border-gray-300 text-[13px]">
                                     App To
