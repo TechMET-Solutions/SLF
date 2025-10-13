@@ -1,11 +1,12 @@
 import { useState, useEffect } from "react";
-import GroupData from "../assets/Group 124.svg";
 import {
   fetchItemsApi,
   addItemApi,
   updateItemApi,
   updateItemStatusApi,
 } from "../API/Master/Master_Profile/Item_Details";
+import Pagination from "../Component/Pagination";
+import { FiEdit } from "react-icons/fi";
 
 const ItemProfileList = () => {
   const [data, setData] = useState([]);
@@ -30,29 +31,50 @@ const ItemProfileList = () => {
   const itemsPerPage = 10;
 
   // 🔹 Fetch Items (with pagination)
+  // const fetchAllItems = async (page = 1) => {
+  //   try {
+  //     const result = await fetchItemsApi(page, itemsPerPage);
+  //     if (result?.items) {
+  //       setData(result.items);
+  //       setTotalItems(result.total);
+  //       setCurrentPage(result.page);
+  //       setShowPagination(result.showPagination || false);
+  //     } else {
+  //       setData([]);
+  //       setShowPagination(false);
+  //     }
+  //   } catch (error) {
+  //     console.error("❌ Error fetching items:", error);
+  //     setData([]);
+  //     setShowPagination(false);
+  //   }
+  // };
+
   const fetchAllItems = async (page = 1) => {
-    try {
-      const result = await fetchItemsApi(page, itemsPerPage);
-      if (result?.items) {
-        setData(result.items);
-        setTotalItems(result.total);
-        setCurrentPage(result.page);
-        setShowPagination(result.showPagination || false);
-      } else {
-        setData([]);
-        setShowPagination(false);
-      }
-    } catch (error) {
-      console.error("❌ Error fetching items:", error);
+  try {
+    const result = await fetchItemsApi(page, itemsPerPage, searchCode, searchName);
+    if (result?.items) {
+      setData(result.items);
+      setTotalItems(result.total);
+      setCurrentPage(result.page);
+      setShowPagination(result.showPagination || false);
+    } else {
       setData([]);
       setShowPagination(false);
     }
-  };
+  } catch (error) {
+    console.error("❌ Error fetching items:", error);
+    setData([]);
+    setShowPagination(false);
+  }
+};
+
 
   useEffect(() => {
     fetchAllItems();
   }, []);
 
+  
   // 🔹 Open Modal
   const handleOpenModal = (item = null) => {
     if (item) {
@@ -169,7 +191,7 @@ const ItemProfileList = () => {
                 className="border border-gray-400 px-3 py-1 text-[11.25px] rounded"
               />
               <button
-                className="bg-[#0b2c69] text-white text-[11.25px] px-4 py-1 rounded"
+                className="bg-[#0b2c69] text-white text-[11.25px] px-4 py-1 rounded cursor-pointer"
               >
                 Search
               </button>
@@ -179,11 +201,11 @@ const ItemProfileList = () => {
             <div className="flex justify-center items-center gap-5">
               <button
                 onClick={() => handleOpenModal()}
-                className="bg-[#0A2478] text-white text-[11.25px] px-4 py-1 rounded"
+                className="bg-[#0A2478] text-white text-[11.25px] px-4 py-1 rounded cursor-pointer"
               >
                 Add
               </button>
-              <button className="bg-[#C1121F] text-white text-[10px] px-4 py-1 rounded">
+              <button className="bg-[#C1121F] text-white text-[10px] px-4 py-1 rounded cursor-pointer">
                 Exit
               </button>
             </div>
@@ -288,13 +310,13 @@ const ItemProfileList = () => {
             <div className="flex justify-center gap-4">
               <button
                 onClick={handleSave}
-                className="bg-[#0A2478] text-white px-6 py-2 rounded-md"
+                className="bg-[#0A2478] text-white px-6 py-2 rounded-md cursor-pointer"
               >
                 Save
               </button>
               <button
                 onClick={() => setIsModalOpen(false)}
-                className="bg-[#C1121F] text-white px-6 py-2 rounded-md"
+                className="bg-[#C1121F] text-white px-6 py-2 rounded-md cursor-pointer"
               >
                 Exit
               </button>
@@ -314,24 +336,23 @@ const ItemProfileList = () => {
             <table className="w-full border-collapse">
               <thead className="bg-[#0A2478] text-white text-sm">
                 <tr>
-                  <th className="px-4 py-2 text-left">Code</th>
-                  <th className="px-4 py-2 text-left">Name</th>
-                  <th className="px-4 py-2 text-left">Status</th>
-                  <th className="px-4 py-2 text-left">Added By</th>
-                  <th className="px-4 py-2 text-left">Added On</th>
-                  <th className="px-4 py-2 text-left">Modified By</th>
-                  <th className="px-4 py-2 text-left">Modified On</th>
-                  <th className="px-4 py-2 text-left">Action</th>
-                  <th className="px-4 py-2 text-left">Active</th>
+                  <th className="px-4 py-2 border-r-2 text-left">Code</th>
+                  <th className="px-4 py-2 border-r-2 text-left">Name</th>
+                  <th className="px-4 py-2 border-r-2 text-left">Status</th>
+                  <th className="px-4 py-2 border-r-2 text-left">Added By</th>
+                  <th className="px-4 py-2 border-r-2 text-left">Added On</th>
+                  <th className="px-4 py-2 border-r-2 text-left">Modified By</th>
+                  <th className="px-4 py-2 border-r-2 text-left">Modified On</th>
+                  <th className="px-4 py-2 border-r-2 text-left">Action</th>
+                  <th className="px-4 py-2 border-r-2 text-left">Active</th>
                 </tr>
               </thead>
               <tbody className="text-[12px]">
                 {data.map((row, index) => (
                   <tr
                     key={row.id}
-                    className={`border-b ${
-                      index % 2 === 0 ? "bg-gray-50" : "bg-white"
-                    }`}
+                    className={`border-b ${index % 2 === 0 ? "bg-gray-50" : "bg-white"
+                      }`}
                   >
                     <td className="px-4 py-2">{row.code}</td>
                     <td className="px-4 py-2">{row.name}</td>
@@ -350,31 +371,25 @@ const ItemProfileList = () => {
                         ? new Date(row.modified_on).toLocaleDateString()
                         : "-"}
                     </td>
-                    <td className="px-4 py-2 text-[#1883EF] cursor-pointer">
-                      <div
-                        className="w-[17px] h-[17px] bg-[#56A869] rounded-[2.31px] flex items-center justify-center cursor-pointer"
+                    <td className="px-4 py-2 text-[#1883EF]  cursor-pointer">
+                      <button
+                        className="bg-green-500 p-1.5 text-white rounded cursor-pointer"
                         onClick={() => handleOpenModal(row)}
                       >
-                        <img
-                          src={GroupData}
-                          alt="edit"
-                          className="w-[18px] h-[18px]"
-                        />
-                      </div>
+                        <FiEdit className="text-white text-sm" />
+                      </button>
                     </td>
                     <td className="px-4 py-2">
                       <button
                         onClick={() => handleToggleStatus(row)}
-                        className={`w-12 h-6 flex items-center rounded-full p-1 transition-colors ${
-                          row.status === 1 ? "bg-[#0A2478]" : "bg-gray-400"
-                        }`}
+                        className={`w-12 h-6 flex items-center rounded-full p-1 transition-colors ${row.status === 1 ? "bg-[#0A2478]" : "bg-gray-400"
+                          }`}
                       >
                         <div
-                          className={`bg-white w-4 h-4 rounded-full shadow-md transform transition-transform ${
-                            row.status === 1
-                              ? "translate-x-6"
-                              : "translate-x-0"
-                          }`}
+                          className={`bg-white w-4 h-4 rounded-full shadow-md transform transition-transform ${row.status === 1
+                            ? "translate-x-6"
+                            : "translate-x-0"
+                            }`}
                         />
                       </button>
                     </td>
@@ -386,38 +401,11 @@ const ItemProfileList = () => {
         </div>
       </div>
 
-      {/* Pagination - Only show when showPagination is true */}
-      {showPagination && (
-        <div className="flex justify-center items-center px-6 py-3 border-t gap-2">
-          <button
-            className="px-3 py-1 border rounded-md disabled:opacity-50"
-            onClick={() => handlePageChange(currentPage - 1)}
-            disabled={currentPage === 1}
-          >
-            Previous
-          </button>
-          <div className="flex gap-2">
-            {Array.from({ length: totalPages }, (_, i) => i + 1).map((pageNum) => (
-              <button
-                key={pageNum}
-                onClick={() => handlePageChange(pageNum)}
-                className={`px-3 py-1 border rounded-md ${
-                  currentPage === pageNum ? "bg-[#0b2c69] text-white" : ""
-                }`}
-              >
-                {pageNum}
-              </button>
-            ))}
-          </div>
-          <button
-            className="px-3 py-1 border rounded-md disabled:opacity-50"
-            onClick={() => handlePageChange(currentPage + 1)}
-            disabled={currentPage === totalPages}
-          >
-            Next
-          </button>
-        </div>
-      )}
+      <Pagination
+        currentPage={currentPage}
+        totalPages={totalPages}
+        onPageChange={handlePageChange}
+      />
     </div>
   );
 };

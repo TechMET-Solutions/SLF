@@ -1,24 +1,13 @@
-// import React from 'react'
-
-// const BranchProfileList = () => {
-//   return (
-//     <div>
-
-//     </div>
-//   )
-// }
-
-// export default BranchProfileList
-
 import axios from "axios";
 import { useEffect, useState } from "react";
 import { API } from "../api";
 import { fetchBranchesApi, updateBranchApi, updateBranchStatusApi } from "../API/Master/Master_Profile/Branch_Details";
-import GroupData from "../assets/Group 124.svg";
-import Vectorimg from "../assets/Vectorimg.png";
 import Loader from "../Component/Loader";
 import { encryptData } from "../utils/cryptoHelper";
 import { formatIndianDate } from "../utils/Helpers";
+import { FiEdit, FiEye, FiTrash2 } from "react-icons/fi";
+import Pagination from "../Component/Pagination";
+
 const BranchProfileList = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
@@ -35,7 +24,7 @@ const BranchProfileList = () => {
     status: false,
   });
   console.log(branchData, "branchData")
- const [currentPage, setCurrentPage] = useState(1);
+  const [currentPage, setCurrentPage] = useState(1);
   const [totalRecords, setTotalRecords] = useState(0);
   const recordsPerPage = 10;
   const handleChange = (e) => {
@@ -56,7 +45,7 @@ const BranchProfileList = () => {
 
       const url = isEditMode
         ? `${API}/Master/Master_Profile/update_Branch`
-        : `${API}/Master/Master_Profile/add_Branch`  ;
+        : `${API}/Master/Master_Profile/add_Branch`;
 
       await axios.post(url, { data: encrypted });
 
@@ -87,7 +76,7 @@ const BranchProfileList = () => {
   const [isEditMode, setIsEditMode] = useState(false);
   const [editBranchId, setEditBranchId] = useState(null);
   console.log(branches, "branches")
-   const fetchBranches = async (page = 1) => {
+  const fetchBranches = async (page = 1) => {
     setIsLoading(true);
     try {
       const data = await fetchBranchesApi(page, recordsPerPage);
@@ -105,10 +94,15 @@ const BranchProfileList = () => {
   }, [currentPage]);
 
 
-   const totalPages = Math.ceil(totalRecords / recordsPerPage);
+  const totalPages = Math.ceil(totalRecords / recordsPerPage);
 
-  
-   const handleToggleStatus = async (id, currentStatus) => {
+  const handlePageChange = (page) => {
+    if (page < 1 || page > totalPages) return;
+    setCurrentPage(page); // this will trigger useEffect to fetch
+  };
+
+
+  const handleToggleStatus = async (id, currentStatus) => {
     try {
       const newStatus = currentStatus === "1" ? "0" : "1";
 
@@ -143,25 +137,25 @@ const BranchProfileList = () => {
   };
 
   const handleUpdateBranch = async () => {
-  try {
-    const payload = {
-      id: editBranchId,  // ✅ using the stored id
-      ...branchData,
-    };
+    try {
+      const payload = {
+        id: editBranchId,  // ✅ using the stored id
+        ...branchData,
+      };
 
-    const response = await updateBranchApi(payload);
-    console.log("✅ Branch updated:", response);
+      const response = await updateBranchApi(payload);
+      console.log("✅ Branch updated:", response);
 
-    alert("Branch updated successfully!");
-    setIsModalOpen(false);
-    setIsEditMode(false);
-    setEditBranchId(null);
-    fetchBranches(); // refresh list
-  } catch (error) {
-    console.error("Error updating branch:", error);
-    alert("Failed to update branch");
-  }
-};
+      alert("Branch updated successfully!");
+      setIsModalOpen(false);
+      setIsEditMode(false);
+      setEditBranchId(null);
+      fetchBranches(); // refresh list
+    } catch (error) {
+      console.error("Error updating branch:", error);
+      alert("Failed to update branch");
+    }
+  };
   return (
 
     <>
@@ -242,13 +236,13 @@ const BranchProfileList = () => {
                     height: "26.87px",
                     borderRadius: "5px",
                   }}
-                  className="bg-[#0b2c69] text-white text-[11.25px] font-source font-normal flex items-center justify-center"
+                  className="bg-[#0b2c69] cursor-pointer text-white text-[11.25px] font-source font-normal flex items-center justify-center"
                 >
                   Search
                 </button>
 
               </div>
-              <div className="flex justify-center item-center gap-5">
+              <div className="flex justify-center cursor-pointer item-center gap-5">
                 <button
                   style={{
                     width: "74px",
@@ -264,7 +258,7 @@ const BranchProfileList = () => {
                 </button>
 
                 <button
-                  className="text-white px-[6.25px] py-[6.25px] rounded-[3.75px] bg-[#C1121F] w-[74px] h-[24px] opacity-100 text-[10px]"
+                  className="text-white px-[6.25px] cursor-pointer  py-[6.25px] rounded-[3.75px] bg-[#C1121F] w-[74px] h-[24px] opacity-100 text-[10px]"
                 >
                   Exit
                 </button>
@@ -421,36 +415,36 @@ const BranchProfileList = () => {
                   {isEditMode ? "Update" : "Save"}
                 </button> */}
                 {isEditMode ? (
-  <button
-    onClick={handleUpdateBranch}
-    className="bg-blue-600 text-white px-4 py-2 rounded-md"
-  >
-    Update Branch
-  </button>
-) : (
-  <button
-    onClick={handleSave}
-    className="bg-green-600 text-white px-4 py-2 rounded-md"
-  >
-    Add Branch
-  </button>
-)}
+                  <button
+                    onClick={handleUpdateBranch}
+                    className="bg-blue-600 text-white cursor-pointer px-4 py-2 rounded-md"
+                  >
+                    Update Branch
+                  </button>
+                ) : (
+                  <button
+                    onClick={handleSave}
+                    className="bg-green-600 text-white cursor-pointer px-4 py-2 rounded-md"
+                  >
+                    Add Branch
+                  </button>
+                )}
                 <button
-                  className="bg-[#C1121F] text-white px-5 py-2 rounded"
+                  className="bg-[#C1121F] text-white cursor-pointer px-5 py-2 rounded"
                   onClick={() => {
                     setIsModalOpen(false);
                     setIsEditMode(false);
-                     setBranchData({
-        branch_code: "",
-        branch_name: "",
-        print_name: "",
-        address_line1: "",
-        address_line3: "",
-        mobile_no: "",
-        lead_person: "",
-        is_main: false,
-        status: false,
-      });
+                    setBranchData({
+                      branch_code: "",
+                      branch_name: "",
+                      print_name: "",
+                      address_line1: "",
+                      address_line3: "",
+                      mobile_no: "",
+                      lead_person: "",
+                      is_main: false,
+                      status: false,
+                    });
                   }}
                 >
                   Exit
@@ -489,18 +483,17 @@ const BranchProfileList = () => {
 
                     <td className="px-4 py-2 text-[#1883EF] cursor-pointer">
                       <div className="flex gap-2 justify-center">
-                        <div className="w-[17px] h-[17px] bg-[#56A869] rounded-[2.31px] flex items-center  p-0.5 justify-center"
-                          onClick={() => handleEdit(row)}>
-                          <img src={GroupData} alt="logout" className="w-[18px] h-[18px]" />
-                        </div>
-
-                        <div
-                          className="w-[17px] h-[17px] bg-[#646AD9] rounded-[2.31px] flex items-center p-0.5 justify-center cursor-pointer"
-                        // onClick={() => handleEdit(row)}
+                        <button
+                          className="bg-green-500 p-1.5 text-white rounded cursor-pointer"
+                          onClick={() => handleEdit(row)}                        >
+                          <FiEdit className="text-white text-sm" />
+                        </button>
+                        <button
+                          className="bg-red-600 p-1.5 text-white rounded cursor-pointer"
+                        // onClick={() => }
                         >
-                          <img src={Vectorimg} alt="edit" />
-                        </div>
-
+                          <FiEye className="text-white text-sm" />
+                        </button>
                       </div>
                     </td>
 
@@ -537,43 +530,46 @@ const BranchProfileList = () => {
           </div>
           <button className="px-3 py-1 border rounded-md">Next</button>
         </div> */}
- {totalPages > 1 && (
-            <div className="flex justify-center items-center px-6 py-3 border-t gap-2 ">
-              <button
-                className={`px-3 py-1 border rounded-md ${
-                  currentPage === 1 ? "opacity-50 cursor-not-allowed" : ""
+        {/* {totalPages > 1 && (
+          <div className="flex justify-center items-center px-6 py-3 border-t gap-2 ">
+            <button
+              className={`px-3 py-1 border rounded-md ${currentPage === 1 ? "opacity-50 cursor-not-allowed" : ""
                 }`}
-                onClick={() => setCurrentPage((p) => Math.max(p - 1, 1))}
-                disabled={currentPage === 1}
-              >
-                Previous
-              </button>
+              onClick={() => setCurrentPage((p) => Math.max(p - 1, 1))}
+              disabled={currentPage === 1}
+            >
+              Previous
+            </button>
 
-              <div className="flex gap-2">
-                {Array.from({ length: totalPages }, (_, i) => i + 1).map((page) => (
-                  <button
-                    key={page}
-                    onClick={() => setCurrentPage(page)}
-                    className={`px-3 py-1 border rounded-md ${
-                      currentPage === page ? "bg-[#0b2c69] text-white" : ""
+            <div className="flex gap-2">
+              {Array.from({ length: totalPages }, (_, i) => i + 1).map((page) => (
+                <button
+                  key={page}
+                  onClick={() => setCurrentPage(page)}
+                  className={`px-3 py-1 border rounded-md ${currentPage === page ? "bg-[#0b2c69] text-white" : ""
                     }`}
-                  >
-                    {page}
-                  </button>
-                ))}
-              </div>
-
-              <button
-                className={`px-3 py-1 border rounded-md ${
-                  currentPage === totalPages ? "opacity-50 cursor-not-allowed" : ""
-                }`}
-                onClick={() => setCurrentPage((p) => Math.min(p + 1, totalPages))}
-                disabled={currentPage === totalPages}
-              >
-                Next
-              </button>
+                >
+                  {page}
+                </button>
+              ))}
             </div>
-          )}
+
+            <button
+              className={`px-3 py-1 border rounded-md ${currentPage === totalPages ? "opacity-50 cursor-not-allowed" : ""
+                }`}
+              onClick={() => setCurrentPage((p) => Math.min(p + 1, totalPages))}
+              disabled={currentPage === totalPages}
+            >
+              Next
+            </button>
+          </div>
+        )} */}
+
+        <Pagination
+          currentPage={currentPage}
+          totalPages={totalPages}
+          onPageChange={handlePageChange}
+        />
       </div>
 
 

@@ -8,20 +8,11 @@ import {
   updateAreaApi,
   deleteAreaApi,
 } from "../API/Master/Master_Profile/Area_Details";
+import Pagination from "../Component/Pagination";
 
 const indianStatesAndUTs = [
-  // States
-  "Andhra Pradesh", "Arunachal Pradesh", "Assam", "Bihar", "Chhattisgarh",
-  "Goa", "Gujarat", "Haryana", "Himachal Pradesh", "Jharkhand",
-  "Karnataka", "Kerala", "Madhya Pradesh", "Maharashtra", "Manipur",
-  "Meghalaya", "Mizoram", "Nagaland", "Odisha", "Punjab",
-  "Rajasthan", "Sikkim", "Tamil Nadu", "Telangana", "Tripura",
-  "Uttar Pradesh", "Uttarakhand", "West Bengal",
-
-  // Union Territories
-  "Andaman and Nicobar Islands", "Chandigarh",
-  "Dadra and Nagar Haveli and Daman and Diu", "Delhi",
-  "Jammu and Kashmir", "Ladakh", "Lakshadweep", "Puducherry"
+  "Andhra Pradesh", "Arunachal Pradesh", "Assam", "Bihar", "Chhattisgarh", "Goa", "Gujarat", "Haryana", "Himachal Pradesh", "Jharkhand", "Karnataka", "Kerala", "Madhya Pradesh", "Maharashtra", "Manipur", "Meghalaya", "Mizoram", "Nagaland", "Odisha", "Punjab", "Rajasthan", "Sikkim", "Tamil Nadu", "Telangana", "Tripura", "Uttar Pradesh", "Uttarakhand", "West Bengal",
+  "Andaman and Nicobar Islands", "Chandigarh", "Dadra and Nagar Haveli and Daman and Diu", "Delhi", "Jammu and Kashmir", "Ladakh", "Lakshadweep", "Puducherry"
 ];
 
 const Area = () => {
@@ -169,13 +160,13 @@ const Area = () => {
           <h2 className="text-red-600 font-bold text-[20px]">Area</h2>
           <div className="flex gap-3">
             <button
-              className="bg-[#0A2478] text-white text-[11.25px] rounded px-3 py-1"
+              className="bg-[#0A2478] text-white text-sm rounded px-4 py-1 cursor-pointer"
               onClick={() => handleOpenModal(null)}
             >
               Add
             </button>
             <button
-              className="bg-[#C1121F] text-white text-[10px] rounded px-3 py-1"
+              className="bg-[#C1121F] text-white text-sm rounded px-4 py-1 cursor-pointer"
               onClick={() => navigate("/dashboard")}
             >
               Exit
@@ -255,13 +246,13 @@ const Area = () => {
 
             <div className="flex justify-center items-center gap-4 mt-6">
               <button
-                className="bg-[#0A2478] text-white px-4 py-2 rounded"
+                className="bg-[#0A2478] text-white px-4 py-2 rounded cursor-pointer"
                 onClick={handleSave}
               >
                 Submit
               </button>
               <button
-                className="bg-[#C1121F] text-white px-4 py-2 rounded"
+                className="bg-[#C1121F] text-white px-4 py-2 rounded cursor-pointer"
                 onClick={() => setIsModalOpen(false)}
               >
                 Close
@@ -284,13 +275,13 @@ const Area = () => {
             </div>
             <div className="mt-6 flex flex-col items-center gap-4">
               <button
-                className="bg-[#F11717] text-white px-5 py-2 rounded text-[18px]"
+                className="bg-[#F11717] text-white px-5 py-2 rounded text-[18px] cursor-pointer"
                 onClick={handleDeleteConfirm}
               >
                 Ok
               </button>
               <button
-                className="bg-[#0A2478] text-white px-5 py-2 rounded text-[18px]"
+                className="bg-[#0A2478] text-white px-5 py-2 rounded text-[18px] cursor-pointer"
                 onClick={() => setDeleteModalOpen(false)}
               >
                 Cancel
@@ -311,13 +302,13 @@ const Area = () => {
             <table className="w-full border-collapse">
               <thead className="bg-[#0A2478] text-white text-sm">
                 <tr>
-                  <th className="px-4 py-2 text-left">Sr No</th>
-                  <th className="px-4 py-2 text-left">Area/Locality</th>
-                  <th className="px-4 py-2 text-left">City</th>
-                  <th className="px-4 py-2 text-left">State</th>
-                  <th className="px-4 py-2 text-left">Pincode</th>
-                  <th className="px-4 py-2 text-left">Landmark</th>
-                  <th className="px-4 py-2 text-center">Action</th>
+                  <th className="px-4 py-2 border-r-2 text-left">Sr No</th>
+                  <th className="px-4 py-2 border-r-2 text-left">Area/Locality</th>
+                  <th className="px-4 py-2 border-r-2 text-left">City</th>
+                  <th className="px-4 py-2 border-r-2 text-left">State</th>
+                  <th className="px-4 py-2 border-r-2 text-left">Pincode</th>
+                  <th className="px-4 py-2 border-r-2 text-left">Landmark</th>
+                  <th className="px-4 py-2 border-r-2 text-center">Action</th>
                 </tr>
               </thead>
               <tbody className="text-sm">
@@ -332,16 +323,16 @@ const Area = () => {
                     <td className="px-4 py-2 text-center">
                       <div className="flex gap-2 justify-center">
                         <button
-                          className="bg-green-500 p-1.5 text-white rounded"
+                          className="bg-green-500 p-1.5 text-white rounded cursor-pointer"
                           onClick={() => handleOpenModal(row)}
                         >
-                          <FiEdit />
+                          <FiEdit className="text-white text-sm"/>
                         </button>
                         <button
-                          className="bg-red-600 p-1.5 text-white rounded"
+                          className="bg-red-600 p-1.5 text-white rounded cursor-pointer"
                           onClick={() => handleDeleteClick(row.id)}
                         >
-                          <FiTrash2 />
+                          <FiTrash2 className="text-white text-sm"/>
                         </button>
                       </div>
                     </td>
@@ -353,38 +344,12 @@ const Area = () => {
         </div>
       </div>
 
-      {/* Pagination - Only show when showPagination is true */}
-      {showPagination && (
-        <div className="flex justify-center items-center px-6 py-3 border-t gap-2">
-          <button
-            className="px-3 py-1 border rounded-md disabled:opacity-50"
-            onClick={() => handlePageChange(currentPage - 1)}
-            disabled={currentPage === 1}
-          >
-            Previous
-          </button>
-          <div className="flex gap-2">
-            {Array.from({ length: totalPages }, (_, i) => i + 1).map((pageNum) => (
-              <button
-                key={pageNum}
-                onClick={() => handlePageChange(pageNum)}
-                className={`px-3 py-1 border rounded-md ${
-                  currentPage === pageNum ? "bg-[#0b2c69] text-white" : ""
-                }`}
-              >
-                {pageNum}
-              </button>
-            ))}
-          </div>
-          <button
-            className="px-3 py-1 border rounded-md disabled:opacity-50"
-            onClick={() => handlePageChange(currentPage + 1)}
-            disabled={currentPage === totalPages}
-          >
-            Next
-          </button>
-        </div>
-      )}
+     <Pagination
+        currentPage={currentPage}
+        totalPages={totalPages}
+        onPageChange={handlePageChange}
+      />
+
     </div>
   );
 };

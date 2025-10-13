@@ -71,11 +71,11 @@ const ChargesProfileList = () => {
                         <div className="flex gap-3">
                             <button
                                 onClick={() => setIsModalOpen(true)}
-                                className="bg-[#0A2478] text-white text-[11.25px] w-[74px] h-[24px] rounded flex items-center justify-center"
+                                className="bg-[#0A2478] cursor-pointer text-white text-[11.25px] w-[74px] h-[24px] rounded flex items-center justify-center"
                             >
                                 Add
                             </button>
-                            <button className="bg-[#C1121F] text-white text-[10px] w-[74px] h-[24px] rounded">
+                            <button className="bg-[#C1121F] cursor-pointer text-white text-[10px] w-[74px] h-[24px] rounded">
                                 Exit
                             </button>
                         </div>
@@ -132,13 +132,13 @@ const ChargesProfileList = () => {
 
                         <div className="flex justify-center  gap-3 my-6">
                             <button
-                                className="bg-[#0A2478] text-white w-[92px] h-[30px] rounded"
+                                className="bg-[#0A2478] cursor-pointer text-white w-[92px] h-[30px] rounded"
                                 onClick={() => setIsModalOpen(false)}
                             >
                                 Save
                             </button>
                             <button
-                                className="bg-[#C1121F] text-white w-[92px] h-[30px] rounded"
+                                className="bg-[#C1121F] cursor-pointer text-white w-[92px] h-[30px] rounded"
                                 onClick={() => setIsModalOpen(false)}
                             >
                                 Exit
@@ -187,21 +187,11 @@ const ChargesProfileList = () => {
                                             </div>
                                         </div>
                                     </td>
-                                    {/* <td className="px-4 py-2">
-                                        <div className="flex items-center gap-2 justify-center">
-                                            <img src={GroupData} alt="edit" className="w-[18px] h-[18px] bg-green-400 p-0.5  cursor-pointer" />
-                                            <img src={EyeData} alt="view" className="w-[18px] h-[18px] bg-blue-400 p-0.5  cursor-pointer" />
-                                            <img src={DeleteData} alt="delete" className="w-[18px] h-[18px] bg-red-400  p-0.5 cursor-pointer" />
-                                        </div>
-                                    </td> */}
                                     <td className="px-4 py-2">
                                         <button
                                             onClick={() => handleToggle(row.id)}
-                                            className={`w-12 h-6 flex items-center rounded-full p-1 transition-colors ${row.isActive ? "bg-[#0A2478]" : "bg-gray-300"}`}
-                                        >
-                                            <div
-                                                className={`bg-white w-4 h-4 rounded-full shadow-md transform transition-transform ${row.isActive ? "translate-x-6" : "translate-x-0"}`}
-                                            />
+                                            className={`w-12 h-6 flex cursor-pointer items-center rounded-full p-1 transition-colors ${row.isActive ? "bg-[#0A2478]" : "bg-gray-300"}`}>
+                                            <div className={`bg-white w-4 h-4 rounded-full shadow-md transform transition-transform ${row.isActive ? "translate-x-6" : "translate-x-0"}`}/>
                                         </button>
                                     </td>
                                 </tr>
