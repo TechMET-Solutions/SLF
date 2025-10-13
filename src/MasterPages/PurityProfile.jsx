@@ -1,10 +1,13 @@
 import { useEffect, useState } from "react";
-import axios from "axios";
-import { encryptData, decryptData } from "../utils/cryptoHelper";
-import { API } from "../api";
+import {
+  fetchPuritiesApi,
+  addPurityApi,
+  updatePurityApi,
+  updatePurityStatusApi,
+  deletePurityApi,
+} from "../API/Master/Master_Profile/Purity_Details";
 import { FiEdit, FiTrash2 } from "react-icons/fi";
 import blockimg from "../assets/blockimg.png";
-
 
 const PurityProfile = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -22,17 +25,30 @@ const PurityProfile = () => {
     status: 1,
   });
 
+  // Pagination states
+  const [currentPage, setCurrentPage] = useState(1);
+  const [totalItems, setTotalItems] = useState(0);
+  const [showPagination, setShowPagination] = useState(false);
+  const itemsPerPage = 10;
 
-
-  // 📌 Fetch all records
-  const fetchPurities = async () => {
+  // 📌 Fetch all records with pagination
+  const fetchPurities = async (page = 1) => {
     setIsLoading(true);
     try {
-      const res = await axios.get(`${API}/Master/Master_Profile/get-purity`);
-      const decrypted = decryptData(res.data.data);
-      setData(decrypted || []);
+      const result = await fetchPuritiesApi(page, itemsPerPage);
+      if (result?.items) {
+        setData(result.items);
+        setTotalItems(result.total);
+        setCurrentPage(result.page);
+        setShowPagination(result.showPagination || false);
+      } else {
+        setData([]);
+        setShowPagination(false);
+      }
     } catch (err) {
       console.error("❌ Error fetching:", err);
+      setData([]);
+      setShowPagination(false);
     } finally {
       setIsLoading(false);
     }
@@ -46,20 +62,10 @@ const PurityProfile = () => {
   const handleToggleStatus = async (item) => {
     try {
       const newStatus = item.status === 1 ? 0 : 1;
-      const payload = { id: item.id, status: newStatus };
-      const encryptedPayload = encryptData(payload);
-
-      const response = await axios.put(
-        `${API}/Master/Master_Profile/update-purity`,
-        { data: encryptedPayload },
-        { headers: { "Content-Type": "application/json" } }
-      );
-
-      if (response.status === 200) {
-        fetchPurities();
-      }
+      await updatePurityStatusApi(item.id, newStatus);
+      fetchPurities(currentPage);
     } catch (error) {
-      console.error("❌ Error toggling status:", error.response || error);
+      console.error("❌ Error toggling status:", error);
     }
   };
 
@@ -106,32 +112,17 @@ const PurityProfile = () => {
         status: formData.status,
       };
 
-      let url;
-      let method;
-
       if (isEditMode && formData.id) {
         payload.id = formData.id;
-        url = `${API}/Master/Master_Profile/update-purity`;
-        method = "put";
+        await updatePurityApi(payload);
       } else {
-        url = `${API}/Master/Master_Profile/add-purity`;
-        method = "post";
+        await addPurityApi(payload);
       }
 
-      const encryptedPayload = encryptData(payload);
-      const response = await axios({
-        method,
-        url,
-        headers: { "Content-Type": "application/json" },
-        data: { data: encryptedPayload },
-      });
-
-      if (response.status === 200) {
-        setIsModalOpen(false);
-        fetchPurities();
-      }
+      setIsModalOpen(false);
+      fetchPurities(currentPage);
     } catch (error) {
-      console.error("❌ Error saving item:", error.response || error);
+      console.error("❌ Error saving item:", error);
     } finally {
       setIsLoading(false);
     }
@@ -146,31 +137,26 @@ const PurityProfile = () => {
   // 🟥 Confirm delete
   const handleDeleteConfirm = async () => {
     try {
-      const payload = { id: deleteId }; // assuming `deleteId` is defined
-      const encryptedPayload = encryptData(payload);
-
-      const response = await axios.post(
-        `${API}/Master/Master_Profile/delete-purity`,
-        { data: encryptedPayload },
-        { headers: { "Content-Type": "application/json" } }
-      );
-
-      if (response.status === 200) {
-        setDeleteModalOpen(false);
-        setDeleteId(null);
-        fetchPurities(); // Refresh the list
-      }
+      await deletePurityApi(deleteId);
+      setDeleteModalOpen(false);
+      setDeleteId(null);
+      fetchPurities(currentPage);
     } catch (error) {
-      console.error("❌ Error deleting purity:", error.response || error);
+      console.error("❌ Error deleting purity:", error);
       alert("Error deleting purity");
     }
   };
 
+  // 🔹 Pagination Controls
+  const totalPages = Math.ceil(totalItems / itemsPerPage);
 
-
+  const handlePageChange = (page) => {
+    if (page < 1 || page > totalPages) return;
+    fetchPurities(page);
+  };
 
   return (
-    <div className=" min-h-screen w-full">
+    <div className="min-h-screen w-full">
       {/* middletopbar */}
       <div className="flex justify-center">
         <div className="flex justify-center mt-5">
@@ -191,7 +177,6 @@ const PurityProfile = () => {
             </div>
           </div>
         </div>
-
       </div>
 
       {/* modelforAdd */}
@@ -265,19 +250,18 @@ const PurityProfile = () => {
 
       {/* 🗑️ Delete Confirmation Modal */}
       {deleteModalOpen && (
-         <div className="fixed inset-0 flex items-center justify-center z-50 bg-[#0101017A] backdrop-blur-[6.8px]">
+        <div className="fixed inset-0 flex items-center justify-center z-50 bg-[#0101017A] backdrop-blur-[6.8px]">
           <div className="bg-white w-[396.27px] rounded-lg shadow-lg h-[386px] p-5">
-
             <div className="flex justify-center items-center mt-2">
               <img src={blockimg} alt="action" className="w-[113px] h-[113px]" />
             </div>
 
             <div className="mt-10">
               <p className="font-[Source_Sans_3] font-normal text-[21.79px] leading-none text-center">
-                Are you sure  to delete this List
+                Are you sure to delete this List
               </p>
               <p className="font-[Source_Sans_3] font-normal text-[17.43px] leading-none text-center text-[#7C7C7C] mt-2">
-                you won’t be able to revert this action
+                you won't be able to revert this action
               </p>
             </div>
 
@@ -300,91 +284,109 @@ const PurityProfile = () => {
                 </button>
               </div>
             </div>
-
           </div>
         </div>
-
       )}
 
       {/* Table */}
       <div className="flex justify-center">
         <div className="overflow-x-auto mt-5 w-[1290px] h-[500px]">
-          <table className="w-full border-collapse">
-            <thead className="bg-[#0A2478] text-white text-sm">
-              <tr>
-                <th className="px-4 py-2 text-left border-r border-gray-300 text-[13px]">Purity Name</th>
-                <th className="px-4 py-2 text-left border-r border-gray-300 text-[13px]">Purity Percent</th>
-                <th className="px-4 py-2 text-left border-r border-gray-300 text-[13px]">Product Name</th>
-                <th className="px-4 py-2 text-left border-r border-gray-300 text-[13px]">Added By</th>
-                <th className="px-4 py-2 text-left border-r border-gray-300 text-[13px]">Action</th>
-                <th className="px-4 py-2 text-left border-r border-gray-300 text-[13px]">Active</th>
-              </tr>
-            </thead>
-            <tbody className="text-[12px]">
-              {data.map((row, index) => (
-                <tr
-                  key={index}
-                  className={`border-b ${index % 2 === 0 ? "bg-gray-50" : "bg-white"
-                    }`}
-                >
-                  <td className="px-4 py-2">{row.purity_name}</td>
-                  <td className="px-4 py-2">{row.purity_percent}</td>
-                  <td className="px-4 py-2">{row.loan_type}</td>
-                  <td className="px-4 py-2">{row.added_by}</td>
-                  <td className="px-4 py-2 text-center">
-                    <div className="flex gap-2 justify-center">
-                      <button
-                        className="bg-[#3dbd5a] p-1.5 text-white rounded-sm"
-                        onClick={() => handleOpenModal(row)}
-                      >
-                        <FiEdit />
-                      </button>
-                      <button
-                        className="bg-[#f51111ec] p-1.5 text-white rounded-sm"
-                        onClick={() => handleDeleteClick(row.id)}
-                      >
-                        <FiTrash2 />
-                      </button>
-                    </div>
-                  </td>
-                  <td className="px-4 py-2 text-[#1883EF] cursor-pointer">
-                    <button
-                      onClick={() => handleToggleStatus(row)}
-                      className={`w-12 h-6 flex items-center rounded-full p-1 transition-colors duration-300 ease-in-out ${row.status === 1 ? "bg-[#0A2478]" : "bg-gray-400"
-                        }`}
-                    >
-                      <div
-                        className={`bg-white w-4 h-4 rounded-full shadow-md transform transition-transform duration-300 ease-in-out ${row.status === 1 ? "translate-x-6" : "translate-x-0"
-                          }`}
-                      />
-                    </button>
-                  </td>
+          {data.length === 0 && !isLoading ? (
+            <div className="flex justify-center items-center h-full">
+              <p className="text-lg text-gray-500">No Data Found</p>
+            </div>
+          ) : (
+            <table className="w-full border-collapse">
+              <thead className="bg-[#0A2478] text-white text-sm">
+                <tr>
+                  <th className="px-4 py-2 text-left border-r border-gray-300 text-[13px]">Purity Name</th>
+                  <th className="px-4 py-2 text-left border-r border-gray-300 text-[13px]">Purity Percent</th>
+                  <th className="px-4 py-2 text-left border-r border-gray-300 text-[13px]">Product Name</th>
+                  <th className="px-4 py-2 text-left border-r border-gray-300 text-[13px]">Added By</th>
+                  <th className="px-4 py-2 text-left border-r border-gray-300 text-[13px]">Action</th>
+                  <th className="px-4 py-2 text-left border-r border-gray-300 text-[13px]">Active</th>
                 </tr>
-              ))}
-            </tbody>
-          </table>
-          {data.length === 0 && !isLoading && (
-            <div className="text-center text-gray-500 mt-5">No records found</div>
+              </thead>
+              <tbody className="text-[12px]">
+                {data.map((row, index) => (
+                  <tr
+                    key={index}
+                    className={`border-b ${index % 2 === 0 ? "bg-gray-50" : "bg-white"
+                      }`}
+                  >
+                    <td className="px-4 py-2">{row.purity_name}</td>
+                    <td className="px-4 py-2">{row.purity_percent}</td>
+                    <td className="px-4 py-2">{row.loan_type}</td>
+                    <td className="px-4 py-2">{row.added_by}</td>
+                    <td className="px-4 py-2 text-center">
+                      <div className="flex gap-2 justify-center">
+                        <button
+                          className="bg-[#3dbd5a] p-1.5 text-white rounded-sm"
+                          onClick={() => handleOpenModal(row)}
+                        >
+                          <FiEdit />
+                        </button>
+                        <button
+                          className="bg-[#f51111ec] p-1.5 text-white rounded-sm"
+                          onClick={() => handleDeleteClick(row.id)}
+                        >
+                          <FiTrash2 />
+                        </button>
+                      </div>
+                    </td>
+                    <td className="px-4 py-2 text-[#1883EF] cursor-pointer">
+                      <button
+                        onClick={() => handleToggleStatus(row)}
+                        className={`w-12 h-6 flex items-center rounded-full p-1 transition-colors duration-300 ease-in-out ${row.status === 1 ? "bg-[#0A2478]" : "bg-gray-400"
+                          }`}
+                      >
+                        <div
+                          className={`bg-white w-4 h-4 rounded-full shadow-md transform transition-transform duration-300 ease-in-out ${row.status === 1 ? "translate-x-6" : "translate-x-0"
+                            }`}
+                        />
+                      </button>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
           )}
         </div>
       </div>
 
-
-
-      {/* Pagination */}
-      <div className="flex justify-center items-center px-6 py-3 border-t gap-2">
-        <button className="px-3 py-1 border rounded-md">Previous</button>
-        <div className="flex gap-2">
-          <button className="px-3 py-1 border bg-[#0b2c69] text-white rounded-md">1</button>
-          <button className="px-3 py-1 border rounded-md">2</button>
-          <button className="px-3 py-1 border rounded-md">3</button>
-          <button className="px-3 py-1 border rounded-md">...</button>
-          <button className="px-3 py-1 border rounded-md">10</button>
+      {/* Pagination - Only show when showPagination is true */}
+      {showPagination && (
+        <div className="flex justify-center items-center px-6 py-3 border-t gap-2">
+          <button
+            className="px-3 py-1 border rounded-md disabled:opacity-50"
+            onClick={() => handlePageChange(currentPage - 1)}
+            disabled={currentPage === 1}
+          >
+            Previous
+          </button>
+          <div className="flex gap-2">
+            {Array.from({ length: totalPages }, (_, i) => i + 1).map((pageNum) => (
+              <button
+                key={pageNum}
+                onClick={() => handlePageChange(pageNum)}
+                className={`px-3 py-1 border rounded-md ${
+                  currentPage === pageNum ? "bg-[#0b2c69] text-white" : ""
+                }`}
+              >
+                {pageNum}
+              </button>
+            ))}
+          </div>
+          <button
+            className="px-3 py-1 border rounded-md disabled:opacity-50"
+            onClick={() => handlePageChange(currentPage + 1)}
+            disabled={currentPage === totalPages}
+          >
+            Next
+          </button>
         </div>
-        <button className="px-3 py-1 border rounded-md">Next</button>
-      </div>
-
-    </div >
+      )}
+    </div>
   );
 };
 

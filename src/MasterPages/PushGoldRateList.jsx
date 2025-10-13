@@ -1,25 +1,39 @@
 import { useState, useEffect } from "react";
-import axios from "axios";
-import { encryptData, decryptData } from "../utils/cryptoHelper";
+import { fetchGoldRatesApi, addGoldRateApi } from "../API/Master/Master_Profile/Gold_Rate_Details";
 import { formatIndianDate } from "../utils/Helpers";
-import { API } from "../api";
 
 const PushGoldRateList = () => {
   const [data, setData] = useState([]);
   const [pushDate, setPushDate] = useState("");
   const [goldRate, setGoldRate] = useState("");
 
+  // Pagination states
+  const [currentPage, setCurrentPage] = useState(1);
+  const [totalItems, setTotalItems] = useState(0);
+  const [showPagination, setShowPagination] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
+  const itemsPerPage = 10;
 
-  // 🔹 Fetch gold rates
-  const fetchGoldRates = async () => {
+  // 🔹 Fetch gold rates with pagination
+  const fetchGoldRates = async (page = 1) => {
+    setIsLoading(true);
     try {
-      const res = await axios.get(
-        `${API}/Master/Master_Profile/get_gold_rate_list`
-      );
-      const decrypted = decryptData(res.data.data);
-      if (decrypted) setData(decrypted);
+      const result = await fetchGoldRatesApi(page, itemsPerPage);
+      if (result?.items) {
+        setData(result.items);
+        setTotalItems(result.total);
+        setCurrentPage(result.page);
+        setShowPagination(result.showPagination || false);
+      } else {
+        setData([]);
+        setShowPagination(false);
+      }
     } catch (err) {
       console.error("❌ Fetch Error:", err);
+      setData([]);
+      setShowPagination(false);
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -35,22 +49,21 @@ const PushGoldRateList = () => {
     };
 
     try {
-      const encrypted = encryptData(payload);
-      const res = await axios.post(
-        `${API}/Master/Master_Profile/gold_rate`,
-        { data: encrypted },
-        { headers: { "Content-Type": "application/json" } }
-      );
-
-      const decryptedRes = decryptData(res.data.data);
-      if (decryptedRes?.message) {
-        fetchGoldRates(); // refresh table
-        setGoldRate("");
-        setPushDate("");
-      }
+      await addGoldRateApi(payload);
+      fetchGoldRates(currentPage); // refresh table with current page
+      setGoldRate("");
+      setPushDate("");
     } catch (err) {
       console.error("❌ Save Error:", err.response?.data || err.message);
     }
+  };
+
+  // 🔹 Pagination Controls
+  const totalPages = Math.ceil(totalItems / itemsPerPage);
+
+  const handlePageChange = (page) => {
+    if (page < 1 || page > totalPages) return;
+    fetchGoldRates(page);
   };
 
   useEffect(() => {
@@ -110,33 +123,72 @@ const PushGoldRateList = () => {
       {/* Table */}
       <div className="flex justify-center">
         <div className="overflow-x-auto mt-5 w-[1290px] h-[500px]">
-          <table className="w-full border-collapse">
-            <thead className="bg-[#0A2478] text-white text-sm">
-              <tr>
-                <th className="px-4 py-2 text-left border-r">ID</th>
-                <th className="px-4 py-2 text-left border-r">Push Date</th>
-                <th className="px-4 py-2 text-left border-r">Gold Rate</th>
-                <th className="px-4 py-2 text-left border-r">Added On</th>
-                <th className="px-4 py-2 text-left border-r">Added By</th>
-              </tr>
-            </thead>
-            <tbody className="text-[12px]">
-              {data.map((row, index) => (
-                <tr
-                  key={row.id}
-                  className={`border-b ${index % 2 === 0 ? "bg-gray-50" : "bg-white"}`}
-                >
-                  <td className="px-4 py-2">{row.id}</td>
-                  <td className="px-4 py-2">{formatIndianDate(row.push_date)}</td>
-                  <td className="px-4 py-2">{row.gold_rate}</td>
-                  <td className="px-4 py-2">{formatIndianDate(row.added_on)}</td>
-                  <td className="px-4 py-2">{row.added_by}</td>
+          {data.length === 0 && !isLoading ? (
+            <div className="flex justify-center items-center h-full">
+              <p className="text-lg text-gray-500">No Data Found</p>
+            </div>
+          ) : (
+            <table className="w-full border-collapse">
+              <thead className="bg-[#0A2478] text-white text-sm">
+                <tr>
+                  <th className="px-4 py-2 text-left border-r">ID</th>
+                  <th className="px-4 py-2 text-left border-r">Push Date</th>
+                  <th className="px-4 py-2 text-left border-r">Gold Rate</th>
+                  <th className="px-4 py-2 text-left border-r">Added On</th>
+                  <th className="px-4 py-2 text-left border-r">Added By</th>
                 </tr>
-              ))}
-            </tbody>
-          </table>
+              </thead>
+              <tbody className="text-[12px]">
+                {data.map((row, index) => (
+                  <tr
+                    key={row.id}
+                    className={`border-b ${index % 2 === 0 ? "bg-gray-50" : "bg-white"}`}
+                  >
+                    <td className="px-4 py-2">{row.id}</td>
+                    <td className="px-4 py-2">{formatIndianDate(row.push_date)}</td>
+                    <td className="px-4 py-2">{row.gold_rate}</td>
+                    <td className="px-4 py-2">{formatIndianDate(row.added_on)}</td>
+                    <td className="px-4 py-2">{row.added_by}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          )}
         </div>
       </div>
+
+      {/* Pagination - Only show when showPagination is true */}
+      {showPagination && (
+        <div className="flex justify-center items-center px-6 py-3 border-t gap-2">
+          <button
+            className="px-3 py-1 border rounded-md disabled:opacity-50"
+            onClick={() => handlePageChange(currentPage - 1)}
+            disabled={currentPage === 1}
+          >
+            Previous
+          </button>
+          <div className="flex gap-2">
+            {Array.from({ length: totalPages }, (_, i) => i + 1).map((pageNum) => (
+              <button
+                key={pageNum}
+                onClick={() => handlePageChange(pageNum)}
+                className={`px-3 py-1 border rounded-md ${
+                  currentPage === pageNum ? "bg-[#0b2c69] text-white" : ""
+                }`}
+              >
+                {pageNum}
+              </button>
+            ))}
+          </div>
+          <button
+            className="px-3 py-1 border rounded-md disabled:opacity-50"
+            onClick={() => handlePageChange(currentPage + 1)}
+            disabled={currentPage === totalPages}
+          >
+            Next
+          </button>
+        </div>
+      )}
     </div>
   );
 };
