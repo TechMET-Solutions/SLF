@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import { fetchGoldRatesApi, addGoldRateApi } from "../API/Master/Master_Profile/Gold_Rate_Details";
 import { formatIndianDate } from "../utils/Helpers";
+import Pagination from "../Component/Pagination";
 
 const PushGoldRateList = () => {
   const [data, setData] = useState([]);
@@ -105,12 +106,12 @@ const PushGoldRateList = () => {
             <div className="flex gap-3">
               <button
                 onClick={handleSave}
-                className="bg-[#0A2478] text-white text-[11.25px] w-[74px] h-[24px] rounded flex items-center justify-center"
+                className="bg-[#0A2478] cursor-pointer text-white text-[11.25px] w-[74px] h-[24px] rounded flex items-center justify-center"
               >
                 Save
               </button>
               <button
-                className="bg-[#C1121F] text-white text-[10px] w-[74px] h-[24px] rounded"
+                className="bg-[#C1121F] cursor-pointer text-white text-[10px] w-[74px] h-[24px] rounded"
                 onClick={() => window.history.back()}
               >
                 Exit
@@ -156,39 +157,11 @@ const PushGoldRateList = () => {
           )}
         </div>
       </div>
-
-      {/* Pagination - Only show when showPagination is true */}
-      {showPagination && (
-        <div className="flex justify-center items-center px-6 py-3 border-t gap-2">
-          <button
-            className="px-3 py-1 border rounded-md disabled:opacity-50"
-            onClick={() => handlePageChange(currentPage - 1)}
-            disabled={currentPage === 1}
-          >
-            Previous
-          </button>
-          <div className="flex gap-2">
-            {Array.from({ length: totalPages }, (_, i) => i + 1).map((pageNum) => (
-              <button
-                key={pageNum}
-                onClick={() => handlePageChange(pageNum)}
-                className={`px-3 py-1 border rounded-md ${
-                  currentPage === pageNum ? "bg-[#0b2c69] text-white" : ""
-                }`}
-              >
-                {pageNum}
-              </button>
-            ))}
-          </div>
-          <button
-            className="px-3 py-1 border rounded-md disabled:opacity-50"
-            onClick={() => handlePageChange(currentPage + 1)}
-            disabled={currentPage === totalPages}
-          >
-            Next
-          </button>
-        </div>
-      )}
+      <Pagination
+        currentPage={currentPage}
+        totalPages={totalPages}
+        onPageChange={handlePageChange}
+      />
     </div>
   );
 };

@@ -8,6 +8,7 @@ import {
 } from "../API/Master/Master_Profile/Purity_Details";
 import { FiEdit, FiTrash2 } from "react-icons/fi";
 import blockimg from "../assets/blockimg.png";
+import Pagination from "../Component/Pagination";
 
 const PurityProfile = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -167,11 +168,11 @@ const PurityProfile = () => {
             <div className="flex gap-5">
               <button
                 onClick={() => handleOpenModal()}
-                className="w-[74px] h-[24px] rounded bg-[#0A2478] text-white text-[11.25px] flex items-center justify-center"
+                className="w-[74px] h-[24px]  cursor-pointer rounded bg-[#0A2478] text-white text-[11.25px] flex items-center justify-center"
               >
                 Add
               </button>
-              <button className="w-[74px] h-[24px] rounded bg-[#C1121F] text-white text-[10px]">
+              <button className="w-[74px] h-[24px] cursor-pointer  rounded bg-[#C1121F] text-white text-[10px]">
                 Exit
               </button>
             </div>
@@ -232,14 +233,14 @@ const PurityProfile = () => {
               <button
                 disabled={isLoading}
                 onClick={handleSave}
-                className={`bg-[#0A2478] text-white px-5 py-2 rounded ${isLoading ? "opacity-50 cursor-not-allowed" : "hover:bg-[#081b5c]"
+                className={`bg-[#0A2478] cursor-pointer text-white px-5 py-2 rounded ${isLoading ? "opacity-50 cursor-not-allowed" : "hover:bg-[#081b5c]"
                   }`}
               >
                 {isLoading ? "Saving..." : isEditMode ? "Update" : "Save"}
               </button>
               <button
                 onClick={() => setIsModalOpen(false)}
-                className="bg-[#C1121F] text-white px-5 py-2 rounded hover:bg-[#a50f19] transition"
+                className="bg-[#C1121F] cursor-pointer text-white px-5 py-2 rounded hover:bg-[#a50f19] transition"
               >
                 Exit
               </button>
@@ -268,7 +269,7 @@ const PurityProfile = () => {
             <div className="mt-5 grid justify-center">
               <div className="pl-3">
                 <button
-                  className="bg-[#F11717] text-white font-[Source_Sans_3] font-semibold text-[19.61px] leading-none text-center w-[67.53px] h-[30.57px] rounded-[2.67px]"
+                  className="bg-[#F11717] cursor-pointer text-white font-[Source_Sans_3] font-semibold text-[19.61px] leading-none text-center w-[67.53px] h-[30.57px] rounded-[2.67px]"
                   onClick={handleDeleteConfirm}
                 >
                   Ok
@@ -277,7 +278,7 @@ const PurityProfile = () => {
 
               <div className="mt-4">
                 <button
-                  className="bg-[#0A2478] text-white text-[19px] w-[100.66px] h-[30.57px] rounded-[2.67px] opacity-100"
+                  className="bg-[#0A2478] cursor-pointer text-white text-[19px] w-[100.66px] h-[30.57px] rounded-[2.67px] opacity-100"
                   onClick={() => setDeleteModalOpen(false)}
                 >
                   Cancel
@@ -321,13 +322,13 @@ const PurityProfile = () => {
                     <td className="px-4 py-2 text-center">
                       <div className="flex gap-2 justify-center">
                         <button
-                          className="bg-[#3dbd5a] p-1.5 text-white rounded-sm"
+                          className="bg-[#3dbd5a] cursor-pointer p-1.5 text-white rounded-sm"
                           onClick={() => handleOpenModal(row)}
                         >
                           <FiEdit />
                         </button>
                         <button
-                          className="bg-[#f51111ec] p-1.5 text-white rounded-sm"
+                          className="bg-[#f51111ec] cursor-pointer p-1.5 text-white rounded-sm"
                           onClick={() => handleDeleteClick(row.id)}
                         >
                           <FiTrash2 />
@@ -354,38 +355,11 @@ const PurityProfile = () => {
         </div>
       </div>
 
-      {/* Pagination - Only show when showPagination is true */}
-      {showPagination && (
-        <div className="flex justify-center items-center px-6 py-3 border-t gap-2">
-          <button
-            className="px-3 py-1 border rounded-md disabled:opacity-50"
-            onClick={() => handlePageChange(currentPage - 1)}
-            disabled={currentPage === 1}
-          >
-            Previous
-          </button>
-          <div className="flex gap-2">
-            {Array.from({ length: totalPages }, (_, i) => i + 1).map((pageNum) => (
-              <button
-                key={pageNum}
-                onClick={() => handlePageChange(pageNum)}
-                className={`px-3 py-1 border rounded-md ${
-                  currentPage === pageNum ? "bg-[#0b2c69] text-white" : ""
-                }`}
-              >
-                {pageNum}
-              </button>
-            ))}
-          </div>
-          <button
-            className="px-3 py-1 border rounded-md disabled:opacity-50"
-            onClick={() => handlePageChange(currentPage + 1)}
-            disabled={currentPage === totalPages}
-          >
-            Next
-          </button>
-        </div>
-      )}
+      <Pagination
+        currentPage={currentPage}
+        totalPages={totalPages}
+        onPageChange={handlePageChange}
+      />
     </div>
   );
 };
