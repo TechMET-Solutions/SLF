@@ -1,10 +1,13 @@
 import { useEffect, useState } from "react";
-import axios from "axios";
-import { encryptData, decryptData } from "../utils/cryptoHelper";
-import { API } from "../api";
 import { FiEdit, FiTrash2 } from "react-icons/fi";
 import blockimg from "../assets/blockimg.png";
-import { useNavigate } from "react-router-dom"; // for Exit button navigation
+import { useNavigate } from "react-router-dom";
+import {
+  fetchAreasApi,
+  addAreaApi,
+  updateAreaApi,
+  deleteAreaApi,
+} from "../API/Master/Master_Profile/Area_Details";
 
 const indianStatesAndUTs = [
   // States
@@ -20,7 +23,6 @@ const indianStatesAndUTs = [
   "Dadra and Nagar Haveli and Daman and Diu", "Delhi",
   "Jammu and Kashmir", "Ladakh", "Lakshadweep", "Puducherry"
 ];
-
 
 const Area = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -38,17 +40,32 @@ const Area = () => {
     landmark: "",
   });
 
+  // Pagination states
+  const [currentPage, setCurrentPage] = useState(1);
+  const [totalItems, setTotalItems] = useState(0);
+  const [showPagination, setShowPagination] = useState(false);
+  const itemsPerPage = 10;
+
   const navigate = useNavigate();
 
-  // 🟢 Fetch Area Data
-  const fetchArea = async () => {
+  // 🟢 Fetch Area Data with Pagination
+  const fetchArea = async (page = 1) => {
     setIsLoading(true);
     try {
-      const res = await axios.get(`${API}/Master/Master_Profile/get-area`);
-      const decrypted = decryptData(res.data.data);
-      setArea(decrypted || []);
-    } catch (err) {
-      console.error("❌ Error fetching area:", err);
+      const result = await fetchAreasApi(page, itemsPerPage);
+      if (result?.items) {
+        setArea(result.items);
+        setTotalItems(result.total);
+        setCurrentPage(result.page);
+        setShowPagination(result.showPagination || false);
+      } else {
+        setArea([]);
+        setShowPagination(false);
+      }
+    } catch (error) {
+      console.error("❌ Error fetching areas:", error);
+      setArea([]);
+      setShowPagination(false);
     } finally {
       setIsLoading(false);
     }
@@ -101,32 +118,17 @@ const Area = () => {
         landmark: formData.landmark,
       };
 
-      let url;
-      let method;
-
       if (isEditMode && formData.id) {
         payload.id = formData.id;
-        url = `${API}/Master/Master_Profile/update-area`;
-        method = "put";
+        await updateAreaApi(payload);
       } else {
-        url = `${API}/Master/Master_Profile/add-area`;
-        method = "post";
+        await addAreaApi(payload);
       }
 
-      const encryptedPayload = encryptData(payload);
-      const response = await axios({
-        method,
-        url,
-        headers: { "Content-Type": "application/json" },
-        data: { data: encryptedPayload },
-      });
-
-      if (response.status === 200) {
-        setIsModalOpen(false);
-        fetchArea();
-      }
+      setIsModalOpen(false);
+      fetchArea(currentPage);
     } catch (error) {
-      console.error("❌ Error saving item:", error.response || error);
+      console.error("❌ Error saving area:", error);
     } finally {
       setIsLoading(false);
     }
@@ -141,24 +143,22 @@ const Area = () => {
   // 🟥 Confirm delete
   const handleDeleteConfirm = async () => {
     try {
-      const payload = { id: deleteId };
-      const encryptedPayload = encryptData(payload);
-
-      const response = await axios.post(
-        `${API}/Master/Master_Profile/delete-area`, // ✅ fixed endpoint
-        { data: encryptedPayload },
-        { headers: { "Content-Type": "application/json" } }
-      );
-
-      if (response.status === 200) {
-        setDeleteModalOpen(false);
-        setDeleteId(null);
-        fetchArea();
-      }
+      await deleteAreaApi(deleteId);
+      setDeleteModalOpen(false);
+      setDeleteId(null);
+      fetchArea(currentPage);
     } catch (error) {
-      console.error("❌ Error deleting area:", error.response || error);
+      console.error("❌ Error deleting area:", error);
       alert("Error deleting area");
     }
+  };
+
+  // 🔹 Pagination Controls
+  const totalPages = Math.ceil(totalItems / itemsPerPage);
+
+  const handlePageChange = (page) => {
+    if (page < 1 || page > totalPages) return;
+    fetchArea(page);
   };
 
   return (
@@ -280,7 +280,7 @@ const Area = () => {
             </div>
             <div className="mt-10 text-center">
               <p className="text-[22px] font-medium">Are you sure to delete this List?</p>
-              <p className="text-[17px] text-gray-600 mt-2">You won’t be able to revert this action.</p>
+              <p className="text-[17px] text-gray-600 mt-2">You won't be able to revert this action.</p>
             </div>
             <div className="mt-6 flex flex-col items-center gap-4">
               <button
@@ -303,23 +303,27 @@ const Area = () => {
       {/* Area Table */}
       <div className="flex justify-center">
         <div className="overflow-x-auto mt-5 w-[1290px] h-[500px]">
-          <table className="w-full border-collapse">
-            <thead className="bg-[#0A2478] text-white text-sm">
-              <tr>
-                <th className="px-4 py-2 text-left">Sr No</th>
-                <th className="px-4 py-2 text-left">Area/Locality</th>
-                <th className="px-4 py-2 text-left">City</th>
-                <th className="px-4 py-2 text-left">State</th>
-                <th className="px-4 py-2 text-left">Pincode</th>
-                <th className="px-4 py-2 text-left">Landmark</th>
-                <th className="px-4 py-2 text-center">Action</th>
-              </tr>
-            </thead>
-            <tbody className="text-sm">
-              {area.length > 0 ? (
-                area.map((row, index) => (
-                  <tr key={index} className={index % 2 === 0 ? "bg-gray-50" : "bg-white"}>
-                    <td className="px-4 py-2">{index + 1}</td>
+          {area.length === 0 ? (
+            <div className="flex justify-center items-center h-full">
+              <p className="text-lg text-gray-500">No Data Found</p>
+            </div>
+          ) : (
+            <table className="w-full border-collapse">
+              <thead className="bg-[#0A2478] text-white text-sm">
+                <tr>
+                  <th className="px-4 py-2 text-left">Sr No</th>
+                  <th className="px-4 py-2 text-left">Area/Locality</th>
+                  <th className="px-4 py-2 text-left">City</th>
+                  <th className="px-4 py-2 text-left">State</th>
+                  <th className="px-4 py-2 text-left">Pincode</th>
+                  <th className="px-4 py-2 text-left">Landmark</th>
+                  <th className="px-4 py-2 text-center">Action</th>
+                </tr>
+              </thead>
+              <tbody className="text-sm">
+                {area.map((row, index) => (
+                  <tr key={row.id} className={index % 2 === 0 ? "bg-gray-50" : "bg-white"}>
+                    <td className="px-4 py-2">{(currentPage - 1) * itemsPerPage + index + 1}</td>
                     <td className="px-4 py-2">{row.area_locality}</td>
                     <td className="px-4 py-2">{row.city}</td>
                     <td className="px-4 py-2">{row.state}</td>
@@ -342,18 +346,45 @@ const Area = () => {
                       </div>
                     </td>
                   </tr>
-                ))
-              ) : (
-                <tr>
-                  <td colSpan="7" className="text-center py-4 text-gray-500">
-                    No area found.
-                  </td>
-                </tr>
-              )}
-            </tbody>
-          </table>
+                ))}
+              </tbody>
+            </table>
+          )}
         </div>
       </div>
+
+      {/* Pagination - Only show when showPagination is true */}
+      {showPagination && (
+        <div className="flex justify-center items-center px-6 py-3 border-t gap-2">
+          <button
+            className="px-3 py-1 border rounded-md disabled:opacity-50"
+            onClick={() => handlePageChange(currentPage - 1)}
+            disabled={currentPage === 1}
+          >
+            Previous
+          </button>
+          <div className="flex gap-2">
+            {Array.from({ length: totalPages }, (_, i) => i + 1).map((pageNum) => (
+              <button
+                key={pageNum}
+                onClick={() => handlePageChange(pageNum)}
+                className={`px-3 py-1 border rounded-md ${
+                  currentPage === pageNum ? "bg-[#0b2c69] text-white" : ""
+                }`}
+              >
+                {pageNum}
+              </button>
+            ))}
+          </div>
+          <button
+            className="px-3 py-1 border rounded-md disabled:opacity-50"
+            onClick={() => handlePageChange(currentPage + 1)}
+            disabled={currentPage === totalPages}
+          >
+            Next
+          </button>
+        </div>
+      )}
     </div>
   );
 };
