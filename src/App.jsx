@@ -36,6 +36,10 @@ import CancelledLoan from "./TrasactionPages/CancelledLoan";
 import AddGoldLoanApplication from "./TrasactionPages/AddGoldLoanApplication";
 import NOC from "./TrasactionPages/NOC";
 import Area from "./MasterPages/Area";
+import LoanChanges from "./TrasactionPages/LoanChanges";
+import AuctionCreation from "./TrasactionPages/AuctionCreation";
+import CreditNote from "./TrasactionPages/CreditNote";
+import DebitNote from "./TrasactionPages/DebitNote";
 function App() {
 
 
@@ -87,12 +91,19 @@ function App() {
 
 
           {/* loanApplication */}
-             <Route path="/Loan-Application" element={<LoanApplication />} />
+          <Route path="/Loan-Application" element={<LoanApplication />} />
           <Route path="/Loan-Enquiry" element={<LoanEnquiry />} />
-             <Route path="/Cancelled-Loan" element={<CancelledLoan />} />
+          <Route path="/Cancelled-Loan" element={<CancelledLoan />} />
           <Route path="/Add-Gold-Loan-Application" element={<AddGoldLoanApplication />} />
-           <Route path="/Area" element={<Area />} />
+          <Route path="/Area" element={<Area />} />
           <Route path="/NOC" element={<NOC />} />
+          <Route path="/Loan-Changes" element={<LoanChanges />} />
+
+        {/* Auction */}
+          <Route path="/Auction-Creation" element={<AuctionCreation />} />
+          <Route path="/Credit-Note" element={<CreditNote />} />
+          <Route path="/Debit-Note" element={<DebitNote />} />
+
           <Route path="*" element={<Navigate to="/" />} />
         </Routes>
       </Router>
