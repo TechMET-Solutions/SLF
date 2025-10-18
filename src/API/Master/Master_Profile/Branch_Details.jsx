@@ -43,7 +43,7 @@ export const updateBranchStatusApi = async (id, status) => {
 };
 
 export const updateBranchApi = async (branchData) => {
-    debugger
+    
   try {
     const encrypted = encryptData(branchData);
     const res = await axios.post(`${API}/Master/Master_Profile/update_Branch`, {
