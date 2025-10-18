@@ -11,6 +11,7 @@ import { Link } from "react-router-dom";
 const Navbar = () => {
   // Masters
   const [isMasterOpen, setIsMasterOpen] = useState(false);
+  const [isBranchModelOpen, setIsBranchModelOpen] = useState(false);
   const [isMasterProfileOpen, setIsMasterProfileOpen] = useState(false);
   const [isMasterSchemeMaster, setIsMasterSchemeMaster] = useState(false);
   const [isMasterSchemeEmployeeProfile, setIsMasterSchemeEmployeeProfile] =
@@ -21,6 +22,8 @@ const Navbar = () => {
   // Transactions
   const [isTransactionsOpen, setIsTransactionsOpen] = useState(false);
   const [isGoldLoanOpen, setIsGoldLoanOpen] = useState(false);
+  const [isAuctionOpen, setIsAuctionOpen] = useState(false);
+
 
   const dropdownRef = useRef(null);
 
@@ -49,7 +52,11 @@ const Navbar = () => {
     <div className="flex justify-center">
       <div className="bg-[#0A2478] text-white flex items-center justify-between relative mt-5 p-5 w-[1360px] h-[50px] rounded-[10px]">
         {/* Left side placeholder */}
-        <div></div>
+        <div className="flex items-center gap-3">
+          <img src="/logo.svg" alt="Logo" className="w-8 h-8 object-contain" />
+          <p className="text-sm font-medium text-white">Bhagur B1</p>
+        </div>
+
 
         {/* ===== Center Menu ===== */}
         <div
@@ -115,7 +122,7 @@ const Navbar = () => {
                         },
                         { name: "Push Gold Rate", path: "/Push-Gold-Rate-List" },
                         { name: "Charges Profile", path: "/Charges-Profile-List" },
-                         { name: "Area", path: "/Area" },
+                        { name: "Area", path: "/Area" },
                       ].map((item) => (
                         <Link
                           key={item.path}
@@ -286,10 +293,14 @@ const Navbar = () => {
 
             {isTransactionsOpen && (
               <div className="absolute top-full left-0 mt-2 bg-white text-black rounded shadow-lg w-[200px] z-50">
+                {/* Gold Loan Section */}
                 <div className="relative">
                   <button
                     className="w-full text-left px-4 py-2 hover:bg-gray-100 flex justify-between items-center"
-                    onClick={() => setIsGoldLoanOpen(!isGoldLoanOpen)}
+                    onClick={() => {
+                      setIsGoldLoanOpen(!isGoldLoanOpen);
+                      setIsAuctionOpen(false); // close other submenu
+                    }}
                   >
                     Gold Loan
                     {isGoldLoanOpen ? (
@@ -300,22 +311,96 @@ const Navbar = () => {
                   </button>
 
                   {isGoldLoanOpen && (
-                    <div className="absolute top-0 left-full ml-1 w-[200px] bg-white text-black rounded shadow-lg flex flex-col gap-1">
+                    <div className="absolute top-0 left-full ml-1 w-[200px] bg-white text-black rounded shadow-lg flex flex-col gap-1 z-50">
                       <Link
                         to="/Loan-Application"
                         className="px-4 py-2 hover:bg-gray-100 text-left"
                         onClick={() => {
-                        //   setIsTransactionsOpen(false);
-                        //   setIsGoldLoanOpen(false);
+                          setIsTransactionsOpen(false);
+                          setIsGoldLoanOpen(false);
                         }}
                       >
                         Loan Application
+                      </Link>
+                      <Link
+                        to="/Loan-Changes"
+                        className="px-4 py-2 hover:bg-gray-100 text-left"
+                        onClick={() => {
+                          setIsTransactionsOpen(false);
+                          setIsGoldLoanOpen(false);
+                        }}
+                      >
+                        Loan Changes
+                      </Link>
+                    </div>
+                  )}
+                </div>
+
+                {/* Auction Section */}
+                <div className="relative">
+                  <button
+                    className="w-full text-left px-4 py-2 hover:bg-gray-100 flex justify-between items-center"
+                    onClick={() => {
+                      setIsAuctionOpen(!isAuctionOpen);
+                      setIsGoldLoanOpen(false); // close other submenu
+                    }}
+                  >
+                    Auction
+                    {isAuctionOpen ? (
+                      <FiChevronDown className="inline-block" />
+                    ) : (
+                      <FiChevronRight className="inline-block" />
+                    )}
+                  </button>
+
+                  {isAuctionOpen && (
+                    <div className="absolute top-0 left-full ml-1 w-[200px] bg-white text-black rounded shadow-lg flex flex-col gap-1 z-50">
+                      <Link
+                        to="/Auction-Creation"
+                        className="px-4 py-2 hover:bg-gray-100 text-left"
+                        onClick={() => {
+                          setIsTransactionsOpen(false);
+                          setIsAuctionOpen(false);
+                        }}
+                      >
+                        Auction Creation
+                      </Link>
+                      <Link
+                        to="/Bidder-Registration"
+                        className="px-4 py-2 hover:bg-gray-100 text-left"
+                        onClick={() => {
+                          setIsTransactionsOpen(false);
+                          setIsAuctionOpen(false);
+                        }}
+                      >
+                        Bidder Registration
+                      </Link>
+                      <Link
+                        to="/Credit-Note"
+                        className="px-4 py-2 hover:bg-gray-100 text-left"
+                        onClick={() => {
+                          setIsTransactionsOpen(false);
+                          setIsAuctionOpen(false);
+                        }}
+                      >
+                        Credit Note
+                      </Link>
+                      <Link
+                        to="/Debit-Note"
+                        className="px-4 py-2 hover:bg-gray-100 text-left"
+                        onClick={() => {
+                          setIsTransactionsOpen(false);
+                          setIsAuctionOpen(false);
+                        }}
+                      >
+                        Debit Note
                       </Link>
                     </div>
                   )}
                 </div>
               </div>
             )}
+
           </div>
 
           {/* ================== OTHER BUTTONS ================== */}
@@ -327,15 +412,91 @@ const Navbar = () => {
         </div>
 
         {/* ===== Logout Button ===== */}
-        <button className="w-[130px] h-[36px] bg-[#FFFFFF] rounded-[4.8px] flex items-center text-[#0b2c69] font-medium p-2 gap-3">
-          <span className="flex gap-2 font-semibold text-xl items-center">
-            <FiLogOut className="text-xl" />
-            Logout
-            <FiChevronDown />
-          </span>
-        </button>
+        <div className="flex gap-3">
+          <button
+            onClick={() => setIsBranchModelOpen(true)}
+            className="w-[80px] h-[36px] flex items-center justify-center bg-white rounded-[4.8px] text-[#0b2c69] font-medium p-2"
+          >
+            Branch
+          </button>
+          <button
+            className="w-[50px] h-[36px] flex items-center justify-center bg-white rounded-[4.8px] text-[#0b2c69] font-medium p-2"
+          >
+            <span className="flex items-center gap-1 text-xl font-semibold">
+              <FiLogOut className="text-xl" />
+              {/* <span className="text-sm font-medium">Logout</span>
+         <FiChevronDown className="text-sm" /> */}
+            </span>
+          </button>
+        </div>
+        {/* modelforAdd */}
+        {isBranchModelOpen && (
+          <div className="fixed inset-0 z-50 flex items-center justify-center bg-[#0101017A] backdrop-blur-md">
+            <div className="bg-white w-[396px] rounded-lg shadow-xl h-auto p-6">
+              <h1 className="text-xl font-bold text-[#0A2478] mb-6 text-center">
+                Change Branch
+              </h1>
+
+              {/* Change Branch Dropdown */}
+              <div className="mb-4">
+                <label htmlFor="branch" className="block text-sm font-medium text-gray-700 mb-1">
+                  Select Branch
+                </label>
+                <select
+                  id="branch"
+                  name="branch"
+                  className="w-full border border-gray-300 text-black rounded px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#0A2478]"
+                  defaultValue=""
+                >
+                  <option value="" disabled className="">Choose a branch</option>
+                  <option value="nsk-rd">Nashik Road</option>
+                  <option value="bhagur">Bhagur</option>
+                  <option value="bhagur">Nashik</option>
+                </select>
+              </div>
+
+              {/* Change Year Dropdown */}
+              <div className="mb-6">
+                <label htmlFor="year" className="block text-sm font-medium text-gray-700 mb-1">
+                  Select Year
+                </label>
+                <select
+                  id="year"
+                  name="year"
+                  className="w-full border border-gray-300 text-black rounded px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#0A2478]"
+                  defaultValue=""
+                >
+                  <option value="" disabled>Choose a year</option>
+                  <option value="2025">2025</option>
+                  <option value="2024">2024</option>
+                  {/* Add more years if needed */}
+                </select>
+              </div>
+
+              {/* Buttons */}
+              <div className="flex justify-center gap-4">
+                <button
+                  className="bg-[#F11717] hover:bg-red-700 text-white px-5 py-2 rounded text-base font-medium"
+                // onClick={handleDeleteConfirm}
+                >
+                  OK
+                </button>
+                <button
+                  className="bg-[#0A2478] hover:bg-[#081a5e] text-white px-5 py-2 rounded text-base font-medium"
+                  onClick={() => setIsBranchModelOpen(false)}
+                >
+                  Cancel
+                </button>
+              </div>
+            </div>
+          </div>
+
+        )}
       </div>
+
     </div>
+
+
   );
 };
 
