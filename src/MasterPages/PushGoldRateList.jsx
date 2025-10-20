@@ -4,6 +4,9 @@ import { formatIndianDate } from "../utils/Helpers";
 import Pagination from "../Component/Pagination";
 
 const PushGoldRateList = () => {
+  useEffect(() => {
+    document.title = "SLF | Push Gold Rate List ";
+  }, []);
   const [data, setData] = useState([]);
   const [pushDate, setPushDate] = useState("");
   const [goldRate, setGoldRate] = useState("");

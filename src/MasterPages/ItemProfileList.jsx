@@ -9,6 +9,9 @@ import Pagination from "../Component/Pagination";
 import { FiEdit } from "react-icons/fi";
 
 const ItemProfileList = () => {
+  useEffect(() => {
+    document.title = "SLF | Item Profile List";
+  }, []);
   const [data, setData] = useState([]);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isEditMode, setIsEditMode] = useState(false);

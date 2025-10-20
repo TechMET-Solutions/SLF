@@ -1,6 +1,9 @@
 import React from "react";
 
 const GoldOrnamentList = () => {
+  useEffect(() => {
+    document.title = "SLF | Gold Ornament List ";
+  }, []);
   return (
     <div className="flex flex-col items-center mt-5">
       {/* Header Section */}

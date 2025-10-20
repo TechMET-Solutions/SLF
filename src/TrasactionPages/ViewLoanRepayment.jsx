@@ -1,7 +1,10 @@
-import React from "react";
+import React, { useEffect } from "react";
 import profileempty from '../assets/profileempty.png';
 
 function ViewLoanRepayment() {
+    useEffect(() => {
+    document.title = "SLF | View Loan Repayment ";
+  }, []);
     // Dummy Installments (replace with props or API data later)
     const installments = [
         {

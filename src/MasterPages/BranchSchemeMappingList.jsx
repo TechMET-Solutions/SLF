@@ -1,8 +1,12 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import GroupData from "../assets/Group 124.svg"; // optional if needed later
 import { useNavigate } from "react-router-dom";
 
 const BranchSchemeMappingList = () => {
+  useEffect(() => {
+    document.title = "SLF | Branch Scheme Mapping List";
+  }, []);
+  
   const [data, setData] = useState([
     {
       id: 1,

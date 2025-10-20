@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useEffect } from 'react'
 import profileempty from '../assets/profileempty.png';
 import { MdOutlineFileDownload } from 'react-icons/md';
 import { IoMdPrint, IoMdDownload } from 'react-icons/io';
@@ -35,6 +35,11 @@ const ItemList = [{
 }];
 
 function AddLoanRepayment() {
+    useEffect(() => {
+        document.title = "SLF | Add Loan Repayment";
+    }, []);
+
+
     return (
         <div className="flex flex-col items-center mt-5">
             {/* Header Section */}
@@ -313,28 +318,28 @@ function AddLoanRepayment() {
                         <div className="flex flex-col gap-1 w-[150px]">
                             <label className="text-gray-900 font-medium">Pay Amount</label>
                             <input type="text" placeholder="Pay Amount"
-                                className="border border-gray-300 rounded-md px-3 py-2 focus:ring-1 focus:ring-blue-500 focus:outline-none"/>
+                                className="border border-gray-300 rounded-md px-3 py-2 focus:ring-1 focus:ring-blue-500 focus:outline-none" />
                         </div>
 
                         {/* Interest Adjusted */}
                         <div className="flex flex-col gap-1 w-[150px]">
                             <label className="text-gray-900 font-medium">Interest Adjusted</label>
                             <input type="text" placeholder="Interest Adjusted"
-                                className="border border-gray-300 rounded-md px-3 py-2 focus:ring-1 focus:ring-blue-500 focus:outline-none"/>
+                                className="border border-gray-300 rounded-md px-3 py-2 focus:ring-1 focus:ring-blue-500 focus:outline-none" />
                         </div>
 
                         {/* Loan Amt Adjusted */}
                         <div className="flex flex-col gap-1 w-[150px]">
                             <label className="text-gray-900 font-medium">Loan Amt Adjusted</label>
                             <input type="text" placeholder="Loan Amt Adjusted"
-                                className="border border-gray-300 rounded-md px-3 py-2 focus:ring-1 focus:ring-blue-500 focus:outline-none"/>
+                                className="border border-gray-300 rounded-md px-3 py-2 focus:ring-1 focus:ring-blue-500 focus:outline-none" />
                         </div>
 
                         {/* Balance Loan Amt */}
                         <div className="flex flex-col gap-1 w-[150px]">
                             <label className="text-gray-900 font-medium">Balance Loan Amt</label>
                             <input type="text" placeholder="Balance Loan Amt"
-                                className="border border-gray-300 rounded-md px-3 py-2 focus:ring-1 focus:ring-blue-500 focus:outline-none"/>
+                                className="border border-gray-300 rounded-md px-3 py-2 focus:ring-1 focus:ring-blue-500 focus:outline-none" />
                         </div>
                     </div>
 
@@ -349,28 +354,28 @@ function AddLoanRepayment() {
                         <div className="flex flex-col gap-1 w-[150px]">
                             <label className="text-gray-900 font-medium">Notice Amt Adjusted</label>
                             <input type="text" placeholder="Notice Amt Adjusted"
-                                className="border border-gray-300 rounded-md px-3 py-2 focus:ring-1 focus:ring-blue-500 focus:outline-none"/>
+                                className="border border-gray-300 rounded-md px-3 py-2 focus:ring-1 focus:ring-blue-500 focus:outline-none" />
                         </div>
 
                         {/* Oth. Charges Adjusted */}
                         <div className="flex flex-col gap-1 w-[150px]">
                             <label className="text-gray-900 font-medium">Oth. Charges Adjusted</label>
                             <input type="text" placeholder="Oth. Charges Adjusted"
-                                className="border border-gray-300 rounded-md px-3 py-2 focus:ring-1 focus:ring-blue-500 focus:outline-none"/>
+                                className="border border-gray-300 rounded-md px-3 py-2 focus:ring-1 focus:ring-blue-500 focus:outline-none" />
                         </div>
 
                         {/* Interest Paid For */}
                         <div className="flex flex-col gap-1 w-[150px]">
                             <label className="text-gray-900 font-medium">Interest Paid For</label>
                             <input type="text" placeholder="Interest Paid For"
-                                className="border border-gray-300 rounded-md px-3 py-2 focus:ring-1 focus:ring-blue-500 focus:outline-none"/>
+                                className="border border-gray-300 rounded-md px-3 py-2 focus:ring-1 focus:ring-blue-500 focus:outline-none" />
                         </div>
 
                         {/* Int Paid Upto */}
                         <div className="flex flex-col gap-1 w-[150px]">
                             <label className="text-gray-900 font-medium">Int Paid Upto</label>
                             <input type="date"
-                                className="border border-gray-300 rounded-md px-3 py-2 focus:ring-1 focus:ring-blue-500 focus:outline-none"/>
+                                className="border border-gray-300 rounded-md px-3 py-2 focus:ring-1 focus:ring-blue-500 focus:outline-none" />
                         </div>
 
                     </div>
@@ -386,7 +391,7 @@ function AddLoanRepayment() {
                         <div className="flex flex-col gap-1 w-[150px]">
                             <label className="text-gray-900 font-medium">Cash In Transit</label>
                             <input type="text" placeholder="Cash In Transit"
-                                className="border border-gray-300 rounded-md px-3 py-2 focus:ring-1 focus:ring-blue-500 focus:outline-none"/>
+                                className="border border-gray-300 rounded-md px-3 py-2 focus:ring-1 focus:ring-blue-500 focus:outline-none" />
                         </div>
 
                         {/* Mode of Payment */}
@@ -404,21 +409,21 @@ function AddLoanRepayment() {
                         <div className="flex flex-col gap-1 w-[150px]">
                             <label className="text-gray-900 font-medium">Cash A/C</label>
                             <input type="text" placeholder="Cash A/C"
-                                className="border border-gray-300 rounded-md px-3 py-2 focus:ring-1 focus:ring-blue-500 focus:outline-none"/>
+                                className="border border-gray-300 rounded-md px-3 py-2 focus:ring-1 focus:ring-blue-500 focus:outline-none" />
                         </div>
 
                         {/* Payment Ref. No */}
                         <div className="flex flex-col gap-1 w-[150px]">
                             <label className="text-gray-900 font-medium">Payment Ref. No</label>
                             <input type="text" placeholder="Payment Ref. No"
-                                className="border border-gray-300 rounded-md px-3 py-2 focus:ring-1 focus:ring-blue-500 focus:outline-none"/>
+                                className="border border-gray-300 rounded-md px-3 py-2 focus:ring-1 focus:ring-blue-500 focus:outline-none" />
                         </div>
 
                         {/* Payment Made By */}
                         <div className="flex flex-col gap-1 w-[150px]">
                             <label className="text-gray-900 font-medium">Payment Made By</label>
                             <input type="text" placeholder="Payment Made By"
-                                className="border border-gray-300 rounded-md px-3 py-2 focus:ring-1 focus:ring-blue-500 focus:outline-none"/>
+                                className="border border-gray-300 rounded-md px-3 py-2 focus:ring-1 focus:ring-blue-500 focus:outline-none" />
                         </div>
 
                         {/* Amount Paid (In Words) */}

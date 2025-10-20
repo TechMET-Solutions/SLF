@@ -3,6 +3,9 @@ import { useNavigate } from "react-router-dom"; // Add this import
 import GroupData from "../assets/Group 124.svg";
 import eyeIcon from "../assets/Vectorimg.png";
 const SchemeDetailsList = () => {
+    useEffect(() => {
+    document.title = "SLF | Scheme Details List";
+  }, []);
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [data, setData] = useState([
         {

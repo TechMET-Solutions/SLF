@@ -1,7 +1,10 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 import GroupData from "../assets/Group 124.svg";
 const AccountGroupList = () => {
+  useEffect(() => {
+    document.title = "SLF | Account Group List";
+  }, []);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [data] = useState([
     {

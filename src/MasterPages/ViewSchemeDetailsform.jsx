@@ -1,7 +1,10 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 
 const ViewSchemeDetailsform = () => {
+  useEffect(() => {
+    document.title = "SLF | View Scheme Details Form ";
+  }, []);
   const navigate = useNavigate();
   const [formData, setFormData] = useState({});
 

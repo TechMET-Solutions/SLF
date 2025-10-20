@@ -1,9 +1,12 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import GroupData from "../assets/Group 124.svg";
 import DeleteData from "../assets/deletimg.png";
 import EyeData from "../assets/eye.svg";
 
 const ChargesProfileList = () => {
+    useEffect(() => {
+    document.title = "SLF | Charges Profile List";
+  }, []);
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [data] = useState([
         {

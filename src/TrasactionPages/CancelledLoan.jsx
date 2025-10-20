@@ -6,6 +6,9 @@ import emptyImg from "../assets/profileempty.png";
 import envImg from "../assets/envImg.jpg"
 
 const CancelledLoan = () => {
+    useEffect(() => {
+    document.title = "SLF | Cancelled Loan";
+  }, []);
     return (
         <div className="min-h-screen w-full  p-6">
             {/* Header */}

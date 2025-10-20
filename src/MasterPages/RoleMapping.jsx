@@ -1,7 +1,10 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 
 const RoleMapping = () => {
+  useEffect(() => {
+    document.title = "SLF | Role Mapping";
+  }, []);
   const [roles, setRoles] = useState([
     { id: 1, name: "Emp", selected: true },
     { id: 2, name: "No Role", selected: true },

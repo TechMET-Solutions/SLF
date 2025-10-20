@@ -140,7 +140,7 @@ const EmployeeProfile = () => {
     setIsEditMode(true);
     setFormData({
       ...employee,
-      // password: "", // Don't pre-fill password for security
+      password: "", // Don't pre-fill password for security
     });
     setIsModalOpen(true);
   };

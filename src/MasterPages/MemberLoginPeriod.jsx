@@ -1,9 +1,12 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import GroupData from "../assets/Group 124.svg";
 import DeleteData from "../assets/deletimg.png";
 import EyeData from "../assets/eye.svg";
 
 const MemberLoginPeriod = () => {
+    useEffect(() => {
+    document.title = "SLF | Member Login Period";
+  }, []);
     const [data] = useState([
         {
             name: "ssl@slunawat.com",

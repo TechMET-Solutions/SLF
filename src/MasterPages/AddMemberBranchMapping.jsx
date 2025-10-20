@@ -1,8 +1,11 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 
 
 const AddMemberBranchMapping = () => {
+    useEffect(() => {
+    document.title = "SLF | Add Member Branch Mapping";
+  }, []);
 
     const branches = [
         "01 - Bhagur B1",

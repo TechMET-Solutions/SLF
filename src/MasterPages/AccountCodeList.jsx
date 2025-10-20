@@ -1,8 +1,11 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import LogoutIcon from "../assets/logouticon.svg";
 import GroupData from "../assets/Group 124.svg";
 
 const AccountCodeList = () => {
+  useEffect(() => {
+    document.title = "SLF | Account Code List";
+  }, []);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [data] = useState([
     {
