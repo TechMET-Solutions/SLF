@@ -1,5 +1,4 @@
 import { useEffect, useState } from "react";
-import { FaPaperclip } from "react-icons/fa";
 import { FiEdit, FiEye, FiTrash2 } from "react-icons/fi";
 import blockimg from "../assets/blockimg.png";
 import profileempty from "../assets/profileempty.png";
@@ -7,15 +6,22 @@ import {
   deleteEmployeeApi,
   fetchEmployeeProfileApi,
   createEmployeeApi,
-  updateEmployeeApi
+  updateEmployeeApi,
+  updateEmployeeStatusApi
 } from "../API/Master/Employee_Profile/EmployeeProfile";
 import Pagination from "../Component/Pagination";
 
 const EmployeeProfile = () => {
+
+   useEffect(() => {
+          document.title = "SLF | Employee Profile";
+      }, []);
+
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [employeeList, setEmployeeList] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
   const [isEditMode, setIsEditMode] = useState(false);
+  const [isViewMode, setIsViewMode] = useState(false);
   const [deleteModalOpen, setDeleteModalOpen] = useState(false);
   const [deleteId, setDeleteId] = useState(null);
   const [searchTerm, setSearchTerm] = useState({ empId: "", empName: "" });
@@ -52,6 +58,7 @@ const EmployeeProfile = () => {
   // Pagination states
   const [currentPage, setCurrentPage] = useState(1);
   const [totalItems, setTotalItems] = useState(0);
+  const [showPagination, setShowPagination] = useState(false);
   const itemsPerPage = 10;
 
   // 🔹 Pagination Controls
@@ -65,17 +72,22 @@ const EmployeeProfile = () => {
 
   // ✅ Fetch employee list
   const fetchEmployee = async (page = 1) => {
-    setIsLoading(true);
+    // setIsLoading(true);
     try {
       const result = await fetchEmployeeProfileApi(page, itemsPerPage);
-      if (result && result.data) {
-        setEmployeeList(result.data);
+      if (result?.items) {
+        setEmployeeList(result.items);
         setTotalItems(result.total || result.data.length);
-        setCurrentPage(result.currentPage || page);
+        setCurrentPage(result.page);
+        setShowPagination(result.showPagination || false);
+      } else {
+        setEmployeeList([]);
+        setShowPagination(false);
       }
     } catch (error) {
       console.error("❌ Error fetching employees:", error);
-      alert("Error fetching employees");
+      setEmployeeList([]);
+      setShowPagination(false);
     } finally {
       setIsLoading(false);
     }
@@ -84,6 +96,16 @@ const EmployeeProfile = () => {
   useEffect(() => {
     fetchEmployee();
   }, []);
+
+  const handleToggleStatus = async (item) => {
+    try {
+      const newStatus = item.status === 1 ? 0 : 1;
+      await updateEmployeeStatusApi(item.id, newStatus);
+      fetchEmployee(currentPage);
+    } catch (error) {
+      console.error("❌ Error toggling status:", error);
+    }
+  };
 
   // 🗑️ Show delete confirmation modal
   const handleDeleteClick = (id) => {
@@ -95,7 +117,6 @@ const EmployeeProfile = () => {
   const handleDeleteConfirm = async () => {
     try {
       await deleteEmployeeApi(deleteId);
-      console.log(deleteEmployeeApi)
       setDeleteModalOpen(false);
       setDeleteId(null);
       fetchEmployee(currentPage);
@@ -105,12 +126,21 @@ const EmployeeProfile = () => {
     }
   };
 
+
+
+  const handleView = (employee) => {
+    setIsViewMode(true);
+    setFormData(employee);
+    setIsModalOpen(true);
+  };
+
+
   // ✏️ Handle Edit
   const handleEdit = (employee) => {
     setIsEditMode(true);
     setFormData({
       ...employee,
-      password: "", // Don't pre-fill password for security
+      // password: "", // Don't pre-fill password for security
     });
     setIsModalOpen(true);
   };
@@ -149,19 +179,35 @@ const EmployeeProfile = () => {
 
   // 💾 Handle Save/Update
   const handleSave = async () => {
-    debugger
     try {
-      // Basic validation
-      if (!formData.emp_name || !formData.email || !formData.mobile_no) {
-        alert("Please fill in required fields");
-        return;
-      }
-
-      if (isEditMode) {
-        await updateEmployeeApi(formData);
+      const payload = {
+        pan_card: formData.pan_card,
+        aadhar_card: formData.aadhar_card,
+        emp_name: formData.emp_name,
+        emp_id: formData.emp_id,
+        mobile_no: formData.mobile_no,
+        email: formData.email,
+        print_name: formData.print_name,
+        corresponding_address: formData.corresponding_address,
+        permanent_address: formData.permanent_address,
+        branch: formData.branch,
+        joining_date: formData.joining_date,
+        designation: formData.designation,
+        date_of_birth: formData.date_of_birth,
+        assign_role: formData.assign_role,
+        password: formData.password,
+        fax: formData.fax,
+        emp_image: formData.emp_image,
+        emp_add_prof: formData.emp_add_prof,
+        emp_id_prof: formData.emp_id_prof,
+        status: formData.status,
+      };
+      if (isEditMode && formData.id) {
+        payload.id = formData.id;
+        await updateEmployeeApi(payload);
         alert("Employee updated successfully");
       } else {
-        await createEmployeeApi(formData);
+        await createEmployeeApi(payload);
         alert("Employee created successfully");
       }
 
@@ -170,6 +216,8 @@ const EmployeeProfile = () => {
     } catch (error) {
       console.error("❌ Error saving employee:", error);
       alert(error.response?.data?.message || "Error saving employee");
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -204,16 +252,6 @@ const EmployeeProfile = () => {
     }
   };
 
-  const handleToggle = async (id, currentStatus) => {
-    try {
-      // Implement status toggle API call
-      console.log("Toggling status for:", id, "to:", !currentStatus);
-      // await toggleEmployeeStatusApi(id, !currentStatus);
-      fetchEmployee(currentPage);
-    } catch (error) {
-      console.error("❌ Error toggling employee status:", error);
-    }
-  };
 
   return (
     <div className="min-h-screen w-full">
@@ -249,7 +287,6 @@ const EmployeeProfile = () => {
 
             <div className="flex gap-3">
               <button
-                onClick={handleSearch}
                 className="bg-[#0A2478] text-white text-[11.25px] w-[74px] h-[24px] rounded flex items-center justify-center"
               >
                 Search
@@ -263,7 +300,8 @@ const EmployeeProfile = () => {
               >
                 Add
               </button>
-              <button className="bg-[#C1121F] text-white text-[10px] w-[74px] h-[24px] rounded">
+              <button
+                className="bg-[#C1121F] text-white text-[10px] w-[74px] h-[24px] rounded">
                 Exit
               </button>
             </div>
@@ -272,365 +310,369 @@ const EmployeeProfile = () => {
       </div>
 
       {/* Add/Edit Modal */}
-      {isModalOpen && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-sm">
-          <div className="bg-white w-[920px] max-h-[90vh] rounded-lg shadow-lg p-6 overflow-y-auto">
-            {/* Title */}
-            <h2 className="text-[#0A2478] text-[20px] font-semibold mb-6">
-              {isEditMode ? "Edit Employee Profile" : "Add Employee Profile"}
-            </h2>
+      {
+        isModalOpen && (
+          <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-sm">
+            <div className="bg-white w-[920px] max-h-[90vh] rounded-lg shadow-lg p-6 overflow-y-auto">
+              {/* Title */}
+              <h2 className="text-[#0A2478] text-[20px] font-semibold mb-6">
+                {isEditMode ? "Edit Employee Profile" : "Add Employee Profile"}
+              </h2>
 
-            <div className="flex gap-6">
-              {/* Left Form */}
-              <div className="w-3/4 space-y-4 text-sm">
-                {/* PAN + Aadhaar + Name */}
-                <div className="grid grid-cols-3 gap-4">
-                  {/* PAN */}
-                  <div className="flex flex-col gap-1">
-                    <label className="text-gray-700 font-medium">Pan Card Number*</label>
-                    <div className="flex">
+              <div className="flex gap-6">
+                {/* Left Form */}
+                <div className="w-3/4 space-y-4 text-sm">
+                  {/* PAN + Aadhaar + Name */}
+                  <div className="grid grid-cols-3 gap-4">
+                    {/* PAN */}
+                    <div className="flex flex-col gap-1">
+                      <label className="text-gray-700 font-medium">Pan Card Number*</label>
+                      <div className="flex">
+                        <input
+                          type="text"
+                          name="pan_card"
+                          value={formData.pan_card}
+                          onChange={handleInputChange}
+                          placeholder="PAN Card Number"
+                          className="border border-[#C4C4C4] rounded-l-md px-3 py-2 w-full focus:outline-none focus:ring-1 focus:ring-blue-500"
+                        />
+                        <button className="bg-[#0A2478] text-white px-3 py-2 rounded-r-md hover:bg-[#081c5b]">
+                          Verify
+                        </button>
+                      </div>
+                    </div>
+
+                    {/* Aadhaar */}
+                    <div className="flex flex-col gap-1">
+                      <label className="text-gray-700 font-medium">Aadhar Card Number*</label>
+                      <div className="flex">
+                        <input
+                          type="text"
+                          name="aadhar_card"
+                          value={formData.aadhar_card}
+                          onChange={handleInputChange}
+                          placeholder="Aadhar Card Number"
+                          className="border border-[#C4C4C4] rounded-l-md px-3 py-2 w-full focus:outline-none focus:ring-1 focus:ring-blue-500"
+                        />
+                        <button className="bg-[#0A2478] text-white px-3 py-2 rounded-r-md hover:bg-[#081c5b]">
+                          Verify
+                        </button>
+                      </div>
+                    </div>
+
+                    {/* Name */}
+                    <div className="flex flex-col gap-1">
+                      <label className="text-gray-700 font-medium">Name*</label>
                       <input
                         type="text"
-                        name="pan_card"
-                        value={formData.pan_card}
+                        name="emp_name"
+                        value={formData.emp_name}
                         onChange={handleInputChange}
-                        placeholder="PAN Card Number"
-                        className="border border-[#C4C4C4] rounded-l-md px-3 py-2 w-full focus:outline-none focus:ring-1 focus:ring-blue-500"
+                        placeholder="Name"
+                        className="border border-[#C4C4C4] rounded-md px-3 py-2 focus:outline-none focus:ring-1 focus:ring-blue-500"
                       />
-                      <button className="bg-[#0A2478] text-white px-3 py-2 rounded-r-md hover:bg-[#081c5b]">
-                        Verify
-                      </button>
                     </div>
                   </div>
 
-                  {/* Aadhaar */}
-                  <div className="flex flex-col gap-1">
-                    <label className="text-gray-700 font-medium">Aadhar Card Number*</label>
-                    <div className="flex">
+                  {/* Employee ID, Mobile, Email */}
+                  <div className="grid grid-cols-3 gap-4">
+                    <div className="flex flex-col gap-1">
+                      <label className="text-gray-700 font-medium">Employee ID*</label>
                       <input
                         type="text"
-                        name="aadhar_card"
-                        value={formData.aadhar_card}
+                        name="emp_id"
+                        value={formData.emp_id}
                         onChange={handleInputChange}
-                        placeholder="Aadhar Card Number"
-                        className="border border-[#C4C4C4] rounded-l-md px-3 py-2 w-full focus:outline-none focus:ring-1 focus:ring-blue-500"
+                        placeholder="Employee ID"
+                        className="border border-[#C4C4C4] rounded-md px-3 py-2 focus:outline-none focus:ring-1 focus:ring-blue-500"
                       />
-                      <button className="bg-[#0A2478] text-white px-3 py-2 rounded-r-md hover:bg-[#081c5b]">
-                        Verify
-                      </button>
+                    </div>
+                    <div className="flex flex-col gap-1">
+                      <label className="text-gray-700 font-medium">Mobile No*</label>
+                      <input
+                        type="text"
+                        name="mobile_no"
+                        value={formData.mobile_no}
+                        onChange={handleInputChange}
+                        placeholder="Mobile No"
+                        className="border border-[#C4C4C4] rounded-md px-3 py-2 focus:outline-none focus:ring-1 focus:ring-blue-500"
+                      />
+                    </div>
+                    <div className="flex flex-col gap-1">
+                      <label className="text-gray-700 font-medium">Email ID*</label>
+                      <input
+                        type="email"
+                        name="email"
+                        value={formData.email}
+                        onChange={handleInputChange}
+                        placeholder="Email ID"
+                        className="border border-[#C4C4C4] rounded-md px-3 py-2 focus:outline-none focus:ring-1 focus:ring-blue-500"
+                      />
                     </div>
                   </div>
 
-                  {/* Name */}
-                  <div className="flex flex-col gap-1">
-                    <label className="text-gray-700 font-medium">Name*</label>
-                    <input
-                      type="text"
-                      name="emp_name"
-                      value={formData.emp_name}
-                      onChange={handleInputChange}
-                      placeholder="Name"
-                      className="border border-[#C4C4C4] rounded-md px-3 py-2 focus:outline-none focus:ring-1 focus:ring-blue-500"
-                    />
+                  {/* Address */}
+                  <div className="grid grid-cols-3 gap-4">
+                    {/* Corresponding Address */}
+                    <div className="flex flex-col gap-1">
+                      <label className="text-gray-700 font-medium">Corresponding Address*</label>
+                      <input
+                        type="text"
+                        name="corresponding_address"
+                        value={formData.corresponding_address}
+                        onChange={handleInputChange}
+                        placeholder=" Corresponding Address*"
+                        className="border border-[#C4C4C4] rounded-md px-3 py-2 focus:outline-none focus:ring-1 focus:ring-blue-500"
+                      />
+                    </div>
+
+                    {/* Radio Option */}
+                    <div className="flex gap-2 items-center">
+                      <input
+                        type="checkbox"
+                        id="sameAddress"
+                        name="sameAddress"
+                        checked={formData.permanent_address === formData.corresponding_address}
+                        onChange={(e) => {
+                          if (e.target.checked) {
+                            setFormData(prev => ({ ...prev, permanent_address: prev.corresponding_address }));
+                          } else {
+                            setFormData(prev => ({ ...prev, permanent_address: "" }));
+                          }
+                        }}
+                        className="border border-[#C4C4C4] focus:outline-none focus:ring-1 focus:ring-blue-500"
+                      />
+                      <label htmlFor="sameAddress" className="text-gray-700 font-medium">
+                        Permanent Address same as Correspondence Address?
+                      </label>
+                    </div>
+
+                    {/* Permanent Address */}
+                    <div className="flex flex-col gap-1">
+                      <label className="text-gray-700 font-medium">Permanent Address*</label>
+                      <input
+                        type="text"
+                        name="permanent_address"
+                        value={formData.permanent_address}
+                        onChange={handleInputChange}
+                        placeholder=" Permanent Address*"
+                        className="border border-[#C4C4C4] rounded-md px-3 py-2 focus:outline-none focus:ring-1 focus:ring-blue-500"
+                      />
+                    </div>
+                  </div>
+
+                  {/* Branch, Joining Date, Designation, DOB */}
+                  <div className="grid grid-cols-4 gap-4">
+                    <div className="flex flex-col gap-1">
+                      <label className="text-gray-700 font-medium">Branch*</label>
+                      <input
+                        type="text"
+                        name="branch"
+                        value={formData.branch}
+                        onChange={handleInputChange}
+                        placeholder="Branch"
+                        className="border border-[#C4C4C4] rounded-md px-3 py-2 focus:outline-none focus:ring-1 focus:ring-blue-500"
+                      />
+                    </div>
+                    <div className="flex flex-col gap-1">
+                      <label className="text-gray-700 font-medium">Joining Date*</label>
+                      <input
+                        type="date"
+                        name="joining_date"
+                        value={formData.joining_date}
+                        onChange={handleInputChange}
+                        className="border border-[#C4C4C4] rounded-md px-3 py-2 focus:outline-none focus:ring-1 focus:ring-blue-500"
+                      />
+                    </div>
+                    <div className="flex flex-col gap-1">
+                      <label className="text-gray-700 font-medium">Designation*</label>
+                      <select
+                        name="designation"
+                        value={formData.designation}
+                        onChange={handleInputChange}
+                        className="border border-[#C4C4C4] rounded-md px-3 py-2 focus:outline-none focus:ring-1 focus:ring-blue-500"
+                      >
+                        <option value="" disabled>Select Designation</option>
+                        <option value="cashier">Cashier</option>
+                        <option value="branch manager">Branch Manager</option>
+                        <option value="executive">Executive</option>
+                        <option value="administrator">Administrator</option>
+                      </select>
+                    </div>
+                    <div className="flex flex-col gap-1">
+                      <label className="text-gray-700 font-medium">Date of Birth*</label>
+                      <input
+                        type="date"
+                        name="date_of_birth"
+                        value={formData.date_of_birth}
+                        onChange={handleInputChange}
+                        className="border border-[#C4C4C4] rounded-md px-3 py-2 focus:outline-none focus:ring-1 focus:ring-blue-500"
+                      />
+                    </div>
+                  </div>
+
+                  {/* Role, Password, Fax */}
+                  <div className="grid grid-cols-3 gap-4">
+                    <div className="flex flex-col gap-1">
+                      <label className="text-gray-700 font-medium">Assign Role*</label>
+                      <select
+                        name="assign_role"
+                        value={formData.assign_role}
+                        onChange={handleInputChange}
+                        className="border border-[#C4C4C4] rounded-md px-3 py-2 focus:outline-none focus:ring-1 focus:ring-blue-500"
+                      >
+                        <option value="" disabled>Select Role</option>
+                        <option value="Emp">Employee</option>
+                        <option value="branch manager">Branch Manager</option>
+                        <option value="executive">Executive</option>
+                        <option value="administrator">Administrator</option>
+                        <option value="auditor">Auditor</option>
+                        <option value="minor role">Minor Role</option>
+                        <option value="No role">No Role</option>
+                      </select>
+                    </div>
+                    <div className="flex flex-col gap-1">
+                      <label className="text-gray-700 font-medium">Password*</label>
+                      <input
+                        type="password"
+                        name="password"
+                        value={formData.password}
+                        onChange={handleInputChange}
+                        placeholder="Password"
+                        className="border border-[#C4C4C4] rounded-md px-3 py-2 focus:outline-none focus:ring-1 focus:ring-blue-500"
+                      />
+                    </div>
+                    <div className="flex flex-col gap-1">
+                      <label className="text-gray-700 font-medium">Fax*</label>
+                      <input
+                        type="text"
+                        name="fax"
+                        value={formData.fax}
+                        onChange={handleInputChange}
+                        placeholder="Fax"
+                        className="border border-[#C4C4C4] rounded-md px-3 py-2 focus:outline-none focus:ring-1 focus:ring-blue-500"
+                      />
+                    </div>
                   </div>
                 </div>
 
-                {/* Employee ID, Mobile, Email */}
-                <div className="grid grid-cols-3 gap-4">
-                  <div className="flex flex-col gap-1">
-                    <label className="text-gray-700 font-medium">Employee ID*</label>
-                    <input
-                      type="text"
-                      name="emp_id"
-                      value={formData.emp_id}
-                      onChange={handleInputChange}
-                      placeholder="Employee ID"
-                      className="border border-[#C4C4C4] rounded-md px-3 py-2 focus:outline-none focus:ring-1 focus:ring-blue-500"
-                    />
-                  </div>
-                  <div className="flex flex-col gap-1">
-                    <label className="text-gray-700 font-medium">Mobile No*</label>
-                    <input
-                      type="text"
-                      name="mobile_no"
-                      value={formData.mobile_no}
-                      onChange={handleInputChange}
-                      placeholder="Mobile No"
-                      className="border border-[#C4C4C4] rounded-md px-3 py-2 focus:outline-none focus:ring-1 focus:ring-blue-500"
-                    />
-                  </div>
-                  <div className="flex flex-col gap-1">
-                    <label className="text-gray-700 font-medium">Email ID*</label>
-                    <input
-                      type="email"
-                      name="email"
-                      value={formData.email}
-                      onChange={handleInputChange}
-                      placeholder="Email ID"
-                      className="border border-[#C4C4C4] rounded-md px-3 py-2 focus:outline-none focus:ring-1 focus:ring-blue-500"
-                    />
-                  </div>
-                </div>
+                {/* Right Upload Section */}
+                <div className="w-1/4 p-4">
+                  <div>
+                    <div className="flex justify-center">
+                      <img src={profileempty} alt="logout" className="w-[120px] h-[140px]" />
+                    </div>
 
-                {/* Address */}
-                <div className="grid grid-cols-3 gap-4">
-                  {/* Corresponding Address */}
-                  <div className="flex flex-col gap-1">
-                    <label className="text-gray-700 font-medium">Corresponding Address*</label>
-                    <input
-                      type="text"
-                      name="corresponding_address"
-                      value={formData.corresponding_address}
-                      onChange={handleInputChange}
-                      placeholder=" Corresponding Address*"
-                      className="border border-[#C4C4C4] rounded-md px-3 py-2 focus:outline-none focus:ring-1 focus:ring-blue-500"
-                    />
-                  </div>
+                    <div className="flex justify-center mt-2 mb-2">
+                      <label className="font-roboto font-bold text-[16px] leading-[100%] tracking-[0.03em] text-center">
+                        Upload Customer Profile
+                      </label>
+                    </div>
 
-                  {/* Radio Option */}
-                  <div className="flex gap-2 items-center">
-                    <input
-                      type="checkbox"
-                      id="sameAddress"
-                      name="sameAddress"
-                      checked={formData.permanent_address === formData.corresponding_address}
-                      onChange={(e) => {
-                        if (e.target.checked) {
-                          setFormData(prev => ({ ...prev, permanent_address: prev.corresponding_address }));
-                        } else {
-                          setFormData(prev => ({ ...prev, permanent_address: "" }));
-                        }
-                      }}
-                      className="border border-[#C4C4C4] focus:outline-none focus:ring-1 focus:ring-blue-500"
-                    />
-                    <label htmlFor="sameAddress" className="text-gray-700 font-medium">
-                      Permanent Address same as Correspondence Address?
-                    </label>
-                  </div>
+                    <div className="flex items-center border border-gray-300 rounded mt-1 w-full">
+                      <label htmlFor="profileImage"
+                        className="bg-[#D9D9D9] px-4 py-1.5 cursor-pointer text-[10px] rounded-l border-r border w-[200px] text-black font-bold">
+                        Choose File
+                      </label>
+                      <input id="profileImage" type="file" className="hidden" onChange={handleFileChange(setProfileImage)} />
+                      <span className="px-3 py-2 text-sm text-gray-500 w-full truncate">
+                        {formData.emp_image || "No file chosen"}
+                      </span>
+                    </div>
+                    <h1 className="text-[14px] font-medium">Add Proof</h1>
+                    <div className="flex items-center border border-gray-300 rounded mt-1 w-full">
+                      <label htmlFor="addressProof"
+                        className="bg-[#D9D9D9] px-4 py-1.5 cursor-pointer text-[10px] rounded-l border-r border w-[200px] text-black font-bold">
+                        Choose File
+                      </label>
+                      <input id="addressProof" type="file" className="hidden" onChange={handleFileChange(setAddressProof)} />
+                      <span className="px-3 py-2 text-sm text-gray-500 w-full truncate">
+                        {formData.emp_add_prof || "No file chosen"}
+                      </span>
+                    </div>
+                    <h1 className="text-[14px] font-medium">Id Proof</h1>
+                    <div className="flex items-center border border-gray-300 rounded mt-1 w-full">
+                      <label htmlFor="idProof"
+                        className="bg-[#D9D9D9] px-4 py-1.5 cursor-pointer text-[10px] rounded-l border-r border w-[200px] text-black font-bold">
+                        Choose File
+                      </label>
+                      <input id="idProof" type="file" className="hidden" onChange={handleFileChange(setIdProof)} />
+                      <span className="px-3 py-2 text-sm text-gray-500 w-full truncate">
+                        {formData.emp_id_prof || "No file chosen"}
+                      </span>
+                    </div>
 
-                  {/* Permanent Address */}
-                  <div className="flex flex-col gap-1">
-                    <label className="text-gray-700 font-medium">Permanent Address*</label>
-                    <input
-                      type="text"
-                      name="permanent_address"
-                      value={formData.permanent_address}
-                      onChange={handleInputChange}
-                      placeholder=" Permanent Address*"
-                      className="border border-[#C4C4C4] rounded-md px-3 py-2 focus:outline-none focus:ring-1 focus:ring-blue-500"
-                    />
-                  </div>
-                </div>
-
-                {/* Branch, Joining Date, Designation, DOB */}
-                <div className="grid grid-cols-4 gap-4">
-                  <div className="flex flex-col gap-1">
-                    <label className="text-gray-700 font-medium">Branch*</label>
-                    <input
-                      type="text"
-                      name="branch"
-                      value={formData.branch}
-                      onChange={handleInputChange}
-                      placeholder="Branch"
-                      className="border border-[#C4C4C4] rounded-md px-3 py-2 focus:outline-none focus:ring-1 focus:ring-blue-500"
-                    />
-                  </div>
-                  <div className="flex flex-col gap-1">
-                    <label className="text-gray-700 font-medium">Joining Date*</label>
-                    <input
-                      type="date"
-                      name="joining_date"
-                      value={formData.joining_date}
-                      onChange={handleInputChange}
-                      className="border border-[#C4C4C4] rounded-md px-3 py-2 focus:outline-none focus:ring-1 focus:ring-blue-500"
-                    />
-                  </div>
-                  <div className="flex flex-col gap-1">
-                    <label className="text-gray-700 font-medium">Designation*</label>
-                    <select
-                      name="designation"
-                      value={formData.designation}
-                      onChange={handleInputChange}
-                      className="border border-[#C4C4C4] rounded-md px-3 py-2 focus:outline-none focus:ring-1 focus:ring-blue-500"
-                    >
-                      <option value="" disabled>Select Designation</option>
-                      <option value="cashier">Cashier</option>
-                      <option value="branch manager">Branch Manager</option>
-                      <option value="executive">Executive</option>
-                      <option value="administrator">Administrator</option>
-                    </select>
-                  </div>
-                  <div className="flex flex-col gap-1">
-                    <label className="text-gray-700 font-medium">Date of Birth*</label>
-                    <input
-                      type="date"
-                      name="date_of_birth"
-                      value={formData.date_of_birth}
-                      onChange={handleInputChange}
-                      className="border border-[#C4C4C4] rounded-md px-3 py-2 focus:outline-none focus:ring-1 focus:ring-blue-500"
-                    />
-                  </div>
-                </div>
-
-                {/* Role, Password, Fax */}
-                <div className="grid grid-cols-3 gap-4">
-                  <div className="flex flex-col gap-1">
-                    <label className="text-gray-700 font-medium">Assign Role*</label>
-                    <select
-                      name="assign_role"
-                      value={formData.assign_role}
-                      onChange={handleInputChange}
-                      className="border border-[#C4C4C4] rounded-md px-3 py-2 focus:outline-none focus:ring-1 focus:ring-blue-500"
-                    >
-                      <option value="" disabled>Select Role</option>
-                      <option value="Emp">Employee</option>
-                      <option value="branch manager">Branch Manager</option>
-                      <option value="executive">Executive</option>
-                      <option value="administrator">Administrator</option>
-                      <option value="auditor">Auditor</option>
-                      <option value="minor role">Minor Role</option>
-                      <option value="No role">No Role</option>
-                    </select>
-                  </div>
-                  <div className="flex flex-col gap-1">
-                    <label className="text-gray-700 font-medium">Password*</label>
-                    <input
-                      type="password"
-                      name="password"
-                      value={formData.password}
-                      onChange={handleInputChange}
-                      placeholder="Password"
-                      className="border border-[#C4C4C4] rounded-md px-3 py-2 focus:outline-none focus:ring-1 focus:ring-blue-500"
-                    />
-                  </div>
-                  <div className="flex flex-col gap-1">
-                    <label className="text-gray-700 font-medium">Fax*</label>
-                    <input
-                      type="text"
-                      name="fax"
-                      value={formData.fax}
-                      onChange={handleInputChange}
-                      placeholder="Fax"
-                      className="border border-[#C4C4C4] rounded-md px-3 py-2 focus:outline-none focus:ring-1 focus:ring-blue-500"
-                    />
+                    <div className=" mt-4 text-sm w-fit flex justify-end">
+                      <p className="bg-green-500 px-2 py-1 text-white rounded-lg">
+                        View Document History
+                      </p>
+                    </div>
                   </div>
                 </div>
               </div>
 
-              {/* Right Upload Section */}
-              <div className="w-1/4 p-4">
-                <div>
-                  <div className="flex justify-center">
-                    <img src={profileempty} alt="logout" className="w-[120px] h-[140px]" />
-                  </div>
-
-                  <div className="flex justify-center mt-2 mb-2">
-                    <label className="font-roboto font-bold text-[16px] leading-[100%] tracking-[0.03em] text-center">
-                      Upload Customer Profile
-                    </label>
-                  </div>
-
-                  <div className="flex items-center border border-gray-300 rounded mt-1 w-full">
-                    <label htmlFor="profileImage"
-                      className="bg-[#D9D9D9] px-4 py-1.5 cursor-pointer text-[10px] rounded-l border-r border w-[200px] text-black font-bold">
-                      Choose File
-                    </label>
-                    <input id="profileImage" type="file" className="hidden" onChange={handleFileChange(setProfileImage)} />
-                    <span className="px-3 py-2 text-sm text-gray-500 w-full truncate">
-                      {formData.emp_image || "No file chosen"}
-                    </span>
-                  </div>
-                  <h1 className="text-[14px] font-medium">Add Proof</h1>
-                  <div className="flex items-center border border-gray-300 rounded mt-1 w-full">
-                    <label htmlFor="addressProof"
-                      className="bg-[#D9D9D9] px-4 py-1.5 cursor-pointer text-[10px] rounded-l border-r border w-[200px] text-black font-bold">
-                      Choose File
-                    </label>
-                    <input id="addressProof" type="file" className="hidden" onChange={handleFileChange(setAddressProof)} />
-                    <span className="px-3 py-2 text-sm text-gray-500 w-full truncate">
-                      {formData.emp_add_prof || "No file chosen"}
-                    </span>
-                  </div>
-                  <h1 className="text-[14px] font-medium">Id Proof</h1>
-                  <div className="flex items-center border border-gray-300 rounded mt-1 w-full">
-                    <label htmlFor="idProof"
-                      className="bg-[#D9D9D9] px-4 py-1.5 cursor-pointer text-[10px] rounded-l border-r border w-[200px] text-black font-bold">
-                      Choose File
-                    </label>
-                    <input id="idProof" type="file" className="hidden" onChange={handleFileChange(setIdProof)} />
-                    <span className="px-3 py-2 text-sm text-gray-500 w-full truncate">
-                      {formData.emp_id_prof || "No file chosen"}
-                    </span>
-                  </div>
-
-                  <div className=" mt-4 text-sm w-fit flex justify-end">
-                    <p className="bg-green-500 px-2 py-1 text-white rounded-lg">
-                      View Document History
-                    </p>
-                  </div>
+              {/* Bottom Actions */}
+              <div className="flex flex-col gap-3 items-center justify-between mt-6">
+                <label className="flex items-center gap-2 text-gray-700 font-medium">
+                  <input
+                    type="checkbox"
+                    name="status"
+                    checked={!!formData.status}
+                    onChange={(e) => setFormData(prev => ({ ...prev, status: e.target.checked }))}
+                    className="w-4 h-4"
+                  />
+                  Is Active
+                </label>
+                <div className="flex gap-3">
+                  <button
+                    className="bg-[#0A2478] text-white w-[92px] h-[32px] rounded hover:bg-[#081c5b]"
+                    onClick={handleSave}
+                  >
+                    Save
+                  </button>
+                  <button
+                    className="bg-[#C1121F] text-white w-[92px] h-[32px] rounded hover:bg-[#a00e18]"
+                    onClick={() => setIsModalOpen(false)}
+                  >
+                    Exit
+                  </button>
                 </div>
-              </div>
-            </div>
-
-            {/* Bottom Actions */}
-            <div className="flex flex-col gap-3 items-center justify-between mt-6">
-              <label className="flex items-center gap-2 text-gray-700 font-medium">
-                <input
-                  type="checkbox"
-                  name="status"
-                  checked={!!formData.status}
-                  onChange={(e) => setFormData(prev => ({ ...prev, status: e.target.checked }))}
-                  className="w-4 h-4"
-                />
-                Is Active
-              </label>
-              <div className="flex gap-3">
-                <button
-                  className="bg-[#0A2478] text-white w-[92px] h-[32px] rounded hover:bg-[#081c5b]"
-                  onClick={handleSave}
-                >
-                  Save
-                </button>
-                <button
-                  className="bg-[#C1121F] text-white w-[92px] h-[32px] rounded hover:bg-[#a00e18]"
-                  onClick={() => setIsModalOpen(false)}
-                >
-                  Exit
-                </button>
               </div>
             </div>
           </div>
-        </div>
-      )}
+        )
+      }
 
       {/* Delete Confirmation Modal */}
-      {deleteModalOpen && (
-        <div className="fixed inset-0 flex items-center justify-center z-50 bg-[#0101017A] backdrop-blur-md">
-          <div className="bg-white w-[396px] rounded-lg shadow-lg h-[386px] p-5">
-            <div className="flex justify-center mt-2">
-              <img src={blockimg} alt="block" className="w-[113px] h-[113px]" />
-            </div>
-            <div className="mt-10 text-center">
-              <p className="text-[22px] font-medium">Are you sure to delete this employee?</p>
-              <p className="text-[17px] text-gray-600 mt-2">You won't be able to revert this action.</p>
-            </div>
-            <div className="mt-6 flex flex-col items-center gap-4">
-              <button
-                className="bg-[#F11717] text-white px-5 py-2 rounded text-[18px] cursor-pointer"
-                onClick={handleDeleteConfirm}
-              >
-                Confirm Delete
-              </button>
-              <button
-                className="bg-[#0A2478] text-white px-5 py-2 rounded text-[18px] cursor-pointer"
-                onClick={() => setDeleteModalOpen(false)}
-              >
-                Cancel
-              </button>
+      {
+        deleteModalOpen && (
+          <div className="fixed inset-0 flex items-center justify-center z-50 bg-[#0101017A] backdrop-blur-md">
+            <div className="bg-white w-[396px] rounded-lg shadow-lg h-[386px] p-5">
+              <div className="flex justify-center mt-2">
+                <img src={blockimg} alt="block" className="w-[113px] h-[113px]" />
+              </div>
+              <div className="mt-10 text-center">
+                <p className="text-[22px] font-medium">Are you sure to delete this employee?</p>
+                <p className="text-[17px] text-gray-600 mt-2">You won't be able to revert this action.</p>
+              </div>
+              <div className="mt-6 flex flex-col items-center gap-4">
+                <button
+                  className="bg-[#F11717] text-white px-5 py-2 rounded text-[18px] cursor-pointer"
+                  onClick={handleDeleteConfirm}
+                >
+                  Confirm Delete
+                </button>
+                <button
+                  className="bg-[#0A2478] text-white px-5 py-2 rounded text-[18px] cursor-pointer"
+                  onClick={() => setDeleteModalOpen(false)}
+                >
+                  Cancel
+                </button>
+              </div>
             </div>
           </div>
-        </div>
-      )}
+        )
+      }
 
       {/* Table */}
       <div className="flex justify-center">
@@ -672,26 +714,31 @@ const EmployeeProfile = () => {
                       </td>
                       <td className="px-4 py-2">
                         <div className="flex gap-2 justify-center">
-                          <button className="bg-[#646AD9] p-1.5 rounded text-white hover:bg-[#5057c9]">
+                          <button
+                            title="View"
+                            onClick={() => handleView(emp)}
+                            className="bg-[#646AD9] p-1.5 rounded text-white hover:bg-[#5057c9]">
                             <FiEye />
                           </button>
                           <button
+                            title="Edit"
                             className="bg-green-500 p-1.5 rounded text-white hover:bg-green-600"
                             onClick={() => handleEdit(emp)}
                           >
                             <FiEdit />
                           </button>
                           <button
+                            title="Delete"
                             className="bg-red-600 p-1.5 rounded text-white hover:bg-red-700"
                             onClick={() => handleDeleteClick(emp.id)}
                           >
-                            <FiTrash2 />
+                            <FiTrash2 title="Delete" />
                           </button>
                         </div>
                       </td>
                       <td className="px-4 py-2">
                         <button
-                          onClick={() => handleToggle(emp.id, emp.status)}
+                          onClick={() => handleToggleStatus(emp)}
                           className={`w-12 h-6 flex items-center rounded-full p-1 transition-colors ${emp.status ? "bg-[#0A2478]" : "bg-gray-300"
                             }`}
                         >
@@ -717,14 +764,16 @@ const EmployeeProfile = () => {
       </div>
 
       {/* Pagination */}
-      {totalPages > 1 && (
-        <Pagination
-          currentPage={currentPage}
-          totalPages={totalPages}
-          onPageChange={handlePageChange}
-        />
-      )}
-    </div>
+      {
+        totalPages > 1 && (
+          <Pagination
+            currentPage={currentPage}
+            totalPages={totalPages}
+            onPageChange={handlePageChange}
+          />
+        )
+      }
+    </div >
   );
 };
 
