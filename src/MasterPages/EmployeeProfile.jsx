@@ -1,50 +1,218 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { FaPaperclip } from "react-icons/fa";
-import GroupData from "../assets/Group 124.svg";
-import DeleteData from "../assets/deletimg.png";
+import { FiEdit, FiEye, FiTrash2 } from "react-icons/fi";
+import blockimg from "../assets/blockimg.png";
 import profileempty from "../assets/profileempty.png";
+import {
+  deleteEmployeeApi,
+  fetchEmployeeProfileApi,
+  createEmployeeApi,
+  updateEmployeeApi
+} from "../API/Master/Employee_Profile/EmployeeProfile";
+import Pagination from "../Component/Pagination";
 
 const EmployeeProfile = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [data] = useState([
-    {
-      id: 1,
-      employee: "",
-      name: "Sakshi Chaudhari",
-      email: "sakshi.chaudhari@sluwant.com",
-      mobile: "4217845963",
-      doj: "14-05-2025",
-      dob: "45-03-2025",
-      address: "Sakshi Arjun Chaudhari,N41/CF 1-1-6,Shivshakti Chowk,Cidco,Nashik",
-      isActive: true,
-    },
-    {
-      id: 2,
-      employee: "",
-      name: "Sakshi Chaudhari",
-      email: "sakshi.chaudhari@sluwant.com",
-      mobile: "4217845963",
-      doj: "14-05-2025",
-      dob: "45-03-2025",
-      address: "Sakshi Arjun Chaudhari,N41/CF 1-1-6,Shivshakti Chowk,Cidco,Nashik",
-      isActive: true,
-    },
-    {
-      id: 3,
-      employee: "",
-      name: "Sakshi Chaudhari",
-      email: "sakshi.chaudhari@sluwant.com",
-      mobile: "4217845963",
-      doj: "14-05-2025",
-      dob: "45-03-2025",
-      address: "Sakshi Arjun Chaudhari,N41/CF 1-1-6,Shivshakti Chowk,Cidco,Nashik",
-      isActive: true,
-    },
-  ]);
+  const [employeeList, setEmployeeList] = useState([]);
+  const [isLoading, setIsLoading] = useState(false);
+  const [isEditMode, setIsEditMode] = useState(false);
+  const [deleteModalOpen, setDeleteModalOpen] = useState(false);
+  const [deleteId, setDeleteId] = useState(null);
+  const [searchTerm, setSearchTerm] = useState({ empId: "", empName: "" });
 
-  const handleToggle = (id) => {
-    // TODO: Toggle active state logic
-    console.log("Toggling active state for:", id);
+  const [formData, setFormData] = useState({
+    id: null,
+    pan_card: "",
+    aadhar_card: "",
+    emp_name: "",
+    emp_id: "",
+    mobile_no: "",
+    email: "",
+    print_name: "",
+    corresponding_address: "",
+    permanent_address: "",
+    branch: "",
+    joining_date: "",
+    designation: "",
+    date_of_birth: "",
+    assign_role: "",
+    password: "",
+    fax: "",
+    emp_image: "",
+    emp_add_prof: "",
+    emp_id_prof: "",
+    status: true,
+  });
+
+  // File states
+  const [profileImage, setProfileImage] = useState(null);
+  const [addressProof, setAddressProof] = useState(null);
+  const [idProof, setIdProof] = useState(null);
+
+  // Pagination states
+  const [currentPage, setCurrentPage] = useState(1);
+  const [totalItems, setTotalItems] = useState(0);
+  const itemsPerPage = 10;
+
+  // 🔹 Pagination Controls
+  const totalPages = Math.ceil(totalItems / itemsPerPage);
+
+  const handlePageChange = (page) => {
+    if (page < 1 || page > totalPages) return;
+    setCurrentPage(page);
+    fetchEmployee(page);
+  };
+
+  // ✅ Fetch employee list
+  const fetchEmployee = async (page = 1) => {
+    setIsLoading(true);
+    try {
+      const result = await fetchEmployeeProfileApi(page, itemsPerPage);
+      if (result && result.data) {
+        setEmployeeList(result.data);
+        setTotalItems(result.total || result.data.length);
+        setCurrentPage(result.currentPage || page);
+      }
+    } catch (error) {
+      console.error("❌ Error fetching employees:", error);
+      alert("Error fetching employees");
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    fetchEmployee();
+  }, []);
+
+  // 🗑️ Show delete confirmation modal
+  const handleDeleteClick = (id) => {
+    setDeleteId(id);
+    setDeleteModalOpen(true);
+  };
+
+  // 🟥 Confirm delete
+  const handleDeleteConfirm = async () => {
+    try {
+      await deleteEmployeeApi(deleteId);
+      console.log(deleteEmployeeApi)
+      setDeleteModalOpen(false);
+      setDeleteId(null);
+      fetchEmployee(currentPage);
+    } catch (error) {
+      console.error("❌ Error deleting employee:", error);
+      alert("Error deleting employee");
+    }
+  };
+
+  // ✏️ Handle Edit
+  const handleEdit = (employee) => {
+    setIsEditMode(true);
+    setFormData({
+      ...employee,
+      password: "", // Don't pre-fill password for security
+    });
+    setIsModalOpen(true);
+  };
+
+  // ➕ Handle Add New
+  const handleAddNew = () => {
+    setIsEditMode(false);
+    setFormData({
+      id: null,
+      pan_card: "",
+      aadhar_card: "",
+      emp_name: "",
+      emp_id: "",
+      mobile_no: "",
+      email: "",
+      print_name: "",
+      corresponding_address: "",
+      permanent_address: "",
+      branch: "",
+      joining_date: "",
+      designation: "",
+      date_of_birth: "",
+      assign_role: "",
+      password: "",
+      fax: "",
+      emp_image: "",
+      emp_add_prof: "",
+      emp_id_prof: "",
+      status: true,
+    });
+    setProfileImage(null);
+    setAddressProof(null);
+    setIdProof(null);
+    setIsModalOpen(true);
+  };
+
+  // 💾 Handle Save/Update
+  const handleSave = async () => {
+    debugger
+    try {
+      // Basic validation
+      if (!formData.emp_name || !formData.email || !formData.mobile_no) {
+        alert("Please fill in required fields");
+        return;
+      }
+
+      if (isEditMode) {
+        await updateEmployeeApi(formData);
+        alert("Employee updated successfully");
+      } else {
+        await createEmployeeApi(formData);
+        alert("Employee created successfully");
+      }
+
+      setIsModalOpen(false);
+      fetchEmployee(currentPage);
+    } catch (error) {
+      console.error("❌ Error saving employee:", error);
+      alert(error.response?.data?.message || "Error saving employee");
+    }
+  };
+
+  // 🔍 Handle Search
+  const handleSearch = () => {
+    // Implement search logic here
+    console.log("Searching with:", searchTerm);
+    // You might want to call a search API or filter locally
+  };
+
+  const handleInputChange = (e) => {
+    const { name, value, type, checked } = e.target;
+    setFormData(prev => ({
+      ...prev,
+      [name]: type === 'checkbox' ? checked : value
+    }));
+  };
+
+  const handleFileChange = (setter) => (e) => {
+    const file = e.target.files[0];
+    if (file) {
+      setter(file);
+      // Here you would typically upload the file and get the URL
+      // For now, we'll just use the file name
+      if (setter === setProfileImage) {
+        setFormData(prev => ({ ...prev, emp_image: file.name }));
+      } else if (setter === setAddressProof) {
+        setFormData(prev => ({ ...prev, emp_add_prof: file.name }));
+      } else if (setter === setIdProof) {
+        setFormData(prev => ({ ...prev, emp_id_prof: file.name }));
+      }
+    }
+  };
+
+  const handleToggle = async (id, currentStatus) => {
+    try {
+      // Implement status toggle API call
+      console.log("Toggling status for:", id, "to:", !currentStatus);
+      // await toggleEmployeeStatusApi(id, !currentStatus);
+      fetchEmployee(currentPage);
+    } catch (error) {
+      console.error("❌ Error toggling employee status:", error);
+    }
   };
 
   return (
@@ -63,6 +231,8 @@ const EmployeeProfile = () => {
                 <p className="text-[11.25px] font-source">Emp Id</p>
                 <input
                   type="text"
+                  value={searchTerm.empId}
+                  onChange={(e) => setSearchTerm(prev => ({ ...prev, empId: e.target.value }))}
                   className="border border-gray-400 rounded px-3 py-1 text-[11.25px] w-[168px] h-[28px]"
                 />
               </div>
@@ -70,6 +240,8 @@ const EmployeeProfile = () => {
                 <p className="text-[11.25px] font-source">Emp Name</p>
                 <input
                   type="text"
+                  value={searchTerm.empName}
+                  onChange={(e) => setSearchTerm(prev => ({ ...prev, empName: e.target.value }))}
                   className="border border-gray-400 rounded px-3 py-1 text-[11.25px] w-[168px] h-[28px]"
                 />
               </div>
@@ -77,16 +249,16 @@ const EmployeeProfile = () => {
 
             <div className="flex gap-3">
               <button
-                // onClick={() => setIsModalOpen(true)}
+                onClick={handleSearch}
                 className="bg-[#0A2478] text-white text-[11.25px] w-[74px] h-[24px] rounded flex items-center justify-center"
               >
-                Save
+                Search
               </button>
             </div>
 
             <div className="flex gap-3">
               <button
-                onClick={() => setIsModalOpen(true)}
+                onClick={handleAddNew}
                 className="bg-[#0A2478] text-white text-[11.25px] w-[74px] h-[24px] rounded flex items-center justify-center"
               >
                 Add
@@ -99,14 +271,13 @@ const EmployeeProfile = () => {
         </div>
       </div>
 
-
-
+      {/* Add/Edit Modal */}
       {isModalOpen && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-sm">
           <div className="bg-white w-[920px] max-h-[90vh] rounded-lg shadow-lg p-6 overflow-y-auto">
             {/* Title */}
             <h2 className="text-[#0A2478] text-[20px] font-semibold mb-6">
-              Add Charges Profile
+              {isEditMode ? "Edit Employee Profile" : "Add Employee Profile"}
             </h2>
 
             <div className="flex gap-6">
@@ -120,6 +291,9 @@ const EmployeeProfile = () => {
                     <div className="flex">
                       <input
                         type="text"
+                        name="pan_card"
+                        value={formData.pan_card}
+                        onChange={handleInputChange}
                         placeholder="PAN Card Number"
                         className="border border-[#C4C4C4] rounded-l-md px-3 py-2 w-full focus:outline-none focus:ring-1 focus:ring-blue-500"
                       />
@@ -135,6 +309,9 @@ const EmployeeProfile = () => {
                     <div className="flex">
                       <input
                         type="text"
+                        name="aadhar_card"
+                        value={formData.aadhar_card}
+                        onChange={handleInputChange}
                         placeholder="Aadhar Card Number"
                         className="border border-[#C4C4C4] rounded-l-md px-3 py-2 w-full focus:outline-none focus:ring-1 focus:ring-blue-500"
                       />
@@ -149,6 +326,9 @@ const EmployeeProfile = () => {
                     <label className="text-gray-700 font-medium">Name*</label>
                     <input
                       type="text"
+                      name="emp_name"
+                      value={formData.emp_name}
+                      onChange={handleInputChange}
                       placeholder="Name"
                       className="border border-[#C4C4C4] rounded-md px-3 py-2 focus:outline-none focus:ring-1 focus:ring-blue-500"
                     />
@@ -161,6 +341,9 @@ const EmployeeProfile = () => {
                     <label className="text-gray-700 font-medium">Employee ID*</label>
                     <input
                       type="text"
+                      name="emp_id"
+                      value={formData.emp_id}
+                      onChange={handleInputChange}
                       placeholder="Employee ID"
                       className="border border-[#C4C4C4] rounded-md px-3 py-2 focus:outline-none focus:ring-1 focus:ring-blue-500"
                     />
@@ -169,6 +352,9 @@ const EmployeeProfile = () => {
                     <label className="text-gray-700 font-medium">Mobile No*</label>
                     <input
                       type="text"
+                      name="mobile_no"
+                      value={formData.mobile_no}
+                      onChange={handleInputChange}
                       placeholder="Mobile No"
                       className="border border-[#C4C4C4] rounded-md px-3 py-2 focus:outline-none focus:ring-1 focus:ring-blue-500"
                     />
@@ -177,6 +363,9 @@ const EmployeeProfile = () => {
                     <label className="text-gray-700 font-medium">Email ID*</label>
                     <input
                       type="email"
+                      name="email"
+                      value={formData.email}
+                      onChange={handleInputChange}
                       placeholder="Email ID"
                       className="border border-[#C4C4C4] rounded-md px-3 py-2 focus:outline-none focus:ring-1 focus:ring-blue-500"
                     />
@@ -190,17 +379,28 @@ const EmployeeProfile = () => {
                     <label className="text-gray-700 font-medium">Corresponding Address*</label>
                     <input
                       type="text"
+                      name="corresponding_address"
+                      value={formData.corresponding_address}
+                      onChange={handleInputChange}
                       placeholder=" Corresponding Address*"
                       className="border border-[#C4C4C4] rounded-md px-3 py-2 focus:outline-none focus:ring-1 focus:ring-blue-500"
                     />
                   </div>
 
                   {/* Radio Option */}
-                  <div className="flex gap-2">
+                  <div className="flex gap-2 items-center">
                     <input
                       type="checkbox"
                       id="sameAddress"
-                      name="address"
+                      name="sameAddress"
+                      checked={formData.permanent_address === formData.corresponding_address}
+                      onChange={(e) => {
+                        if (e.target.checked) {
+                          setFormData(prev => ({ ...prev, permanent_address: prev.corresponding_address }));
+                        } else {
+                          setFormData(prev => ({ ...prev, permanent_address: "" }));
+                        }
+                      }}
                       className="border border-[#C4C4C4] focus:outline-none focus:ring-1 focus:ring-blue-500"
                     />
                     <label htmlFor="sameAddress" className="text-gray-700 font-medium">
@@ -213,6 +413,9 @@ const EmployeeProfile = () => {
                     <label className="text-gray-700 font-medium">Permanent Address*</label>
                     <input
                       type="text"
+                      name="permanent_address"
+                      value={formData.permanent_address}
+                      onChange={handleInputChange}
                       placeholder=" Permanent Address*"
                       className="border border-[#C4C4C4] rounded-md px-3 py-2 focus:outline-none focus:ring-1 focus:ring-blue-500"
                     />
@@ -225,6 +428,9 @@ const EmployeeProfile = () => {
                     <label className="text-gray-700 font-medium">Branch*</label>
                     <input
                       type="text"
+                      name="branch"
+                      value={formData.branch}
+                      onChange={handleInputChange}
                       placeholder="Branch"
                       className="border border-[#C4C4C4] rounded-md px-3 py-2 focus:outline-none focus:ring-1 focus:ring-blue-500"
                     />
@@ -233,21 +439,34 @@ const EmployeeProfile = () => {
                     <label className="text-gray-700 font-medium">Joining Date*</label>
                     <input
                       type="date"
+                      name="joining_date"
+                      value={formData.joining_date}
+                      onChange={handleInputChange}
                       className="border border-[#C4C4C4] rounded-md px-3 py-2 focus:outline-none focus:ring-1 focus:ring-blue-500"
                     />
                   </div>
                   <div className="flex flex-col gap-1">
                     <label className="text-gray-700 font-medium">Designation*</label>
-                    <input
-                      type="text"
-                      placeholder="Designation"
+                    <select
+                      name="designation"
+                      value={formData.designation}
+                      onChange={handleInputChange}
                       className="border border-[#C4C4C4] rounded-md px-3 py-2 focus:outline-none focus:ring-1 focus:ring-blue-500"
-                    />
+                    >
+                      <option value="" disabled>Select Designation</option>
+                      <option value="cashier">Cashier</option>
+                      <option value="branch manager">Branch Manager</option>
+                      <option value="executive">Executive</option>
+                      <option value="administrator">Administrator</option>
+                    </select>
                   </div>
                   <div className="flex flex-col gap-1">
                     <label className="text-gray-700 font-medium">Date of Birth*</label>
                     <input
                       type="date"
+                      name="date_of_birth"
+                      value={formData.date_of_birth}
+                      onChange={handleInputChange}
                       className="border border-[#C4C4C4] rounded-md px-3 py-2 focus:outline-none focus:ring-1 focus:ring-blue-500"
                     />
                   </div>
@@ -257,16 +476,29 @@ const EmployeeProfile = () => {
                 <div className="grid grid-cols-3 gap-4">
                   <div className="flex flex-col gap-1">
                     <label className="text-gray-700 font-medium">Assign Role*</label>
-                    <input
-                      type="text"
-                      placeholder="Assign Role"
+                    <select
+                      name="assign_role"
+                      value={formData.assign_role}
+                      onChange={handleInputChange}
                       className="border border-[#C4C4C4] rounded-md px-3 py-2 focus:outline-none focus:ring-1 focus:ring-blue-500"
-                    />
+                    >
+                      <option value="" disabled>Select Role</option>
+                      <option value="Emp">Employee</option>
+                      <option value="branch manager">Branch Manager</option>
+                      <option value="executive">Executive</option>
+                      <option value="administrator">Administrator</option>
+                      <option value="auditor">Auditor</option>
+                      <option value="minor role">Minor Role</option>
+                      <option value="No role">No Role</option>
+                    </select>
                   </div>
                   <div className="flex flex-col gap-1">
                     <label className="text-gray-700 font-medium">Password*</label>
                     <input
                       type="password"
+                      name="password"
+                      value={formData.password}
+                      onChange={handleInputChange}
                       placeholder="Password"
                       className="border border-[#C4C4C4] rounded-md px-3 py-2 focus:outline-none focus:ring-1 focus:ring-blue-500"
                     />
@@ -275,6 +507,9 @@ const EmployeeProfile = () => {
                     <label className="text-gray-700 font-medium">Fax*</label>
                     <input
                       type="text"
+                      name="fax"
+                      value={formData.fax}
+                      onChange={handleInputChange}
                       placeholder="Fax"
                       className="border border-[#C4C4C4] rounded-md px-3 py-2 focus:outline-none focus:ring-1 focus:ring-blue-500"
                     />
@@ -296,44 +531,35 @@ const EmployeeProfile = () => {
                   </div>
 
                   <div className="flex items-center border border-gray-300 rounded mt-1 w-full">
-                    <label htmlFor="uploadFile"
+                    <label htmlFor="profileImage"
                       className="bg-[#D9D9D9] px-4 py-1.5 cursor-pointer text-[10px] rounded-l border-r border w-[200px] text-black font-bold">
                       Choose File
                     </label>
-                    <input id="uploadFile" type="file" className="hidden" // onChange={(e)=>
-                    // setFileName(e.target.files[0] ? e.target.files[0].name : "No file chosen")
-                    // }
-                    />
+                    <input id="profileImage" type="file" className="hidden" onChange={handleFileChange(setProfileImage)} />
                     <span className="px-3 py-2 text-sm text-gray-500 w-full truncate">
-                      {/* {fileName || "No file chosen"} */}
+                      {formData.emp_image || "No file chosen"}
                     </span>
                   </div>
                   <h1 className="text-[14px] font-medium">Add Proof</h1>
                   <div className="flex items-center border border-gray-300 rounded mt-1 w-full">
-                    <label htmlFor="uploadFile"
+                    <label htmlFor="addressProof"
                       className="bg-[#D9D9D9] px-4 py-1.5 cursor-pointer text-[10px] rounded-l border-r border w-[200px] text-black font-bold">
                       Choose File
                     </label>
-                    <input id="uploadFile" type="file" className="hidden" // onChange={(e)=>
-                    // setFileName(e.target.files[0] ? e.target.files[0].name : "No file chosen")
-                    // }
-                    />
+                    <input id="addressProof" type="file" className="hidden" onChange={handleFileChange(setAddressProof)} />
                     <span className="px-3 py-2 text-sm text-gray-500 w-full truncate">
-                      {/* {fileName || "No file chosen"} */}
+                      {formData.emp_add_prof || "No file chosen"}
                     </span>
                   </div>
                   <h1 className="text-[14px] font-medium">Id Proof</h1>
                   <div className="flex items-center border border-gray-300 rounded mt-1 w-full">
-                    <label htmlFor="uploadFile"
+                    <label htmlFor="idProof"
                       className="bg-[#D9D9D9] px-4 py-1.5 cursor-pointer text-[10px] rounded-l border-r border w-[200px] text-black font-bold">
                       Choose File
                     </label>
-                    <input id="uploadFile" type="file" className="hidden" // onChange={(e)=>
-                    // setFileName(e.target.files[0] ? e.target.files[0].name : "No file chosen")
-                    // }
-                    />
+                    <input id="idProof" type="file" className="hidden" onChange={handleFileChange(setIdProof)} />
                     <span className="px-3 py-2 text-sm text-gray-500 w-full truncate">
-                      {/* {fileName || "No file chosen"} */}
+                      {formData.emp_id_prof || "No file chosen"}
                     </span>
                   </div>
 
@@ -349,12 +575,19 @@ const EmployeeProfile = () => {
             {/* Bottom Actions */}
             <div className="flex flex-col gap-3 items-center justify-between mt-6">
               <label className="flex items-center gap-2 text-gray-700 font-medium">
-                <input type="checkbox" className="w-4 h-4" /> Is Active
+                <input
+                  type="checkbox"
+                  name="status"
+                  checked={!!formData.status}
+                  onChange={(e) => setFormData(prev => ({ ...prev, status: e.target.checked }))}
+                  className="w-4 h-4"
+                />
+                Is Active
               </label>
               <div className="flex gap-3">
                 <button
                   className="bg-[#0A2478] text-white w-[92px] h-[32px] rounded hover:bg-[#081c5b]"
-                  onClick={() => setIsModalOpen(false)}
+                  onClick={handleSave}
                 >
                   Save
                 </button>
@@ -370,90 +603,127 @@ const EmployeeProfile = () => {
         </div>
       )}
 
-
+      {/* Delete Confirmation Modal */}
+      {deleteModalOpen && (
+        <div className="fixed inset-0 flex items-center justify-center z-50 bg-[#0101017A] backdrop-blur-md">
+          <div className="bg-white w-[396px] rounded-lg shadow-lg h-[386px] p-5">
+            <div className="flex justify-center mt-2">
+              <img src={blockimg} alt="block" className="w-[113px] h-[113px]" />
+            </div>
+            <div className="mt-10 text-center">
+              <p className="text-[22px] font-medium">Are you sure to delete this employee?</p>
+              <p className="text-[17px] text-gray-600 mt-2">You won't be able to revert this action.</p>
+            </div>
+            <div className="mt-6 flex flex-col items-center gap-4">
+              <button
+                className="bg-[#F11717] text-white px-5 py-2 rounded text-[18px] cursor-pointer"
+                onClick={handleDeleteConfirm}
+              >
+                Confirm Delete
+              </button>
+              <button
+                className="bg-[#0A2478] text-white px-5 py-2 rounded text-[18px] cursor-pointer"
+                onClick={() => setDeleteModalOpen(false)}
+              >
+                Cancel
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* Table */}
       <div className="flex justify-center">
-        <div className="overflow-x-auto mt-5 w-[1290px] h-[500px]">
-          <table className="w-full border-collapse">
-            <thead className="bg-[#0A2478] text-white text-sm">
-              <tr>
-                <th className="px-4 py-2 text-left border-r">Employee</th>
-                <th className="px-4 py-2 text-left border-r">Name</th>
-                <th className="px-4 py-2 text-left border-r">Email</th>
-                <th className="px-4 py-2 text-left border-r">Mobile</th>
-                <th className="px-4 py-2 text-left border-r">DOJ</th>
-                <th className="px-4 py-2 text-left border-r">DOB</th>
-                <th className="px-4 py-2 text-left border-r">Address</th>
-                <th className="px-4 py-2 text-left border-r">Action</th>
-                <th className="px-4 py-2 text-left border-r">Active</th>
-
-
-
-
-
-              </tr>
-            </thead>
-            <tbody className="text-[12px]">
-              {data.map((row, index) => (
-                <tr
-                  key={row.id}
-                  className={`border-b ${index % 2 === 0 ? "bg-gray-50" : "bg-white"}`}
-                >
-                  <td className="px-4 py-2">{row.employee}</td>
-                  <td className="px-4 py-2">{row.name}</td>
-                  <td className="px-4 py-2">{row.email}</td>
-                  <td className="px-4 py-2">{row.mobile}</td>
-                  <td className="px-4 py-2">{row.doj}</td>
-                  <td className="px-4 py-2">{row.dob}</td>
-                  <td className="px-4 py-2">{row.address}</td>
-                  <td className="px-4 py-2 text-[#1883EF] cursor-pointer">
-                    <div className="flex gap-2">
-                      <div className="w-[17px] h-[17px] bg-[#56A869] rounded-[2.31px] flex items-center  p-0.5 justify-center">
-                        <img src={GroupData} alt="logout" className="w-[18px] h-[18px]" />
-                      </div>
-
-                      <div className="w-[17px] h-[17px] bg-red-400 rounded-[2.31px] flex items-center  p-0.5 justify-center">
-                        <img src={DeleteData} alt="delete" className="w-[12px] h-[14px]" />
-                      </div>
-                    </div>
-                  </td>
-                  {/* <td className="px-4 py-2">
-                                        <div className="flex items-center gap-2 justify-center">
-                                            <img src={GroupData} alt="edit" className="w-[18px] h-[18px] bg-green-400 p-0.5  cursor-pointer" />
-                                            <img src={EyeData} alt="view" className="w-[18px] h-[18px] bg-blue-400 p-0.5  cursor-pointer" />
-                                            <img src={DeleteData} alt="delete" className="w-[18px] h-[18px] bg-red-400  p-0.5 cursor-pointer" />
-                                        </div>
-                                    </td> */}
-                  <td className="px-4 py-2">
-                    <button
-                      onClick={() => handleToggle(row.id)}
-                      className={`w-12 h-6 flex items-center rounded-full p-1 transition-colors ${row.isActive ? "bg-[#0A2478]" : "bg-gray-300"}`}
-                    >
-                      <div
-                        className={`bg-white w-4 h-4 rounded-full shadow-md transform transition-transform ${row.isActive ? "translate-x-6" : "translate-x-0"}`}
-                      />
-                    </button>
-                  </td>
+        <div className="overflow-x-auto mt-5 w-[1290px] min-h-[500px]">
+          {isLoading ? (
+            <div className="flex justify-center items-center h-32">
+              <p>Loading employees...</p>
+            </div>
+          ) : (
+            <table className="w-full border-collapse">
+              <thead className="bg-[#0A2478] text-white text-sm">
+                <tr>
+                  <th className="px-4 py-2 text-left border-r">Employee ID</th>
+                  <th className="px-4 py-2 text-left border-r">Name</th>
+                  <th className="px-4 py-2 text-left border-r">Email</th>
+                  <th className="px-4 py-2 text-left border-r">Mobile</th>
+                  <th className="px-4 py-2 text-left border-r">DOJ</th>
+                  <th className="px-4 py-2 text-left border-r">DOB</th>
+                  <th className="px-4 py-2 text-left border-r">Address</th>
+                  <th className="px-4 py-2 text-left border-r">Action</th>
+                  <th className="px-4 py-2 text-left border-r">Active</th>
                 </tr>
-              ))}
-            </tbody>
-          </table>
+              </thead>
+              <tbody className="text-[12px]">
+                {employeeList.length > 0 ? (
+                  employeeList.map((emp, index) => (
+                    <tr
+                      key={emp.id}
+                      className={`${index % 2 === 0 ? "bg-gray-50" : "bg-white"} hover:bg-gray-100`}
+                    >
+                      <td className="px-4 py-2">{emp.emp_id}</td>
+                      <td className="px-4 py-2">{emp.emp_name}</td>
+                      <td className="px-4 py-2">{emp.email}</td>
+                      <td className="px-4 py-2">{emp.mobile_no}</td>
+                      <td className="px-4 py-2">{new Date(emp.joining_date).toLocaleDateString()}</td>
+                      <td className="px-4 py-2">{new Date(emp.date_of_birth).toLocaleDateString()}</td>
+                      <td className="px-4 py-2 max-w-[200px] truncate" title={emp.corresponding_address}>
+                        {emp.corresponding_address}
+                      </td>
+                      <td className="px-4 py-2">
+                        <div className="flex gap-2 justify-center">
+                          <button className="bg-[#646AD9] p-1.5 rounded text-white hover:bg-[#5057c9]">
+                            <FiEye />
+                          </button>
+                          <button
+                            className="bg-green-500 p-1.5 rounded text-white hover:bg-green-600"
+                            onClick={() => handleEdit(emp)}
+                          >
+                            <FiEdit />
+                          </button>
+                          <button
+                            className="bg-red-600 p-1.5 rounded text-white hover:bg-red-700"
+                            onClick={() => handleDeleteClick(emp.id)}
+                          >
+                            <FiTrash2 />
+                          </button>
+                        </div>
+                      </td>
+                      <td className="px-4 py-2">
+                        <button
+                          onClick={() => handleToggle(emp.id, emp.status)}
+                          className={`w-12 h-6 flex items-center rounded-full p-1 transition-colors ${emp.status ? "bg-[#0A2478]" : "bg-gray-300"
+                            }`}
+                        >
+                          <div
+                            className={`bg-white w-4 h-4 rounded-full shadow-md transform transition-transform ${emp.status ? "translate-x-6" : "translate-x-0"
+                              }`}
+                          />
+                        </button>
+                      </td>
+                    </tr>
+                  ))
+                ) : (
+                  <tr>
+                    <td colSpan="9" className="px-4 py-8 text-center text-gray-500">
+                      No employees found
+                    </td>
+                  </tr>
+                )}
+              </tbody>
+            </table>
+          )}
         </div>
       </div>
 
       {/* Pagination */}
-      <div className="flex justify-center items-center px-6 py-3 border-t gap-2 mt-4">
-        <button className="px-3 py-1 border rounded-md">Previous</button>
-        <div className="flex gap-2">
-          <button className="px-3 py-1 border bg-[#0b2c69] text-white rounded-md">1</button>
-          <button className="px-3 py-1 border rounded-md">2</button>
-          <button className="px-3 py-1 border rounded-md">3</button>
-          <span className="px-3 py-1">...</span>
-          <button className="px-3 py-1 border rounded-md">10</button>
-        </div>
-        <button className="px-3 py-1 border rounded-md">Next</button>
-      </div>
+      {totalPages > 1 && (
+        <Pagination
+          currentPage={currentPage}
+          totalPages={totalPages}
+          onPageChange={handlePageChange}
+        />
+      )}
     </div>
   );
 };

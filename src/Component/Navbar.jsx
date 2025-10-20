@@ -53,7 +53,7 @@ const Navbar = () => {
       <div className="bg-[#0A2478] text-white flex items-center justify-between relative mt-5 p-5 w-[1360px] h-[50px] rounded-[10px]">
         {/* Left side placeholder */}
         <div className="flex items-center gap-3">
-          <img src="/logo.svg" alt="Logo" className="w-8 h-8 object-contain" />
+          <img src="/logo.svg" alt="Logo" className="w-12 h-12 object-contain" />
           <p className="text-sm font-medium text-white">Bhagur B1</p>
         </div>
 
