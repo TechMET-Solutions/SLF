@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom"; // Add this import
 import GroupData from "../assets/Group 124.svg";
 import eyeIcon from "../assets/Vectorimg.png";

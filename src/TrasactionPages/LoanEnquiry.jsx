@@ -28,19 +28,18 @@ const LoanEnquiry = () => {
             Loan Enquiry
           </h2>
 
-          <button className="text-white px-[6.25px] py-[6.25px] rounded-[3.75px] bg-[#C1121F] w-[74px] h-[24px] text-[10px]">
+          <button
+            onClick={() => navigate(-1)}
+            className="text-white px-[6.25px] py-[6.25px] rounded-[3.75px] bg-[#C1121F] w-[74px] h-[24px] text-[10px]"
+          >
             Close
           </button>
         </div>
       </div>
 
       {/* ===== FORM SECTIONS ===== */}
-<<<<<<< HEAD
-      <div className="p-9 py-6   bg-gray-50 min-h-screen space-y-8">
-=======
-      <div className="p-9 py-6    min-h-screen space-y-8">
->>>>>>> main
-        <di className="flex justify-center mb-6">
+      <div className="p-9 py-6 bg-gray-50 min-h-screen space-y-8">
+        <div className="flex justify-center mb-6">
           <div className="w-[1050px] pt-3">
             {/* Loan Details Section */}
             <h3 className="text-lg font-semibold mb-4 text-[#0A2478]">
@@ -50,27 +49,29 @@ const LoanEnquiry = () => {
             {/* First Row */}
             <div className="flex gap-7 text-sm mb-3">
               <div>
-                <p className="font-semibold">Loan No </p>
+                <p className="font-semibold">Loan No</p>
                 <p>01A5602839</p>
               </div>
               <div>
-                <p className="font-semibold">Loan Date </p>
-                <p className="">25/07/2025 <span className="ml-2">12:00:00AM</span> </p>
+                <p className="font-semibold">Loan Date</p>
+                <p>
+                  25/07/2025 <span className="ml-2">12:00:00 AM</span>
+                </p>
               </div>
               <div>
-                <p className="font-semibold">Party Name </p>
+                <p className="font-semibold">Party Name</p>
                 <p>MAHESH SANJAY DONDE</p>
               </div>
               <div>
-                <p className="font-semibold">Scheme </p>
+                <p className="font-semibold">Scheme</p>
                 <p>IND001</p>
               </div>
               <div>
-                <p className="font-semibold">Print Name </p>
+                <p className="font-semibold">Print Name</p>
                 <p>MAHESH SANJAY DONDE</p>
               </div>
               <div>
-                <p className="font-semibold">Address </p>
+                <p className="font-semibold">Address</p>
                 <p>H. NO.444-31, BHAGUR, Nashik 422502, India</p>
               </div>
             </div>
@@ -78,38 +79,39 @@ const LoanEnquiry = () => {
             {/* Second Row */}
             <div className="flex gap-7 text-sm">
               <div>
-                <p className="font-semibold">City </p>
+                <p className="font-semibold">City</p>
                 <p>Nashik</p>
               </div>
               <div>
-                <p className="font-semibold">Mobile Number </p>
+                <p className="font-semibold">Mobile Number</p>
                 <p>+91 8965412568</p>
               </div>
               <div>
-                <p className="font-semibold">Co-Borrower </p>
+                <p className="font-semibold">Co-Borrower</p>
                 <p>BARFILAL</p>
               </div>
               <div>
-                <p className="font-semibold">Relation </p>
+                <p className="font-semibold">Relation</p>
                 <p>Father</p>
               </div>
               <div>
-                <p className="font-semibold">Nominee </p>
+                <p className="font-semibold">Nominee</p>
                 <p>BARFILAL</p>
               </div>
               <div>
-                <p className="font-semibold">Relation </p>
+                <p className="font-semibold">Relation</p>
                 <p>Father</p>
               </div>
               <div>
-                <p className="font-semibold">Loan Amount </p>
+                <p className="font-semibold">Loan Amount</p>
                 <p>35000.00</p>
               </div>
             </div>
           </div>
+
           {/* Ornament Photos */}
           <div className="mt-2 mr-10">
-            <h3 className="font-semibold mb-2 ">Ornament Photo</h3>
+            <h3 className="font-semibold mb-2">Ornament Photo</h3>
             <div className="flex gap-4">
               <img
                 src={emptyImg}
@@ -123,11 +125,7 @@ const LoanEnquiry = () => {
               />
             </div>
           </div>
-        </di>
-
-
-
-
+        </div>
 
         {/* Pledge Item List */}
         <div className="flex justify-center mb-6">

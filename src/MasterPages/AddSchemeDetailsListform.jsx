@@ -1,4 +1,5 @@
 import { useState } from "react";
+
 import { IoIosCloseCircleOutline, IoMdAddCircleOutline } from "react-icons/io";
 
 const FormField = ({
@@ -9,7 +10,6 @@ const FormField = ({
   setFormData,
 }) => {
   const suffixFields = ["loanPeriod", "paymentFrequency"];
-  const suffix = formData.calcBasisOn === "Daily" ? "D" : "M";
 
   // ✅ Special case for calcBasisOn checkboxes
   if (field.name === "calcBasisOn") {
@@ -71,8 +71,9 @@ const FormField = ({
           name={field.name}
           value={formData[field.name] || ""}
           onChange={handleInputChange}
-          className={`px-2 py-1 border rounded text-xs ${errors[field.name] ? "border-red-500" : "border-gray-300"
-            }`}
+          className={`px-2 py-1 border rounded text-xs ${
+            errors[field.name] ? "border-red-500" : "border-gray-300"
+          }`}
         >
           <option value="">Select {field.label}</option>
           {field.options.map((opt) => (
@@ -88,8 +89,9 @@ const FormField = ({
             name={field.name}
             value={formData[field.name] || ""}
             onChange={handleInputChange}
-            className={`px-2 py-1 border rounded text-xs w-full pr-10 ${errors[field.name] ? "border-red-500" : "border-gray-300"
-              }`}
+            className={`px-2 py-1 border rounded text-xs w-full pr-10 ${
+              errors[field.name] ? "border-red-500" : "border-gray-300"
+            }`}
           />
           {suffixFields.includes(field.name) && (
             <span
@@ -110,9 +112,7 @@ const FormField = ({
 const InterestRateTable = ({ interestRates, onChange, addRow, removeRow }) => (
   <div>
     <h3 className="text-md font-semibold mb-4">Interest Rate</h3>
-    <div className="flex justify-between items-center mb-3">
-      
-    </div>
+    <div className="flex justify-between items-center mb-3"></div>
     <div className="overflow-x-auto border rounded-lg">
       <table className="w-full border-collapse bg-white">
         <thead>
@@ -121,18 +121,13 @@ const InterestRateTable = ({ interestRates, onChange, addRow, removeRow }) => (
             <th className="p-3 border-r">To</th>
             <th className="p-3 border-r">Type</th>
             <th className="p-3">Add int %</th>
-         
           </tr>
         </thead>
         <tbody>
           {interestRates.map((rate, i) => (
             <tr key={rate.id} className={i % 2 ? "bg-gray-50" : ""}>
-              <td className="p-3 text-center">
-                
-              </td>
-              <td className="p-3 text-center">
-               
-              </td>
+              <td className="p-3 text-center"></td>
+              <td className="p-3 text-center"></td>
               <td className="p-3">
                 <select
                   value={rate.type}
@@ -145,7 +140,7 @@ const InterestRateTable = ({ interestRates, onChange, addRow, removeRow }) => (
                 </select>
               </td>
               <td className="p-3">
-                 <div className="flex justify-end gap-2">
+                <div className="flex justify-end gap-2">
                   <button
                     type="button"
                     onClick={addRow}
@@ -166,7 +161,6 @@ const InterestRateTable = ({ interestRates, onChange, addRow, removeRow }) => (
                   </button>
                 </div>
               </td>
-              
             </tr>
           ))}
         </tbody>
@@ -185,22 +179,24 @@ const AddSchemeDetailsListform = () => {
     calcBasisOn: "",
     calcMethod: "",
     paymentFrequency: "",
-    interestInAdvance: "",
-    preCloserMinDays: "",
+    // KEEP these fields always visible as per the user's request
+    interestInAdvance: "", 
+    preCloserMinDays: "", 
     penaltyType: "Amount",
     penalty: "",
     minLoanAmount: "",
     loanPeriod: "",
     paymentBasisOn: "",
-    goldApprovePercent: "",
+    goldApprovePercent: "", // KEEP this field always visible
     maxLoanAmount: "",
     partyType: "individual",
     administrativeCharges: "",
-    interestType: "Floating",
+    interestType: "Floating", // HIDE/SHOW this one
     docChargePercent: "",
     docChargeMin: "",
-    docChargeMax: ""
+    docChargeMax: "",
   });
+  const suffix = formData.calcBasisOn === "Daily" ? "D" : "M";
 
   const [interestRates, setInterestRates] = useState([
     { id: 1, selected: false, type: "days", addToPercent: "" },
@@ -224,11 +220,10 @@ const AddSchemeDetailsListform = () => {
       { id: prev.length + 1, selected: false, type: "days", addToPercent: "" },
     ]);
 
-  const removeRows = () => {
-    const hasSelection = interestRates.some((r) => r.selected);
-    if (!hasSelection) return alert("Please select at least one row.");
-    setInterestRates((prev) => prev.filter((r) => !r.selected));
+  const removeRows = (id) => {
+    setInterestRates((prev) => prev.filter((r) => r.id !== id));
   };
+    
 
   const validateForm = () => {
     const required = [
@@ -250,11 +245,20 @@ const AddSchemeDetailsListform = () => {
   };
 
   const handleCalcBasisChange = (value) => {
-    setFormData((prev) => ({
-      ...prev,
-      calcBasisOn: prev.calcBasisOn === value ? "" : value
-    }));
+    setFormData((prev) => {
+      const updated = { ...prev, calcBasisOn: prev.calcBasisOn === value ? "" : value };
+      
+      // Clear Interest Type when Daily is selected, as it will be hidden.
+      if (value === "Daily") {
+        updated.interestType = "";
+      }
+      
+      return updated;
+    });
   };
+
+  // Define a constant for the conditional check
+  const isDailyBasis = formData.calcBasisOn === "Daily";
 
   return (
     <div className="min-h-screen bg-white p-5">
@@ -296,35 +300,41 @@ const AddSchemeDetailsListform = () => {
       </div>
 
       <div className="bg-white rounded-lg px-20">
-        {/* First Row */}
+        {/* First Row (ALWAYS VISIBLE) */}
         <div className="flex items-end gap-4 w-full mt-5">
           {/* Scheme Name */}
           <div className="flex flex-col">
-            <label className="text-[14px] font-medium">Scheme Name <span className="text-red-500">*</span></label>
+            <label className="text-[14px] font-medium">
+              Scheme Name <span className="text-red-500">*</span>
+            </label>
             <div className="relative mt-1 w-[180px]">
               <input
                 type="text"
-                placeholder="Enter Scheme Name*"
+                placeholder=" Scheme Name"
                 name="schemeName"
                 value={formData.schemeName}
                 onChange={handleInputChange}
-                className={`border border-gray-300 rounded-[8px] px-3 py-2 w-full bg-white focus:outline-none focus:ring-1 focus:ring-blue-500 ${errors.schemeName ? "border-red-500" : ""
-                  }`}
+                className={`border border-gray-300 rounded-[8px] px-3 py-2 w-full bg-white focus:outline-none focus:ring-1 focus:ring-blue-500 ${
+                  errors.schemeName ? "border-red-500" : ""
+                }`}
               />
             </div>
           </div>
 
           {/* Description */}
           <div className="flex flex-col">
-            <label className="text-[14px] font-medium">Description <span className="text-red-500">*</span></label>
+            <label className="text-[14px] font-medium">
+              Description <span className="text-red-500">*</span>
+            </label>
             <input
               type="text"
               name="description"
               value={formData.description}
               onChange={handleInputChange}
               placeholder=""
-              className={`border border-gray-300 rounded px-3 py-2 mt-1 w-[350px] bg-white ${errors.description ? "border-red-500" : ""
-                }`}
+              className={`border border-gray-300 rounded px-3 py-2 mt-1 w-[350px] bg-white ${
+                errors.description ? "border-red-500" : ""
+              }`}
             />
           </div>
 
@@ -352,16 +362,15 @@ const AddSchemeDetailsListform = () => {
               name="applicableFrom"
               value={formData.applicableFrom}
               onChange={handleInputChange}
-              className={`border border-gray-300 rounded px-3 py-2 mt-1 w-[180px] bg-white ${errors.applicableFrom ? "border-red-500" : ""
-                }`}
+              className={`border border-gray-300 rounded px-3 py-2 mt-1 w-[180px] bg-white ${
+                errors.applicableFrom ? "border-red-500" : ""
+              }`}
             />
           </div>
 
           {/* Applicable To */}
           <div className="flex flex-col">
-            <label className="text-[14px] font-medium">
-              Applicable To
-            </label>
+            <label className="text-[14px] font-medium">Applicable To</label>
             <input
               type="date"
               name="applicableTo"
@@ -371,7 +380,7 @@ const AddSchemeDetailsListform = () => {
             />
           </div>
 
-          {/* Calculation Basis */}
+          {/* Calculation Basis (ALWAYS VISIBLE) */}
           <div className="flex flex-col">
             <label className="text-[14px] mb-5 font-medium">
               Cal. basis on
@@ -403,34 +412,33 @@ const AddSchemeDetailsListform = () => {
               </label>
             </div>
             {errors.calcBasisOn && (
-              <p className="text-red-500 text-xs mt-1">This field is required</p>
+              <p className="text-red-500 text-xs mt-1">
+                This field is required
+              </p>
             )}
-
-
           </div>
 
-          <div className="flex flex-col">
-            <label className="text-[14px] font-medium">Add 1 Day</label>
-            <select
-              name="addOneDay"
-
-              className="border border-gray-300 rounded px-3 py-2 mt-1 bg-white"
-            >
-              <option value="No">No</option>
-              <option value="Yes">Yes</option>
-
-            </select>
-          </div>
-
+          {/* Add 1 Day - Only show for Daily (This remains conditional) */}
+          {isDailyBasis && (
+            <div className="flex flex-col gap-2">
+              <label>Add 1 Day</label>
+              <select
+                name="addOneDay"
+                value={formData.addOneDay}
+                onChange={handleInputChange}
+                className="border border-gray-300 rounded px-3 py-2 mt-1 w-[90px] bg-white"
+              >
+                <option value="No">No</option>
+              </select>
+            </div>
+          )}
         </div>
 
-        {/* Second Row */}
+        {/* Second Row (All fields are now ALWAYS VISIBLE) */}
         <div className="flex items-end gap-4 w-full mt-5">
           {/* Calculation Method */}
           <div className="flex flex-col">
-            <label className="text-[14px] font-medium">
-              Calc. Method
-            </label>
+            <label className="text-[14px] font-medium">Calc. Method</label>
             <select
               name="calcMethod"
               value={formData.calcMethod}
@@ -445,57 +453,62 @@ const AddSchemeDetailsListform = () => {
           </div>
 
           {/* Payment Frequency */}
-          <div className="flex flex-col">
-            <label className="text-[14px] font-medium">Payment Frequency*</label>
-            <input
-              type="text"
-              name="paymentFrequency"
-              value={formData.paymentFrequency}
-              onChange={handleInputChange}
-              placeholder=""
-              className="border border-gray-300 rounded px-3 py-2 mt-1 w-[132px] bg-white"
-            />
+          <div className="flex flex-col w-30 ">
+            <label className="text-xs font-medium mb-1 ">
+              Payment Frequency <span className="text-red-600">*</span>
+            </label>
+            <div className="flex w-30">
+              <input
+                type="number"
+                placeholder="185"
+                className="flex-1 w-15 border border-gray-300 rounded-l-md px-2 py-1 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              />
+              <button className="bg-[#0A2478] text-white px-4 py-2 rounded-r-md hover:bg-[#081c5b] transition-colors duration-200 text-sm font-medium">
+                {suffix}
+              </button>
+            </div>
           </div>
 
-          {/* Interest in Advance */}
+          {/* Interest in Advance (NOW ALWAYS VISIBLE) */}
           <div className="flex flex-col">
-            <label className="text-[14px] font-medium">Interest in Advance*</label>
+            <label className="text-xs font-medium mb-1">
+              Interest in Advance <span className="text-red-600">*</span>
+            </label>
             <select
               name="interestInAdvance"
-              value={formData.interestInAdvance}
+              value={formData.interestInAdvance || ""}
               onChange={handleInputChange}
-              className="border rounded-md px-2 py-1 w-[132px] h-[32px] text-sm"
+              className="border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent w-27 px-2 py-2 text-xs"
             >
-              <option value="">Yes</option>
-              <option value="simple">No</option>
-
+              <option value="Yes">Yes</option>
+              <option value="No">No</option>
             </select>
           </div>
 
-          {/* Pre Closer Min Days */}
+          {/* Pre Closer Min Days (NOW ALWAYS VISIBLE) */}
           <div className="flex flex-col">
-            <label className="text-[14px] font-medium">
-              Pre Closer Min Days*
+            <label className="text-xs font-medium mb-1">
+              Pre Closer Min Days <span className="text-red-600">*</span>
             </label>
             <input
               type="number"
               name="preCloserMinDays"
-              value={formData.preCloserMinDays}
+              value={formData.preCloserMinDays || ""}
               onChange={handleInputChange}
-              className="border border-gray-300 rounded px-3 py-2 mt-1 w-[180px] bg-white"
+              className="border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent rounded px-2 w-30 py-2 text-xs"
             />
           </div>
 
           {/* Penalty Type */}
           <div className="flex flex-col">
-            <label className="text-[14px] font-medium">
-              Penalty Type*
+            <label className="text-xs font-medium mb-1">
+              Penalty Type <span className="text-red-600">*</span>
             </label>
             <select
               name="penaltyType"
-              value={formData.penaltyType}
+              value={formData.penaltyType || ""}
               onChange={handleInputChange}
-              className="border rounded-md px-2 py-1 w-[132px] h-[32px] text-sm"
+              className="border border-gray-300 rounded px-2 w-22 py-2 text-xs focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
             >
               <option value="Amount">Amount</option>
               <option value="Percent">Percent</option>
@@ -504,70 +517,82 @@ const AddSchemeDetailsListform = () => {
 
           {/* Penalty */}
           <div className="flex flex-col">
-            <label className="text-[14px] font-medium">
-              Penalty*
+            <label className="text-xs font-medium mb-1">
+              Penalty <span className="text-red-600">*</span>
             </label>
             <input
               type="number"
               name="penalty"
-              value={formData.penalty}
+              value={formData.penalty || ""}
               onChange={handleInputChange}
-              className="border border-gray-300 rounded px-3 py-2 mt-1 w-[132px] bg-white"
+              className="border border-gray-300 rounded w-15 px-2 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent text-xs"
             />
           </div>
 
           {/* Min Loan Amount */}
           <div className="flex flex-col">
-            <label className="text-[14px] font-medium">
-              Min Loan Amount*
+            <label className="text-xs font-medium mb-1">
+              Min Loan Amount <span className="text-red-600">*</span>
             </label>
             <input
               type="number"
               name="minLoanAmount"
-              value={formData.minLoanAmount}
+              value={formData.minLoanAmount || ""}
               onChange={handleInputChange}
-              className="border border-gray-300 rounded px-3 py-2 mt-1 w-[132px] bg-white"
+              className="border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent rounded w-29 px-2 py-2 text-xs"
             />
           </div>
 
           {/* Payment Basis On */}
           <div className="flex flex-col">
-            <label className="text-[14px] font-medium">Payment Basis On*</label>
-            <input
-              type="number"
+            <label className="text-xs font-medium mb-1">
+              Payment Basis On <span className="text-red-600">*</span>
+            </label>
+            <select
               name="paymentBasisOn"
-              value={formData.paymentBasisOn}
+              value={formData.paymentBasisOn || ""}
               onChange={handleInputChange}
-              className="border border-gray-300 rounded px-3 py-2 mt-1 w-[132px] bg-white"
-            />
+              className="border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent rounded w-28 px-2 py-2 text-xs"
+            >
+              <option value="Interest">Interest</option>
+              <option value="Principal">Principal</option>
+            </select>
           </div>
 
           {/* Loan Period */}
-          <div className="flex flex-col">
-            <label className="text-[14px] font-medium">Loan Period*</label>
-            <input
-              type="number"
-              name="loanPeriod"
-              value={formData.loanPeriod}
-              onChange={handleInputChange}
-              className="border border-gray-300 rounded px-3 py-2 mt-1 w-[132px] bg-white"
-            />
+          <div className="flex flex-col mr-6 w-20 ">
+            <label className="text-xs font-medium mb-1 ">Loan Period</label>
+            <div className="flex w-20">
+              <input
+                type="number"
+                placeholder="185"
+                className="flex-1 w-15 border border-gray-300 rounded-l-md px-2 py-1 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              />
+              <button className="bg-[#0A2478] text-white px-4 py-2 rounded-r-md hover:bg-[#081c5b] transition-colors duration-200 text-sm font-medium">
+                {suffix}
+              </button>
+            </div>
           </div>
+          
+          {/* Gold Approve % (First instance - NOW ALWAYS VISIBLE) */}
+            <div className="flex flex-col">
+              <label className="text-xs font-medium mb-1">
+                Gold Approve %{" "}
+              </label>
+              <input
+                type="number"
+                name="goldApprove"
+                value={formData.goldApprove || ""}
+                onChange={handleInputChange}
+                className="border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent rounded w-20 px-4 py-2 text-xs"
+              />
+            </div>
         </div>
 
-        {/* Third Row */}
+        {/* Third Row (Adjusted for conditional fields) */}
         <div className="flex items-end gap-4 w-full mt-5">
-          {/* Gold Approve % */}
-          <div className="flex flex-col">
-            <label className="text-[14px] font-medium">Gold approve %</label>
-            <input
-              type="number"
-              name="goldApprovePercent"
-              value={formData.goldApprovePercent}
-              onChange={handleInputChange}
-              className="border border-gray-300 rounded px-3 py-2 mt-1 w-[132px] bg-white"
-            />
-          </div>
+          {/* Gold Approve % (Second instance - NOW ALWAYS VISIBLE) */}
+            
 
           {/* Max Loan Amount */}
           <div className="flex flex-col">
@@ -597,7 +622,9 @@ const AddSchemeDetailsListform = () => {
 
           {/* Administrative Charges */}
           <div className="flex flex-col">
-            <label className="text-[14px] font-medium">Administrative Charges</label>
+            <label className="text-[14px] font-medium">
+              Administrative Charges
+            </label>
             <input
               type="number"
               name="administrativeCharges"
@@ -607,36 +634,38 @@ const AddSchemeDetailsListform = () => {
             />
           </div>
 
-          {/* Interest Type - Floating/Reducing */}
-          <div className="flex flex-col">
-            <div className="flex gap-4 mb-2">
-              <label className="flex items-center gap-2">
-                <input
-                  type="radio"
-                  name="interestType"
-                  value="Floating"
-                  checked={formData.interestType === "Floating"}
-                  onChange={handleInputChange}
-                  className="accent-[#0A2478]"
-                />
-                <span className="text-[14px]">Floating</span>
-              </label>
-              <label className="flex items-center gap-2">
-                <input
-                  type="radio"
-                  name="interestType"
-                  value="Reducing"
-                  checked={formData.interestType === "Reducing"}
-                  onChange={handleInputChange}
-                  className="accent-[#0A2478]"
-                />
-                <span className="text-[14px]">Reducing</span>
-              </label>
+          {/* Interest Type - Floating/Reducing (HIDE ONLY ON DAILY) */}
+          {!isDailyBasis && (
+            <div className="flex flex-col">
+              <div className="flex gap-4 mb-2">
+                <label className="flex items-center gap-2">
+                  <input
+                    type="radio"
+                    name="interestType"
+                    value="Floating"
+                    checked={formData.interestType === "Floating"}
+                    onChange={handleInputChange}
+                    className="accent-[#0A2478]"
+                  />
+                  <span className="text-[14px]">Floating</span>
+                </label>
+                <label className="flex items-center gap-2">
+                  <input
+                    type="radio"
+                    name="interestType"
+                    value="Reducing"
+                    checked={formData.interestType === "Reducing"}
+                    onChange={handleInputChange}
+                    className="accent-[#0A2478]"
+                  />
+                  <span className="text-[14px]">Reducing</span>
+                </label>
+              </div>
             </div>
-          </div>
+          )}
         </div>
 
-        {/* Document Charges */}
+        {/* Document Charges (ALWAYS VISIBLE) */}
         <div className="mb-6 mt-6">
           <h3 className="text-lg font-semibold mb-4">Document Charge</h3>
           <div className="flex gap-25 items-end">
@@ -679,7 +708,7 @@ const AddSchemeDetailsListform = () => {
           </div>
         </div>
 
-        {/* Interest Table */}
+        {/* Interest Table (ALWAYS VISIBLE) */}
         <InterestRateTable
           interestRates={interestRates}
           onChange={handleInterestRateChange}
