@@ -1,8 +1,12 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import emptyImg from "../assets/profileempty.png";
 
 const LoanEnquiry = () => {
+  useEffect(() => {
+    document.title = "SLF | Loan Enquiry";
+  }, []);
+
   const [isModalOpen, setIsModalOpen] = useState(false);
   const navigate = useNavigate();
 
@@ -103,27 +107,27 @@ const LoanEnquiry = () => {
               </div>
             </div>
           </div>
-           {/* Ornament Photos */}
-                <div className="mt-2 mr-10">
-                    <h3 className="font-semibold mb-2 ">Ornament Photo</h3>
-                    <div className="flex gap-4">
-                        <img
-                            src={emptyImg}
-                            alt="ornament"
-                            className="w-[100px] h-[100px] border border-gray-300 rounded"
-                        />
-                        <img
-                            src={emptyImg}
-                            alt="ornament"
-                            className="w-[100px] h-[100px] border border-gray-300 rounded"
-                        />
-                    </div>
-                </div>
+          {/* Ornament Photos */}
+          <div className="mt-2 mr-10">
+            <h3 className="font-semibold mb-2 ">Ornament Photo</h3>
+            <div className="flex gap-4">
+              <img
+                src={emptyImg}
+                alt="ornament"
+                className="w-[100px] h-[100px] border border-gray-300 rounded"
+              />
+              <img
+                src={emptyImg}
+                alt="ornament"
+                className="w-[100px] h-[100px] border border-gray-300 rounded"
+              />
+            </div>
+          </div>
         </di>
-        
-            
- 
-        
+
+
+
+
 
         {/* Pledge Item List */}
         <div className="flex justify-center mb-6">

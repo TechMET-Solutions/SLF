@@ -1,6 +1,9 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 
 const SchemeRoleMapping = () => {
+    useEffect(() => {
+    document.title = "SLF | Scheme Role Mapping ";
+  }, []); 
     const [schemes, setSchemes] = useState([
         "01",
         "02",

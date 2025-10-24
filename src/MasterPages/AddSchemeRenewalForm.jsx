@@ -1,6 +1,9 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 const AddSchemeRenewalForm = () => {
+    useEffect(() => {
+    document.title = "SLF | Add Scheme Renewal Form";
+  }, []);
     const [data, setData] = useState([
         { id: 1, from: 0, to: 62, type: "Days", addInt: 15 },
         { id: 2, from: 63, to: 123, type: "Days", addInt: 18 },

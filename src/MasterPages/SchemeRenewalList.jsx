@@ -3,6 +3,9 @@ import GroupData from "../assets/Group 124.svg"; // make sure this exists
 import { useNavigate } from "react-router-dom";
 
 const SchemeRenewalList = () => {
+  useEffect(() => {
+    document.title = "SLF | Scheme Renewal List";
+  }, []);
   const [data, setData] = useState([
     {
       id: 1,

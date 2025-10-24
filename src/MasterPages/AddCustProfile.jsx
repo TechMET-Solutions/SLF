@@ -1579,7 +1579,7 @@ const handleSubmit = async () => {
         {/* Question */}
         <p className="mt-1">
           <label className="flex items-center gap-2 font-['Roboto'] text-[16px]">
-            <input type="radio" name="access" className="accent-[#0A2478]"  name="access"
+            <input type="radio" name="access" className="accent-[#0A2478]"
           value="Yes"
           checked={formData.access === "Yes"}
           onChange={handleChange} />

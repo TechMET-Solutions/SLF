@@ -1,6 +1,9 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 const AddSchemeDetailsform = () => {
+  useEffect(() => {
+    document.title = "SLF | Add Scheme Details Form";
+  }, []);
   const [formData, setFormData] = useState({});
   const [interestRates, setInterestRates] = useState([
     { id: 1, selected: false, type: "days", addToPercent: "" },
@@ -172,9 +175,9 @@ const AddSchemeDetailsform = () => {
             <div className="flex w-30">
               <input
                 type="number"
-                placeholder="185" 
+                placeholder="185"
                 className="flex-1 w-15 border border-gray-300 rounded-l-md px-2 py-1 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-              />  
+              />
               <button className="bg-[#0A2478] text-white px-4 py-2 rounded-r-md hover:bg-[#081c5b] transition-colors duration-200 text-sm font-medium">
                 D
               </button>
@@ -273,9 +276,9 @@ const AddSchemeDetailsform = () => {
             <div className="flex w-20">
               <input
                 type="number"
-                placeholder="185" 
+                placeholder="185"
                 className="flex-1 w-15 border border-gray-300 rounded-l-md px-2 py-1 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-              />  
+              />
               <button className="bg-[#0A2478] text-white px-4 py-2 rounded-r-md hover:bg-[#081c5b] transition-colors duration-200 text-sm font-medium">
                 D
               </button>

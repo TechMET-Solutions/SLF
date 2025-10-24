@@ -516,55 +516,6 @@ const BranchProfileList = () => {
             </table>
           </div>
         </div>
-
-
-        {/* Pagination */}
-        {/* <div className="flex justify-center items-center px-6 py-3 border-t gap-2">
-          <button className="px-3 py-1 border rounded-md">Previous</button>
-          <div className="flex gap-2">
-            <button className="px-3 py-1 border bg-[#0b2c69] text-white rounded-md">1</button>
-            <button className="px-3 py-1 border rounded-md">2</button>
-            <button className="px-3 py-1 border rounded-md">3</button>
-            <button className="px-3 py-1 border rounded-md">...</button>
-            <button className="px-3 py-1 border rounded-md">10</button>
-          </div>
-          <button className="px-3 py-1 border rounded-md">Next</button>
-        </div> */}
-        {/* {totalPages > 1 && (
-          <div className="flex justify-center items-center px-6 py-3 border-t gap-2 ">
-            <button
-              className={`px-3 py-1 border rounded-md ${currentPage === 1 ? "opacity-50 cursor-not-allowed" : ""
-                }`}
-              onClick={() => setCurrentPage((p) => Math.max(p - 1, 1))}
-              disabled={currentPage === 1}
-            >
-              Previous
-            </button>
-
-            <div className="flex gap-2">
-              {Array.from({ length: totalPages }, (_, i) => i + 1).map((page) => (
-                <button
-                  key={page}
-                  onClick={() => setCurrentPage(page)}
-                  className={`px-3 py-1 border rounded-md ${currentPage === page ? "bg-[#0b2c69] text-white" : ""
-                    }`}
-                >
-                  {page}
-                </button>
-              ))}
-            </div>
-
-            <button
-              className={`px-3 py-1 border rounded-md ${currentPage === totalPages ? "opacity-50 cursor-not-allowed" : ""
-                }`}
-              onClick={() => setCurrentPage((p) => Math.min(p + 1, totalPages))}
-              disabled={currentPage === totalPages}
-            >
-              Next
-            </button>
-          </div>
-        )} */}
-
         <Pagination
           currentPage={currentPage}
           totalPages={totalPages}

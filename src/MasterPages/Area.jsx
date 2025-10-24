@@ -16,6 +16,9 @@ const indianStatesAndUTs = [
 ];
 
 const Area = () => {
+  useEffect(() => {
+    document.title = "SLF | Area";
+  }, []);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [area, setArea] = useState([]);
   const [isLoading, setIsLoading] = useState(false);

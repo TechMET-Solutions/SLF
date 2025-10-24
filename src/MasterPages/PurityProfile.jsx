@@ -11,6 +11,9 @@ import blockimg from "../assets/blockimg.png";
 import Pagination from "../Component/Pagination";
 
 const PurityProfile = () => {
+  useEffect(() => {
+    document.title = "SLF | Purity Profile ";
+  }, []);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [deleteModalOpen, setDeleteModalOpen] = useState(false);
   const [deleteId, setDeleteId] = useState(null);
