@@ -9,6 +9,7 @@ import {
   deleteAreaApi,
 } from "../API/Master/Master_Profile/Area_Details";
 import Pagination from "../Component/Pagination";
+import Loader from "../Component/Loader";
 
 const indianStatesAndUTs = [
   "Andhra Pradesh", "Arunachal Pradesh", "Assam", "Bihar", "Chhattisgarh", "Goa", "Gujarat", "Haryana", "Himachal Pradesh", "Jharkhand", "Karnataka", "Kerala", "Madhya Pradesh", "Maharashtra", "Manipur", "Meghalaya", "Mizoram", "Nagaland", "Odisha", "Punjab", "Rajasthan", "Sikkim", "Tamil Nadu", "Telangana", "Tripura", "Uttar Pradesh", "Uttarakhand", "West Bengal",
@@ -154,6 +155,9 @@ const Area = () => {
     if (page < 1 || page > totalPages) return;
     fetchArea(page);
   };
+
+    if (isLoading) return <div className="text-center py-10"><Loader /></div>;
+
 
   return (
     <div className="min-h-screen w-full">
