@@ -3,6 +3,7 @@ import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom"; // Add this import
 import GroupData from "../assets/Group 124.svg";
 import eyeIcon from "../assets/Vectorimg.png";
+import { formatIndianDate } from "../utils/Helpers";
 const SchemeDetailsList = () => {
     useEffect(() => {
     document.title = "SLF | Scheme Details List";
@@ -160,11 +161,14 @@ useEffect(() => {
                                         }`}
                                 >
                                     <td className="px-4 py-2">{row.schemeName}</td>
-                                    <td className="px-4 py-2">{row.applicableFrom}</td>
-                                    <td className="px-4 py-2">{row.applicableTo}</td>
+                                {/* <td className="px-4 py-2">{row.applicableFrom}</td> */}
+                                <td className="px-4 py-2">{formatIndianDate(row.applicableFrom)}</td>
+                                 <td className="px-4 py-2">{formatIndianDate(row.applicableTo)}</td>
+                                    {/* <td className="px-4 py-2">{row.applicableTo}</td> */}
                                    <td className="px-4 py-2">
-  {row.intCompound ? "True" : "False"}
+  {row.calcMethod === "Compound" ? "True" : "False"}
 </td>
+
 
                                     <td className="px-4 py-2">{row.minLoanAmount}</td>
                                     <td className="px-4 py-2">{row.maxLoanAmount}</td>
