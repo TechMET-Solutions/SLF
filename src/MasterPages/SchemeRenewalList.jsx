@@ -1,6 +1,6 @@
-import React, { useState } from "react";
-import GroupData from "../assets/Group 124.svg"; // make sure this exists
+import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import GroupData from "../assets/Group 124.svg"; // make sure this exists
 
 const SchemeRenewalList = () => {
   useEffect(() => {

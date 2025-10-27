@@ -1,4 +1,5 @@
-import { useState, useEffect } from "react";
+import axios from "axios";
+import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom"; // Add this import
 import GroupData from "../assets/Group 124.svg";
 import eyeIcon from "../assets/Vectorimg.png";
@@ -8,42 +9,51 @@ const SchemeDetailsList = () => {
   }, []);
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [data, setData] = useState([
-        {
-            id: 1,
-            groupName: "Recoverable",
-            appFrom: "29-05-2025",
-            appTo: "31-12-2050",
-            intCompound: "True",
-            minAmount: 0,
-            maxAmount: 0,
-            description: "TDS of interest on FDR",
-            active: true,
-        },
-        {
-            id: 2,
-            groupName: "IND 95",
-            appFrom: "01-06-2025",
-            appTo: "31-12-2050",
-            intCompound: "True",
-            minAmount: 1000,
-            maxAmount: 5000,
-            description: "IND 95%, 1.5%, 35 & 185 days",
-            active: false,
-        },
-        {
-            id: 3,
-            groupName: "IND 96",
-            appFrom: "15-06-2025",
-            appTo: "31-12-2050",
-            intCompound: "False",
-            minAmount: 500,
-            maxAmount: 10000,
-            description: "IND 96%, 1.8%, 90 & 365 days",
-            active: true,
-        },
+       
     ]);
+    console.log(data,"data")
+useEffect(() => {
+    const fetchSchemes = async () => {
+      try {
+        const response = await axios.get("http://localhost:5000/Scheme/getAllSchemes");
+        const schemes = response.data.map((item) => ({
+          ...item,
+          intCompound: item.calcMethod === "compound", // optional double-check
+        }));
+        setData(schemes);
+      } catch (err) {
+        console.error("❌ Error fetching schemes:", err);
+      }
+    };
 
+    fetchSchemes();
+  }, []);
     const navigate = useNavigate(); // Add this line
+
+  
+  const handleStatusToggle = async (row) => {
+    const newStatus = row.status === 1 ? 0 : 1;
+
+    try {
+      // 🔄 Update status in backend
+      const res = await axios.patch("http://localhost:5000/Scheme/statusScheme", {
+        id: row.id,
+        status: newStatus,
+      });
+
+      console.log(res.data.message);
+
+      // ✅ Update state immediately
+      const updatedData = data.map((item) =>
+        item.id === row.id ? { ...item, status: newStatus } : item
+      );
+      setData(updatedData);
+    } catch (err) {
+      console.error("Error updating scheme status:", err);
+      alert("Failed to update status. Please try again.");
+    }
+  };
+
 
     return (
         <div className="min-h-screen w-full">
@@ -149,66 +159,74 @@ const SchemeDetailsList = () => {
                                     className={`border-b ${index % 2 === 0 ? "bg-gray-50" : "bg-white"
                                         }`}
                                 >
-                                    <td className="px-4 py-2">{row.groupName}</td>
-                                    <td className="px-4 py-2">{row.appFrom}</td>
-                                    <td className="px-4 py-2">{row.appTo}</td>
-                                    <td className="px-4 py-2">{row.intCompound}</td>
-                                    <td className="px-4 py-2">{row.minAmount}</td>
-                                    <td className="px-4 py-2">{row.maxAmount}</td>
+                                    <td className="px-4 py-2">{row.schemeName}</td>
+                                    <td className="px-4 py-2">{row.applicableFrom}</td>
+                                    <td className="px-4 py-2">{row.applicableTo}</td>
+                                   <td className="px-4 py-2">
+  {row.intCompound ? "True" : "False"}
+</td>
+
+                                    <td className="px-4 py-2">{row.minLoanAmount}</td>
+                                    <td className="px-4 py-2">{row.maxLoanAmount}</td>
                                     <td className="px-4 py-2">{row.description}</td>
-                                    <td className="px-4 py-2 text-center cursor-pointer">
-                                        <div className="flex items-center gap-2">
-                                            {/* First colored div with eye icon */}
-                                            <div className="w-5 h-5 bg-[#646AD9] flex items-center justify-center rounded-[2px] "onClick={() => navigate("/View-Scheme-Details-form")}>
-                                                <img
-                                                
-                                                    src={eyeIcon}
-                                                    alt="eye"
-                                                    className="w-3.5 h-2.5"
-                                                />
-                                            </div>
+                                  <td className="px-4 py-2 text-center cursor-pointer">
+      <div className="flex items-center gap-2">
 
-                                            {/* Second colored div with group icon */}
-                                            <div className="w-5 h-5 bg-[#56A869] flex items-center justify-center rounded-[2px]">
-                                                <img
-                                                    src={GroupData}
-                                                    alt="group"
-                                                    className="w-3.5 h-3.5"
-                                                />
-                                            </div>
-                                        </div>
+        {/* View button */}
+        <div
+          className="w-5 h-5 bg-[#646AD9] flex items-center justify-center rounded-[2px]"
+          onClick={() => navigate("/Add-Scheme-Details-Listform", { state: { type: "view",data : row } })}
+        >
+          <img
+            src={eyeIcon}
+            alt="eye"
+            className="w-3.5 h-2.5"
+          />
+        </div>
 
-                                    </td>
+        {/* Edit button */}
+        <div
+          className="w-5 h-5 bg-[#56A869] flex items-center justify-center rounded-[2px]"
+          onClick={() => navigate("/Add-Scheme-Details-Listform", { state: { type: "edit" ,data : row } })}
+        >
+          <img
+            src={GroupData}
+            alt="group"
+            className="w-3.5 h-3.5"
+          />
+        </div>
+
+      </div>
+    </td>
                                     <td className="px-4 py-2 text-[#1883EF] cursor-pointer"
-                                                                    onClick={() => navigate("/Role-Mapping")}
+                                  // onClick={() => navigate("/Role-Mapping")}
+                                   onClick={() => navigate("/Role-Mapping", { state: { data : row } })}
 >
                                         Role Mapping
                                     </td>
 
                                     {/* Toggle */}
                                     <td className="px-4 py-2 text-[#1883EF] cursor-pointer">
-                                        <button
-                                            onClick={() => {
-                                                const newData = data.map((item) =>
-                                                    item.id === row.id
-                                                        ? { ...item, active: !item.active }
-                                                        : item
-                                                );
-                                                setData(newData);
-                                            }}
-                                            className={`w-12 h-6 flex items-center rounded-full p-1 transition-colors ${
-                                                row.active ? "bg-[#0A2478]" : "bg-gray-400"
-                                            }`}
-                                            style={{ border: "none", outline: "none", cursor: "pointer", padding: 0 }}
-                                            aria-label="Toggle Active"
-                                        >
-                                            <div
-                                                className={`bg-white w-4 h-4 rounded-full shadow-md transform transition-transform ${
-                                                    row.active ? "translate-x-6" : "translate-x-0"
-                                                }`}
-                                            />
-                                        </button>
-                                    </td>
+              <button
+                onClick={() => handleStatusToggle(row)}
+                className={`w-12 h-6 flex items-center rounded-full p-1 transition-colors ${
+                  row.status === 1 ? "bg-[#0A2478]" : "bg-gray-400"
+                }`}
+                style={{
+                  border: "none",
+                  outline: "none",
+                  cursor: "pointer",
+                  padding: 0,
+                }}
+                aria-label="Toggle Active"
+              >
+                <div
+                  className={`bg-white w-4 h-4 rounded-full shadow-md transform transition-transform ${
+                    row.status === 1 ? "translate-x-6" : "translate-x-0"
+                  }`}
+                />
+              </button>
+            </td>
 
                                 </tr>
                             ))}

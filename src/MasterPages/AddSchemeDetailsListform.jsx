@@ -1,6 +1,8 @@
-import { useState } from "react";
-
+import axios from "axios";
+import { useEffect, useState } from "react";
 import { IoIosCloseCircleOutline, IoMdAddCircleOutline } from "react-icons/io";
+import { useLocation, useNavigate } from "react-router-dom";
+import { API } from "../api";
 
 const FormField = ({
   field,
@@ -109,67 +111,13 @@ const FormField = ({
   );
 };
 
-const InterestRateTable = ({ interestRates, onChange, addRow, removeRow }) => (
-  <div>
-    <h3 className="text-md font-semibold mb-4">Interest Rate</h3>
-    <div className="flex justify-between items-center mb-3"></div>
-    <div className="overflow-x-auto border rounded-lg">
-      <table className="w-full border-collapse bg-white">
-        <thead>
-          <tr style={{ backgroundColor: "#0A2478", color: "white" }}>
-            <th className="p-3 border-r">From</th>
-            <th className="p-3 border-r">To</th>
-            <th className="p-3 border-r">Type</th>
-            <th className="p-3">Add int %</th>
-          </tr>
-        </thead>
-        <tbody>
-          {interestRates.map((rate, i) => (
-            <tr key={rate.id} className={i % 2 ? "bg-gray-50" : ""}>
-              <td className="p-3 text-center"></td>
-              <td className="p-3 text-center"></td>
-              <td className="p-3">
-                <select
-                  value={rate.type}
-                  onChange={(e) => onChange(rate.id, "type", e.target.value)}
-                  className="w-full  rounded p-1"
-                >
-                  <option value="days">Days</option>
-                  <option value="months">Months</option>
-                  <option value="years">Years</option>
-                </select>
-              </td>
-              <td className="p-3">
-                <div className="flex justify-end gap-2">
-                  <button
-                    type="button"
-                    onClick={addRow}
-                    className="text-white p-1 rounded flex items-center justify-center"
-                    style={{ backgroundColor: "#0A2478" }}
-                    title="Add row"
-                  >
-                    <IoMdAddCircleOutline className="h-5 w-5" />
-                  </button>
-                  <button
-                    type="button"
-                    onClick={() => removeRow(rate.id)}
-                    className="text-white p-1 rounded flex items-center justify-center"
-                    style={{ backgroundColor: "#C1121F" }}
-                    title="Delete row"
-                  >
-                    <IoIosCloseCircleOutline className="h-5 w-5" />
-                  </button>
-                </div>
-              </td>
-            </tr>
-          ))}
-        </tbody>
-      </table>
-    </div>
-  </div>
-);
 
 const AddSchemeDetailsListform = () => {
+
+  const navigate = useNavigate();
+  const location = useLocation();
+  const { type, data } = location.state || {};
+const isViewMode = type === "view";
   const [formData, setFormData] = useState({
     schemeName: "",
     description: "",
@@ -183,6 +131,7 @@ const AddSchemeDetailsListform = () => {
     interestInAdvance: "", 
     preCloserMinDays: "", 
     penaltyType: "Amount",
+    addOneDay:"",
     penalty: "",
     minLoanAmount: "",
     loanPeriod: "",
@@ -196,11 +145,31 @@ const AddSchemeDetailsListform = () => {
     docChargeMin: "",
     docChargeMax: "",
   });
-  const suffix = formData.calcBasisOn === "Daily" ? "D" : "M";
 
+  useEffect(() => {
+    if (data) {
+      setFormData({
+        ...data,
+        applicableFrom: data.applicableFrom
+          ? data.applicableFrom.split("T")[0]
+          : "",
+        applicableTo: data.applicableTo ? data.applicableTo.split("T")[0] : "",
+      });
+
+      if (data.interestRates) {
+        setInterestRates(
+          typeof data.interestRates === "string"
+            ? JSON.parse(data.interestRates)
+            : data.interestRates
+        );
+      }
+    }
+  }, [data]);
+console.log(formData,"formData")
   const [interestRates, setInterestRates] = useState([
-    { id: 1, selected: false, type: "days", addToPercent: "" },
+    {},
   ]);
+  console.log(interestRates,"interestRates")
   const [errors, setErrors] = useState({});
 
   const handleInputChange = (e) => {
@@ -209,22 +178,52 @@ const AddSchemeDetailsListform = () => {
     if (errors[name]) setErrors((prev) => ({ ...prev, [name]: false }));
   };
 
-  const handleInterestRateChange = (id, field, value) =>
-    setInterestRates((prev) =>
-      prev.map((r) => (r.id === id ? { ...r, [field]: value } : r))
-    );
+  
+const onchange = (id, field, value) => {
+  setInterestRates((prevRates) =>
+    prevRates.map((rate) =>
+      rate.id === id ? { ...rate, [field]: value } : rate
+    )
+  );
+};
 
-  const addRow = () =>
+
+  
+  const handleSave = async () => {
+  try {
+    if (type === "edit") {
+      const response = await axios.put(`${API}/Scheme/updateScheme`, {
+        id: data.id,
+        formData,
+        interestRates,
+      });
+      alert("✅ Scheme updated successfully!");
+    } else {
+      const response = await axios.post(`${API}/Scheme/addScheme`, {
+        formData,
+        interestRates,
+      });
+      alert("✅ Scheme added successfully!");
+    }
+
+    navigate("/Scheme-Details-List");
+  } catch (error) {
+    console.error("Error saving scheme:", error);
+    alert("❌ Failed to save scheme.");
+  }
+};
+
+  
+  const addRow = () => {
     setInterestRates((prev) => [
       ...prev,
-      { id: prev.length + 1, selected: false, type: "days", addToPercent: "" },
+      { id: Date.now(), from: "", to: "", type: "days", addInt: "" },
     ]);
-
-  const removeRows = (id) => {
-    setInterestRates((prev) => prev.filter((r) => r.id !== id));
   };
-    
 
+  const removeRow = (id) => {
+    setInterestRates((prev) => prev.filter((rate) => rate.id !== id));
+  };
   const validateForm = () => {
     const required = [
       "schemeName",
@@ -236,12 +235,6 @@ const AddSchemeDetailsListform = () => {
     required.forEach((f) => !formData[f]?.trim() && (newErrors[f] = true));
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
-  };
-
-  const handleSave = () => {
-    if (!validateForm()) return alert("Please fill all required fields.");
-    console.log("Form Data:", formData, "Interest Rates:", interestRates);
-    alert("Form saved!");
   };
 
   const handleCalcBasisChange = (value) => {
@@ -291,9 +284,12 @@ const AddSchemeDetailsListform = () => {
                 Save
               </button>
 
-              <button className="text-white px-[6.25px] py-[6.25px] rounded-[3.75px] bg-[#C1121F] w-[74px] h-[24px] opacity-100 text-[10px]">
-                Exit
-              </button>
+             <button
+      className="text-white px-[6.25px] py-[6.25px] rounded-[3.75px] bg-[#C1121F] w-[74px] h-[24px] opacity-100 text-[10px]"
+      onClick={() => navigate("/Scheme-Details-List")}
+    >
+      Exit
+    </button>
             </div>
           </div>
         </div>
@@ -312,6 +308,7 @@ const AddSchemeDetailsListform = () => {
                 type="text"
                 placeholder=" Scheme Name"
                 name="schemeName"
+                disabled={isViewMode}
                 value={formData.schemeName}
                 onChange={handleInputChange}
                 className={`border border-gray-300 rounded-[8px] px-3 py-2 w-full bg-white focus:outline-none focus:ring-1 focus:ring-blue-500 ${
@@ -330,6 +327,7 @@ const AddSchemeDetailsListform = () => {
               type="text"
               name="description"
               value={formData.description}
+              disabled={isViewMode}
               onChange={handleInputChange}
               placeholder=""
               className={`border border-gray-300 rounded px-3 py-2 mt-1 w-[350px] bg-white ${
@@ -418,20 +416,22 @@ const AddSchemeDetailsListform = () => {
             )}
           </div>
 
-          {/* Add 1 Day - Only show for Daily (This remains conditional) */}
-          {isDailyBasis && (
-            <div className="flex flex-col gap-2">
-              <label>Add 1 Day</label>
-              <select
-                name="addOneDay"
-                value={formData.addOneDay}
-                onChange={handleInputChange}
-                className="border border-gray-300 rounded px-3 py-2 mt-1 w-[90px] bg-white"
-              >
-                <option value="No">No</option>
-              </select>
-            </div>
-          )}
+         {formData.calcBasisOn === "Daily" && (
+  <div className="flex flex-col">
+    <label className="text-[14px] font-medium">Add 1 Day</label>
+    <select
+      name="addOneDay"
+      value={formData.addOneDay || "No"}
+      onChange={handleInputChange}
+      className="border border-gray-300 rounded px-3 py-2 mt-1 bg-white"
+    >
+      <option value="No">No</option>
+      <option value="Yes">Yes</option>
+    </select>
+  </div>
+)}
+
+
         </div>
 
         {/* Second Row (All fields are now ALWAYS VISIBLE) */}
@@ -443,7 +443,7 @@ const AddSchemeDetailsListform = () => {
               name="calcMethod"
               value={formData.calcMethod}
               onChange={handleInputChange}
-              className="border border-gray-300 rounded px-3 py-2 mt-1 w-[104px] bg-white rounded-[8px]"
+              className="border border-gray-300  px-3 py-2 mt-1 w-[104px] bg-white rounded-[8px]"
             >
               <option value="">Select</option>
               <option value="Simple">Simple</option>
@@ -452,33 +452,36 @@ const AddSchemeDetailsListform = () => {
             </select>
           </div>
 
-          {/* Payment Frequency */}
-          <div className="flex flex-col w-30 ">
-            <label className="text-xs font-medium mb-1 ">
-              Payment Frequency <span className="text-red-600">*</span>
-            </label>
-            <div className="flex w-30">
-              <input
-                type="number"
-                placeholder="185"
-                className="flex-1 w-15 border border-gray-300 rounded-l-md px-2 py-1 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-              />
-              <button className="bg-[#0A2478] text-white px-4 py-2 rounded-r-md hover:bg-[#081c5b] transition-colors duration-200 text-sm font-medium">
-                {suffix}
-              </button>
-            </div>
-          </div>
-
-          {/* Interest in Advance (NOW ALWAYS VISIBLE) */}
           <div className="flex flex-col">
-            <label className="text-xs font-medium mb-1">
-              Interest in Advance <span className="text-red-600">*</span>
-            </label>
+                          <label className="text-[14px] font-medium">
+                           Payment Frequency<span className="text-red-500">*</span>
+                          </label>
+                          <div className="flex items-center w-[220px]">
+                           <input
+              type="text"
+              name="paymentFrequency"
+              value={formData.paymentFrequency}
+              onChange={handleInputChange}
+              placeholder=""
+              className="border border-gray-300  px-3 py-2 w-[132px] bg-white"
+            />
+                            <button className="bg-[#0A2478] text-white px-4 py-2 rounded-r-[8px] border border-gray-300 border-l-0 hover:bg-[#081c5b] flex items-center gap-2">
+                              
+                             <button className="bg-[#0A2478] text-white  hover:bg-[#081c5b] flex items-center gap-2">
+  <span>{formData.calcBasisOn === "Daily" ? "D" : formData.calcBasisOn === "Monthly" ? "M" : "-"}</span>
+</button>
+                            </button>
+                          </div>
+                        </div>
+
+         
+          <div className="flex flex-col">
+            <label className="text-[14px] font-medium">Interest in Advance</label>
             <select
               name="interestInAdvance"
               value={formData.interestInAdvance || ""}
               onChange={handleInputChange}
-              className="border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent w-27 px-2 py-2 text-xs"
+              className="border rounded-md px-2 py-1 w-[126px] h-[38px] text-sm mt-1"
             >
               <option value="Yes">Yes</option>
               <option value="No">No</option>
@@ -495,11 +498,11 @@ const AddSchemeDetailsListform = () => {
               name="preCloserMinDays"
               value={formData.preCloserMinDays || ""}
               onChange={handleInputChange}
-              className="border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent rounded px-2 w-30 py-2 text-xs"
+              className="border border-gray-300 rounded px-3 py-2 mt-1 w-[130px] bg-white"
             />
           </div>
 
-          {/* Penalty Type */}
+        
           <div className="flex flex-col">
             <label className="text-xs font-medium mb-1">
               Penalty Type <span className="text-red-600">*</span>
@@ -508,38 +511,37 @@ const AddSchemeDetailsListform = () => {
               name="penaltyType"
               value={formData.penaltyType || ""}
               onChange={handleInputChange}
-              className="border border-gray-300 rounded px-2 w-22 py-2 text-xs focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              className="border rounded-md px-2 py-1 w-[111px] h-[38px] text-sm mt-1"
             >
               <option value="Amount">Amount</option>
               <option value="Percent">Percent</option>
             </select>
           </div>
 
-          {/* Penalty */}
           <div className="flex flex-col">
-            <label className="text-xs font-medium mb-1">
-              Penalty <span className="text-red-600">*</span>
+            <label className="text-[14px] font-medium">
+              Penalty
             </label>
             <input
               type="number"
               name="penalty"
               value={formData.penalty || ""}
               onChange={handleInputChange}
-              className="border border-gray-300 rounded w-15 px-2 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent text-xs"
+              className="border border-gray-300 rounded px-3 py-2 mt-1 w-[75px] bg-white"
             />
           </div>
 
           {/* Min Loan Amount */}
           <div className="flex flex-col">
-            <label className="text-xs font-medium mb-1">
-              Min Loan Amount <span className="text-red-600">*</span>
+            <label className="text-[14px] font-medium">
+              Min Loan Amount
             </label>
             <input
               type="number"
               name="minLoanAmount"
               value={formData.minLoanAmount || ""}
               onChange={handleInputChange}
-              className="border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent rounded w-29 px-2 py-2 text-xs"
+              className="border border-gray-300 rounded px-3 py-2 mt-1 w-[116px] bg-white"
             />
           </div>
 
@@ -552,49 +554,47 @@ const AddSchemeDetailsListform = () => {
               name="paymentBasisOn"
               value={formData.paymentBasisOn || ""}
               onChange={handleInputChange}
-              className="border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent rounded w-28 px-2 py-2 text-xs"
-            >
-              <option value="Interest">Interest</option>
-              <option value="Principal">Principal</option>
-            </select>
+              className="border border-gray-300 rounded px-3 py-2 mt-1 w-[119px] bg-white"
+            />
           </div>
 
-          {/* Loan Period */}
-          <div className="flex flex-col mr-6 w-20 ">
-            <label className="text-xs font-medium mb-1 ">Loan Period</label>
-            <div className="flex w-20">
-              <input
-                type="number"
-                placeholder="185"
-                className="flex-1 w-15 border border-gray-300 rounded-l-md px-2 py-1 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-              />
-              <button className="bg-[#0A2478] text-white px-4 py-2 rounded-r-md hover:bg-[#081c5b] transition-colors duration-200 text-sm font-medium">
-                {suffix}
-              </button>
-            </div>
-          </div>
-          
-          {/* Gold Approve % (First instance - NOW ALWAYS VISIBLE) */}
-            <div className="flex flex-col">
-              <label className="text-xs font-medium mb-1">
-                Gold Approve %{" "}
-              </label>
-              <input
-                type="number"
-                name="goldApprove"
-                value={formData.goldApprove || ""}
-                onChange={handleInputChange}
-                className="border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent rounded w-20 px-4 py-2 text-xs"
-              />
-            </div>
+          <div className="flex flex-col">
+                          <label className="text-[14px] font-medium">
+                          Loan Period<span className="text-red-500">*</span>
+                          </label>
+                          <div className="flex items-center w-[220px]">
+                           <input
+              type="text"
+              name="loanPeriod"
+              value={formData.loanPeriod}
+              onChange={handleInputChange}
+              placeholder=""
+              className="border border-gray-300  px-3 py-2 w-[113px] bg-white"
+            />
+                            <button className="bg-[#0A2478] text-white px-4 py-2 rounded-r-[8px] border border-gray-300 border-l-0 hover:bg-[#081c5b] flex items-center gap-2">
+                            <button className="bg-[#0A2478] text-white     hover:bg-[#081c5b] flex items-center gap-2">
+  <span>{formData.calcBasisOn === "Daily" ? "D" : formData.calcBasisOn === "Monthly" ? "M" : "-"}</span>
+</button>
+                            </button>
+                          </div>
+                        </div>
         </div>
 
         {/* Third Row (Adjusted for conditional fields) */}
         <div className="flex items-end gap-4 w-full mt-5">
-          {/* Gold Approve % (Second instance - NOW ALWAYS VISIBLE) */}
-            
+         
+          <div className="flex flex-col">
+            <label className="text-[14px] font-medium">Gold approve %</label>
+            <input
+              type="number"
+              name="goldApprovePercent"
+              value={formData.goldApprovePercent}
+              onChange={handleInputChange}
+              className="border border-gray-300 rounded px-3 py-2 mt-1 w-[100px] bg-white"
+            />
+          </div>
 
-          {/* Max Loan Amount */}
+          
           <div className="flex flex-col">
             <label className="text-[14px] font-medium">Max Loan Amount*</label>
             <input
@@ -602,7 +602,7 @@ const AddSchemeDetailsListform = () => {
               name="maxLoanAmount"
               value={formData.maxLoanAmount}
               onChange={handleInputChange}
-              className="border border-gray-300 rounded px-3 py-2 mt-1 w-[132px] bg-white"
+              className="border border-gray-300 rounded px-3 py-2 mt-1 w-[150px] bg-white"
             />
           </div>
 
@@ -613,7 +613,7 @@ const AddSchemeDetailsListform = () => {
               name="partyType"
               value={formData.partyType}
               onChange={handleInputChange}
-              className="border border-gray-300 rounded px-3 py-2 mt-1 w-[132px] bg-white"
+              className="border border-gray-300 rounded px-3 py-2 mt-1 w-[111px] bg-white"
             >
               <option value="individual">Individual</option>
               <option value="cooperative">Corporate</option>
@@ -630,7 +630,7 @@ const AddSchemeDetailsListform = () => {
               name="administrativeCharges"
               value={formData.administrativeCharges}
               onChange={handleInputChange}
-              className="border border-gray-300 rounded px-3 py-2 mt-1 w-[132px] bg-white"
+              className="border border-gray-300 rounded px-3 py-2 mt-1 w-[151px] bg-white"
             />
           </div>
 
@@ -708,13 +708,104 @@ const AddSchemeDetailsListform = () => {
           </div>
         </div>
 
-        {/* Interest Table (ALWAYS VISIBLE) */}
-        <InterestRateTable
-          interestRates={interestRates}
-          onChange={handleInterestRateChange}
-          addRow={addRow}
-          removeRows={removeRows}
-        />
+       
+
+        <div>
+    <h3 className="text-md font-semibold mb-4">Interest Rate</h3>
+    <div className="flex justify-between items-center mb-3">
+      
+    </div>
+    <div className="overflow-x-auto border rounded-lg">
+    <table className="w-full border-collapse bg-white">
+      <thead>
+        <tr style={{ backgroundColor: "#0A2478", color: "white" }}>
+          <th className="p-3 border-r">From</th>
+          <th className="p-3 border-r">To</th>
+          <th className="p-3 border-r">Type</th>
+          <th className="p-3 border-r">Add int %</th>
+          <th className="p-3">Actions</th>
+        </tr>
+      </thead>
+
+      <tbody>
+        {interestRates.map((rate, i) => (
+          <tr key={rate.id} className={i % 2 ? "bg-gray-50" : ""}>
+            
+            {/* From input */}
+            <td className="p-3 text-center">
+              <input
+                type="number"
+                value={rate.from || ""}
+                onChange={(e) => onchange(rate.id, "from", e.target.value)}
+                className="border border-gray-300 rounded px-2 py-1 w-[200px] text-center"
+                placeholder="From"
+              />
+            </td>
+
+            {/* To input */}
+            <td className="p-3 text-center">
+              <input
+                type="number"
+                value={rate.to || ""}
+                onChange={(e) => onchange(rate.id, "to", e.target.value)}
+                className="border border-gray-300 rounded px-2 py-1 w-[200px] text-center"
+                placeholder="To"
+              />
+            </td>
+
+            {/* Type dropdown */}
+            <td className="p-3 text-center">
+              <select
+                value={rate.type || "days"}
+                onChange={(e) => onchange(rate.id, "type", e.target.value)}
+                className="border border-gray-300 rounded px-2 py-1 w-28"
+              >
+                <option value="days">Days</option>
+                <option value="months">Months</option>
+                <option value="years">Years</option>
+              </select>
+            </td>
+
+            {/* Add int % input */}
+            <td className="p-3 text-center">
+              <input
+                type="number"
+                value={rate.addInt || ""}
+                onChange={(e) => onchange(rate.id, "addInt", e.target.value)}
+                className="border border-gray-300 rounded px-2 py-1 w-24 text-center"
+                placeholder="%"
+              />
+            </td>
+
+            {/* Action buttons */}
+            <td className="p-3 text-center">
+              <div className="flex justify-center gap-2">
+                <button
+                  type="button"
+                  onClick={addRow}
+                  className="text-white p-1 rounded flex items-center justify-center"
+                  style={{ backgroundColor: "#0A2478" }}
+                  title="Add row"
+                >
+                  <IoMdAddCircleOutline className="h-5 w-5" />
+                </button>
+                <button
+                  type="button"
+                  onClick={() => removeRow(rate.id)}
+                  className="text-white p-1 rounded flex items-center justify-center"
+                  style={{ backgroundColor: "#C1121F" }}
+                  title="Delete row"
+                >
+                  <IoIosCloseCircleOutline className="h-5 w-5" />
+                </button>
+              </div>
+            </td>
+          </tr>
+        ))}
+      </tbody>
+    </table>
+  </div>
+  </div>
       </div>
     </div>
   );
