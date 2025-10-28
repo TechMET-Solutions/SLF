@@ -13,9 +13,9 @@ import Pagination from "../Component/Pagination";
 
 const EmployeeProfile = () => {
 
-   useEffect(() => {
-          document.title = "SLF | Employee Profile";
-      }, []);
+  useEffect(() => {
+    document.title = "SLF | Employee Profile";
+  }, []);
 
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [employeeList, setEmployeeList] = useState([]);
@@ -68,6 +68,13 @@ const EmployeeProfile = () => {
     if (page < 1 || page > totalPages) return;
     setCurrentPage(page);
     fetchEmployee(page);
+  };
+
+  const handleFileChange = (e, setProfileImage) => {
+    if (!e?.target?.files?.[0]) return; // safety check
+    const file = e.target.files[0];
+    setProfileImage(file);
+    setFormData((prev) => ({ ...prev, emp_image: file.name }));
   };
 
   // ✅ Fetch employee list
@@ -236,21 +243,6 @@ const EmployeeProfile = () => {
     }));
   };
 
-  const handleFileChange = (setter) => (e) => {
-    const file = e.target.files[0];
-    if (file) {
-      setter(file);
-      // Here you would typically upload the file and get the URL
-      // For now, we'll just use the file name
-      if (setter === setProfileImage) {
-        setFormData(prev => ({ ...prev, emp_image: file.name }));
-      } else if (setter === setAddressProof) {
-        setFormData(prev => ({ ...prev, emp_add_prof: file.name }));
-      } else if (setter === setIdProof) {
-        setFormData(prev => ({ ...prev, emp_id_prof: file.name }));
-      }
-    }
-  };
 
 
   return (
@@ -313,7 +305,7 @@ const EmployeeProfile = () => {
       {
         isModalOpen && (
           <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-sm">
-            <div className="bg-white w-[920px] max-h-[90vh] rounded-lg shadow-lg p-6 overflow-y-auto">
+            <div className="bg-white w-[1183px] max-h-[90vh] rounded-lg shadow-lg p-6 overflow-y-auto">
               {/* Title */}
               <h2 className="text-[#0A2478] text-[20px] font-semibold mb-6">
                 {isEditMode ? "Edit Employee Profile" : "Add Employee Profile"}
@@ -427,7 +419,7 @@ const EmployeeProfile = () => {
                     </div>
 
                     {/* Radio Option */}
-                    <div className="flex gap-2 items-center">
+                    <div className="flex gap-3 items-center">
                       <input
                         type="checkbox"
                         id="sameAddress"
@@ -440,7 +432,7 @@ const EmployeeProfile = () => {
                             setFormData(prev => ({ ...prev, permanent_address: "" }));
                           }
                         }}
-                        className="border border-[#C4C4C4] focus:outline-none focus:ring-1 focus:ring-blue-500"
+                        className="border accent-blue-900 w-5 h-5"
                       />
                       <label htmlFor="sameAddress" className="text-gray-700 font-medium">
                         Permanent Address same as Correspondence Address?
@@ -560,9 +552,20 @@ const EmployeeProfile = () => {
                 <div className="w-1/4 p-4">
                   <div>
                     <div className="flex justify-center">
-                      <img src={profileempty} alt="logout" className="w-[120px] h-[140px]" />
+                      {profileImage ? (
+                        <img
+                          src={URL.createObjectURL(profileImage)}
+                          alt="Profile Preview"
+                          className="w-[120px] h-[140px] rounded-lg object-cover border border-gray-300"
+                        />
+                      ) : (
+                        <img
+                          src={profileempty}
+                          alt="Default Profile"
+                          className="w-[120px] h-[140px]"
+                        />
+                      )}
                     </div>
-
                     <div className="flex justify-center mt-2 mb-2">
                       <label className="font-roboto font-bold text-[16px] leading-[100%] tracking-[0.03em] text-center">
                         Upload Customer Profile
@@ -574,7 +577,12 @@ const EmployeeProfile = () => {
                         className="bg-[#D9D9D9] px-4 py-1.5 cursor-pointer text-[10px] rounded-l border-r border w-[200px] text-black font-bold">
                         Choose File
                       </label>
-                      <input id="profileImage" type="file" className="hidden" onChange={handleFileChange(setProfileImage)} />
+                      <input
+                        id="profileImage"
+                        type="file"
+                        className="hidden"
+                        onChange={(e) => handleFileChange(e, setProfileImage)}
+                      />
                       <span className="px-3 py-2 text-sm text-gray-500 w-full truncate">
                         {formData.emp_image || "No file chosen"}
                       </span>
@@ -602,11 +610,13 @@ const EmployeeProfile = () => {
                       </span>
                     </div>
 
-                    <div className=" mt-4 text-sm w-fit flex justify-end">
-                      <p className="bg-green-500 px-2 py-1 text-white rounded-lg">
-                        View Document History
-                      </p>
-                    </div>
+                    {isEditMode && (
+                      <div className="mt-4 text-sm w-fit flex justify-end">
+                        <p className="bg-green-500 px-2 py-1 text-white rounded-lg">
+                          View Document History
+                        </p>
+                      </div>
+                    )}
                   </div>
                 </div>
               </div>
@@ -619,7 +629,7 @@ const EmployeeProfile = () => {
                     name="status"
                     checked={!!formData.status}
                     onChange={(e) => setFormData(prev => ({ ...prev, status: e.target.checked }))}
-                    className="w-4 h-4"
+                    className="w-5 h-5 accent-blue-900"
                   />
                   Is Active
                 </label>
