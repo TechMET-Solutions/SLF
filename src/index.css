@@ -10,3 +10,11 @@ body{
   /* Fonts */
   --font-primary: "Source Sans 3", sans-serif;
 }
+
+
+/* Chrome, Safari, Edge, Opera ke liye */
+.no-spinner::-webkit-inner-spin-button,
+.no-spinner::-webkit-outer-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}

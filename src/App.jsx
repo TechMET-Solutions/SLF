@@ -42,7 +42,7 @@ import LoanEnquiry from "./TrasactionPages/LoanEnquiry";
 import CancelledLoan from "./TrasactionPages/CancelledLoan";
 import AddGoldLoanApplication from "./TrasactionPages/AddGoldLoanApplication";
 import NOC from "./TrasactionPages/NOC";
-import LoanChanges from "./TrasactionPages/LoanChanges";
+import LoanChargesList from "./TrasactionPages/LoanChargesList";
 import AuctionCreation from "./TrasactionPages/AuctionCreation";
 import CreditNote from "./TrasactionPages/CreditNote";
 import DebitNote from "./TrasactionPages/DebitNote";
@@ -124,7 +124,7 @@ function App() {
             element={<AddGoldLoanApplication />}
           />
           <Route path="/NOC" element={<NOC />} />
-          <Route path="/Loan-Changes" element={<LoanChanges />} />
+          <Route path="/Loan-Charges-List" element={<LoanChargesList />} />
           <Route path="/Area" element={<Area />} />
 
           {/* Auction */}
