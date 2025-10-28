@@ -6,12 +6,27 @@ import {
   FiChevronUp,
   FiLogOut,
 } from "react-icons/fi";
+import { TfiReload } from "react-icons/tfi";
 import { Link } from "react-router-dom";
 
 const Navbar = () => {
+
+  const [isBranchModelOpen, setIsBranchModelOpen] = useState(false);
+  const [selectedBranch, setSelectedBranch] = useState("Nashik Road"); // default branch
+  const [selectedYear, setSelectedYear] = useState("2025");
+
+  // Temporary states for modal selection before confirming
+  const [tempBranch, setTempBranch] = useState("");
+  const [tempYear, setTempYear] = useState("");
+
+  const handleOk = () => {
+    if (tempBranch) setSelectedBranch(tempBranch);
+    if (tempYear) setSelectedYear(tempYear);
+    setIsBranchModelOpen(false);
+  };
   // Masters
   const [isMasterOpen, setIsMasterOpen] = useState(false);
-  const [isBranchModelOpen, setIsBranchModelOpen] = useState(false);
+  // const [isBranchModelOpen, setIsBranchModelOpen] = useState(false);
   const [isMasterProfileOpen, setIsMasterProfileOpen] = useState(false);
   const [isMasterSchemeMaster, setIsMasterSchemeMaster] = useState(false);
   const [isMasterSchemeEmployeeProfile, setIsMasterSchemeEmployeeProfile] =
@@ -54,7 +69,6 @@ const Navbar = () => {
         {/* Left side placeholder */}
         <div className="flex items-center gap-3">
           <img src="/logo.svg" alt="Logo" className="w-12 h-12 object-contain" />
-          <p className="text-sm font-medium text-white">Bhagur B1</p>
         </div>
 
 
@@ -413,11 +427,18 @@ const Navbar = () => {
 
         {/* ===== Logout Button ===== */}
         <div className="flex gap-3">
-          <button
+          {/* <button
             onClick={() => setIsBranchModelOpen(true)}
             className="w-[80px] h-[36px] flex items-center justify-center bg-white rounded-[4.8px] text-[#0b2c69] font-medium p-2"
           >
             Branch
+          </button> */}
+          <button
+            onClick={() => setIsBranchModelOpen(true)}
+            className="w-[150px] h-[40px] flex items-center gap-2 justify-center bg-white rounded-[4.8px] text-[#0b2c69] font-medium border border-gray-300"
+          >
+            {selectedBranch}
+            <TfiReload className="text-lg size-5" />
           </button>
           <button
             className="w-[50px] h-[36px] flex items-center justify-center bg-white rounded-[4.8px] text-[#0b2c69] font-medium p-2"
@@ -439,7 +460,10 @@ const Navbar = () => {
 
               {/* Change Branch Dropdown */}
               <div className="mb-4">
-                <label htmlFor="branch" className="block text-sm font-medium text-gray-700 mb-1">
+                <label
+                  htmlFor="branch"
+                  className="block text-sm font-medium text-gray-700 mb-1"
+                >
                   Select Branch
                 </label>
                 <select
@@ -447,17 +471,23 @@ const Navbar = () => {
                   name="branch"
                   className="w-full border border-gray-300 text-black rounded px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#0A2478]"
                   defaultValue=""
+                  onChange={(e) => setTempBranch(e.target.value)}
                 >
-                  <option value="" disabled className="">Choose a branch</option>
-                  <option value="nsk-rd">Nashik Road</option>
-                  <option value="bhagur">Bhagur</option>
-                  <option value="bhagur">Nashik</option>
+                  <option value="" disabled>
+                    Choose a branch
+                  </option>
+                  <option value="Nashik Road">Nashik Road</option>
+                  <option value="Bhagur">Bhagur</option>
+                  <option value="Nashik">Nashik</option>
                 </select>
               </div>
 
               {/* Change Year Dropdown */}
               <div className="mb-6">
-                <label htmlFor="year" className="block text-sm font-medium text-gray-700 mb-1">
+                <label
+                  htmlFor="year"
+                  className="block text-sm font-medium text-gray-700 mb-1"
+                >
                   Select Year
                 </label>
                 <select
@@ -465,11 +495,13 @@ const Navbar = () => {
                   name="year"
                   className="w-full border border-gray-300 text-black rounded px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#0A2478]"
                   defaultValue=""
+                  onChange={(e) => setTempYear(e.target.value)}
                 >
-                  <option value="" disabled>Choose a year</option>
+                  <option value="" disabled>
+                    Choose a year
+                  </option>
                   <option value="2025">2025</option>
                   <option value="2024">2024</option>
-                  {/* Add more years if needed */}
                 </select>
               </div>
 
@@ -477,7 +509,7 @@ const Navbar = () => {
               <div className="flex justify-center gap-4">
                 <button
                   className="bg-[#F11717] hover:bg-red-700 text-white px-5 py-2 rounded text-base font-medium"
-                // onClick={handleDeleteConfirm}
+                  onClick={handleOk}
                 >
                   OK
                 </button>
@@ -490,7 +522,6 @@ const Navbar = () => {
               </div>
             </div>
           </div>
-
         )}
       </div>
 
