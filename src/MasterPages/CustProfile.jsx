@@ -10,68 +10,99 @@
 
 // export default CustProfile
 import JoditEditor from "jodit-react";
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import GroupData from "../assets/Group 124.svg";
 import msg from "../assets/msg.png";
 import print from "../assets/print.png";
 
+import axios from "axios";
 import blockimg from "../assets/blockimg.png";
+import { formatIndianDate } from "../utils/Helpers";
 const CustProfile = () => {
   const navigate = useNavigate();
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isModalOpenForRemark, setIsModalOpenForRemark] = useState(false);
-  const [isModalOpenForBlock, setIsModalOpenForblock] = useState(false);
+ 
   const [checkedRows, setCheckedRows] = useState({}); // store checked state per row
   const editor = useRef(null);
+   
   const [content, setContent] = useState("");
-  const [data] = useState([
-    {
-      customer: "Recoverable",
-      partyUID: "UID12345",
-      fName: "Ramesh",
-      mName: "Kumar",
-      lName: "Sharma",
-      city: "Mumbai",
-      mobileNumber: "9876543210",
-      badDebtor: "No",
-      addedOn: "22-09-2017",
-      addedBy: "Admin",
-      block: "Active",
-
-      action: "Edit",
-    },
-    {
-      customer: "IND 95",
-      partyUID: "UID67890",
-      fName: "Suresh",
-      mName: "Raj",
-      lName: "Patel",
-      city: "Pune",
-      mobileNumber: "9123456780",
-      badDebtor: "Yes",
-      addedOn: "23-09-2017",
-      addedBy: "System",
-      block: "Blocked",
-      action: "View",
-    },
-    {
-      customer: "Test User",
-      partyUID: "UID11122",
-      fName: "Amit",
-      mName: "Prakash",
-      lName: "Yadav",
-      city: "Delhi",
-      mobileNumber: "9988776655",
-      badDebtor: "No",
-      addedOn: "24-09-2017",
-      addedBy: "Admin",
-      block: "Active",
-      action: "Delete",
-    },
-  ]);
+  const [data, setData] = useState([]);
+  console.log(data, "data")
+  const [isModalOpenForBlock, setIsModalOpenForblock] = useState(false);
+  const [selectedCustomer, setSelectedCustomer] = useState(null);
 
 
+ const handleCheckboxChange = async (row, checked) => {
+  setCheckedRows((prev) => ({
+    ...prev,
+    [row.id]: checked,
+  }));
+
+  if (checked) {
+    // Open confirmation modal for blocking
+    setSelectedCustomer(row);
+    setIsModalOpenForblock(true);
+  } else {
+    // Directly call unblock API
+    try {
+      await axios.post(`http://localhost:5000/Master/doc/blockUnblockCustomer`, {
+        id: row.id,
+        block: false,
+      });
+      alert("Customer unblocked successfully");
+    } catch (err) {
+      console.error("Error unblocking customer:", err);
+      alert("Failed to unblock customer");
+    }
+  }
+};
+
+const handleBlockConfirm = async () => {
+  try {
+    await axios.post(`http://localhost:5000/Master/doc/blockUnblockCustomer`, {
+      id: selectedCustomer.id,
+      block: true,
+    });
+    alert("Customer blocked successfully");
+    setIsModalOpenForblock(false);
+  } catch (err) {
+    console.error("Error blocking customer:", err);
+    alert("Failed to block customer");
+  }
+};
+const fetchCustomers = async () => {
+    try {
+      const response = await axios.get("http://localhost:5000/Master/doc/list");
+      setData(response.data);
+    } catch (error) {
+      console.error("❌ Error fetching customers:", error);
+    }
+  };
+
+
+  
+  useEffect(() => {
+    document.title = "SLF | Customer List";
+    fetchCustomers();
+  }, []);
+
+
+  const handleOpenRemark = (customer) => {
+    setSelectedCustomer(customer);
+    setContent(customer.Remark || ""); // prefill if remark exists
+    setIsModalOpenForRemark(true);
+  };
+
+   const handleNavigateToProfile = (row) => {
+  navigate("/Add-Customer-Profile", { 
+    state: { 
+      customerData: row, 
+      type: "edit"  // 👈 indicate edit mode
+    } 
+  });
+};
   return (
     <div className=" min-h-screen w-full">
 
@@ -333,7 +364,7 @@ const CustProfile = () => {
             <div className="flex justify-center gap-5 items-center">
 
               <div className="flex justify-end gap-3 mt-6 item-center">
-                <button
+                {/* <button
                   className="bg-[#0A2478] text-white"
                   style={{
                     width: "92.66px",
@@ -345,7 +376,7 @@ const CustProfile = () => {
                   onClick={() => setIsModalOpenForRemark(false)}
                 >
                   Save
-                </button>
+                </button> */}
 
                 <button
                   className="text-white"
@@ -371,43 +402,38 @@ const CustProfile = () => {
         </div>
       )}
 
-      {isModalOpenForBlock && (
-        <div className="fixed inset-0 flex items-center justify-center z-50"
+       {isModalOpenForBlock && (
+        <div
+          className="fixed inset-0 flex items-center justify-center z-50"
           style={{
             background: "#0101017A",
             backdropFilter: "blur(6.8px)",
-          }}>
-          <div className="bg-white w-[396.2737731933594px]  rounded-lg shadow-lg h-[386px] p-5">
-
-
+          }}
+        >
+          <div className="bg-white w-[396px] rounded-lg shadow-lg h-[386px] p-5">
             <div className="flex justify-center items-center mt-2">
               <img src={blockimg} alt="action" className="w-[113px] h-[113px]" />
             </div>
             <div className="mt-10">
-
-
-              <p className="font-[Source_Sans_3] font-normal text-[21.79px] leading-[100%] tracking-[0%] text-center">
+              <p className="font-[Source_Sans_3] font-normal text-[21.79px] text-center">
                 Are you sure to Block this Customer
               </p>
-              <p className="font-[Source_Sans_3] font-normal text-[17.43px] leading-[100%] tracking-[0%] text-center text-[#7C7C7C] mt-2">
-                you won’t be able to revert this action
+              <p className="font-[Source_Sans_3] font-normal text-[17.43px] text-center text-[#7C7C7C] mt-2">
+                You won’t be able to revert this action
               </p>
-
-
             </div>
 
             <div className="mt-5 grid justify-center">
-              <div className="pl-3"><button
-                className="bg-[#F11717] text-white font-[Source_Sans_3] font-semibold text-[19.61px] leading-[100%] tracking-[0%] text-center w-[67.53px] h-[30.57px] rounded-[2.67px] "
-                onClick={() => setIsModalOpenForblock(false)}
-              >
-                Ok
-              </button></div>
-
+              <div className="pl-3">
+                <button
+                  className="bg-[#F11717] text-white font-semibold text-[19.61px] w-[67.53px] h-[30.57px] rounded-[2.67px]"
+                  onClick={handleBlockConfirm}
+                >
+                  Ok
+                </button>
+              </div>
 
               <div className="mt-4">
-
-
                 <button
                   className="text-white text-[19px]"
                   style={{
@@ -415,25 +441,14 @@ const CustProfile = () => {
                     width: "100.66px",
                     height: "30.57px",
                     borderRadius: "2.67px",
-
-                    opacity: 1,
                   }}
                   onClick={() => setIsModalOpenForblock(false)}
                 >
                   Cancel
                 </button>
-
               </div>
             </div>
-
-
-
-
-
           </div>
-
-
-
         </div>
       )}
       {/* Table */}
@@ -463,49 +478,57 @@ const CustProfile = () => {
                   key={index}
                   className={`border-b ${index % 2 === 0 ? "bg-gray-50" : "bg-white"}`}
                 >
-                  <td className="px-4 py-2">{row.customer}</td>
-                  <td className="px-4 py-2">{row.partyUID}</td>
-                  <td className="px-4 py-2">{row.fName}</td>
-                  <td className="px-4 py-2">{row.mName}</td>
-                  <td className="px-4 py-2">{row.lName}</td>
-                  <td className="px-4 py-2">{row.city}</td>
-                  <td className="px-4 py-2">{row.mobileNumber}</td>
-                  <td className="px-4 py-2">{row.badDebtor}</td>
-                  <td className="px-4 py-2">{row.addedOn}</td>
-                  <td className="px-4 py-2">{row.addedBy}</td>
+                 <td className="px-4 py-2 flex items-center gap-3">
+  {/* Profile Image */}
+  <img
+    src={row.profileImage}
+    alt={row.customer}
+    className="w-10 h-10 rounded-full object-cover border border-gray-300"
+  />
 
-                  <td className="px-4 py-2">
-                    <input
-                      type="checkbox"
-                      className="w-[25px] h-[25px]"
-                      checked={checkedRows[row.customer] || false}
-                      onChange={(e) => {
-                        setCheckedRows((prev) => ({
-                          ...prev,
-                          [row.customer]: e.target.checked,
-                        }));
-                        if (e.target.checked) {
-                          setIsModalOpenForblock(true); // open modal when checked
-                        }
-                      }}
-                    />
-                  </td>
+  {/* Customer Name */}
+  <span className="font-medium text-gray-800">{row.customer}</span>
+</td>
+
+                  <td className="px-4 py-2">{row.id}</td>
+                  <td className="px-4 py-2">{row.firstName}</td>
+                  <td className="px-4 py-2">{row.middleNam}</td>
+                  <td className="px-4 py-2">{row.lastName}</td>
+                  <td className="px-4 py-2">{row.Permanent_City}</td>
+                  <td className="px-4 py-2">{row.mobile}</td>
+                  <td className="px-4 py-2 text-center">
+  {row.badDebtor ? "True" : "False"}
+</td>
+
+                  {/* <td className="px-4 py-2">{row.Added_On}</td> */}
+                  <td className="px-4 py-2">{formatIndianDate(row.Added_On)}</td>
+                  <td className="px-4 py-2">{row.Added_By}</td>
+
+              <td className="px-4 py-2">
+  <input
+    type="checkbox"
+    className="w-[25px] h-[25px]"
+    checked={checkedRows[row.id] ?? row.block === 1}
+    onChange={(e) => handleCheckboxChange(row, e.target.checked)}
+  />
+</td>
+
 
                   <td className="px-4 py-2 text-[#1883EF] cursor-pointer">
                     <div className="flex gap-5">
-                      <div className="w-[17px] h-[17px] bg-[#6D5300] rounded-[2.31px] flex items-center justify-center">
-                        <img
-                          src={msg}
-                          alt="action"
-                          className="w-[12px] h-[12px]"
-                          onClick={() => setIsModalOpenForRemark(true)}
-                        />
-                      </div>
+                    <div
+        className="w-[17px] h-[17px] bg-[#6D5300] rounded-[2.31px] flex items-center justify-center cursor-pointer"
+        onClick={() => handleOpenRemark(row)} // pass full row object
+      >
+        <img src={msg} alt="action" className="w-[12px] h-[12px]" />
+      </div>
 
-                      <div className="w-[17px] h-[17px] bg-[#56A869] rounded-[2.31px] flex items-center justify-center">
-                        <img src={GroupData} alt="action" className="w-[12px] h-[12px]" />
-                      </div>
-
+                      <div
+                className="w-[17px] h-[17px] bg-[#56A869] rounded-[2.31px] flex items-center justify-center cursor-pointer"
+                onClick={() => handleNavigateToProfile(row)}
+              >
+                <img src={GroupData} alt="action" className="w-[12px] h-[12px]" />
+              </div>
                       <div className="w-[17px] h-[17px] bg-[#83090B] rounded-[2.31px] flex items-center justify-center">
                         <img src={print} alt="action" className="w-[12px] h-[12px]" />
                       </div>

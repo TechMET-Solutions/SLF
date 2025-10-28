@@ -2,8 +2,9 @@ import { FaPaperclip } from "react-icons/fa";
 
 import axios from "axios";
 import JoditEditor from "jodit-react";
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { MdOutlineFileUpload } from "react-icons/md";
+import { useLocation, useNavigate } from "react-router-dom";
 import GroupData from "../assets/Group 124.svg";
 import Vectorimg from "../assets/Vectorimg.png";
 import profileempty from "../assets/profileempty.png";
@@ -11,8 +12,14 @@ import righttick from "../assets/righttick.png";
 import send from "../assets/send.svg";
 import { encryptData } from "../utils/cryptoHelper";
 
+
 const AddCustProfile = () => {
+  const navigate = useNavigate();
+
+  const location = useLocation();
   const editor = useRef(null);
+const mode = location.state?.type || "add";
+  const customerData = location.state?.customerData;
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [content, setContent] = useState("");
   const bankData = [
@@ -111,10 +118,46 @@ const AddCustProfile = () => {
     Nominee_City: "",
 
     //access
-        access: "", 
+    access: "", 
+         badDebtor: false,
    
   });
 
+useEffect(() => {
+  if (customerData) {
+    setFormData((prev) => ({
+      ...prev,
+      ...customerData,
+      id: customerData.id || customerData.ID || "", // ✅ ensure id is stored in formData
+    }));
+
+    // ✅ Set the remark content if it exists
+    if (customerData.Remark) {
+      setContent(customerData.Remark);
+    }
+  }
+}, [customerData]);
+
+  
+const handleProfileUpload = (e) => {
+    const file = e.target.files[0];
+    if (file) {
+      setFormData((prev) => ({
+        ...prev,
+        profileImage: file,
+      }));
+    }
+  };
+
+  const handleSignatureUpload = (e) => {
+    const file = e.target.files[0];
+    if (file) {
+      setFormData((prev) => ({
+        ...prev,
+        signature: file,
+      }));
+    }
+  };
   console.log(formData, "formData");
   const panFileInputRef = useRef(null);
   const aadharFileInputRef = useRef(null);
@@ -201,19 +244,101 @@ const handleRadioChange = () => {
     return newValue;
   });
 };
+
+// const handleSubmit = async () => {
+//   try {
+//     // Merge remark into formData before encrypting
+//     const payloadToEncrypt = { 
+//       ...formData, 
+//       Remark: content, 
+//       Added_By: "" // currently blank
+//     };
+
+//     // Encrypt non-file data
+//     const encrypted = encryptData(payloadToEncrypt);
+
+//     // Create FormData object
+//     const formDataToSend = new FormData();
+//     formDataToSend.append("data", encrypted);
+
+//     // Append files if they exist
+//     if (formData.panFile) formDataToSend.append("panFile", formData.panFile);
+//     if (formData.aadharFile) formDataToSend.append("aadharFile", formData.aadharFile);
+//     if (formData.profileImage) formDataToSend.append("profileImage", formData.profileImage);
+//     if (formData.signature) formDataToSend.append("signature", formData.signature);
+//     if (formData.Additional_UploadDocumentFile1)
+//       formDataToSend.append("Additional_UploadDocumentFile1", formData.Additional_UploadDocumentFile1);
+//     if (formData.Additional_UploadDocumentFile2)
+//       formDataToSend.append("Additional_UploadDocumentFile2", formData.Additional_UploadDocumentFile2);
+
+//     // Send API request
+//     const response = await axios.post(
+//       "http://localhost:5000/Master/doc/add",
+//       formDataToSend,
+//       { headers: { "Content-Type": "multipart/form-data" } }
+//     );
+
+//     console.log("✅ Response:", response.data);
+
+//     if (response.data.status && response.data.statuscode === 200) {
+//       alert(response.data.message);
+//       navigate("/Customer-Profile-List");
+//     } else {
+//       alert("❌ Something went wrong: " + (response.data.message || "Unknown error"));
+//     }
+//   } catch (error) {
+//     console.error("❌ Error submitting form:", error);
+//     alert("An error occurred while adding the customer.");
+//   }
+// };
 const handleSubmit = async () => {
   try {
-    const encrypted = encryptData(formData);
+    const payloadToEncrypt = {
+      ...formData,
+      Remark: content,
+      Added_By: "",
+    };
 
-    const response = await axios.post("http://localhost:5000/Master/doc/add", {
-      data: encrypted, // send encrypted data
+    const encrypted = encryptData(payloadToEncrypt);
+
+    const formDataToSend = new FormData();
+    formDataToSend.append("data", encrypted);
+
+    if (formData.panFile instanceof File) formDataToSend.append("panFile", formData.panFile);
+    if (formData.aadharFile instanceof File) formDataToSend.append("aadharFile", formData.aadharFile);
+    if (formData.profileImage instanceof File) formDataToSend.append("profileImage", formData.profileImage);
+    if (formData.signature instanceof File) formDataToSend.append("signature", formData.signature);
+    if (formData.Additional_UploadDocumentFile1 instanceof File)
+      formDataToSend.append("Additional_UploadDocumentFile1", formData.Additional_UploadDocumentFile1);
+    if (formData.Additional_UploadDocumentFile2 instanceof File)
+      formDataToSend.append("Additional_UploadDocumentFile2", formData.Additional_UploadDocumentFile2);
+
+    const apiUrl =
+      mode === "edit"
+        ? "http://localhost:5000/Master/doc/updateCustomer"
+        : "http://localhost:5000/Master/doc/add";
+
+    // ✅ Always use POST for file uploads
+    const response = await axios.post(apiUrl, formDataToSend, {
+      headers: { "Content-Type": "multipart/form-data" },
     });
 
-    console.log("Response:", response.data);
+    console.log("✅ Response:", response.data);
+    if (response.data.status && response.data.statuscode === 200) {
+      alert(response.data.message);
+      navigate("/Customer-Profile-List");
+    } else {
+      alert("❌ Something went wrong: " + (response.data.message || "Unknown error"));
+    }
   } catch (error) {
-    console.error("Error:", error);
+    console.error("❌ Error submitting form:", error);
+    alert(`An error occurred while ${mode === "edit" ? "updating" : "adding"} the customer.`);
   }
 };
+
+
+
+
 
   return (
     <div>
@@ -236,7 +361,20 @@ const handleSubmit = async () => {
           {/* Right section (search + buttons) */}
           <div className="flex items-center gap-6">
             {/* Search section */}
-
+            
+            <div className="flex items-center gap-2 ">
+              <label htmlFor="badDebtor" className="text-gray-700 font-medium text-[11.25px]">
+    Bad Debtor
+  </label>
+  <input
+    type="checkbox"
+    id="badDebtor"
+    checked={formData.badDebtor}
+    onChange={(e) => setFormData({ ...formData, badDebtor: e.target.checked })}
+    className="w-5 h-5 accent-red-600 cursor-pointer w-[15.25px]"
+  />
+  
+</div>
             {/* Buttons stuck to right */}
             <div className="flex gap-3">
               <button
@@ -269,29 +407,7 @@ const handleSubmit = async () => {
         <div className="flex justify-between gap-5">
           <div className="">
             <div className="flex items-center gap-4 w-full">
-              {/* PAN No */}
-              {/* <div className="flex flex-col">
-    <label className="text-[14px] font-medium">PAN No.</label>
-    <div className="flex items-center mt-1 w-[220px]">
-      <div className="relative flex-1">
-        <input
-          type="text"
-                      placeholder="Enter PAN"
-                       name="panNo"
-  value={formData.panNo}
-  onChange={handleChange}
-          className="border border-[#C4C4C4] border-r-0 rounded-l px-3 py-2 w-full pr-10 focus:outline-none focus:ring-1 focus:ring-blue-500 bg-white"
-        />
-        <FaPaperclip
-          className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 cursor-pointer"
-          size={16}
-        />
-      </div>
-      <button className="bg-[#0A2478] text-white px-5 py-2 rounded-r border border-gray-300 border-l-0 hover:bg-[#081c5b]">
-        Verify
-      </button>
-    </div>
-  </div> */}
+              
 
               <div className="flex flex-col">
                 <label className="text-[14px] font-medium">PAN No.</label>
@@ -340,29 +456,7 @@ const handleSubmit = async () => {
               </div>
 
               {/* Aadhaar */}
-              {/* <div className="flex flex-col">
-    <label className="text-[14px] font-medium">Aadhar Number*</label>
-    <div className="flex items-center mt-1 w-[220px]">
-      <div className="relative flex-1">
-        <input
-          type="text"
-                      placeholder="Enter Aadhaar"
-                       name="aadhar"
-  value={formData.aadhar}
-  onChange={handleChange}
-          className="border border-gray-300 border-r-0 rounded-l px-3 py-2 w-full pr-10 focus:outline-none focus:ring-1 focus:ring-blue-500 bg-white"
-        />
-        <FaPaperclip
-          className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 cursor-pointer"
-          size={16}
-        />
-      </div>
-      <button className="bg-[#0A2478] text-white px-5 py-2 rounded-r border border-gray-300 border-l-0 hover:bg-[#081c5b]">
-        Verify
-      </button>
-    </div>
-  </div> */}
-
+            
               <div className="flex flex-col">
                 <label className="text-[14px] font-medium">
                   Aadhar Number <span className="text-red-500">*</span>
@@ -777,76 +871,97 @@ const handleSubmit = async () => {
           </div>
 
           <div>
-            <div className="flex justify-center mt-5 mb-2">
-              <label className="font-roboto font-bold text-[16px] leading-[100%] tracking-[0.03em] text-center">
-                Upload Customer Signature
-              </label>
-            </div>
-            <div className="relative flex justify-center">
-              {/* Background Image */}
-              <img
-                src={profileempty}
-                alt="signature"
-                className="w-[156px] h-[156px] border rounded-md object-cover"
-              />
+           <div>
+      {/* Upload Customer Profile */}
+      <div>
+        <div className="flex justify-center mt-5 mb-2">
+          <label className="font-roboto font-bold text-[16px] leading-[100%] tracking-[0.03em] text-center">
+            Upload Customer Profile
+          </label>
+        </div>
 
-              {/* Upload Button on Top of Image */}
-              <div
-                htmlFor="signatureUpload"
-                className="absolute inset-0 flex items-center justify-center  bg-opacity-40 text-white text-sm px-4 py-2 rounded-md cursor-pointer hover:bg-opacity-60 transition  "
-              >
-                <button className="w-[101px] h-[18px] p-1 bg-[#0A2478] text-white text-[8px] rounded-[3px]">
-                  {" "}
-                  Upload from Computer
-                </button>
-              </div>
+        <div className="relative flex justify-center">
+          {/* Background or Preview */}
+        <img
+  src={
+    formData.profileImage
+      ? typeof formData.profileImage === "string"
+        ? formData.profileImage // use existing URL from backend
+        : URL.createObjectURL(formData.profileImage) // use File preview
+      : profileempty // default placeholder
+  }
+  alt="profile"
+  className="w-[156px] h-[156px] border"
+/>
 
-              {/* Hidden File Input */}
-              <input
-                type="file"
-                id="signatureUpload"
-                accept="image/*"
-                className="hidden"
-                onChange={(e) => console.log(e.target.files[0])}
-              />
-            </div>
 
-            <div>
-              <div className="flex justify-center mt-5 mb-2">
-                <label className="font-roboto font-bold text-[16px] leading-[100%] tracking-[0.03em] text-center">
-                  Upload Customer Signature
-                </label>
-              </div>
+          {/* Upload Button */}
+          <div
+            className="absolute inset-0 flex items-center justify-center bg-opacity-40 text-white text-sm px-4 py-2 rounded-md cursor-pointer hover:bg-opacity-60 transition"
+            onClick={() => document.getElementById("profileUpload").click()}
+          >
+            <button className="w-[101px] h-[18px] p-1 bg-[#0A2478] text-white text-[8px] rounded-[3px]">
+              Upload from Computer
+            </button>
+          </div>
 
-              <div className="relative flex justify-center">
-                {/* Background Image */}
-                <img
-                  src={profileempty}
-                  alt="signature"
-                  className="w-[156px] h-[58px] border rounded-md object-cover"
-                />
+          {/* Hidden Input */}
+          <input
+            type="file"
+            id="profileUpload"
+            accept="image/*"
+            className="hidden"
+            onChange={handleProfileUpload}
+          />
+        </div>
+      </div>
 
-                {/* Upload Button on Top of Image */}
-                <div
-                  htmlFor="signatureUpload"
-                  className="absolute inset-0 flex items-center justify-center  bg-opacity-40 text-white text-sm px-4 py-2 rounded-md cursor-pointer hover:bg-opacity-60 transition  "
-                >
-                  <button className="w-[101px] h-[18px] p-1 bg-[#0A2478] text-white text-[8px] rounded-[3px]">
-                    {" "}
-                    Upload from Computer
-                  </button>
-                </div>
+     
+      
+    </div>
 
-                {/* Hidden File Input */}
-                <input
-                  type="file"
-                  id="signatureUpload"
-                  accept="image/*"
-                  className="hidden"
-                  onChange={(e) => console.log(e.target.files[0])}
-                />
-              </div>
-            </div>
+           <div>
+      <div className="flex justify-center mt-5 mb-2">
+        <label className="font-roboto font-bold text-[16px] leading-[100%] tracking-[0.03em] text-center">
+          Upload Customer Signature
+        </label>
+      </div>
+
+      <div className="relative flex justify-center">
+        {/* Background Image or Preview */}
+       <img
+  src={
+    formData.signature
+      ? formData.signature instanceof File
+        ? URL.createObjectURL(formData.signature) // for newly uploaded files
+        : `${formData.signature}` // for existing file path
+      : profileempty
+  }
+  alt="signature"
+  className="w-[156px] h-[58px] border rounded-md"
+/>
+
+
+        {/* Upload Button */}
+        <div
+          className="absolute inset-0 flex items-center justify-center bg-opacity-40 text-white text-sm px-4 py-2 rounded-md cursor-pointer hover:bg-opacity-60 transition"
+          onClick={() => document.getElementById("signatureUpload").click()}
+        >
+          <button className="w-[101px] h-[18px] p-1 bg-[#0A2478] text-white text-[8px] rounded-[3px]">
+            Upload from Computer
+          </button>
+        </div>
+
+        {/* Hidden Input */}
+        <input
+          type="file"
+          id="signatureUpload"
+          accept="image/*"
+          className="hidden"
+          onChange={handleSignatureUpload}
+        />
+      </div>
+    </div>
           </div>
         </div>
       </div>
