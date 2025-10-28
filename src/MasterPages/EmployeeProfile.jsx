@@ -1,14 +1,15 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
+import { FaPaperclip } from "react-icons/fa";
 import { FiEdit, FiEye, FiTrash2 } from "react-icons/fi";
-import blockimg from "../assets/blockimg.png";
-import profileempty from "../assets/profileempty.png";
 import {
+  createEmployeeApi,
   deleteEmployeeApi,
   fetchEmployeeProfileApi,
-  createEmployeeApi,
   updateEmployeeApi,
   updateEmployeeStatusApi
 } from "../API/Master/Employee_Profile/EmployeeProfile";
+import blockimg from "../assets/blockimg.png";
+import profileempty from "../assets/profileempty.png";
 import Pagination from "../Component/Pagination";
 
 const EmployeeProfile = () => {
@@ -28,6 +29,7 @@ const EmployeeProfile = () => {
 
   const [formData, setFormData] = useState({
     id: null,
+    panFile:null,
     pan_card: "",
     aadhar_card: "",
     emp_name: "",
@@ -49,7 +51,16 @@ const EmployeeProfile = () => {
     emp_id_prof: "",
     status: true,
   });
-
+  const panFileInputRef = useRef(null);
+  const handlePanFileChange = (e) => {
+    const file = e.target.files[0];
+    if (file) {
+      setFormData((prev) => ({
+        ...prev,
+        panFile: file,
+      }));
+    }
+  };
   // File states
   const [profileImage, setProfileImage] = useState(null);
   const [addressProof, setAddressProof] = useState(null);
@@ -317,7 +328,7 @@ const EmployeeProfile = () => {
                   {/* PAN + Aadhaar + Name */}
                   <div className="grid grid-cols-3 gap-4">
                     {/* PAN */}
-                    <div className="flex flex-col gap-1">
+                    {/* <div className="flex flex-col gap-1">
                       <label className="text-gray-700 font-medium">Pan Card Number*</label>
                       <div className="flex">
                         <input
@@ -332,8 +343,52 @@ const EmployeeProfile = () => {
                           Verify
                         </button>
                       </div>
-                    </div>
+                    </div> */}
+ <div className="flex flex-col">
+                <label className="text-[14px] font-medium">PAN No.</label>
+                <div className="flex items-center mt-1 w-[220px]">
+                  <div className="relative flex-1">
+                    <input
+                      type="text"
+                      placeholder="Enter PAN"
+                      name="panNo"
+                      value={formData.panNo}
+                      onChange={handleInputChange}
+                      className="border border-[#C4C4C4] border-r-0 rounded-l px-3 py-2 w-full pr-10 focus:outline-none focus:ring-1 focus:ring-blue-500 bg-white"
+                    />
 
+                    {/* Hidden file input */}
+                    <input
+                      type="file"
+                      accept="image/*,.pdf"
+                      ref={panFileInputRef}
+                      onChange={handlePanFileChange}
+                      className="hidden"
+                    />
+
+                    {/* Paperclip icon triggers file selection */}
+                    <FaPaperclip
+                      className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 cursor-pointer"
+                      size={16}
+                      onClick={() => panFileInputRef.current.click()}
+                    />
+                  </div>
+
+                  <button
+                    className="bg-[#0A2478] text-white px-5 py-2 rounded-r border border-gray-300 border-l-0 hover:bg-[#081c5b]"
+                    type="button"
+                  >
+                    Verify
+                  </button>
+                </div>
+
+                {/* Show selected file name */}
+                {formData.panFile && (
+                  <p className="text-xs text-gray-500 mt-1">
+                    Selected file: {formData.panFile.name}
+                  </p>
+                )}
+              </div>
                     {/* Aadhaar */}
                     <div className="flex flex-col gap-1">
                       <label className="text-gray-700 font-medium">Aadhar Card Number*</label>
