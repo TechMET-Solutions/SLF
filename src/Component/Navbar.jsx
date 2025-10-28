@@ -337,14 +337,14 @@ const Navbar = () => {
                         Loan Application
                       </Link>
                       <Link
-                        to="/Loan-Changes"
+                        to="/Loan-Charges-List"
                         className="px-4 py-2 hover:bg-gray-100 text-left"
                         onClick={() => {
                           setIsTransactionsOpen(false);
                           setIsGoldLoanOpen(false);
                         }}
                       >
-                        Loan Changes
+                        Loan Charges List
                       </Link>
                     </div>
                   )}
