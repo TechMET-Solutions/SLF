@@ -1,7 +1,7 @@
 
 
 
-import React from "react";
+import React, { useEffect } from "react";
 import emptyImg from "../assets/profileempty.png";
 import envImg from "../assets/envImg.jpg"
 

@@ -38,7 +38,7 @@ const LoanEnquiry = () => {
       </div>
 
       {/* ===== FORM SECTIONS ===== */}
-      <div className="p-9 py-6 bg-gray-50 min-h-screen space-y-8">
+      <div className="p-9 py-6  min-h-screen space-y-8">
         <div className="flex justify-center mb-6">
           <div className="w-[1050px] pt-3">
             {/* Loan Details Section */}
