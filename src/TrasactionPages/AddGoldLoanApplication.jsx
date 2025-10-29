@@ -3,10 +3,12 @@ import { useEffect, useState } from "react";
 import profileempty from "../assets/profileempty.png";
 import timesvg from "../assets/timesvg.svg";
 import PledgeItemList from "./PledgeItemList";
+import { useNavigate } from "react-router-dom";
+
 const AddGoldLoanApplication = () => {
   const [schemes, setSchemes] = useState([]); // store all schemes
   const [selectedScheme, setSelectedScheme] = useState(null); // store selected scheme
-
+  const navigate = useNavigate();
   useEffect(() => {
     const fetchSchemes = async () => {
       try {
@@ -103,7 +105,7 @@ const AddGoldLoanApplication = () => {
       );
 
       alert("✅ Loan Application Saved Successfully!");
-      console.log("📤 Response:", res.data);
+      navigate("/Loan-Application")
     } catch (error) {
       console.error("❌ Error saving loan:", error);
       alert("Failed to save loan. Check console for details.");
@@ -359,7 +361,9 @@ const AddGoldLoanApplication = () => {
               className="text-white px-[6.25px] py-[6.25px] rounded-[3.75px] bg-[#0A2478] w-[74px] h-[24px] text-[10px]">
               Submit
             </button>
-            <button className="text-white px-[6.25px] py-[6.25px] rounded-[3.75px] bg-[#C1121F] w-[74px] h-[24px] text-[10px]">
+            <button
+              onClick={() => navigate("/Loan-Application")}
+              className="text-white px-[6.25px] py-[6.25px] rounded-[3.75px] bg-[#C1121F] w-[74px] h-[24px] text-[10px]">
               Close
             </button>
           </div>
