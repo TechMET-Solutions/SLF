@@ -1,75 +1,56 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import { IoIosAddCircleOutline } from "react-icons/io";
-import { IoIosCloseCircleOutline } from "react-icons/io";
 
 function ViewLoanCharges() {
   const navigate = useNavigate();
 
-  const [formData, setFormData] = useState({
-    partyName: "",
-    scheme: "",
-    loanNo: "",
-    loanDate: "",
-    loanAmt: "",
-    pendingAmt: "",
-    documentNo: "",
-    documentDate: "",
-    remark: "",
-  });
-  // ✅ Added rows state for Charges Details
-  const [rows, setRows] = useState([
-    {
-      charges: "",
-      account: "",
-      date: "",
-      grossAmount: "",
-      cgstPercent: "",
-      cgstAmount: "",
-      sgstPercent: "",
-      sgstAmount: "",
-      netPayable: "",
-    },
-  ]);
-
   useEffect(() => {
-    document.title = "SLF | Loan Charges";
+    document.title = "SLF | View Loan Charges";
   }, []);
 
-  const handleChange = (e) => {
-    const { name, value } = e.target;
-    setFormData((prev) => ({ ...prev, [name]: value }));
-  };
-  // ✅ Handle input changes for each row
-  const handleRowChange = (index, field, value) => {
-    const updatedRows = [...rows];
-    updatedRows[index][field] = value;
-    setRows(updatedRows);
+  // 🔹 Dummy data for loan details
+  const loanData = {
+    loanNo: "LN-2025-101",
+    loanDate: "2025-09-14",
+    scheme: "Gold Loan",
+    partyName: "Rahul Patil",
+    loanAmt: "₹ 1,50,000",
+    pendingAmt: "₹ 25,000",
+    documentNo: "DOC-8742",
+    documentDate: "2025-09-20",
+    remark: "Processing completed",
   };
 
-  // ✅ Add new row
-  const handleAddRow = () => {
-    setRows([
-      ...rows,
-      {
-        charges: "",
-        account: "",
-        date: "",
-        grossAmount: "",
-        cgstPercent: "",
-        cgstAmount: "",
-        sgstPercent: "",
-        sgstAmount: "",
-        netPayable: "",
-      },
-    ]);
-  };
-    // ✅ Remove selected row
-  const handleRemoveRow = (index) => {
-    if (rows.length === 1) return; // prevent removing all
-    const updatedRows = rows.filter((_, i) => i !== index);
-    setRows(updatedRows);
-  };
+  // 🔹 Dummy rows for Charges Details table
+  const rows = [
+    {
+      charges: "Processing Fee",
+      account: "ACC-101",
+      date: "2025-09-15",
+      grossAmount: "500",
+      cgstPercent: "9",
+      cgstAmount: "45",
+      sgstPercent: "9",
+      sgstAmount: "45",
+      netPayable: "590",
+    },
+    {
+      charges: "Legal Fee",
+      account: "ACC-102",
+      date: "2025-09-18",
+      grossAmount: "1000",
+      cgstPercent: "9",
+      cgstAmount: "90",
+      sgstPercent: "9",
+      sgstAmount: "90",
+      netPayable: "1180",
+    },
+  ];
+
+  const totalNet = rows.reduce(
+    (sum, row) => sum + parseFloat(row.netPayable || 0),
+    0
+  );
 
   return (
     <div className="min-h-screen w-full">
@@ -77,17 +58,10 @@ function ViewLoanCharges() {
       <div className="flex justify-center">
         <div className="flex items-center px-6 py-4 border-b mt-5 w-[1290px] h-[62px] border rounded-[11px] border-gray-200 justify-between">
           <h2 className="text-red-600 font-bold text-[20px]">
-          View Loan Charges
+            View Loan Charges
           </h2>
 
           <div className="flex gap-3">
-            <button
-              onClick={() => navigate("/add-loan-charge")}
-              className="bg-[#0A2478] text-white text-sm rounded px-6 py-1 cursor-pointer"
-            >
-              Submit
-            </button>
-
             <button
               onClick={() => navigate("/add-loan-charge")}
               className="bg-[#C1121F] text-white text-sm rounded px-6 py-1 cursor-pointer"
@@ -98,397 +72,118 @@ function ViewLoanCharges() {
         </div>
       </div>
 
-      {/* 🔹Search*/}
-      <div className="bg-[#FFE6E6] mt-2 p-6 rounded-md w-full mx-auto pl-[120px] pr-[120px]">
-        <p className="font-[Source_Sans_3] font-bold text-[24px] text-[#0A2478] mb-4">
-          Search
-        </p>
+      {/* 🔹 Loan Details */}
+ <div className="bg-[#F7F7FF] mt-7 p-6 rounded-md w-full pl-[120px] pr-[120px]">
+  <p className="font-[Source_Sans_3] font-bold text-[24px] text-[#0A2478] mb-4">
+    Loan Details
+  </p>
 
-        <div className="flex gap-3">
-          <div>
-            <div className="">
-              <div>
-                <label className="text-[14px] font-medium">Party Name</label>
-              </div>
+  <div className="flex flex-wrap gap-x-15 gap-y-15">
+    <div className="flex flex-col">
+      <label className="text-[14px] font-medium">Loan No</label>
+      <p className="mt-1">{loanData.loanNo}</p>
+    </div>
+    <div className="flex flex-col">
+      <label className="text-[14px] font-medium">Loan Date</label>
+      <p className="mt-1">{loanData.loanDate}</p>
+    </div>
+    <div className="flex flex-col">
+      <label className="text-[14px] font-medium">Scheme</label>
+      <p className="mt-1">{loanData.scheme}</p>
+    </div>
+    <div className="flex flex-col">
+      <label className="text-[14px] font-medium">Party Name</label>
+      <p className="mt-1">{loanData.partyName}</p>
+    </div>
+    <div className="flex flex-col">
+      <label className="text-[14px] font-medium">Loan Amt.</label>
+      <p className="mt-1">{loanData.loanAmt}</p>
+    </div>
+    <div className="flex flex-col">
+      <label className="text-[14px] font-medium">Pending Amt.</label>
+      <p className="mt-1">{loanData.pendingAmt}</p>
+    </div>
+  </div>
+</div>
 
-              <input
-                type="text"
-                name="Permanent_Address"
-                value={formData.Permanent_Address}
-                onChange={handleChange}
-                placeholder="Party Name"
-                className="border border-gray-300 px-3 py-2 mt-1 w-[385px]  bg-white rounded-[8px]"
-              />
-            </div>
-          </div>
 
-          <div>
-            <div className="">
-              <div>
-                <label className="text-[14px] font-medium">Schemes</label>
-              </div>
 
-              <input
-                type="text"
-                name="Permanent_Pincode"
-                value={formData.Permanent_Pincode}
-                onChange={handleChange}
-                placeholder="Schemes"
-                className="border border-gray-300 px-3 py-2 mt-1 w-[385px] bg-white rounded-[8px]"
-              />
-            </div>
-          </div>
-          <div>
-            <div className="">
-              <div>
-                <label className="text-[14px] font-medium">Loan No</label>
-              </div>
-              <input
-                type="text"
-                name="Permanent_Pincode"
-                value={formData.Permanent_Pincode}
-                onChange={handleChange}
-                placeholder="Loan No"
-                className="border border-gray-300 px-3 py-2 mt-1 w-[385px] bg-white rounded-[8px]"
-              />
-            </div>
-          </div>
+      {/* 🔹 Document Section */}
+     <div className="bg-[#FFE6E6] p-6 rounded-md w-full mx-auto pl-[120px] pr-[120px] ">
+  <div className="flex flex-wrap gap-x-20 gap-y-20">
+    <div className="flex flex-col">
+      <label className="text-[14px] font-medium">Document No</label>
+      <p className="mt-1">{loanData.documentNo}</p>
+    </div>
+    <div className="flex flex-col">
+      <label className="text-[14px] font-medium">Document Date</label>
+      <p className="mt-1">{loanData.documentDate}</p>
+    </div>
+    <div className="flex flex-col">
+      <label className="text-[14px] font-medium"> Remark <span className="text-red-600">*
+        </span  ></label>
+      <p className="mt-1">{loanData.remark}</p>
+    </div>
+  </div>
+</div>
 
-          <div></div>
-        </div>
-      </div>
-      {/* 🔹Loan Detils*/}
-      <div className="bg-[#F7F7FF]  p-6 rounded-md w-full mx-auto pl-[120px] pr-[120px]">
-        <p className="font-[Source_Sans_3] font-bold text-[24px] text-[#0A2478] mb-4">
-          Loan Detils
-        </p>
 
-        <div className="flex gap-3">
-          <div>
-            <div className="">
-              <div>
-                <label className="text-[14px] font-medium">Loan No</label>
-              </div>
-
-              <input
-                type="text"
-                name="Permanent_Address"
-                value={formData.Permanent_Address}
-                onChange={handleChange}
-                placeholder="Loan No"
-                className="border border-gray-300 px-3 py-2 mt-1 w-[150px]  bg-white rounded-[8px]"
-              />
-            </div>
-          </div>
-
-          <div>
-            <div className="">
-              <div>
-                <label className="text-[14px] font-medium">Loan Date</label>
-              </div>
-
-              <input
-                type="text"
-                name="Permanent_Pincode"
-                value={formData.Permanent_Pincode}
-                onChange={handleChange}
-                placeholder="Loan Date"
-                className="border border-gray-300 px-3 py-2 mt-1 w-[150px] bg-white rounded-[8px]"
-              />
-            </div>
-          </div>
-          <div>
-            <div className="">
-              <div>
-                <label className="text-[14px] font-medium">Scheme</label>
-              </div>
-              <input
-                type="text"
-                name="Permanent_Pincode"
-                value={formData.Permanent_Pincode}
-                onChange={handleChange}
-                placeholder="Scheme"
-                className="border border-gray-300 px-3 py-2 mt-1 w-[150 px] bg-white rounded-[8px]"
-              />
-            </div>
-          </div>
-          <div>
-            <div className="">
-              <div>
-                <label className="text-[14px] font-medium">Party Name</label>
-              </div>
-              <input
-                type="text"
-                name="Permanent_Pincode"
-                value={formData.Permanent_Pincode}
-                onChange={handleChange}
-                placeholder="Party Name"
-                className="border border-gray-300 px-3 py-2 mt-1 w-[300px] bg-white rounded-[8px]"
-              />
-            </div>
-          </div>
-          <div>
-            <div className="">
-              <div>
-                <label className="text-[14px] font-medium">Loan Amt.</label>
-              </div>
-              <input
-                type="text"
-                name="Permanent_Pincode"
-                value={formData.Permanent_Pincode}
-                onChange={handleChange}
-                placeholder="Loan Amt."
-                className="border border-gray-300 px-3 py-2 mt-1 w-[150 px] bg-white rounded-[8px]"
-              />
-            </div>
-          </div>
-          <div>
-            <div className="">
-              <div>
-                <label className="text-[14px] font-medium">Pending Amt.</label>
-              </div>
-              <input
-                type="text"
-                name="Permanent_Pincode"
-                value={formData.Permanent_Pincode}
-                onChange={handleChange}
-                placeholder="Pending Amt."
-                className="border border-gray-300 px-3 py-2 mt-1 w-[150 px] bg-white rounded-[8px]"
-              />
-            </div>
-          </div>
-
-          <div></div>
-        </div>
-      </div>
-
-      <div className="bg-[#FFE6E6]  p-6 rounded-md w-full mx-auto pl-[120px] pr-[120px]">
-        <div className="flex gap-3">
-          <div>
-            <div className="">
-              <div>
-                <label className="text-[14px] font-medium">Documnet No</label>
-              </div>
-
-              <input
-                type="text"
-                name="Permanent_Address"
-                value={formData.Permanent_Address}
-                onChange={handleChange}
-                className="border border-gray-300 px-3 py-2 mt-1 w-[385px]  bg-white rounded-[8px]"
-              />
-            </div>
-          </div>
-
-          <div>
-            <div className="">
-              <div>
-                <label className="text-[14px] font-medium">Document Date</label>
-              </div>
-
-              <input
-                type="text"
-                name="Permanent_Pincode"
-                value={formData.Permanent_Pincode}
-                onChange={handleChange}
-                className="border border-gray-300 px-3 py-2 mt-1 w-[385px] bg-white rounded-[8px]"
-              />
-            </div>
-          </div>
-          <div>
-            <div className="">
-              <div>
-                <label className="text-[14px] font-medium">
-                  Remark <spam className="text-red-600">*</spam>
-                </label>
-              </div>
-              <input
-                type="text"
-                name="Permanent_Pincode"
-                value={formData.Permanent_Pincode}
-                onChange={handleChange}
-                className="border border-gray-300 px-3 py-2 mt-1 w-[385px] bg-white rounded-[8px]"
-              />
-            </div>
-          </div>
-
-          <div></div>
-        </div>
-      </div>
-       <h1 className="font-[Source_Sans_3] font-bold text-[24px] text-[#0A2478] mb-4 mt-6 px-30">
+      {/* 🔹 Charges Details */}
+      <h1 className="font-[Source_Sans_3] font-bold text-[24px] text-[#0A2478] mb-4 mt-6 px-[120px]">
         Charges Details
       </h1>
 
-      {/* ✅ Charges Details Table with Add / Remove logic */}
-      <div className="px-[120px]">
-        <div className="border border-gray-300 rounded-md overflow-hidden shadow-sm">
-          <table className="w-full border-collapse text-sm">
-            <thead>
-              <tr className="bg-[#0A2478] text-white text-center">
-                <th className="py-2 px-2 border">Sr No</th>
-                <th className="py-2 px-2 border">Charges</th>
-                <th className="py-2 px-2 border">Account</th>
-                <th className="py-2 px-2 border">Date</th>
-                <th className="py-2 px-2 border">Gross Amount</th>
-                <th className="py-2 px-2 border">CGST(%)</th>
-                <th className="py-2 px-2 border">Amount</th>
-                <th className="py-2 px-2 border">SGST(%)</th>
-                <th className="py-2 px-2 border">Amount</th>
-                <th className="py-2 px-2 border">Net Payable</th>
-                <th className="py-2 px-2 border">Action</th>
-              </tr>
-            </thead>
+     <div className="px-[120px]">
+  <div className=" overflow-hidden shadow-sm">
+    <table className="w-full text-sm border-separate border-spacing-1"> 
+      <thead>
+        <tr className="bg-[#0A2478] text-white text-center">
+          <th className="py-2 px-2 ">Sr No</th>
+          <th className="py-2 px-2 ">Charges</th>
+          <th className="py-2 px-2 ">Account</th>
+          <th className="py-2 px-2 ">Date</th>
+          <th className="py-2 px-2 ">Gross Amount</th>
+          <th className="py-2 px-2 ">CGST(%)</th>
+          <th className="py-2 px-2 ">CGST Amt</th>
+          <th className="py-2 px-2 ">SGST(%)</th>
+          <th className="py-2 px-2 ">SGST Amt</th>
+          <th className="py-2 px-2 ro">Net Payable</th>
+        </tr>
+      </thead>
 
-            <tbody>
-              {rows.map((row, index) => (
-                <tr key={index} className="text-center bg-white">
-                  <td className=" py-2">{index + 1}</td>
+      <tbody>
+        {rows.map((row, index) => (
+          <tr key={index} className="text-center bg-transparent">
+            <td className="bg-white shadow border border-gray-200 rounded-md py-2 px-2">{index + 1}</td>
+            <td className="bg-white shadow border border-gray-200 rounded-md py-2 px-2">{row.charges}</td>
+            <td className="bg-white shadow border border-gray-200 rounded-md py-2 px-2">{row.account}</td>
+            <td className="bg-white shadow border border-gray-200 rounded-md py-2 px-2">{row.date}</td>
+            <td className="bg-white shadow border border-gray-200 rounded-md py-2 px-2">{row.grossAmount}</td>
+            <td className="bg-white shadow border border-gray-200 rounded-md py-2 px-2">{row.cgstPercent}%</td>
+            <td className="bg-white shadow border border-gray-200 rounded-md py-2 px-2">{row.cgstAmount}</td>
+            <td className="bg-white shadow border border-gray-200 rounded-md py-2 px-2">{row.sgstPercent}%</td>
+            <td className="bg-white shadow border border-gray-200 rounded-md py-2 px-2">{row.sgstAmount}</td>
+            <td className="bg-white shadow border border-gray-200 rounded-md py-2 px-2 font-semibold">{row.netPayable}</td>
+          </tr>
+        ))}
 
-                  {/* Charges Select */}
-                  <td className=" py-2">
-                    <select
-                      value={row.charges}
-                      onChange={(e) =>
-                        handleRowChange(index, "charges", e.target.value)
-                      }
-                      className="border border-gray-300 rounded-md px-2 py-1 w-[100px]"
-                    >
-                      <option value="">Select</option>
-                      <option>Proce</option>
-                      <option>Mics</option>
-                      <option>Legal</option>
-                      <option>Card</option>
-                      <option>Notice</option>
-                      <option>Postg</option>
-                      <option>LoDoc</option>
-                    </select>
-                  </td>
+        <tr className="bg-transparent font-semibold ">
+          <td
+            colSpan="8"
+            className="bg-gray-100 border border-gray-300 rounded-md text-right pr-40 shadow"
+          >
+            Total
+          </td>
+          <td colSpan="2" className="bg-gray-100 border border-gray-300 rounded-md text-center py-2  shadow">
+            ₹ {totalNet}
+            
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</div>
 
-                  {/* Account */}
-                  <td className=" py-2">
-                    <input
-                      type="text"
-                      value={row.account}
-                      onChange={(e) =>
-                        handleRowChange(index, "account", e.target.value)
-                      }
-                      className="border border-gray-300 rounded-md px-2 py-1 w-[100px]"
-                    />
-                  </td>
-
-                  {/* Date */}
-                  <td className=" py-2">
-                    <input
-                      type="date"
-                      value={row.date}
-                      onChange={(e) =>
-                        handleRowChange(index, "date", e.target.value)
-                      }
-                      className="border border-gray-300 rounded-md px-2 py-1"
-                    />
-                  </td>
-
-                  {/* Gross Amount */}
-                  <td className=" py-2">
-                    <input
-                      type="number"
-                      value={row.grossAmount}
-                      onChange={(e) =>
-                        handleRowChange(index, "grossAmount", e.target.value)
-                      }
-                      className="no-spinner border border-gray-300 rounded-md px-2 py-1 w-[100px]"
-                    />
-                  </td>
-
-                  {/* CGST (%) */}
-                  <td className=" py-2">
-                    <input
-                      type="number"
-                      value={row.cgstPercent}
-                      onChange={(e) =>
-                        handleRowChange(index, "cgstPercent", e.target.value)
-                      }
-                      className="no-spinner border border-gray-300 rounded-md px-2 py-1 w-[70px]"
-                    />
-                  </td>
-
-                  {/* CGST Amount */}
-                  <td className=" py-2">
-                    <input
-                      type="number"
-                      value={row.cgstAmount}
-                      onChange={(e) =>
-                        handleRowChange(index, "cgstAmount", e.target.value)
-                      }
-                      className="no-spinner border border-gray-300 rounded-md px-2 py-1 w-[100px]"
-                    />
-                  </td>
-
-                  {/* SGST (%) */}
-                  <td className=" py-2">
-                    <input
-                      type="number"
-                      value={row.sgstPercent}
-                      onChange={(e) =>
-                        handleRowChange(index, "sgstPercent", e.target.value)
-                      }
-                      className="no-spinner border border-gray-300 rounded-md px-2 py-1 w-[70px]"
-                    />
-                  </td>
-
-                  {/* SGST Amount */}
-                  <td className=" py-2">
-                    <input
-                      type="number"
-                      value={row.sgstAmount}
-                      onChange={(e) =>
-                        handleRowChange(index, "sgstAmount", e.target.value)
-                      }
-                      className="no-spinner border border-gray-300 rounded-md px-2 py-1 w-[100px]"
-                    />
-                  </td>
-
-                  {/* Net Payable */}
-                  <td className=" py-2">
-                    <input
-                      type="number"
-                      value={row.netPayable}
-                      onChange={(e) =>
-                        handleRowChange(index, "netPayable", e.target.value)
-                      }
-                      className="no-spinner border border-gray-300 rounded-md px-2 py-1 w-[120px]"
-                    />
-                  </td>
-
-                  {/* Action Buttons */}
-                  <td className=" py-2 flex justify-center items-center gap-2">
-                    <button
-                      onClick={handleAddRow}
-                      className="bg-[#0A2478] text-white px-2 py-2 rounded hover:bg-blue-700"
-                    >
-                      <IoIosAddCircleOutline size={17} />
-                    </button>
-                    <button
-                      onClick={() => handleRemoveRow(index)}
-                      className="bg-red-600 text-white px-2 py-2 rounded hover:bg-red-700"
-                    >
-                      <IoIosCloseCircleOutline size={17} />
-                    </button>
-                  </td>
-                </tr>
-              ))}
-
-              {/* Total Row */}
-              <tr className=" border border-gray-300   font-semibold">
-                <td colSpan="9" className="text-right pr-34  py-2 ">
-                  Total
-                </td>
-                <td className="   text-center ">0</td>
-              </tr>
-            </tbody>
-          </table>
-        </div>
-      </div>
     </div>
   );
 }

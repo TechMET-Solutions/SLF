@@ -99,7 +99,7 @@ function AddLoanCharges() {
       </div>
 
       {/* 🔹Search*/}
-      <div className="bg-[#FFE6E6] mt-2 p-6 rounded-md w-full mx-auto pl-[120px] pr-[120px]">
+      <div className="bg-[#FFE6E6] mt-5 p-6 rounded-md w-full mx-auto pl-[120px] pr-[120px]">
         <p className="font-[Source_Sans_3] font-bold text-[24px] text-[#0A2478] mb-4">
           Search
         </p>
