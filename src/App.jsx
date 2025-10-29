@@ -52,6 +52,9 @@ import EditLoanCharges from "./TrasactionPages/EditLoanCharge";
 import AddCreditNotePage from "./TrasactionPages/AddCreditNotePage";
 import ViewCreditNote from "./TrasactionPages/ViewCreditNote";
 import PrintCreditNote from "./TrasactionPages/PrintCreditNote";
+import AddAuctionCreation from "./TrasactionPages/AddAuctionCreation";
+import AuctionItemsList from "./TrasactionPages/AuctionItemsList";
+import GoldOrnamentBill from "./TrasactionPages/GoldOrnamentBill";
 
 function App() {
   return (
@@ -141,6 +144,9 @@ function App() {
 
           {/* Auction */}
           <Route path="/Auction-Creation" element={<AuctionCreation />} />
+          <Route path="/Add-Auction-Creation" element={<AddAuctionCreation />} />
+          <Route path="/Auction-Items-List" element={<AuctionItemsList />} />
+          <Route path="/Gold-Ornament-Bill" element={<GoldOrnamentBill />} />
           <Route path="/Credit-Note" element={<CreditNote />} />
           <Route path="/Debit-Note" element={<DebitNote />} />
 
