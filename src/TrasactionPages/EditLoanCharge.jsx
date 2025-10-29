@@ -3,7 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { IoIosAddCircleOutline } from "react-icons/io";
 import { IoIosCloseCircleOutline } from "react-icons/io";
 
-function AddLoanCharges() {
+function EditLoanCharges() {
   const navigate = useNavigate();
 
   const [formData, setFormData] = useState({
@@ -77,15 +77,15 @@ function AddLoanCharges() {
       <div className="flex justify-center">
         <div className="flex items-center px-6 py-4 border-b mt-5 w-[1290px] h-[62px] border rounded-[11px] border-gray-200 justify-between">
           <h2 className="text-red-600 font-bold text-[20px]">
-            Add Loan Charges
+            Edit Loan Charges
           </h2>
 
           <div className="flex gap-3">
             <button
-              onClick={() => navigate("/add-loan-charge")}
+              onClick={() => navigate("/edit-loan-charge")}
               className="bg-[#0A2478] text-white text-sm rounded px-6 py-1 cursor-pointer"
             >
-              Submit
+              Update
             </button>
 
             <button
@@ -98,67 +98,9 @@ function AddLoanCharges() {
         </div>
       </div>
 
-      {/* 🔹Search*/}
-      <div className="bg-[#FFE6E6] mt-5 p-6 rounded-md w-full mx-auto pl-[120px] pr-[120px]">
-        <p className="font-[Source_Sans_3] font-bold text-[24px] text-[#0A2478] mb-4">
-          Search
-        </p>
-
-        <div className="flex gap-3">
-          <div>
-            <div className="">
-              <div>
-                <label className="text-[14px] font-medium">Party Name</label>
-              </div>
-
-              <input
-                type="text"
-                name="Permanent_Address"
-                value={formData.Permanent_Address}
-                onChange={handleChange}
-                placeholder="Party Name"
-                className="border border-gray-300 px-3 py-2 mt-1 w-[385px]  bg-white rounded-[8px]"
-              />
-            </div>
-          </div>
-
-          <div>
-            <div className="">
-              <div>
-                <label className="text-[14px] font-medium">Schemes</label>
-              </div>
-
-              <input
-                type="text"
-                name="Permanent_Pincode"
-                value={formData.Permanent_Pincode}
-                onChange={handleChange}
-                placeholder="Schemes"
-                className="border border-gray-300 px-3 py-2 mt-1 w-[385px] bg-white rounded-[8px]"
-              />
-            </div>
-          </div>
-          <div>
-            <div className="">
-              <div>
-                <label className="text-[14px] font-medium">Loan No</label>
-              </div>
-              <input
-                type="text"
-                name="Permanent_Pincode"
-                value={formData.Permanent_Pincode}
-                onChange={handleChange}
-                placeholder="Loan No"
-                className="border border-gray-300 px-3 py-2 mt-1 w-[385px] bg-white rounded-[8px]"
-              />
-            </div>
-          </div>
-
-          <div></div>
-        </div>
-      </div>
+     
       {/* 🔹Loan Detils*/}
-      <div className="bg-[#F7F7FF]  p-6 rounded-md w-full mx-auto pl-[120px] pr-[120px]">
+      <div className="bg-[#F7F7FF] mt-7 p-6 rounded-md w-full mx-auto pl-[120px] pr-[120px]">
         <p className="font-[Source_Sans_3] font-bold text-[24px] text-[#0A2478] mb-4">
           Loan Detils
         </p>
@@ -493,4 +435,4 @@ function AddLoanCharges() {
   );
 }
 
-export default AddLoanCharges;
+export default EditLoanCharges;

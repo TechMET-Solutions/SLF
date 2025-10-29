@@ -63,7 +63,7 @@ function ViewLoanCharges() {
 
           <div className="flex gap-3">
             <button
-              onClick={() => navigate("/add-loan-charge")}
+              onClick={() => navigate("/loan-charges-list")}
               className="bg-[#C1121F] text-white text-sm rounded px-6 py-1 cursor-pointer"
             >
               Close
