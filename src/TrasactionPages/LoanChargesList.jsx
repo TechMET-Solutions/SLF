@@ -172,7 +172,7 @@ function LoanChargesList() {
           <div className="flex gap-3">
             <button
               onClick={() => navigate("/add-loan-charge")}
-              className="bg-[#0A2478] text-white text-sm rounded px-7 py-2 cursor-pointer"
+              className="bg-[#0A2478] text-white text-sm rounded px-7 py-1 cursor-pointer"
             >
               Add
             </button>
@@ -220,7 +220,7 @@ function LoanChargesList() {
                   {/* 🔹 Action Buttons */}
                   <td className="px-4 py-2 flex items-center gap-2">
                     <button
-                      onClick={() => handleView(row)}
+                      onClick={() => navigate("/view-loan-charge")}
                       className="bg-blue-500 hover:bg-blue-600 p-1.5 rounded text-white"
                       title="View"
                     >

@@ -3,7 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { IoIosAddCircleOutline } from "react-icons/io";
 import { IoIosCloseCircleOutline } from "react-icons/io";
 
-function AddLoanCharges() {
+function ViewLoanCharges() {
   const navigate = useNavigate();
 
   const [formData, setFormData] = useState({
@@ -77,7 +77,7 @@ function AddLoanCharges() {
       <div className="flex justify-center">
         <div className="flex items-center px-6 py-4 border-b mt-5 w-[1290px] h-[62px] border rounded-[11px] border-gray-200 justify-between">
           <h2 className="text-red-600 font-bold text-[20px]">
-            Add Loan Charges
+          View Loan Charges
           </h2>
 
           <div className="flex gap-3">
@@ -493,4 +493,4 @@ function AddLoanCharges() {
   );
 }
 
-export default AddLoanCharges;
+export default ViewLoanCharges;
