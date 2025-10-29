@@ -5,6 +5,7 @@ import Rights from "../assets/Rights.png";
 import Pagination from "../Component/Pagination";
 import Loader from "../Component/Loader";
 import { addRolesApi, fetchRolesApi, updateRolesApi, updateRolesStatusApi } from "../API/Master/User_Management/Roles";
+import { FiEdit } from "react-icons/fi";
 
 
 const UserRolePermission = () => {
@@ -36,7 +37,6 @@ const UserRolePermission = () => {
     setLoading(true);
     try {
       const result = await fetchRolesApi(page, itemsPerPage);
-      console.log(result)
       if (result?.roles) {
         setRoles(result.roles);
         setTotalItems(result.total);
@@ -224,7 +224,7 @@ const UserRolePermission = () => {
                     required
                   />
                 </div>
-                
+
                 {/* System Name Input */}
                 <div className="flex-1">
                   <label className="text-[14px]">
@@ -241,19 +241,19 @@ const UserRolePermission = () => {
                   />
                 </div>
               </div>
-              
+
               <div className="flex gap-10 justify-center items-center mt-5">
                 <div className="flex items-center space-x-2">
                   <label htmlFor="is_system_role" className="text-[14px]">
                     Is System Role <span className="text-red-500">*</span>
                   </label>
-                  <input 
-                    type="checkbox" 
-                    id="is_system_role" 
+                  <input
+                    type="checkbox"
+                    id="is_system_role"
                     name="is_system_role"
                     checked={formData.is_system_role}
                     onChange={handleInputChange}
-                    className="w-[24px] h-[24px]" 
+                    className="w-[24px] h-[24px] accent-[#0A2478]"
                   />
                 </div>
 
@@ -261,17 +261,17 @@ const UserRolePermission = () => {
                   <label htmlFor="is_active" className="text-[14px]">
                     Is Active <span className="text-red-500">*</span>
                   </label>
-                  <input 
-                    type="checkbox" 
-                    id="is_active" 
+                  <input
+                    type="checkbox"
+                    id="is_active"
                     name="is_active"
                     checked={formData.is_active}
                     onChange={handleInputChange}
-                    className="w-[24px] h-[24px]" 
+                    className="w-[24px] h-[24px] accent-[#0A2478]"
                   />
                 </div>
               </div>
-              
+
               {/* Modal Footer */}
               <div className="flex justify-center gap-4 mt-6">
                 <button
@@ -318,24 +318,23 @@ const UserRolePermission = () => {
                     <td className="px-4 py-2">
                       <button
                         onClick={() => handleToggleStatus(row)}
-                        className={`w-12 h-6 flex items-center rounded-full p-1 transition-colors duration-300 ease-in-out ${
-                          row.is_active === 1 ? "bg-[#0A2478]" : "bg-gray-400"
-                        }`}
+                        className={`w-12 h-6 flex items-center rounded-full p-1 transition-colors duration-300 ease-in-out ${row.is_active === 1 ? "bg-[#0A2478]" : "bg-gray-400"
+                          }`}
                       >
                         <div
-                          className={`bg-white w-4 h-4 rounded-full shadow-md transform transition-transform duration-300 ease-in-out ${
-                            row.is_active === 1 ? "translate-x-6" : "translate-x-0"
-                          }`}
+                          className={`bg-white w-4 h-4 rounded-full shadow-md transform transition-transform duration-300 ease-in-out ${row.is_active === 1 ? "translate-x-6" : "translate-x-0"
+                            }`}
                         />
                       </button>
                     </td>
                     <td className="px-4 py-2">
                       <div className="flex gap-2 justify-center">
-                        <button 
+                        <button
+                          title="Edit"
+                          className="bg-green-500 p-1.5 rounded text-white hover:bg-green-600"
                           onClick={() => handleEdit(row)}
-                          className="w-[17px] h-[17px] bg-[#56A869] rounded-[2.31px] flex items-center justify-center p-0.5"
                         >
-                          <img src={GroupData} alt="edit" className="w-[18px] h-[18px]" />
+                          <FiEdit />
                         </button>
                       </div>
                     </td>
@@ -346,8 +345,9 @@ const UserRolePermission = () => {
                             src={Rights}
                             alt="rights"
                             className="w-[18px] h-[18px] cursor-pointer"
-                            onClick={() => navigate("/User-Role")}
+                            onClick={() => navigate(`/User-Role/${row.id}`)}
                           />
+
                         </button>
                       </div>
                     </td>
