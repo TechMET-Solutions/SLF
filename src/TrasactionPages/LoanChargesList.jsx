@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { HiMagnifyingGlass } from "react-icons/hi2";
 import { FiEye, FiEdit, FiTrash2 } from "react-icons/fi";
+import blockimg from "../assets/blockimg.png"; // 🖼️ import your image
 
 function Pagination({ currentPage, totalPages, onPageChange }) {
   return (
@@ -57,7 +58,7 @@ function LoanChargesList() {
   const navigate = useNavigate();
 
   // 🔹 Dummy Data
-  const [data] = useState([
+  const [data, setData] = useState([
     {
       id: 1,
       docNo: "DOC-001",
@@ -88,65 +89,37 @@ function LoanChargesList() {
       addedOn: "2025-03-15",
       addedByEmail: "amit@slf.com",
     },
-    {
-      id: 4,
-      docNo: "DOC-004",
-      docDate: "2025-04-08",
-      loanNo: "LN-104",
-      partyName: "Sneha Patil",
-      amount: "₹80,000",
-      addedOn: "2025-04-10",
-      addedByEmail: "sneha@slf.com",
-    },
-    {
-      id: 5,
-      docNo: "DOC-005",
-      docDate: "2025-05-01",
-      loanNo: "LN-105",
-      partyName: "Vikas Rao",
-      amount: "₹1,00,000",
-      addedOn: "2025-05-03",
-      addedByEmail: "vikas@slf.com",
-    },
-    {
-      id: 6,
-      docNo: "DOC-006",
-      docDate: "2025-06-10",
-      loanNo: "LN-106",
-      partyName: "Neha Kulkarni",
-      amount: "₹1,50,000",
-      addedOn: "2025-06-13",
-      addedByEmail: "neha@slf.com",
-    },
   ]);
+
+  // 🔹 Delete Modal State
+  const [deleteModalOpen, setDeleteModalOpen] = useState(false);
+  const [selectedRow, setSelectedRow] = useState(null);
+
+  const handleDeleteClick = (row) => {
+    setSelectedRow(row);
+    setDeleteModalOpen(true);
+  };
+
+  const handleDeleteConfirm = () => {
+    if (selectedRow) {
+      setData((prevData) =>
+        prevData.filter((item) => item.id !== selectedRow.id)
+      );
+    }
+    setDeleteModalOpen(false);
+    setSelectedRow(null);
+  };
 
   // 🔹 Pagination Logic
   const [currentPage, setCurrentPage] = useState(1);
   const rowsPerPage = 3;
   const totalPages = Math.ceil(data.length / rowsPerPage);
-
   const handlePageChange = (page) => {
     if (page >= 1 && page <= totalPages) setCurrentPage(page);
   };
-
   const indexOfLastRow = currentPage * rowsPerPage;
   const indexOfFirstRow = indexOfLastRow - rowsPerPage;
   const currentRows = data.slice(indexOfFirstRow, indexOfLastRow);
-
-  // 🔹 Action Handlers
-  const handleView = (row) => {
-    alert(`Viewing ${row.docNo}`);
-  };
-
-  const handleEdit = (row) => {
-    alert(`Editing ${row.docNo}`);
-  };
-
-  const handleDelete = (row) => {
-    if (window.confirm(`Are you sure you want to delete ${row.docNo}?`)) {
-      alert(`${row.docNo} deleted`);
-    }
-  };
 
   return (
     <div className="min-h-screen w-full">
@@ -192,7 +165,9 @@ function LoanChargesList() {
                 <th className="px-10 py-2 text-left border-r">Party Name</th>
                 <th className="px-4 py-2 text-left border-r">Amount</th>
                 <th className="px-4 py-2 text-left border-r">Added On</th>
-                <th className="px-10 py-2 text-left border-r">Added By Email</th>
+                <th className="px-10 py-2 text-left border-r">
+                  Added By Email
+                </th>
                 <th className="px-4 py-2 text-left border-r">Action</th>
               </tr>
             </thead>
@@ -227,14 +202,14 @@ function LoanChargesList() {
                       <FiEye className="text-sm" />
                     </button>
                     <button
-                      onClick={() => handleEdit(row)}
+                      onClick={() => navigate("/edit-loan-charge")}
                       className="bg-green-500 hover:bg-green-600 p-1.5 rounded text-white"
                       title="Edit"
                     >
                       <FiEdit className="text-sm" />
                     </button>
                     <button
-                      onClick={() => handleDelete(row)}
+                      onClick={() => handleDeleteClick(row)}
                       className="bg-red-500 hover:bg-red-600 p-1.5 rounded text-white"
                       title="Delete"
                     >
@@ -247,9 +222,11 @@ function LoanChargesList() {
           </table>
         </div>
       </div>
+
+      {/* 🔹 Divider */}
       <div className="flex justify-center mt-4">
-  <div className="w-[1300px] border-t border-black"></div>
-</div>
+        <div className="w-[1300px] border-t border-black"></div>
+      </div>
 
       {/* 🔹 Pagination */}
       {totalPages > 1 && (
@@ -258,6 +235,46 @@ function LoanChargesList() {
           totalPages={totalPages}
           onPageChange={handlePageChange}
         />
+      )}
+
+      {/* 🗑️ Delete Confirmation Modal */}
+      {deleteModalOpen && (
+        <div className="fixed inset-0 flex  items-center justify-center z-50 bg-[#0101017A] backdrop-blur-[6.8px]">
+          <div className="bg-white w-[396.27px] rounded-lg shadow-lg h-[386px] p-5">
+            <div className="flex justify-center items-center mt-11">
+              <img
+                src={blockimg}
+                alt="action"
+                className="w-[113px] h-[113px]"
+              />
+            </div>
+
+            <div className="mt-10">
+              <p className="font-[Source_Sans_3] font-normal text-[21.79px] leading-none text-center">
+                Are you sure to delete this Entry
+              </p>
+              <p className="font-[Source_Sans_3] font-normal text-[17.43px] leading-none text-center text-[#7C7C7C] mt-2">
+                you won't be able to revert this action
+              </p>
+            </div>
+
+            <div className="mt-7 flex justify-center gap-4">
+              <button
+                className="bg-[#F11717] cursor-pointer text-white font-[Source_Sans_3] font-semibold text-[19.61px] leading-none text-center w-[67.53px] h-[30.57px] rounded-[2.67px]"
+                onClick={handleDeleteConfirm}
+              >
+                Yes
+              </button>
+
+              <button
+                className="bg-[#0A2478] cursor-pointer text-white font-[Source_Sans_3] font-semibold text-[19.61px] leading-none text-center w-[67.53px] h-[30.57px] rounded-[2.67px]"
+                onClick={() => setDeleteModalOpen(false)}
+              >
+                No
+              </button>
+            </div>
+          </div>
+        </div>
       )}
     </div>
   );

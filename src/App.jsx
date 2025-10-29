@@ -48,6 +48,7 @@ import CreditNote from "./TrasactionPages/CreditNote";
 import DebitNote from "./TrasactionPages/DebitNote";
 import AddLoanCharges from "./TrasactionPages/AddLoanCharges";
 import ViewLoanCharges from "./TrasactionPages/ViewLoanCharges";
+import EditLoanCharges from "./TrasactionPages/EditLoanCharge";
 
 
 function App() {
@@ -131,6 +132,7 @@ function App() {
           <Route path="/Area" element={<Area />} />
           <Route path="/add-loan-charge" element={<AddLoanCharges />} />
           <Route path="/view-loan-charge" element={<ViewLoanCharges />} />
+          <Route path="/edit-loan-charge" element={<EditLoanCharges />} />
 
 
           {/* Auction */}
