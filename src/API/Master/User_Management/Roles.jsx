@@ -15,7 +15,6 @@ export const fetchRolesApi = async (page = 1, limit = 10) => {
       headers: { "Content-Type": "application/json" },
       data: { data: encryptedPayload },
     });
-    console.log(response.data?.data)
 
     if (response.data?.data) {
       return decryptData(response.data.data);
@@ -29,7 +28,6 @@ export const fetchRolesApi = async (page = 1, limit = 10) => {
 };
 
 export const updateRolesStatusApi = async (id, is_active) => {
-    debugger
   try {
     const encryptedPayload = encryptData({ id, is_active });
     return await axios.put(`${API_BASE}/update-roles`, { data: encryptedPayload }, {
