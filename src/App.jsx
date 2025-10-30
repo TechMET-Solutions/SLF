@@ -61,6 +61,7 @@ import EditBidderDetails from "./TrasactionPages/EditBidderDetails";
 import ViewLoanDetails from "./TrasactionPages/ViewLoanDeatils";
 import EditLoanDetails from "./TrasactionPages/EditLoanDetails";
 import GoldLoanApproval from "./TrasactionPages/GoldLoanApproval";
+import AppraisalNote from "./TrasactionPages/AppraisalNote";
 
 function App() {
   return (
@@ -149,6 +150,8 @@ function App() {
           <Route path="/Add-Credit-Note-Page" element={<AddCreditNotePage />} />
           <Route path="/View-Credit-Note" element={<ViewCreditNote />} />
           <Route path="/Print-Credit-Note" element={<PrintCreditNote />} />
+          <Route path="/Appraisal-Note" element={<AppraisalNote />} />
+
 
           {/* Auction */}
           <Route path="/Auction-Creation" element={<AuctionCreation />} />
