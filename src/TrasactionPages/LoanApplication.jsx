@@ -397,23 +397,26 @@
 import { useEffect, useState } from 'react';
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
-import { CiEdit, CiSearch } from "react-icons/ci";
+import { CiBarcode, CiEdit, CiSearch } from "react-icons/ci";
 import { MdOutlineCancel } from "react-icons/md";
 import { useNavigate } from 'react-router-dom';
 import calender from "../assets/calender.png";
-import goldlogo from "../assets/goldlogo.svg";
+import goldlogo from "../assets/gold_print.svg";
 import msg from "../assets/msg.png";
 import printwithobject from "../assets/printwithobject.png";
 import envImg from "../assets/envImg.jpg";
 import text from "../assets/text.png";
 import upload from "../assets/upload.png";
 import { formatIndianDate } from '../utils/Helpers';
+import { PiPrinterLight } from 'react-icons/pi';
+import { CgSoftwareUpload } from 'react-icons/cg';
+import { RiMessage2Line } from 'react-icons/ri';
 
 const LoanApplication = () => {
   useEffect(() => {
     document.title = "SLF | Loan Application";
   }, []);
-  
+
   const navigate = useNavigate();
   const [isOpen, setIsOpen] = useState(false);
   const [selected, setSelected] = useState("");
@@ -455,13 +458,13 @@ const LoanApplication = () => {
       });
 
       const response = await fetch(`http://localhost:5000/Transactions/goldloan/all?${queryParams}`);
-      
+
       if (!response.ok) {
         throw new Error(`HTTP error! status: ${response.status}`);
       }
-      
+
       const data = await response.json();
-      
+
       if (data.success) {
         setLoanApplication(data.data);
         setPagination({
@@ -565,9 +568,8 @@ const LoanApplication = () => {
         buttons.push(
           <button
             key={i}
-            className={`px-3 py-1 border rounded-md ${
-              currentPage === i ? "bg-[#0b2c69] text-white" : "hover:bg-gray-100"
-            }`}
+            className={`px-3 py-1 border rounded-md ${currentPage === i ? "bg-[#0b2c69] text-white" : "hover:bg-gray-100"
+              }`}
             onClick={() => handlePageChange(i)}
           >
             {i}
@@ -579,9 +581,8 @@ const LoanApplication = () => {
       buttons.push(
         <button
           key={1}
-          className={`px-3 py-1 border rounded-md ${
-            currentPage === 1 ? "bg-[#0b2c69] text-white" : "hover:bg-gray-100"
-          }`}
+          className={`px-3 py-1 border rounded-md ${currentPage === 1 ? "bg-[#0b2c69] text-white" : "hover:bg-gray-100"
+            }`}
           onClick={() => handlePageChange(1)}
         >
           1
@@ -603,9 +604,8 @@ const LoanApplication = () => {
         buttons.push(
           <button
             key={i}
-            className={`px-3 py-1 border rounded-md ${
-              currentPage === i ? "bg-[#0b2c69] text-white" : "hover:bg-gray-100"
-            }`}
+            className={`px-3 py-1 border rounded-md ${currentPage === i ? "bg-[#0b2c69] text-white" : "hover:bg-gray-100"
+              }`}
             onClick={() => handlePageChange(i)}
           >
             {i}
@@ -624,9 +624,8 @@ const LoanApplication = () => {
       buttons.push(
         <button
           key={totalPages}
-          className={`px-3 py-1 border rounded-md ${
-            currentPage === totalPages ? "bg-[#0b2c69] text-white" : "hover:bg-gray-100"
-          }`}
+          className={`px-3 py-1 border rounded-md ${currentPage === totalPages ? "bg-[#0b2c69] text-white" : "hover:bg-gray-100"
+            }`}
           onClick={() => handlePageChange(totalPages)}
         >
           {totalPages}
@@ -672,7 +671,7 @@ const LoanApplication = () => {
                 <select
                   name="field"
                   value={filters.field}
-                  onChange={(e) => setFilters({...filters, field: e.target.value})}
+                  onChange={(e) => setFilters({ ...filters, field: e.target.value })}
                   className="border border-gray-300 rounded pl-2 w-[111px] h-[31px] text-[12px]"
                 >
                   <option value="">Field</option>
@@ -689,7 +688,7 @@ const LoanApplication = () => {
                   type="text"
                   placeholder='Search'
                   value={filters.search}
-                  onChange={(e) => setFilters({...filters, search: e.target.value})}
+                  onChange={(e) => setFilters({ ...filters, search: e.target.value })}
                   onKeyPress={(e) => e.key === 'Enter' && handleSearch()}
                   style={{
                     width: "134.64px",
@@ -858,28 +857,25 @@ const LoanApplication = () => {
                     <td className="px-4 py-2">
                       <div className="flex gap-2 justify-center">
                         <div className="w-[24px] h-[24px] bg-[#4A90E2] text-white rounded flex items-center justify-center transition-transform duration-200 hover:scale-110 cursor-pointer">
-                          <CiEdit />
+                          <CiEdit    className="w-[20px] h-[20px]"/>
                         </div>
                         <div
                           className="w-[24px] h-[24px] bg-[#F5A623] rounded flex items-center justify-center transition-transform duration-200 hover:scale-110 cursor-pointer"
                           onClick={handleOpenRemark}
                         >
-                          <img src={msg} alt="message" className="w-[14px] h-[14px]" />
+                          <RiMessage2Line   className="w-[20px] h-[20px]"/>                        </div>
+                        <div className="w-[24px] h-[24px] bg-green-600 rounded flex items-center justify-center transition-transform duration-200 hover:scale-110 cursor-pointer">
+                          <CgSoftwareUpload    className="w-[20px] h-[20px]"/>                        </div>
+                        <div className="w-[24px] h-[24px] bg-blue-300 rounded flex items-center justify-center transition-transform duration-200 hover:scale-110 cursor-pointer">
+                          <PiPrinterLight   className="w-[20px] h-[20px]" />
                         </div>
-                        <div className="w-[24px] h-[24px] bg-[#28A745] rounded flex items-center justify-center transition-transform duration-200 hover:scale-110 cursor-pointer">
-                          <img src={upload} alt="upload" className="w-[14px] h-[14px]" />
-                        </div>
-                        <div className="w-[24px] h-[24px] bg-[#50E3C2] rounded flex items-center justify-center transition-transform duration-200 hover:scale-110 cursor-pointer">
-                          <img src={printwithobject} alt="print object" className="w-[14px] h-[14px]" />
-                        </div>
-                        <div className="w-[24px] h-[24px] bg-[#8B572A] rounded flex items-center justify-center transition-transform duration-200 hover:scale-110 cursor-pointer">
-                          <img src={text} alt="text" className="w-[14px] h-[14px]" />
-                        </div>
-                        <div className="w-[24px] h-[24px] border rounded flex items-center justify-center transition-transform duration-200 hover:scale-110 cursor-pointer" style={{ border: "2px solid black" }}>
-                          <img src={goldlogo} alt="gold logo" className="w-[14px] h-[14px]" />
+                        <div className="w-[24px] h-[24px] bg-[#DADADA] rounded flex items-center justify-center transition-transform duration-200 hover:scale-110 cursor-pointer">
+                          <CiBarcode    className="w-[20px] h-[20px]" />                        </div>
+                        <div className="w-[24px] h-[24px]  rounded flex items-center justify-center transition-transform duration-200 hover:scale-110 cursor-pointer" style={{ border: "2px solid black" }}>
+                          <img src={goldlogo} alt="gold logo"  className="w-[20px] h-[20px]" />
                         </div>
                         <div className="w-[24px] h-[24px] bg-[#C72828] rounded flex items-center justify-center transition-transform duration-200 hover:scale-110 cursor-pointer text-white">
-                          <MdOutlineCancel />
+                          <MdOutlineCancel   className="w-[20px] h-[20px]" />
                         </div>
                       </div>
                     </td>
@@ -914,8 +910,8 @@ const LoanApplication = () => {
 
       {/* Remark Modal */}
       {isRemarkOpen && (
-        <div 
-          className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50" 
+        <div
+          className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50"
           style={{
             background: "#0101017A",
             backdropFilter: "blur(6.8px)",
