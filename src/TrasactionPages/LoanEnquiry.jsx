@@ -1,17 +1,37 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import emptyImg from "../assets/profileempty.png";
+import profileempty from "../assets/profileempty.png";
 
 const LoanEnquiry = () => {
   useEffect(() => {
     document.title = "SLF | Loan Enquiry";
   }, []);
 
-  const [isModalOpen, setIsModalOpen] = useState(false);
   const navigate = useNavigate();
 
+  // ✅ Initialize formData state
+  const [formData, setFormData] = useState({
+    Borrower_ProfileImg: "",
+    Borrower_signature: "",
+    CoBorrower_ProfileImg: "",
+    CoBorrower_signature: "",
+    OrnamentPhoto: "",
+  });
+
+  // ✅ Handle ornament image upload
+  const handleOrnamentUpload = (e) => {
+    const file = e.target.files[0];
+    if (file) {
+      const reader = new FileReader();
+      reader.onload = () => {
+        setFormData((prev) => ({ ...prev, OrnamentPhoto: reader.result }));
+      };
+      reader.readAsDataURL(file);
+    }
+  };
+
   return (
-    <div className="min-h-screen w-full">
+    <div className="min-h-screen w-full bg-[#FAFAFA]">
       {/* ===== Top Bar ===== */}
       <div className="flex justify-center">
         <div className="flex items-center px-6 py-4 border-b mt-5 w-[1290px] h-[62px] border rounded-[11px] border-gray-200 justify-between shadow">
@@ -38,16 +58,16 @@ const LoanEnquiry = () => {
       </div>
 
       {/* ===== FORM SECTIONS ===== */}
-      <div className="p-9 py-6  min-h-screen space-y-8">
+      <div className="p-9 py-6 min-h-screen space-y-8 px-4">
+        {/* ===== Loan Details Section ===== */}
         <div className="flex justify-center mb-6">
-          <div className="w-[1050px] pt-3">
-            {/* Loan Details Section */}
+          <div className="w-[1050px] pt-3 pl-19">
             <h3 className="text-lg font-semibold mb-4 text-[#0A2478]">
               Loan Details
             </h3>
 
             {/* First Row */}
-            <div className="flex gap-7 text-sm mb-3">
+            <div className="flex gap-7 text-sm mb-3 flex-wrap">
               <div>
                 <p className="font-semibold">Loan No</p>
                 <p>01A5602839</p>
@@ -77,7 +97,7 @@ const LoanEnquiry = () => {
             </div>
 
             {/* Second Row */}
-            <div className="flex gap-7 text-sm">
+            <div className="flex gap-7 text-sm flex-wrap">
               <div>
                 <p className="font-semibold">City</p>
                 <p>Nashik</p>
@@ -109,25 +129,93 @@ const LoanEnquiry = () => {
             </div>
           </div>
 
-          {/* Ornament Photos */}
-          <div className="mt-2 mr-10">
-            <h3 className="font-semibold mb-2">Ornament Photo</h3>
-            <div className="flex gap-4">
-              <img
-                src={emptyImg}
-                alt="ornament"
-                className="w-[100px] h-[100px] border border-gray-300 rounded"
-              />
-              <img
-                src={emptyImg}
-                alt="ornament"
-                className="w-[100px] h-[100px] border border-gray-300 rounded"
-              />
-            </div>
-          </div>
+          {/* ===== Ornament & Profile Photos ===== */}
+      <div className="flex mr-17 space-x-[1px] ">
+  {/* Borrower */}
+  <div className="w-[120px] h-auto flex flex-col items-center">
+    <p className="font-medium mb-1 text-xs">Customer</p>
+    <img
+      src={
+        formData.Borrower_ProfileImg
+          ? formData.Borrower_ProfileImg
+          : profileempty
+      }
+      alt="Borrower Profile"
+      className="w-[100px] h-[115px] rounded-[5px] object-cover border border-gray-300"
+    />
+    <div className="mt-1 border w-[100px] h-[26px] flex items-center justify-center bg-white rounded-[4px]">
+      {formData.Borrower_signature ? (
+        <img
+          src={formData.Borrower_signature}
+          alt="Borrower Signature"
+          className="w-full h-full object-contain"
+        />
+      ) : (
+        <span className="text-gray-400 text-[9px]">No Signature</span>
+      )}
+    </div>
+  </div>
+
+  {/* Co-Borrower */}
+  <div className="w-[120px] h-auto flex flex-col items-center">
+    <p className="font-medium mb-1 text-xs">Co-Borrower</p>
+    <img
+      src={
+        formData.CoBorrower_ProfileImg
+          ? formData.CoBorrower_ProfileImg
+          : profileempty
+      }
+      alt="Co-Borrower Profile"
+      className="w-[100px] h-[115px] rounded-[5px] object-cover border border-gray-300"
+    />
+    <div className="mt-1 w-[100px] h-[26px] border flex items-center justify-center bg-white rounded-[4px]">
+      {formData.CoBorrower_signature ? (
+        <img
+          src={formData.CoBorrower_signature}
+          alt="Co-Borrower Signature"
+          className="max-h-[24px] object-contain"
+        />
+      ) : (
+        <p className="text-gray-400 text-[9px]">No signature</p>
+      )}
+    </div>
+  </div>
+
+  {/* Ornament */}
+  <div className="w-[120px] h-auto flex flex-col items-center">
+    <p className="font-medium mb-1 text-xs">Ornament Photo</p>
+    <img
+      src={
+        formData.OrnamentPhoto
+          ? formData.OrnamentPhoto
+          : profileempty
+      }
+      alt="Ornament"
+      className="w-[100px] h-[115px] object-cover rounded-[5px] border border-gray-300"
+    />
+
+    <div className="flex items-center border border-gray-300 rounded mt-1 w-[110px]">
+      <label
+        htmlFor="ornamentFile"
+        className="bg-[#D9D9D9] p-1 cursor-pointer text-[8px] rounded-l border-r border w-[65px] text-black font-semibold h-[18px] flex items-center justify-center"
+      >
+        Choose File
+      </label>
+      <input
+        id="ornamentFile"
+        type="file"
+        accept="image/*"
+        className="hidden"
+        onChange={handleOrnamentUpload}
+      />
+    </div>
+  </div>
+</div>
+
+
         </div>
 
-        {/* Pledge Item List */}
+        {/* ===== Pledge Item List ===== */}
         <div className="flex justify-center mb-6">
           <div className="w-[1290px]">
             <h3 className="font-semibold mb-4 text-blue-900 text-lg">
@@ -172,7 +260,7 @@ const LoanEnquiry = () => {
           </div>
         </div>
 
-        {/* Payment Details */}
+        {/* ===== Payment Details ===== */}
         <div className="flex justify-center mb-6">
           <div className="w-[1290px]">
             <h3 className="font-semibold mb-4 text-blue-900 text-lg">
@@ -203,7 +291,7 @@ const LoanEnquiry = () => {
           </div>
         </div>
 
-        {/* Scheme Details */}
+        {/* ===== Scheme Details ===== */}
         <div className="flex justify-center mb-6">
           <div className="w-[1290px]">
             <h3 className="font-semibold mb-4 text-blue-900 text-lg">
