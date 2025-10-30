@@ -38,7 +38,6 @@ import Area from "./MasterPages/Area";
 
 // Transaction Pages
 import LoanApplication from "./TrasactionPages/LoanApplication";
-import LoanEnquiry from "./TrasactionPages/LoanEnquiry";
 import CancelledLoan from "./TrasactionPages/CancelledLoan";
 import AddGoldLoanApplication from "./TrasactionPages/AddGoldLoanApplication";
 import NOC from "./TrasactionPages/NOC";
@@ -59,6 +58,9 @@ import BidderRegistration from "./TrasactionPages/BidderRegistration";
 import BidderRegistrationList from "./TrasactionPages/BidderRegistrationList";
 import ViewBidderDetails from "./TrasactionPages/ViewBidderDetails";
 import EditBidderDetails from "./TrasactionPages/EditBidderDetails";
+import ViewLoanDetails from "./TrasactionPages/ViewLoanDeatils";
+import EditLoanDetails from "./TrasactionPages/EditLoanDetails";
+import GoldLoanApproval from "./TrasactionPages/GoldLoanApproval";
 
 function App() {
   return (
@@ -130,8 +132,10 @@ function App() {
 
           {/* Loan Application */}
           <Route path="/Loan-Application" element={<LoanApplication />} />
-          <Route path="/Loan-Enquiry" element={<LoanEnquiry />} />
           <Route path="/Cancelled-Loan" element={<CancelledLoan />} />
+          <Route path="/View-Loan-Details" element={<ViewLoanDetails />} />
+          <Route path="/Edit-Loan-Details" element={<EditLoanDetails />} />
+          <Route path="/Gold-Loan-Approval" element={<GoldLoanApproval />} />
           <Route
             path="/Add-Gold-Loan-Application"
             element={<AddGoldLoanApplication />}

@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import profileempty from "../assets/profileempty.png";
 
-const LoanEnquiry = () => {
+const ViewLoanDetails = () => {
   useEffect(() => {
     document.title = "SLF | Loan Enquiry";
   }, []);
@@ -63,7 +63,7 @@ const LoanEnquiry = () => {
         <div className="flex justify-center mb-6">
           <div className="w-[1050px] pt-3 pl-19">
             <h3 className="text-lg font-semibold mb-4 text-[#0A2478]">
-              Loan Details
+            View  Loan Details
             </h3>
 
             {/* First Row */}
@@ -330,4 +330,8 @@ const LoanEnquiry = () => {
   );
 };
 
-export default LoanEnquiry;
+export default ViewLoanDetails;
+
+
+// EditLoanDetails
+// GoldLoanApproval
