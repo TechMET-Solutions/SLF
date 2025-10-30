@@ -56,9 +56,13 @@ export const updateItemApi = async (payload) => {
 export const updateItemStatusApi = async (id, status) => {
   try {
     const encryptedPayload = encryptData({ id, status });
-    return await axios.put(`${API_BASE}/edit_Item_Status`, { data: encryptedPayload }, {
-      headers: { "Content-Type": "application/json" },
-    });
+    return await axios.put(
+      `${API_BASE}/edit_Item_Status`,
+      { data: encryptedPayload }, // ✅ must be passed here as 2nd arg
+      {
+        headers: { "Content-Type": "application/json" },
+      }
+    );
   } catch (error) {
     console.error("❌ Error updating item status:", error);
     throw error;
