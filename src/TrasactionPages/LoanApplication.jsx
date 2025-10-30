@@ -475,7 +475,7 @@ const LoanApplication = () => {
                         // navigation handlers using state (no URL params)
                         const goEdit = (loan) => () => navigate("/Edit-Loan-Details", { state: { loan } });
                         const goUpload = (loan) => () => navigate("/Upload", { state: { loan } });
-                        const goPrint = (loan) => () => navigate("/Print", { state: { loan } });
+                        const goPrint = (loan) => () => navigate("/Print-Loan-Application", { state: { loan } });
                         const goGold = (loan) => () => navigate("/Appraisal-Note", { state: { loan } });
                         const goBarcode = (loan) => () => navigate("/Barcode", { state: { loan } });
                         const goCancel = (loan) => () => navigate("/Cancel-Loan", { state: { loan } });
