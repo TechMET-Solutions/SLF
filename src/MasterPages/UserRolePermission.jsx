@@ -345,7 +345,7 @@ const UserRolePermission = () => {
                             src={Rights}
                             alt="rights"
                             className="w-[18px] h-[18px] cursor-pointer"
-                            onClick={() => navigate(`/User-Role/${row.id}`)}
+                            onClick={() => navigate(`/User-Role`)}
                           />
 
                         </button>
