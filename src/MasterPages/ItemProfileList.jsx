@@ -33,51 +33,31 @@ const ItemProfileList = () => {
   const [showPagination, setShowPagination] = useState(false);
   const itemsPerPage = 10;
 
-  // 🔹 Fetch Items (with pagination)
-  // const fetchAllItems = async (page = 1) => {
-  //   try {
-  //     const result = await fetchItemsApi(page, itemsPerPage);
-  //     if (result?.items) {
-  //       setData(result.items);
-  //       setTotalItems(result.total);
-  //       setCurrentPage(result.page);
-  //       setShowPagination(result.showPagination || false);
-  //     } else {
-  //       setData([]);
-  //       setShowPagination(false);
-  //     }
-  //   } catch (error) {
-  //     console.error("❌ Error fetching items:", error);
-  //     setData([]);
-  //     setShowPagination(false);
-  //   }
-  // };
-
   const fetchAllItems = async (page = 1) => {
-  try {
-    const result = await fetchItemsApi(page, itemsPerPage, searchCode, searchName);
-    if (result?.items) {
-      setData(result.items);
-      setTotalItems(result.total);
-      setCurrentPage(result.page);
-      setShowPagination(result.showPagination || false);
-    } else {
+    try {
+      const result = await fetchItemsApi(page, itemsPerPage, searchCode, searchName);
+      if (result?.items) {
+        setData(result.items);
+        setTotalItems(result.total);
+        setCurrentPage(result.page);
+        setShowPagination(result.showPagination || false);
+      } else {
+        setData([]);
+        setShowPagination(false);
+      }
+    } catch (error) {
+      console.error("❌ Error fetching items:", error);
       setData([]);
       setShowPagination(false);
     }
-  } catch (error) {
-    console.error("❌ Error fetching items:", error);
-    setData([]);
-    setShowPagination(false);
-  }
-};
+  };
 
 
   useEffect(() => {
     fetchAllItems();
   }, []);
 
-  
+
   // 🔹 Open Modal
   const handleOpenModal = (item = null) => {
     if (item) {
@@ -305,7 +285,7 @@ const ItemProfileList = () => {
                 onChange={(e) =>
                   setFormData({ ...formData, status: e.target.checked ? 1 : 0 })
                 }
-                className="w-5 h-5"
+                className="w-5 h-5 accent-blue-900"
               />
               <label className="text-[14px] font-medium">Active</label>
             </div>
@@ -331,27 +311,33 @@ const ItemProfileList = () => {
       {/* Table */}
       <div className="flex justify-center">
         <div className="overflow-x-auto mt-5 w-[1290px] h-[500px]">
-          {data.length === 0 ? (
-            <div className="flex justify-center items-center h-full">
-              <p className="text-lg text-gray-500">No Data Found</p>
-            </div>
-          ) : (
-            <table className="w-full border-collapse">
-              <thead className="bg-[#0A2478] text-white text-sm">
+          <table className="w-full border-collapse">
+            <thead className="bg-[#0A2478] text-white text-sm">
+              <tr>
+                <th className="px-4 py-2 border-r-2 text-left">Code</th>
+                <th className="px-4 py-2 border-r-2 text-left">Name</th>
+                <th className="px-4 py-2 border-r-2 text-left">Status</th>
+                <th className="px-4 py-2 border-r-2 text-left">Added By</th>
+                <th className="px-4 py-2 border-r-2 text-left">Added On</th>
+                <th className="px-4 py-2 border-r-2 text-left">Modified By</th>
+                <th className="px-4 py-2 border-r-2 text-left">Modified On</th>
+                <th className="px-4 py-2 border-r-2 text-left">Action</th>
+                <th className="px-4 py-2 border-r-2 text-left">Active</th>
+              </tr>
+            </thead>
+
+            <tbody className="text-[12px]">
+              {data.length === 0 ? (
                 <tr>
-                  <th className="px-4 py-2 border-r-2 text-left">Code</th>
-                  <th className="px-4 py-2 border-r-2 text-left">Name</th>
-                  <th className="px-4 py-2 border-r-2 text-left">Status</th>
-                  <th className="px-4 py-2 border-r-2 text-left">Added By</th>
-                  <th className="px-4 py-2 border-r-2 text-left">Added On</th>
-                  <th className="px-4 py-2 border-r-2 text-left">Modified By</th>
-                  <th className="px-4 py-2 border-r-2 text-left">Modified On</th>
-                  <th className="px-4 py-2 border-r-2 text-left">Action</th>
-                  <th className="px-4 py-2 border-r-2 text-left">Active</th>
+                  <td
+                    colSpan="9"
+                    className="text-center text-gray-500 py-10 text-lg"
+                  >
+                    No Data Found
+                  </td>
                 </tr>
-              </thead>
-              <tbody className="text-[12px]">
-                {data.map((row, index) => (
+              ) : (
+                data.map((row, index) => (
                   <tr
                     key={row.id}
                     className={`border-b ${index % 2 === 0 ? "bg-gray-50" : "bg-white"
@@ -374,9 +360,9 @@ const ItemProfileList = () => {
                         ? new Date(row.modified_on).toLocaleDateString()
                         : "-"}
                     </td>
-                    <td className="px-4 py-2 text-[#1883EF]  cursor-pointer">
+                    <td className="px-4 py-2 text-[#1883EF] cursor-pointer">
                       <button
-                        className="bg-green-500 p-1.5 text-white rounded cursor-pointer"
+                        className="bg-green-500 p-1.5 text-white rounded"
                         onClick={() => handleOpenModal(row)}
                       >
                         <FiEdit className="text-white text-sm" />
@@ -389,20 +375,19 @@ const ItemProfileList = () => {
                           }`}
                       >
                         <div
-                          className={`bg-white w-4 h-4 rounded-full shadow-md transform transition-transform ${row.status === 1
-                            ? "translate-x-6"
-                            : "translate-x-0"
+                          className={`bg-white w-4 h-4 rounded-full shadow-md transform transition-transform ${row.status === 1 ? "translate-x-6" : "translate-x-0"
                             }`}
                         />
                       </button>
                     </td>
                   </tr>
-                ))}
-              </tbody>
-            </table>
-          )}
+                ))
+              )}
+            </tbody>
+          </table>
         </div>
       </div>
+
 
       <Pagination
         currentPage={currentPage}
