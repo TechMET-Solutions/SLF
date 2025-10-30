@@ -702,3 +702,73 @@ const LoanApplication = () => {
 };
 
 export default LoanApplication;
+
+
+  {/* ===================== Cancel Loan Modal ===================== */}
+      // {deleteModalOpen && (
+      //   <div className="fixed inset-0 flex items-center justify-center z-50 bg-[#0101017A] backdrop-blur-[6.8px]">
+      //     <div className="bg-white w-[445px] rounded-lg shadow-lg p-6 relative">
+      //       {/* Red Exclamation Icon */}
+      //       <div className="absolute -top-7 left-1/2 transform -translate-x-1/2 bg-white rounded-full p-2 shadow-md">
+      //         <div className="w-10 h-10 flex items-center justify-center border-2 border-red-500 rounded-full">
+      //           <span className="text-red-500 text-3xl leading-none">!</span>
+      //         </div>
+      //       </div>
+
+      //       {/* Title */}
+      //       <div className="mt-8 text-center">
+      //         <p className="text-[20px] font-semibold text-[#0A0A0A]">
+      //           Are you sure to Cancel this Loan
+      //         </p>
+      //         <p className="text-[14px] text-[#7C7C7C] mt-1">
+      //           You won’t be able to revert this action
+      //         </p>
+      //       </div>
+
+      //       {/* Add Remark Section with Jodit Editor */}
+      //       <div className="mt-6">
+      //         <label className="text-[15px] font-medium text-[#0A0A0A] mb-2 block">
+      //           Add Remark
+      //         </label>
+      //         <div className="border border-[#BEBEBE] rounded-md overflow-hidden">
+      //           <JoditEditor
+      //             ref={editor}
+      //             value={cancelRemark}
+      //             config={{
+      //               readonly: false,
+      //               height: 180,
+      //               placeholder: "Type your remark here...",
+      //               toolbarAdaptive: false,
+      //               buttons: [
+      //                 "bold",
+      //                 "italic",
+      //                 "underline",
+      //                 "ul",
+      //                 "ol",
+      //                 "link",
+      //                 "eraser",
+      //               ],
+      //             }}
+      //             onBlur={(newContent) => setCancelRemark(newContent)}
+      //           />
+      //         </div>
+      //       </div>
+
+      //       {/* Buttons */}
+      //       <div className="mt-5 flex justify-center gap-4">
+      //         <button
+      //           className="bg-[#0A2478] text-white px-5 py-2 rounded-md text-[15px] font-semibold hover:bg-[#091E5E]"
+      //           onClick={handleDeleteConfirm}
+      //         >
+      //           Submit
+      //         </button>
+      //         <button
+      //           className="bg-[#F11717] text-white px-5 py-2 rounded-md text-[15px] font-semibold hover:bg-[#C70F0F]"
+      //           onClick={() => setDeleteModalOpen(false)}
+      //         >
+      //           Cancel
+      //         </button>
+      //       </div>
+      //     </div>
+      //   </div>
+      // )}
