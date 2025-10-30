@@ -55,6 +55,10 @@ import PrintCreditNote from "./TrasactionPages/PrintCreditNote";
 import AddAuctionCreation from "./TrasactionPages/AddAuctionCreation";
 import AuctionItemsList from "./TrasactionPages/AuctionItemsList";
 import GoldOrnamentBill from "./TrasactionPages/GoldOrnamentBill";
+import BidderRegistration from "./TrasactionPages/BidderRegistration";
+import BidderRegistrationList from "./TrasactionPages/BidderRegistrationList";
+import ViewBidderDetails from "./TrasactionPages/ViewBidderDetails";
+import EditBidderDetails from "./TrasactionPages/EditBidderDetails";
 
 function App() {
   return (
@@ -147,6 +151,10 @@ function App() {
           <Route path="/Add-Auction-Creation" element={<AddAuctionCreation />} />
           <Route path="/Auction-Items-List" element={<AuctionItemsList />} />
           <Route path="/Gold-Ornament-Bill" element={<GoldOrnamentBill />} />
+          <Route path="/Bidder-Registration-List" element={ <BidderRegistrationList/>} />
+          <Route path="/Bidder-Registration" element={ <BidderRegistration/>} />
+          <Route path="/View-Bidder-Details" element={ <ViewBidderDetails/>} />
+          <Route path="/EditBidderDetails" element={ <EditBidderDetails/>} />
           <Route path="/Credit-Note" element={<CreditNote />} />
           <Route path="/Debit-Note" element={<DebitNote />} />
 

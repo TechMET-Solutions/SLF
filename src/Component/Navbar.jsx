@@ -380,7 +380,7 @@ const Navbar = () => {
                         Auction Creation
                       </Link>
                       <Link
-                        to="/Bidder-Registration"
+                        to="/Bidder-Registration-List"
                         className="px-4 py-2 hover:bg-gray-100 text-left"
                         onClick={() => {
                           setIsTransactionsOpen(false);
