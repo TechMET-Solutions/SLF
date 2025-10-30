@@ -472,32 +472,32 @@ const LoanApplication = () => {
                           </div>
                         );
 
-                        // common handlers/navigation
-                        const goEdit = () => navigate(`/Edit-Loan-Details`);
-                        const goUpload = () => navigate(`/Upload`);
-                        const goPrint = () => navigate(`/Print`);
-                        const goGold = () => navigate(`/Appraisal-Note`);
-                        const goBarcode = () => navigate(`/Barcode`);
-                        const goCancel = () => navigate(`/Cancel-Loan`);
+                        // navigation handlers using state (no URL params)
+                        const goEdit = (loan) => () => navigate("/Edit-Loan-Details", { state: { loan } });
+                        const goUpload = (loan) => () => navigate("/Upload", { state: { loan } });
+                        const goPrint = (loan) => () => navigate("/Print", { state: { loan } });
+                        const goGold = (loan) => () => navigate("/Appraisal-Note", { state: { loan } });
+                        const goBarcode = (loan) => () => navigate("/Barcode", { state: { loan } });
+                        const goCancel = (loan) => () => navigate("/Cancel-Loan", { state: { loan } });
 
                         // Render sets per status
                         if (st === "approved") {
                           // print -> upload -> message -> gold -> barcode
                           return (
                             <div className="flex gap-2 justify-center">
-                              <IconButton onClick={goPrint} title="Print" bg="bg-blue-500 text-white">
+                              <IconButton onClick={goPrint(row)} title="Print" bg="bg-blue-500 text-white">
                                 <PiPrinterLight className="w-[20px] h-[20px]" />
                               </IconButton>
-                              <IconButton onClick={goUpload} title="Upload" bg="bg-green-600 text-white">
+                              <IconButton onClick={goUpload(row)} title="Upload" bg="bg-green-600 text-white">
                                 <CgSoftwareUpload className="w-[20px] h-[20px]" />
                               </IconButton>
                               <IconButton onClick={handleOpenRemark} title="Message" bg="bg-yellow-400">
                                 <RiMessage2Line className="w-[20px] h-[20px]" />
                               </IconButton>
-                              <IconButton onClick={goGold} title="Gold Details" bg="border" >
+                              <IconButton onClick={goGold(row)} title="Gold Details" bg="border" >
                                 <img src={goldlogo} alt="gold" className="w-[20px] h-[20px]" />
                               </IconButton>
-                              <IconButton onClick={goBarcode} title="Barcode" bg="bg-gray-200">
+                              <IconButton onClick={goBarcode(row)} title="Barcode" bg="bg-gray-200">
                                 <CiBarcode className="w-[20px] h-[20px]" />
                               </IconButton>
                             </div>
@@ -508,19 +508,19 @@ const LoanApplication = () => {
                           // edit -> upload -> message -> gold -> cancel
                           return (
                             <div className="flex gap-2 justify-center">
-                              <IconButton onClick={goEdit} title="Edit" bg="bg-blue-500 text-white">
+                              <IconButton onClick={goEdit(row)} title="Edit" bg="bg-blue-500 text-white">
                                 <CiEdit className="w-[20px] h-[20px]" />
                               </IconButton>
-                              <IconButton onClick={goUpload} title="Upload" bg="bg-green-600 text-white">
+                              <IconButton onClick={goUpload(row)} title="Upload" bg="bg-green-600 text-white">
                                 <CgSoftwareUpload className="w-[20px] h-[20px]" />
                               </IconButton>
                               <IconButton onClick={handleOpenRemark} title="Message" bg="bg-yellow-400">
                                 <RiMessage2Line className="w-[20px] h-[20px]" />
                               </IconButton>
-                              <IconButton onClick={goGold} title="Gold Details" bg="border">
+                              <IconButton onClick={goGold(row)} title="Gold Details" bg="border">
                                 <img src={goldlogo} alt="gold" className="w-[20px] h-[20px]" />
                               </IconButton>
-                              <IconButton onClick={goCancel} title="Cancel" bg="bg-red-600 text-white">
+                              <IconButton onClick={goCancel(row)} title="Cancel" bg="bg-red-600 text-white">
                                 <MdOutlineCancel className="w-[20px] h-[20px]" />
                               </IconButton>
                             </div>
@@ -539,25 +539,25 @@ const LoanApplication = () => {
                         }
 
                         if (st === "closed") {
-                          // Closed status: show edit, upload, message, print, text, gold, barcode
+                          // Closed status: show edit, upload, message, print, gold, barcode
                           return (
                             <div className="flex gap-2 justify-center">
-                              <IconButton onClick={goEdit} title="Edit" bg="bg-blue-500 text-white">
+                              <IconButton onClick={goEdit(row)} title="Edit" bg="bg-blue-500 text-white">
                                 <CiEdit className="w-[20px] h-[20px]" />
                               </IconButton>
-                              <IconButton onClick={goUpload} title="Upload" bg="bg-green-600 text-white">
+                              <IconButton onClick={goUpload(row)} title="Upload" bg="bg-green-600 text-white">
                                 <CgSoftwareUpload className="w-[20px] h-[20px]" />
                               </IconButton>
                               <IconButton onClick={handleOpenRemark} title="Message" bg="bg-yellow-400">
                                 <RiMessage2Line className="w-[20px] h-[20px]" />
                               </IconButton>
-                              <IconButton onClick={goPrint} title="Print" bg="bg-blue-300 text-white">
+                              <IconButton onClick={goPrint(row)} title="Print" bg="bg-blue-300 text-white">
                                 <PiPrinterLight className="w-[20px] h-[20px]" />
                               </IconButton>
-                              <IconButton onClick={goGold} title="Gold Details" bg="border">
+                              <IconButton onClick={goGold(row)} title="Gold Details" bg="border">
                                 <img src={goldlogo} alt="gold" className="w-[20px] h-[20px]" />
                               </IconButton>
-                              <IconButton onClick={goBarcode} title="Barcode" bg="bg-gray-200">
+                              <IconButton onClick={goBarcode(row)} title="Barcode" bg="bg-gray-200">
                                 <CiBarcode className="w-[20px] h-[20px]" />
                               </IconButton>
                             </div>
