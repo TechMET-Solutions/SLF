@@ -476,7 +476,7 @@ const LoanApplication = () => {
                         const goEdit = () => navigate(`/Edit-Loan-Details`);
                         const goUpload = () => navigate(`/Upload`);
                         const goPrint = () => navigate(`/Print`);
-                        const goGold = () => navigate(`/Gold-Details`);
+                        const goGold = () => navigate(`/Appraisal-Note`);
                         const goBarcode = () => navigate(`/Barcode`);
                         const goCancel = () => navigate(`/Cancel-Loan`);
 
