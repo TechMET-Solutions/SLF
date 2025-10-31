@@ -1,9 +1,11 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useRef } from 'react';
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import { CiBarcode, CiEdit, CiSearch } from "react-icons/ci";
 import { MdOutlineCancel } from "react-icons/md";
 import { useNavigate } from 'react-router-dom';
+import axios from 'axios';
+import JoditEditor from 'jodit-react';
 import calender from "../assets/calender.png";
 import goldlogo from "../assets/gold_print.svg";
 import envImg from "../assets/envImg.jpg";
@@ -27,6 +29,12 @@ const LoanApplication = () => {
   const [isRemarkOpen, setIsRemarkOpen] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
+  const [deleteModalOpen, setDeleteModalOpen] = useState(false);
+  const editor = useRef(null);
+  const [cancelRemark, setCancelRemark] = useState("");
+  const [selectedCancelLoan, setSelectedCancelLoan] = useState(null);
+  const [cancelLoading, setCancelLoading] = useState(false);
+  const [successMessage, setSuccessMessage] = useState("");
 
   // State for API data and pagination
   const [loanApplication, setLoanApplication] = useState([]);
@@ -48,40 +56,61 @@ const LoanApplication = () => {
     "IND-01", "IND-02", "IND-03", "IND-04"
   ];
 
-  // Fetch loan applications from API
+  // Jodit Editor configuration
+  const editorConfig = {
+    readonly: false,
+    height: 180,
+    placeholder: "Type your cancellation remark here...",
+    toolbarAdaptive: false,
+    buttons: [
+      "bold", "italic", "underline", "strikethrough",
+      "ul", "ol", "outdent", "indent",
+      "font", "fontsize", "brush", "paragraph",
+      "link", "align", "undo", "redo"
+    ],
+    removeButtons: ['image', 'file', 'video', 'source'], // Remove unnecessary buttons
+    showXPathInStatusbar: false,
+    askBeforePasteHTML: false,
+    askBeforePasteFromWord: false,
+    defaultActionOnPaste: "insert_clear_html"
+  };
+
+  // Create axios instance with base configuration
+  const apiClient = axios.create({
+    baseURL: API,
+    timeout: 10000,
+    headers: {
+      'Content-Type': 'application/json',
+    }
+  });
+
+  // Fetch loan applications from API using Axios
   const fetchLoanApplications = async (page = 1, status = "") => {
     setLoading(true);
     setError("");
     try {
-      const queryParams = new URLSearchParams({
+      const params = {
         page: page.toString(),
         limit: pagination.limit.toString(),
         ...(status && { status })
-      });
+      };
 
-      const response = await fetch(`${API}/Transactions/goldloan/all?${queryParams}`);
+      const response = await apiClient.get('/Transactions/goldloan/all', { params });
 
-      if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
-      }
-
-      const data = await response.json();
-
-      if (data.success) {
-        setLoanApplication(data.data);
+      if (response.data.success) {
+        setLoanApplication(response.data.data);
         setPagination({
-          page: data.page,
-          totalPages: data.totalPages,
-          total: data.total,
+          page: response.data.page,
+          totalPages: response.data.totalPages,
+          total: response.data.total,
           limit: pagination.limit
         });
       } else {
-        throw new Error(data.message || "Failed to fetch loan applications");
+        throw new Error(response.data.message || "Failed to fetch loan applications");
       }
     } catch (err) {
       console.error("Error fetching loan applications:", err);
-      setError(err.message);
-      // Fallback to empty data
+      setError(err.response?.data?.message || err.message || "Failed to fetch loan applications");
       setLoanApplication([]);
     } finally {
       setLoading(false);
@@ -101,7 +130,6 @@ const LoanApplication = () => {
 
   // Handle search
   const handleSearch = () => {
-    // Since the backend doesn't support search yet, we'll just refetch with current status
     fetchLoanApplications(1, filters.status);
   };
 
@@ -120,6 +148,99 @@ const LoanApplication = () => {
     setIsRemarkOpen(false);
   };
 
+  // Handle delete confirmation using Axios - FIXED VERSION
+  const handleDeleteConfirm = async () => {
+    if (!selectedCancelLoan) return;
+    
+    // Convert HTML to plain text for the remark
+    const plainTextRemark = cancelRemark.replace(/<[^>]*>/g, '').trim();
+    
+    if (!plainTextRemark) {
+      alert('Please provide a cancellation remark');
+      return;
+    }
+
+    setCancelLoading(true);
+    try {
+      // Debug: Log the selected loan data to see what fields are available
+      
+      
+      // Try different possible ID fields - check what your backend expects
+      const possibleIdFields = [
+        selectedCancelLoan.id,
+        selectedCancelLoan.ID,
+        selectedCancelLoan.Id,
+        selectedCancelLoan.loan_id,
+        selectedCancelLoan.Loan_ID,
+        selectedCancelLoan.LoanId,
+        selectedCancelLoan.Loan_No // Sometimes loan number is used as ID
+      ].filter(Boolean); // Remove null/undefined values
+
+     
+
+      if (possibleIdFields.length === 0) {
+        throw new Error('No valid ID field found in loan data');
+      }
+
+      // Use the first available ID field
+      const loanId = possibleIdFields[0];
+
+
+      console.log('Sending cancellation request with:', {
+        id: loanId,
+        remark: plainTextRemark
+      });
+
+      // Since your backend uses PUT method for cancellation
+      const response = await apiClient.put('/Transactions/goldloan/cancel', {
+        id: loanId,
+        remark: plainTextRemark,
+      });
+
+
+
+      if (response.data.success) {
+        // Successfully cancelled - refresh the loan applications list
+        fetchLoanApplications(pagination.page, filters.status);
+        
+        // Close the modal
+        setDeleteModalOpen(false);
+        setSelectedCancelLoan(null);
+        setCancelRemark("");
+        
+        // Show success message
+        setSuccessMessage('Loan application cancelled successfully');
+        setTimeout(() => setSuccessMessage(""), 3000);
+      } else {
+        throw new Error(response.data.message || 'Failed to cancel loan application');
+      }
+    } catch (err) {
+      console.error('Error cancelling loan application:', err);
+      
+      let errorMessage = 'Failed to cancel loan application';
+      
+      if (err.response) {
+        // Server responded with error status
+        errorMessage = err.response.data?.message || `Server error: ${err.response.status}`;
+        
+        // If it's a 400 error, show more specific message
+        if (err.response.status === 400) {
+          errorMessage = `Bad Request: ${err.response.data?.message || 'Invalid data sent to server'}`;
+        }
+      } else if (err.request) {
+        // Request was made but no response received
+        errorMessage = 'No response from server. Please check your connection.';
+      } else {
+        // Something else happened
+        errorMessage = err.message;
+      }
+      
+      alert(`Error: ${errorMessage}`);
+    } finally {
+      setCancelLoading(false);
+    }
+  };
+
   const handleClick = (row) => {
     if (row.Status === "Cancelled") {
       navigate("/Cancelled-Loan");
@@ -136,6 +257,8 @@ const LoanApplication = () => {
         return "text-orange-500";
       case "cancelled":
         return "text-red-600";
+      case "closed":
+        return "text-blue-600";
       default:
         return "text-gray-600";
     }
@@ -165,7 +288,6 @@ const LoanApplication = () => {
 
     // Page numbers
     if (totalPages <= 5) {
-      // Show all pages if total pages is 5 or less
       for (let i = 1; i <= totalPages; i++) {
         buttons.push(
           <button
@@ -179,7 +301,6 @@ const LoanApplication = () => {
         );
       }
     } else {
-      // Show first page, current page with neighbors, and last page
       buttons.push(
         <button
           key={1}
@@ -337,7 +458,8 @@ const LoanApplication = () => {
                       </li>
                     ))}
                   </ul>
-                )}
+                )
+                }
               </div>
             </div>
 
@@ -388,6 +510,15 @@ const LoanApplication = () => {
         </div>
       </div>
 
+      {/* Success Message */}
+      {successMessage && (
+        <div className="flex justify-center mt-4">
+          <div className="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded w-[1290px] text-sm">
+            <strong>Success: </strong>{successMessage}
+          </div>
+        </div>
+      )}
+
       {/* Error Message */}
       {error && (
         <div className="flex justify-center mt-4">
@@ -426,7 +557,6 @@ const LoanApplication = () => {
                       <option value="Approved" className="text-black bg-white">Approved</option>
                       <option value="Cancelled" className="text-black bg-white">Cancelled</option>
                       <option value="Closed" className="text-black bg-white">Closed</option>
-
                     </select>
                   </th>
                   <th className="px-4 py-2 border-r border-gray-300 text-[14px] w-[187px]">Added By</th>
@@ -472,17 +602,20 @@ const LoanApplication = () => {
                           </div>
                         );
 
-                        // navigation handlers using state (no URL params)
+                        // navigation handlers using state
                         const goEdit = (loan) => () => navigate("/Edit-Loan-Details", { state: { loan } });
                         const goUpload = (loan) => () => navigate("/Upload", { state: { loan } });
                         const goPrint = (loan) => () => navigate("/Print-Loan-Application", { state: { loan } });
                         const goGold = (loan) => () => navigate("/Appraisal-Note", { state: { loan } });
                         const goBarcode = (loan) => () => navigate("/Barcode", { state: { loan } });
-                        const goCancel = (loan) => () => navigate("/Cancel-Loan", { state: { loan } });
+                        const goCancel = (loan) => () => {
+                          setSelectedCancelLoan(loan);
+                          setCancelRemark("");
+                          setDeleteModalOpen(true);
+                        };
 
                         // Render sets per status
                         if (st === "approved") {
-                          // print -> upload -> message -> gold -> barcode
                           return (
                             <div className="flex gap-2 justify-center">
                               <IconButton onClick={goPrint(row)} title="Print" bg="bg-blue-500 text-white">
@@ -505,7 +638,6 @@ const LoanApplication = () => {
                         }
 
                         if (st === "pending") {
-                          // edit -> upload -> message -> gold -> cancel
                           return (
                             <div className="flex gap-2 justify-center">
                               <IconButton onClick={goEdit(row)} title="Edit" bg="bg-blue-500 text-white">
@@ -528,7 +660,6 @@ const LoanApplication = () => {
                         }
 
                         if (st === "cancelled") {
-                          // only message icon
                           return (
                             <div className="flex gap-2 justify-center">
                               <IconButton onClick={handleOpenRemark} title="Message" bg="bg-yellow-400">
@@ -539,7 +670,6 @@ const LoanApplication = () => {
                         }
 
                         if (st === "closed") {
-                          // Closed status: show edit, upload, message, print, gold, barcode
                           return (
                             <div className="flex gap-2 justify-center">
                               <IconButton onClick={goEdit(row)} title="Edit" bg="bg-blue-500 text-white">
@@ -564,7 +694,6 @@ const LoanApplication = () => {
                           );
                         }
 
-                        // default: show minimal actions
                         return (
                           <div className="flex gap-2 justify-center">
                             <IconButton onClick={handleOpenRemark} title="Message" bg="bg-yellow-400">
@@ -575,13 +704,11 @@ const LoanApplication = () => {
                       })()}
                     </td>
 
-
                     {/* Payment column */}
                     <td className="px-4 py-2 text-center">
                       {(() => {
                         const st = (row.Status || "").toLowerCase();
                         if (st === "approved") {
-                          // Condition 1: Approved -> show NOC (clickable)
                           return (
                             <span
                               className="text-blue-600 cursor-pointer hover:underline"
@@ -592,11 +719,9 @@ const LoanApplication = () => {
                           );
                         }
                         if (st === "closed" || st === "cancelled") {
-                          // Condition 2: Closed or Cancelled -> NA
                           return <span className="text-gray-500">NA</span>;
                         }
                         if (st === "pending") {
-                          // Condition 3: Pending -> Approve (clickable)
                           return (
                             <span
                               className="text-blue-600 cursor-pointer hover:underline"
@@ -606,7 +731,6 @@ const LoanApplication = () => {
                             </span>
                           );
                         }
-                        // Fallback
                         return (
                           <span
                             className="text-blue-600 cursor-pointer hover:underline"
@@ -623,7 +747,6 @@ const LoanApplication = () => {
                       {(() => {
                         const st = (row.Status || "").toLowerCase();
                         if (st === "approved") {
-                          // Condition 1: Approved -> show Repay button -> redirect to repay page
                           return (
                             <button
                               className="bg-[#0A2478] text-white px-3 py-1 rounded text-[11px] hover:bg-[#091f6c]"
@@ -633,12 +756,9 @@ const LoanApplication = () => {
                             </button>
                           );
                         }
-                        // For Closed, Cancelled, Pending (and other statuses) show NA
                         return <span className="text-gray-500">NA</span>;
                       })()}
                     </td>
-
-
                   </tr>
                 ))}
               </tbody>
@@ -697,78 +817,73 @@ const LoanApplication = () => {
           </div>
         </div>
       )}
+
+      {/* Cancel/Delete Modal with JoditEditor */}
+      {deleteModalOpen && selectedCancelLoan && (
+        <div className="fixed inset-0 flex items-center justify-center z-50 bg-[#0101017A] backdrop-blur-[6.8px]">
+          <div className="bg-white w-[500px] rounded-lg shadow-lg p-6 relative">
+            <div className="absolute -top-7 left-1/2 transform -translate-x-1/2 bg-white rounded-full p-2 shadow-md">
+              <div className="w-10 h-10 flex items-center justify-center border-2 border-red-500 rounded-full">
+                <span className="text-red-500 text-3xl leading-none">!</span>
+              </div>
+            </div>
+
+            <div className="mt-8 text-center">
+              <p className="text-[20px] font-semibold text-[#0A0A0A]">
+                Are you sure to Cancel this Loan?
+              </p>
+              <p className="text-[14px] text-[#7C7C7C] mt-1">
+                You won't be able to revert this action
+              </p>
+              <p className="text-sm text-gray-600 mt-2">
+                Loan: {selectedCancelLoan.Party_Name} (#{selectedCancelLoan.Loan_No})
+              </p>
+              
+            </div>
+
+            <div className="mt-6">
+              <label className="text-[19px] font-medium text-[#0A2478] mb-2 block">
+                Add Remark 
+              </label>
+              <div className="border border-[#BEBEBE] rounded-md overflow-hidden">
+                <JoditEditor
+                  ref={editor}
+                  value={cancelRemark}
+                  config={editorConfig}
+                  onBlur={(newContent) => setCancelRemark(newContent)}
+                  onChange={(newContent) => {}}
+                />
+              </div>
+              <p className="text-xs text-gray-500 mt-1">
+                Please provide a detailed reason for cancellation
+              </p>
+            </div>
+
+            <div className="mt-5 flex justify-center gap-4">
+              <button
+                className="bg-[#0A2478] text-white px-5 py-2 rounded-md text-[15px] font-semibold hover:bg-[#091E5E] disabled:opacity-50 disabled:cursor-not-allowed"
+                onClick={handleDeleteConfirm}
+                disabled={cancelLoading || !cancelRemark.replace(/<[^>]*>/g, '').trim()}
+              >
+                {cancelLoading ? "Submitting..." : "Submit"}
+              </button>
+              <button
+                className="bg-[#F11717] text-white px-5 py-2 rounded-md text-[15px] font-semibold hover:bg-[#C70F0F] disabled:opacity-50"
+                onClick={() => {
+                  setDeleteModalOpen(false);
+                  setSelectedCancelLoan(null);
+                  setCancelRemark("");
+                }}
+                disabled={cancelLoading}
+              >
+                Cancel
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };
 
 export default LoanApplication;
-
-
-  {/* ===================== Cancel Loan Modal ===================== */}
-      // {deleteModalOpen && (
-      //   <div className="fixed inset-0 flex items-center justify-center z-50 bg-[#0101017A] backdrop-blur-[6.8px]">
-      //     <div className="bg-white w-[445px] rounded-lg shadow-lg p-6 relative">
-      //       {/* Red Exclamation Icon */}
-      //       <div className="absolute -top-7 left-1/2 transform -translate-x-1/2 bg-white rounded-full p-2 shadow-md">
-      //         <div className="w-10 h-10 flex items-center justify-center border-2 border-red-500 rounded-full">
-      //           <span className="text-red-500 text-3xl leading-none">!</span>
-      //         </div>
-      //       </div>
-
-      //       {/* Title */}
-      //       <div className="mt-8 text-center">
-      //         <p className="text-[20px] font-semibold text-[#0A0A0A]">
-      //           Are you sure to Cancel this Loan
-      //         </p>
-      //         <p className="text-[14px] text-[#7C7C7C] mt-1">
-      //           You won’t be able to revert this action
-      //         </p>
-      //       </div>
-
-      //       {/* Add Remark Section with Jodit Editor */}
-      //       <div className="mt-6">
-      //         <label className="text-[15px] font-medium text-[#0A0A0A] mb-2 block">
-      //           Add Remark
-      //         </label>
-      //         <div className="border border-[#BEBEBE] rounded-md overflow-hidden">
-      //           <JoditEditor
-      //             ref={editor}
-      //             value={cancelRemark}
-      //             config={{
-      //               readonly: false,
-      //               height: 180,
-      //               placeholder: "Type your remark here...",
-      //               toolbarAdaptive: false,
-      //               buttons: [
-      //                 "bold",
-      //                 "italic",
-      //                 "underline",
-      //                 "ul",
-      //                 "ol",
-      //                 "link",
-      //                 "eraser",
-      //               ],
-      //             }}
-      //             onBlur={(newContent) => setCancelRemark(newContent)}
-      //           />
-      //         </div>
-      //       </div>
-
-      //       {/* Buttons */}
-      //       <div className="mt-5 flex justify-center gap-4">
-      //         <button
-      //           className="bg-[#0A2478] text-white px-5 py-2 rounded-md text-[15px] font-semibold hover:bg-[#091E5E]"
-      //           onClick={handleDeleteConfirm}
-      //         >
-      //           Submit
-      //         </button>
-      //         <button
-      //           className="bg-[#F11717] text-white px-5 py-2 rounded-md text-[15px] font-semibold hover:bg-[#C70F0F]"
-      //           onClick={() => setDeleteModalOpen(false)}
-      //         >
-      //           Cancel
-      //         </button>
-      //       </div>
-      //     </div>
-      //   </div>
-      // )}
