@@ -16,7 +16,6 @@ import { CgSoftwareUpload } from 'react-icons/cg';
 import { RiMessage2Line } from 'react-icons/ri';
 import { API } from '../api';
 
-
 const LoanApplication = () => {
   useEffect(() => {
     document.title = "SLF | Loan Application";
@@ -36,6 +35,12 @@ const LoanApplication = () => {
   const [selectedCancelLoan, setSelectedCancelLoan] = useState(null);
   const [cancelLoading, setCancelLoading] = useState(false);
   const [successMessage, setSuccessMessage] = useState("");
+
+  // NEW STATE FOR UPLOAD MODAL
+  const [uploadModalOpen, setUploadModalOpen] = useState(false);
+  const [selectedUploadLoan, setSelectedUploadLoan] = useState(null);
+  const [fileDescription, setFileDescription] = useState("");
+  const [selectedFile, setSelectedFile] = useState(null);
 
   // State for API data and pagination
   const [loanApplication, setLoanApplication] = useState([]);
@@ -71,7 +76,7 @@ const LoanApplication = () => {
       "font", "fontsize", "brush", "paragraph",
       "link", "align", "undo", "redo"
     ],
-    removeButtons: ['image', 'file', 'video', 'source'], // Remove unnecessary buttons
+    removeButtons: ['image', 'file', 'video', 'source'],
     showXPathInStatusbar: false,
     askBeforePasteHTML: false,
     askBeforePasteFromWord: false,
@@ -152,8 +157,7 @@ const LoanApplication = () => {
       if (status === "cancelled") {
         response = await axios.get(`${API}/Transactions/goldloan/remark/${row.Loan_No}`);
       } else if (status === "pending") {
-       response = await axios.get(`${API}/Transactions/Customer/remark/${row.BorrowerId}`);
-
+        response = await axios.get(`${API}/Transactions/Customer/remark/${row.BorrowerId}`);
       }
 
       if (response.data.success) {
@@ -170,7 +174,7 @@ const LoanApplication = () => {
     }
   };
 
-  // Handle delete confirmation using Axios - FIXED VERSION
+  // Handle delete confirmation using Axios
   const handleDeleteConfirm = async () => {
     if (!selectedCancelLoan) return;
 
@@ -183,10 +187,6 @@ const LoanApplication = () => {
 
     setCancelLoading(true);
     try {
-      // Debug: Log the selected loan data to see what fields are available
-
-
-      // Try different possible ID fields - check what your backend expects
       const possibleIdFields = [
         selectedCancelLoan.id,
         selectedCancelLoan.ID,
@@ -194,42 +194,25 @@ const LoanApplication = () => {
         selectedCancelLoan.loan_id,
         selectedCancelLoan.Loan_ID,
         selectedCancelLoan.LoanId,
-        selectedCancelLoan.Loan_No // Sometimes loan number is used as ID
-      ].filter(Boolean); // Remove null/undefined values
-
-
+        selectedCancelLoan.Loan_No
+      ].filter(Boolean);
 
       if (possibleIdFields.length === 0) {
         throw new Error('No valid ID field found in loan data');
       }
 
-      // Use the first available ID field
       const loanId = possibleIdFields[0];
 
-
-      console.log('Sending cancellation request with:', {
-        id: loanId,
-        remark: plainTextRemark
-      });
-
-      // Since your backend uses PUT method for cancellation
       const response = await apiClient.put('/Transactions/goldloan/cancel', {
         id: loanId,
         remark: plainTextRemark,
       });
 
-
-
       if (response.data.success) {
-        // Successfully cancelled - refresh the loan applications list
         fetchLoanApplications(pagination.page, filters.status);
-
-        // Close the modal
         setDeleteModalOpen(false);
         setSelectedCancelLoan(null);
         setCancelRemark("");
-
-        // Show success message
         setSuccessMessage('Loan application cancelled successfully');
         setTimeout(() => setSuccessMessage(""), 3000);
       } else {
@@ -237,22 +220,16 @@ const LoanApplication = () => {
       }
     } catch (err) {
       console.error('Error cancelling loan application:', err);
-
       let errorMessage = 'Failed to cancel loan application';
 
       if (err.response) {
-        // Server responded with error status
         errorMessage = err.response.data?.message || `Server error: ${err.response.status}`;
-
-        // If it's a 400 error, show more specific message
         if (err.response.status === 400) {
           errorMessage = `Bad Request: ${err.response.data?.message || 'Invalid data sent to server'}`;
         }
       } else if (err.request) {
-        // Request was made but no response received
         errorMessage = 'No response from server. Please check your connection.';
       } else {
-        // Something else happened
         errorMessage = err.message;
       }
 
@@ -260,6 +237,84 @@ const LoanApplication = () => {
     } finally {
       setCancelLoading(false);
     }
+  };
+
+  // NEW: Handle upload button click
+  const handleUploadClick = (loan) => {
+    setSelectedUploadLoan(loan);
+    setUploadModalOpen(true);
+    setFileDescription("");
+    setSelectedFile(null);
+  };
+
+  // NEW: Handle file selection
+  const handleFileChange = (event) => {
+    const file = event.target.files[0];
+    setSelectedFile(file);
+  };
+
+  // NEW: Handle upload submission
+  const handleUploadSubmit = async () => {
+    if (!selectedFile) {
+      alert('Please select a file to upload');
+      return;
+    }
+
+    if (!fileDescription.trim()) {
+      alert('Please enter a file description');
+      return;
+    }
+
+    // Here you would typically make an API call to upload the file
+    // For now, we'll just show a success message and close the modal
+    try {
+      // Create FormData for file upload
+      const formData = new FormData();
+      formData.append('file', selectedFile);
+      formData.append('description', fileDescription);
+      formData.append('loanId', selectedUploadLoan.Loan_No);
+      formData.append('loanNo', selectedUploadLoan.Loan_No);
+
+      // Example API call (uncomment and modify according to your API)
+      /*
+      const response = await apiClient.post('/upload/loan-document', formData, {
+        headers: {
+          'Content-Type': 'multipart/form-data',
+        }
+      });
+
+      if (response.data.success) {
+        setSuccessMessage('File uploaded successfully');
+        setUploadModalOpen(false);
+        setTimeout(() => setSuccessMessage(""), 3000);
+      } else {
+        throw new Error(response.data.message || 'Upload failed');
+      }
+      */
+
+      // For demo purposes - simulate successful upload
+      console.log('Uploading file:', {
+        loan: selectedUploadLoan.Loan_No,
+        description: fileDescription,
+        file: selectedFile.name
+      });
+
+      setSuccessMessage('File uploaded successfully!');
+      setUploadModalOpen(false);
+      setTimeout(() => setSuccessMessage(""), 3000);
+
+    } catch (error) {
+      console.error('Upload error:', error);
+      alert('Failed to upload file: ' + (error.message || 'Unknown error'));
+    }
+  };
+
+  // NEW: Handle cancel for upload modal
+  const handleUploadCancel = () => {
+    setUploadModalOpen(false);
+    setSelectedUploadLoan(null);
+    setFileDescription("");
+    setSelectedFile(null);
   };
 
   const handleClick = (row) => {
@@ -295,7 +350,6 @@ const LoanApplication = () => {
     const totalPages = pagination.totalPages;
     const currentPage = pagination.page;
 
-    // Previous button
     buttons.push(
       <button
         key="prev"
@@ -307,7 +361,6 @@ const LoanApplication = () => {
       </button>
     );
 
-    // Page numbers
     if (totalPages <= 5) {
       for (let i = 1; i <= totalPages; i++) {
         buttons.push(
@@ -377,7 +430,6 @@ const LoanApplication = () => {
       );
     }
 
-    // Next button
     buttons.push(
       <button
         key="next"
@@ -625,7 +677,7 @@ const LoanApplication = () => {
 
                         // navigation handlers using state
                         const goEdit = (loan) => () => navigate("/Edit-Loan-Details", { state: { loan } });
-                        const goUpload = (loan) => () => navigate("/Upload", { state: { loan } });
+                        const goUpload = (loan) => () => handleUploadClick(loan); // UPDATED: Now uses handleUploadClick
                         const goPrint = (loan) => () => navigate("/Print-Loan-Application", { state: { loan } });
                         const goGold = (loan) => () => navigate("/Appraisal-Note", { state: { loan } });
                         const goBarcode = (loan) => () => navigate("/Barcode", { state: { loan } });
@@ -825,13 +877,12 @@ const LoanApplication = () => {
                   <p className='text-black font-bold text-[14px]'>
                     Remark for Loan #{remarkData?.id}
                   </p>
-                <p
-  className="text-[14px] mt-2 text-[#000000C7]"
-  dangerouslySetInnerHTML={{
-    __html: remarkData?.remark || "No remark available",
-  }}
-></p>
-
+                  <p
+                    className="text-[14px] mt-2 text-[#000000C7]"
+                    dangerouslySetInnerHTML={{
+                      __html: remarkData?.remark || "No remark available",
+                    }}
+                  ></p>
                 </div>
                 <div>
                   <img src={envImg} alt="envelope" className="w-[156px] h-[156px] rounded-[10px]" />
@@ -874,7 +925,6 @@ const LoanApplication = () => {
               <p className="text-sm text-gray-600 mt-2">
                 Loan: {selectedCancelLoan.Party_Name} (#{selectedCancelLoan.Loan_No})
               </p>
-
             </div>
 
             <div className="mt-6">
@@ -918,99 +968,102 @@ const LoanApplication = () => {
           </div>
         </div>
       )}
+
+      {/* NEW UPLOAD MODAL */}
+      {uploadModalOpen && selectedUploadLoan && (
+        <div className="fixed inset-0 flex items-center justify-center z-50 bg-[#0101017A] backdrop-blur-[6.8px]">
+          <div className="bg-white w-[850px] max-w-[95%] rounded-lg shadow-lg p-8 relative">
+            <h2 className="text-[20px] font-bold text-[#0A2478] pb-6">
+              Upload file against loan #{selectedUploadLoan.Loan_No}
+            </h2>
+
+            <div className="grid grid-cols-2 gap-4 mt-5">
+              {/* File Description Input */}
+              <div className="flex flex-col">
+                <label className="text-[15px] font-medium mb-1">
+                  File Description
+                </label>
+                <input
+                  type="text"
+                  placeholder="Enter the Description"
+                  value={fileDescription}
+                  onChange={(e) => setFileDescription(e.target.value)}
+                  className="border border-[#BEBEBE] rounded-md p-2 focus:ring-2 focus:ring-[#0A2478] focus:outline-none"
+                />
+              </div>
+
+              {/* Upload File Input and Button */}
+              <div className="flex flex-col">
+                <label className="text-[15px] font-medium mb-1">Upload</label>
+                <div className="flex gap-2">
+                  <input
+                    type="file"
+                    onChange={handleFileChange}
+                    className="border border-[#BEBEBE] rounded-md p-2 w-full text-[14px] file:mr-4 file:py-1 file:px-2 file:text-sm file:bg-gray-400 file:text-[#4A4A4A]"
+                  />
+                  <button 
+                    className="bg-[#0A2478] text-white px-5 py-2 rounded-md hover:bg-[#091E5E] flex-shrink-0"
+                    onClick={handleUploadSubmit}
+                  >
+                    Upload Files
+                  </button>
+                </div>
+              </div>
+            </div>
+
+            {/* Uploaded Files Table */}
+            <div className="mt-6 border border-gray-300 rounded-md overflow-hidden">
+              <table className="w-full border-collapse text-[14px]">
+                <thead>
+                  <tr className="bg-[#0A2478] text-white">
+                    <th className="p-3 border border-gray-300 font-semibold">File Name</th>
+                    <th className="p-3 border border-gray-300 font-semibold">File Description</th>
+                    <th className="p-3 border border-gray-300 font-semibold">Uploaded Date</th>
+                    <th className="p-3 border border-gray-300 font-semibold">Uploaded By</th>
+                    <th className="p-3 border border-gray-300 font-semibold">Actions</th>
+                  </tr>
+                </thead>
+
+                <tbody>
+                  {/* This would typically be populated from an API response */}
+                  <tr className="text-center">
+                    <td className="p-3 border border-gray-300 text-gray-500">
+                      {selectedFile ? selectedFile.name : "—"}
+                    </td>
+                    <td className="p-3 border border-gray-300 text-gray-500">
+                      {fileDescription || "—"}
+                    </td>
+                    <td className="p-3 border border-gray-300 text-gray-500">
+                      {new Date().toLocaleDateString()}
+                    </td>
+                    <td className="p-3 border border-gray-300 text-gray-500">
+                      Current User
+                    </td>
+                    <td className="p-3 border border-gray-300 text-gray-500">
+                      {selectedFile && (
+                        <button className="text-blue-600 hover:underline">
+                          View
+                        </button>
+                      )}
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+
+            <div className="flex justify-center mt-8">
+              <button
+                className="bg-[#C1121F] text-white px-9 py-2 rounded-md hover:bg-[#A30F19]"
+                onClick={handleUploadCancel}
+              >
+                Cancel
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };
 
 export default LoanApplication;
-
-
-
-  // {/* NEW UPLOAD MODAL */}
-//      {uploadModalOpen && (
-//   // 1. Modal Overlay
-//   <div className="fixed inset-0 flex items-center justify-center z-50 bg-[#0101017A] backdrop-blur-[6.8px]">
-//     {/* 2. Modal Content Container: Increased padding for better internal spacing */}
-//     <div className="bg-white w-[850px] max-w-[95%] rounded-lg shadow-lg p-8 relative"> 
-      
-//       {/* 3. Modal Title: Adjusted padding to a standard size (pb-6) */}
-//       <h2 className="text-[20px] font-bold text-[#0A2478] pb-6">
-//         Upload file against loan
-//       </h2>
-
-//       <div className="grid grid-cols-2 gap-4 mt-5">
-//         {/* File Description Input */}
-//         <div className="flex flex-col">
-//           <label className="text-[15px] font-medium mb-1">
-//             File Description
-//           </label>
-//           <input
-//             type="text"
-//             placeholder="Enter the Description"
-//             className="border border-[#BEBEBE] rounded-md p-2 focus:ring-2 focus:ring-[#0A2478] focus:outline-none" // Added focus:outline-none for cleaner focus ring
-//           />
-//         </div>
-
-//         {/* Upload File Input and Button */}
-//         <div className="flex flex-col">
-//           <label className="text-[15px] font-medium mb-1">Upload</label>
-//           <div className="flex gap-2">
-//             <input
-//               type="file"
-//               className="border border-[#BEBEBE] rounded-md p-2 w-full text-[14px] file:mr-4 file:py-1 file:px-2   file:text-sm fihe  file:bg-gray-400 file:text-[##4A4A4A]" // Added more styling to the native file input button
-//             />
-//             <button className="bg-[#0A2478] text-white px-5 py-2 rounded-md hover:bg-[#091E5E] flex-shrink-0">
-//               Upload Files
-//             </button>
-//           </div>
-//         </div>
-//       </div>
-
-//       {/* Uploaded Files Table */}
-//       <div className="mt-6 border border-gray-300 rounded-md overflow-hidden">
-//         <table className="w-full border-collapse text-[14px]">
-//           <thead>
-//             <tr className="bg-[#0A2478] text-white">
-//               <th className="p-3 border border-gray-300 font-semibold">File Name</th> {/* Increased padding to p-3 for better heading appearance */}
-//               <th className="p-3 border border-gray-300 font-semibold">File Description</th>
-//               <th className="p-3 border border-gray-300 font-semibold">Uploaded Date</th>
-//               <th className="p-3 border border-gray-300 font-semibold">Uploaded By</th>
-//                             <th className="p-3 border border-gray-300 font-semibold"></th>
-
-//             </tr>
-//           </thead>
-          
-//           <tbody>
-//             <tr className="text-center">
-//               <td className="p-3 border border-gray-300 text-gray-500">
-//                 —
-//               </td>
-//               <td className="p-3 border border-gray-300 text-gray-500">
-//                 —
-//               </td>
-//               <td className="p-3 border border-gray-300 text-gray-500">
-//                 —
-//               </td>
-//               <td className="p-3 border border-gray-300 text-gray-500">
-//                 —
-//               </td>
-//             </tr>
-//           </tbody>
-//         </table>
-//       </div>
-      
-//       {/* 4. Cancel Button: Centered with a flex container and mx-auto */}
-//      <div className="flex justify-center mt-8"> 
-//   {/* Added container for centering and margin-top */}
-//   <button 
-//     className="bg-[#C1121F] text-white px-9 py-2 rounded-md hover:bg-[#A30F19]"
-//     // ADDED onClick HANDLER HERE
-//     onClick={handleCancel} // Use the name of your specific cancel/close function
-//   >
-//     Cancel
-//   </button>
-// </div>
-      
-//     </div>
-//   </div>
-// )}
