@@ -36,11 +36,14 @@ const LoanApplication = () => {
   const [cancelLoading, setCancelLoading] = useState(false);
   const [successMessage, setSuccessMessage] = useState("");
 
-  // NEW STATE FOR UPLOAD MODAL
+  // UPLOAD MODAL STATE
   const [uploadModalOpen, setUploadModalOpen] = useState(false);
   const [selectedUploadLoan, setSelectedUploadLoan] = useState(null);
   const [fileDescription, setFileDescription] = useState("");
   const [selectedFile, setSelectedFile] = useState(null);
+  const [uploadLoading, setUploadLoading] = useState(false);
+  const [uploadedDocuments, setUploadedDocuments] = useState([]);
+  const [documentsLoading, setDocumentsLoading] = useState(false);
 
   // State for API data and pagination
   const [loanApplication, setLoanApplication] = useState([]);
@@ -122,6 +125,25 @@ const LoanApplication = () => {
       setLoanApplication([]);
     } finally {
       setLoading(false);
+    }
+  };
+
+  // Fetch uploaded documents for a loan
+  const fetchLoanDocuments = async (loanId) => {
+    setDocumentsLoading(true);
+    try {
+      const response = await apiClient.get(`/Transactions/get-loan-documents/${loanId}`);
+      
+      if (response.data.success) {
+        setUploadedDocuments(response.data.data || []);
+      } else {
+        throw new Error(response.data.message || "Failed to fetch documents");
+      }
+    } catch (err) {
+      console.error("Error fetching loan documents:", err);
+      setUploadedDocuments([]);
+    } finally {
+      setDocumentsLoading(false);
     }
   };
 
@@ -239,21 +261,24 @@ const LoanApplication = () => {
     }
   };
 
-  // NEW: Handle upload button click
-  const handleUploadClick = (loan) => {
+  // Handle upload button click
+  const handleUploadClick = async (loan) => {
     setSelectedUploadLoan(loan);
     setUploadModalOpen(true);
     setFileDescription("");
     setSelectedFile(null);
+    
+    // Fetch existing documents when modal opens
+    await fetchLoanDocuments(loan.Loan_No);
   };
 
-  // NEW: Handle file selection
+  // Handle file selection
   const handleFileChange = (event) => {
     const file = event.target.files[0];
     setSelectedFile(file);
   };
 
-  // NEW: Handle upload submission
+  // Handle upload submission
   const handleUploadSubmit = async () => {
     if (!selectedFile) {
       alert('Please select a file to upload');
@@ -265,56 +290,69 @@ const LoanApplication = () => {
       return;
     }
 
-    // Here you would typically make an API call to upload the file
-    // For now, we'll just show a success message and close the modal
+    setUploadLoading(true);
     try {
-      // Create FormData for file upload
       const formData = new FormData();
-      formData.append('file', selectedFile);
-      formData.append('description', fileDescription);
-      formData.append('loanId', selectedUploadLoan.Loan_No);
-      formData.append('loanNo', selectedUploadLoan.Loan_No);
+      formData.append('document', selectedFile);
+      formData.append('loan_id', selectedUploadLoan.Loan_No);
+      formData.append('file_description', fileDescription);
+      formData.append('uploaded_by', 'Admin'); // You can replace this with actual user data
 
-      // Example API call (uncomment and modify according to your API)
-      /*
-      const response = await apiClient.post('/upload/loan-document', formData, {
+      const response = await apiClient.post('/Transactions/goldloan/add-loan-document', formData, {
         headers: {
           'Content-Type': 'multipart/form-data',
         }
       });
 
       if (response.data.success) {
-        setSuccessMessage('File uploaded successfully');
-        setUploadModalOpen(false);
+        setSuccessMessage('File uploaded successfully!');
+        setFileDescription("");
+        setSelectedFile(null);
+        
+        // Refresh the documents list
+        await fetchLoanDocuments(selectedUploadLoan.Loan_No);
+        
+        // Clear file input
+        const fileInput = document.querySelector('input[type="file"]');
+        if (fileInput) fileInput.value = '';
+        
         setTimeout(() => setSuccessMessage(""), 3000);
       } else {
         throw new Error(response.data.message || 'Upload failed');
       }
-      */
-
-      // For demo purposes - simulate successful upload
-      console.log('Uploading file:', {
-        loan: selectedUploadLoan.Loan_No,
-        description: fileDescription,
-        file: selectedFile.name
-      });
-
-      setSuccessMessage('File uploaded successfully!');
-      setUploadModalOpen(false);
-      setTimeout(() => setSuccessMessage(""), 3000);
-
     } catch (error) {
       console.error('Upload error:', error);
-      alert('Failed to upload file: ' + (error.message || 'Unknown error'));
+      let errorMessage = 'Failed to upload file';
+      
+      if (error.response) {
+        errorMessage = error.response.data?.message || `Server error: ${error.response.status}`;
+      } else if (error.request) {
+        errorMessage = 'No response from server. Please check your connection.';
+      } else {
+        errorMessage = error.message;
+      }
+      
+      alert(`Error: ${errorMessage}`);
+    } finally {
+      setUploadLoading(false);
     }
   };
 
-  // NEW: Handle cancel for upload modal
+  // Handle document download/view
+  const handleDocumentAction = (document) => {
+    // Since the document field contains the filename/path, you can construct the URL
+    // Adjust this based on how you serve uploaded files
+    const fileUrl = `${API}/ImagesFolders/loan_documents/${document.document}`; // Adjust path as needed
+    window.open(fileUrl, '_blank');
+  };
+
+  // Handle cancel for upload modal
   const handleUploadCancel = () => {
     setUploadModalOpen(false);
     setSelectedUploadLoan(null);
     setFileDescription("");
     setSelectedFile(null);
+    setUploadedDocuments([]);
   };
 
   const handleClick = (row) => {
@@ -342,6 +380,17 @@ const LoanApplication = () => {
 
   const getStatusText = (status) => {
     return status?.charAt(0).toUpperCase() + status?.slice(1).toLowerCase() || "Unknown";
+  };
+
+  // Format date for display
+  const formatDate = (dateString) => {
+    if (!dateString) return '—';
+    try {
+      const date = new Date(dateString);
+      return date.toLocaleDateString('en-IN');
+    } catch {
+      return dateString;
+    }
   };
 
   // Generate pagination buttons
@@ -677,7 +726,7 @@ const LoanApplication = () => {
 
                         // navigation handlers using state
                         const goEdit = (loan) => () => navigate("/Edit-Loan-Details", { state: { loan } });
-                        const goUpload = (loan) => () => handleUploadClick(loan); // UPDATED: Now uses handleUploadClick
+                        const goUpload = (loan) => () => handleUploadClick(loan);
                         const goPrint = (loan) => () => navigate("/Print-Loan-Application", { state: { loan } });
                         const goGold = (loan) => () => navigate("/Appraisal-Note", { state: { loan } });
                         const goBarcode = (loan) => () => navigate("/Barcode", { state: { loan } });
@@ -915,7 +964,8 @@ const LoanApplication = () => {
               </div>
             </div>
 
- <div className="mt-15 text-center">              <p className="text-[20px] font-semibold text-[#0A0A0A]">
+            <div className="mt-15 text-center">
+              <p className="text-[20px] font-semibold text-[#0A0A0A]">
                 Are you sure to Cancel this Loan?
               </p>
               <p className="text-[14px] text-[#7C7C7C] mt-1">
@@ -968,7 +1018,7 @@ const LoanApplication = () => {
         </div>
       )}
 
-      {/* NEW UPLOAD MODAL */}
+      {/* UPLOAD MODAL */}
       {uploadModalOpen && selectedUploadLoan && (
         <div className="fixed inset-0 flex items-center justify-center z-50 bg-[#0101017A] backdrop-blur-[6.8px]">
           <div className="bg-white w-[850px] max-w-[95%] rounded-lg shadow-lg p-8 relative">
@@ -1001,10 +1051,11 @@ const LoanApplication = () => {
                     className="border border-[#BEBEBE] rounded-md p-2 w-full text-[14px] file:mr-4 file:py-1 file:px-2 file:text-sm file:bg-gray-400 file:text-[#4A4A4A]"
                   />
                   <button 
-                    className="bg-[#0A2478] text-white px-5 py-2 rounded-md hover:bg-[#091E5E] flex-shrink-0"
+                    className="bg-[#0A2478] text-white px-5 py-2 rounded-md hover:bg-[#091E5E] flex-shrink-0 disabled:opacity-50"
                     onClick={handleUploadSubmit}
+                    disabled={uploadLoading || !selectedFile || !fileDescription.trim()}
                   >
-                    Upload Files
+                    {uploadLoading ? "Uploading..." : "Upload Files"}
                   </button>
                 </div>
               </div>
@@ -1024,28 +1075,44 @@ const LoanApplication = () => {
                 </thead>
 
                 <tbody>
-                  {/* This would typically be populated from an API response */}
-                  <tr className="text-center">
-                    <td className="p-3 border border-gray-300 text-gray-500">
-                      {selectedFile ? selectedFile.name : "—"}
-                    </td>
-                    <td className="p-3 border border-gray-300 text-gray-500">
-                      {fileDescription || "—"}
-                    </td>
-                    <td className="p-3 border border-gray-300 text-gray-500">
-                      {new Date().toLocaleDateString()}
-                    </td>
-                    <td className="p-3 border border-gray-300 text-gray-500">
-                      Current User
-                    </td>
-                    <td className="p-3 border border-gray-300 text-gray-500">
-                      {selectedFile && (
-                        <button className="text-blue-600 hover:underline">
-                          View
-                        </button>
-                      )}
-                    </td>
-                  </tr>
+                  {documentsLoading ? (
+                    <tr>
+                      <td colSpan="5" className="p-4 text-center text-gray-500">
+                        Loading documents...
+                      </td>
+                    </tr>
+                  ) : uploadedDocuments.length === 0 ? (
+                    <tr>
+                      <td colSpan="5" className="p-4 text-center text-gray-500">
+                        No documents uploaded yet
+                      </td>
+                    </tr>
+                  ) : (
+                    uploadedDocuments.map((doc) => (
+                      <tr key={doc.id} className="hover:bg-gray-50">
+                        <td className="p-3 border border-gray-300">
+                          {doc.file_name}
+                        </td>
+                        <td className="p-3 border border-gray-300">
+                          {doc.file_description || "—"}
+                        </td>
+                        <td className="p-3 border border-gray-300">
+                          {formatDate(doc.uploaded_date)}
+                        </td>
+                        <td className="p-3 border border-gray-300">
+                          {doc.uploaded_by || "System"}
+                        </td>
+                        <td className="p-3 border border-gray-300">
+                          <button 
+                            className="text-blue-600 hover:underline"
+                            onClick={() => handleDocumentAction(doc)}
+                          >
+                            View
+                          </button>
+                        </td>
+                      </tr>
+                    ))
+                  )}
                 </tbody>
               </table>
             </div>
@@ -1054,8 +1121,9 @@ const LoanApplication = () => {
               <button
                 className="bg-[#C1121F] text-white px-9 py-2 rounded-md hover:bg-[#A30F19]"
                 onClick={handleUploadCancel}
+                disabled={uploadLoading}
               >
-                Cancel
+                Close
               </button>
             </div>
           </div>
