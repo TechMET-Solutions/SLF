@@ -1,16 +1,16 @@
+import axios from "axios";
 import { useEffect, useRef, useState } from "react";
 import { FaPaperclip } from "react-icons/fa";
 import { FiEdit, FiEye, FiTrash2 } from "react-icons/fi";
+import { API } from "../api";
 import {
-  createEmployeeApi,
   deleteEmployeeApi,
-  fetchEmployeeProfileApi,
-  updateEmployeeApi,
-  updateEmployeeStatusApi
+  fetchEmployeeProfileApi
 } from "../API/Master/Employee_Profile/EmployeeProfile";
 import blockimg from "../assets/blockimg.png";
 import profileempty from "../assets/profileempty.png";
 import Pagination from "../Component/Pagination";
+import { encryptData } from "../utils/cryptoHelper";
 
 const EmployeeProfile = () => {
 
@@ -20,9 +20,10 @@ const EmployeeProfile = () => {
 
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [employeeList, setEmployeeList] = useState([]);
+  console.log(employeeList,"employeeList")
   const [isLoading, setIsLoading] = useState(false);
   const [isEditMode, setIsEditMode] = useState(false);
-  const [isViewMode, setIsViewMode] = useState(false);
+  const [isViewDocumentHistory, setIsDocumentHistory] = useState(false);
   const [deleteModalOpen, setDeleteModalOpen] = useState(false);
   const [deleteId, setDeleteId] = useState(null);
   const [searchTerm, setSearchTerm] = useState({ empId: "", empName: "" });
@@ -32,9 +33,11 @@ const EmployeeProfile = () => {
     panFile:null,
     pan_card: "",
     aadhar_card: "",
+    aadharFile: null,
     emp_name: "",
     emp_id: "",
     mobile_no: "",
+    Alternate_Mobile:"",
     email: "",
     print_name: "",
     corresponding_address: "",
@@ -46,11 +49,10 @@ const EmployeeProfile = () => {
     assign_role: "",
     password: "",
     fax: "",
-    emp_image: "",
-    emp_add_prof: "",
-    emp_id_prof: "",
     status: true,
   });
+
+  console.log(formData,"formData")
   const panFileInputRef = useRef(null);
   const handlePanFileChange = (e) => {
     const file = e.target.files[0];
@@ -61,16 +63,27 @@ const EmployeeProfile = () => {
       }));
     }
   };
+  const aadharFileInputRef = useRef(null);
+  const handleAadharFileChange = (e) => {
+    const file = e.target.files[0];
+    if (file) {
+      setFormData((prev) => ({
+        ...prev,
+        aadharFile: file,
+      }));
+    }
+  };
   // File states
   const [profileImage, setProfileImage] = useState(null);
   const [addressProof, setAddressProof] = useState(null);
   const [idProof, setIdProof] = useState(null);
-
+console.log(addressProof,idProof,profileImage)
   // Pagination states
   const [currentPage, setCurrentPage] = useState(1);
   const [totalItems, setTotalItems] = useState(0);
   const [showPagination, setShowPagination] = useState(false);
   const itemsPerPage = 10;
+  const [mode, setMode] = useState("add");
 
   // 🔹 Pagination Controls
   const totalPages = Math.ceil(totalItems / itemsPerPage);
@@ -86,6 +99,20 @@ const EmployeeProfile = () => {
     const file = e.target.files[0];
     setProfileImage(file);
     setFormData((prev) => ({ ...prev, emp_image: file.name }));
+  };
+
+   const handleFileChangeForAddProof = (e, setAddressProof) => {
+    if (!e?.target?.files?.[0]) return; // safety check
+    const file = e.target.files[0];
+    setAddressProof(file);
+    setFormData((prev) => ({ ...prev, emp_add_prof: file.name }));
+  };
+
+   const handleFileChangeForIdProof = (e, setIdProof) => {
+    if (!e?.target?.files?.[0]) return; // safety check
+    const file = e.target.files[0];
+    setIdProof(file);
+    setFormData((prev) => ({ ...prev, emp_id_prof: file.name }));
   };
 
   // ✅ Fetch employee list
@@ -115,16 +142,45 @@ const EmployeeProfile = () => {
     fetchEmployee();
   }, []);
 
-  const handleToggleStatus = async (item) => {
-    try {
-      const newStatus = item.status === 1 ? 0 : 1;
-      await updateEmployeeStatusApi(item.id, newStatus);
-      fetchEmployee(currentPage);
-    } catch (error) {
-      console.error("❌ Error toggling status:", error);
-    }
-  };
+  const updateEmployeeStatus = async (id, status) => {
+    debugger
+  try {
+    const payload = { id, status };
+    const encryptedData = encryptData(JSON.stringify(payload));
 
+    const res = await axios.post(`${API}/Master/updateEmployeeStatus`, {
+      data: encryptedData,
+    });
+
+    return res.data;
+  } catch (error) {
+    console.error("Error updating employee status:", error);
+  }
+  };
+  
+
+
+ const handleToggleStatus = async (emp) => {
+  try {
+    // 🧩 Flip the current status (1 → 0 or 0 → 1)
+    const newStatus = emp.status ? 0 : 1;
+
+    // 📨 Call backend API
+    const response = await updateEmployeeStatus(emp.id, newStatus);
+
+    // 🔐 If response is encrypted, decrypt it (if needed)
+    console.log("✅ Status updated response:", response);
+
+    // 🧠 Update the state to reflect new status instantly
+    setEmployeeList((prev) =>
+      prev.map((e) =>
+        e.id === emp.id ? { ...e, status: newStatus } : e
+      )
+    );
+  } catch (error) {
+    console.error("❌ Error toggling employee status:", error);
+  }
+};
   // 🗑️ Show delete confirmation modal
   const handleDeleteClick = (id) => {
     setDeleteId(id);
@@ -144,26 +200,20 @@ const EmployeeProfile = () => {
     }
   };
 
-
-
   const handleView = (employee) => {
-    setIsViewMode(true);
-    setFormData(employee);
-    setIsModalOpen(true);
-  };
+  setMode("view");
+  setFormData(employee);
+  setIsModalOpen(true);
+};
+
+const handleEdit = (employee) => {
+  setMode("edit");
+  setFormData(employee);
+  setIsModalOpen(true);
+};
 
 
-  // ✏️ Handle Edit
-  const handleEdit = (employee) => {
-    setIsEditMode(true);
-    setFormData({
-      ...employee,
-      password: "", // Don't pre-fill password for security
-    });
-    setIsModalOpen(true);
-  };
 
-  // ➕ Handle Add New
   const handleAddNew = () => {
     setIsEditMode(false);
     setFormData({
@@ -173,6 +223,7 @@ const EmployeeProfile = () => {
       emp_name: "",
       emp_id: "",
       mobile_no: "",
+      Alternate_MobileL:"",
       email: "",
       print_name: "",
       corresponding_address: "",
@@ -195,49 +246,99 @@ const EmployeeProfile = () => {
     setIsModalOpen(true);
   };
 
-  // 💾 Handle Save/Update
-  const handleSave = async () => {
-    try {
-      const payload = {
-        pan_card: formData.pan_card,
-        aadhar_card: formData.aadhar_card,
-        emp_name: formData.emp_name,
-        emp_id: formData.emp_id,
-        mobile_no: formData.mobile_no,
-        email: formData.email,
-        print_name: formData.print_name,
-        corresponding_address: formData.corresponding_address,
-        permanent_address: formData.permanent_address,
-        branch: formData.branch,
-        joining_date: formData.joining_date,
-        designation: formData.designation,
-        date_of_birth: formData.date_of_birth,
-        assign_role: formData.assign_role,
-        password: formData.password,
-        fax: formData.fax,
-        emp_image: formData.emp_image,
-        emp_add_prof: formData.emp_add_prof,
-        emp_id_prof: formData.emp_id_prof,
-        status: formData.status,
-      };
-      if (isEditMode && formData.id) {
-        payload.id = formData.id;
-        await updateEmployeeApi(payload);
-        alert("Employee updated successfully");
-      } else {
-        await createEmployeeApi(payload);
-        alert("Employee created successfully");
-      }
+ 
 
-      setIsModalOpen(false);
-      fetchEmployee(currentPage);
-    } catch (error) {
-      console.error("❌ Error saving employee:", error);
-      alert(error.response?.data?.message || "Error saving employee");
-    } finally {
-      setIsLoading(false);
-    }
-  };
+  const handleSave = async () => {
+  try {
+    const payload = {
+      pan_card: formData.pan_card,
+      aadhar_card: formData.aadhar_card,
+      emp_name: formData.emp_name,
+      mobile_no: formData.mobile_no,
+      Alternate_Mobile:formData.Alternate_Mobile,
+      email: formData.email,
+      corresponding_address: formData.corresponding_address,
+      permanent_address: formData.permanent_address,
+      branch: formData.branch,
+      joining_date: formData.joining_date,
+      designation: formData.designation,
+      date_of_birth: formData.date_of_birth,
+      assign_role: formData.assign_role,
+      password: formData.password,
+      fax: formData.fax,
+      status: formData.status,
+    };
+
+    // Encrypt payload
+    const encryptedData = encryptData(JSON.stringify(payload));
+
+    const formDataToSend = new FormData();
+    formDataToSend.append("data", encryptedData);
+    if (profileImage) formDataToSend.append("emp_image", profileImage);
+    if (addressProof) formDataToSend.append("emp_add_prof", addressProof);
+    if (idProof) formDataToSend.append("emp_id_prof", idProof);
+
+    await axios.post(`${API}/Master/Employee_Profile/add-employee`, formDataToSend, {
+      headers: { "Content-Type": "multipart/form-data" },
+    });
+
+    alert("Employee created successfully");
+    setIsModalOpen(false)
+    fetchEmployee(currentPage);
+  } catch (error) {
+    console.error("❌ Error saving employee:", error);
+    alert(error.response?.data?.message || "Error saving employee");
+  } finally {
+    setIsLoading(false);
+  }
+};
+
+  const handleUpdate = async () => {
+    debugger
+  try {
+    const payload = {
+      id: formData.id,
+      pan_card: formData.pan_card,
+      aadhar_card: formData.aadhar_card,
+      emp_name: formData.emp_name,
+      mobile_no: formData.mobile_no,
+      Alternate_Mobile:formData.Alternate_Mobile,
+      email: formData.email,
+      corresponding_address: formData.corresponding_address,
+      permanent_address: formData.permanent_address,
+      branch: formData.branch,
+      joining_date: formData.joining_date,
+      designation: formData.designation,
+      date_of_birth: formData.date_of_birth,
+      assign_role: formData.assign_role,
+      password: formData.password,
+      fax: formData.fax,
+      status: formData.status,
+    };
+
+    const encryptedData = encryptData(JSON.stringify(payload));
+
+    const formDataToSend = new FormData();
+    formDataToSend.append("data", encryptedData);
+
+    // Append only changed files
+    if (profileImage) formDataToSend.append("emp_image", profileImage);
+    if (addressProof) formDataToSend.append("emp_add_prof", addressProof);
+    if (idProof) formDataToSend.append("emp_id_prof", idProof);
+
+    await axios.put(`${API}/Master/Employee_Profile/update-employee`, formDataToSend, {
+      headers: { "Content-Type": "multipart/form-data" },
+    });
+
+    alert("Employee updated successfully!");
+     setIsModalOpen(false)
+    fetchEmployee(currentPage);
+  } catch (err) {
+    console.error("Error updating employee:", err);
+    alert(err.response?.data?.message || "Error updating employee");
+  }
+};
+
 
   // 🔍 Handle Search
   const handleSearch = () => {
@@ -253,7 +354,30 @@ const EmployeeProfile = () => {
       [name]: type === 'checkbox' ? checked : value
     }));
   };
+ const handleForceDownload = async (fileUrl, filename) => {
+    try {
+      // Fetch the file as a blob (binary data)
+      const response = await fetch(fileUrl, { mode: "cors" });
+      const blob = await response.blob();
 
+      // Create a temporary object URL
+      const blobUrl = window.URL.createObjectURL(blob);
+
+      // Create a temporary link element
+      const link = document.createElement("a");
+      link.href = blobUrl;
+      link.download = filename || "document";
+      document.body.appendChild(link);
+      link.click();
+
+      // Cleanup
+      link.remove();
+      window.URL.revokeObjectURL(blobUrl);
+    } catch (error) {
+      console.error("❌ Error downloading file:", error);
+      alert("Failed to download file.");
+    }
+  };
 
 
   return (
@@ -319,31 +443,15 @@ const EmployeeProfile = () => {
             <div className="bg-white w-[1183px] max-h-[90vh] rounded-lg shadow-lg p-6 overflow-y-auto">
               {/* Title */}
               <h2 className="text-[#0A2478] text-[20px] font-semibold mb-6">
-                {isEditMode ? "Edit Employee Profile" : "Add Employee Profile"}
+                {mode==="edit" ? "Edit Employee Profile" : "Add Employee Profile"}
               </h2>
 
-              <div className="flex gap-6">
+              <div className="flex gap-2">
                 {/* Left Form */}
-                <div className="w-3/4 space-y-4 text-sm">
+                <div className=" space-y-4 text-sm">
                   {/* PAN + Aadhaar + Name */}
-                  <div className="grid grid-cols-3 gap-4">
-                    {/* PAN */}
-                    {/* <div className="flex flex-col gap-1">
-                      <label className="text-gray-700 font-medium">Pan Card Number*</label>
-                      <div className="flex">
-                        <input
-                          type="text"
-                          name="pan_card"
-                          value={formData.pan_card}
-                          onChange={handleInputChange}
-                          placeholder="PAN Card Number"
-                          className="border border-[#C4C4C4] rounded-l-md px-3 py-2 w-full focus:outline-none focus:ring-1 focus:ring-blue-500"
-                        />
-                        <button className="bg-[#0A2478] text-white px-3 py-2 rounded-r-md hover:bg-[#081c5b]">
-                          Verify
-                        </button>
-                      </div>
-                    </div> */}
+                  <div className="flex gap-2">
+                   
  <div className="flex flex-col">
                 <label className="text-[14px] font-medium">PAN No.</label>
                 <div className="flex items-center mt-1 w-[220px]">
@@ -351,8 +459,9 @@ const EmployeeProfile = () => {
                     <input
                       type="text"
                       placeholder="Enter PAN"
-                      name="panNo"
-                      value={formData.panNo}
+                            name="pan_card"
+                            disabled={mode === "view"}
+                      value={formData.pan_card}
                       onChange={handleInputChange}
                       className="border border-[#C4C4C4] border-r-0 rounded-l px-3 py-2 w-full pr-10 focus:outline-none focus:ring-1 focus:ring-blue-500 bg-white"
                     />
@@ -361,7 +470,8 @@ const EmployeeProfile = () => {
                     <input
                       type="file"
                       accept="image/*,.pdf"
-                      ref={panFileInputRef}
+                            ref={panFileInputRef}
+                             disabled={mode === "view"}
                       onChange={handlePanFileChange}
                       className="hidden"
                     />
@@ -390,7 +500,7 @@ const EmployeeProfile = () => {
                 )}
               </div>
                     {/* Aadhaar */}
-                    <div className="flex flex-col gap-1">
+                    {/* <div className="flex flex-col gap-1">
                       <label className="text-gray-700 font-medium">Aadhar Card Number*</label>
                       <div className="flex">
                         <input
@@ -405,7 +515,54 @@ const EmployeeProfile = () => {
                           Verify
                         </button>
                       </div>
-                    </div>
+                    </div> */}
+                    <div className="flex flex-col">
+                <label className="text-[14px] font-medium">Aadhar Card Number.</label>
+                <div className="flex items-center mt-1 w-[300px]">
+                  <div className="relative flex-1">
+                    <input
+                      type="text"
+                      placeholder="Enter Aadhar Number"
+                            name="aadhar_card"
+                             disabled={mode === "view"}
+                      value={formData.aadhar_card}
+                      onChange={handleInputChange}
+                      className="border border-[#C4C4C4] border-r-0 rounded-l px-3 py-2 w-full pr-10 focus:outline-none focus:ring-1 focus:ring-blue-500 bg-white"
+                    />
+
+                    {/* Hidden file input */}
+                    <input
+                      type="file"
+                      accept="image/*,.pdf"
+                            ref={aadharFileInputRef}
+                             disabled={mode === "view"}
+                      onChange={handleAadharFileChange}
+                      className="hidden"
+                    />
+
+                    {/* Paperclip icon triggers file selection */}
+                    <FaPaperclip
+                      className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 cursor-pointer"
+                      size={16}
+                      onClick={() => aadharFileInputRef.current.click()}
+                    />
+                  </div>
+
+                  <button
+                    className="bg-[#0A2478] text-white px-5 py-2 rounded-r border border-gray-300 border-l-0 hover:bg-[#081c5b]"
+                    type="button"
+                  >
+                    Verify
+                  </button>
+                </div>
+
+                {/* Show selected file name */}
+                {formData.aadharFile && (
+                  <p className="text-xs text-gray-500 mt-1">
+                    Selected file: {formData.aadharFile.name}
+                  </p>
+                )}
+              </div>
 
                     {/* Name */}
                     <div className="flex flex-col gap-1">
@@ -414,33 +571,37 @@ const EmployeeProfile = () => {
                         type="text"
                         name="emp_name"
                         value={formData.emp_name}
+                         disabled={mode === "view"}
                         onChange={handleInputChange}
                         placeholder="Name"
-                        className="border border-[#C4C4C4] rounded-md px-3 py-2 focus:outline-none focus:ring-1 focus:ring-blue-500"
+                        className="border border-[#C4C4C4] rounded-md px-3 py-2 focus:outline-none focus:ring-1 focus:ring-blue-500 w-[226px]"
                       />
                     </div>
                   </div>
 
                   {/* Employee ID, Mobile, Email */}
-                  <div className="grid grid-cols-3 gap-4">
-                    <div className="flex flex-col gap-1">
-                      <label className="text-gray-700 font-medium">Employee ID*</label>
-                      <input
-                        type="text"
-                        name="emp_id"
-                        value={formData.emp_id}
-                        onChange={handleInputChange}
-                        placeholder="Employee ID"
-                        className="border border-[#C4C4C4] rounded-md px-3 py-2 focus:outline-none focus:ring-1 focus:ring-blue-500"
-                      />
-                    </div>
+                  <div className="flex gap-2">
+                   
                     <div className="flex flex-col gap-1">
                       <label className="text-gray-700 font-medium">Mobile No*</label>
                       <input
                         type="text"
                         name="mobile_no"
                         value={formData.mobile_no}
+                         disabled={mode === "view"}
                         onChange={handleInputChange}
+                        placeholder="Mobile No"
+                        className="border border-[#C4C4C4] rounded-md px-3 py-2 focus:outline-none focus:ring-1 focus:ring-blue-500"
+                      />
+                    </div>
+                     <div className="flex flex-col gap-1">
+                      <label className="text-gray-700 font-medium">Alternate Mobile No*</label>
+                      <input
+                        type="text"
+                        name="Alternate_Mobile"
+                        value={formData.Alternate_Mobile}
+                        onChange={handleInputChange}
+                         disabled={mode === "view"}
                         placeholder="Mobile No"
                         className="border border-[#C4C4C4] rounded-md px-3 py-2 focus:outline-none focus:ring-1 focus:ring-blue-500"
                       />
@@ -452,14 +613,32 @@ const EmployeeProfile = () => {
                         name="email"
                         value={formData.email}
                         onChange={handleInputChange}
+                         disabled={mode === "view"}
                         placeholder="Email ID"
                         className="border border-[#C4C4C4] rounded-md px-3 py-2 focus:outline-none focus:ring-1 focus:ring-blue-500"
                       />
                     </div>
+                    <div className="flex flex-col gap-1">
+  <label className="text-gray-700 font-medium">Date of Birth*</label>
+  <input
+    type="date"
+    name="date_of_birth"
+    value={
+      formData.date_of_birth
+        ? new Date(formData.date_of_birth).toISOString().split("T")[0]
+        : ""
+    }
+    disabled={mode === "view"}
+    onChange={handleInputChange}
+    className={`border border-[#C4C4C4] rounded-md px-3 py-2 focus:outline-none focus:ring-1 focus:ring-blue-500 
+    }`}
+  />
+</div>
+
                   </div>
 
                   {/* Address */}
-                  <div className="grid grid-cols-3 gap-4">
+                  <div className="flex gap-4">
                     {/* Corresponding Address */}
                     <div className="flex flex-col gap-1">
                       <label className="text-gray-700 font-medium">Corresponding Address*</label>
@@ -467,9 +646,10 @@ const EmployeeProfile = () => {
                         type="text"
                         name="corresponding_address"
                         value={formData.corresponding_address}
+                         disabled={mode === "view"}
                         onChange={handleInputChange}
                         placeholder=" Corresponding Address*"
-                        className="border border-[#C4C4C4] rounded-md px-3 py-2 focus:outline-none focus:ring-1 focus:ring-blue-500"
+                        className="border border-[#C4C4C4] rounded-md px-3 py-2 focus:outline-none focus:ring-1 focus:ring-blue-500 w-[266px]"
                       />
                     </div>
 
@@ -478,6 +658,7 @@ const EmployeeProfile = () => {
                       <input
                         type="checkbox"
                         id="sameAddress"
+                         disabled={mode === "view"}
                         name="sameAddress"
                         checked={formData.permanent_address === formData.corresponding_address}
                         onChange={(e) => {
@@ -490,7 +671,7 @@ const EmployeeProfile = () => {
                         className="border accent-blue-900 w-5 h-5"
                       />
                       <label htmlFor="sameAddress" className="text-gray-700 font-medium">
-                        Permanent Address same as Correspondence Address?
+                        Permanent Address same as<br></br> Correspondence Address?
                       </label>
                     </div>
 
@@ -500,16 +681,17 @@ const EmployeeProfile = () => {
                       <input
                         type="text"
                         name="permanent_address"
+                         disabled={mode === "view"}
                         value={formData.permanent_address}
                         onChange={handleInputChange}
                         placeholder=" Permanent Address*"
-                        className="border border-[#C4C4C4] rounded-md px-3 py-2 focus:outline-none focus:ring-1 focus:ring-blue-500"
+                        className="border border-[#C4C4C4] rounded-md px-3 py-2 focus:outline-none focus:ring-1 focus:ring-blue-500 w-[259px]"
                       />
                     </div>
                   </div>
 
                   {/* Branch, Joining Date, Designation, DOB */}
-                  <div className="grid grid-cols-4 gap-4">
+                  <div className="flex gap-2">
                     <div className="flex flex-col gap-1">
                       <label className="text-gray-700 font-medium">Branch*</label>
                       <input
@@ -517,27 +699,35 @@ const EmployeeProfile = () => {
                         name="branch"
                         value={formData.branch}
                         onChange={handleInputChange}
+                         disabled={mode === "view"}
                         placeholder="Branch"
-                        className="border border-[#C4C4C4] rounded-md px-3 py-2 focus:outline-none focus:ring-1 focus:ring-blue-500"
+                        className="border border-[#C4C4C4] rounded-md px-3 py-2 focus:outline-none focus:ring-1 focus:ring-blue-500 w-[220px]"
                       />
                     </div>
                     <div className="flex flex-col gap-1">
-                      <label className="text-gray-700 font-medium">Joining Date*</label>
-                      <input
-                        type="date"
-                        name="joining_date"
-                        value={formData.joining_date}
-                        onChange={handleInputChange}
-                        className="border border-[#C4C4C4] rounded-md px-3 py-2 focus:outline-none focus:ring-1 focus:ring-blue-500"
-                      />
+                      <label className="text-gray-700 font-medium">Date of Joining</label>
+                     <input
+  type="date"
+  name="joining_date"
+  value={
+    formData.joining_date
+      ? new Date(formData.joining_date).toISOString().split("T")[0]
+      : ""
+  }
+  disabled={mode === "view"}
+  onChange={handleInputChange}
+  className="border border-[#C4C4C4] rounded-md px-3 py-2 focus:outline-none focus:ring-1 focus:ring-blue-500 w-[164px]"
+/>
+
                     </div>
                     <div className="flex flex-col gap-1">
                       <label className="text-gray-700 font-medium">Designation*</label>
                       <select
                         name="designation"
                         value={formData.designation}
+                         disabled={mode === "view"}
                         onChange={handleInputChange}
-                        className="border border-[#C4C4C4] rounded-md px-3 py-2 focus:outline-none focus:ring-1 focus:ring-blue-500"
+                        className="border border-[#C4C4C4] rounded-md px-3 py-2 focus:outline-none focus:ring-1 focus:ring-blue-500 w-[162px]"
                       >
                         <option value="" disabled>Select Designation</option>
                         <option value="cashier">Cashier</option>
@@ -546,27 +736,19 @@ const EmployeeProfile = () => {
                         <option value="administrator">Administrator</option>
                       </select>
                     </div>
-                    <div className="flex flex-col gap-1">
-                      <label className="text-gray-700 font-medium">Date of Birth*</label>
-                      <input
-                        type="date"
-                        name="date_of_birth"
-                        value={formData.date_of_birth}
-                        onChange={handleInputChange}
-                        className="border border-[#C4C4C4] rounded-md px-3 py-2 focus:outline-none focus:ring-1 focus:ring-blue-500"
-                      />
-                    </div>
+                   
                   </div>
 
                   {/* Role, Password, Fax */}
-                  <div className="grid grid-cols-3 gap-4">
+                  <div className="flex gap-2">
                     <div className="flex flex-col gap-1">
                       <label className="text-gray-700 font-medium">Assign Role*</label>
                       <select
                         name="assign_role"
                         value={formData.assign_role}
+                         disabled={mode === "view"}
                         onChange={handleInputChange}
-                        className="border border-[#C4C4C4] rounded-md px-3 py-2 focus:outline-none focus:ring-1 focus:ring-blue-500"
+                        className="border border-[#C4C4C4] rounded-md px-3 py-2 focus:outline-none focus:ring-1 focus:ring-blue-500 w-[174px]"
                       >
                         <option value="" disabled>Select Role</option>
                         <option value="Emp">Employee</option>
@@ -584,9 +766,10 @@ const EmployeeProfile = () => {
                         type="password"
                         name="password"
                         value={formData.password}
+                         disabled={mode === "view"}
                         onChange={handleInputChange}
                         placeholder="Password"
-                        className="border border-[#C4C4C4] rounded-md px-3 py-2 focus:outline-none focus:ring-1 focus:ring-blue-500"
+                        className="border border-[#C4C4C4] rounded-md px-3 py-2 focus:outline-none focus:ring-1 focus:ring-blue-500 w-[220px]"
                       />
                     </div>
                     <div className="flex flex-col gap-1">
@@ -594,84 +777,176 @@ const EmployeeProfile = () => {
                       <input
                         type="text"
                         name="fax"
+                         disabled={mode === "view"}
                         value={formData.fax}
                         onChange={handleInputChange}
                         placeholder="Fax"
-                        className="border border-[#C4C4C4] rounded-md px-3 py-2 focus:outline-none focus:ring-1 focus:ring-blue-500"
+                        className="border border-[#C4C4C4] rounded-md px-3 py-2 focus:outline-none focus:ring-1 focus:ring-blue-500 w-[220px]"
                       />
                     </div>
                   </div>
                 </div>
 
                 {/* Right Upload Section */}
-                <div className="w-1/4 p-4">
+                <div className=" p-4">
                   <div>
-                    <div className="flex justify-center">
+                    {/* <div className="flex justify-center">
                       {profileImage ? (
                         <img
                           src={URL.createObjectURL(profileImage)}
                           alt="Profile Preview"
-                          className="w-[120px] h-[140px] rounded-lg object-cover border border-gray-300"
+                          className="w-[78px] h-[78px] rounded-lg object-cover border border-gray-300"
                         />
                       ) : (
                         <img
                           src={profileempty}
                           alt="Default Profile"
-                          className="w-[120px] h-[140px]"
+                          className="w-[78px] h-[78px]"
                         />
                       )}
-                    </div>
-                    <div className="flex justify-center mt-2 mb-2">
+                    </div> */}
+                   <div className="flex justify-center">
+  {mode === "view" ? (
+    // 🟦 View mode: show saved image or default
+    formData.emp_image ? (
+      <img
+        src={formData.emp_image}
+        alt="Employee Profile"
+        className="w-[78px] h-[78px] rounded-lg object-cover border border-gray-300"
+      />
+    ) : (
+      <img
+        src={profileempty}
+        alt="Default Profile"
+        className="w-[78px] h-[78px]"
+      />
+    )
+  ) : mode === "edit" ? (
+    // 🟨 Edit mode: show new uploaded preview or existing image
+    profileImage ? (
+      <img
+        src={URL.createObjectURL(profileImage)}
+        alt="Profile Preview"
+        className="w-[78px] h-[78px] rounded-lg object-cover border border-gray-300"
+      />
+    ) : formData.emp_image ? (
+      <img
+        src={formData.emp_image}
+        alt="Existing Employee Profile"
+        className="w-[78px] h-[78px] rounded-lg object-cover border border-gray-300"
+      />
+    ) : (
+      <img
+        src={profileempty}
+        alt="Default Profile"
+        className="w-[78px] h-[78px]"
+      />
+    )
+  ) : (
+    // 🟩 Add mode: show uploaded preview or default
+    profileImage ? (
+      <img
+        src={URL.createObjectURL(profileImage)}
+        alt="Profile Preview"
+        className="w-[78px] h-[78px] rounded-lg object-cover border border-gray-300"
+      />
+    ) : (
+      <img
+        src={profileempty}
+        alt="Default Profile"
+        className="w-[78px] h-[78px]"
+      />
+    )
+  )}
+</div>
+
+                    <div className="flex flex-col p-5">
+                       <div className="flex  mt-2 mb-2">
                       <label className="font-roboto font-bold text-[16px] leading-[100%] tracking-[0.03em] text-center">
                         Upload Customer Profile
                       </label>
                     </div>
 
-                    <div className="flex items-center border border-gray-300 rounded mt-1 w-full">
-                      <label htmlFor="profileImage"
-                        className="bg-[#D9D9D9] px-4 py-1.5 cursor-pointer text-[10px] rounded-l border-r border w-[200px] text-black font-bold">
-                        Choose File
-                      </label>
-                      <input
-                        id="profileImage"
-                        type="file"
-                        className="hidden"
-                        onChange={(e) => handleFileChange(e, setProfileImage)}
-                      />
-                      <span className="px-3 py-2 text-sm text-gray-500 w-full truncate">
-                        {formData.emp_image || "No file chosen"}
-                      </span>
-                    </div>
-                    <h1 className="text-[14px] font-medium">Add Proof</h1>
-                    <div className="flex items-center border border-gray-300 rounded mt-1 w-full">
-                      <label htmlFor="addressProof"
-                        className="bg-[#D9D9D9] px-4 py-1.5 cursor-pointer text-[10px] rounded-l border-r border w-[200px] text-black font-bold">
-                        Choose File
-                      </label>
-                      <input id="addressProof" type="file" className="hidden" onChange={handleFileChange(setAddressProof)} />
-                      <span className="px-3 py-2 text-sm text-gray-500 w-full truncate">
-                        {formData.emp_add_prof || "No file chosen"}
-                      </span>
-                    </div>
-                    <h1 className="text-[14px] font-medium">Id Proof</h1>
-                    <div className="flex items-center border border-gray-300 rounded mt-1 w-full">
-                      <label htmlFor="idProof"
-                        className="bg-[#D9D9D9] px-4 py-1.5 cursor-pointer text-[10px] rounded-l border-r border w-[200px] text-black font-bold">
-                        Choose File
-                      </label>
-                      <input id="idProof" type="file" className="hidden" onChange={handleFileChange(setIdProof)} />
-                      <span className="px-3 py-2 text-sm text-gray-500 w-full truncate">
-                        {formData.emp_id_prof || "No file chosen"}
-                      </span>
-                    </div>
+                   <div className="flex w-[200px] border border-gray-400 rounded-[10px] overflow-hidden mt-3 ">
+  <label
+    htmlFor="profileImage"
+    className="bg-[#D9D9D9] px-6 py-2 text-sm text-black font-semibold cursor-pointer hover:bg-gray-300 transition-all duration-200"
+  >
+    Choose File
+  </label>
 
-                    {isEditMode && (
-                      <div className="mt-4 text-sm w-fit flex justify-end">
-                        <p className="bg-green-500 px-2 py-1 text-white rounded-lg">
-                          View Document History
-                        </p>
-                      </div>
-                    )}
+  <input
+    id="profileImage"
+                          type="file"
+                           disabled={mode === "view"}
+    className="hidden"
+    onChange={(e) => handleFileChange(e, setProfileImage)}
+  />
+
+  <span className="flex-1 px-4 py-2 text-gray-500 text-sm truncate">
+    {formData.emp_image || "Upload Customer Profile"}
+  </span>
+</div>
+
+                    </div>
+                   
+
+                    <h1 className="text-[14px] font-medium ">Add Proof</h1>
+                  
+                    <div className="flex  border border-gray-400 rounded-[10px] overflow-hidden w-[300px] mt-1">
+  <label
+    htmlFor="addressProof"
+    className="bg-[#D9D9D9] px-6 py-2 text-sm text-black font-semibold cursor-pointer hover:bg-gray-300 transition-all duration-200 "
+  >
+    Choose File
+  </label>
+
+  <input
+    id="addressProof"
+                        type="file"
+                         disabled={mode === "view"}
+    className="hidden"
+    onChange={(e) => handleFileChangeForAddProof(e, setAddressProof)}
+  />
+
+  <span className="flex-1 px-4 py-2 text-gray-500 text-sm truncate">
+     {formData.emp_add_prof || "No file chosen"}
+  </span>
+</div>
+                    <h1 className="text-[14px] font-medium mt-2">Id Proof</h1>
+
+                      <div className="flex  border border-gray-400 rounded-[10px] overflow-hidden w-[300px] mt-1">
+  <label
+    htmlFor="idProof"
+    className="bg-[#D9D9D9] px-6 py-2 text-sm text-black font-semibold cursor-pointer hover:bg-gray-300 transition-all duration-200 "
+  >
+    Choose File
+  </label>
+
+  <input
+                        id="idProof"
+                         disabled={mode === "view"}
+    type="file"
+    className="hidden"
+    onChange={(e) => handleFileChangeForIdProof(e, setIdProof)}
+  />
+
+  <span className="flex-1 px-4 py-2 text-gray-500 text-sm truncate">
+      {formData.emp_id_prof || "No file chosen"}
+  </span>
+</div>
+
+                    {mode === "edit" && (
+  <div className="mt-4 text-sm w-fit flex justify-end">
+    <button
+      onClick={() => setIsDocumentHistory(true)}
+      className="bg-green-500 px-2 py-1 text-white rounded-lg hover:bg-green-600"
+    >
+      View Document History
+    </button>
+  </div>
+)}
+
                   </div>
                 </div>
               </div>
@@ -689,19 +964,26 @@ const EmployeeProfile = () => {
                   Is Active
                 </label>
                 <div className="flex gap-3">
-                  <button
-                    className="bg-[#0A2478] text-white w-[92px] h-[32px] rounded hover:bg-[#081c5b]"
-                    onClick={handleSave}
-                  >
-                    Save
-                  </button>
-                  <button
-                    className="bg-[#C1121F] text-white w-[92px] h-[32px] rounded hover:bg-[#a00e18]"
-                    onClick={() => setIsModalOpen(false)}
-                  >
-                    Exit
-                  </button>
-                </div>
+  {mode !== "view" && (
+  <button
+    className="bg-[#0A2478] text-white w-[92px] h-[32px] rounded hover:bg-[#081c5b]"
+    onClick={mode === "edit" ? handleUpdate : handleSave}
+  >
+    {mode === "edit" ? "Update" : "Save"}
+  </button>
+)}
+  <button
+  className="bg-[#C1121F] text-white w-[92px] h-[32px] rounded hover:bg-[#a00e18]"
+  onClick={() => {
+    setIsModalOpen(false);
+    setMode("add"); // 🟦 Reset mode to "add" when exiting
+  }}
+>
+  Exit
+</button>
+
+</div>
+
               </div>
             </div>
           </div>
@@ -739,6 +1021,71 @@ const EmployeeProfile = () => {
         )
       }
 
+   {isViewDocumentHistory && (
+        <div className="fixed inset-0 flex items-center justify-center z-50 bg-[#0101017A] backdrop-blur-md">
+          <div className="bg-white rounded-xl w-[500px] shadow-lg p-6">
+            <h2 className="text-lg font-bold text-[#1B2C79] mb-4">
+              Uploaded Document History
+            </h2>
+
+            <div className="grid grid-cols-2 gap-4">
+              {/* ID Proof */}
+              <div>
+                <label className="text-sm font-semibold text-gray-700">
+                  ID Proof <span className="text-red-500">*</span>
+                </label>
+                <div className="border border-gray-300 rounded-md mt-1 p-2 flex justify-between items-center">
+                  <span className="text-gray-500 text-sm">Download</span>
+                  {formData.emp_id_prof ? (
+                    <button
+                      onClick={() =>
+                        handleForceDownload(formData.emp_id_prof, "ID_Proof")
+                      }
+                      className="bg-[#E2E8F0] text-sm text-[#1B2C79] font-medium px-3 py-1 rounded hover:bg-[#CBD5E1]"
+                    >
+                      Download
+                    </button>
+                  ) : (
+                    <span className="text-gray-400 text-sm">No file</span>
+                  )}
+                </div>
+              </div>
+
+              {/* Address Proof */}
+              <div>
+                <label className="text-sm font-semibold text-gray-700">
+                  Address Proof
+                </label>
+                <div className="border border-gray-300 rounded-md mt-1 p-2 flex justify-between items-center">
+                  <span className="text-gray-500 text-sm">Download</span>
+                  {formData.emp_add_prof ? (
+                    <button
+                      onClick={() =>
+                        handleForceDownload(formData.emp_add_prof, "Address_Proof")
+                      }
+                      className="bg-[#E2E8F0] text-sm text-[#1B2C79] font-medium px-3 py-1 rounded hover:bg-[#CBD5E1]"
+                    >
+                      Download
+                    </button>
+                  ) : (
+                    <span className="text-gray-400 text-sm">No file</span>
+                  )}
+                </div>
+              </div>
+            </div>
+
+            {/* Close Button */}
+            <div className="flex justify-center mt-6">
+              <button
+                onClick={() => setIsDocumentHistory(false)}
+                className="bg-[#D32F2F] text-white font-semibold px-6 py-2 rounded-lg hover:bg-[#B71C1C]"
+              >
+                Close
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
       {/* Table */}
       <div className="flex justify-center">
         <div className="overflow-x-auto mt-5 w-[1290px] min-h-[500px]">
@@ -768,7 +1115,15 @@ const EmployeeProfile = () => {
                       key={emp.id}
                       className={`${index % 2 === 0 ? "bg-gray-50" : "bg-white"} hover:bg-gray-100`}
                     >
-                      <td className="px-4 py-2">{emp.emp_id}</td>
+                      <td className="px-4 py-2 flex items-center justify-center gap-2">
+  <img
+    src={emp.emp_image}
+    alt={emp.emp_name}
+    className="w-10 h-10 rounded-full object-cover border border-gray-300"
+  />
+ 
+</td>
+
                       <td className="px-4 py-2">{emp.emp_name}</td>
                       <td className="px-4 py-2">{emp.email}</td>
                       <td className="px-4 py-2">{emp.mobile_no}</td>

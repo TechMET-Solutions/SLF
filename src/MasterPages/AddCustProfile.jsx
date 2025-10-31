@@ -5,12 +5,11 @@ import JoditEditor from "jodit-react";
 import { useEffect, useRef, useState } from "react";
 import { MdOutlineFileUpload } from "react-icons/md";
 import { useLocation, useNavigate } from "react-router-dom";
-import GroupData from "../assets/Group 124.svg";
-import Vectorimg from "../assets/Vectorimg.png";
 import profileempty from "../assets/profileempty.png";
 import righttick from "../assets/righttick.png";
 import send from "../assets/send.svg";
 import { encryptData } from "../utils/cryptoHelper";
+import CustBankDetails from "./CustBankDetails";
 
 
 const AddCustProfile = () => {
@@ -18,34 +17,19 @@ const AddCustProfile = () => {
 
   const location = useLocation();
   const editor = useRef(null);
-const mode = location.state?.type || "add";
+
   const customerData = location.state?.customerData;
+  const modedata = location.state?.type
+  console.log(customerData,"customerData")
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [content, setContent] = useState("");
-  const bankData = [
-    {
-      bankName: "HDFC Bank",
-      Customer_Name: "sumit pathak",
-      Account_No: "323902010133409",
-      IFSC: "UBIN0532398",
-
-      Bank_Address: "Bhagur",
-      Update_By: "rasika.gade@slunawat.com",
-      Update_On: "25-Jul-2025",
-    },
-    {
-      bankName: "HDFC Bank",
-      Customer_Name: "sumit pathak",
-      Account_No: "323902010133409",
-      IFSC: "UBIN0532398",
-
-      Bank_Address: "Bhagur",
-      Update_By: "rasika.gade@slunawat.com",
-      Update_On: "25-Jul-2025",
-    },
-  ];
-
-  const [formData, setFormData] = useState({
+  const [mode, setMode] = useState(modedata);
+  const [modeForBank, setModeForbank] = useState("add");
+  console.log(mode,"mode")
+const [bankData, setBankData] = useState([]);
+console.log(bankData,"bankData")
+  
+const [formData, setFormData] = useState({
     panNo: "",
     panFile: null, // store selected file here
     aadhar: "",
@@ -122,18 +106,35 @@ const mode = location.state?.type || "add";
          badDebtor: false,
    
   });
+  const [BankformData, setBankFormData] = useState({
+      bankName: "",
+      customerName: "",
+      accountNo: "",
+      ifsc: "",
+      bankAddress: "",
+      cancelCheque: null,
+      
+  });
+  
+
 
 useEffect(() => {
   if (customerData) {
+    // ✅ Set formData (customer details)
     setFormData((prev) => ({
       ...prev,
       ...customerData,
-      id: customerData.id || customerData.ID || "", // ✅ ensure id is stored in formData
+      id: customerData.id || customerData.ID || "",
     }));
 
-    // ✅ Set the remark content if it exists
+    // ✅ Set remark content if exists
     if (customerData.Remark) {
       setContent(customerData.Remark);
+    }
+
+    // ✅ Set bank data if exists (Array check)
+    if (Array.isArray(customerData.bankData)) {
+      setBankData(customerData.bankData);
     }
   }
 }, [customerData]);
@@ -245,23 +246,21 @@ const handleRadioChange = () => {
   });
 };
 
+
+
 // const handleSubmit = async () => {
 //   try {
-//     // Merge remark into formData before encrypting
 //     const payloadToEncrypt = { 
 //       ...formData, 
 //       Remark: content, 
-//       Added_By: "" // currently blank
+//       Added_By: "",
 //     };
 
-//     // Encrypt non-file data
 //     const encrypted = encryptData(payloadToEncrypt);
 
-//     // Create FormData object
 //     const formDataToSend = new FormData();
 //     formDataToSend.append("data", encrypted);
 
-//     // Append files if they exist
 //     if (formData.panFile) formDataToSend.append("panFile", formData.panFile);
 //     if (formData.aadharFile) formDataToSend.append("aadharFile", formData.aadharFile);
 //     if (formData.profileImage) formDataToSend.append("profileImage", formData.profileImage);
@@ -271,17 +270,23 @@ const handleRadioChange = () => {
 //     if (formData.Additional_UploadDocumentFile2)
 //       formDataToSend.append("Additional_UploadDocumentFile2", formData.Additional_UploadDocumentFile2);
 
-//     // Send API request
+//     // Step 1️⃣: Add customer first
 //     const response = await axios.post(
 //       "http://localhost:5000/Master/doc/add",
 //       formDataToSend,
 //       { headers: { "Content-Type": "multipart/form-data" } }
 //     );
 
-//     console.log("✅ Response:", response.data);
+//     console.log("✅ Customer API Response:", response.data);
 
 //     if (response.data.status && response.data.statuscode === 200) {
+//       const customerId = response.data.customerId; // Get the new customer ID
+
 //       alert(response.data.message);
+
+//       // Step 2️⃣: Call addBankDetails API
+//       await addBankDetails(customerId);
+
 //       navigate("/Customer-Profile-List");
 //     } else {
 //       alert("❌ Something went wrong: " + (response.data.message || "Unknown error"));
@@ -291,48 +296,123 @@ const handleRadioChange = () => {
 //     alert("An error occurred while adding the customer.");
 //   }
 // };
-const handleSubmit = async () => {
+  const handleSubmit = async () => {
+  debugger
   try {
-    const payloadToEncrypt = {
-      ...formData,
-      Remark: content,
+    const { bankData, ...rest } = formData;
+
+    // 🧩 Step 2: Prepare the payload without bankData
+    const payloadToEncrypt = { 
+      ...rest, 
+      Remark: content, 
       Added_By: "",
     };
 
+    // 🔒 Step 3: Encrypt only the filtered data
     const encrypted = encryptData(payloadToEncrypt);
-
     const formDataToSend = new FormData();
     formDataToSend.append("data", encrypted);
 
-    if (formData.panFile instanceof File) formDataToSend.append("panFile", formData.panFile);
-    if (formData.aadharFile instanceof File) formDataToSend.append("aadharFile", formData.aadharFile);
-    if (formData.profileImage instanceof File) formDataToSend.append("profileImage", formData.profileImage);
-    if (formData.signature instanceof File) formDataToSend.append("signature", formData.signature);
-    if (formData.Additional_UploadDocumentFile1 instanceof File)
+    // Append uploaded files only if present
+    if (formData.panFile) formDataToSend.append("panFile", formData.panFile);
+    if (formData.aadharFile) formDataToSend.append("aadharFile", formData.aadharFile);
+    if (formData.profileImage) formDataToSend.append("profileImage", formData.profileImage);
+    if (formData.signature) formDataToSend.append("signature", formData.signature);
+    if (formData.Additional_UploadDocumentFile1)
       formDataToSend.append("Additional_UploadDocumentFile1", formData.Additional_UploadDocumentFile1);
-    if (formData.Additional_UploadDocumentFile2 instanceof File)
+    if (formData.Additional_UploadDocumentFile2)
       formDataToSend.append("Additional_UploadDocumentFile2", formData.Additional_UploadDocumentFile2);
 
-    const apiUrl =
-      mode === "edit"
-        ? "http://localhost:5000/Master/doc/updateCustomer"
-        : "http://localhost:5000/Master/doc/add";
+    let response;
 
-    // ✅ Always use POST for file uploads
-    const response = await axios.post(apiUrl, formDataToSend, {
-      headers: { "Content-Type": "multipart/form-data" },
-    });
+    if (mode === "edit") {
+      // ✳️ Update existing customer
+      response = await axios.post(
+        "http://localhost:5000/Master/doc/updateCustomer",
+        formDataToSend,
+        { headers: { "Content-Type": "multipart/form-data" } }
+      );
+    } else {
+      // 🆕 Add new customer
+      response = await axios.post(
+        "http://localhost:5000/Master/doc/add",
+        formDataToSend,
+        { headers: { "Content-Type": "multipart/form-data" } }
+      );
+    }
 
-    console.log("✅ Response:", response.data);
+    console.log("✅ Customer API Response:", response.data);
+
     if (response.data.status && response.data.statuscode === 200) {
+      const customerId =
+        mode === "edit" ? formData.id : response.data.customerId;
+
       alert(response.data.message);
+
+      // Step 2️⃣: Call add or update bank details API
+      if (mode === "edit") {
+        await updateBankDetails(customerId);
+      } else {
+        await addBankDetails(customerId);
+      }
+
       navigate("/Customer-Profile-List");
     } else {
       alert("❌ Something went wrong: " + (response.data.message || "Unknown error"));
     }
   } catch (error) {
     console.error("❌ Error submitting form:", error);
-    alert(`An error occurred while ${mode === "edit" ? "updating" : "adding"} the customer.`);
+    alert("An error occurred while saving the customer.");
+  }
+};
+
+
+const addBankDetails = async (customerId) => {
+  try {
+    const formData = new FormData();
+
+    // send all bank data in one go
+    formData.append("bankData", JSON.stringify(bankData));
+    formData.append("customerId", customerId);
+
+    // append all cheque files
+    bankData.forEach((bank) => {
+      if (bank.cancelCheque && bank.cancelCheque instanceof File) {
+        formData.append("cancelCheque", bank.cancelCheque); // ✅ field name matches multer
+      }
+    });
+
+    const res = await axios.post("http://localhost:5000/bank/add", formData, {
+      headers: { "Content-Type": "multipart/form-data" },
+    });
+
+    console.log("✅ Response:", res.data);
+  } catch (error) {
+    console.error("❌ Error adding bank details:", error);
+  }
+};
+
+  const updateBankDetails = async (customerId) => {
+  debugger
+  try {
+    const formData = new FormData();
+    formData.append("bankData", JSON.stringify(bankData));
+    formData.append("customerId", customerId);
+
+    // Append cheque files (only new ones)
+    bankData.forEach((bank) => {
+      if (bank.cancelCheque && bank.cancelCheque instanceof File) {
+        formData.append("cancelCheque", bank.cancelCheque);
+      }
+    });
+
+    const res = await axios.put("http://localhost:5000/bank/update", formData, {
+      headers: { "Content-Type": "multipart/form-data" },
+    });
+
+    console.log("✅ Bank Update Response:", res.data);
+  } catch (error) {
+    console.error("❌ Error updating bank details:", error);
   }
 };
 
@@ -1719,299 +1799,7 @@ const handleSubmit = async () => {
         />
       </div>
 
-      <div className="flex justify-center">
-        <div className="overflow-x-auto mt-5 w-[1290px] h-auto mb-5">
-          <div className="flex justify-between">
-            <p className="font-[Source_Sans_3] font-semibold text-[14px] leading-[14px] tracking-[0em] underline">
-              Bank Details
-            </p>
-            <button
-              className="w-[72.7px] h-[33.7px] bg-[#0A2478] text-white rounded-[3.12px] px-[9.36px] flex items-center justify-center gap-[7.8px] text-[14px] font-[Source_Sans_3] font-semibold"
-              onClick={() => setIsModalOpen(true)}
-            >
-              Add New
-            </button>
-          </div>
-          <table className="w-full border-collapse mt-5">
-            <thead className="bg-[#0A2478] text-white text-sm">
-              <tr>
-                <th className="px-4 py-2 text-left border-r border-gray-300 text-[13px]">
-                  Bank Name
-                </th>
-                <th className="px-4 py-2 text-left border-r border-gray-300 text-[13px]">
-                  Customer Name
-                </th>
-                <th className="px-4 py-2 text-left border-r border-gray-300 text-[13px]">
-                  Account No
-                </th>
-                <th className="px-4 py-2 text-left border-r border-gray-300 text-[13px]">
-                  IFSC
-                </th>
-                <th className="px-4 py-2 text-left border-r border-gray-300 text-[13px]">
-                  Cancelled Cheques
-                </th>
-                <th className="px-4 py-2 text-left border-r border-gray-300 text-[13px]">
-                  Bank Address
-                </th>
-                <th className="px-4 py-2 text-left border-r border-gray-300 text-[13px]">
-                  Update By
-                </th>
-                <th className="px-4 py-2 text-left border-r border-gray-300 text-[13px]">
-                  Update On
-                </th>
-                <th className="px-4 py-2 text-left text-[13px]">Action</th>
-              </tr>
-            </thead>
-            <tbody className="text-[12px]">
-              {bankData.map((row, index) => (
-                <tr
-                  key={index}
-                  className={`border-b ${
-                    index % 2 === 0 ? "bg-gray-50" : "bg-white"
-                  }`}
-                >
-                  <td className="px-4 py-2">{row.bankName}</td>
-                  <td className="px-4 py-2">{row.Customer_Name}</td>
-                  <td className="px-4 py-2">{row.Account_No}</td>
-                  <td className="px-4 py-2">{row.IFSC}</td>
-                  <td className="px-4 py-2">download</td>
-                  <td className="px-4 py-2">{row.Bank_Address}</td>
-                  <td className="px-4 py-2">{row.Update_By || "-"}</td>
-                  <td className="px-4 py-2">{row.Update_On || "-"}</td>
-                  <td className="px-4 py-2 text-[#1883EF] cursor-pointer">
-                    <div className="flex gap-2 justify-center">
-                      <div className="w-[17px] h-[17px] bg-[#56A869] rounded-[2.31px] flex items-center justify-center p-0.5">
-                        <img
-                          src={GroupData}
-                          alt="view"
-                          className="w-[18px] h-[18px]"
-                        />
-                      </div>
-
-                      <div className="w-[17px] h-[17px] bg-[#C5644E] rounded-[2.31px] flex items-center justify-center p-0.5">
-                        <img src={Vectorimg} alt="edit" />
-                      </div>
-                    </div>
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
-      </div>
-
-      {isModalOpen && (
-        <div
-          className="fixed inset-0 flex items-center justify-center z-50"
-          style={{
-            background: "#0101017A",
-            backdropFilter: "blur(6.8px)",
-          }}
-        >
-          <div className="bg-white w-[896px]  rounded-lg shadow-lg h-[322px] p-10">
-            <h2
-              className="text-[#0A2478] mb-4"
-              style={{
-                fontFamily: "Source Sans 3, sans-serif",
-                fontWeight: 600,
-                fontSize: "20px",
-                lineHeight: "24px",
-                letterSpacing: "0%",
-              }}
-            >
-              Add Bank Details
-            </h2>
-
-            <div className=" gap-4">
-              <div className="flex gap-2">
-                {" "}
-                <div>
-                  <label className="text-[14px] ">
-                    Bank Name* <span className="text-red-500">*</span>
-                  </label>
-                  <input
-                    type="text"
-                    placeholder="Bank Name"
-                    className="border border-gray-300 rounded"
-                    style={{
-                      width: "238px",
-                      height: "38px",
-                      padding: "10px 14px",
-                      borderRadius: "8px",
-                      borderWidth: "1px",
-                      opacity: 1,
-                    }}
-                  />
-                </div>
-                <div>
-                  <label className="text-[14px] ">
-                    Account Holder Name <span className="text-red-500">*</span>
-                  </label>
-                  <input
-                    type="text"
-                    placeholder="Bank Name"
-                    className="border border-gray-300 rounded"
-                    style={{
-                      width: "300px",
-                      height: "38px",
-                      padding: "10px 14px",
-                      borderRadius: "8px",
-                      borderWidth: "1px",
-                      opacity: 1,
-                    }}
-                  />
-                </div>
-                <div>
-                  <label className="text-[14px] ">
-                    Account No<span className="text-red-500">*</span>
-                  </label>
-                  <input
-                    type="text"
-                    placeholder="Bank Name"
-                    className="border border-gray-300 rounded"
-                    style={{
-                      width: "238px",
-                      height: "38px",
-                      padding: "10px 14px",
-                      borderRadius: "8px",
-                      borderWidth: "1px",
-                      opacity: 1,
-                    }}
-                  />
-                </div>
-              </div>
-              <div className="flex mt-5 gap-2">
-                <div>
-                  {/* <label className="text-[12px] font-medium">Account Type *</label> */}
-                  <label className="text-[14px] ">
-                    IFSC Code* <span className="text-red-500">*</span>
-                  </label>
-                  <input
-                    type="text"
-                    placeholder="IFSC Code"
-                    className="border border-gray-300 rounded"
-                    style={{
-                      width: "238px",
-                      height: "38px",
-                      padding: "10px 14px",
-                      borderRadius: "8px",
-                      borderWidth: "1px",
-                      opacity: 1,
-                    }}
-                  />
-                  {/* <select
-                  className="border border-gray-300 rounded px-2 py-1 w-full mt-1 text-[12px]"
-                  style={{
-                    width: "280px",
-                    height: "38px",
-                    padding: "10px 14px",
-                    borderRadius: "5px",
-                    borderWidth: "1px",
-                    opacity: 1,
-                  }}
-                >
-                  <option>Balance Sheet</option>
-                  <option>Income Statement</option>
-                </select> */}
-                </div>
-                <div>
-                  {/* <label className="text-[12px] font-medium">Account Type *</label> */}
-                  <label className="text-[14px] ">
-                    Bank Address<span className="text-red-500"></span>
-                  </label>
-                  <input
-                    type="text"
-                    placeholder="Address"
-                    className="border border-gray-300 rounded"
-                    style={{
-                      width: "300px",
-                      height: "38px",
-                      padding: "10px 14px",
-                      borderRadius: "8px",
-                      borderWidth: "1px",
-                      opacity: 1,
-                    }}
-                  />
-
-                  {/* <select
-                  className="border border-gray-300 rounded px-2 py-1 w-full mt-1 text-[12px]"
-                  style={{
-                    width: "300px",
-                    height: "38px",
-                    padding: "10px 14px",
-                    borderRadius: "5px",
-                    borderWidth: "1px",
-                    opacity: 1,
-                  }}
-                >
-                  <option>Balance Sheet</option>
-                  <option>Income Statement</option>
-                </select> */}
-                </div>
-                <div>
-                  {/* <label className="text-[12px] font-medium">Account Type *</label> */}
-                  <label className="text-[14px] ">
-                    Attached Cancel Cheque{" "}
-                    <span className="text-red-500"></span>
-                  </label>
-                  <div className="flex items-center border border-gray-300 rounded mt-1 w-full">
-                    <label
-                      htmlFor="uploadFile"
-                      className="bg-[#D9D9D9] px-4 py-2 cursor-pointer text-[12px] rounded-l border-r border w-[200px] text-black font-[Source_Sans_3] font-semibold leading-[100%] tracking-[0.03em]"
-                    >
-                      Choose File
-                    </label>
-
-                    <input
-                      id="uploadFile"
-                      type="file"
-                      className="hidden"
-                      //   onChange={(e) =>
-                      //     setFileName(e.target.files[0] ? e.target.files[0].name : "No file chosen")
-                      //   }
-                    />
-                    <span className="px-3 py-2 text-sm text-gray-500 w-full truncate">
-                      {/* {fileName || "No file chosen"} */}
-                    </span>
-                  </div>
-                </div>
-              </div>
-            </div>
-            <div className="flex justify-center gap-5 items-center">
-              <div className="flex justify-end gap-3 mt-6 item-center">
-                <button
-                  className="bg-[#0A2478] text-white"
-                  style={{
-                    width: "92.66px",
-                    height: "30.57px",
-                    borderRadius: "4.67px",
-
-                    opacity: 1,
-                  }}
-                  onClick={() => setIsModalOpen(false)}
-                >
-                  Save
-                </button>
-
-                <button
-                  className="text-white"
-                  style={{
-                    backgroundColor: "#C1121F",
-                    width: "92.66px",
-                    height: "30.57px",
-                    borderRadius: "4.67px",
-
-                    opacity: 1,
-                  }}
-                  onClick={() => setIsModalOpen(false)}
-                >
-                  Exit
-                </button>
-              </div>
-            </div>
-          </div>
-        </div>
-      )}
+      <CustBankDetails bankData={bankData} setBankData={setBankData} mode={modeForBank} setMode={setModeForbank} updatemode={mode} />
     </div>
   );
 };

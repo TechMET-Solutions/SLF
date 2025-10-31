@@ -72,15 +72,20 @@ const handleBlockConfirm = async () => {
     alert("Failed to block customer");
   }
 };
-const fetchCustomers = async () => {
-    try {
-      const response = await axios.get("http://localhost:5000/Master/doc/list");
-      setData(response.data);
-    } catch (error) {
-      console.error("❌ Error fetching customers:", error);
-    }
-  };
+const [page, setPage] = useState(1);
+const [totalPages, setTotalPages] = useState(1);
 
+
+const fetchCustomers = async (pageNumber = 1) => {
+  try {
+    const response = await axios.get(`http://localhost:5000/Master/doc/list?page=${pageNumber}&limit=10`);
+    setData(response.data.data);
+    setTotalPages(response.data.totalPages);
+    setPage(response.data.currentPage);
+  } catch (error) {
+    console.error("❌ Error fetching customers:", error);
+  }
+};
 
   
   useEffect(() => {
@@ -364,19 +369,7 @@ const fetchCustomers = async () => {
             <div className="flex justify-center gap-5 items-center">
 
               <div className="flex justify-end gap-3 mt-6 item-center">
-                {/* <button
-                  className="bg-[#0A2478] text-white"
-                  style={{
-                    width: "92.66px",
-                    height: "30.57px",
-                    borderRadius: "4.67px",
-
-                    opacity: 1,
-                  }}
-                  onClick={() => setIsModalOpenForRemark(false)}
-                >
-                  Save
-                </button> */}
+                
 
                 <button
                   className="text-white"
@@ -544,17 +537,38 @@ const fetchCustomers = async () => {
 
 
       {/* Pagination */}
-      <div className="flex justify-center items-center px-6 py-3 border-t gap-2">
-        <button className="px-3 py-1 border rounded-md">Previous</button>
-        <div className="flex gap-2">
-          <button className="px-3 py-1 border bg-[#0b2c69] text-white rounded-md">1</button>
-          <button className="px-3 py-1 border rounded-md">2</button>
-          <button className="px-3 py-1 border rounded-md">3</button>
-          <button className="px-3 py-1 border rounded-md">...</button>
-          <button className="px-3 py-1 border rounded-md">10</button>
-        </div>
-        <button className="px-3 py-1 border rounded-md">Next</button>
-      </div>
+    <div className="flex justify-center items-center px-6 py-3 border-t gap-2">
+  <button
+    onClick={() => setPage((prev) => Math.max(prev - 1, 1))}
+    disabled={page === 1}
+    className="px-3 py-1 border rounded-md disabled:opacity-50"
+  >
+    Previous
+  </button>
+
+  <div className="flex gap-2">
+    {Array.from({ length: totalPages }, (_, i) => (
+      <button
+        key={i + 1}
+        onClick={() => setPage(i + 1)}
+        className={`px-3 py-1 border rounded-md ${
+          page === i + 1 ? "bg-[#0b2c69] text-white" : ""
+        }`}
+      >
+        {i + 1}
+      </button>
+    ))}
+  </div>
+
+  <button
+    onClick={() => setPage((prev) => Math.min(prev + 1, totalPages))}
+    disabled={page === totalPages}
+    className="px-3 py-1 border rounded-md disabled:opacity-50"
+  >
+    Next
+  </button>
+</div>
+
 
     </div>
   );
