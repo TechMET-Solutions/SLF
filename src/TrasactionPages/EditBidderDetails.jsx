@@ -1,378 +1,125 @@
-// import { useState } from 'react';
-// import { IoMdImage } from "react-icons/io";
-// import { MdDelete, MdOutlineFileUpload } from "react-icons/md";
-// import profileempty from '../assets/profileempty.png';
-
-
-// const EditBidderDetails = () => {
-//     const [file, setFile] = useState(null);
-
-//   const handleFileChange = (e) => {
-//     setFile(e.target.files[0]);
-//   };
-
-//   const handleDelete = () => {
-//     setFile(null);
-//   };
-//  return (
-//          <div className="flex flex-col items-center mt-5">
-//              {/* Header Section */}
-//              <div className="flex items-center justify-between px-6 py-4 w-[1290px] h-[62px] border border-gray-200 rounded-[11px] shadow-sm">
-//                  <h2 className="text-red-600 font-bold text-[20px] leading-[1.48] font-['Source_Sans_3']">
-//                       Edit Bidder Registration
-//                  </h2>
-
-//                  <div className="flex items-center gap-5">
-//                      <button className="bg-[#0A2478] text-white text-[10px] w-[74px] h-[24px] rounded-[3.75px] hover:bg-red-700 transition">
-//                          Update
-//                      </button>
-//                      <button className="bg-[#C1121F] text-white text-[10px] w-[74px] h-[24px] rounded-[3.75px] hover:bg-red-700 transition">
-//                          Cancel
-//                      </button>
-//                  </div>
-//              </div>
-//              {/* Loan Information Section */}
-//              <div className=" max-w-[1290px] bg-white p-4">
-//                  <h1 className="text-blue-900 font-semibold text-xl pb-3"> Edit Bidder Information</h1>
-
-//                  <div className="flex flex-wrap justify-between grid-cols-4 gap-6 text-sm">
-//                      {/* Left Section (Form Fields) */}
-//                      <div className="flex flex-wrap gap-8 flex-1 text-sm w-full">
-
-//                          {/* Bidder Name */}
-//                          <div className="flex flex-col gap-1 w-[250px]">
-//                              <label className="text-gray-900 font-medium">Bidder Name</label>
-//                              <input
-//                                  type="text"
-//                                  placeholder="Bidder Name"
-//                                  className="border border-gray-300 rounded-md px-3 py-2 focus:ring-1 focus:ring-blue-500 focus:outline-none"
-//                              />
-//                          </div>
-
-
-
-//                          {/* Mobile Number */}
-//                          <div className="flex flex-col gap-1  w-[250px]">
-//                              <label className="text-gray-900 font-medium">Mobile Number</label>
-//                              <input
-//                                  type="number"
-//                                  placeholder="Mobile Number"
-//                                  className="border border-gray-300 rounded-md px-3 py-2 focus:ring-1 focus:ring-blue-500 focus:outline-none"
-//                              />
-//                          </div>
-
-//                          {/*Alternate Mobile Number */}
-//                          <div className="flex flex-col gap-1  w-[250px]">
-//                              <label className="text-gray-900 font-medium">Alternate Mobile Number</label>
-//                              <input
-//                                  type="number"
-//                                  placeholder="Alternate Mobile Number"
-//                                  className="border border-gray-300 rounded-md px-3 py-2 focus:ring-1 focus:ring-blue-500 focus:outline-none"
-//                              />
-//                          </div>
-
-//                          {/* Email ID*/}
-//                          <div className="flex flex-col gap-1  w-[250px]">
-//                              <label className="text-gray-900 font-medium">Email ID</label>
-//                              <input
-//                                  type="email"
-//                                  placeholder="Email ID"
-//                                  className="border border-gray-300 rounded-md px-3 py-2 focus:ring-1 focus:ring-blue-500 focus:outline-none"
-//                              />
-//                          </div>
-
-//                          {/*Personal Address*/}
-//                          <div className="flex flex-col gap-1 w-[300px]">
-//                              <label className="text-gray-900 font-medium">Personal Address</label>
-//                              <input
-//                              type="text"
-//                              placeholder="Personal Address"
-//                                  className="border border-gray-300 rounded-md px-3 py-2 focus:ring-1 focus:ring-blue-500 focus:outline-none"
-//                              />
-//                          </div>
-
-//                          {/* Shop Address */}
-//                          <div className="flex flex-col gap-1 w-[300px]">
-//                              <label className="text-gray-900 font-medium">Shop Address</label>
-//                              <div className="flex">
-//                                  <input
-//                                      type="text"
-//                                      placeholder="Shop Address"
-//                                      className="border border-gray-300 rounded-l-md px-3 py-2 w-full focus:ring-1 focus:ring-blue-500 focus:outline-none"
-//                                  />
-
-//                              </div>
-//                          </div>
-
-//                          {/* Landline No 1 */}
-//                          <div className="flex flex-col gap-1 w-[200px]">
-//                              <label className="text-gray-900 font-medium">Landline No 1</label>
-//                              <input
-//                              type="number"
-//                              placeholder='203-53363'
-//                                  className="border border-gray-300 rounded-md px-3 py-2 focus:ring-1 focus:ring-blue-500 focus:outline-none"
-//                              />
-//                      </div>
-
-//                       {/* Landline No 2 */}
-//                          <div className="flex flex-col gap-1 w-[200px]">
-//                              <label className="text-gray-900 font-medium">Landline No 2</label>
-//                              <input
-//                              type="number"
-//                              placeholder='203-53363'
-//                                  className="border border-gray-300 rounded-md px-3 py-2 focus:ring-1 focus:ring-blue-500 focus:outline-none"
-//                              />
-//                          </div>
-
-//                          {/* Firm Name */}
-//                          <div className="flex flex-col gap-1 w-[170px]">
-//                              <label className="text-gray-900 font-medium">Firm Name</label>
-//                              <input
-//                                  type="text"
-//                                  placeholder="Firm Name"
-//                                  className="border border-gray-300 rounded-md px-3 py-2 focus:ring-1 focus:ring-blue-500 focus:outline-none"
-//                              />
-//                          </div>
-
-//                          {/* GST No */}
-//                          <div className="flex flex-col gap-1 w-[170px]">
-//                              <label className="text-gray-900 font-medium">GST No</label>
-//                              <input
-//                                  type="number"
-//                                  placeholder="GST No"
-//                                  className="border border-gray-300 rounded-md px-3 py-2 focus:ring-1 focus:ring-blue-500 focus:outline-none"
-//                              />
-//                      </div>
-
-
-//                          {/* Aadhar No */}
-
-
-//                       <div className="flex flex-col gap-1 w-[250px]">
-//                              <label className="text-gray-900 font-medium">Adhar No</label>
-//                              <input
-//                                  type="number"
-//                                  placeholder="Adhar no"
-//                                  className="border border-gray-300 rounded-md px-3 py-2 focus:ring-1 focus:ring-blue-500 focus:outline-none"
-//                              />
-//                      </div>
-//                       <div className="flex flex-col space-y-2 w-full max-w-sm">
-//                            <label htmlFor="pan" className="text-sm font-medium text-gray-700">
-//                              <span className="text-red-500">*</span>
-//                            </label>
-
-//                            <div className="flex items-center border border-gray-300 rounded-md px-3 py-2">
-//                              <IoMdImage className="text-black mr-2" size={20} />
-//                              <input
-//                                type="file"
-//                                id="pan"
-//                                name="pan"
-//                                accept=".png,.jpg,.jpeg,.pdf"
-//                                onChange={handleFileChange}
-//                                className="hidden"
-//                              />
-//                              <span className="flex-1 text-gray-700 text-sm">
-//                                {file ? file.name : "Adhar.png "}
-//                              </span>
-
-//                              {file ? (
-//                                <button type="button" onClick={handleDelete} className="ml-2 text-red-500">
-//                                  <MdDelete size={20} />
-//                                </button>
-//                              ) : (
-//                                <label htmlFor="pan" className="ml-2 cursor-pointer text-blue-700">
-//                                  <MdOutlineFileUpload size={22} />
-//                                </label>
-//                              )}
-//                            </div>
-//                       </div>
-
-
-//                          {/* Pan No */}
-
-//                                               <div className="flex flex-col gap-1 w-[250px]">
-//                                                       <label className="text-gray-900 font-medium">Pan No</label>
-//                                                       <input
-//                                                           type="number"
-//                                                           placeholder="Pan no"
-//                                                           className="border border-gray-300 rounded-md px-3 py-2 focus:ring-1 focus:ring-blue-500 focus:outline-none"
-//                                                       />
-//                                                   </div>
-
-//                                                  <div className="flex flex-col space-y-2 w-full max-w-sm">
-//                                <label htmlFor="pan" className="text-sm font-medium text-gray-700">
-//                                  <span className="text-red-500">*</span>
-//                                </label>
-
-//                                <div className="flex items-center border border-gray-300 rounded-md px-3 py-2">
-//                                  <IoMdImage className="text-black mr-2" size={20} />
-//                                  <input
-//                                    type="file"
-//                                    id="pan"
-//                                    name="pan"
-//                                    accept=".png,.jpg,.jpeg,.pdf"
-//                                    onChange={handleFileChange}
-//                                    className="hidden"
-//                                  />
-//                                  <span className="flex-1 text-gray-700 text-sm">
-//                                    {file ? file.name : "Pan.png "}
-//                                  </span>
-
-//                                  {file ? (
-//                                    <button type="button" onClick={handleDelete} className="ml-2 text-red-500">
-//                                      <MdDelete size={20} />
-//                                    </button>
-//                                  ) : (
-//                                    <label htmlFor="pan" className="ml-2 cursor-pointer text-blue-700">
-//                                      <MdOutlineFileUpload size={22} />
-//                                    </label>
-//                                  )}
-//                                </div>
-//                           </div>
-
-//                          <div className=" absolute top-50 right-30"> {/* Make parent relative */}
-//   {/* ... your Bidder Information form fields ... */}
-
-//                          {/* <div className="absolute top-2 right-4"> */}
-//                          <h1 className='font-semibold'>Upload Bidder Profile</h1>
-//     <img
-//       src={profileempty}
-//       alt="profile"
-//                              className="h-[120px] w-[120px]  border border-gray-300 object-cover "
-
-
-
-
-//                          />
-
-// </div>
-// </div>
-//                         {/* </div> */}
-
-//                  </div>
-//              </div>
-
-
-
-
-
-
-
-//              <div className="mt-4 w-[1290px] bg-white rounded-md">
-//                  <h1 className="text-blue-900 font-semibold text-xl pb-2">Add Bank Details</h1>
-//                  <div className="flex flex-wrap justify-between gap-4">
-//                      {/* Left Section (Form Fields) */}
-//                      <div className="flex flex-wrap gap-10 flex-1 text-sm">
-
-//                          {/* Account No */}
-//                          <div className="flex flex-col gap-1  w-[160px]">
-//                              <label className="text-gray-900 font-medium">Account Number</label>
-//                              <input
-//                                  type="number"
-//                                  placeholder=" 521753215"
-//                                  className="border border-gray-300 rounded-md px-3 py-2 focus:ring-1 focus:ring-blue-500 focus:outline-none"
-//                              />
-//                          </div>
-
-
-
-//                          {/* IFSC Number */}
-//                          <div className="flex flex-col gap-1  w-[160px]">
-//                              <label className="text-gray-900 font-medium">IFSC Number</label>
-//                              <input
-//                                  type="number"
-//                                  placeholder="IFSC Number"
-//                                  className="border border-gray-300 rounded-md px-3 py-2 focus:ring-1 focus:ring-blue-500 focus:outline-none"
-//                              />
-//                          </div>
-
-//                          {/*Alternate Mobile Number */}
-//                          <div className="flex flex-col gap-1  w-[160px]">
-//                              <label className="text-gray-900 font-medium">Alternate Mobile Number</label>
-//                              <input
-//                                  type="number"
-//                                  placeholder="Alternate Mobile Number"
-//                                  className="border border-gray-300 rounded-md px-3 py-2 focus:ring-1 focus:ring-blue-500 focus:outline-none"
-//                              />
-//                          </div>
-
-//                          {/* Account Holder No*/}
-//                          <div className="flex flex-col gap-1  w-[160px]">
-//                              <label className="text-gray-900 font-medium">Account Holder No</label>
-//                              <input
-//                                  type="number"
-//                                  placeholder="46242266"
-//                                  className="border border-gray-300 rounded-md px-3 py-2 focus:ring-1 focus:ring-blue-500 focus:outline-none"
-//                              />
-//                          </div>
-
-//                          {/*Bank Name*/}
-//                          <div className="flex flex-col gap-1 w-[160px]">
-//                              <label className="text-gray-900 font-medium">Bank Name</label>
-//                              <input
-//                              type="text"
-//                              placeholder="Bank Name"
-//                                  className="border border-gray-300 rounded-md px-3 py-2 focus:ring-1 focus:ring-blue-500 focus:outline-none"
-//                              />
-//                          </div>
-
-//                          {/* Bank Address */}
-//                          <div className="flex flex-col gap-1 w-[160px]">
-//                              <label className="text-gray-900 font-medium">Bank Address </label>
-//                              <div className="flex">
-//                                  <input
-//                                      type="text"
-//                                      placeholder="Bank Address "
-//                                      className="border border-gray-300 rounded-l-md px-3 py-2 w-full focus:ring-1 focus:ring-blue-500 focus:outline-none"
-//                                  />
-
-//                              </div>
-//                          </div>
-
-
-
-
-
-
-
-
-
-
-
-
-//                         </div>
-
-//                  </div>
-
-//              </div>
-
-
-
-
-
-//          </div >
-
-//      )
-// }
-
-// export default EditBidderDetails
-
-
-import { useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { IoMdImage } from "react-icons/io";
 import { MdDelete, MdOutlineFileUpload } from "react-icons/md";
 import profileempty from '../assets/profileempty.png';
+import { updateBidderApi, viewBidderApi } from '../API/Transaction/Auction/BidderApi'
+import { useNavigate, useParams } from 'react-router-dom';
 
 const EditBidderDetails = () => {
-    const [file, setFile] = useState(null);
+    const navigate = useNavigate();
+    const { id } = useParams(); // 🔹 Get bidder ID from route
+    const [bidderPhoto, setBidderPhoto] = useState(null);
 
-    const handleFileChange = (e) => {
-        setFile(e.target.files[0]);
+    const [formData, setFormData] = useState({
+        bidder_name: "",
+        mobile_no: "",
+        alt_mob_no: "",
+        email: "",
+        personal_address: "",
+        shop_address: "",
+        landline_no: "",
+        landline_no2: "",
+        firm_name: "",
+        gst_no: "",
+        aadhar_no: "",
+        pan_no: "",
+        bank_name: "",
+        account_no: "",
+        ifsc_code: "",
+        account_holder_name: "",
+        bank_address: "",
+    });
+
+    // File Refs
+    const aadharRef = useRef(null);
+    const panRef = useRef(null);
+    const photoRef = useRef(null);
+
+    const handleFileChange = (e, type) => {
+        const file = e.target.files[0];
+        if (type === "aadhar") setAadharFile(file);
+        else if (type === "pan") setPanFile(file);
+        else if (type === "photo") setBidderPhoto(file);
     };
 
-    const handleDelete = () => {
-        setFile(null);
+
+    const handleDeleteFile = (type) => {
+        if (type === "aadhar") setAadharFile(null);
+        else if (type === "pan") setPanFile(null);
+        else if (type === "photo") setBidderPhoto(null);
     };
+
+    const [aadharFile, setAadharFile] = useState(null);
+    const [panFile, setPanFile] = useState(null);
+    const [loading, setLoading] = useState(false);
+
+    useEffect(() => {
+        const fetchBidder = async () => {
+            // debugger
+            try {
+                setLoading(true);
+                const res = await viewBidderApi(id);
+                // console.log(res.bidder)
+                setFormData(res.bidder); // adjust this based on backend response shape
+            } catch (err) {
+                console.error("❌ Error fetching bidder:", err);
+                alert("Failed to load bidder data");
+            } finally {
+                setLoading(false);
+            }
+        };
+        fetchBidder();
+    }, [id]);
+
+    // 🔹 Handle input changes
+    const handleChange = (e) => {
+        const { name, value } = e.target;
+        setFormData((prev) => ({ ...prev, [name]: value }));
+    };
+
+    // 🔹 Handle file inputs
+    const handleAadharChange = (e) => setAadharFile(e.target.files[0]);
+    const handlePanChange = (e) => setPanFile(e.target.files[0]);
+    const handleDeleteAadhar = () => setAadharFile(null);
+    const handleDeletePan = () => setPanFile(null);
+
+    // // 🔹 Submit update
+    // const handleUpdate = async () => {
+    //     try {
+    //         const fd = new FormData();
+    //         Object.entries(formData).forEach(([key, value]) => fd.append(key, value));
+    //         if (aadharFile) fd.append("aadharDoc", aadharFile);
+    //         if (panFile) fd.append("panDoc", panFile);
+
+    //         await updateBidderApi(id, fd);
+    //         alert("✅ Bidder updated successfully!");
+    //         navigate(-1);
+    //     } catch (err) {
+    //         console.error("❌ Error updating bidder:", err);
+    //         alert("Update failed!");
+    //     }
+    // };
+
+    const handleUpdate = async () => {
+        try {
+            const fd = new FormData();
+            Object.entries(formData).forEach(([key, value]) => fd.append(key, value));
+            if (aadharFile) fd.append("aadharDoc", aadharFile);
+            if (panFile) fd.append("panDoc", panFile);
+            if (bidderPhoto) fd.append("bidderPhoto", bidderPhoto); // ✅ add this line
+
+            await updateBidderApi(id, fd);
+            alert("✅ Bidder updated successfully!");
+            navigate(-1);
+        } catch (err) {
+            console.error("❌ Error updating bidder:", err);
+            alert("Update failed!");
+        }
+    };
+
+
+    if (loading) return <div className="text-center py-10">Loading bidder details...</div>;
+
 
     return (
         <div className="flex flex-col items-center mt-5 px-4">
@@ -383,10 +130,10 @@ const EditBidderDetails = () => {
                         Edit Bidder Registration
                     </h2>
                     <div className="flex items-center gap-3">
-                        <button className="bg-[#0A2478] text-white text-[12px] w-[80px] h-[32px] rounded-[3.75px] hover:bg-blue-700 transition">
+                        <button onClick={handleUpdate} className="bg-[#0A2478] text-white text-[12px] w-[80px] h-[32px] rounded-[3.75px] hover:bg-blue-700 transition">
                             Update
                         </button>
-                        <button className="bg-[#C1121F] text-white text-[12px] w-[80px] h-[32px] rounded-[3.75px] hover:bg-red-700 transition">
+                        <button onClick={() => navigate(-1)} className="bg-[#C1121F] text-white text-[12px] w-[80px] h-[32px] rounded-[3.75px] hover:bg-red-700 transition">
                             Cancel
                         </button>
                     </div>
@@ -406,7 +153,10 @@ const EditBidderDetails = () => {
                                 <div className="px-3 mb-2  w-[280px]">
                                     <label className="text-gray-900 font-medium">Bidder Name <span className='text-red-600'>*</span></label>
                                     <input
+                                        name="bidder_name"
                                         type="text"
+                                        value={formData.bidder_name}
+                                        onChange={handleChange}
                                         placeholder="Bidder Name"
                                         className="border border-gray-300 rounded-md px-3 py-1.5 w-full"
                                     />
@@ -417,6 +167,9 @@ const EditBidderDetails = () => {
                                     <label className="text-gray-900 font-medium">Mobile Number <span className='text-red-600'>*</span></label>
                                     <input
                                         type="tel"
+                                        name="mobile_no"
+                                        value={formData.mobile_no}
+                                        onChange={handleChange}
                                         placeholder="Mobile Number"
                                         className="border border-gray-300 rounded-md px-3 py-1.5 w-full"
                                     />
@@ -427,6 +180,10 @@ const EditBidderDetails = () => {
                                     <label className="text-gray-900 font-medium">Alternate Mobile Number</label>
                                     <input
                                         type="tel"
+                                        name="alt_mob_no"
+                                        value={formData.alt_mob_no}
+                                        onChange={handleChange}
+
                                         placeholder="Alternate Mobile Number"
                                         className="border border-gray-300 rounded-md px-3 py-1.5 w-full"
                                     />
@@ -437,6 +194,9 @@ const EditBidderDetails = () => {
                                     <label className="text-gray-900 font-medium">Email ID <span className='text-red-600'>*</span></label>
                                     <input
                                         type="email"
+                                        name="email"
+                                        value={formData.email}
+                                        onChange={handleChange}
                                         placeholder="Email ID"
                                         className="border border-gray-300 rounded-md px-3 py-1.5 w-full"
                                     />
@@ -447,6 +207,9 @@ const EditBidderDetails = () => {
                                     <label className="text-gray-900 font-medium">Personal Address <span className='text-red-600'>*</span></label>
                                     <input
                                         type="text"
+                                        name="personal_address"
+                                        value={formData.personal_address}
+                                        onChange={handleChange}
                                         placeholder="Personal Address"
                                         className="border border-gray-300 rounded-md px-3 py-1.5 w-full"
                                     />
@@ -457,6 +220,9 @@ const EditBidderDetails = () => {
                                     <label className="text-gray-900 font-medium">Shop Address <span className='text-red-600'>*</span></label>
                                     <input
                                         type="text"
+                                        name="shop_address"
+                                        value={formData.shop_address}
+                                        onChange={handleChange}
                                         placeholder="Shop Address"
                                         className="border border-gray-300 rounded-md px-3 py-1.5 w-full"
                                     />
@@ -467,6 +233,9 @@ const EditBidderDetails = () => {
                                     <label className="text-gray-900 font-medium">Landline No 1 <span className='text-red-600'>*</span></label>
                                     <input
                                         type="tel"
+                                        name="landline_no"
+                                        value={formData.landline_no}
+                                        onChange={handleChange}
                                         placeholder="203-53363"
                                         className="border border-gray-300 rounded-md px-3 py-1.5 w-full"
                                     />
@@ -477,6 +246,9 @@ const EditBidderDetails = () => {
                                     <label className="text-gray-900 font-medium">Landline No 2</label>
                                     <input
                                         type="tel"
+                                        name="landline_no2"
+                                        value={formData.landline_no2}
+                                        onChange={handleChange}
                                         placeholder="203-53363"
                                         className="border border-gray-300 rounded-md px-3 py-1.5 w-full"
                                     />
@@ -487,6 +259,9 @@ const EditBidderDetails = () => {
                                     <label className="text-gray-900 font-medium">Firm Name <span className='text-red-600'>*</span></label>
                                     <input
                                         type="text"
+                                        name="firm_name"
+                                        value={formData.firm_name}
+                                        onChange={handleChange}
                                         placeholder="Firm Name"
                                         className="border border-gray-300 rounded-md px-3 py-1.5 w-full"
                                     />
@@ -497,6 +272,9 @@ const EditBidderDetails = () => {
                                     <label className="text-gray-900 font-medium">GST No <span className='text-red-600'>*</span></label>
                                     <input
                                         type="text"
+                                        name="gst_no"
+                                        value={formData.gst_no}
+                                        onChange={handleChange}
                                         placeholder="GST No"
                                         className="border border-gray-300 rounded-md px-3 py-1.5 w-full"
                                     />
@@ -507,6 +285,9 @@ const EditBidderDetails = () => {
                                     <label className="text-gray-900 font-medium">Aadhar No <span className='text-red-600'>*</span></label>
                                     <input
                                         type="text"
+                                        name="aadhar_no"
+                                        value={formData.aadhar_no}
+                                        onChange={handleChange}
                                         placeholder="Aadhar no"
                                         className="border border-gray-300 rounded-md px-3 py-1.5 w-full"
                                     />
@@ -518,17 +299,22 @@ const EditBidderDetails = () => {
                                     <div className="flex items-center border border-gray-300 rounded-md px-3 py-1.5">
                                         <IoMdImage className="text-gray-600 mr-2" size={20} />
                                         <input
+                                            ref={aadharRef}
                                             type="file"
                                             accept=".png,.jpg,.jpeg,.pdf"
-                                            onChange={handleFileChange}
+                                            onChange={(e) => handleFileChange(e, "aadhar")}
                                             className="hidden"
                                             id="aadhar-file"
                                         />
                                         <span className="flex-1 text-gray-700 text-sm">
-                                            {file ? file.name : "Aadhar.png"}
+                                            {aadharFile ? aadharFile.name : "Aadhar.png"}
                                         </span>
-                                        {file ? (
-                                            <button type="button" onClick={handleDelete} className="ml-2 text-red-500 hover:text-red-700">
+                                        {aadharFile ? (
+                                            <button
+                                                type="button"
+                                                onClick={() => handleDeleteFile("aadhar")}
+                                                className="ml-2 text-red-500 hover:text-red-700"
+                                            >
                                                 <MdDelete size={20} />
                                             </button>
                                         ) : (
@@ -538,12 +324,14 @@ const EditBidderDetails = () => {
                                         )}
                                     </div>
                                 </div>
-
                                 {/* Pan No */}
                                 <div className="px-3 mb-6 w-[220px]">
                                     <label className="text-gray-900 font-medium">Pan No <span className='text-red-600'>*</span></label>
                                     <input
                                         type="text"
+                                        name="pan_no"
+                                        value={formData.pan_no}
+                                        onChange={handleChange}
                                         placeholder="Pan no"
                                         className="border border-gray-300 rounded-md px-3 py-1.5 w-full"
                                     />
@@ -555,17 +343,22 @@ const EditBidderDetails = () => {
                                     <div className="flex items-center border border-gray-300 rounded-md px-3 py-1.5">
                                         <IoMdImage className="text-gray-600 mr-2" size={20} />
                                         <input
+                                            ref={panRef}
                                             type="file"
                                             accept=".png,.jpg,.jpeg,.pdf"
-                                            onChange={handleFileChange}
+                                            onChange={(e) => handleFileChange(e, "pan")}
                                             className="hidden"
                                             id="pan-file"
                                         />
                                         <span className="flex-1 text-gray-700 text-sm">
-                                            {file ? file.name : "Pan.png"}
+                                            {panFile ? panFile.name : "pan.png"}
                                         </span>
-                                        {file ? (
-                                            <button type="button" onClick={handleDelete} className="ml-2 text-red-500 hover:text-red-700">
+                                        {panFile ? (
+                                            <button
+                                                type="button"
+                                                onClick={() => handleDeleteFile("pan")}
+                                                className="ml-2 text-red-500 hover:text-red-700"
+                                            >
                                                 <MdDelete size={20} />
                                             </button>
                                         ) : (
@@ -586,37 +379,68 @@ const EditBidderDetails = () => {
                             </h3>
                             <div className="relative">
                                 <img
-                                    src={profileempty}
+                                    src={
+                                        bidderPhoto
+                                            ? URL.createObjectURL(bidderPhoto)
+                                            : formData.bidder_photo || profileempty
+                                    }
                                     alt="profile"
                                     className="h-32 w-32 border-2 border-gray-300 object-cover rounded-lg"
                                 />
-
+                                <input
+                                    ref={photoRef}
+                                    type="file"
+                                    accept=".png,.jpg,.jpeg"
+                                    onChange={(e) => handleFileChange(e, "photo")}
+                                    className="hidden"
+                                    id="photo-file"
+                                />
+                                {bidderPhoto ? (
+                                    <button
+                                        type="button"
+                                        onClick={() => handleDeleteFile("photo")}
+                                        className="absolute top-1 right-1 bg-white text-red-500 rounded-full p-1 shadow hover:text-red-700"
+                                    >
+                                        <MdDelete size={18} />
+                                    </button>
+                                ) : (
+                                    <label
+                                        htmlFor="photo-file"
+                                        className="absolute bottom-1 right-1 bg-white text-blue-600 rounded-full p-1 shadow cursor-pointer hover:text-blue-800"
+                                    >
+                                        <MdOutlineFileUpload size={18} />
+                                    </label>
+                                )}
                             </div>
-
                         </div>
+
                     </div>
                 </div>
 
                 {/* Bank Details Section */}
                 <div className="bg-white">
-                    <h1 className="text-blue-900 font-semibold text-xl pb-4 mb-2 border-gray-200">
+                    <h1 className="text-blue-900 font-semibold text-xl pb-4 mb-2">
                         Add Bank Details
                     </h1>
                     <div className="flex flex-wrap -mx-3">
-                        {/* Account Number */}
                         <div className="flex flex-col gap-2 px-3 mb-6 w-[240px]">
                             <label className="text-gray-900 font-medium">Account Number <span className='text-red-600'>*</span></label>
                             <input
+                                name="account_no"
+                                value={formData.account_no}
+                                onChange={handleChange}
                                 type="text"
                                 placeholder="521753215"
                                 className="border border-gray-300 rounded-md px-3 py-2 w-full"
                             />
                         </div>
-
                         {/* IFSC Number */}
                         <div className="flex flex-col gap-2 px-3 mb-6 w-[200px]">
                             <label className="text-gray-900 font-medium">IFSC Number <span className='text-red-600'>*</span></label>
                             <input
+                                name="ifsc_code"
+                                value={formData.ifsc_code}
+                                onChange={handleChange}
                                 type="text"
                                 placeholder="IFSC Number"
                                 className="border border-gray-300 rounded-md px-3 py-2 w-full"
@@ -627,6 +451,9 @@ const EditBidderDetails = () => {
                         <div className="flex flex-col gap-2 px-3 mb-6 w-[280px]">
                             <label className="text-gray-900 font-medium">Account Holder Name <span className='text-red-600'>*</span></label>
                             <input
+                                name="account_holder_name"
+                                value={formData.account_holder_name}
+                                onChange={handleChange}
                                 type="text"
                                 placeholder="Account Holder Name"
                                 className="border border-gray-300 rounded-md px-3 py-2 w-full"
@@ -637,6 +464,9 @@ const EditBidderDetails = () => {
                         <div className="flex flex-col gap-2 px-3 mb-6 w-[250px]">
                             <label className="text-gray-900 font-medium">Bank Name <span className='text-red-600'>*</span></label>
                             <input
+                                name="bank_name"
+                                value={formData.bank_name}
+                                onChange={handleChange}
                                 type="text"
                                 placeholder="Bank Name"
                                 className="border border-gray-300 rounded-md px-3 py-2 w-full"
@@ -647,13 +477,15 @@ const EditBidderDetails = () => {
                         <div className="flex flex-col gap-2 px-3 mb-6 w-[320px]">
                             <label className="text-gray-900 font-medium">Bank Address <span className='text-red-600'>*</span></label>
                             <input
+                                name="bank_address"
+                                value={formData.bank_address}
+                                onChange={handleChange}
                                 type="text"
                                 placeholder="Bank Address"
                                 className="border border-gray-300 rounded-md px-3 py-2 w-full"
                             />
                         </div>
                     </div>
-
                 </div>
             </div>
         </div>

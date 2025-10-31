@@ -82,42 +82,44 @@ function PrintLoanApplication() {
           </div>
 
           {/* Group 2 (duplicate layout) */}
-          <div className="flex items-start gap-8">
-            {/* Customer Card (reuse same two image URLs) */}
-            <div className="text-center">
-              <h3 className="text-sm font-semibold text-blue-800 mb-2">
-                Customer
-              </h3>
-              <div className="w-[120px]">
-                <img
-                  src="https://images.unsplash.com/photo-1544005313-94ddf0286df2?q=80&w=480&auto=format&fit=crop"
-                  alt="customer-2"
-                  className="w-full h-[120px] object-cover  border border-blue-200"
-                />
-                <img
-                  src="src\assets\sign.png"
-                  alt="customer-sign-2"
-                  className="w-full mt-2 h-[34px] object-contain border border-blue-100"
-                />
+          <div className="flex justify-between gap-30">
+            <div className="flex gap-4">
+              {/* Customer Card */}
+              <div className="text-center">
+                <h3 className="text-sm font-semibold text-blue-800 mb-2">
+                  Customer
+                </h3>
+                <div className="w-[120px]">
+                  <img
+                    src="https://images.unsplash.com/photo-1544005313-94ddf0286df2?q=80&w=480&auto=format&fit=crop"
+                    alt="customer"
+                    className="w-full h-[120px] object-cover  border border-gray-200"
+                  />
+                  <img
+                    src="src\assets\sign.png"
+                    alt="customer-sign"
+                    className="w-full mt-2 h-[34px] object-contain border border-blue-100"
+                  />
+                </div>
               </div>
-            </div>
 
-            {/* Co Borrower Card */}
-            <div className="text-center">
-              <h3 className="text-sm font-semibold text-blue-800 mb-2">
-                Co Borrower
-              </h3>
-              <div className="w-[120px]">
-                <img
-                  src="https://images.unsplash.com/photo-1544005313-94ddf0286df2?q=80&w=480&auto=format&fit=crop"
-                  alt="co-borrower-2"
-                  className="w-full h-[120px] object-cover  border border-blue-200"
-                />
-                <img
-                  src="src\assets\sign.png"
-                  alt="co-sign-2"
-                  className="w-full mt-2 h-[34px] object-contain border border-blue-100"
-                />
+              {/* Co Borrower Card */}
+              <div className="text-center">
+                <h3 className="text-sm font-semibold text-blue-800 mb-2">
+                  Co Borrower
+                </h3>
+                <div className="w-[120px]">
+                  <img
+                    src="https://images.unsplash.com/photo-1544005313-94ddf0286df2?q=80&w=480&auto=format&fit=crop"
+                    alt="co-borrower"
+                    className="w-full h-[120px] object-cover  border border-gray-200"
+                  />
+                  <img
+                    src="src\assets\sign.png"
+                    alt="co-sign"
+                    className="w-full mt-2 h-[34px] object-contain border border-blue-100"
+                  />
+                </div>
               </div>
             </div>
 

@@ -1,337 +1,9 @@
-// import { useRef } from "react";
-// import { MdOutlineFileUpload } from "react-icons/md";
-// import profileempty from '../assets/profileempty.png';
-// const BidderRegistration = () => {
-   
-
-//         return (
-//             <div className="flex flex-col items-center mt-5">
-//                 {/* Header Section */}
-//                 <div className="flex items-center justify-between px-6 py-4 w-[1290px] h-[62px] border border-gray-200 rounded-[11px] shadow-sm">
-//                     <h2 className="text-red-600 font-bold text-[20px] leading-[1.48] font-['Source_Sans_3']">
-//                         Bidder Registration
-//                     </h2>
- 
-//                     <div className="flex items-center gap-5">
-//                         <button className="bg-[#0A2478] text-white text-[10px] w-[74px] h-[24px] rounded-[3.75px] hover:bg-red-700 transition">
-//                             Submit
-//                         </button>
-//                         <button className="bg-[#C1121F] text-white text-[10px] w-[74px] h-[24px] rounded-[3.75px] hover:bg-red-700 transition">
-//                             Cancel
-//                         </button>
-//                     </div>
-//                 </div>
-//                 {/* Loan Information Section */}
-//                 <div className=" max-w-[1290px] bg-white p-4">
-//                     <h1 className="text-blue-900 font-semibold text-xl pb-3">Bidder Information</h1>
- 
-//                     <div className="flex flex-wrap justify-between grid-cols-4 gap-6 text-sm">
-//                         {/* Left Section (Form Fields) */}
-//                         <div className="flex flex-wrap gap-5 flex-1 text-sm w-full">
- 
-//                             {/* Bidder Name */}
-//                             <div className="flex flex-col gap-1 w-[250px]">
-//                                 <label className="text-gray-900 font-medium">Bidder Name</label>
-//                                 <input
-//                                     type="text"
-//                                     placeholder="Bidder Name"
-//                                     className="border border-gray-300 rounded-md px-3 py-2 focus:ring-1 focus:ring-blue-500 focus:outline-none"
-//                                 />
-//                             </div>
- 
-                         
- 
-//                             {/* Mobile Number */}
-//                             <div className="flex flex-col gap-1  w-[250px]">
-//                                 <label className="text-gray-900 font-medium">Mobile Number</label>
-//                                 <input
-//                                     type="number"
-//                                     placeholder="Mobile Number"
-//                                     className="border border-gray-300 rounded-md px-3 py-2 focus:ring-1 focus:ring-blue-500 focus:outline-none"
-//                                 />
-//                             </div>
- 
-//                             {/*Alternate Mobile Number */}
-//                             <div className="flex flex-col gap-1  w-[250px]">
-//                                 <label className="text-gray-900 font-medium">Alternate Mobile Number</label>
-//                                 <input
-//                                     type="number"
-//                                     placeholder="Alternate Mobile Number"
-//                                     className="border border-gray-300 rounded-md px-3 py-2 focus:ring-1 focus:ring-blue-500 focus:outline-none"
-//                                 />
-//                             </div>
- 
-//                             {/* Email ID*/}
-//                             <div className="flex flex-col gap-1  w-[250px]">
-//                                 <label className="text-gray-900 font-medium">Email ID</label>
-//                                 <input
-//                                     type="email"
-//                                     placeholder="Email ID"
-//                                     className="border border-gray-300 rounded-md px-3 py-2 focus:ring-1 focus:ring-blue-500 focus:outline-none"
-//                                 />
-//                             </div>
- 
-//                             {/*Personal Address*/}
-//                             <div className="flex flex-col gap-1 w-[250px]">
-//                                 <label className="text-gray-900 font-medium">Personal Address</label>
-//                                 <input
-//                                     type="text"
-//                                     placeholder="Personal Address"
-//                                     className="border border-gray-300 rounded-md px-3 py-2 focus:ring-1 focus:ring-blue-500 focus:outline-none"
-//                                 />
-//                             </div>
- 
-//                             {/* Shop Address */}
-//                             <div className="flex flex-col gap-1 w-[250px]">
-//                                 <label className="text-gray-900 font-medium">Shop Address</label>
-//                                 <div className="flex">
-//                                     <input
-//                                         type="text"
-//                                         placeholder="Shop Address"
-//                                         className="border border-gray-300 rounded-l-md px-3 py-2 w-full focus:ring-1 focus:ring-blue-500 focus:outline-none"
-//                                     />
-                                 
-//                                 </div>
-//                             </div>
- 
-//                             {/* Landline No 1 */}
-//                             <div className="flex flex-col gap-1 w-[250px]">
-//                                 <label className="text-gray-900 font-medium">Landline No 1</label>
-//                                 <input
-//                                     type="number"
-//                                     placeholder='203-53363'
-//                                     className="border border-gray-300 rounded-md px-3 py-2 focus:ring-1 focus:ring-blue-500 focus:outline-none"
-//                                 />
-//                             </div>
-                     
-//                             {/* Landline No 2 */}
-//                             <div className="flex flex-col gap-1 w-[250px]">
-//                                 <label className="text-gray-900 font-medium">Landline No 2</label>
-//                                 <input
-//                                     type="number"
-//                                     placeholder='203-53363'
-//                                     className="border border-gray-300 rounded-md px-3 py-2 focus:ring-1 focus:ring-blue-500 focus:outline-none"
-//                                 />
-//                             </div>
- 
-//                             {/* Firm Name */}
-//                             <div className="flex flex-col gap-1 w-[280px]">
-//                                 <label className="text-gray-900 font-medium">Firm Name</label>
-//                                 <input
-//                                     type="text"
-//                                     placeholder="Firm Name"
-//                                     className="border border-gray-300 rounded-md px-3 py-2 focus:ring-1 focus:ring-blue-500 focus:outline-none"
-//                                 />
-//                             </div>
- 
-//                             {/* GST No */}
-//                             <div className="flex flex-col gap-1 w-[320px]">
-//                                 <label className="text-gray-900 font-medium">GST No</label>
-//                                 <input
-//                                     type="number"
-//                                     placeholder="GST No"
-//                                     className="border border-gray-300 rounded-md px-3 py-2 focus:ring-1 focus:ring-blue-500 focus:outline-none"
-//                                 />
-//                             </div>
-                     
-                     
-//                             {/* Aadhar No */}
-//                             <div className="flex flex-col gap-1 w-[250px]">
-//                                 <label className="text-gray-900 font-medium"> Aadhar No</label>
-//                                 <input
-//                                     type="number"
-//                                     placeholder=" Aadhar No"
-//                                     className="border border-gray-300 rounded-md px-3 py-2 focus:ring-1 focus:ring-blue-500 focus:outline-none"
-//                                 />
-//                             </div>
-//                             <div className="flex flex-col space-y-2">
-//                                 <label htmlFor="document" className="text-sm font-medium text-gray-700">
-//                                     Upload Document
-//                                 </label>
-//                                 <input
-//                                     type="file"
-//                                     ref={fileInputRef}
-//                                     onChange={handleFileChange}
-//                                    accept=".pdf,.jpg,.jpeg,.png,.doc,.docx"
-//                                     className="hidden"
-//                                 />
-//                                 <button
-//                                     type="button"
-//                                     onClick={handleUploadClick}
-//                                     className="bg-blue-950  text-white font-semibold py-2 px-4 rounded-md w-fit flex items-center gap-2"
-                                    
-//                                 >
-//                                     Upload Document
-//                                     <MdOutlineFileUpload className="text-xl" />
-//                                 </button>
-//                             </div>
- 
-//                             {/* Pan No */}
-//                             <div className="flex flex-col gap-1 w-[170px]">
-//                                 <label className="text-gray-900 font-medium">Pan No</label>
-//                                 <input
-//                                     type="number"
-//                                     placeholder="Pan No"
-//                                     className="border border-gray-300 rounded-md px-3 py-2 focus:ring-1 focus:ring-blue-500 focus:outline-none"
-//                                 />
-//                             </div>
- 
-//                             <div className="flex flex-col space-y-2">
-//                                 <label htmlFor="document" className="text-sm font-medium text-gray-700">
-//                                     Upload Document
-//                                 </label>
-//                                 <input
-//                                     type="file"
-//                                     ref={fileInputRef}
-//                                     onChange={handleFileChange}
-//                                     accept=".pdf,.jpg,.jpeg,.png,.doc,.docx"
-//                                     className="hidden"
-                                    
-//                                 />
-//                                 <button
-//                                     type="button"
-//                                     onClick={handleUploadClick}
-//                                     className="bg-blue-950  text-white font-semibold py-2 px-4 rounded-md flex items-center gap-2 w-fit"
-//                                 >
-//                                      Upload Document
-//         <MdOutlineFileUpload className="text-xl" />
-//                                 </button>
-//                             </div>
-                         
-//                             <div className=" absolute top-50 right-30"> {/* Make parent relative */}
-//                                 {/* ... your Bidder Information form fields ... */}
-
-//                                 {/* <div className="absolute top-2 right-4"> */}
-//                                 <h1 className='font-semibold'>Upload Bidder Profile</h1>
-//                                 <img
-//                                     src={profileempty}
-//                                     alt="profile"
-//                                     className="h-[120px] w-[120px]  border border-gray-300 object-cover "
-                             
-        
-                         
-                             
-//                                 />
-                         
-//                             </div>
-//                         </div>
-//                         {/* </div> */}
-                     
-//                     </div>
-//                 </div>
- 
- 
- 
-             
-            
- 
-             
-//                 <div className="mt-4 w-[1290px] bg-white rounded-md">
-//                     <h1 className="text-blue-900 font-semibold text-xl pb-2">Add Bank Details</h1>
-//                     <div className="flex flex-wrap justify-between gap-4">
-//                         {/* Left Section (Form Fields) */}
-//                         <div className="flex flex-wrap gap-10 flex-1 text-sm">
- 
-//                             {/* Account No */}
-//                             <div className="flex flex-col gap-1  w-[160px]">
-//                                 <label className="text-gray-900 font-medium">Account Number</label>
-//                                 <input
-//                                     type="number"
-//                                     placeholder=" 521753215"
-//                                     className="border border-gray-300 rounded-md px-3 py-2 focus:ring-1 focus:ring-blue-500 focus:outline-none"
-//                                 />
-//                             </div>
- 
-                         
- 
-//                             {/* IFSC Number */}
-//                             <div className="flex flex-col gap-1  w-[160px]">
-//                                 <label className="text-gray-900 font-medium">IFSC Number</label>
-//                                 <input
-//                                     type="number"
-//                                     placeholder="IFSC Number"
-//                                     className="border border-gray-300 rounded-md px-3 py-2 focus:ring-1 focus:ring-blue-500 focus:outline-none"
-//                                 />
-//                             </div>
- 
-//                             {/*Alternate Mobile Number */}
-//                             <div className="flex flex-col gap-1  w-[160px]">
-//                                 <label className="text-gray-900 font-medium">Alternate Mobile Number</label>
-//                                 <input
-//                                     type="number"
-//                                     placeholder="Alternate Mobile Number"
-//                                     className="border border-gray-300 rounded-md px-3 py-2 focus:ring-1 focus:ring-blue-500 focus:outline-none"
-//                                 />
-//                             </div>
- 
-//                             {/* Account Holder No*/}
-//                             <div className="flex flex-col gap-1  w-[160px]">
-//                                 <label className="text-gray-900 font-medium">Account Holder No</label>
-//                                 <input
-//                                     type="number"
-//                                     placeholder="46242266"
-//                                     className="border border-gray-300 rounded-md px-3 py-2 focus:ring-1 focus:ring-blue-500 focus:outline-none"
-//                                 />
-//                             </div>
- 
-//                             {/*Bank Name*/}
-//                             <div className="flex flex-col gap-1 w-[160px]">
-//                                 <label className="text-gray-900 font-medium">Bank Name</label>
-//                                 <input
-//                                     type="text"
-//                                     placeholder="Bank Name"
-//                                     className="border border-gray-300 rounded-md px-3 py-2 focus:ring-1 focus:ring-blue-500 focus:outline-none"
-//                                 />
-//                             </div>
- 
-//                             {/* Bank Address */}
-//                             <div className="flex flex-col gap-1 w-[160px]">
-//                                 <label className="text-gray-900 font-medium">Bank Address </label>
-//                                 <div className="flex">
-//                                     <input
-//                                         type="text"
-//                                         placeholder="Bank Address "
-//                                         className="border border-gray-300 rounded-l-md px-3 py-2 w-full focus:ring-1 focus:ring-blue-500 focus:outline-none"
-//                                     />
-                                 
-//                                 </div>
-//                             </div>
- 
-                        
-                     
- 
-                         
- 
-                         
-                         
- 
-                        
-                         
-                         
-//                         </div>
-                     
-//                     </div>
-                
-//                 </div>
- 
- 
- 
-            
- 
-//             </div >
- 
-//         )
-//     }
-
-
-// export default BidderRegistration 
-
-
-import { useState, useRef } from "react";
-import { MdOutlineFileUpload } from "react-icons/md";
-import profileempty from "../assets/profileempty.png";
-import { registerBidderApi } from "../API/Transaction/Auction/BidderApi";; // ✅ Import API
+import { useState, useRef } from 'react';
+import { IoMdImage } from "react-icons/io";
+import { MdDelete, MdOutlineFileUpload } from "react-icons/md";
 import { useNavigate } from "react-router-dom";
+import profileempty from '../assets/profileempty.png';
+import { registerBidderApi } from '../API/Transaction/Auction/BidderApi'
 
 const BidderRegistration = () => {
   const navigate = useNavigate();
@@ -353,6 +25,7 @@ const BidderRegistration = () => {
     account_no: "",
     ifsc_code: "",
     account_holder_name: "",
+    bank_address: "",
   });
 
   // File Refs
@@ -380,10 +53,15 @@ const BidderRegistration = () => {
     else if (type === "photo") setBidderPhoto(file);
   };
 
+  const handleDeleteFile = (type) => {
+    if (type === "aadhar") setAadharFile(null);
+    else if (type === "pan") setPanFile(null);
+    else if (type === "photo") setBidderPhoto(null);
+  };
+
   // Submit Form
   const handleSubmit = async () => {
     try {
-      // ✅ Validate minimal fields
       if (!formData.bidder_name || !formData.mobile_no || !formData.gst_no) {
         alert("Please fill all required fields!");
         return;
@@ -409,147 +87,369 @@ const BidderRegistration = () => {
   };
 
   return (
-    <div className="flex flex-col items-center mt-5">
+    <div className="flex flex-col items-center mt-5 px-4">
       {/* Header Section */}
-      <div className="flex items-center justify-between px-6 py-4 w-[1290px] border border-gray-200 rounded-[11px] shadow-sm">
-        <h2 className="text-red-600 font-bold text-[20px] leading-[1.48]">
-          Bidder Registration
-        </h2>
-
-        <div className="flex items-center gap-5">
-          <button
-            onClick={handleSubmit}
-            className="bg-[#0A2478] text-white text-[10px] w-[74px] h-[24px] rounded-[3.75px] hover:bg-blue-700 transition"
-          >
-            Submit
-          </button>
-          <button
-            onClick={() => navigate("/Bidder-Registration-List")}
-            className="bg-[#C1121F] text-white text-[10px] w-[74px] h-[24px] rounded-[3.75px] hover:bg-red-700 transition"
-          >
-            Cancel
-          </button>
-        </div>
-      </div>
-
-      {/* Bidder Information */}
-      <div className="max-w-[1290px] bg-white p-4 mt-4 rounded-md shadow-sm">
-        <h1 className="text-blue-900 font-semibold text-xl pb-3">Bidder Information</h1>
-
-        <div className="flex flex-wrap gap-6 text-sm">
-          {[
-            { label: "Bidder Name", name: "bidder_name" },
-            { label: "Mobile Number", name: "mobile_no" },
-            { label: "Alternate Mobile", name: "alt_mob_no" },
-            { label: "Email ID", name: "email" },
-            { label: "Personal Address", name: "personal_address" },
-            { label: "Shop Address", name: "shop_address" },
-            { label: "Landline No 1", name: "landline_no" },
-            { label: "Landline No 2", name: "landline_no2" },
-            { label: "Firm Name", name: "firm_name" },
-            { label: "GST No", name: "gst_no" },
-            { label: "Aadhar No", name: "aadhar_no" },
-            { label: "PAN No", name: "pan_no" },
-          ].map((f) => (
-            <div key={f.name} className="flex flex-col gap-1 w-[250px]">
-              <label className="text-gray-900 font-medium">{f.label}</label>
-              <input
-                name={f.name}
-                type="text"
-                value={formData[f.name]}
-                onChange={handleChange}
-                placeholder={f.label}
-                className="border border-gray-300 rounded-md px-3 py-2 focus:ring-1 focus:ring-blue-500 focus:outline-none"
-              />
-            </div>
-          ))}
-
-          {/* File Uploads */}
-          <div className="flex flex-col space-y-2">
-            <label className="text-sm font-medium text-gray-700">Upload Aadhar</label>
-            <input
-              type="file"
-              ref={aadharRef}
-              onChange={(e) => handleFileChange(e, "aadhar")}
-              accept=".pdf,.jpg,.jpeg,.png"
-              className="hidden"
-            />
+      <div className="w-full max-w-[1290px] bg-white border border-gray-200 rounded-[11px] shadow-sm mb-6">
+        <div className="flex flex-col sm:flex-row items-center justify-between px-6 py-4">
+          <h2 className="text-red-600 font-bold text-[20px]">Bidder Registration</h2>
+          <div className="flex items-center gap-3">
             <button
-              type="button"
-              onClick={() => aadharRef.current.click()}
-              className="bg-blue-950 text-white font-semibold py-2 px-4 rounded-md flex items-center gap-2 w-fit"
+              onClick={handleSubmit}
+              className="bg-[#0A2478] text-white text-[12px] w-[80px] h-[32px] rounded-[3.75px] hover:bg-blue-700 transition"
             >
-              Upload Aadhar <MdOutlineFileUpload className="text-xl" />
+              Sumbit
             </button>
-          </div>
-
-          <div className="flex flex-col space-y-2">
-            <label className="text-sm font-medium text-gray-700">Upload PAN</label>
-            <input
-              type="file"
-              ref={panRef}
-              onChange={(e) => handleFileChange(e, "pan")}
-              accept=".pdf,.jpg,.jpeg,.png"
-              className="hidden"
-            />
             <button
-              type="button"
-              onClick={() => panRef.current.click()}
-              className="bg-blue-950 text-white font-semibold py-2 px-4 rounded-md flex items-center gap-2 w-fit"
+              onClick={() => navigate(-1)}
+              className="bg-[#C1121F] text-white text-[12px] w-[80px] h-[32px] rounded-[3.75px] hover:bg-red-700 transition"
             >
-              Upload PAN <MdOutlineFileUpload className="text-xl" />
-            </button>
-          </div>
-
-          {/* Bidder Photo Upload */}
-          <div className="flex flex-col items-center space-y-2">
-            <h1 className="font-semibold">Upload Bidder Profile</h1>
-            <img
-              src={bidderPhoto ? URL.createObjectURL(bidderPhoto) : profileempty}
-              alt="profile"
-              className="h-[120px] w-[120px] border border-gray-300 object-cover rounded-md"
-            />
-            <input
-              type="file"
-              ref={photoRef}
-              onChange={(e) => handleFileChange(e, "photo")}
-              accept=".jpg,.jpeg,.png"
-              className="hidden"
-            />
-            <button
-              type="button"
-              onClick={() => photoRef.current.click()}
-              className="bg-blue-950 text-white font-semibold py-2 px-4 rounded-md flex items-center gap-2 w-fit"
-            >
-              Upload Photo <MdOutlineFileUpload className="text-xl" />
+              Cancel
             </button>
           </div>
         </div>
       </div>
 
-      {/* Bank Details */}
-      <div className="mt-4 w-[1290px] bg-white rounded-md p-4 shadow-sm">
-        <h1 className="text-blue-900 font-semibold text-xl pb-2">Add Bank Details</h1>
+      {/* Main Content Container */}
+      <div className="w-full max-w-[1290px] space-y-6">
+        {/* Bidder Information Section */}
+        <div className="bg-white">
+          <h1 className="text-blue-900 font-semibold text-xl pb-4 mb-2">
+            Bidder Information
+          </h1>
+          <div className="flex flex-col lg:flex-row gap-4">
+            {/* Left Section - Form Fields */}
+            <div className="flex-1">
+              <div className="flex flex-wrap -mx-3">
+                <div className="px-3 mb-2 w-[280px]">
+                  <label className="text-gray-900 font-medium">Bidder Name <span className='text-red-600'>*</span></label>
+                  <input
+                    name="bidder_name"
+                    type="text"
+                    value={formData.bidder_name}
+                    onChange={handleChange}
+                    placeholder="Bidder Name"
+                    className="border border-gray-300 rounded-md px-3 py-1.5 w-full"
+                  />
+                </div>
 
-        <div className="flex flex-wrap gap-6 text-sm">
-          {[
-            { label: "Account Number", name: "account_no" },
-            { label: "IFSC Code", name: "ifsc_code" },
-            { label: "Account Holder Name", name: "account_holder_name" },
-            { label: "Bank Name", name: "bank_name" },
-          ].map((f) => (
-            <div key={f.name} className="flex flex-col gap-1 w-[250px]">
-              <label className="text-gray-900 font-medium">{f.label}</label>
+                {/* Repeat for all other fields with name/value/onChange */}
+                {/* Mobile Number */}
+                <div className="px-3 mb-6 w-[220px]">
+                  <label className="text-gray-900 font-medium">Mobile Number <span className='text-red-600'>*</span></label>
+                  <input
+                    type="tel"
+                    name="mobile_no"
+                    value={formData.mobile_no}
+                    onChange={handleChange}
+                    placeholder="Mobile Number"
+                    className="border border-gray-300 rounded-md px-3 py-1.5 w-full"
+                  />
+                </div>
+
+                <div className="px-3 mb-6 w-[220px]">
+                  <label className="text-gray-900 font-medium">Alternate Mobile Number</label>
+                  <input
+                    type="tel"
+                    name="alt_mob_no"
+                    value={formData.alt_mob_no}
+                    onChange={handleChange}
+                    placeholder="Alternate Mobile Number"
+                    className="border border-gray-300 rounded-md px-3 py-1.5 w-full"
+                  />
+                </div>
+
+                {/* Email ID */}
+                <div className="px-3 mb-6 w-[280px]">
+                  <label className="text-gray-900 font-medium">Email ID <span className='text-red-600'>*</span></label>
+                  <input
+                    type="email"
+                    name="email"
+                    value={formData.email}
+                    onChange={handleChange}
+                    placeholder="Email ID"
+                    className="border border-gray-300 rounded-md px-3 py-1.5 w-full"
+                  />
+                </div>
+
+                {/* Personal Address */}
+                <div className="px-3 mb-6 w-[340px]">
+                  <label className="text-gray-900 font-medium">Personal Address <span className='text-red-600'>*</span></label>
+                  <input
+                    type="text"
+                    name="personal_address"
+                    value={formData.personal_address}
+                    onChange={handleChange}
+                    placeholder="Personal Address"
+                    className="border border-gray-300 rounded-md px-3 py-1.5 w-full"
+                  />
+                </div>
+
+                {/* Shop Address */}
+                <div className="px-3 mb-6 w-[340px]">
+                  <label className="text-gray-900 font-medium">Shop Address <span className='text-red-600'>*</span></label>
+                  <input
+                    type="text"
+                    name="shop_address"
+                    value={formData.shop_address}
+                    onChange={handleChange}
+                    placeholder="Shop Address"
+                    className="border border-gray-300 rounded-md px-3 py-1.5 w-full"
+                  />
+                </div>
+
+                {/* Landline No 1 */}
+                <div className="px-3 mb-6 w-[180px]">
+                  <label className="text-gray-900 font-medium">Landline No 1 <span className='text-red-600'>*</span></label>
+                  <input
+                    type="tel"
+                    name="landline_no"
+                    value={formData.landline_no}
+                    onChange={handleChange}
+                    placeholder="203-53363"
+                    className="border border-gray-300 rounded-md px-3 py-1.5 w-full"
+                  />
+                </div>
+
+                {/* Landline No 2 */}
+                <div className="px-3 mb-6 w-[180px]">
+                  <label className="text-gray-900 font-medium">Landline No 2</label>
+                  <input
+                    type="tel"
+                    name="landline_no2"
+                    value={formData.landline_no2}
+                    onChange={handleChange}
+                    placeholder="203-53363"
+                    className="border border-gray-300 rounded-md px-3 py-1.5 w-full"
+                  />
+                </div>
+
+                {/* Firm Name */}
+                <div className="px-3 mb-6 w-[280px]">
+                  <label className="text-gray-900 font-medium">Firm Name <span className='text-red-600'>*</span></label>
+                  <input
+                    type="text"
+                    name="firm_name"
+                    value={formData.firm_name}
+                    onChange={handleChange}
+                    placeholder="Firm Name"
+                    className="border border-gray-300 rounded-md px-3 py-1.5 w-full"
+                  />
+                </div>
+
+                {/* GST No */}
+                <div className="px-3 mb-6 w-[280px]">
+                  <label className="text-gray-900 font-medium">GST No <span className='text-red-600'>*</span></label>
+                  <input
+                    type="text"
+                    name="gst_no"
+                    value={formData.gst_no}
+                    onChange={handleChange}
+                    placeholder="GST No"
+                    className="border border-gray-300 rounded-md px-3 py-1.5 w-full"
+                  />
+                </div>
+
+                {/* Aadhar No */}
+                <div className="px-3 mb-6 w-[220px]">
+                  <label className="text-gray-900 font-medium">Aadhar No <span className='text-red-600'>*</span></label>
+                  <input
+                    type="text"
+                    name="aadhar_no"
+                    value={formData.aadhar_no}
+                    onChange={handleChange}
+                    placeholder="Aadhar no"
+                    className="border border-gray-300 rounded-md px-3 py-1.5 w-full"
+                  />
+                </div>
+
+                {/* Aadhar Document */}
+                <div className="px-3 mb-6 w-[280px]">
+                  <label className="text-gray-900 font-medium">Aadhar Document</label>
+                  <div className="flex items-center border border-gray-300 rounded-md px-3 py-1.5">
+                    <IoMdImage className="text-gray-600 mr-2" size={20} />
+                    <input
+                      ref={aadharRef}
+                      type="file"
+                      accept=".png,.jpg,.jpeg,.pdf"
+                      onChange={(e) => handleFileChange(e, "aadhar")}
+                      className="hidden"
+                      id="aadhar-file"
+                    />
+                    <span className="flex-1 text-gray-700 text-sm">
+                      {aadharFile ? aadharFile.name : "Aadhar.png"}
+                    </span>
+                    {aadharFile ? (
+                      <button
+                        type="button"
+                        onClick={() => handleDeleteFile("aadhar")}
+                        className="ml-2 text-red-500 hover:text-red-700"
+                      >
+                        <MdDelete size={20} />
+                      </button>
+                    ) : (
+                      <label htmlFor="aadhar-file" className="ml-2 cursor-pointer text-blue-600 hover:text-blue-800">
+                        <MdOutlineFileUpload size={22} />
+                      </label>
+                    )}
+                  </div>
+                </div>
+                {/* Pan No */}
+                <div className="px-3 mb-6 w-[220px]">
+                  <label className="text-gray-900 font-medium">Pan No <span className='text-red-600'>*</span></label>
+                  <input
+                    type="text"
+                    name="pan_no"
+                    value={formData.pan_no}
+                    onChange={handleChange}
+                    placeholder="Pan no"
+                    className="border border-gray-300 rounded-md px-3 py-1.5 w-full"
+                  />
+                </div>
+
+                {/* Pan Document */}
+                <div className="px-3 mb-6 w-[280px]">
+                  <label className="text-gray-900 font-medium">Pan Document</label>
+                  <div className="flex items-center border border-gray-300 rounded-md px-3 py-1.5">
+                    <IoMdImage className="text-gray-600 mr-2" size={20} />
+                    <input
+                      ref={panRef}
+                      type="file"
+                      accept=".png,.jpg,.jpeg,.pdf"
+                      onChange={(e) => handleFileChange(e, "pan")}
+                      className="hidden"
+                      id="pan-file"
+                    />
+                    <span className="flex-1 text-gray-700 text-sm">
+                      {panFile ? panFile.name : "pan.png"}
+                    </span>
+                    {panFile ? (
+                      <button
+                        type="button"
+                        onClick={() => handleDeleteFile("pan")}
+                        className="ml-2 text-red-500 hover:text-red-700"
+                      >
+                        <MdDelete size={20} />
+                      </button>
+                    ) : (
+                      <label htmlFor="pan-file" className="ml-2 cursor-pointer text-blue-600 hover:text-blue-800">
+                        <MdOutlineFileUpload size={22} />
+                      </label>
+                    )}
+                  </div>
+                </div>
+
+              </div>
+            </div>
+
+            {/* Right Section - Profile Picture */}
+            <div className="lg:w-48 flex flex-col items-center lg:items-start gap-4">
+              <h3 className="font-semibold text-gray-900 text-center lg:text-left">
+                Upload Bidder Profile
+              </h3>
+              <div className="relative">
+                <img
+                  src={bidderPhoto ? URL.createObjectURL(bidderPhoto) : profileempty}
+                  alt="profile"
+                  className="h-32 w-32 border-2 border-gray-300 object-cover rounded-lg"
+                />
+                {bidderPhoto ? (
+                  <button
+                    type="button"
+                    onClick={() => handleDeleteFile("photo")}
+                    className="absolute top-1 right-1 bg-white text-red-500 rounded-full p-1"
+                  >
+                    <MdDelete size={18} />
+                  </button>
+                ) : (
+                  <label
+                    htmlFor="photo-file"
+                    className="absolute bottom-2 right-3 bg-[#0A2478] text-white rounded-sm text-[10px] p-1 cursor-pointer"
+                  >
+                    Upload from Computer
+                    {/* <MdOutlineFileUpload size={18} /> */}
+                    <input
+                      id="photo-file"
+                      type="file"
+                      accept=".png,.jpg,.jpeg"
+                      onChange={(e) => handleFileChange(e, "photo")}
+                      className="hidden"
+                    />
+                  </label>
+                )}
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* Bank Details Section */}
+        <div className="bg-white">
+          <h1 className="text-blue-900 font-semibold text-xl pb-4 mb-2">
+            Add Bank Details
+          </h1>
+          <div className="flex flex-wrap -mx-3">
+            <div className="flex flex-col gap-2 px-3 mb-6 w-[240px]">
+              <label className="text-gray-900 font-medium">Account Number <span className='text-red-600'>*</span></label>
               <input
-                name={f.name}
-                type="text"
-                value={formData[f.name]}
+                name="account_no"
+                value={formData.account_no}
                 onChange={handleChange}
-                placeholder={f.label}
-                className="border border-gray-300 rounded-md px-3 py-2 focus:ring-1 focus:ring-blue-500 focus:outline-none"
+                type="text"
+                placeholder="521753215"
+                className="border border-gray-300 rounded-md px-3 py-2 w-full"
               />
             </div>
-          ))}
+            {/* IFSC Number */}
+            <div className="flex flex-col gap-2 px-3 mb-6 w-[200px]">
+              <label className="text-gray-900 font-medium">IFSC Number <span className='text-red-600'>*</span></label>
+              <input
+              name="ifsc_code"
+                value={formData.ifsc_code}
+                onChange={handleChange}
+                type="text"
+                placeholder="IFSC Number"
+                className="border border-gray-300 rounded-md px-3 py-2 w-full"
+              />
+            </div>
+
+            {/* Account Holder Name */}
+            <div className="flex flex-col gap-2 px-3 mb-6 w-[280px]">
+              <label className="text-gray-900 font-medium">Account Holder Name <span className='text-red-600'>*</span></label>
+              <input
+              name="account_holder_name"
+                value={formData.account_holder_name}
+                onChange={handleChange}
+                type="text"
+                placeholder="Account Holder Name"
+                className="border border-gray-300 rounded-md px-3 py-2 w-full"
+              />
+            </div>
+
+            {/* Bank Name */}
+            <div className="flex flex-col gap-2 px-3 mb-6 w-[250px]">
+              <label className="text-gray-900 font-medium">Bank Name <span className='text-red-600'>*</span></label>
+              <input
+              name="bank_name"
+                value={formData.bank_name}
+                onChange={handleChange}
+                type="text"
+                placeholder="Bank Name"
+                className="border border-gray-300 rounded-md px-3 py-2 w-full"
+              />
+            </div>
+
+            {/* Bank Address (full width on large screens) */}
+            <div className="flex flex-col gap-2 px-3 mb-6 w-[320px]">
+              <label className="text-gray-900 font-medium">Bank Address <span className='text-red-600'>*</span></label>
+              <input
+              name="bank_address"
+                value={formData.bank_address}
+                onChange={handleChange}
+                type="text"
+                placeholder="Bank Address"
+                className="border border-gray-300 rounded-md px-3 py-2 w-full"
+              />
+            </div>
+          </div>
         </div>
       </div>
     </div>

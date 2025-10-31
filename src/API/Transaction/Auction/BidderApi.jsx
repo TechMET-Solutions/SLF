@@ -40,7 +40,7 @@ export const registerBidderApi = async (formData) => {
 // 🔹 Update existing bidder
 export const updateBidderApi = async (id, formData) => {
   try {
-    const response = await axios.put(`${API_BASE}/updateBidder/${id}`, formData, {
+    const response = await axios.put(`${API_BASE}/update-bidder/${id}`, formData, {
       headers: {
         "Content-Type": "multipart/form-data",
       },
@@ -54,8 +54,10 @@ export const updateBidderApi = async (id, formData) => {
 
 // 🔹 View single bidder by ID
 export const viewBidderApi = async (id) => {
+  debugger
   try {
     const response = await axios.get(`${API_BASE}/view-bidder/${id}`);
+    console.log(response)
     return response.data;
   } catch (error) {
     console.error("❌ Error viewing bidder:", error);
