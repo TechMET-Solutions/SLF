@@ -16,6 +16,7 @@ import { CgSoftwareUpload } from 'react-icons/cg';
 import { RiMessage2Line } from 'react-icons/ri';
 import { API } from '../api';
 
+
 const LoanApplication = () => {
   useEffect(() => {
     document.title = "SLF | Loan Application";
@@ -923,3 +924,94 @@ const LoanApplication = () => {
 };
 
 export default LoanApplication;
+
+
+
+  // {/* NEW UPLOAD MODAL */}
+//      {uploadModalOpen && (
+//   // 1. Modal Overlay
+//   <div className="fixed inset-0 flex items-center justify-center z-50 bg-[#0101017A] backdrop-blur-[6.8px]">
+//     {/* 2. Modal Content Container: Increased padding for better internal spacing */}
+//     <div className="bg-white w-[850px] max-w-[95%] rounded-lg shadow-lg p-8 relative"> 
+      
+//       {/* 3. Modal Title: Adjusted padding to a standard size (pb-6) */}
+//       <h2 className="text-[20px] font-bold text-[#0A2478] pb-6">
+//         Upload file against loan
+//       </h2>
+
+//       <div className="grid grid-cols-2 gap-4 mt-5">
+//         {/* File Description Input */}
+//         <div className="flex flex-col">
+//           <label className="text-[15px] font-medium mb-1">
+//             File Description
+//           </label>
+//           <input
+//             type="text"
+//             placeholder="Enter the Description"
+//             className="border border-[#BEBEBE] rounded-md p-2 focus:ring-2 focus:ring-[#0A2478] focus:outline-none" // Added focus:outline-none for cleaner focus ring
+//           />
+//         </div>
+
+//         {/* Upload File Input and Button */}
+//         <div className="flex flex-col">
+//           <label className="text-[15px] font-medium mb-1">Upload</label>
+//           <div className="flex gap-2">
+//             <input
+//               type="file"
+//               className="border border-[#BEBEBE] rounded-md p-2 w-full text-[14px] file:mr-4 file:py-1 file:px-2   file:text-sm fihe  file:bg-gray-400 file:text-[##4A4A4A]" // Added more styling to the native file input button
+//             />
+//             <button className="bg-[#0A2478] text-white px-5 py-2 rounded-md hover:bg-[#091E5E] flex-shrink-0">
+//               Upload Files
+//             </button>
+//           </div>
+//         </div>
+//       </div>
+
+//       {/* Uploaded Files Table */}
+//       <div className="mt-6 border border-gray-300 rounded-md overflow-hidden">
+//         <table className="w-full border-collapse text-[14px]">
+//           <thead>
+//             <tr className="bg-[#0A2478] text-white">
+//               <th className="p-3 border border-gray-300 font-semibold">File Name</th> {/* Increased padding to p-3 for better heading appearance */}
+//               <th className="p-3 border border-gray-300 font-semibold">File Description</th>
+//               <th className="p-3 border border-gray-300 font-semibold">Uploaded Date</th>
+//               <th className="p-3 border border-gray-300 font-semibold">Uploaded By</th>
+//                             <th className="p-3 border border-gray-300 font-semibold"></th>
+
+//             </tr>
+//           </thead>
+          
+//           <tbody>
+//             <tr className="text-center">
+//               <td className="p-3 border border-gray-300 text-gray-500">
+//                 —
+//               </td>
+//               <td className="p-3 border border-gray-300 text-gray-500">
+//                 —
+//               </td>
+//               <td className="p-3 border border-gray-300 text-gray-500">
+//                 —
+//               </td>
+//               <td className="p-3 border border-gray-300 text-gray-500">
+//                 —
+//               </td>
+//             </tr>
+//           </tbody>
+//         </table>
+//       </div>
+      
+//       {/* 4. Cancel Button: Centered with a flex container and mx-auto */}
+//      <div className="flex justify-center mt-8"> 
+//   {/* Added container for centering and margin-top */}
+//   <button 
+//     className="bg-[#C1121F] text-white px-9 py-2 rounded-md hover:bg-[#A30F19]"
+//     // ADDED onClick HANDLER HERE
+//     onClick={handleCancel} // Use the name of your specific cancel/close function
+//   >
+//     Cancel
+//   </button>
+// </div>
+      
+//     </div>
+//   </div>
+// )}
