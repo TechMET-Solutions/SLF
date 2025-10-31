@@ -47,11 +47,34 @@ const EmployeeProfile = () => {
     designation: "",
     date_of_birth: "",
     assign_role: "",
+     assign_role_id: "",
     password: "",
     fax: "",
     status: true,
   });
 
+
+const [roles, setRoles] = useState([]);
+
+  useEffect(() => {
+    const loadRoles = async () => {
+      const fetchedRoles = await fetchAllRoles();
+      setRoles(fetchedRoles);
+    };
+    loadRoles();
+  }, []);
+
+  const fetchAllRoles = async () => {
+  try {
+    const response = await fetch(`${API}/Master/User-Management/getAll-roles-options`);
+    const result = await response.json();
+    return result.roles || [];
+  } catch (err) {
+    console.error("Error fetching roles:", err);
+    return [];
+  }
+  };
+  
   console.log(formData,"formData")
   const panFileInputRef = useRef(null);
   const handlePanFileChange = (e) => {
@@ -311,6 +334,7 @@ const handleEdit = (employee) => {
       designation: formData.designation,
       date_of_birth: formData.date_of_birth,
       assign_role: formData.assign_role,
+      assign_role_id: formData.assign_role_id,
       password: formData.password,
       fax: formData.fax,
       status: formData.status,
@@ -347,13 +371,26 @@ const handleEdit = (employee) => {
     // You might want to call a search API or filter locally
   };
 
-  const handleInputChange = (e) => {
-    const { name, value, type, checked } = e.target;
-    setFormData(prev => ({
+ const handleInputChange = (e) => {
+  const { name, value, type, checked } = e.target;
+
+  if (name === "assign_role") {
+    // Find the selected role object
+    const selectedRole = roles.find((role) => role.id === parseInt(value));
+
+    setFormData((prev) => ({
       ...prev,
-      [name]: type === 'checkbox' ? checked : value
+      assign_role_id: selectedRole ? selectedRole.id : "",
+      assign_role: selectedRole ? selectedRole.role_name : "",
     }));
-  };
+  } else {
+    setFormData((prev) => ({
+      ...prev,
+      [name]: type === "checkbox" ? checked : value,
+    }));
+  }
+};
+
  const handleForceDownload = async (fileUrl, filename) => {
     try {
       // Fetch the file as a blob (binary data)
@@ -742,24 +779,24 @@ const handleEdit = (employee) => {
                   {/* Role, Password, Fax */}
                   <div className="flex gap-2">
                     <div className="flex flex-col gap-1">
-                      <label className="text-gray-700 font-medium">Assign Role*</label>
-                      <select
-                        name="assign_role"
-                        value={formData.assign_role}
-                         disabled={mode === "view"}
-                        onChange={handleInputChange}
-                        className="border border-[#C4C4C4] rounded-md px-3 py-2 focus:outline-none focus:ring-1 focus:ring-blue-500 w-[174px]"
-                      >
-                        <option value="" disabled>Select Role</option>
-                        <option value="Emp">Employee</option>
-                        <option value="branch manager">Branch Manager</option>
-                        <option value="executive">Executive</option>
-                        <option value="administrator">Administrator</option>
-                        <option value="auditor">Auditor</option>
-                        <option value="minor role">Minor Role</option>
-                        <option value="No role">No Role</option>
-                      </select>
-                    </div>
+      <label className="text-gray-700 font-medium">Assign Role*</label>
+     <select
+  name="assign_role"
+  value={formData.assign_role_id}  // ✅ use role_id as value
+  onChange={handleInputChange}
+  disabled={mode === "view"}
+  className="border border-[#C4C4C4] rounded-md px-3 py-2 focus:outline-none focus:ring-1 focus:ring-blue-500 w-[174px]"
+>
+  <option value="" disabled>
+    Select Role
+  </option>
+  {roles.map((role) => (
+    <option key={role.id} value={role.id}>
+      {role.role_name}
+    </option>
+  ))}
+</select>
+    </div>
                     <div className="flex flex-col gap-1">
                       <label className="text-gray-700 font-medium">Password*</label>
                       <input
