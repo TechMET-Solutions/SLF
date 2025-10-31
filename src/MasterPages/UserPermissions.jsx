@@ -1,84 +1,114 @@
-import { useNavigate } from "react-router-dom";
+import axios from "axios";
 import { useEffect, useState } from "react";
+import { useLocation, useNavigate } from "react-router-dom";
+import { API } from "../api";
 
 const UserPermissions = () => {
+  const navigate = useNavigate();
+  const location = useLocation();
+
+  // 👇 Extract user/role data passed from previous page
+  const { row } = location.state || {};
+
+  console.log("Received Role/User Row:", row);
+
   useEffect(() => {
-    document.title = "SLF | User Permissions ";
+    document.title = "SLF | User Permissions";
   }, []);
 
-  const navigate = useNavigate();
-
-  // Active tab
+  // Active Tab
   const [activeTab, setActiveTab] = useState("Master");
 
-  // Data for all tabs
+  // Permissions structure
   const [tabData, setTabData] = useState({
-    Master: [
-      { name: "Account Group", view: true, add: false, edit: true, delete: false, approve: true },
-      { name: "Account Code", view: true, add: false, edit: true, delete: false, approve: true },
-      { name: "Item Profile", view: false, add: true, edit: false, delete: true, approve: false },
-      { name: "Product Purity Profile", view: false, add: true, edit: false, delete: true, approve: false },
-      { name: "Address Proof", view: false, add: true, edit: false, delete: true, approve: false },
-      { name: "ID Proof", view: false, add: true, edit: false, delete: true, approve: false },
-      { name: "Customer Profile", view: false, add: true, edit: false, delete: true, approve: false },
-      { name: "Employee Profile", view: false, add: true, edit: false, delete: true, approve: false },
-      { name: "Push Gold Rate", view: false, add: true, edit: false, delete: true, approve: false },
-      { name: "Scheme Type", view: false, add: true, edit: false, delete: true, approve: false },
-      { name: "Scheme Details", view: false, add: true, edit: false, delete: true, approve: false },
-      { name: "Scheme Process", view: false, add: true, edit: false, delete: true, approve: false },
-      { name: "Scheme Process", view: true, add: true, edit: true, delete: false, approve: true },
-      { name: "User Role", view: true, add: false, edit: true, delete: false, approve: false },
-      { name: "User Role Permission", view: true, add: true, edit: false, delete: false, approve: true },
-      { name: "Branch Profile", view: true, add: true, edit: true, delete: true, approve: true },
-      { name: "Scheme Renewal", view: false, add: true, edit: false, delete: false, approve: false },
-      { name: "Preference Shares Scheme Details", view: true, add: true, edit: false, delete: false, approve: true },
-      { name: "Preference Shares Scheme Process", view: true, add: false, edit: true, delete: false, approve: false },
-      { name: "Auction Notice Template", view: true, add: false, edit: false, delete: false, approve: true },
-      { name: "Charges Profile", view: true, add: true, edit: true, delete: true, approve: true },
-      { name: "Member Branch Mapping", view: true, add: true, edit: false, delete: false, approve: false },
-      { name: "Member Login Time Period", view: true, add: false, edit: true, delete: false, approve: false },
-      { name: "Branch Scheme Mapping", view: true, add: false, edit: false, delete: false, approve: false },
-      { name: "Tax Master", view: true, add: false, edit: false, delete: false, approve: false },
-      { name: "Tax Mapping", view: true, add: true, edit: false, delete: false, approve: false },
+   Master: [
+      { name: "Account Group", view: false, add: false, edit: false, delete: false, approve: false },
+      { name: "Account Code", view: false, add: false, edit: false, delete: false, approve: false },
+      { name: "Item Profile", view: false, add: false, edit: false, delete: false, approve: false },
+      { name: "Product Purity Profile", view: false, add: false, edit: false, delete: false, approve: false },
+      { name: "Address Proof", view: false, add: false, edit: false, delete: false, approve: false },
+      { name: "ID Proof", view: false, add: false, edit: false, delete: false, approve: false },
+      { name: "Customer Profile", view: false, add: false, edit: false, delete: false, approve: false },
+      { name: "Employee Profile", view: false, add: false, edit: false, delete: false, approve: false },
+      { name: "Push Gold Rate", view: false, add: false, edit: false, delete: false, approve: false },
+      { name: "Scheme Type", view: false, add: false, edit: false, delete: false, approve: false },
+      { name: "Scheme Details", view: false, add: false, edit: false, delete: false, approve: false },
+      { name: "Scheme Process", view: false, add: false, edit: false, delete: false, approve: false },
+      { name: "Scheme Process", view: false, add: false, edit: false, delete: false, approve: false },
+      { name: "User Role", view: false, add: false, edit: false, delete: false, approve: false },
+      { name: "User Role Permission", view: false, add: false, edit: false, delete: false, approve: false },
+      { name: "Branch Profile", view: false, add: false, edit: false, delete: false, approve: false },
+      { name: "Scheme Renewal", view: false, add: false, edit: false, delete: false, approve: false },
+      { name: "Preference Shares Scheme Details", view: false, add: false, edit: false, delete: false, approve: false },
+      { name: "Preference Shares Scheme Process", view: false, add: false, edit: false, delete: false, approve: false },
+      { name: "Auction Notice Template", view: false, add: false, edit: false, delete: false, approve: false },
+      { name: "Charges Profile", view: false, add: false, edit: false, delete: false, approve: false },
+      { name: "Member Branch Mapping", view: false, add: false, edit: false, delete: false, approve: false },
+      { name: "Member Login Time Period", view: false, add: false, edit: false, delete: false, approve: false },
+      { name: "Branch Scheme Mapping", view: false, add: false, edit: false, delete: false, approve: false },
+      { name: "Tax Master", view: false, add: false, edit: false, delete: false, approve: false },
+      { name: "Tax Mapping", view: false, add: false, edit: false, delete: false, approve: false },
     ],
     Transaction: [
-      { name: "Loan Application", view: true, add: true, edit: false, delete: false, approve: true },
-      { name: "Loan Application Process", view: true, add: true, edit: true, delete: false, approve: true },
-      { name: "Gold Purity Check", view: true, add: false, edit: false, delete: false, approve: false },
-      { name: "Gold Packaging Profile", view: true, add: true, edit: false, delete: false, approve: false },
-      { name: "Loan RePayment", view: true, add: true, edit: true, delete: false, approve: true },
-      { name: "Loan Installment Profile", view: true, add: true, edit: true, delete: false, approve: false },
-      { name: "Journal Voucher", view: true, add: true, edit: false, delete: false, approve: false },
-      { name: "Deposit Withdrawal", view: true, add: true, edit: true, delete: false, approve: false },
-      { name: "Fund Transfer", view: true, add: true, edit: false, delete: false, approve: true },
-      { name: "Over Draft", view: true, add: true, edit: false, delete: false, approve: false },
-      { name: "Receipt Voucher", view: true, add: false, edit: false, delete: false, approve: false },
-      { name: "Payment Voucher", view: true, add: true, edit: false, delete: false, approve: false },
-      { name: "Loan Auction Notice", view: true, add: true, edit: false, delete: false, approve: true },
-      { name: "Auction of Ornaments", view: true, add: false, edit: false, delete: false, approve: true },
-      { name: "Auction Loan Closure", view: true, add: true, edit: true, delete: false, approve: true },
-      { name: "Loan Approval Payment", view: true, add: false, edit: false, delete: false, approve: true },
-      { name: "Bank Reconciliation", view: true, add: false, edit: false, delete: false, approve: false },
-      { name: "Loan Cancellation", view: true, add: true, edit: false, delete: false, approve: true },
-      { name: "Packaging Tag Print", view: true, add: false, edit: false, delete: false, approve: false },
-      { name: "Receipt/Payment Voucher", view: true, add: false, edit: false, delete: false, approve: false },
-      { name: "Charges Againts Loan", view: true, add: true, edit: false, delete: false, approve: false },
-      { name: "Generate Legal Notice", view: true, add: false, edit: false, delete: false, approve: true },
-      { name: "Auction Invoice", view: true, add: false, edit: false, delete: false, approve: false },
-      { name: "Loan Release Legal Notice", view: true, add: false, edit: false, delete: false, approve: true },
-    ],
-    Miscellaneous: [
-      { name: "Backup Settings", view: true, add: false, edit: false, delete: false, approve: false },
+      { name: "Loan Application", view: false, add: false, edit: false, delete: false, approve: false },
+      { name: "Loan RePayment", view: false, add: false, edit: false, delete: false, approve: false },
     ],
     Reports: [
-      { name: "Daily Report", view: true, add: false, edit: false, delete: false, approve: false },
-      { name: "Monthly Report", view: true, add: false, edit: false, delete: false, approve: false },
+      { name: "Daily Report", view: false, add: false, edit: false, delete: false, approve: false },
+      { name: "Monthly Report", view: false, add: false, edit: false, delete: false, approve: false },
+    ],
+    Miscellaneous: [
+      { name: "Backup Settings", view: false, add: false, edit: false, delete: false, approve: false },
     ],
     "Tools/Utilities": [
-      { name: "Import Tool", view: true, add: false, edit: false, delete: false, approve: false },
-      { name: "Export Tool", view: true, add: false, edit: false, delete: false, approve: false },
+      { name: "Import Tool", view: false, add: false, edit: false, delete: false, approve: false },
+      { name: "Export Tool", view: false, add: false, edit: false, delete: false, approve: false },
     ],
   });
+
+  console.log(tabData,"tabdata")
+useEffect(() => {
+    if (row?.permissions) {
+      try {
+        // If permissions is string (e.g. from DB), parse it
+        const parsedPermissions =
+          typeof row.permissions === "string"
+            ? JSON.parse(row.permissions)
+            : row.permissions;
+
+        // ✅ Merge with default tabData to ensure structure consistency
+        setTabData((prev) => ({
+          ...prev,
+          ...parsedPermissions,
+        }));
+      } catch (err) {
+        console.error("❌ Invalid permissions JSON:", err);
+      }
+    }
+  }, [row]);
+
+  const handleSavePermissions = async () => {
+   
+    try {
+      const payload = {
+        role_id: row?.id || "DefaultRole",
+        permissions:tabData,
+      };
+
+      const response = await axios.post(`${API}/Master/save_Roles`, payload);
+
+      if (response.data.success) {
+        alert("✅ Permissions saved successfully!");
+        navigate("/User-Role-Permission"); // 👈 Redirect after save
+      } else {
+        alert("❌ Failed to save permissions.");
+      }
+    } catch (error) {
+      console.error("Error saving permissions:", error);
+      alert("Something went wrong while saving permissions!");
+    }
+  };
+
 
   // Handle checkbox change
   const handleChange = (tab, index, field, value) => {
@@ -87,103 +117,121 @@ const UserPermissions = () => {
     setTabData(updated);
   };
 
-  return (
-    <div className="min-h-screen w-full">
+  // ✅ Create JSON payload to send to API
+  const generatePermissionJSON = () => {
+    const permissions = Object.entries(tabData).flatMap(([tab, rows]) =>
+      rows.map((r) => ({
+        module: tab,
+        name: r.name,
+        view: r.view ? 1 : 0,
+        add: r.add ? 1 : 0,
+        edit: r.edit ? 1 : 0,
+        delete: r.delete ? 1 : 0,
+        approve: r.approve ? 1 : 0,
+      }))
+    );
 
+    return {
+      user_id: row?.id || null,
+      role_name: row?.role_name || "",
+      system_name: row?.system_name || "",
+      is_system_role: row?.is_system_role || 0,
+      permissions,
+    };
+  };
+
+  // Handle Save click
+  const handleSave = () => {
+    const finalJSON = generatePermissionJSON();
+    console.log("Final Permission JSON:", finalJSON);
+
+    // TODO: send to backend via POST API
+    // await axios.post(`${url}/user/savePermissions`, finalJSON);
+
+    alert("Permissions saved successfully!");
+  };
+
+  return (
+    <div className="min-h-screen w-full bg-gray-50 pb-10">
       {/* Header */}
       <div className="flex justify-center">
-        <div className="flex items-center px-6 py-4 border-b mt-5 w-[1290px] h-[62px] border rounded-[11px] border-gray-200 justify-between">
+        <div className="flex items-center px-6 py-4 border-b mt-5 w-[1290px] h-[62px] border rounded-[11px] border-gray-200 justify-between bg-white shadow">
           <h2
             style={{
               fontFamily: "Source Sans 3, sans-serif",
               fontWeight: 700,
               fontSize: "20px",
               lineHeight: "148%",
-              letterSpacing: "0em",
             }}
-            className="text-red-600"
+            className="text-[#0A2478]"
           >
-            User Role Permission
+            User Role Permission — {row?.role_name || "Unknown Role"}
           </h2>
 
           <div className="flex gap-3">
-            <div className="flex justify-between gap-5">
-              <button
-                style={{ width: "74px", height: "24px", borderRadius: "3.75px" }}
-                // onClick={() => setIsModalOpen(true)}
-                className="bg-[#0A2478] text-white text-[11.25px] font-source font-normal flex items-center justify-center"
-              >
-                Save
-              </button>
-
-              <button
-                className="text-white px-[6.25px] py-[6.25px] rounded-[3.75px] bg-[#C1121F] w-[74px] h-[24px] text-[10px]"
-                onClick={() => navigate(-1)}
-              >
-                Exit
-              </button>
-            </div>
+            <button
+              style={{ width: "74px", height: "30px", borderRadius: "4px" }}
+           onClick={handleSavePermissions}
+              className="bg-[#0A2478] text-white text-[12px] px-3 py-1"
+            >
+              Save
+            </button>
+            <button
+              className="bg-[#C1121F] text-white text-[12px] px-3 py-1 rounded"
+              onClick={() => navigate(-1)}
+            >
+              Exit
+            </button>
           </div>
         </div>
       </div>
 
       {/* Tabs */}
       <div className="flex justify-center gap-2 mt-5 items-center">
-        {["Master", "Transaction", "Miscellaneous", "Reports", "Tools/Utilities"].map((tab) => (
+        {Object.keys(tabData).map((tab) => (
           <div
             key={tab}
             onClick={() => setActiveTab(tab)}
             className={`cursor-pointer text-center rounded-[5px] border h-[31px] flex items-center justify-center px-4 transition 
-              ${activeTab === tab
-                ? "bg-[#0A2478] text-white"
-                : "hover:bg-[#0A2478] hover:text-white"
-              }`}
-            style={{
-              width:
-                tab === "Master"
-                  ? "228px"
-                  : tab === "Transaction"
-                    ? "251px"
-                    : tab === "Miscellaneous"
-                      ? "271px"
-                      : tab === "Reports"
-                        ? "228px"
-                        : "264px",
-            }}
+              ${activeTab === tab ? "bg-[#0A2478] text-white" : "hover:bg-[#0A2478] hover:text-white"}
+            `}
+            style={{ minWidth: "200px" }}
           >
             {tab}
           </div>
         ))}
       </div>
 
-      {/* Table Section */}
+      {/* Table */}
       <div className="flex justify-center">
-        <div className="overflow-x-auto mt-5 w-[1290px] mb-10">
+        <div className="overflow-x-auto mt-5 w-[1290px]">
           <table className="w-full border-collapse">
             <thead className="bg-[#0A2478] text-white text-sm">
               <tr>
-                <th className="px-4 py-2 text-left border-r border-gray-300 text-[13px] w-[370px]">Name</th>
-                <th className="px-4 py-2 text-center border-r border-gray-300 text-[13px] w-[183px]">View</th>
-                <th className="px-4 py-2 text-center border-r border-gray-300 text-[13px] w-[183px]">Add</th>
-                <th className="px-4 py-2 text-center border-r border-gray-300 text-[13px] w-[177px]">Edit</th>
-                <th className="px-4 py-2 text-center border-r border-gray-300 text-[13px] w-[181px]">Delete</th>
-                <th className="px-4 py-2 text-center border-r border-gray-300 text-[13px] w-[183px]">Approve</th>
+                <th className="px-4 py-2 text-left border-r border-gray-300">Name</th>
+                <th className="px-4 py-2 text-center border-r border-gray-300">View</th>
+                <th className="px-4 py-2 text-center border-r border-gray-300">Add</th>
+                <th className="px-4 py-2 text-center border-r border-gray-300">Edit</th>
+                <th className="px-4 py-2 text-center border-r border-gray-300">Delete</th>
+                <th className="px-4 py-2 text-center">Approve</th>
               </tr>
             </thead>
-            <tbody className="text-[12px]">
-              {tabData[activeTab].map((row, index) => (
+            <tbody className="text-[13px]">
+              {tabData[activeTab].map((r, index) => (
                 <tr
                   key={index}
                   className={`${index % 2 === 0 ? "bg-gray-50" : "bg-white"}`}
                 >
-                  <td className="px-4 py-2">{row.name}</td>
+                  <td className="px-4 py-2">{r.name}</td>
                   {["view", "add", "edit", "delete", "approve"].map((field) => (
                     <td key={field} className="px-4 py-2 text-center">
                       <input
                         type="checkbox"
-                        checked={row[field]}
-                        onChange={(e) => handleChange(activeTab, index, field, e.target.checked)}
-                        className="w-4 h-4 cursor-pointer accent-[#0A2478]"
+                        checked={r[field]}
+                        onChange={(e) =>
+                          handleChange(activeTab, index, field, e.target.checked)
+                        }
+                        className="w-4 h-4 accent-[#0A2478] cursor-pointer"
                       />
                     </td>
                   ))}

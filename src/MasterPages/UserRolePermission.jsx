@@ -338,19 +338,21 @@ const UserRolePermission = () => {
                         </button>
                       </div>
                     </td>
-                    <td className="px-4 py-2">
-                      <div className="flex gap-2 justify-center">
-                        <button className="bg-[#56A869] rounded-[2.31px] flex items-center justify-center p-0.5">
-                          <img
-                            src={Rights}
-                            alt="rights"
-                            className="w-[18px] h-[18px] cursor-pointer"
-                            onClick={() => navigate(`/User-Role`)}
-                          />
+                   <td className="px-4 py-2">
+  <div className="flex gap-2 justify-center">
+    <button
+      className="bg-[#56A869] rounded-[2.31px] flex items-center justify-center p-0.5"
+      onClick={() => navigate(`/User-Role`, { state: { row } })}
+    >
+      <img
+        src={Rights}
+        alt="rights"
+        className="w-[18px] h-[18px] cursor-pointer"
+      />
+    </button>
+  </div>
+</td>
 
-                        </button>
-                      </div>
-                    </td>
                   </tr>
                 ))
               ) : (
