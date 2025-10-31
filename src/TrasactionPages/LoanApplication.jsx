@@ -49,6 +49,8 @@ const LoanApplication = () => {
     status: "",
     field: ""
   });
+  const [remarkData, setRemarkData] = useState(null);
+  const [loadingRemark, setLoadingRemark] = useState(false);
 
   const options = [
     "01", "02", "03", "04", "11", "13",
@@ -140,21 +142,40 @@ const LoanApplication = () => {
     }
   };
 
-  const handleOpenRemark = () => {
-    setIsRemarkOpen(true);
-  };
+  const handleOpenRemark = async (row) => {
+    setLoadingRemark(true);
+    try {
+      let response;
+      const status = row.Status.toLowerCase();
 
-  const handleCloseRemark = () => {
-    setIsRemarkOpen(false);
+      if (status === "cancelled") {
+        response = await axios.get(`${API}/Transactions/goldloan/remark/${row.Loan_No}`);
+      } else if (status === "pending") {
+       response = await axios.get(`${API}/Transactions/Customer/remark/${row.BorrowerId}`);
+
+      }
+
+      if (response.data.success) {
+        setRemarkData(response.data.data);
+        setIsRemarkOpen(true);
+      } else {
+        throw new Error(response.data.message || 'Failed to fetch remark');
+      }
+    } catch (error) {
+      console.error('Error fetching remark:', error);
+      alert('Failed to fetch remark: ' + (error.message || 'Unknown error'));
+    } finally {
+      setLoadingRemark(false);
+    }
   };
 
   // Handle delete confirmation using Axios - FIXED VERSION
   const handleDeleteConfirm = async () => {
     if (!selectedCancelLoan) return;
-    
+
     // Convert HTML to plain text for the remark
     const plainTextRemark = cancelRemark.replace(/<[^>]*>/g, '').trim();
-    
+
     if (!plainTextRemark) {
       alert('Please provide a cancellation remark');
       return;
@@ -163,8 +184,8 @@ const LoanApplication = () => {
     setCancelLoading(true);
     try {
       // Debug: Log the selected loan data to see what fields are available
-      
-      
+
+
       // Try different possible ID fields - check what your backend expects
       const possibleIdFields = [
         selectedCancelLoan.id,
@@ -176,7 +197,7 @@ const LoanApplication = () => {
         selectedCancelLoan.Loan_No // Sometimes loan number is used as ID
       ].filter(Boolean); // Remove null/undefined values
 
-     
+
 
       if (possibleIdFields.length === 0) {
         throw new Error('No valid ID field found in loan data');
@@ -202,12 +223,12 @@ const LoanApplication = () => {
       if (response.data.success) {
         // Successfully cancelled - refresh the loan applications list
         fetchLoanApplications(pagination.page, filters.status);
-        
+
         // Close the modal
         setDeleteModalOpen(false);
         setSelectedCancelLoan(null);
         setCancelRemark("");
-        
+
         // Show success message
         setSuccessMessage('Loan application cancelled successfully');
         setTimeout(() => setSuccessMessage(""), 3000);
@@ -216,13 +237,13 @@ const LoanApplication = () => {
       }
     } catch (err) {
       console.error('Error cancelling loan application:', err);
-      
+
       let errorMessage = 'Failed to cancel loan application';
-      
+
       if (err.response) {
         // Server responded with error status
         errorMessage = err.response.data?.message || `Server error: ${err.response.status}`;
-        
+
         // If it's a 400 error, show more specific message
         if (err.response.status === 400) {
           errorMessage = `Bad Request: ${err.response.data?.message || 'Invalid data sent to server'}`;
@@ -234,7 +255,7 @@ const LoanApplication = () => {
         // Something else happened
         errorMessage = err.message;
       }
-      
+
       alert(`Error: ${errorMessage}`);
     } finally {
       setCancelLoading(false);
@@ -624,7 +645,7 @@ const LoanApplication = () => {
                               <IconButton onClick={goUpload(row)} title="Upload" bg="bg-green-600 text-white">
                                 <CgSoftwareUpload className="w-[20px] h-[20px]" />
                               </IconButton>
-                              <IconButton onClick={handleOpenRemark} title="Message" bg="bg-yellow-400">
+                              <IconButton onClick={() => handleOpenRemark(row)} title="Message" bg="bg-yellow-400">
                                 <RiMessage2Line className="w-[20px] h-[20px]" />
                               </IconButton>
                               <IconButton onClick={goGold(row)} title="Gold Details" bg="border" >
@@ -646,7 +667,7 @@ const LoanApplication = () => {
                               <IconButton onClick={goUpload(row)} title="Upload" bg="bg-green-600 text-white">
                                 <CgSoftwareUpload className="w-[20px] h-[20px]" />
                               </IconButton>
-                              <IconButton onClick={handleOpenRemark} title="Message" bg="bg-yellow-400">
+                              <IconButton onClick={() => handleOpenRemark(row)} title="Message" bg="bg-yellow-400">
                                 <RiMessage2Line className="w-[20px] h-[20px]" />
                               </IconButton>
                               <IconButton onClick={goGold(row)} title="Gold Details" bg="border">
@@ -662,7 +683,7 @@ const LoanApplication = () => {
                         if (st === "cancelled") {
                           return (
                             <div className="flex gap-2 justify-center">
-                              <IconButton onClick={handleOpenRemark} title="Message" bg="bg-yellow-400">
+                              <IconButton onClick={() => handleOpenRemark(row)} title="Message" bg="bg-yellow-400">
                                 <RiMessage2Line className="w-[20px] h-[20px]" />
                               </IconButton>
                             </div>
@@ -678,7 +699,7 @@ const LoanApplication = () => {
                               <IconButton onClick={goUpload(row)} title="Upload" bg="bg-green-600 text-white">
                                 <CgSoftwareUpload className="w-[20px] h-[20px]" />
                               </IconButton>
-                              <IconButton onClick={handleOpenRemark} title="Message" bg="bg-yellow-400">
+                              <IconButton onClick={() => handleOpenRemark(row)} title="Message" bg="bg-yellow-400">
                                 <RiMessage2Line className="w-[20px] h-[20px]" />
                               </IconButton>
                               <IconButton onClick={goPrint(row)} title="Print" bg="bg-blue-300 text-white">
@@ -696,7 +717,7 @@ const LoanApplication = () => {
 
                         return (
                           <div className="flex gap-2 justify-center">
-                            <IconButton onClick={handleOpenRemark} title="Message" bg="bg-yellow-400">
+                            <IconButton onClick={() => handleOpenRemark(row)} title="Message" bg="bg-yellow-400">
                               <RiMessage2Line className="w-[20px] h-[20px]" />
                             </IconButton>
                           </div>
@@ -789,27 +810,42 @@ const LoanApplication = () => {
           }}
         >
           <div className="bg-white w-[829px] h-[356px] p-6 shadow-lg relative rounded-[8px]">
-            <h2 className="font-semibold text-[24px] leading-[100%] tracking-[0.03em] mb-4 text-[#0A2478]" style={{ fontFamily: 'Source Sans 3' }}>
+            <h2 className="font-semibold text-[24px] leading-[100%] tracking-[0.03em] mb-4 text-[#0A2478]"
+              style={{ fontFamily: 'Source Sans 3' }}>
               Remark
             </h2>
-            <div className="w-[728px] border border-gray-300 p-5 resize-none h-[183px] rounded-[16px] flex justify-between">
-              <div>
-                <p className='text-black font-bold text-[14px]'>Documents Pending</p>
-                <p className='text-[14px] mt-2 text-[#000000C7]'>
-                  Some required documents are missing from your application. To continue processing your<br />
-                  loan request, please upload the pending documents at the earliest. These may include<br />
-                  identity proof, address proof, income statements, or bank records, depending on your loan type.
-                </p>
+
+            {loadingRemark ? (
+              <div className="flex justify-center items-center h-[200px]">
+                <div className="text-lg text-gray-600">Loading remark...</div>
               </div>
-              <div>
-                <img src={envImg} alt="envelope" className="w-[156px] h-[156px] rounded-[10px]" />
+            ) : (
+              <div className="w-[728px] border border-gray-300 p-5 resize-none h-[183px] rounded-[16px] flex justify-between">
+                <div>
+                  <p className='text-black font-bold text-[14px]'>
+                    Remark for Loan #{remarkData?.id}
+                  </p>
+                <p
+  className="text-[14px] mt-2 text-[#000000C7]"
+  dangerouslySetInnerHTML={{
+    __html: remarkData?.remark || "No remark available",
+  }}
+></p>
+
+                </div>
+                <div>
+                  <img src={envImg} alt="envelope" className="w-[156px] h-[156px] rounded-[10px]" />
+                </div>
               </div>
-            </div>
+            )}
 
             <div className="flex justify-center mt-4 gap-2">
               <button
                 className="px-4 py-2 rounded w-[119px] h-[38px] bg-[#C1121F] text-white font-semibold cursor-pointer hover:bg-[#a50e1a]"
-                onClick={handleCloseRemark}
+                onClick={() => {
+                  setIsRemarkOpen(false);
+                  setRemarkData(null);
+                }}
               >
                 Close
               </button>
@@ -838,12 +874,12 @@ const LoanApplication = () => {
               <p className="text-sm text-gray-600 mt-2">
                 Loan: {selectedCancelLoan.Party_Name} (#{selectedCancelLoan.Loan_No})
               </p>
-              
+
             </div>
 
             <div className="mt-6">
               <label className="text-[19px] font-medium text-[#0A2478] mb-2 block">
-                Add Remark 
+                Add Remark
               </label>
               <div className="border border-[#BEBEBE] rounded-md overflow-hidden">
                 <JoditEditor
@@ -851,7 +887,7 @@ const LoanApplication = () => {
                   value={cancelRemark}
                   config={editorConfig}
                   onBlur={(newContent) => setCancelRemark(newContent)}
-                  onChange={(newContent) => {}}
+                  onChange={(newContent) => { }}
                 />
               </div>
               <p className="text-xs text-gray-500 mt-1">
