@@ -908,15 +908,14 @@ const LoanApplication = () => {
       {/* Cancel/Delete Modal with JoditEditor */}
       {deleteModalOpen && selectedCancelLoan && (
         <div className="fixed inset-0 flex items-center justify-center z-50 bg-[#0101017A] backdrop-blur-[6.8px]">
-          <div className="bg-white w-[500px] rounded-lg shadow-lg p-6 relative">
-            <div className="absolute -top-7 left-1/2 transform -translate-x-1/2 bg-white rounded-full p-2 shadow-md">
+          <div className="bg-white w-[600px] rounded-lg shadow-lg p-6 relative">
+            <div className="absolute -mt-2 left-1/2 transform -translate-x-1/2 bg-white rounded-full p-2 shadow-md">
               <div className="w-10 h-10 flex items-center justify-center border-2 border-red-500 rounded-full">
                 <span className="text-red-500 text-3xl leading-none">!</span>
               </div>
             </div>
 
-            <div className="mt-8 text-center">
-              <p className="text-[20px] font-semibold text-[#0A0A0A]">
+ <div className="mt-15 text-center">              <p className="text-[20px] font-semibold text-[#0A0A0A]">
                 Are you sure to Cancel this Loan?
               </p>
               <p className="text-[14px] text-[#7C7C7C] mt-1">
