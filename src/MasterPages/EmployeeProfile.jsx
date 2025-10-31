@@ -256,6 +256,7 @@ const handleEdit = (employee) => {
       designation: "",
       date_of_birth: "",
       assign_role: "",
+     assign_role_id:"",
       password: "",
       fax: "",
       emp_image: "",
@@ -272,6 +273,7 @@ const handleEdit = (employee) => {
  
 
   const handleSave = async () => {
+    debugger
   try {
     const payload = {
       pan_card: formData.pan_card,
@@ -287,6 +289,7 @@ const handleEdit = (employee) => {
       designation: formData.designation,
       date_of_birth: formData.date_of_birth,
       assign_role: formData.assign_role,
+            assign_role_id: formData.assign_role_id,
       password: formData.password,
       fax: formData.fax,
       status: formData.status,
