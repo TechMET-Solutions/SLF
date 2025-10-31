@@ -144,6 +144,9 @@ const EditBidderDetails = () => {
             <div className="w-full max-w-[1290px] space-y-6">
                 {/* Bidder Information Section */}
                 <div className="bg-white">
+                    <h1 className="text-blue-900 font-semibold text-xl pb-4 mb-2">
+                        Bidder Information
+                    </h1>
                     <div className="flex flex-col lg:flex-row gap-4">
                         {/* Left Section - Form Fields */}
                         <div className="flex-1">
