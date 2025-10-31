@@ -174,8 +174,7 @@ const LoanApplication = () => {
   const handleDeleteConfirm = async () => {
     if (!selectedCancelLoan) return;
 
-    // Convert HTML to plain text for the remark
-    const plainTextRemark = cancelRemark.replace(/<[^>]*>/g, '').trim();
+    const plainTextRemark = cancelRemark;
 
     if (!plainTextRemark) {
       alert('Please provide a cancellation remark');
