@@ -85,14 +85,14 @@ const AppraisalNote = () => {
       </div>
 
       {/* 🧾 Printable Content Section */}
-      <div id="print-section" className="max-w-[1500px] w-full mx-auto px-4">
+      <div id="print-section" className="max-w-[1300px] w-full mx-auto px-4">
         {/* Borrower Details */}
         <div className="flex justify-between mt-6 text-[16px]">
           <div>
             <p className="font-semibold">Name of the borrower</p>
             <p className="text-gray-700 mt-1">{appraisalData?.name || "N/A"}</p>
           </div>
-          <div>
+          <div className="pr-230">
             <p className="font-semibold">GL No.</p>
             <p className="text-gray-700 mt-1">{loanId || "N/A"}</p>
           </div>

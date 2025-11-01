@@ -15,7 +15,7 @@ import { PiPrinterLight } from 'react-icons/pi';
 import { CgSoftwareUpload } from 'react-icons/cg';
 import { RiMessage2Line } from 'react-icons/ri';
 import { API } from '../api';
-
+import { IoChevronDownOutline } from "react-icons/io5"; // better arrow icon
 const LoanApplication = () => {
   useEffect(() => {
     document.title = "SLF | Loan Application";
@@ -567,32 +567,35 @@ const LoanApplication = () => {
               </div>
 
               <div className="relative w-[111px]">
-                <button
-                  className="border border-gray-300 rounded pl-2 h-[31px] w-full text-left text-[12px] flex items-center justify-between px-2"
-                  onClick={() => setIsOpen(!isOpen)}
-                >
-                  <span>{selected || "Scheme"}</span>
-                  <span className="text-xs">▼</span>
-                </button>
+  <button
+    className="border border-black rounded h-[31px] w-full text-left text-[12px] flex items-center justify-between px-2 transition-colors duration-200 hover:border-gray-400"
+    onClick={() => setIsOpen(!isOpen)}
+  >
+    <span className="truncate">{selected || "Scheme"}</span>
+    <IoChevronDownOutline
+      className={`w-3 h-3 transition-transform duration-200 ${
+        isOpen ? "rotate-180" : "rotate-0"
+      }`}
+    />
+  </button>
 
-                {isOpen && (
-                  <ul className="absolute z-10 w-full max-h-40 overflow-y-auto border border-gray-300 bg-white mt-1 rounded shadow-lg">
-                    {options.map((opt, index) => (
-                      <li
-                        key={index}
-                        className="px-2 py-1 hover:bg-gray-100 cursor-pointer text-[12px]"
-                        onClick={() => {
-                          setSelected(opt);
-                          setIsOpen(false);
-                        }}
-                      >
-                        {opt}
-                      </li>
-                    ))}
-                  </ul>
-                )
-                }
-              </div>
+  {isOpen && (
+    <ul className="absolute z-10 w-full max-h-40 overflow-y-auto border border-gray-300 bg-white mt-1 rounded shadow-lg">
+      {options.map((opt, index) => (
+        <li
+          key={index}
+          className="px-2 py-1  cursor-pointer text-[12px]"
+          onClick={() => {
+            setSelected(opt);
+            setIsOpen(false);
+          }}
+        >
+          {opt}
+        </li>
+      ))}
+    </ul>
+  )}
+</div>
             </div>
 
             <div className="flex gap-5 items-center">
