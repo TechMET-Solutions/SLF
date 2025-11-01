@@ -133,7 +133,7 @@ const LoanApplication = () => {
     setDocumentsLoading(true);
     try {
       const response = await apiClient.get(`/Transactions/get-loan-documents/${loanId}`);
-      
+
       if (response.data.success) {
         setUploadedDocuments(response.data.data || []);
       } else {
@@ -267,7 +267,7 @@ const LoanApplication = () => {
     setUploadModalOpen(true);
     setFileDescription("");
     setSelectedFile(null);
-    
+
     // Fetch existing documents when modal opens
     await fetchLoanDocuments(loan.Loan_No);
   };
@@ -308,14 +308,14 @@ const LoanApplication = () => {
         setSuccessMessage('File uploaded successfully!');
         setFileDescription("");
         setSelectedFile(null);
-        
+
         // Refresh the documents list
         await fetchLoanDocuments(selectedUploadLoan.Loan_No);
-        
+
         // Clear file input
         const fileInput = document.querySelector('input[type="file"]');
         if (fileInput) fileInput.value = '';
-        
+
         setTimeout(() => setSuccessMessage(""), 3000);
       } else {
         throw new Error(response.data.message || 'Upload failed');
@@ -323,7 +323,7 @@ const LoanApplication = () => {
     } catch (error) {
       console.error('Upload error:', error);
       let errorMessage = 'Failed to upload file';
-      
+
       if (error.response) {
         errorMessage = error.response.data?.message || `Server error: ${error.response.status}`;
       } else if (error.request) {
@@ -331,7 +331,7 @@ const LoanApplication = () => {
       } else {
         errorMessage = error.message;
       }
-      
+
       alert(`Error: ${errorMessage}`);
     } finally {
       setUploadLoading(false);
@@ -357,9 +357,19 @@ const LoanApplication = () => {
 
   const handleClick = (row) => {
     if (row.Status === "Cancelled") {
-      navigate("/Cancelled-Loan");
+      navigate("/Cancelled-Loan", {
+        state: {
+          loanId: row.Loan_No,
+          loanData: row
+        }
+      });
     } else {
-      navigate("/View-Loan-Details");
+      navigate("/View-Loan-Details", {
+        state: {
+          loanId: row.Loan_No,
+          loanData: row
+        }
+      });
     }
   };
 
@@ -725,11 +735,26 @@ const LoanApplication = () => {
                         );
 
                         // navigation handlers using state
-                        const goEdit = (loan) => () => navigate("/Edit-Loan-Details", { state: { loan } });
+                        const goEdit = (loan) => () => navigate("/Edit-Loan-Details", {
+                          state: {
+                            loanId: loan.Loan_No,
+                            loanData: loan
+                          }
+                        });
                         const goUpload = (loan) => () => handleUploadClick(loan);
                         const goPrint = (loan) => () => navigate("/Print-Loan-Application", { state: { loan } });
-                        const goGold = (loan) => () => navigate("/Appraisal-Note", { state: { loan } });
-                        const goBarcode = (loan) => () => navigate("/Barcode", { state: { loan } });
+                        const goGold = (loan) => () => navigate("/Appraisal-Note", {
+                          state: {
+                            loanId: loan.Loan_No,
+                            loanData: loan
+                          }
+                        });
+                        const goBarcode = (loan) => () => navigate("/Barcode", {
+                          state: {
+                            loanId: loan.Loan_No,
+                            loanData: loan
+                          }
+                        });
                         const goCancel = (loan) => () => {
                           setSelectedCancelLoan(loan);
                           setCancelRemark("");
@@ -834,7 +859,12 @@ const LoanApplication = () => {
                           return (
                             <span
                               className="text-blue-600 cursor-pointer hover:underline"
-                              onClick={() => navigate(`/NOC`)}
+                              onClick={() => navigate(`/NOC`, {
+                                state: {
+                                  loanId: row.Loan_No,
+                                  loanData: row
+                                }
+                              })}
                             >
                               NOC
                             </span>
@@ -847,7 +877,12 @@ const LoanApplication = () => {
                           return (
                             <span
                               className="text-blue-600 cursor-pointer hover:underline"
-                              onClick={() => navigate(`/Gold-Loan-Approval`)}
+                              onClick={() => navigate(`/Gold-Loan-Approval`, {
+                                state: {
+                                  loanId: row.Loan_No,
+                                  loanData: row
+                                }
+                              })}
                             >
                               Approve
                             </span>
@@ -856,7 +891,12 @@ const LoanApplication = () => {
                         return (
                           <span
                             className="text-blue-600 cursor-pointer hover:underline"
-                            onClick={() => navigate(`/Loan-Enquiry`)}
+                            onClick={() => navigate(`/Loan-Enquiry`, {
+                              state: {
+                                loanId: row.Loan_No,
+                                loanData: row
+                              }
+                            })}
                           >
                             view
                           </span>
@@ -872,7 +912,12 @@ const LoanApplication = () => {
                           return (
                             <button
                               className="bg-[#0A2478] text-white px-3 py-1 rounded text-[11px] hover:bg-[#091f6c]"
-                              onClick={() => navigate(`/Repay-Loan`)}
+                              onClick={() => navigate(`/Repay-Loan`, {
+                                state: {
+                                  loanId: row.Loan_No,
+                                  loanData: row
+                                }
+                              })}
                             >
                               Repay
                             </button>
@@ -1050,7 +1095,7 @@ const LoanApplication = () => {
                     onChange={handleFileChange}
                     className="border border-[#BEBEBE] rounded-md p-2 w-full text-[14px] file:mr-4 file:py-1 file:px-2 file:text-sm file:bg-gray-400 file:text-[#4A4A4A]"
                   />
-                  <button 
+                  <button
                     className="bg-[#0A2478] text-white px-5 py-2 rounded-md hover:bg-[#091E5E] flex-shrink-0 disabled:opacity-50"
                     onClick={handleUploadSubmit}
                     disabled={uploadLoading || !selectedFile || !fileDescription.trim()}
@@ -1103,7 +1148,7 @@ const LoanApplication = () => {
                           {doc.uploaded_by || "System"}
                         </td>
                         <td className="p-3 border border-gray-300">
-                          <button 
+                          <button
                             className="text-blue-600 hover:underline"
                             onClick={() => handleDocumentAction(doc)}
                           >
