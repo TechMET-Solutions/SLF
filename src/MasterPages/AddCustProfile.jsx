@@ -17,7 +17,7 @@ const AddCustProfile = () => {
 
   const location = useLocation();
   const editor = useRef(null);
-
+ 
   const customerData = location.state?.customerData;
   const modedata = location.state?.type
   console.log(customerData,"customerData")
@@ -470,9 +470,12 @@ const addBankDetails = async (customerId) => {
                 save
               </button>
 
-              <button className="text-white px-[6.25px] py-[6.25px] rounded-[3.75px] bg-[#C1121F] w-[74px] h-[24px] opacity-100 text-[10px]">
-                Exit
-              </button>
+             <button
+      onClick={() => navigate("/Customer-Profile-List")}
+      className="text-white px-[6.25px] py-[6.25px] rounded-[3.75px] bg-[#C1121F] w-[74px] h-[24px] opacity-100 text-[10px]"
+    >
+      Exit
+    </button>
             </div>
           </div>
         </div>
