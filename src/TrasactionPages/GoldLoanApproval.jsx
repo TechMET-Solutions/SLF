@@ -1,39 +1,212 @@
 import { useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
+import axios from "axios";
 import profileempty from "../assets/profileempty.png";
 import { IoMdAddCircleOutline } from "react-icons/io";
 import { MdOutlineCancel } from "react-icons/md";
 
 const GoldLoanApproval = () => {
+  const [loanData, setLoanData] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+  const navigate = useNavigate();
+  const location = useLocation();
+   
+  // Get loan ID from URL params or location state
+  const { loanId } = location.state || {};
+
   useEffect(() => {
     document.title = "SLF | Gold Loan Approval";
-  }, []);
+    if (loanId) {
+      fetchLoanData();
+    } else {
+      setError("Loan ID not provided");
+      setLoading(false);
+    }
+  }, [loanId]);
 
-  const navigate = useNavigate();
-
-  // ✅ Initialize formData state
-  const [formData, setFormData] = useState({
-    Borrower_ProfileImg: "",
-    Borrower_signature: "",
-    CoBorrower_ProfileImg: "",
-    CoBorrower_signature: "",
-    OrnamentPhoto: "",
-  });
-
-  // ✅ Handle ornament image upload
-  const handleOrnamentUpload = (e) => {
-    const file = e.target.files[0];
-    if (file) {
-      const reader = new FileReader();
-      reader.onload = () => {
-        setFormData((prev) => ({ ...prev, OrnamentPhoto: reader.result }));
-      };
-      reader.readAsDataURL(file);
+  const fetchLoanData = async () => {
+    try {
+      setLoading(true);
+      const response = await axios.get(`http://localhost:5000/Transactions/goldloan/getLoan/${loanId}`);
+      setLoanData(response.data.loanApplication); // Access the data property
+      setError(null);
+    } catch (err) {
+      console.error("❌ Error fetching loan data:", err);
+      setError("Failed to load loan data");
+    } finally {
+      setLoading(false);
     }
   };
 
+  // Parse JSON strings from API response
+  const parseJSONData = (data) => {
+    try {
+      if (typeof data === 'string') {
+        return JSON.parse(data);
+      }
+      return data || [];
+    } catch (error) {
+      console.error('Error parsing JSON data:', error);
+      return [];
+    }
+  };
+
+  // Format date
+  const formatDate = (dateString) => {
+    if (!dateString) return '-';
+    const date = new Date(dateString);
+    return date.toLocaleDateString('en-GB');
+  };
+
+  // Format time
+  const formatTime = (dateString) => {
+    if (!dateString) return '12:00:00 AM';
+    const date = new Date(dateString);
+    return date.toLocaleTimeString('en-US', {
+      hour12: true,
+      hour: '2-digit',
+      minute: '2-digit',
+      second: '2-digit'
+    });
+  };
+
+  // Format currency
+  const formatCurrency = (amount) => {
+    if (!amount || isNaN(amount)) return '0.00';
+    const numAmount = typeof amount === 'string' ? parseFloat(amount) : amount;
+    return new Intl.NumberFormat('en-IN', {
+      minimumFractionDigits: 2,
+      maximumFractionDigits: 2
+    }).format(numAmount);
+  };
+
+  // Convert number to words
+  const numberToWords = (num) => {
+    if (!num || isNaN(num)) return '';
+
+    const numValue = typeof num === 'string' ? parseFloat(num.replace(/,/g, '')) : num;
+    if (numValue === 0) return 'Zero';
+
+    const ones = ['', 'One', 'Two', 'Three', 'Four', 'Five', 'Six', 'Seven', 'Eight', 'Nine'];
+    const tens = ['', '', 'Twenty', 'Thirty', 'Forty', 'Fifty', 'Sixty', 'Seventy', 'Eighty', 'Ninety'];
+    const teens = ['Ten', 'Eleven', 'Twelve', 'Thirteen', 'Fourteen', 'Fifteen', 'Sixteen', 'Seventeen', 'Eighteen', 'Nineteen'];
+
+    const convertMillions = (n) => {
+      if (n >= 10000000) {
+        return convertMillions(Math.floor(n / 10000000)) + ' Crore ' + convertLakhs(n % 10000000);
+      } else {
+        return convertLakhs(n);
+      }
+    };
+
+    const convertLakhs = (n) => {
+      if (n >= 100000) {
+        return convertLakhs(Math.floor(n / 100000)) + ' Lakh ' + convertThousands(n % 100000);
+      } else {
+        return convertThousands(n);
+      }
+    };
+
+    const convertThousands = (n) => {
+      if (n >= 1000) {
+        return convertHundreds(Math.floor(n / 1000)) + ' Thousand ' + convertHundreds(n % 1000);
+      } else {
+        return convertHundreds(n);
+      }
+    };
+
+    const convertHundreds = (n) => {
+      if (n > 99) {
+        return ones[Math.floor(n / 100)] + ' Hundred ' + convertTens(n % 100);
+      } else {
+        return convertTens(n);
+      }
+    };
+
+    const convertTens = (n) => {
+      if (n < 10) return ones[n];
+      else if (n >= 10 && n < 20) return teens[n - 10];
+      else {
+        return tens[Math.floor(n / 10)] + ' ' + ones[n % 10];
+      }
+    };
+
+    let words = convertMillions(numValue);
+    return words.trim() + ' only';
+  };
+
+  // Approve loan handler
+  const [approving, setApproving] = useState(false);
+
+  const approveLoan = async () => {
+    if (!loanData || !loanData.id) return setError("Loan ID missing");
+
+    const confirmApprove = window.confirm("Approve this loan application?");
+    if (!confirmApprove) return;
+
+    try {
+      setApproving(true);
+      const approved_by = "Admin - test ";
+      const payload = { id: loanData.id, approved_by };
+
+      const res = await axios.put(
+        "http://localhost:5000/Transactions/goldloan/approve-loan",
+        payload
+      );
+
+      if (res.data && res.data.success) {
+        alert("Loan approved successfully.");
+        // optional: navigate back to list or refresh
+        navigate("/Loan-Application");
+      } else {
+        const msg = (res.data && res.data.message) || "Failed to approve loan";
+        setError(msg);
+      }
+    } catch (err) {
+      console.error("❌ Error approving loan:", err);
+      setError("Server error while approving loan", err);
+    } finally {
+      setApproving(false);
+    }
+  };
+
+  if (loading) {
+    return (
+      <div className="min-h-screen w-full flex items-center justify-center">
+        <div className="text-lg">Loading loan data...</div>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="min-h-screen w-full flex items-center justify-center">
+        <div className="text-red-600 text-lg">{error}</div>
+      </div>
+    );
+  }
+
+  if (!loanData) {
+    return (
+      <div className="min-h-screen w-full flex items-center justify-center">
+        <div className="text-lg">No loan data found</div>
+      </div>
+    );
+  }
+
+  // Parse the JSON strings from API
+  const pledgeItems = parseJSONData(loanData.Pledge_Item_List);
+  const interestRates = parseJSONData(loanData.Effective_Interest_Rates);
+
+  // Calculate totals from pledge items
+  const totalNos = pledgeItems.reduce((sum, item) => sum + (parseInt(item.nos) || 0), 0);
+  const totalGross = pledgeItems.reduce((sum, item) => sum + (parseFloat(item.gross) || 0), 0);
+  const totalNetWeight = pledgeItems.reduce((sum, item) => sum + (parseFloat(item.netWeight) || 0), 0);
+  const totalValuation = pledgeItems.reduce((sum, item) => sum + (parseFloat(item.valuation) || 0), 0);
+
   return (
-    <div className="min-h-screen w-full bg-[#FAFAFA]">
+    <div className="min-h-screen w-full">
       {/* ===== Top Bar ===== */}
       <div className="flex justify-center">
         <div className="flex items-center px-6 py-4 border-b mt-5 w-[1290px] h-[62px] border rounded-[11px] border-gray-200 justify-between shadow">
@@ -47,15 +220,19 @@ const GoldLoanApproval = () => {
             }}
             className="text-red-600"
           >
-            Gold Loan Approval
+            Gold Loan Approval - {loanData.id || 'N/A'}
           </h2>
 
           <div className="flex gap-2 mr-6">
-            <button className="bg-[#0A2478] text-white px-4 py-1 text-sm shadow-lg rounded hover:bg-[#091d5f] ">
-              Approve
+            <button
+              onClick={approveLoan}
+              disabled={approving}
+              className={`px-4 py-1 text-sm shadow-lg rounded ${approving ? 'bg-gray-400 cursor-not-allowed' : 'bg-[#0A2478] hover:bg-[#091d5f]'} text-white`}
+            >
+              {approving ? "Approving..." : "Approve"}
             </button>
             <button
-                onClick={() => navigate("/Loan-Application")}
+              onClick={() => navigate("/Loan-Application")}
               className="bg-[#C1121F] text-white px-6 py-1 text-sm rounded hover:bg-[#a50d18] shadow-lg"
             >
               Close
@@ -68,34 +245,37 @@ const GoldLoanApproval = () => {
       <div className="p-9 py-6 min-h-screen space-y-8 px-4">
         {/* ===== Loan Details Section ===== */}
         <div className="flex justify-center mb-6">
-          <div className="w-[1050px] pt-3 pl-14">
+          <div className="w-[950px] pt-3 pl-14">
             {/* First Row */}
-            <div className="flex gap-7 text-sm mb-8 flex-wrap ">
+            <div className="flex gap-7 text-sm mb-8 flex-wrap">
               <div>
                 <p className="font-semibold">Loan No</p>
-                <p>01A5602839</p>
+                <p>{loanData.id || 'N/A'}</p>
               </div>
               <div>
                 <p className="font-semibold">Loan Date</p>
                 <p>
-                  25/07/2025 <span className="ml-2">12:00:00 AM</span>
+                  {formatDate(loanData.created_at)}
+                  <span className="ml-2">
+                    {formatTime(loanData.created_at)}
+                  </span>
                 </p>
               </div>
               <div>
                 <p className="font-semibold">Party Name</p>
-                <p>MAHESH SANJAY DONDE</p>
+                <p>{loanData.Borrower || 'N/A'}</p>
               </div>
               <div>
                 <p className="font-semibold">Scheme</p>
-                <p>IND001</p>
+                <p>{loanData.Scheme || 'N/A'}</p>
               </div>
               <div>
                 <p className="font-semibold">Print Name</p>
-                <p>MAHESH SANJAY DONDE</p>
+                <p>{loanData.Print_Name || 'N/A'}</p>
               </div>
               <div>
                 <p className="font-semibold">Mobile Number</p>
-                <p>+91 8965412568</p>
+                <p>+91 {loanData.Mobile_Number || 'N/A'}</p>
               </div>
             </div>
 
@@ -103,48 +283,50 @@ const GoldLoanApproval = () => {
             <div className="flex gap-13 text-sm flex-wrap">
               <div>
                 <p className="font-semibold">Co-Borrower</p>
-                <p>BARFILAL</p>
+                <p>{loanData.Co_Borrower || 'N/A'}</p>
               </div>
               <div>
                 <p className="font-semibold">Relation</p>
-                <p>Father</p>
+                <p>{loanData.Relation || 'N/A'}</p>
               </div>
               <div>
                 <p className="font-semibold">Nominee</p>
-                <p>BARFILAL</p>
+                <p>{loanData.Nominee || 'N/A'}</p>
               </div>
               <div>
                 <p className="font-semibold">Relation</p>
-                <p>Father</p>
+                <p>{loanData.Nominee_Relation || 'N/A'}</p>
               </div>
-
               <div>
                 <p className="font-semibold">Address</p>
-                <p>H. NO.444-31, BHAGUR, Nashik 422502, India</p>
+                <p>{loanData.Address || 'N/A'}</p>
               </div>
             </div>
           </div>
 
           {/* ===== Ornament & Profile Photos ===== */}
-          <div className="flex mr-17 space-x-[1px] ">
+          <div className="flex mr-17 space-x-[1px]">
             {/* Borrower */}
             <div className="w-[120px] h-auto flex flex-col items-center">
               <p className="font-medium mb-1 text-xs">Customer</p>
               <img
-                src={
-                  formData.Borrower_ProfileImg
-                    ? formData.Borrower_ProfileImg
-                    : profileempty
-                }
+                src={loanData.borrower_profileImage || profileempty}
                 alt="Borrower Profile"
                 className="w-[100px] h-[115px] rounded-[5px] object-cover border border-gray-300"
+                onError={(e) => {
+                  e.target.src = profileempty;
+                }}
               />
               <div className="mt-1 border w-[100px] h-[26px] flex items-center justify-center bg-white rounded-[4px]">
-                {formData.Borrower_signature ? (
+                {loanData.borrower_signature ? (
                   <img
-                    src={formData.Borrower_signature}
+                    src={loanData.borrower_signature}
                     alt="Borrower Signature"
                     className="w-full h-full object-contain"
+                    onError={(e) => {
+                      e.target.style.display = 'none';
+                      e.target.nextSibling.style.display = 'block';
+                    }}
                   />
                 ) : (
                   <span className="text-gray-400 text-[9px]">No Signature</span>
@@ -156,20 +338,23 @@ const GoldLoanApproval = () => {
             <div className="w-[120px] h-auto flex flex-col items-center">
               <p className="font-medium mb-1 text-xs">Co-Borrower</p>
               <img
-                src={
-                  formData.CoBorrower_ProfileImg
-                    ? formData.CoBorrower_ProfileImg
-                    : profileempty
-                }
+                src={loanData.coborrower_profileImage || profileempty}
                 alt="Co-Borrower Profile"
                 className="w-[100px] h-[115px] rounded-[5px] object-cover border border-gray-300"
+                onError={(e) => {
+                  e.target.src = profileempty;
+                }}
               />
               <div className="mt-1 w-[100px] h-[26px] border flex items-center justify-center bg-white rounded-[4px]">
-                {formData.CoBorrower_signature ? (
+                {loanData.coborrower_signature ? (
                   <img
-                    src={formData.CoBorrower_signature}
+                    src={loanData.coborrower_signature}
                     alt="Co-Borrower Signature"
                     className="max-h-[24px] object-contain"
+                    onError={(e) => {
+                      e.target.style.display = 'none';
+                      e.target.nextSibling.style.display = 'block';
+                    }}
                   />
                 ) : (
                   <p className="text-gray-400 text-[9px]">No signature</p>
@@ -182,10 +367,15 @@ const GoldLoanApproval = () => {
               <p className="font-medium mb-1 text-xs">Ornament Photo</p>
               <img
                 src={
-                  formData.OrnamentPhoto ? formData.OrnamentPhoto : profileempty
+                  loanData.Ornament_Photo
+                    ? `http://localhost:5000/uploads/ornaments/${loanData.Ornament_Photo}`
+                    : profileempty
                 }
                 alt="Ornament"
                 className="w-[130px] h-[115px] object-cover rounded-[5px] border border-gray-300"
+                onError={(e) => {
+                  e.target.src = profileempty;
+                }}
               />
             </div>
           </div>
@@ -198,7 +388,7 @@ const GoldLoanApproval = () => {
               Pledge Item List
             </h3>
             <div className="w-full text-xs border border-gray-300">
-              <div className="flex bg-[#0A2478]   text-white font-semibold">
+              <div className="flex bg-[#0A2478] text-white font-semibold">
                 <div className="flex-1 p-2 py-3 border-r-2 border-white">
                   Particulars
                 </div>
@@ -223,56 +413,72 @@ const GoldLoanApproval = () => {
                 <div className="w-28 p-2 text-center">Remark</div>
               </div>
 
-              {/* Row 1 */}
-              <div className="flex border-t border-gray-300">
-                <div className="flex-1 p-2 border-r border-gray-300">Gold</div>
-                <div className="w-16 p-2 border-r border-gray-300 text-center">
-                  1
-                </div>
-                <div className="w-24 p-2 border-r border-gray-300 text-center">
-                  5.000
-                </div>
-                <div className="w-24 p-2 border-r border-gray-300 text-center">
-                  5.000
-                </div>
-                <div className="w-28 p-2 border-r border-gray-300 text-center">
-                  Gold 20K
-                </div>
-                <div className="w-24 p-2 border-r border-gray-300 text-center">
-                  6,300
-                </div>
-                <div className="w-28 p-2 border-r border-gray-300 text-center">
-                  31,500.00
-                </div>
-                <div className="w-28 p-2 text-center">Ganthan</div>
-              </div>
+              {/* Dynamic Rows */}
+              {pledgeItems.length > 0 ? (
+                <>
+                  {pledgeItems.map((item, index) => (
+                    <div key={item.id || index} className="flex border-t border-gray-300">
+                      <div className="flex-1 p-2 border-r border-gray-300">
+                        {item.particular || 'Gold'}
+                      </div>
+                      <div className="w-16 p-2 border-r border-gray-300 text-center">
+                        {item.nos || 1}
+                      </div>
+                      <div className="w-24 p-2 border-r border-gray-300 text-center">
+                        {formatCurrency(item.gross)}
+                      </div>
+                      <div className="w-24 p-2 border-r border-gray-300 text-center">
+                        {formatCurrency(item.netWeight)}
+                      </div>
+                      <div className="w-28 p-2 border-r border-gray-300 text-center">
+                        {item.purity || 'Gold 20K'}
+                      </div>
+                      <div className="w-24 p-2 border-r border-gray-300 text-center">
+                        {formatCurrency(item.rate)}
+                      </div>
+                      <div className="w-28 p-2 border-r border-gray-300 text-center">
+                        {formatCurrency(item.valuation)}
+                      </div>
+                      <div className="w-28 p-2 text-center">
+                        {item.remark || '-'}
+                      </div>
+                    </div>
+                  ))}
 
-              {/* Total Row */}
-              <div className="flex border-t border-gray-300 ">
-                <div className="flex-1 p-2 border-r border-gray-300 font-semibold">
-                  Total
+                  {/* Total Row */}
+                  <div className="flex border-t border-gray-300 bg-gray-50">
+                    <div className="flex-1 p-2 border-r border-gray-300 font-semibold">
+                      Total
+                    </div>
+                    <div className="w-16 p-2 border-r border-gray-300 text-center font-semibold">
+                      {totalNos}
+                    </div>
+                    <div className="w-24 p-2 border-r border-gray-300 text-center font-semibold">
+                      {formatCurrency(totalGross)}
+                    </div>
+                    <div className="w-24 p-2 border-r border-gray-300 text-center font-semibold">
+                      {formatCurrency(totalNetWeight)}
+                    </div>
+                    <div className="w-28 p-2 border-r border-gray-300 text-center"></div>
+                    <div className="w-24 p-2 border-r border-gray-300 text-center"></div>
+                    <div className="w-28 p-2 border-r border-gray-300 text-center font-semibold">
+                      {formatCurrency(totalValuation)}
+                    </div>
+                    <div className="w-28 p-2 text-center"></div>
+                  </div>
+                </>
+              ) : (
+                <div className="flex border-t border-gray-300">
+                  <div className="flex-1 p-4 text-center text-gray-500">
+                    No pledge items found
+                  </div>
                 </div>
-                <div className="w-16 p-2 border-r border-gray-300 text-center">
-                  1
-                </div>
-                <div className="w-24 p-2 border-r border-gray-300 text-center">
-                  5.000
-                </div>
-                <div className="w-24 p-2 border-r border-gray-300 text-center">
-                  5.000
-                </div>
-                <div className="w-28 p-2 border-r border-gray-300 text-center"></div>
-                <div className="w-24 p-2 border-r border-gray-300 text-center"></div>
-                <div className="w-28 p-2 border-r border-gray-300 text-center">
-                  31,500.00
-                </div>
-                <div className="w-28 p-2 text-center"></div>
-              </div>
+              )}
             </div>
           </div>
         </div>
 
-        {/* Loan Amount */}
+        {/* Loan Amount Section */}
         <div>
           <div className="w-full px-14 flex items-start gap-4 text-xs">
             <div className="flex flex-col w-40">
@@ -281,24 +487,26 @@ const GoldLoanApproval = () => {
               </label>
               <input
                 type="text"
-                value="31,500.00"
-                className="border border-gray-300 rounded-md px-2 py-1 mt-1 text-sm focus:outline-none"
+                value={formatCurrency(loanData.Loan_amount)}
+                readOnly
+                className="border border-gray-300 rounded-md px-2 py-1 mt-1 text-sm focus:outline-none bg-gray-50"
               />
             </div>
 
             {/* Doc Charges */}
             <div className="flex flex-col">
               <label className="text-[13px] font-semibold">
-                Doc Charges(%)
+                Doc Charges
               </label>
               <div className="flex mt-1">
                 <div className="bg-[#0B2B68] text-white px-2 py-1 rounded-l-md text-sm flex items-center justify-center">
-                  0.2%
+                  2%
                 </div>
                 <input
                   type="text"
-                  value="₹500.00"
-                  className="border border-gray-300 rounded-r-md px-2 py-1 text-sm focus:outline-none w-20"
+                  value={`₹${formatCurrency(loanData.Doc_Charges)}`}
+                  readOnly
+                  className="border border-gray-300 rounded-r-md px-2 py-1 text-sm focus:outline-none w-24 bg-gray-50"
                 />
               </div>
             </div>
@@ -308,8 +516,9 @@ const GoldLoanApproval = () => {
               <label className="text-[13px] font-semibold">Net Payable</label>
               <input
                 type="text"
-                value="31,000.00"
-                className="border border-gray-300 rounded-md px-2 py-1 mt-1 text-sm focus:outline-none"
+                value={formatCurrency(loanData.Net_Payable)}
+                readOnly
+                className="border border-gray-300 rounded-md px-2 py-1 mt-1 text-sm focus:outline-none bg-gray-50"
               />
             </div>
 
@@ -318,9 +527,9 @@ const GoldLoanApproval = () => {
               <label className="text-[13px] font-semibold">
                 Valuer 1 <span className="text-red-500">*</span>
               </label>
-              <select className="border border-gray-300 rounded-md px-2 py-1 mt-1 text-sm focus:outline-none">
-                <option>Select Valuer 1</option>
-              </select>
+              <div className="border border-gray-300 rounded-md px-2 py-1 mt-1 text-sm bg-gray-50">
+                {loanData.Valuer_1 || 'Not Assigned'}
+              </div>
             </div>
 
             {/* Valuer 2 */}
@@ -328,122 +537,24 @@ const GoldLoanApproval = () => {
               <label className="text-[13px] font-semibold">
                 Valuer 2 <span className="text-red-500">*</span>
               </label>
-              <select className="border border-gray-300 rounded-md px-2 py-1 mt-1 text-sm focus:outline-none">
-                <option>Select Valuer 2</option>
-              </select>
+              <div className="border border-gray-300 rounded-md px-2 py-1 mt-1 text-sm bg-gray-50">
+                {loanData.Valuer_2 || 'Not Assigned'}
+              </div>
             </div>
           </div>
           <div className="text-[11px] mt-2 ml-14 font-semibold">
-            Thirty One Thousand Five Hundred only
-          </div>
-        </div>
-
-        {/* ===== Payment Details ===== */}
-        <div className="flex justify-center mb-6">
-          <div className="w-[1290px]">
-            <h3 className="font-semibold mb-4 text-blue-900 text-lg">
-              Payment Details
-            </h3>
-            <div className="w-full text-xs ">
-              {/* Header */}
-              <div className="flex bg-[#0B2B68] text-white font-semibold">
-                <div className="w-48 p-2 border-r border-white text-center">
-                  Paid By
-                </div>
-                <div className="w-48 ml-1 p-2 border-r border-white text-center">
-                  UTR No
-                </div>
-                <div className="w-48 ml-1 p-2 border-r border-white text-center">
-                  Bank
-                </div>
-                <div className="flex-1 ml-1 p-2 border-r border-white text-center">
-                  Customer Bank
-                </div>
-                <div className="w-48 ml-1 p-2 text-center">Amount</div>
-              </div>
-
-              {/* Row 1 */}
-              <div className="flex ">
-                <div className="w-48 p-2 border my-1 border-gray-300 flex items-center">
-                  <select className="w-full  px-2 py-1 focus:outline-none">
-                    <option>Cash</option>
-                  </select>
-                </div>
-                <div className="w-48 m-1 p-2 border border-gray-300"></div>
-                <div className="w-48 m-1 p-2 border border-gray-300">
-                  Bhagur B1
-                </div>
-                <div className="flex-1 m-1 p-2 border border-gray-300">
-                  Cash
-                </div>
-                <div className="w-48 m-1 p-2 border border-gray-300 flex items-center justify-between">
-                  <span>20,000.00</span>
-                  <button className="bg-[#F11717] text-white p-0.5 rounded">
-                    <MdOutlineCancel size={20} />
-                  </button>
-                </div>
-              </div>
-
-              {/* Row 2 */}
-              <div className="flex ">
-                <div className="w-48 my-1 p-2 border border-gray-300 flex items-center">
-                  <select className="w-full px-2 py-1 focus:outline-none">
-                    <option>Net Banking</option>
-                  </select>
-                </div>
-                <div className="w-49 m-1 p-2 border border-gray-300">
-                  123456789123
-                </div>
-                <div className="w-48 m-1 p-2 border border-gray-300">HDFC</div>
-                <div className="w-125 m-1 p-2 border border-gray-300">
-                  HDFC0000456, MAYUR SUDAM TARLE, 323902010133409
-                </div>
-                <div className="w-48 m-1 p-2 border border-gray-300 flex items-center justify-between">
-                  <span>11,500.00</span>
-                  <button className="bg-[#F11717] text-white p-0.5 rounded">
-                    <MdOutlineCancel size={20} />
-                  </button>
-                </div>
-              </div>
-
-              {/* Row 3 */}
-              <div className="flex ">
-                <div className="w-48 my-1 p-2 border border-gray-300 flex items-center">
-                  <select className="w-full text-gray-600 px-2 py-1 focus:outline-none">
-                    <option>--Select--</option>
-                  </select>
-                </div>
-                <div className="w-48 m-1 p-2 border border-gray-300"></div>
-                <div className="w-48 p-2 border border-gray-300 m-1">
-                  --Select--
-                </div>
-                <div className="flex-1 p-2 border border-gray-300 m-1 flex items-center">
-                  <select className="w-full text-gray-600  px-2 py-1 focus:outline-none">
-                    <option>--Select--</option>
-                  </select>
-                </div>
-                <div className="w-48 p-2 border border-gray-300 m-1 flex items-center justify-end gap-2">
-                  <button className="bg-[#0A2478] text-white p-0.5 rounded">
-                    <IoMdAddCircleOutline size={20} />
-                  </button>
-                  <button className="bg-[#F11717] text-white p-0.5 rounded">
-                    <MdOutlineCancel size={20} />
-                  </button>
-                </div>
-              </div>
-            </div>
+            {numberToWords(loanData.Loan_amount)}
           </div>
         </div>
 
         {/* ===== Scheme Details & Effective Interest Rates ===== */}
-        <div className=" flex gap-8 text-xs mx-14">
+        <div className="flex gap-8 text-xs mx-14">
           {/* Scheme Details Table */}
           <div className="w-1/2">
             <h2 className="font-semibold text-[20px] mb-1 text-[#0A2478]">
               Scheme Details
             </h2>
             <div className="border border-gray-300">
-              {/* Header */}
               <div className="flex bg-[#0A2478] text-white font-semibold">
                 <div className="flex-1 p-2 py-4 border-r border-white text-center">
                   Loan Tenure (Days)
@@ -453,16 +564,16 @@ const GoldLoanApproval = () => {
                 </div>
                 <div className="w-40 p-2 py-4 text-center">Max Loan</div>
               </div>
-
-              {/* Row */}
               <div className="flex border-t border-gray-300">
                 <div className="flex-1 p-2 py-4 border-r border-gray-300 text-center">
-                  365
+                  {loanData.Loan_Tenure || loanData.loanPeriod || 'N/A'}
                 </div>
                 <div className="w-40 p-2 py-4 border-r border-gray-300 text-center">
-                  1,000
+                  {formatCurrency(loanData.Min_Loan || loanData.minLoanAmount)}
                 </div>
-                <div className="w-40 p-2 py-4 text-center">20,00,000</div>
+                <div className="w-40 p-2 py-4 text-center">
+                  {formatCurrency(loanData.Max_Loan || loanData.maxLoanAmount)}
+                </div>
               </div>
             </div>
           </div>
@@ -472,41 +583,47 @@ const GoldLoanApproval = () => {
             <h2 className="font-semibold text-[20px] mb-1 text-[#0A2478]">
               Effective Interest Rates
             </h2>
-            <div className="">
-              {/* Header */}
-              <div className="flex bg-[#0A2478] gap-3  text-white font-semibold">
-                <div className="flex-1 p-2 border-r-4 border-white text-center">
+            <div className="border border-gray-300">
+              <div className="flex bg-[#0A2478] text-white font-semibold">
+                <div className="flex-1 p-2 border-r border-white text-center">
                   Terms
                 </div>
-                <div className="w-67 p-2 text-center">
+                <div className="w-40 p-2 text-center">
                   Effective Interest Rates
                 </div>
               </div>
 
-              {/* Row 1 */}
-              <div className="flex  bg-[#FFCDCD]">
-                <div className="flex-1 p-2 border-r-4 border-white text-center">
-                  0 To 185 DAYS
+              {/* Dynamic Interest Rates */}
+              {interestRates.length > 0 ? (
+                interestRates.map((rate, index) => (
+                  <div
+                    key={index}
+                    className={`flex ${index % 2 === 0 ? 'bg-[#FFCDCD]' : 'bg-[#E5E5FF]'}`}
+                  >
+                    <div className="flex-1 p-2 border-r border-white text-center">
+                      {rate.term} DAYS
+                    </div>
+                    <div className="w-40 p-2 text-center">
+                      {rate.rate}%
+                    </div>
+                  </div>
+                ))
+              ) : (
+                <div className="flex bg-[#FFCDCD]">
+                  <div className="flex-1 p-2 border-r border-white text-center">
+                    No rates available
+                  </div>
+                  <div className="w-40 p-2 text-center">-</div>
                 </div>
-                <div className="w-70 p-2 text-center">18.00%</div>
-              </div>
-
-              {/* Row 2 */}
-              <div className="flex  bg-[#E5E5FF]">
-                <div className="flex-1 p-2 border-r-4 border-white text-center">
-                  185 To 365 DAYS
-                </div>
-                <div className="w-70 p-2 text-center">24.00%</div>
-              </div>
+              )}
             </div>
           </div>
         </div>
+
+
       </div>
     </div>
   );
 };
 
 export default GoldLoanApproval;
-
-// EditLoanDetails
-// GoldLoanApproval
