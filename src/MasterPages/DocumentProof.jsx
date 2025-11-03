@@ -9,41 +9,7 @@ const DocumentProof = () => {
     document.title = "SLF | Document Proof";
   }, []);
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [data, setData] = useState([
-    {
-      type: "Purity",
-      name: "24K Gold",
-      addedBy: "John Doe",
-      addedOn: "2025-09-20",
-      modifiedBy: "Jane Smith",
-      modifiedOn: "2025-09-21",
-      view: true,
-      edit: true,
-      active: true,
-    },
-    {
-      type: "Purity",
-      name: "22K Gold",
-      addedBy: "Alice Johnson",
-      addedOn: "2025-09-18",
-      modifiedBy: "Bob Williams",
-      modifiedOn: "2025-09-19",
-      view: true,
-      edit: false,
-      active: false,
-    },
-    {
-      type: "Product",
-      name: "Gold Ring",
-      addedBy: "Chris Evans",
-      addedOn: "2025-09-15",
-      modifiedBy: "Tom Hardy",
-      modifiedOn: "2025-09-16",
-      view: false,
-      edit: true,
-      active: true,
-    },
-  ]);
+   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [formData, setFormData] = useState({
     proof_type: "",
     proof_number: "",
@@ -53,7 +19,9 @@ const DocumentProof = () => {
     modified_by: "",
     status: "Active",
   });
+  const [selectedDataid, setselectedDataid] = useState(null);
 
+  console.log(formData,"formData")
   const [file, setFile] = useState(null);
   const [fileName, setFileName] = useState("No file chosen");
   const [previewUrl, setPreviewUrl] = useState("");
@@ -70,6 +38,22 @@ const DocumentProof = () => {
     }));
   };
 
+  const resetModal = () => {
+  setFormData({
+    proof_type: "",
+    proof_number: "",
+    is_id_proof: false,
+    is_address_proof: false,
+    added_by: "",
+    modified_by: "",
+    status: "Active",
+  });
+
+  setFileName("");
+    setIsModalOpen(false);
+    setIsEditModalOpen(false)
+};
+
   // handle file select
   const handleFileChange = (e) => {
     const selectedFile = e.target.files[0];
@@ -81,6 +65,22 @@ const DocumentProof = () => {
       setFileName("No file chosen");
     }
   };
+const handleEditClick = (doc) => {
+  setFormData({
+    proof_type: doc.proof_type || "",
+    proof_number: doc.proof_number || "",
+    is_id_proof: doc.is_id_proof === 1,         // convert number → boolean
+    is_address_proof: doc.is_address_proof === 1,
+    added_by: doc.added_by || "",
+    modified_by: doc.modified_by || "",
+    status: doc.status === 1 ? "Active" : "Inactive",
+  });
+  setselectedDataid(doc.id)
+
+  setFileName(doc.file_path?.split("/")?.pop() || "");
+  setIsModalOpen(true);
+  setIsEditModalOpen(true);
+};
 
   const fetchDocuments = async () => {
     try {
@@ -131,6 +131,49 @@ const DocumentProof = () => {
       alert("Failed to add document proof.");
     }
   };
+
+  const handleUpdateSubmit = async () => {
+    debugger
+  try {
+    if (!formData.proof_type || !formData.proof_number) {
+      alert("Please fill all required fields!");
+      return;
+    }
+
+    // add id in object
+    const updatePayloadObject = {
+      ...formData,
+      id: selectedDataid,  // <-- this will come from selected row
+    };
+
+    const encryptedData = encryptData(JSON.stringify(updatePayloadObject));
+
+    const payload = new FormData();
+    payload.append("data", encryptedData);
+
+    // only append file if user selected new file
+    if (file) {
+      payload.append("file", file);
+    }
+
+    const response = await axios.post(
+      `${API}/Master/Master_Profile/update_document`,
+      payload,
+      { headers: { "Content-Type": "multipart/form-data" } }
+    );
+
+    const result = response.data;
+    console.log("✅ UPDATE RESPONSE:", result);
+
+    alert("Document proof updated successfully!");
+    setIsModalOpen(false);
+    fetchDocuments();
+  } catch (error) {
+    console.error("❌ UPDATE Error:", error);
+    alert("Failed to update document proof.");
+  }
+};
+
 
   const updateDocumentStatus = async (id, currentStatus) => {
     try {
@@ -217,13 +260,14 @@ const DocumentProof = () => {
                 Exit
               </button>
 
+
             </div>
 
           </div>
         </div>
       </div>
 
-      {/* modelforAdd */}
+     
       {isModalOpen && (
         <div
           className="fixed inset-0 flex items-center justify-center z-50"
@@ -265,27 +309,6 @@ const DocumentProof = () => {
                 </select>
               </div>
 
-              {/* Proof Number */}
-
-
-              {/* Added By */}
-              {/* <div>
-          <label className="text-[14px]">
-            Added By <span className="text-red-500">*</span>
-          </label>
-          <input
-            type="text"
-            name="added_by"
-            placeholder="Enter name"
-            value={formData.added_by}
-            onChange={handleChange}
-            className="border border-gray-300 rounded px-3 py-2 mt-1 w-full"
-          />
-        </div> */}
-
-
-
-              {/* File Upload */}
               <div className="flex justify-between gap-10 mt-5">
 
                 <div className="col-span-2">
@@ -365,15 +388,24 @@ const DocumentProof = () => {
 
             {/* Buttons */}
             <div className="flex justify-center gap-4 mt-6">
-              <button
-                className="bg-[#0A2478] text-white px-6 py-2 rounded"
-                onClick={handleSubmit}
-              >
-                Submit
-              </button>
+             { isEditModalOpen ? (
+  <button
+    className="bg-[#0A2478] text-white px-6 py-2 rounded"
+    onClick={handleUpdateSubmit}
+  >
+    Update
+  </button>
+) : (
+  <button
+    className="bg-[#0A2478] text-white px-6 py-2 rounded"
+    onClick={handleSubmit}
+  >
+    Submit
+  </button>
+)}
               <button
                 className="bg-[#C1121F] text-white px-6 py-2 rounded"
-                onClick={() => setIsModalOpen(false)}
+               onClick={resetModal}
               >
                 Exit
               </button>
@@ -423,8 +455,8 @@ const DocumentProof = () => {
                   {/* Action icons */}
                   <td className="px-4 py-2 text-[#1883EF] cursor-pointer">
                     <div className="flex gap-2 justify-center">
-                      <div className="w-[17px] h-[17px] bg-[#56A869] rounded-[2.31px] flex items-center justify-center p-0.5">
-                        <img src={GroupData} alt="view" className="w-[18px] h-[18px]" />
+                      <div className="w-[17px] h-[17px] bg-[#56A869] rounded-[2.31px] flex items-center justify-center p-0.5" onClick={() => handleEditClick(row)}>
+                        <img src={GroupData} alt="view" className="w-[18px] h-[18px] "  />
                       </div>
                     </div>
                   </td>

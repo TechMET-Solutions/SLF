@@ -550,11 +550,19 @@ const onchange = (id, field, value) => {
             <label className="text-xs font-medium mb-1">
               Payment Basis On <span className="text-red-600">*</span>
             </label>
-            <select
+            {/* <select
               name="paymentBasisOn"
               value={formData.paymentBasisOn || ""}
               onChange={handleInputChange}
               className="border border-gray-300 rounded px-3 py-2 mt-1 w-[119px] bg-white"
+            /> */}
+             <input
+              type="text"
+              name="paymentBasisOn"
+              value={formData.paymentBasisOn}
+              onChange={handleInputChange}
+              placeholder=""
+              className="border border-gray-300  px-3 py-2 w-[113px] bg-white"
             />
           </div>
 
