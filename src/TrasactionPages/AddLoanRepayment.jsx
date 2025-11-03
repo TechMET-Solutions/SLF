@@ -1,6 +1,8 @@
 import React, { useEffect, useState } from "react";
 import profileempty from "../assets/profileempty.png";
 import { IoMdPrint, IoMdDownload } from "react-icons/io";
+import DatePicker from "react-datepicker";
+import "react-datepicker/dist/react-datepicker.css";
 
 const installments = [
   {
@@ -120,7 +122,7 @@ function AddLoanRepayment() {
                     placeholder="Loan Amount"
                     value={loanInfo.loanAmount}
                     onChange={handleChange}
-                    className="border border-gray-300 rounded-l-md px-3 py-2 w-full focus:ring-1 focus:ring-blue-500 focus:outline-none"
+                    className="border border-gray-300 rounded-l-md px-3 py-2 w-full focus:ring-1 focus:outline-none"
                   />
                   <button className="bg-[#0A2478] text-white px-2 py-2 rounded-r-md hover:bg-[#081c5b] text-xs w-[40px]">
                     {loanInfo.interestRate || "18%"}
@@ -137,7 +139,7 @@ function AddLoanRepayment() {
                 name={f.name}
                 value={loanInfo[f.name]}
                 onChange={handleChange}
-                className="bg-[#F8FAFC] border border-gray-300 rounded-md px-3 py-2 focus:ring-1 focus:ring-blue-500 focus:outline-none"
+                className=" border border-gray-300 rounded-md px-3 py-2 focus:ring-1 focus:ring-blue-500 focus:outline-none"
               />
             </div>
           );
@@ -160,7 +162,7 @@ function AddLoanRepayment() {
               name={f.name}
               value={loanInfo[f.name]}
               onChange={handleChange}
-              className="bg-[#F8FAFC] border border-gray-300 rounded-md px-3 py-2 focus:ring-1 focus:ring-blue-500 focus:outline-none"
+              className=" border border-gray-300 rounded-md px-3 py-2 focus:ring-1 focus:ring-blue-500 focus:outline-none"
             />
           </div>
         ))}
@@ -179,7 +181,7 @@ function AddLoanRepayment() {
               name={f.name}
               value={loanInfo[f.name]}
               onChange={handleChange}
-              className="bg-[#F8FAFC] border border-gray-300 rounded-md px-3 py-2 focus:ring-1 focus:ring-blue-500 focus:outline-none"
+              className=" border border-gray-300 rounded-md px-3 py-2 focus:ring-1 focus:ring-blue-500 focus:outline-none"
             />
           </div>
         ))}
@@ -242,26 +244,40 @@ function AddLoanRepayment() {
           </div>
 
           {/* Row 1 */}
-          <div className="flex flex-wrap gap-x-6 gap-y-4">
-            {[
-              "Pay Amount",
-              "Interest Adjusted",
-              "Loan Amt Adjusted",
-              "Balance Loan Amt",
-              "Charges Adjusted",
-              "Interest Paid For",
-              "Int. Paid Upto",
-            ].map((field, i) => (
-              <div key={i} className="flex flex-col gap-1 w-[150px]">
-                <label className="text-gray-900 font-medium">{field}</label>
-                <input
-                  type="text"
-                  placeholder={field}
-                  className="border border-gray-300 rounded-md px-3 py-2 focus:ring-1 focus:ring-blue-500 focus:outline-none"
-                />
-              </div>
-            ))}
-          </div>
+         <div className="flex flex-wrap gap-x-6 gap-y-4">
+  {[
+    "Pay Amount",
+    "Interest Adjusted",
+    "Loan Amt Adjusted",
+    "Balance Loan Amt",
+    "Charges Adjusted",
+    "Interest Paid For",
+  ].map((field, i) => (
+    <div key={i} className="flex flex-col gap-1 w-[150px]">
+      <label className="text-gray-900 font-medium">{field}</label>
+      <input
+        type="text"
+        placeholder={field}
+        className="border border-gray-300 rounded-md px-3 py-2 focus:ring-1 focus:ring-blue-500 focus:outline-none"
+      />
+    </div>
+  ))}
+
+  {/* Int. Paid Upto (Date Picker Field) */}
+  <div className="flex flex-col gap-1 w-[150px]">
+    <label className="text-gray-900 font-medium">Int. Paid Upto</label>
+    <DatePicker
+      selected={loanInfo.intPaidUpto}
+      onChange={(date) =>
+        setLoanInfo((prev) => ({ ...prev, intPaidUpto: date }))
+      }
+      dateFormat="dd/MM/yyyy"
+      placeholderText="Select Date"
+      className="border border-gray-300 rounded-md px-3 py-2 w-full focus:ring-1 focus:ring-blue-500 focus:outline-none"
+    />
+  </div>
+</div>
+
 
           <p className="text-sm text-gray-500 mt-1 ml-1">Amount in words</p>
 
@@ -379,7 +395,16 @@ function AddLoanRepayment() {
                   <th className="p-2 border border-gray-300">Sr. No</th>
                   <th className="p-2 border border-gray-300">Receipt No</th>
                   <th className="p-2 border border-gray-300">Payment Date</th>
-                  <th className="p-2 border border-gray-300">Paid Upto</th>
+<th className="p-2 border border-gray-300">
+  <input
+    type="date"
+    value={formData.paidUpto}
+    onChange={(e) =>
+      setFormData({ ...formData, paidUpto: e.target.value })
+    }
+    className="border border-gray-300 rounded px-2 py-1 text-sm focus:ring-1 focus:ring-blue-500 focus:outline-none"
+  />
+</th>
                   <th className="p-2 border border-gray-300">
                     Mode of Payment
                   </th>
