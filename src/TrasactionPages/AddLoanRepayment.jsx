@@ -1,507 +1,438 @@
-import React, { useEffect } from 'react'
-import profileempty from '../assets/profileempty.png';
-import { MdOutlineFileDownload } from 'react-icons/md';
-import { IoMdPrint, IoMdDownload } from 'react-icons/io';
+import React, { useEffect, useState } from "react";
+import profileempty from "../assets/profileempty.png";
+import { IoMdPrint, IoMdDownload } from "react-icons/io";
 
 const installments = [
-    {
-        srNo: 1,
-        receiptNo: "R-1001",
-        paymentDate: "25/09/2025",
-        paidUpto: "Aug 2025",
-        mode: "UPI",
-        refNo: "TXN12345",
-        amount: "₹10,000",
-        interest: "₹500",
-        loanAdj: "₹9,500",
-        intDays: 30,
-    },
-    {
-        srNo: 2,
-        receiptNo: "R-1002",
-        paymentDate: "25/10/2025",
-        paidUpto: "Sep 2025",
-        mode: "Cash",
-        refNo: "-",
-        amount: "₹10,000",
-        interest: "₹400",
-        loanAdj: "₹9,600",
-        intDays: 28,
-    },
+  {
+    srNo: 1,
+    receiptNo: "R-1001",
+    paymentDate: "25/09/2025",
+    paidUpto: "Aug 2025",
+    mode: "UPI",
+    refNo: "TXN12345",
+    amount: "₹10,000",
+    interest: "₹500",
+    loanAdj: "₹9,500",
+    intDays: 30,
+  },
+  {
+    srNo: 2,
+    receiptNo: "R-1002",
+    paymentDate: "25/10/2025",
+    paidUpto: "Sep 2025",
+    mode: "Cash",
+    refNo: "-",
+    amount: "₹10,000",
+    interest: "₹400",
+    loanAdj: "₹9,600",
+    intDays: 28,
+  },
 ];
 
-const ItemList = [{
-
-}];
+const ItemList = [{}];
 
 function AddLoanRepayment() {
-    useEffect(() => {
-        document.title = "SLF | Add Loan Repayment";
-    }, []);
+  useEffect(() => {
+    document.title = "SLF | Add Loan Repayment";
+  }, []);
 
+  const initialLoanInfo = {
+    loanNo: "",
+    customerName: "",
+    mobileNumber: "",
+    loanDate: "",
+    loanAmount: "",
+    interestRate: "",
+    scheme: "",
+    pendingLoanAmount: "",
+    pendingInt: "",
+    pendingDays: "",
+    loanAmountPaid: "",
+    chargesDue: "",
+    lastInterestPaidDate: "",
+    lastInterestPaidUpto: "",
+  };
+  // ✅ Initialize formData state
+  const [formData, setFormData] = useState({
+    Borrower_ProfileImg: "",
+    Borrower_signature: "",
+    CoBorrower_ProfileImg: "",
+    CoBorrower_signature: "",
+    OrnamentPhoto: "",
+  });
 
-    return (
-        <div className="flex flex-col items-center mt-5">
-            {/* Header Section */}
-            <div className="flex items-center justify-between px-6 py-4 w-[1290px] h-[62px] border border-gray-200 rounded-[11px] shadow-sm">
-                <h2 className="text-red-600 font-bold text-[20px] leading-[1.48] font-['Source_Sans_3']">
-                    Add Loan Repayment
-                </h2>
+  const [loanInfo, setLoanInfo] = useState(initialLoanInfo);
 
-                <div className="flex items-center gap-5">
-                    <button className="bg-[#0A2478] text-white text-[10px] w-[74px] h-[24px] rounded-[3.75px] hover:bg-red-700 transition">
-                        Search
-                    </button>
-                    <button className="bg-[#C1121F] text-white text-[10px] w-[74px] h-[24px] rounded-[3.75px] hover:bg-red-700 transition">
-                        Close
-                    </button>
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+    setLoanInfo((prev) => ({ ...prev, [name]: value }));
+  };
+
+  return (
+    <div className="flex flex-col items-center mt-5">
+      {/* Header Section */}
+      <div className="flex items-center justify-between px-6 py-4 w-[1290px] h-[62px] border border-gray-200 rounded-[11px] shadow-sm">
+        <h2 className="text-red-600 font-bold text-[20px] leading-[1.48] font-['Source_Sans_3']">
+          Add Loan Repayment
+        </h2>
+
+        <div className="flex items-center gap-5">
+          <button className="bg-[#0A2478] text-white text-[10px] w-[74px] h-[24px] rounded-[3.75px]  transition">
+            Submit
+          </button>
+          <button className="bg-[#C1121F] text-white text-[10px] w-[74px] h-[24px] rounded-[3.75px]  transition">
+            Close
+          </button>
+        </div>
+      </div>
+
+      {/* Loan Information Section */}
+      <div className="flex flex-col items-center ">
+        {/* Header Section */}
+
+        {/* Loan Information Section */}
+      <div className="w-full max-w-[1290px] bg-white p-4 rounded-md">
+  <h1 className="text-blue-900 font-semibold text-xl pb-3">
+    Loan Information
+  </h1>
+
+  <div className="flex justify-between items-start gap-6">
+    {/* Left Section - Loan Info */}
+    <div className="flex flex-col gap-3 flex-1 text-sm">
+      {/* Row 1 */}
+      <div className="flex gap-4">
+        {[
+          { label: "Loan No", name: "loanNo", type: "text", width: "120px" },
+          { label: "Customer Name", name: "customerName", type: "text", width: "210px" },
+          { label: "Mobile Number", name: "mobileNumber", type: "text", width: "120px" },
+          { label: "Loan Date", name: "loanDate", type: "date", width: "130px" },
+          { label: "Loan Amount", name: "loanAmount", type: "text", width: "130px" },
+          { label: "Under the Scheme", name: "scheme", type: "text", width: "120px" },
+        ].map((f, i) => {
+          if (f.name === "loanAmount") {
+            return (
+              <div key={i} className="flex flex-col gap-1" style={{ width: f.width }}>
+                <label className="text-gray-900 font-medium">{f.label}</label>
+                <div className="flex">
+                  <input
+                    type="text"
+                    name="loanAmount"
+                    placeholder="Loan Amount"
+                    value={loanInfo.loanAmount}
+                    onChange={handleChange}
+                    className="border border-gray-300 rounded-l-md px-3 py-2 w-full focus:ring-1 focus:ring-blue-500 focus:outline-none"
+                  />
+                  <button className="bg-[#0A2478] text-white px-2 py-2 rounded-r-md hover:bg-[#081c5b] text-xs w-[40px]">
+                    {loanInfo.interestRate || "18%"}
+                  </button>
                 </div>
+              </div>
+            );
+          }
+          return (
+            <div key={i} className="flex flex-col" style={{ width: f.width }}>
+              <label className="text-gray-800 font-medium">{f.label}</label>
+              <input
+                type={f.type}
+                name={f.name}
+                value={loanInfo[f.name]}
+                onChange={handleChange}
+                className="bg-[#F8FAFC] border border-gray-300 rounded-md px-3 py-2 focus:ring-1 focus:ring-blue-500 focus:outline-none"
+              />
             </div>
-            {/* Loan Information Section */}
-            <div className="mt-4 w-full max-w-[1290px] bg-white">
-                <h1 className="text-blue-900 font-semibold text-xl pb-3">Loan Information</h1>
+          );
+        })}
+      </div>
 
-                <div className="flex flex-wrap justify-between gap-4">
-                    {/* Left Section (Form Fields) */}
-                    <div className="flex flex-wrap gap-2 flex-1 text-sm">
+      {/* Row 2 */}
+      <div className="flex gap-4">
+        {[
+          { label: "Pending Loan Amount", name: "pendingLoanAmount", type: "text", width: "150px" },
+          { label: "Pending Int", name: "pendingInt", type: "text", width: "120px" },
+          { label: "Pending Days", name: "pendingDays", type: "text", width: "120px" },
+          { label: "Loan Amount Paid", name: "loanAmountPaid", type: "text", width: "130px" },
+          { label: "Charges Due", name: "chargesDue", type: "text", width: "130px" },
+        ].map((f, i) => (
+          <div key={i} className="flex flex-col" style={{ width: f.width }}>
+            <label className="text-gray-800 font-medium">{f.label}</label>
+            <input
+              type={f.type}
+              name={f.name}
+              value={loanInfo[f.name]}
+              onChange={handleChange}
+              className="bg-[#F8FAFC] border border-gray-300 rounded-md px-3 py-2 focus:ring-1 focus:ring-blue-500 focus:outline-none"
+            />
+          </div>
+        ))}
+      </div>
 
-                        {/* Loan No */}
-                        <div className="flex flex-col gap-1 w-[100px]">
-                            <label className="text-gray-900 font-medium">Loan No</label>
-                            <input
-                                type="text"
-                                placeholder="Loan No"
-                                className="border border-gray-300 rounded-md px-3 py-2 focus:ring-1 focus:ring-blue-500 focus:outline-none"
-                            />
-                        </div>
+      {/* Row 3 */}
+      <div className="flex gap-4">
+        {[
+          { label: "Last Interest Paid Date", name: "lastInterestPaidDate", type: "date", width: "150px" },
+          { label: "Last Interest Paid Upto", name: "lastInterestPaidUpto", type: "date", width: "150px" },
+        ].map((f, i) => (
+          <div key={i} className="flex flex-col" style={{ width: f.width }}>
+            <label className="text-gray-800 font-medium">{f.label}</label>
+            <input
+              type={f.type}
+              name={f.name}
+              value={loanInfo[f.name]}
+              onChange={handleChange}
+              className="bg-[#F8FAFC] border border-gray-300 rounded-md px-3 py-2 focus:ring-1 focus:ring-blue-500 focus:outline-none"
+            />
+          </div>
+        ))}
+      </div>
+    </div>
 
-                        {/* Customer Name */}
-                        <div className="flex flex-col gap-1  min-w-[180px]">
-                            <label className="text-gray-900 font-medium">Customer Name</label>
-                            <input
-                                type="text"
-                                placeholder="Customer Name"
-                                className="border border-gray-300 rounded-md px-3 py-2 focus:ring-1 focus:ring-blue-500 focus:outline-none"
-                            />
-                        </div>
-
-                        {/* Mobile Number */}
-                        <div className="flex flex-col gap-1  w-[140px]">
-                            <label className="text-gray-900 font-medium">Mobile Number</label>
-                            <input
-                                type="text"
-                                placeholder="Mobile Number"
-                                className="border border-gray-300 rounded-md px-3 py-2 focus:ring-1 focus:ring-blue-500 focus:outline-none"
-                            />
-                        </div>
-
-                        {/* Branch Code */}
-                        <div className="flex flex-col gap-1  w-[100px]">
-                            <label className="text-gray-900 font-medium">Branch Code</label>
-                            <input
-                                type="text"
-                                placeholder="Branch Code"
-                                className="border border-gray-300 rounded-md px-3 py-2 focus:ring-1 focus:ring-blue-500 focus:outline-none"
-                            />
-                        </div>
-
-                        {/* Branch Name */}
-                        <div className="flex flex-col gap-1  w-[140px]">
-                            <label className="text-gray-900 font-medium">Branch Name</label>
-                            <input
-                                type="text"
-                                placeholder="Branch Name"
-                                className="border border-gray-300 rounded-md px-3 py-2 focus:ring-1 focus:ring-blue-500 focus:outline-none"
-                            />
-                        </div>
-
-                        {/* Loan Date */}
-                        <div className="flex flex-col gap-1 w-[140px]">
-                            <label className="text-gray-900 font-medium">Loan Date</label>
-                            <input
-                                type="date"
-                                className="border border-gray-300 rounded-md px-3 py-2 focus:ring-1 focus:ring-blue-500 focus:outline-none"
-                            />
-                        </div>
-
-                        {/* Loan Amount */}
-                        <div className="flex flex-col gap-1 w-[120px]">
-                            <label className="text-gray-900 font-medium">Loan Amount</label>
-                            <div className="flex">
-                                <input
-                                    type="text"
-                                    placeholder="Loan Amount"
-                                    className="border border-gray-300 rounded-l-md px-3 py-2 w-full focus:ring-1 focus:ring-blue-500 focus:outline-none"
-                                />
-                                <button className="bg-[#0A2478] text-white px-1 py-2 rounded-r-md hover:bg-[#081c5b]">
-                                    18%
-                                </button>
-                            </div>
-                        </div>
-
-                        {/* Under the Scheme */}
-                        <div className="flex flex-col gap-1 w-[120px]">
-                            <label className="text-gray-900 font-medium">Under the Scheme</label>
-                            <input
-                                type="text"
-                                className="border border-gray-300 rounded-md px-3 py-2 focus:ring-1 focus:ring-blue-500 focus:outline-none"
-                            />
-                        </div>
-
-                        {/* Tenure */}
-                        <div className="flex flex-col gap-1 w-[110px]">
-                            <label className="text-gray-900 font-medium">Tenure</label>
-                            <input
-                                type="text"
-                                placeholder="Tenure"
-                                className="border border-gray-300 rounded-md px-3 py-2 focus:ring-1 focus:ring-blue-500 focus:outline-none"
-                            />
-                        </div>
-
-                        {/* PreCloser Min Days */}
-                        <div className="flex flex-col gap-1 w-[130px]">
-                            <label className="text-gray-900 font-medium">PreCloser Min Days</label>
-                            <input
-                                type="text"
-                                placeholder="PreCloser Min Days"
-                                className="border border-gray-300 rounded-md px-3 py-2 focus:ring-1 focus:ring-blue-500 focus:outline-none"
-                            />
-                        </div>
-
-                        {/* Precloser Charge */}
-                        <div className="flex flex-col gap-1 w-[130px]">
-                            <label className="text-gray-900 font-medium">Precloser Charge</label>
-                            <input
-                                type="text"
-                                placeholder="Precloser Charge"
-                                className="border border-gray-300 rounded-md px-3 py-2 focus:ring-1 focus:ring-blue-500 focus:outline-none"
-                            />
-                        </div>
-
-                        {/* Pending Amount */}
-                        <div className="flex flex-col gap-1 w-[150px]">
-                            <label className="text-gray-900 font-medium">Pending Loan Amount</label>
-                            <input
-                                type="text"
-                                placeholder="Pending Loan Amount"
-                                className="border border-gray-300 rounded-md px-3 py-2 focus:ring-1 focus:ring-blue-500 focus:outline-none"
-                            />
-                        </div>
-                        {/* Loan Amount Paid */}
-                        <div className="flex flex-col gap-1 w-[120px]">
-                            <label className="text-gray-900 font-medium">Loan Amount Paid</label>
-                            <input
-                                type="text"
-                                placeholder="Loan Amount Paid"
-                                className="border border-gray-300 rounded-md px-3 py-2 focus:ring-1 focus:ring-blue-500 focus:outline-none"
-                            />
-                        </div>
-                        {/* Interest Paid */}
-                        <div className="flex flex-col gap-1 w-[120px]">
-                            <label className="text-gray-900 font-medium">Interest Paid</label>
-                            <input
-                                type="text"
-                                placeholder="Interest Paid"
-                                className="border border-gray-300 rounded-md px-3 py-2 focus:ring-1 focus:ring-blue-500 focus:outline-none"
-                            />
-                        </div>
-                        {/* Interest Due */}
-                        <div className="flex flex-col gap-1 w-[150px]">
-                            <label className="text-gray-900 font-medium">Interest Due </label>
-                            <input
-                                type="text"
-                                placeholder="Interest Due"
-                                className="border border-gray-300 rounded-md px-3 py-2 focus:ring-1 focus:ring-blue-500 focus:outline-none"
-                            />
-                        </div>
-                        {/* Period(Days)  */}
-                        <div className="flex flex-col gap-1 w-[150px]">
-                            <label className="text-gray-900 font-medium">Period(Days) </label>
-                            <input
-                                type="text"
-                                placeholder="Period(Days) "
-                                className="border border-gray-300 rounded-md px-3 py-2 focus:ring-1 focus:ring-blue-500 focus:outline-none"
-                            />
-                        </div>
-
-                        {/* Last Interest Paid Date */}
-                        <div className="flex flex-col gap-1 w-[140px]">
-                            <label className="text-gray-900 font-medium">Last Interest Paid Date</label>
-                            <input
-                                type="date"
-                                placeholder="Last Interest Paid Date"
-                                className="border border-gray-300 rounded-md px-3 py-2 focus:ring-1 focus:ring-blue-500 focus:outline-none"
-                            />
-                        </div>
-                        {/* Last Interest Paid upto */}
-                        <div className="flex flex-col gap-1 w-[140px]">
-                            <label className="text-gray-900 font-medium">Last Interest Paid upto</label>
-                            <input
-                                type="date"
-                                placeholder="Last Interest Paid upto"
-                                className="border border-gray-300 rounded-md px-3 py-2 focus:ring-1 focus:ring-blue-500 focus:outline-none"
-                            />
-                        </div>
-                    </div>
-
-                    {/* Right Section (Profile Image) */}
-                    <div className="flex items-start justify-center w-[150px]">
-                        <img
-                            src={profileempty}
-                            alt="Profile"
-                            className="w-[120px] h-[140px] border border-gray-300 rounded-md object-cover"
-                        />
-                    </div>
-                </div>
+    {/* Right Section - Images */}
+    <div className="flex gap-3 mt-[-40px] ">
+      {[
+        { label: "Customer", img: formData.Borrower_ProfileImg, sign: formData.Borrower_signature },
+        { label: "Co-Borrower", img: formData.CoBorrower_ProfileImg, sign: formData.CoBorrower_signature },
+        { label: "Ornament Photo", img: formData.OrnamentPhoto, sign: null },
+      ].map((item, i) => (
+        <div key={i} className="flex flex-col items-center">
+          <p className="font-medium mb-1 text-xs">{item.label}</p>
+          <img
+            src={item.img ? item.img : profileempty}
+            alt={item.label}
+            className="w-[100px]  h-[115px] object-cover rounded-[5px] border border-gray-300"
+          />
+          {item.sign !== null && (
+            <div className="mt-1 border w-[100px] h-[26px] flex items-center justify-center bg-white rounded-[4px]">
+              {item.sign ? (
+                <img src={item.sign} alt="Signature" className="w-full h-full object-contain" />
+              ) : (
+                <span className="text-gray-400 text-[9px]">No Signature</span>
+              )}
             </div>
+          )}
+        </div>
+      ))}
+    </div>
+  </div>
+</div>
 
 
 
-            {/* Table Section */}
-            <div className="my-6 w-[1290px] bg-white">
-                <h1 className="text-blue-900 font-semibold text-xl py-2">Pledge Item List</h1>
-                <div className="overflow-x-auto">
-                    <table className="w-full border-collapse">
-                        <thead>
-                            <tr className="bg-blue-900 text-start text-white text-sm">
-                                <th className="p-2 border text-start border-gray-300">Particulars</th>
-                                <th className="p-2 border text-start border-gray-300">Nos</th>
-                                <th className="p-2 border text-start border-gray-300">Gross</th>
-                                <th className="p-2 border text-start border-gray-300">Net Weight</th>
-                                <th className="p-2 border text-start w-[550px] border-gray-300">Remark</th>
+        {/* Payment Section */}
+        <div className="mt-4 w-[1290px] bg-white rounded-md p-4">
+          <h1 className="text-blue-900 font-semibold text-xl pb-2">Payment</h1>
 
-                            </tr>
-                        </thead>
+          {/* Top Checkboxes */}
+          <div className="flex gap-6 mb-4">
+            {[
+              { id: "isClose", label: "Is Close" },
+              { id: "isAdvInt", label: "Is Adv. Int" },
+              { id: "creditNote", label: "Credit Note" },
+            ].map((c, i) => (
+              <div key={i} className="flex items-center gap-2">
+                <input
+                  type="checkbox"
+                  id={c.id}
+                  className="accent-[#0A2478] h-4 w-4"
+                />
+                <label htmlFor={c.id} className="font-medium text-gray-900">
+                  {c.label}
+                </label>
+              </div>
+            ))}
+          </div>
 
-                        <tbody>
-                            {installments.length > 0 ? (
-                                ItemList.map((row, index) => (
-                                    <tr
-                                        key={index}
-                                        className="text-center text-sm hover:bg-gray-50 transition"
-                                    >
-                                        <td className="p-2 border border-gray-300">{row.srNo}</td>
-                                        <td className="p-2 border border-gray-300">{row.receiptNo}</td>
-                                        <td className="p-2 border border-gray-300">{row.paymentDate}</td>
-                                        <td className="p-2 border border-gray-300">{row.paidUpto}</td>
-                                        <td className="p-2 border border-gray-300">{row.mode1}</td>
-                                    </tr>
-                                ))
-                            ) : (
-                                <tr className="text-center text-sm">
-                                    <td
-                                        colSpan="7"
-                                        className="p-3 border border-gray-300 text-gray-500"
-                                    >
-                                        No Pledge Item List Available
-                                    </td>
-                                </tr>
-                            )}
-                        </tbody>
-                    </table>
-                </div>
+          {/* Row 1 */}
+          <div className="flex flex-wrap gap-x-6 gap-y-4">
+            {[
+              "Pay Amount",
+              "Interest Adjusted",
+              "Loan Amt Adjusted",
+              "Balance Loan Amt",
+              "Charges Adjusted",
+              "Interest Paid For",
+              "Int. Paid Upto",
+            ].map((field, i) => (
+              <div key={i} className="flex flex-col gap-1 w-[150px]">
+                <label className="text-gray-900 font-medium">{field}</label>
+                <input
+                  type="text"
+                  placeholder={field}
+                  className="border border-gray-300 rounded-md px-3 py-2 focus:ring-1 focus:ring-blue-500 focus:outline-none"
+                />
+              </div>
+            ))}
+          </div>
+
+          <p className="text-sm text-gray-500 mt-1 ml-1">Amount in words</p>
+
+          {/* Row 2: Payment Details */}
+          <div className="flex flex-wrap gap-x-6 gap-y-4 mt-4">
+            <div className="flex flex-col gap-1 w-[200px]">
+              <label className="text-gray-900 font-medium">
+                Mode of Payment
+              </label>
+              <select className="border border-gray-300 rounded-md px-3 py-2 focus:ring-1 focus:ring-blue-500 focus:outline-none">
+                <option>--Select--</option>
+                <option>Cash</option>
+                <option>Net Banking</option>
+                <option>Credit Note</option>
+              </select>
             </div>
 
-            {/* Payment Section */}
-            <div className="mt-4 w-[1290px] bg-white rounded-md">
-                <h1 className="text-blue-900 font-semibold text-xl pb-2">Payment</h1>
-
-                <div className="flex flex-wrap gap-x-6 gap-y-4">
-                    {/* Is Close */}
-                    <div className="flex gap-2">
-                        <div className="flex items-center gap-2 w-[150px]">
-                            <input type="checkbox" id="isClose" className="accent-[#0A2478] h-4 w-4" />
-                            <label htmlFor="isClose" className="font-medium text-gray-900">Is Close</label>
-                        </div>
-
-                        {/* Pay Amount */}
-                        <div className="flex flex-col gap-1 w-[150px]">
-                            <label className="text-gray-900 font-medium">Pay Amount</label>
-                            <input type="text" placeholder="Pay Amount"
-                                className="border border-gray-300 rounded-md px-3 py-2 focus:ring-1 focus:ring-blue-500 focus:outline-none" />
-                        </div>
-
-                        {/* Interest Adjusted */}
-                        <div className="flex flex-col gap-1 w-[150px]">
-                            <label className="text-gray-900 font-medium">Interest Adjusted</label>
-                            <input type="text" placeholder="Interest Adjusted"
-                                className="border border-gray-300 rounded-md px-3 py-2 focus:ring-1 focus:ring-blue-500 focus:outline-none" />
-                        </div>
-
-                        {/* Loan Amt Adjusted */}
-                        <div className="flex flex-col gap-1 w-[150px]">
-                            <label className="text-gray-900 font-medium">Loan Amt Adjusted</label>
-                            <input type="text" placeholder="Loan Amt Adjusted"
-                                className="border border-gray-300 rounded-md px-3 py-2 focus:ring-1 focus:ring-blue-500 focus:outline-none" />
-                        </div>
-
-                        {/* Balance Loan Amt */}
-                        <div className="flex flex-col gap-1 w-[150px]">
-                            <label className="text-gray-900 font-medium">Balance Loan Amt</label>
-                            <input type="text" placeholder="Balance Loan Amt"
-                                className="border border-gray-300 rounded-md px-3 py-2 focus:ring-1 focus:ring-blue-500 focus:outline-none" />
-                        </div>
-                    </div>
-
-                    <div className="flex gap-2">
-                        {/* Is Adv. Int */}
-                        <div className="flex items-center gap-2 w-[160px]">
-                            <input type="checkbox" id="isAdvInt" className="accent-[#0A2478] h-4 w-4" />
-                            <label htmlFor="isAdvInt" className="font-medium text-gray-900">Is Adv. Int.</label>
-                        </div>
-
-                        {/* Notice Amt Adjusted */}
-                        <div className="flex flex-col gap-1 w-[150px]">
-                            <label className="text-gray-900 font-medium">Notice Amt Adjusted</label>
-                            <input type="text" placeholder="Notice Amt Adjusted"
-                                className="border border-gray-300 rounded-md px-3 py-2 focus:ring-1 focus:ring-blue-500 focus:outline-none" />
-                        </div>
-
-                        {/* Oth. Charges Adjusted */}
-                        <div className="flex flex-col gap-1 w-[150px]">
-                            <label className="text-gray-900 font-medium">Oth. Charges Adjusted</label>
-                            <input type="text" placeholder="Oth. Charges Adjusted"
-                                className="border border-gray-300 rounded-md px-3 py-2 focus:ring-1 focus:ring-blue-500 focus:outline-none" />
-                        </div>
-
-                        {/* Interest Paid For */}
-                        <div className="flex flex-col gap-1 w-[150px]">
-                            <label className="text-gray-900 font-medium">Interest Paid For</label>
-                            <input type="text" placeholder="Interest Paid For"
-                                className="border border-gray-300 rounded-md px-3 py-2 focus:ring-1 focus:ring-blue-500 focus:outline-none" />
-                        </div>
-
-                        {/* Int Paid Upto */}
-                        <div className="flex flex-col gap-1 w-[150px]">
-                            <label className="text-gray-900 font-medium">Int Paid Upto</label>
-                            <input type="date"
-                                className="border border-gray-300 rounded-md px-3 py-2 focus:ring-1 focus:ring-blue-500 focus:outline-none" />
-                        </div>
-
-                    </div>
-
-                    <div className="flex gap-2">
-                        {/* Enhancement Modification */}
-                        <div className="flex items-center gap-2 w-[150px]">
-                            <input type="checkbox" id="enModif" className="accent-[#0A2478] h-4 w-4" />
-                            <label htmlFor="enModif" className="font-medium text-gray-900">Enhancement <br /> Modification</label>
-                        </div>
-
-                        {/* Cash In Transit */}
-                        <div className="flex flex-col gap-1 w-[150px]">
-                            <label className="text-gray-900 font-medium">Cash In Transit</label>
-                            <input type="text" placeholder="Cash In Transit"
-                                className="border border-gray-300 rounded-md px-3 py-2 focus:ring-1 focus:ring-blue-500 focus:outline-none" />
-                        </div>
-
-                        {/* Mode of Payment */}
-                        <div className="flex flex-col gap-1 w-[150px]">
-                            <label className="text-gray-900 font-medium">Mode of Payment</label>
-                            <select
-                                className="border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-1 focus:ring-blue-500">
-                                <option value="">Select</option>
-                                <option value="Cash">Cash</option>
-                                <option value="Online">Online</option>
-                            </select>
-                        </div>
-
-                        {/* Cash A/C */}
-                        <div className="flex flex-col gap-1 w-[150px]">
-                            <label className="text-gray-900 font-medium">Cash A/C</label>
-                            <input type="text" placeholder="Cash A/C"
-                                className="border border-gray-300 rounded-md px-3 py-2 focus:ring-1 focus:ring-blue-500 focus:outline-none" />
-                        </div>
-
-                        {/* Payment Ref. No */}
-                        <div className="flex flex-col gap-1 w-[150px]">
-                            <label className="text-gray-900 font-medium">Payment Ref. No</label>
-                            <input type="text" placeholder="Payment Ref. No"
-                                className="border border-gray-300 rounded-md px-3 py-2 focus:ring-1 focus:ring-blue-500 focus:outline-none" />
-                        </div>
-
-                        {/* Payment Made By */}
-                        <div className="flex flex-col gap-1 w-[150px]">
-                            <label className="text-gray-900 font-medium">Payment Made By</label>
-                            <input type="text" placeholder="Payment Made By"
-                                className="border border-gray-300 rounded-md px-3 py-2 focus:ring-1 focus:ring-blue-500 focus:outline-none" />
-                        </div>
-
-                        {/* Amount Paid (In Words) */}
-                        <div className="flex flex-col gap-1 w-[250px]">
-                            <label className="text-gray-900 font-medium">Amount Paid (In Words)</label>
-                            <input type="text" placeholder="Amount Paid (In Words)"
-                                className="border border-gray-300 rounded-md px-3 py-2 focus:ring-1 focus:ring-blue-500 focus:outline-none" />
-                        </div>
-
-                    </div>
-                </div>
+            <div className="flex flex-col gap-1 w-[150px]">
+              <label className="text-gray-900 font-medium">
+                Type of Payment
+              </label>
+              <input
+                type="text"
+                placeholder="Cash"
+                className="border border-gray-300 rounded-md px-3 py-2 focus:ring-1 focus:ring-blue-500 focus:outline-none"
+              />
             </div>
 
-
-
-            {/* Table Section */}
-            <div className="my-6 w-[1290px] bg-white">
-                <h1 className="text-blue-900 font-semibold text-xl py-2">Installments</h1>
-                <div className="overflow-x-auto">
-                    <table className="w-full border-collapse">
-                        <thead>
-                            <tr className="bg-blue-900 text-white text-sm">
-                                <th className="p-2 border border-gray-300">Sr. No</th>
-                                <th className="p-2 border border-gray-300">Receipt No</th>
-                                <th className="p-2 border border-gray-300">Payment Date</th>
-                                <th className="p-2 border border-gray-300">Paid Upto</th>
-                                <th className="p-2 border border-gray-300">Mode of Payment</th>
-                                <th className="p-2 border border-gray-300">Payment Ref. No</th>
-                                <th className="p-2 border border-gray-300">Amount</th>
-                                <th className="p-2 border border-gray-300">Interest</th>
-                                <th className="p-2 border border-gray-300">Loan Amt. Adj</th>
-                                <th className="p-2 border border-gray-300">Int Paid Days</th>
-                                <th className="p-2 border border-gray-300">Action</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            {installments.length > 0 ? (
-                                installments.map((row, index) => (
-                                    <tr
-                                        key={index}
-                                        className="text-center text-sm hover:bg-gray-50 transition"
-                                    >
-                                        <td className="p-2 border border-gray-300">{row.srNo}</td>
-                                        <td className="p-2 border border-gray-300">{row.receiptNo}</td>
-                                        <td className="p-2 border border-gray-300">{row.paymentDate}</td>
-                                        <td className="p-2 border border-gray-300">{row.paidUpto}</td>
-                                        <td className="p-2 border border-gray-300">{row.mode}</td>
-                                        <td className="p-2 border border-gray-300">{row.refNo}</td>
-                                        <td className="p-2 border border-gray-300">{row.amount}</td>
-                                        <td className="p-2 border border-gray-300">{row.interest}</td>
-                                        <td className="p-2 border border-gray-300">{row.loanAdj}</td>
-                                        <td className="p-2 border border-gray-300">{row.intDays}</td>
-                                        <td className="p-2 border border-gray-300">
-                                            <div className="flex gap-4 text-lg items-center justify-center">
-                                                <IoMdDownload />
-                                                <IoMdPrint />
-                                            </div>
-                                        </td>
-                                    </tr>
-                                ))
-                            ) : (
-                                <tr className="text-center text-sm">
-                                    <td
-                                        colSpan="10"
-                                        className="p-3 border border-gray-300 text-gray-500"
-                                    >
-                                        No Installments Available
-                                    </td>
-                                </tr>
-                            )}
-                        </tbody>
-                    </table>
-                </div>
+            <div className="flex flex-col gap-1 w-[200px]">
+              <label className="text-gray-900 font-medium">
+                Payment Ref. No
+              </label>
+              <input
+                type="text"
+                placeholder="Reference Number"
+                className="border border-gray-300 rounded-md px-3 py-2 focus:ring-1 focus:ring-blue-500 focus:outline-none"
+              />
             </div>
 
-        </div >
+            <div className="flex flex-col gap-1 w-[200px]">
+              <label className="text-gray-900 font-medium">
+                Payment Made By
+              </label>
+              <input
+                type="text"
+                placeholder="Name"
+                className="border border-gray-300 rounded-md px-3 py-2 focus:ring-1 focus:ring-blue-500 focus:outline-none"
+              />
+            </div>
+          </div>
+        </div>
 
-    )
+        {/* Pledge Item List */}
+        <div className="my-6 w-[1270px] bg-white">
+          <h1 className="text-blue-900 font-semibold text-xl py-2">
+            Pledge Item List
+          </h1>
+          <div className="overflow-x-auto">
+            <table className="w-full border-collapse">
+              <thead>
+                <tr className="bg-blue-900 text-white text-sm">
+                  <th className="p-2 border border-gray-300">Particulars</th>
+                  <th className="p-2 border border-gray-300">Nos</th>
+                  <th className="p-2 border border-gray-300">Gross</th>
+                  <th className="p-2 border border-gray-300">Net Weight</th>
+                  <th className="p-2 border border-gray-300 w-[550px]">
+                    Remark
+                  </th>
+                </tr>
+              </thead>
+              <tbody>
+                {ItemList.length > 0 ? (
+                  ItemList.map((row, i) => (
+                    <tr
+                      key={i}
+                      className="text-center text-sm hover:bg-gray-50"
+                    >
+                      <td className="p-2 border border-gray-300">
+                        {row.particulars}
+                      </td>
+                      <td className="p-2 border border-gray-300">{row.nos}</td>
+                      <td className="p-2 border border-gray-300">
+                        {row.gross}
+                      </td>
+                      <td className="p-2 border border-gray-300">{row.net}</td>
+                      <td className="p-2 border border-gray-300">
+                        {row.remark}
+                      </td>
+                    </tr>
+                  ))
+                ) : (
+                  <tr className="text-center text-sm">
+                    <td
+                      colSpan="5"
+                      className="p-3 border border-gray-300 text-gray-500"
+                    >
+                      No Pledge Item List Available
+                    </td>
+                  </tr>
+                )}
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        {/* Installments Table */}
+        <div className="my-6 w-[1270px] bg-white">
+          <h1 className="text-blue-900 font-semibold text-xl py-2">
+            Installments
+          </h1>
+          <div className="overflow-x-auto">
+            <table className="w-full border-collapse">
+              <thead>
+                <tr className="bg-blue-900 text-white text-sm">
+                  <th className="p-2 border border-gray-300">Sr. No</th>
+                  <th className="p-2 border border-gray-300">Receipt No</th>
+                  <th className="p-2 border border-gray-300">Payment Date</th>
+                  <th className="p-2 border border-gray-300">Paid Upto</th>
+                  <th className="p-2 border border-gray-300">
+                    Mode of Payment
+                  </th>
+                  <th className="p-2 border border-gray-300">
+                    Payment Ref. No
+                  </th>
+                  <th className="p-2 border border-gray-300">Amount</th>
+                  <th className="p-2 border border-gray-300">Interest</th>
+                  <th className="p-2 border border-gray-300">Loan Amt. Adj</th>
+                  <th className="p-2 border border-gray-300">Int Paid Days</th>
+                  <th className="p-2 border border-gray-300">Action</th>
+                </tr>
+              </thead>
+              <tbody>
+                {installments.map((row, i) => (
+                  <tr key={i} className="text-center text-sm hover:bg-gray-50">
+                    <td className="p-2 border border-gray-300">{row.srNo}</td>
+                    <td className="p-2 border border-gray-300">
+                      {row.receiptNo}
+                    </td>
+                    <td className="p-2 border border-gray-300">
+                      {row.paymentDate}
+                    </td>
+                    <td className="p-2 border border-gray-300">
+                      {row.paidUpto}
+                    </td>
+                    <td className="p-2 border border-gray-300">{row.mode}</td>
+                    <td className="p-2 border border-gray-300">{row.refNo}</td>
+                    <td className="p-2 border border-gray-300">{row.amount}</td>
+                    <td className="p-2 border border-gray-300">
+                      {row.interest}
+                    </td>
+                    <td className="p-2 border border-gray-300">
+                      {row.loanAdj}
+                    </td>
+                    <td className="p-2 border border-gray-300">
+                      {row.intDays}
+                    </td>
+                    <td className="p-2 border border-gray-300">
+                      <div className="flex gap-4 text-lg items-center justify-center">
+                        <IoMdDownload />
+                        <IoMdPrint />
+                      </div>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
 }
 
-export default AddLoanRepayment
+export default AddLoanRepayment;

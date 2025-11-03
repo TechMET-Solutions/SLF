@@ -915,7 +915,7 @@ const LoanApplication = () => {
                           return (
                             <button
                               className="bg-[#0A2478] text-white px-3 py-1 rounded text-[11px] hover:bg-[#091f6c]"
-                              onClick={() => navigate(`/Repay-Loan`, {
+                              onClick={() => navigate(`/Add-Loan-Repayment`, {
                                 state: {
                                   loanId: row.Loan_No,
                                   loanData: row
