@@ -5,8 +5,11 @@ import GroupData from "../assets/Group 124.svg";
 import DeleteData from "../assets/deletimg.png";
 import EyeData from "../assets/eye.svg";
 import { decryptData, encryptData } from "../utils/cryptoHelper";
+import { useNavigate } from "react-router-dom";
 
 const ChargesProfileList = () => {
+
+   const navigate = useNavigate();
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [data, setData] = useState([]);
   const [editingId, setEditingId] = useState(null); // To track which profile is being edited
@@ -155,6 +158,11 @@ const ChargesProfileList = () => {
                 className="bg-[#0A2478] cursor-pointer text-white text-[11.25px] w-[74px] h-[24px] rounded flex items-center justify-center"
               >
                 Add
+              </button>
+              <button
+                onClick={() => navigate("/")}
+                className="bg-[#C1121F] text-white text-[10px] px-4 py-1 rounded cursor-pointer">
+                Exit
               </button>
             </div>
           </div>

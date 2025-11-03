@@ -55,7 +55,7 @@ const GoldLoanApproval = () => {
               Approve
             </button>
             <button
-              //   onClick={() => navigate("/")}
+                onClick={() => navigate("/Loan-Application")}
               className="bg-[#C1121F] text-white px-6 py-1 text-sm rounded hover:bg-[#a50d18] shadow-lg"
             >
               Close

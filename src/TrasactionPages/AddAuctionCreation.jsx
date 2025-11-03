@@ -123,7 +123,7 @@ function AddAuctionCreation() {
             </button>
             <button
               className="bg-[#C1121F] text-white text-sm rounded px-4 py-1 cursor-pointer"
-              onClick={() => navigate("/dashboard")}
+              onClick={() => navigate("/Auction-Creation")}
             >
               Cancel
             </button>

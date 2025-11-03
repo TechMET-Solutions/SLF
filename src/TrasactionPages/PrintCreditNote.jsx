@@ -19,7 +19,7 @@ const PrintCreditNote = () => {
               Print
             </button>
             <button
-                onClick={() => navigate("-1")}
+                onClick={() => navigate("/Credit-Note")}
               className="bg-[#C1121F] text-white px-6 py-1 text-sm rounded hover:bg-[#a50d18] shadow-lg"
             >
               Close

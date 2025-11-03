@@ -19,7 +19,7 @@ const AddCreditNotePage = () => {
               Submit
             </button>
             <button
-              //   onClick={() => navigate("/")}
+                onClick={() => navigate("/Credit-Note")}
               className="bg-[#C1121F] text-white px-4 py-1 text-sm rounded hover:bg-[#a50d18] shadow-lg"
             >
               Close

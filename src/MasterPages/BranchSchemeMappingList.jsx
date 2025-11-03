@@ -208,7 +208,9 @@ const BranchSchemeMappingList = () => {
           <h2 className="text-red-600 font-bold text-[20px]">
             Branch Scheme Mapping List (User List)
           </h2>
-          <button className="text-white px-[6.25px] py-[6.25px] rounded-[3.75px] bg-[#C1121F] w-[74px] h-[24px] opacity-100 text-[10px]">
+          <button
+          onClick={() => navigate("/")}
+          className="text-white px-[6.25px] py-[6.25px] rounded-[3.75px] bg-[#C1121F] w-[74px] h-[24px] opacity-100 text-[10px]">
             Exit
           </button>
         </div>

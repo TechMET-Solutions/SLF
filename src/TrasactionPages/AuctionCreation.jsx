@@ -57,6 +57,12 @@ function AuctionCreation() {
                         >
                             Add
                         </button>
+                        <button
+                            onClick={() => navigate("/")}
+                            className="bg-[#C1121F] text-white text-sm rounded px-4 py-2 cursor-pointer"
+                        >
+                            Exit
+                        </button>
                     </div>
                 </div>
             </div>

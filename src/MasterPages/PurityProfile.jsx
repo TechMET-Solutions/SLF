@@ -9,11 +9,14 @@ import {
 import { FiEdit, FiTrash2 } from "react-icons/fi";
 import blockimg from "../assets/blockimg.png";
 import Pagination from "../Component/Pagination";
+import { useNavigate } from "react-router-dom";
 
 const PurityProfile = () => {
   useEffect(() => {
     document.title = "SLF | Purity Profile ";
   }, []);
+ const navigate = useNavigate();
+
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [deleteModalOpen, setDeleteModalOpen] = useState(false);
   const [deleteId, setDeleteId] = useState(null);
@@ -175,7 +178,9 @@ const PurityProfile = () => {
               >
                 Add
               </button>
-              <button className="w-[74px] h-[24px] cursor-pointer  rounded bg-[#C1121F] text-white text-[10px]">
+              <button
+              onClick={() => navigate("/")}
+              className="w-[74px] h-[24px] cursor-pointer  rounded bg-[#C1121F] text-white text-[10px]">
                 Exit
               </button>
             </div>

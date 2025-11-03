@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { fetchEmployeeProfileApi } from "../API/Master/Employee_Profile/EmployeeProfile";
 import Pagination from "../Component/Pagination";
 
@@ -23,6 +23,8 @@ const MemberBranchMapping = () => {
     document.title = "SLF | Member Branch Mapping";
     loadEmployees();
   }, []);
+
+   const navigate = useNavigate();
 
   const loadEmployees = async (page = 1) => {
     setLoading(true);
@@ -51,7 +53,9 @@ const MemberBranchMapping = () => {
             Member Branch Mapping
           </h2>
           <div className="flex gap-3">
-            <button className="bg-[#C1121F] text-white text-[10px] w-[74px] h-[24px] rounded">
+            <button
+            onClick={() => navigate("/")}
+            className="bg-[#C1121F] text-white text-[10px] w-[74px] h-[24px] rounded">
               Exit
             </button>
           </div>

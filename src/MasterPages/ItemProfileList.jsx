@@ -7,11 +7,15 @@ import {
 } from "../API/Master/Master_Profile/Item_Details";
 import Pagination from "../Component/Pagination";
 import { FiEdit } from "react-icons/fi";
+import { useNavigate } from "react-router-dom";
 
 const ItemProfileList = () => {
   useEffect(() => {
     document.title = "SLF | Item Profile List";
   }, []);
+
+  const navigate = useNavigate();
+
   const [data, setData] = useState([]);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isEditMode, setIsEditMode] = useState(false);
@@ -188,7 +192,9 @@ const ItemProfileList = () => {
               >
                 Add
               </button>
-              <button className="bg-[#C1121F] text-white text-[10px] px-4 py-1 rounded cursor-pointer">
+              <button
+                onClick={() => navigate("/")}
+                className="bg-[#C1121F] text-white text-[10px] px-4 py-1 rounded cursor-pointer">
                 Exit
               </button>
             </div>

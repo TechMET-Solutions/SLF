@@ -196,6 +196,7 @@ const fetchCustomers = async (pageNumber = 1) => {
               </button>
 
               <button
+              onClick={() => navigate("/")}
                 className="text-white px-[6.25px] py-[6.25px] rounded-[3.75px] bg-[#C1121F] w-[74px] h-[24px] opacity-100 text-[10px]"
               >
                 Exit

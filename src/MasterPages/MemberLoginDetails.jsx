@@ -170,12 +170,15 @@ import { useEffect, useState } from "react";
 import Loader from "../Component/Loader";
 import Pagination from "../Component/Pagination";
 import { fetchEmployeeProfileApi } from "../API/Master/Employee_Profile/EmployeeProfile";
+import { useNavigate } from "react-router-dom";
 
 const MemberLoginDetails = () => {
     useEffect(() => {
         document.title = "SLF | Member Login Details";
         fetchEmployee(); // ✅ load initial data
     }, []);
+
+     const navigate = useNavigate();
 
     const [employeeList, setEmployeeList] = useState([]);
     const [isLoading, setIsLoading] = useState(false);
@@ -270,7 +273,9 @@ const MemberLoginDetails = () => {
                             </div>
                         </div>
 
-                        <button className="bg-[#C1121F] text-white text-[10px] w-[74px] h-[24px] rounded">
+                        <button
+                        onClick={() => navigate("/")}
+                        className="bg-[#C1121F] text-white text-[10px] w-[74px] h-[24px] rounded">
                             Exit
                         </button>
                     </div>

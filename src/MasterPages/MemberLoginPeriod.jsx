@@ -4,6 +4,7 @@ import { API } from "../api";
 import { encryptData, decryptData } from "../utils/cryptoHelper";
 import { TimePicker } from "../Component/TimePicker";
 import Pagination from "../Component/Pagination";
+import { useNavigate } from "react-router-dom";
 
 const MemberLoginPeriod = () => {
   const [data, setData] = useState([]);
@@ -14,7 +15,7 @@ const MemberLoginPeriod = () => {
     fetchMemberLoginPeriod();
   }, []);
 
-
+  const navigate = useNavigate();
   const fetchMemberLoginPeriod = async (page = 1) => {
     try {
       const encryptedPayload = encryptData({});
@@ -40,7 +41,7 @@ const MemberLoginPeriod = () => {
         parsedData.members.map((m) => ({
           id: m.id,
           name: m.emp_name,
-          email:m.email,
+          email: m.email,
           startDate: m.start_time || "",
           endDate: m.end_time || "",
           ipAddress: m.ip_address || "",
@@ -153,7 +154,9 @@ const MemberLoginPeriod = () => {
             Member Login Period
             {loading && <span className="text-sm text-gray-500">Updating...</span>}
           </h2>
-          <button className="bg-[#C1121F] text-white text-[10px] w-[74px] h-[24px] rounded">
+          <button
+            onClick={() => navigate("/")}
+            className="bg-[#C1121F] text-white text-[10px] w-[74px] h-[24px] rounded">
             Exit
           </button>
         </div>
@@ -181,7 +184,7 @@ const MemberLoginPeriod = () => {
                   className={`${index % 2 === 0 ? "bg-gray-50" : "bg-white"}`}
                 >
                   <td className="px-4 py-2 flex items-center justify-center">
-                    <input type="checkbox" className="w-4 h-4 accent-blue-900"/>
+                    <input type="checkbox" className="w-4 h-4 accent-blue-900" />
                   </td>
                   <td className="px-4 py-2">{row.name}</td>
                   <td className="px-4 py-2">{row.email}</td>

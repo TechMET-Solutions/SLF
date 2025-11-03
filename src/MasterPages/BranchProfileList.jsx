@@ -7,8 +7,11 @@ import { encryptData } from "../utils/cryptoHelper";
 import { formatIndianDate } from "../utils/Helpers";
 import { FiEdit, FiEye, FiTrash2 } from "react-icons/fi";
 import Pagination from "../Component/Pagination";
+import { useNavigate } from "react-router-dom";
 
 const BranchProfileList = () => {
+
+  const navigate = useNavigate();
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
 
@@ -258,6 +261,7 @@ const BranchProfileList = () => {
                 </button>
 
                 <button
+                   onClick={() => navigate("/")}
                   className="text-white px-[6.25px] cursor-pointer  py-[6.25px] rounded-[3.75px] bg-[#C1121F] w-[74px] h-[24px] opacity-100 text-[10px]"
                 >
                   Exit

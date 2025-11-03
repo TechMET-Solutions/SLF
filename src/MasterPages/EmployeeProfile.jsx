@@ -11,12 +11,15 @@ import blockimg from "../assets/blockimg.png";
 import profileempty from "../assets/profileempty.png";
 import Pagination from "../Component/Pagination";
 import { encryptData } from "../utils/cryptoHelper";
+import { useNavigate } from "react-router-dom";
 
 const EmployeeProfile = () => {
 
   useEffect(() => {
     document.title = "SLF | Employee Profile";
   }, []);
+
+   const navigate = useNavigate();
 
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [employeeList, setEmployeeList] = useState([]);
@@ -468,6 +471,7 @@ const handleEdit = (employee) => {
                 Add
               </button>
               <button
+               onClick={() => navigate("/")}
                 className="bg-[#C1121F] text-white text-[10px] w-[74px] h-[24px] rounded">
                 Exit
               </button>
