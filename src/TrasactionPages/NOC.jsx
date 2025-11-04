@@ -1,9 +1,47 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
+import { useLocation } from "react-router-dom";
+import axios from "axios";
 
 function NOC() {
+    const location = useLocation();
+    const { loanId } = location.state || {};
+    const [loading, setLoading] = useState(false);
+    const [loanData, setLoanData] = useState({});
+    const [error, setError] = useState(null);
+
     useEffect(() => {
-    document.title = "SLF | NOC ";
-  }, []);
+        document.title = "SLF | NOC";
+        if (loanId) {
+            fetchLoanData();
+        }
+    }, [loanId]);
+
+    const fetchLoanData = async () => {
+        try {
+            setLoading(true);
+            const response = await axios.get(
+                `http://localhost:5000/Transactions/goldloan/getLoan/${loanId}`
+            );
+            
+            // ✅ Log full API response
+           
+            
+            // ✅ Set and log loan data
+            const data = response.data.loanApplication || {};
+            setLoanData(data);
+            console.log("✅ Loan Data:", data);
+
+            setError(null);
+        } catch (err) {
+            console.error("❌ Error fetching loan data:", err);
+            setError("Failed to load loan data");
+        } finally {
+            setLoading(false);
+        }
+    };
+
+    if (loading) return <div>Loading...</div>;
+    if (error) return <div>{error}</div>;
     return (
         <div className="flex flex-col items-center mt-5">
             {/* Header Section */}
@@ -38,17 +76,19 @@ function NOC() {
                                 ग्राहकाचे नाव -
                             </td>
                             <td colSpan="6" className="border px-2 py-1">
-                                IND0002563 - BARFILAL MULCHAND KANOJIYA
+                                {loanData.BorrowerId} - {loanData.Print_Name}
                             </td>
                         </tr>
 
                         {/* Loan Info */}
                         <tr className="border">
                             <td className="border px-2 py-1 font-semibold">कर्ज क्रमांक -</td>
-                            <td colSpan="4" className="border px-2 py-1">01A5602839</td>
+                            <td colSpan="4" className="border px-2 py-1">{loanData.id}</td>
                             <td className="border px-2 py-1 font-semibold">कर्ज दिनांक -</td>
                             <td colSpan="4" className="border px-2 py-1">
-                                25/Jul/2025
+                              
+                              <p>{new Date(loanData.approval_date).toLocaleDateString("en-GB")}</p>
+
                             </td>
                         </tr>
 
@@ -61,7 +101,7 @@ function NOC() {
                                 कर्ज रक्कम -
                             </td>
                             <td colSpan="2" className="border text-center  px-2 py-1">
-                                New Loan Amount: ₹35,000
+                                New Loan Amount: ₹{loanData.Loan_amount}
                             </td>
                             <td colSpan="2" className="border text-center      px-2 py-1 font-semibold">
                                 Less: Repay Amount (Old Loan Closed)
@@ -127,9 +167,9 @@ function NOC() {
                             <td colSpan="3" className="border px-2 py-1 text-left">
                                 Loan Approved By: <br /> - Nitin.Suryawanshi@Slunawat.Com
                             </td>
-                            
+
                         </tr>
-                        <tr>  
+                        <tr>
                             <td colSpan="3" className="border px-2 py-1 text-left">
                                 Bank Added By: <br /> -
                             </td>
