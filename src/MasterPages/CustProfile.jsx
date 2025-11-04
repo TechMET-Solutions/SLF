@@ -86,7 +86,9 @@ const fetchCustomers = async (pageNumber = 1) => {
     console.error("❌ Error fetching customers:", error);
   }
 };
-
+useEffect(() => {
+  fetchCustomers(page);
+}, [page]);
   
   useEffect(() => {
     document.title = "SLF | Customer List";

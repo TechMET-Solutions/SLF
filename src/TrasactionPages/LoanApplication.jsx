@@ -1,21 +1,21 @@
-import { useEffect, useState, useRef } from 'react';
+import axios from 'axios';
+import JoditEditor from 'jodit-react';
+import { useEffect, useRef, useState } from 'react';
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import { CiBarcode, CiEdit, CiSearch } from "react-icons/ci";
 import { MdOutlineCancel } from "react-icons/md";
 import { useNavigate } from 'react-router-dom';
-import axios from 'axios';
-import JoditEditor from 'jodit-react';
 import calender from "../assets/calender.png";
-import goldlogo from "../assets/gold_print.svg";
 import envImg from "../assets/envImg.jpg";
+import goldlogo from "../assets/gold_print.svg";
 
-import { formatIndianDate } from '../utils/Helpers';
-import { PiPrinterLight } from 'react-icons/pi';
 import { CgSoftwareUpload } from 'react-icons/cg';
+import { IoChevronDownOutline } from "react-icons/io5"; // better arrow icon
+import { PiPrinterLight } from 'react-icons/pi';
 import { RiMessage2Line } from 'react-icons/ri';
 import { API } from '../api';
-import { IoChevronDownOutline } from "react-icons/io5"; // better arrow icon
+import { formatIndianDate } from '../utils/Helpers';
 const LoanApplication = () => {
   useEffect(() => {
     document.title = "SLF | Loan Application";
@@ -738,7 +738,7 @@ const LoanApplication = () => {
                         );
 
                         // navigation handlers using state
-                        const goEdit = (loan) => () => navigate("/Edit-Loan-Details", {
+                        const goEdit = (loan) => () => navigate("/Edit-Loan-Application", {
                           state: {
                             loanId: loan.Loan_No,
                             loanData: loan

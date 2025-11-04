@@ -11,59 +11,59 @@ import Navbar from "./Component/Navbar";
 import AccountCodeList from "./MasterPages/AccountCodeList";
 import AccountGroupList from "./MasterPages/AccountGroupList";
 import AddCustProfile from "./MasterPages/AddCustProfile";
+import AddMemberBranchMapping from "./MasterPages/AddMemberBranchMapping";
+import AddSchemeDetailsListform from "./MasterPages/AddSchemeDetailsListform";
+import AddSchemeRenewalForm from "./MasterPages/AddSchemeRenewalForm";
+import Area from "./MasterPages/Area";
 import BranchProfileList from "./MasterPages/BranchProfileList";
+import BranchSchemeMappingList from "./MasterPages/BranchSchemeMappingList";
+import ChargesProfileList from "./MasterPages/ChargesProfileList";
 import CustProfile from "./MasterPages/CustProfile";
 import Dashboard from "./MasterPages/Dashboard";
 import DocumentProof from "./MasterPages/DocumentProof";
+import EmployeeProfile from "./MasterPages/EmployeeProfile";
 import ItemProfileList from "./MasterPages/ItemProfileList";
-import PurityProfile from "./MasterPages/PurityProfile";
-import SchemeDetailsList from "./MasterPages/SchemeDetailsList";
-import AddSchemeDetailsListform from "./MasterPages/AddSchemeDetailsListform";
-import ChargesProfileList from "./MasterPages/ChargesProfileList";
+import MemberBranchMapping from "./MasterPages/MemberBranchMapping";
 import MemberLoginDetails from "./MasterPages/MemberLoginDetails";
 import MemberLoginPeriod from "./MasterPages/MemberLoginPeriod";
+import PurityProfile from "./MasterPages/PurityProfile";
 import PushGoldRateList from "./MasterPages/PushGoldRateList";
-import SchemeRenewalList from "./MasterPages/SchemeRenewalList";
-import BranchSchemeMappingList from "./MasterPages/BranchSchemeMappingList";
 import RoleMapping from "./MasterPages/RoleMapping";
+import SchemeDetailsList from "./MasterPages/SchemeDetailsList";
+import SchemeRenewalList from "./MasterPages/SchemeRenewalList";
 import SchemeRoleMapping from "./MasterPages/SchemeRoleMapping";
-import ViewSchemeDetailsform from "./MasterPages/ViewSchemeDetailsform";
-import EmployeeProfile from "./MasterPages/EmployeeProfile";
-import MemberBranchMapping from "./MasterPages/MemberBranchMapping";
-import AddMemberBranchMapping from "./MasterPages/AddMemberBranchMapping";
-import UserRolePermission from "./MasterPages/UserRolePermission";
-import AddSchemeRenewalForm from "./MasterPages/AddSchemeRenewalForm";
 import UserPermissions from "./MasterPages/UserPermissions";
-import Area from "./MasterPages/Area";
-
+import UserRolePermission from "./MasterPages/UserRolePermission";
+import ViewSchemeDetailsform from "./MasterPages/ViewSchemeDetailsform";
+import EditLoanApplication from "./TrasactionPages/EditLoanApplication";
 // Transaction Pages
-import LoanApplication from "./TrasactionPages/LoanApplication";
-import CancelledLoan from "./TrasactionPages/CancelledLoan";
-import AddGoldLoanApplication from "./TrasactionPages/AddGoldLoanApplication";
-import NOC from "./TrasactionPages/NOC";
-import LoanChargesList from "./TrasactionPages/LoanChargesList";
-import AuctionCreation from "./TrasactionPages/AuctionCreation";
-import CreditNote from "./TrasactionPages/CreditNote";
-import DebitNote from "./TrasactionPages/DebitNote";
-import AddLoanCharges from "./TrasactionPages/AddLoanCharges";
-import ViewLoanCharges from "./TrasactionPages/ViewLoanCharges";
-import EditLoanCharges from "./TrasactionPages/EditLoanCharge";
-import AddCreditNotePage from "./TrasactionPages/AddCreditNotePage";
-import ViewCreditNote from "./TrasactionPages/ViewCreditNote";
-import PrintCreditNote from "./TrasactionPages/PrintCreditNote";
 import AddAuctionCreation from "./TrasactionPages/AddAuctionCreation";
+import AddCreditNotePage from "./TrasactionPages/AddCreditNotePage";
+import AddGoldLoanApplication from "./TrasactionPages/AddGoldLoanApplication";
+import AddLoanCharges from "./TrasactionPages/AddLoanCharges";
+import AddLoanRepayment from "./TrasactionPages/AddLoanRepayment";
+import AppraisalNote from "./TrasactionPages/AppraisalNote";
+import AuctionCreation from "./TrasactionPages/AuctionCreation";
 import AuctionItemsList from "./TrasactionPages/AuctionItemsList";
-import GoldOrnamentBill from "./TrasactionPages/GoldOrnamentBill";
 import BidderRegistration from "./TrasactionPages/BidderRegistration";
 import BidderRegistrationList from "./TrasactionPages/BidderRegistrationList";
-import ViewBidderDetails from "./TrasactionPages/ViewBidderDetails";
+import CancelledLoan from "./TrasactionPages/CancelledLoan";
+import CreditNote from "./TrasactionPages/CreditNote";
+import DebitNote from "./TrasactionPages/DebitNote";
 import EditBidderDetails from "./TrasactionPages/EditBidderDetails";
-import ViewLoanDetails from "./TrasactionPages/ViewLoanDeatils";
+import EditLoanCharges from "./TrasactionPages/EditLoanCharge";
 import EditLoanDetails from "./TrasactionPages/EditLoanDetails";
 import GoldLoanApproval from "./TrasactionPages/GoldLoanApproval";
-import AppraisalNote from "./TrasactionPages/AppraisalNote";
+import GoldOrnamentBill from "./TrasactionPages/GoldOrnamentBill";
+import LoanApplication from "./TrasactionPages/LoanApplication";
+import LoanChargesList from "./TrasactionPages/LoanChargesList";
+import NOC from "./TrasactionPages/NOC";
+import PrintCreditNote from "./TrasactionPages/PrintCreditNote";
 import PrintLoanApplication from "./TrasactionPages/PrintLoanApplication";
-import AddLoanRepayment from "./TrasactionPages/AddLoanRepayment";
+import ViewBidderDetails from "./TrasactionPages/ViewBidderDetails";
+import ViewCreditNote from "./TrasactionPages/ViewCreditNote";
+import ViewLoanCharges from "./TrasactionPages/ViewLoanCharges";
+import ViewLoanDetails from "./TrasactionPages/ViewLoanDeatils";
 
 function App() {
   return (
@@ -132,7 +132,7 @@ function App() {
             path="/Add-Member-Branch-Mapping"
             element={<AddMemberBranchMapping />}
           />
-
+        <Route path="/Edit-Loan-Application" element={<EditLoanApplication />} />
           {/* Loan Application */}
           <Route path="/Loan-Application" element={<LoanApplication />} />
           <Route path="/Cancelled-Loan" element={<CancelledLoan />} />
