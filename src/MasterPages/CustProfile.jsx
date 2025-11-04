@@ -492,9 +492,14 @@ useEffect(() => {
                   <td className="px-4 py-2">{row.lastName}</td>
                   <td className="px-4 py-2">{row.Permanent_City}</td>
                   <td className="px-4 py-2">{row.mobile}</td>
-                  <td className="px-4 py-2 text-center">
-  {row.badDebtor ? "True" : "False"}
+                 <td
+  className={`px-4 py-2 text-center font-bold ${
+    row.badDebtor ? "text-green-600" : "text-red-600"
+  }`}
+>
+  {row.badDebtor ? "Yes" : "No"}
 </td>
+
 
                   {/* <td className="px-4 py-2">{row.Added_On}</td> */}
                   <td className="px-4 py-2">{formatIndianDate(row.Added_On)}</td>
