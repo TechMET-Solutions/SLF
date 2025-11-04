@@ -58,6 +58,7 @@ const EmployeeProfile = () => {
 
 
 const [roles, setRoles] = useState([]);
+const [branches, setBranches] = useState([]);
 
   useEffect(() => {
     const loadRoles = async () => {
@@ -65,6 +66,7 @@ const [roles, setRoles] = useState([]);
       setRoles(fetchedRoles);
     };
     loadRoles();
+    fetchBranches();
   }, []);
 
   const fetchAllRoles = async () => {
@@ -76,6 +78,18 @@ const [roles, setRoles] = useState([]);
     console.error("Error fetching roles:", err);
     return [];
   }
+  };
+
+  const fetchBranches = async () => {
+    try {
+      const response = await axios.get(`${API}/Master/Master_Profile/Branchess`);
+      if (response.data.success) {
+        setBranches(response.data.data || []);
+      }
+    } catch (error) {
+      console.error("❌ Error fetching branches:", error);
+      setBranches([]);
+    }
   };
   
   console.log(formData,"formData")
@@ -544,22 +558,6 @@ const handleEdit = (employee) => {
                 )}
               </div>
                     {/* Aadhaar */}
-                    {/* <div className="flex flex-col gap-1">
-                      <label className="text-gray-700 font-medium">Aadhar Card Number*</label>
-                      <div className="flex">
-                        <input
-                          type="text"
-                          name="aadhar_card"
-                          value={formData.aadhar_card}
-                          onChange={handleInputChange}
-                          placeholder="Aadhar Card Number"
-                          className="border border-[#C4C4C4] rounded-l-md px-3 py-2 w-full focus:outline-none focus:ring-1 focus:ring-blue-500"
-                        />
-                        <button className="bg-[#0A2478] text-white px-3 py-2 rounded-r-md hover:bg-[#081c5b]">
-                          Verify
-                        </button>
-                      </div>
-                    </div> */}
                     <div className="flex flex-col">
                 <label className="text-[14px] font-medium">Aadhar Card Number.</label>
                 <div className="flex items-center mt-1 w-[300px]">
@@ -738,15 +736,20 @@ const handleEdit = (employee) => {
                   <div className="flex gap-2">
                     <div className="flex flex-col gap-1">
                       <label className="text-gray-700 font-medium">Branch*</label>
-                      <input
-                        type="text"
+                      <select
                         name="branch"
                         value={formData.branch}
                         onChange={handleInputChange}
-                         disabled={mode === "view"}
-                        placeholder="Branch"
+                        disabled={mode === "view"}
                         className="border border-[#C4C4C4] rounded-md px-3 py-2 focus:outline-none focus:ring-1 focus:ring-blue-500 w-[220px]"
-                      />
+                      >
+                        <option value="" disabled>Select Branch</option>
+                        {branches.map((branch) => (
+                          <option key={branch.id} value={branch.branch_name}>
+                            {branch.branch_name} ({branch.branch_code})
+                          </option>
+                        ))}
+                      </select>
                     </div>
                     <div className="flex flex-col gap-1">
                       <label className="text-gray-700 font-medium">Date of Joining</label>
@@ -834,22 +837,7 @@ const handleEdit = (employee) => {
                 {/* Right Upload Section */}
                 <div className=" p-4">
                   <div>
-                    {/* <div className="flex justify-center">
-                      {profileImage ? (
-                        <img
-                          src={URL.createObjectURL(profileImage)}
-                          alt="Profile Preview"
-                          className="w-[78px] h-[78px] rounded-lg object-cover border border-gray-300"
-                        />
-                      ) : (
-                        <img
-                          src={profileempty}
-                          alt="Default Profile"
-                          className="w-[78px] h-[78px]"
-                        />
-                      )}
-                    </div> */}
-                   <div className="flex justify-center">
+                    <div className="flex justify-center">
   {mode === "view" ? (
     // 🟦 View mode: show saved image or default
     formData.emp_image ? (
