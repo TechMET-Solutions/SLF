@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useRef } from "react";
+import React, { useEffect, useState } from "react";
 import axios from "axios";
 import { useNavigate, useLocation } from "react-router-dom";
 
@@ -10,9 +10,7 @@ function PrintLoanApplication() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
 
-  // 🪞 Ref for printable content
-  const printRef = useRef();
-
+  // 🧩 Fetch loan data
   const fetchLoanData = async () => {
     try {
       setLoading(true);
@@ -44,33 +42,6 @@ function PrintLoanApplication() {
     ? JSON.parse(loanData.Effective_Interest_Rates)
     : [];
 
-  // 🖨️ Function to print only receipt section
-  const handlePrint = () => {
-    const printContents = printRef.current.innerHTML;
-    const printWindow = window.open("", "", "width=900,height=650");
-    printWindow.document.write(`
-      <html>
-        <head>
-          <title>Print Receipt</title>
-          <style>
-            @page { size: A4; margin: 20mm; }
-            body { font-family: Arial, sans-serif; color: #000; }
-            table { width: 100%; border-collapse: collapse; }
-            td { padding: 4px 8px; vertical-align: top; }
-            img { max-width: 100%; height: auto; }
-          </style>
-        </head>
-        <body>
-          ${printContents}
-        </body>
-      </html>
-    `);
-    printWindow.document.close();
-    printWindow.focus();
-    printWindow.print();
-    printWindow.close();
-  };
-
   return (
     <div>
       {/* 🔹 Header */}
@@ -78,7 +49,7 @@ function PrintLoanApplication() {
         <div className="flex justify-end px-6 py-4 border-b mt-5 w-[1290px] h-[62px] border rounded-[11px] border-gray-200 ">
           <div className="flex gap-3">
             <button
-              onClick={handlePrint}
+              onClick={() => window.print()}
               className="bg-green-600 text-white text-sm rounded px-6 cursor-pointer"
             >
               Print
@@ -93,10 +64,7 @@ function PrintLoanApplication() {
         </div>
       </div>
 
-      {/* 🧾 Printable Section */}
-      <div ref={printRef} className="p-4 px-25">
-
-  
+      <div className="p-4 px-25">
         {/* 🔹 Top Section - Images */}
         <div className="grid grid-cols-2 gap-6">
           {[1, 2].map((_, idx) => (
