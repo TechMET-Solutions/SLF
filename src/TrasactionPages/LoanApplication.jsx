@@ -745,7 +745,7 @@ const LoanApplication = () => {
                           }
                         });
                         const goUpload = (loan) => () => handleUploadClick(loan);
-                        const goPrint = (loan) => () => navigate("/Print-Loan-Application", { state: { loan } });
+                        const goPrint = (loan) => () => navigate("/Print-Loan-Application", { state: {  loanId: loan.Loan_No, } });
                         const goGold = (loan) => () => navigate("/Appraisal-Note", {
                           state: {
                             loanId: loan.Loan_No,
