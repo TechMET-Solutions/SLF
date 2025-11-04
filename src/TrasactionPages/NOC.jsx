@@ -22,9 +22,7 @@ function NOC() {
             const response = await axios.get(
                 `http://localhost:5000/Transactions/goldloan/getLoan/${loanId}`
             );
-            
-            // ✅ Log full API response
-           
+
             
             // ✅ Set and log loan data
             const data = response.data.loanApplication || {};

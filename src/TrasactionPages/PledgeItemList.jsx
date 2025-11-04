@@ -1,44 +1,39 @@
+import { useEffect, useState } from "react";
 import { IoMdAddCircleOutline } from "react-icons/io";
 import { MdOutlineCancel } from "react-icons/md";
+import axios from "axios";
+import { decryptData } from "../utils/cryptoHelper"; // adjust the import path as needed
 
-const PledgeItemList = ({rows,setRows}) => {
-  const pledgeItems = [
-    "Gold Item",
-    "Silver Item",
-    "Silver Kade",
-    "Silver Tolbandi",
-    "Kamar-Patta / Kandora",
-    "NATHANI",
-    "Bajuband",
-    "Mix",
-    "SHORT GANTHAN",
-    "BOR-MALA",
-    "BINDI",
-    "KADA",
-    "VAZATIK",
-    "PENDANT (SHIKKA)",
-    "THUSHI (Lakhi)",
-    "Gof-chain",
-    "RANIHAR",
-    "BALYA",
-    "LAXMIHAR",
-    "TOPS / ZUBE",
-    "POHEHAR",
-    "LATKAN",
-    "MO.MAL",
-    "LOOSE ITEM",
-    "BUGDI",
-    "TOPS, LATKAN",
-    "GANTHAN",
-    "VEDHA",
-    "TOPS",
-    "GATHALA",
-    "KANCHAIN",
-    "DHAGAPOT",
-  ];
+const PledgeItemList = ({ rows, setRows }) => {
+  const [pledgeItems, setPledgeItems] = useState([]); // dynamic list of item names
 
- 
+  // 🧩 Fetch & decrypt items from API
+  useEffect(() => {
+    const fetchPledgeItems = async () => {
+      try {
+        const response = await axios.get(
+          "http://localhost:5000/Master/Master_Profile/all_Item"
+        );
 
+        if (response.data?.data) {
+          const decrypted = decryptData(response.data.data);
+          console.log("🔓 Decrypted Data:", decrypted);
+
+          // Extract only item names from decrypted.items
+          const names = decrypted?.items?.map((item) => item.name) || [];
+          setPledgeItems(names);
+        } else {
+          console.warn("⚠️ No data found from API");
+        }
+      } catch (error) {
+        console.error("❌ Error fetching pledge items:", error);
+      }
+    };
+
+    fetchPledgeItems();
+  }, []);
+
+  // 🧩 Add new row
   const handleAddRow = () => {
     const newRow = {
       id: Date.now(),
@@ -54,16 +49,17 @@ const PledgeItemList = ({rows,setRows}) => {
     setRows([...rows, newRow]);
   };
 
+  // 🧩 Delete row
   const handleDeleteRow = (id) => {
     const updatedRows = rows.filter((row) => row.id !== id);
     setRows(updatedRows);
   };
 
+  // 🧩 Handle change
   const handleChange = (index, field, value) => {
     const updatedRows = [...rows];
     updatedRows[index][field] = value;
 
-    // Auto calculate rate and valuation
     if (field === "purity" || field === "netWeight") {
       const rateMap = {
         "20K": 6000,
@@ -80,7 +76,7 @@ const PledgeItemList = ({rows,setRows}) => {
     setRows(updatedRows);
   };
 
-  // ✅ Calculate Totals
+  // 🧩 Totals
   const totalGross = rows.reduce(
     (sum, row) => sum + parseFloat(row.gross || 0),
     0
@@ -94,7 +90,6 @@ const PledgeItemList = ({rows,setRows}) => {
     0
   );
 
-  // ✅ Combine data + totals
   const finalData = {
     rows,
     totals: {
@@ -105,7 +100,7 @@ const PledgeItemList = ({rows,setRows}) => {
   };
 
   return (
-    <div className="flex  mb-6">
+    <div className="flex mb-6">
       <div className="w-[1320px]">
         <h3 className="font-semibold mb-4 text-blue-900 text-lg">
           Pledge Item List
@@ -218,7 +213,6 @@ const PledgeItemList = ({rows,setRows}) => {
               </tr>
             ))}
 
-            {/* ✅ Total Row */}
             <tr className="border-t border-gray-200 font-semibold bg-gray-100">
               <td className="px-4 py-2">Total</td>
               <td className="px-4 py-2 text-center">{rows.length}</td>
@@ -238,11 +232,6 @@ const PledgeItemList = ({rows,setRows}) => {
             </tr>
           </tbody>
         </table>
-
-        {/* ✅ JSON output showing totals too */}
-        {/* <pre className="mt-4 bg-gray-100 p-3 rounded">
-          {JSON.stringify(finalData, null, 2)}
-        </pre> */}
       </div>
     </div>
   );

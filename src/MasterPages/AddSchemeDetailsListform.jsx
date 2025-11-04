@@ -336,19 +336,8 @@ const onchange = (id, field, value) => {
             />
           </div>
 
-          {/* Product */}
-          <div className="flex flex-col">
-            <label className="text-[14px] font-medium">Product</label>
-            <input
-              type="text"
-              name="product"
-              value={formData.product}
-              onChange={handleInputChange}
-              placeholder="Gold"
-              className="border border-gray-300 rounded px-3 py-2 mt-1 w-[90px] bg-white"
-            />
-          </div>
-
+          
+         
           {/* Applicable From */}
           <div className="flex flex-col">
             <label className="text-[14px] font-medium">
