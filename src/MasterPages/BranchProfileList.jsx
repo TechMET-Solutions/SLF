@@ -1,19 +1,21 @@
 import axios from "axios";
 import { useEffect, useState } from "react";
-import { FiEdit, FiEye } from "react-icons/fi";
-import { useNavigate } from "react-router-dom";
 import { API } from "../api";
 import { fetchBranchesApi, updateBranchApi, updateBranchStatusApi } from "../API/Master/Master_Profile/Branch_Details";
 import Loader from "../Component/Loader";
-import Pagination from "../Component/Pagination";
 import { encryptData } from "../utils/cryptoHelper";
 import { formatIndianDate } from "../utils/Helpers";
+import { FiEdit, FiEye, FiTrash2 } from "react-icons/fi";
+import Pagination from "../Component/Pagination";
+import { useNavigate } from "react-router-dom";
 
 const BranchProfileList = () => {
 
   const navigate = useNavigate();
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
+  const [isViewMode, setIsViewMode] = useState(false);
+
 
   const [branchData, setBranchData] = useState({
     branch_code: "",
@@ -59,7 +61,7 @@ const BranchProfileList = () => {
         branch_name: "",
         print_name: "",
         address_line1: "",
-        address_line3: "",
+        // address_line3: "",
         mobile_no: "",
         lead_person: "",
         is_main: false,
@@ -104,6 +106,21 @@ const BranchProfileList = () => {
     setCurrentPage(page); // this will trigger useEffect to fetch
   };
 
+  const handleView = (branch) => {
+    setBranchData({
+      branch_code: branch.branch_code || "",
+      branch_name: branch.branch_name || "",
+      print_name: branch.print_name || "",
+      address_line1: branch.address_line1 || "",
+      // address_line3: branch.address_line3 || "",
+      mobile_no: branch.mobile_no || "",
+      lead_person: branch.lead_person || "",
+      is_main: branch.is_main === "1" || branch.is_main === true,
+      status: branch.status === "1" || branch.status === true,
+    });
+    setIsViewMode(true);
+    setIsModalOpen(true);
+  };
 
   const handleToggleStatus = async (id, currentStatus) => {
     try {
@@ -127,7 +144,7 @@ const BranchProfileList = () => {
       branch_name: branch.branch_name || "",
       print_name: branch.print_name || "",
       address_line1: branch.address_line1 || "",
-      address_line3: branch.address_line3 || "",
+      // address_line3: branch.address_line3 || "",
       mobile_no: branch.mobile_no || "",
       lead_person: branch.lead_person || "",
       is_main: branch.is_main === "1" || branch.is_main === true,
@@ -176,7 +193,7 @@ const BranchProfileList = () => {
               }}
               className="text-red-600"
             >
-              Branch profile List
+              Branch Profile List
             </h2>
 
             <div className="flex gap-3">
@@ -261,7 +278,7 @@ const BranchProfileList = () => {
                 </button>
 
                 <button
-                   onClick={() => navigate("/")}
+                  onClick={() => navigate("/")}
                   className="text-white px-[6.25px] cursor-pointer  py-[6.25px] rounded-[3.75px] bg-[#C1121F] w-[74px] h-[24px] opacity-100 text-[10px]"
                 >
                   Exit
@@ -387,63 +404,59 @@ const BranchProfileList = () => {
                   </select>
                 </div>
 
-                <div className="flex items-center mt-4">
+                <div className="flex items-center mt-4 gap-2">
                   <input
                     type="checkbox"
                     name="is_main"
                     checked={branchData.is_main}
                     onChange={handleChange}
-                    className="mr-2"
+                    className="w-4 h-4 accent-blue-900"
                   />
                   <label className="text-[14px]">Is Main <span className="text-red-500">*</span></label>
                 </div>
 
-                <div className="flex items-center mt-4">
+                <div className="flex items-center mt-4 gap-2">
                   <input
                     type="checkbox"
                     name="status"
                     checked={branchData.status}
                     onChange={handleChange}
-                    className="mr-2"
+                    className="w-4 h-4 accent-blue-900"
                   />
                   <label className="text-[14px]">Status *</label>
                 </div>
               </div>
 
-              {/* Modal Footer */}
-              <div className="flex justify-center gap-4 mt-6">
-                {/* <button
-                  className="bg-[#0A2478] text-white px-5 py-2 rounded"
-                  onClick={handleSave}
-                >
-                  {isEditMode ? "Update" : "Save"}
-                </button> */}
-                {isEditMode ? (
-                  <button
-                    onClick={handleUpdateBranch}
-                    className="bg-blue-600 text-white cursor-pointer px-4 py-2 rounded-md"
-                  >
-                    Update Branch
-                  </button>
-                ) : (
-                  <button
-                    onClick={handleSave}
-                    className="bg-green-600 text-white cursor-pointer px-4 py-2 rounded-md"
-                  >
-                    Add Branch
-                  </button>
+             <div className="flex justify-center gap-4 mt-6">
+                {!isViewMode && (
+                  isEditMode ? (
+                    <button
+                      onClick={handleUpdateBranch}
+                      className="bg-blue-600 text-white cursor-pointer px-4 py-2 rounded-md"
+                    >
+                      Update Branch
+                    </button>
+                  ) : (
+                    <button
+                      onClick={handleSave}
+                      className="bg-green-600 text-white cursor-pointer px-4 py-2 rounded-md"
+                    >
+                      Add Branch
+                    </button>
+                  )
                 )}
                 <button
                   className="bg-[#C1121F] text-white cursor-pointer px-5 py-2 rounded"
                   onClick={() => {
                     setIsModalOpen(false);
                     setIsEditMode(false);
+                    setIsViewMode(false);
                     setBranchData({
                       branch_code: "",
                       branch_name: "",
                       print_name: "",
                       address_line1: "",
-                      address_line3: "",
+                      // address_line3: "",
                       mobile_no: "",
                       lead_person: "",
                       is_main: false,
@@ -451,9 +464,10 @@ const BranchProfileList = () => {
                     });
                   }}
                 >
-                  Exit
+                  {isViewMode ? "Close" : "Exit"}
                 </button>
               </div>
+
             </div>
           </div>
         )}
@@ -488,14 +502,14 @@ const BranchProfileList = () => {
                     <td className="px-4 py-2 text-[#1883EF] cursor-pointer">
                       <div className="flex gap-2 justify-center">
                         <button
+                          disabled={isViewMode}
                           className="bg-green-500 p-1.5 text-white rounded cursor-pointer"
                           onClick={() => handleEdit(row)}                        >
                           <FiEdit className="text-white text-sm" />
                         </button>
                         <button
-                          className="bg-red-600 p-1.5 text-white rounded cursor-pointer"
-                        // onClick={() => }
-                        >
+                          className="bg-[#646AD9] p-1.5 text-white rounded cursor-pointer"
+                          onClick={() => handleView(row)}                        >
                           <FiEye className="text-white text-sm" />
                         </button>
                       </div>
