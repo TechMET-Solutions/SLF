@@ -380,8 +380,8 @@ const AddSchemeDetailsListform = () => {
                 <div className="w-1/2 flex items-center justify-center">
                   <span
                     className={`text-sm font-medium transition-all duration-200 rounded-full w-full text-center py-1 ${formData.calcBasisOn === "Daily"
-                        ? "bg-white text-[#0A2478]"
-                        : "text-white"
+                      ? "bg-white text-[#0A2478]"
+                      : "text-white"
                       }`}
                   >
                     Daily
@@ -390,8 +390,8 @@ const AddSchemeDetailsListform = () => {
                 <div className="w-1/2 flex items-center justify-center">
                   <span
                     className={`text-sm font-medium transition-all duration-200 rounded-full w-full text-center py-1 ${formData.calcBasisOn === "Monthly"
-                        ? "bg-white text-[#0A2478]"
-                        : "text-white"
+                      ? "bg-white text-[#0A2478]"
+                      : "text-white"
                       }`}
                   >
                     Monthly
@@ -532,21 +532,28 @@ const AddSchemeDetailsListform = () => {
           </div>
 
           {/* Payment Basis On */}
-          <div className="flex flex-col">
-            <label className="text-xs font-medium mb-1">
-              Payment Basis On <span className="text-red-600">*</span>
-            </label>
-            <select
-              name="paymentBasisOn"
-              value={formData.paymentBasisOn || ""}
-              onChange={handleInputChange}
-              className="border border-gray-300 rounded px-3 py-2 w-[113px] bg-white text-sm"
-            >
-              <option value="">Select</option>
-              <option value="Interest">Interest</option>
-              <option value="EMI">EMI</option>
-            </select>
-          </div>
+<div className="flex flex-col">
+  <label className="text-xs font-medium mb-1">
+    Payment Basis On <span className="text-red-600">*</span>
+  </label>
+  <select
+    name="paymentBasisOn"
+    value={
+      formData.paymentBasisOn ||
+      (formData.calcBasisOn === "Monthly"
+        ? "Interest"
+        : formData.calcBasisOn === "Daily"
+        ? "EMI"
+        : "")
+    }
+    onChange={handleInputChange}
+    className="border border-gray-300 rounded px-3 py-2 w-[113px] bg-white text-sm"
+  >
+    <option value="Interest" disabled={formData.calcBasisOn === "Daily"}>Interest</option>
+    <option value="EMI" disabled={formData.calcBasisOn === "Monthly"}>EMI</option>
+  </select>
+</div>
+
 
           <div className="flex flex-col">
             <label className="text-[14px] font-medium">
