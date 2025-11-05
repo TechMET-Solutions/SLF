@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { IoIosAddCircleOutline } from "react-icons/io";
-import { IoIosCloseCircleOutline } from "react-icons/io";
+import { IoIosAddCircleOutline, IoIosCloseCircleOutline } from "react-icons/io";
+import axios from "axios";
 
 function AddLoanCharges() {
   const navigate = useNavigate();
@@ -17,7 +17,8 @@ function AddLoanCharges() {
     documentDate: "",
     remark: "",
   });
-  // ✅ Added rows state for Charges Details
+
+  const [chargesList, setChargesList] = useState([]); // active charges from backend
   const [rows, setRows] = useState([
     {
       charges: "",
@@ -32,18 +33,62 @@ function AddLoanCharges() {
     },
   ]);
 
+  // ✅ Fetch active charges from backend
+  useEffect(() => {
+    const fetchCharges = async () => {
+      try {
+        const res = await axios.get(
+          "http://localhost:5000/Master/GetChargesProfile/Active"
+        );
+        if (res.data.success) {
+          setChargesList(res.data.data);
+        } else {
+          console.error("⚠️ Unexpected response:", res.data);
+        }
+      } catch (error) {
+        console.error("❌ Error fetching charges:", error);
+      }
+    };
+    fetchCharges();
+  }, []);
+
   useEffect(() => {
     document.title = "SLF | Loan Charges";
   }, []);
 
+  // ✅ Handle form field updates
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFormData((prev) => ({ ...prev, [name]: value }));
   };
-  // ✅ Handle input changes for each row
+
+  // ✅ Handle row field updates
   const handleRowChange = (index, field, value) => {
     const updatedRows = [...rows];
     updatedRows[index][field] = value;
+
+    // 🔹 Auto-fill account & gross amount when selecting a charge
+    if (field === "charges") {
+      const selected = chargesList.find((ch) => ch.id === parseInt(value));
+      if (selected) {
+        updatedRows[index].account = selected.account || "";
+        updatedRows[index].grossAmount = selected.amount || "";
+      }
+    }
+
+    // 🔹 Calculate CGST / SGST amounts & Net Payable
+    const gross = parseFloat(updatedRows[index].grossAmount) || 0;
+    const cgstPercent = parseFloat(updatedRows[index].cgstPercent) || 0;
+    const sgstPercent = parseFloat(updatedRows[index].sgstPercent) || 0;
+
+    const cgstAmount = (gross * cgstPercent) / 100;
+    const sgstAmount = (gross * sgstPercent) / 100;
+    const netPayable = gross + cgstAmount + sgstAmount;
+
+    updatedRows[index].cgstAmount = cgstAmount.toFixed(2);
+    updatedRows[index].sgstAmount = sgstAmount.toFixed(2);
+    updatedRows[index].netPayable = netPayable.toFixed(2);
+
     setRows(updatedRows);
   };
 
@@ -64,13 +109,29 @@ function AddLoanCharges() {
       },
     ]);
   };
-    // ✅ Remove selected row
+
+  // ✅ Remove selected row
   const handleRemoveRow = (index) => {
-    if (rows.length === 1) return; // prevent removing all
-    const updatedRows = rows.filter((_, i) => i !== index);
-    setRows(updatedRows);
+    if (rows.length === 1) return;
+    setRows(rows.filter((_, i) => i !== index));
   };
 
+  // ✅ Total of all Net Payables
+  const totalNetPayable = rows.reduce(
+    (sum, r) => sum + (parseFloat(r.netPayable) || 0),
+    0
+  );
+
+  // ✅ Handle Submit
+  const handleSubmit = async () => {
+    try {
+      const payload = { ...formData, charges: rows };
+      console.log(payload);
+    } catch (err) {
+      console.error("❌ Submit error:", err);
+      alert("Error submitting charges!");
+    }
+  };
   return (
     <div className="min-h-screen w-full">
       {/* 🔹 Header */}
@@ -319,7 +380,12 @@ function AddLoanCharges() {
         Charges Details
       </h1>
 
-      {/* ✅ Charges Details Table with Add / Remove logic */}
+     
+     {/* 🔹 Charges Details */}
+      <h1 className="font-[Source_Sans_3] font-bold text-[24px] text-[#0A2478] mb-4 mt-6 px-[120px]">
+        Charges Details
+      </h1>
+
       <div className="px-[120px]">
         <div className="border border-gray-300 rounded-md overflow-hidden shadow-sm">
           <table className="w-full border-collapse text-sm">
@@ -331,9 +397,9 @@ function AddLoanCharges() {
                 <th className="py-2 px-2 border">Date</th>
                 <th className="py-2 px-2 border">Gross Amount</th>
                 <th className="py-2 px-2 border">CGST(%)</th>
-                <th className="py-2 px-2 border">Amount</th>
+                <th className="py-2 px-2 border">CGST Amt</th>
                 <th className="py-2 px-2 border">SGST(%)</th>
-                <th className="py-2 px-2 border">Amount</th>
+                <th className="py-2 px-2 border">SGST Amt</th>
                 <th className="py-2 px-2 border">Net Payable</th>
                 <th className="py-2 px-2 border">Action</th>
               </tr>
@@ -342,42 +408,38 @@ function AddLoanCharges() {
             <tbody>
               {rows.map((row, index) => (
                 <tr key={index} className="text-center bg-white">
-                  <td className=" py-2">{index + 1}</td>
+                  <td className="py-2">{index + 1}</td>
 
                   {/* Charges Select */}
-                  <td className=" py-2">
+                  <td className="py-2">
                     <select
                       value={row.charges}
                       onChange={(e) =>
                         handleRowChange(index, "charges", e.target.value)
                       }
-                      className="border border-gray-300 rounded-md px-2 py-1 w-[100px]"
+                      className="border border-gray-300 rounded-md px-2 py-1 w-[120px]"
                     >
                       <option value="">Select</option>
-                      <option>Proce</option>
-                      <option>Mics</option>
-                      <option>Legal</option>
-                      <option>Card</option>
-                      <option>Notice</option>
-                      <option>Postg</option>
-                      <option>LoDoc</option>
+                      {chargesList.map((ch) => (
+                        <option key={ch.id} value={ch.id}>
+                          {ch.description}
+                        </option>
+                      ))}
                     </select>
                   </td>
 
                   {/* Account */}
-                  <td className=" py-2">
+                  <td className="py-2">
                     <input
                       type="text"
                       value={row.account}
-                      onChange={(e) =>
-                        handleRowChange(index, "account", e.target.value)
-                      }
-                      className="border border-gray-300 rounded-md px-2 py-1 w-[100px]"
+                      readOnly
+                      className="border border-gray-300 rounded-md px-2 py-1 w-[120px] bg-gray-100"
                     />
                   </td>
 
                   {/* Date */}
-                  <td className=" py-2">
+                  <td className="py-2">
                     <input
                       type="date"
                       value={row.date}
@@ -389,79 +451,73 @@ function AddLoanCharges() {
                   </td>
 
                   {/* Gross Amount */}
-                  <td className=" py-2">
+                  <td className="py-2">
                     <input
                       type="number"
                       value={row.grossAmount}
                       onChange={(e) =>
                         handleRowChange(index, "grossAmount", e.target.value)
                       }
-                      className="no-spinner border border-gray-300 rounded-md px-2 py-1 w-[100px]"
+                      className="border border-gray-300 rounded-md px-2 py-1 w-[100px]"
                     />
                   </td>
 
                   {/* CGST (%) */}
-                  <td className=" py-2">
+                  <td className="py-2">
                     <input
                       type="number"
                       value={row.cgstPercent}
                       onChange={(e) =>
                         handleRowChange(index, "cgstPercent", e.target.value)
                       }
-                      className="no-spinner border border-gray-300 rounded-md px-2 py-1 w-[70px]"
+                      className="border border-gray-300 rounded-md px-2 py-1 w-[70px]"
                     />
                   </td>
 
-                  {/* CGST Amount */}
-                  <td className=" py-2">
+                  {/* CGST Amt */}
+                  <td className="py-2">
                     <input
                       type="number"
                       value={row.cgstAmount}
-                      onChange={(e) =>
-                        handleRowChange(index, "cgstAmount", e.target.value)
-                      }
-                      className="no-spinner border border-gray-300 rounded-md px-2 py-1 w-[100px]"
+                      readOnly
+                      className="border border-gray-300 rounded-md px-2 py-1 w-[90px] bg-gray-100"
                     />
                   </td>
 
                   {/* SGST (%) */}
-                  <td className=" py-2">
+                  <td className="py-2">
                     <input
                       type="number"
                       value={row.sgstPercent}
                       onChange={(e) =>
                         handleRowChange(index, "sgstPercent", e.target.value)
                       }
-                      className="no-spinner border border-gray-300 rounded-md px-2 py-1 w-[70px]"
+                      className="border border-gray-300 rounded-md px-2 py-1 w-[70px]"
                     />
                   </td>
 
-                  {/* SGST Amount */}
-                  <td className=" py-2">
+                  {/* SGST Amt */}
+                  <td className="py-2">
                     <input
                       type="number"
                       value={row.sgstAmount}
-                      onChange={(e) =>
-                        handleRowChange(index, "sgstAmount", e.target.value)
-                      }
-                      className="no-spinner border border-gray-300 rounded-md px-2 py-1 w-[100px]"
+                      readOnly
+                      className="border border-gray-300 rounded-md px-2 py-1 w-[90px] bg-gray-100"
                     />
                   </td>
 
                   {/* Net Payable */}
-                  <td className=" py-2">
+                  <td className="py-2">
                     <input
                       type="number"
                       value={row.netPayable}
-                      onChange={(e) =>
-                        handleRowChange(index, "netPayable", e.target.value)
-                      }
-                      className="no-spinner border border-gray-300 rounded-md px-2 py-1 w-[120px]"
+                      readOnly
+                      className="border border-gray-300 rounded-md px-2 py-1 w-[120px] bg-gray-100"
                     />
                   </td>
 
-                  {/* Action Buttons */}
-                  <td className=" py-2 flex justify-center items-center gap-2">
+                  {/* Action */}
+                  <td className="py-2 flex justify-center items-center gap-2">
                     <button
                       onClick={handleAddRow}
                       className="bg-[#0A2478] text-white px-2 py-2 rounded hover:bg-blue-700"
@@ -479,11 +535,11 @@ function AddLoanCharges() {
               ))}
 
               {/* Total Row */}
-              <tr className=" border border-gray-300   font-semibold">
-                <td colSpan="9" className="text-right pr-34  py-2 ">
+              <tr className="border font-semibold bg-gray-100">
+                <td colSpan="9" className="text-right pr-4 py-2">
                   Total
                 </td>
-                <td className="   text-center ">0</td>
+                <td className="text-center">{totalNetPayable.toFixed(2)}</td>
               </tr>
             </tbody>
           </table>
