@@ -4,7 +4,8 @@ import { MdOutlineCancel } from "react-icons/md";
 import axios from "axios";
 import { decryptData } from "../utils/cryptoHelper"; // adjust the import path as needed
 
-const PledgeItemList = ({ rows, setRows }) => {
+const PledgeItemList = ({ rows, setRows, selectedScheme }) => {
+  console.log(selectedScheme,"selectedScheme   docChargePercent")
   const [pledgeItems, setPledgeItems] = useState([]); // dynamic list of item names
 
   // 🧩 Fetch & decrypt items from API

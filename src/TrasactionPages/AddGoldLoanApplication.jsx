@@ -196,7 +196,7 @@ const AddGoldLoanApplication = () => {
     });
 
     // Calculate document charges (2% of loan)
-    const docCharges = (totalValuation * 2) / 100;
+    const docCharges = (totalValuation * selectedScheme.docChargePercent) / 100;
     const netPayable = totalValuation + docCharges;
 
     // Update all values in formData
@@ -717,7 +717,7 @@ const AddGoldLoanApplication = () => {
 
       </div>
 
-      <PledgeItemList rows={PledgeItem} setRows={setPledgeItem} />
+      <PledgeItemList rows={PledgeItem} setRows={setPledgeItem} selectedScheme={selectedScheme} />
 
 
 
@@ -759,7 +759,7 @@ const AddGoldLoanApplication = () => {
             <button
               className="bg-[#0A2478] text-white px-4 py-2 text-sm font-medium rounded-l-md border border-[#0A2478] hover:bg-[#081c5b] transition-all duration-200"
             >
-              2%
+             {selectedScheme.docChargePercent}
             </button>
 
             {/* Input Field */}
