@@ -46,6 +46,7 @@ const EmployeeProfile = () => {
     corresponding_address: "",
     permanent_address: "",
     branch: "",
+    branch_id: "", 
     joining_date: "",
     designation: "",
     date_of_birth: "",
@@ -254,33 +255,34 @@ const handleEdit = (employee) => {
 
 
 
-  const handleAddNew = () => {
-    setIsEditMode(false);
-    setFormData({
-      id: null,
-      pan_card: "",
-      aadhar_card: "",
-      emp_name: "",
-      emp_id: "",
-      mobile_no: "",
-      Alternate_MobileL:"",
-      email: "",
-      print_name: "",
-      corresponding_address: "",
-      permanent_address: "",
-      branch: "",
-      joining_date: "",
-      designation: "",
-      date_of_birth: "",
-      assign_role: "",
-     assign_role_id:"",
-      password: "",
-      fax: "",
-      emp_image: "",
-      emp_add_prof: "",
-      emp_id_prof: "",
-      status: true,
-    });
+ const handleAddNew = () => {
+  setIsEditMode(false);
+  setFormData({
+    id: null,
+    pan_card: "",
+    aadhar_card: "",
+    emp_name: "",
+    emp_id: "",
+    mobile_no: "",
+    Alternate_MobileL: "",  // ❌ Typo: should be "Alternate_Mobile"
+    email: "",
+    print_name: "",
+    corresponding_address: "",
+    permanent_address: "",
+    branch: "",
+    branch_id: "",  // ✅ Add this
+    joining_date: "",
+    designation: "",
+    date_of_birth: "",
+    assign_role: "",
+    assign_role_id: "",
+    password: "",
+    fax: "",
+    emp_image: "",
+    emp_add_prof: "",
+    emp_id_prof: "",
+    status: true,
+  });
     setProfileImage(null);
     setAddressProof(null);
     setIdProof(null);
@@ -289,24 +291,26 @@ const handleEdit = (employee) => {
 
  
 
-  const handleSave = async () => {
-    debugger
+
+const handleSave = async () => {
+  debugger
   try {
     const payload = {
       pan_card: formData.pan_card,
       aadhar_card: formData.aadhar_card,
       emp_name: formData.emp_name,
       mobile_no: formData.mobile_no,
-      Alternate_Mobile:formData.Alternate_Mobile,
+      Alternate_Mobile: formData.Alternate_Mobile,
       email: formData.email,
       corresponding_address: formData.corresponding_address,
       permanent_address: formData.permanent_address,
       branch: formData.branch,
+      branch_id: formData.branch_id,  // ✅ Add this line
       joining_date: formData.joining_date,
       designation: formData.designation,
       date_of_birth: formData.date_of_birth,
       assign_role: formData.assign_role,
-            assign_role_id: formData.assign_role_id,
+      assign_role_id: formData.assign_role_id,
       password: formData.password,
       fax: formData.fax,
       status: formData.status,
@@ -336,53 +340,6 @@ const handleEdit = (employee) => {
   }
 };
 
-  const handleUpdate = async () => {
-    debugger
-  try {
-    const payload = {
-      id: formData.id,
-      pan_card: formData.pan_card,
-      aadhar_card: formData.aadhar_card,
-      emp_name: formData.emp_name,
-      mobile_no: formData.mobile_no,
-      Alternate_Mobile:formData.Alternate_Mobile,
-      email: formData.email,
-      corresponding_address: formData.corresponding_address,
-      permanent_address: formData.permanent_address,
-      branch: formData.branch,
-      joining_date: formData.joining_date,
-      designation: formData.designation,
-      date_of_birth: formData.date_of_birth,
-      assign_role: formData.assign_role,
-      assign_role_id: formData.assign_role_id,
-      password: formData.password,
-      fax: formData.fax,
-      status: formData.status,
-    };
-
-    const encryptedData = encryptData(JSON.stringify(payload));
-
-    const formDataToSend = new FormData();
-    formDataToSend.append("data", encryptedData);
-
-    // Append only changed files
-    if (profileImage) formDataToSend.append("emp_image", profileImage);
-    if (addressProof) formDataToSend.append("emp_add_prof", addressProof);
-    if (idProof) formDataToSend.append("emp_id_prof", idProof);
-
-    await axios.put(`${API}/Master/Employee_Profile/update-employee`, formDataToSend, {
-      headers: { "Content-Type": "multipart/form-data" },
-    });
-
-    alert("Employee updated successfully!");
-     setIsModalOpen(false)
-    fetchEmployee(currentPage);
-  } catch (err) {
-    console.error("Error updating employee:", err);
-    alert(err.response?.data?.message || "Error updating employee");
-  }
-};
-
 
   // 🔍 Handle Search
   const handleSearch = () => {
@@ -391,17 +348,23 @@ const handleEdit = (employee) => {
     // You might want to call a search API or filter locally
   };
 
- const handleInputChange = (e) => {
+const handleInputChange = (e) => {
   const { name, value, type, checked } = e.target;
 
   if (name === "assign_role") {
-    // Find the selected role object
     const selectedRole = roles.find((role) => role.id === parseInt(value));
-
     setFormData((prev) => ({
       ...prev,
       assign_role_id: selectedRole ? selectedRole.id : "",
       assign_role: selectedRole ? selectedRole.role_name : "",
+    }));
+  } else if (name === "branch") {
+    // Find the selected branch object
+    const selectedBranch = branches.find((branch) => branch.id === parseInt(value));
+    setFormData((prev) => ({
+      ...prev,
+      branch_id: selectedBranch ? selectedBranch.id : "",
+      branch: selectedBranch ? selectedBranch.branch_name : "",
     }));
   } else {
     setFormData((prev) => ({
@@ -736,20 +699,20 @@ const handleEdit = (employee) => {
                   <div className="flex gap-2">
                     <div className="flex flex-col gap-1">
                       <label className="text-gray-700 font-medium">Branch*</label>
-                      <select
-                        name="branch"
-                        value={formData.branch}
-                        onChange={handleInputChange}
-                        disabled={mode === "view"}
-                        className="border border-[#C4C4C4] rounded-md px-3 py-2 focus:outline-none focus:ring-1 focus:ring-blue-500 w-[220px]"
-                      >
-                        <option value="" disabled>Select Branch</option>
-                        {branches.map((branch) => (
-                          <option key={branch.id} value={branch.branch_name}>
-                            {branch.branch_name} ({branch.branch_code})
-                          </option>
-                        ))}
-                      </select>
+                   <select
+  name="branch"
+  value={formData.branch_id} // Changed from branch to branch_id
+  onChange={handleInputChange}
+  disabled={mode === "view"}
+  className="border border-[#C4C4C4] rounded-md px-3 py-2 focus:outline-none focus:ring-1 focus:ring-blue-500 w-[220px]"
+>
+  <option value="" disabled>Select Branch</option>
+  {branches.map((branch) => (
+    <option key={branch.id} value={branch.id}>
+      {branch.branch_name} ({branch.branch_code})
+    </option>
+  ))}
+</select>
                     </div>
                     <div className="flex flex-col gap-1">
                       <label className="text-gray-700 font-medium">Date of Joining</label>
