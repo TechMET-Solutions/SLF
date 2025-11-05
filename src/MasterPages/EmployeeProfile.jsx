@@ -19,11 +19,11 @@ const EmployeeProfile = () => {
     document.title = "SLF | Employee Profile";
   }, []);
 
-   const navigate = useNavigate();
+  const navigate = useNavigate();
 
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [employeeList, setEmployeeList] = useState([]);
-  console.log(employeeList,"employeeList")
+  console.log(employeeList, "employeeList")
   const [isLoading, setIsLoading] = useState(false);
   const [isEditMode, setIsEditMode] = useState(false);
   const [isViewDocumentHistory, setIsDocumentHistory] = useState(false);
@@ -33,61 +33,65 @@ const EmployeeProfile = () => {
 
   const [formData, setFormData] = useState({
     id: null,
-    panFile:null,
+    panFile: null,
     pan_card: "",
     aadhar_card: "",
     aadharFile: null,
     emp_name: "",
     emp_id: "",
     mobile_no: "",
-    Alternate_Mobile:"",
+    Alternate_Mobile: "",
     email: "",
     print_name: "",
     corresponding_address: "",
     permanent_address: "",
     branch: "",
-    branch_id: "", 
+    branch_id: "",
     joining_date: "",
     designation: "",
     date_of_birth: "",
     assign_role: "",
-     assign_role_id: "",
+    assign_role_id: "",
     password: "",
     fax: "",
     addressProfiletype: "",
-    IdProoftype:"",
+    IdProoftype: "",
     status: true,
   });
-const [documents, setDocuments] = useState([]);      // main list from API
-const [idProofList, setIdProofList] = useState([]);  // filtered only id proof
-const [addrProofList, setAddrProofList] = useState([]); // filtered only address proof
+  const [documents, setDocuments] = useState([]);      // main list from API
+  const [idProofList, setIdProofList] = useState([]);  // filtered only id proof
+  const [addrProofList, setAddrProofList] = useState([]); // filtered only address proof
 
-const fetchDocuments = async () => {
-  try {
-    // setLoading(true);
+  const fetchDocuments = async () => {
+    try {
+      // setLoading(true);
 
-    const response = await axios.get(`${API}/Master/getAllDocumentProofs`);
+      const response = await axios.get(`${API}/Master/getAllDocumentProofs`);
 
-    const docs = response.data.data;  // <-- already clean json
+      const docs = response.data.data;  // <-- already clean json
 
-    setDocuments(docs);
+      setDocuments(docs);
 
-    setIdProofList(docs.filter(x => x.is_id_proof === 1));
-    setAddrProofList(docs.filter(x => x.is_address_proof === 1));
+      setIdProofList(docs.filter(x => x.is_id_proof === 1));
+      setAddrProofList(docs.filter(x => x.is_address_proof === 1));
 
-    // setLoading(false);
-  } catch (err) {
-    console.error("Error fetching documents:", err);
-    // setError("Failed to fetch documents");
-    // setLoading(false);
-  }
-};
+      // setLoading(false);
+    } catch (err) {
+      console.error("Error fetching documents:", err);
+      // setError("Failed to fetch documents");
+      // setLoading(false);
+    }
+  };
 
-const [roles, setRoles] = useState([]);
-const [branches, setBranches] = useState([]);
+  const [roles, setRoles] = useState([]);
+  const [branches, setBranches] = useState([]);
+
+  // added: designations state
+  const [designations, setDesignations] = useState([]);
+
   useEffect(() => {
-   fetchDocuments()
- },[])
+    fetchDocuments()
+  }, [])
   useEffect(() => {
     const loadRoles = async () => {
       const fetchedRoles = await fetchAllRoles();
@@ -95,17 +99,19 @@ const [branches, setBranches] = useState([]);
     };
     loadRoles();
     fetchBranches();
+    // added: fetch designations
+    fetchDesignations();
   }, []);
 
   const fetchAllRoles = async () => {
-  try {
-    const response = await fetch(`${API}/Master/User-Management/getAll-roles-options`);
-    const result = await response.json();
-    return result.roles || [];
-  } catch (err) {
-    console.error("Error fetching roles:", err);
-    return [];
-  }
+    try {
+      const response = await fetch(`${API}/Master/User-Management/getAll-roles-options`);
+      const result = await response.json();
+      return result.roles || [];
+    } catch (err) {
+      console.error("Error fetching roles:", err);
+      return [];
+    }
   };
 
   const fetchBranches = async () => {
@@ -119,8 +125,21 @@ const [branches, setBranches] = useState([]);
       setBranches([]);
     }
   };
-  
-  console.log(formData,"formData")
+
+  // added: fetchDesignations implementation
+  const fetchDesignations = async () => {
+    try {
+      const res = await axios.get(`${API}/Master/Employee_Profile/get-designation`);
+      // response shape: { data: [...], current_page:..., ... }
+      const items = res.data?.data || res.data?.data?.data || [];
+      setDesignations(items);
+    } catch (err) {
+      console.error("❌ Error fetching designations:", err);
+      setDesignations([]);
+    }
+  };
+
+  console.log(formData, "formData")
   const panFileInputRef = useRef(null);
   const handlePanFileChange = (e) => {
     const file = e.target.files[0];
@@ -145,7 +164,7 @@ const [branches, setBranches] = useState([]);
   const [profileImage, setProfileImage] = useState(null);
   const [addressProof, setAddressProof] = useState(null);
   const [idProof, setIdProof] = useState(null);
-console.log(addressProof,idProof,profileImage)
+  console.log(addressProof, idProof, profileImage)
   // Pagination states
   const [currentPage, setCurrentPage] = useState(1);
   const [totalItems, setTotalItems] = useState(0);
@@ -169,14 +188,14 @@ console.log(addressProof,idProof,profileImage)
     setFormData((prev) => ({ ...prev, emp_image: file.name }));
   };
 
-   const handleFileChangeForAddProof = (e, setAddressProof) => {
+  const handleFileChangeForAddProof = (e, setAddressProof) => {
     if (!e?.target?.files?.[0]) return; // safety check
     const file = e.target.files[0];
     setAddressProof(file);
     setFormData((prev) => ({ ...prev, emp_add_prof: file.name }));
   };
 
-   const handleFileChangeForIdProof = (e, setIdProof) => {
+  const handleFileChangeForIdProof = (e, setIdProof) => {
     if (!e?.target?.files?.[0]) return; // safety check
     const file = e.target.files[0];
     setIdProof(file);
@@ -212,43 +231,43 @@ console.log(addressProof,idProof,profileImage)
 
   const updateEmployeeStatus = async (id, status) => {
     debugger
-  try {
-    const payload = { id, status };
-    const encryptedData = encryptData(JSON.stringify(payload));
+    try {
+      const payload = { id, status };
+      const encryptedData = encryptData(JSON.stringify(payload));
 
-    const res = await axios.post(`${API}/Master/updateEmployeeStatus`, {
-      data: encryptedData,
-    });
+      const res = await axios.post(`${API}/Master/updateEmployeeStatus`, {
+        data: encryptedData,
+      });
 
-    return res.data;
-  } catch (error) {
-    console.error("Error updating employee status:", error);
-  }
+      return res.data;
+    } catch (error) {
+      console.error("Error updating employee status:", error);
+    }
   };
-  
 
 
- const handleToggleStatus = async (emp) => {
-  try {
-    // 🧩 Flip the current status (1 → 0 or 0 → 1)
-    const newStatus = emp.status ? 0 : 1;
 
-    // 📨 Call backend API
-    const response = await updateEmployeeStatus(emp.id, newStatus);
+  const handleToggleStatus = async (emp) => {
+    try {
+      // 🧩 Flip the current status (1 → 0 or 0 → 1)
+      const newStatus = emp.status ? 0 : 1;
 
-    // 🔐 If response is encrypted, decrypt it (if needed)
-    console.log("✅ Status updated response:", response);
+      // 📨 Call backend API
+      const response = await updateEmployeeStatus(emp.id, newStatus);
 
-    // 🧠 Update the state to reflect new status instantly
-    setEmployeeList((prev) =>
-      prev.map((e) =>
-        e.id === emp.id ? { ...e, status: newStatus } : e
-      )
-    );
-  } catch (error) {
-    console.error("❌ Error toggling employee status:", error);
-  }
-};
+      // 🔐 If response is encrypted, decrypt it (if needed)
+      console.log("✅ Status updated response:", response);
+
+      // 🧠 Update the state to reflect new status instantly
+      setEmployeeList((prev) =>
+        prev.map((e) =>
+          e.id === emp.id ? { ...e, status: newStatus } : e
+        )
+      );
+    } catch (error) {
+      console.error("❌ Error toggling employee status:", error);
+    }
+  };
   // 🗑️ Show delete confirmation modal
   const handleDeleteClick = (id) => {
     setDeleteId(id);
@@ -269,159 +288,159 @@ console.log(addressProof,idProof,profileImage)
   };
 
   const handleView = (employee) => {
-  setMode("view");
-  setFormData(employee);
-  setIsModalOpen(true);
-};
+    setMode("view");
+    setFormData(employee);
+    setIsModalOpen(true);
+  };
 
-const handleEdit = (employee) => {
-  setMode("edit");
-  setFormData(employee);
-  setIsModalOpen(true);
-};
+  const handleEdit = (employee) => {
+    setMode("edit");
+    setFormData(employee);
+    setIsModalOpen(true);
+  };
 
 
 
- const handleAddNew = () => {
-  setIsEditMode(false);
-  setFormData({
-    id: null,
-    pan_card: "",
-    aadhar_card: "",
-    emp_name: "",
-    emp_id: "",
-    mobile_no: "",
-    Alternate_MobileL: "",  // ❌ Typo: should be "Alternate_Mobile"
-    email: "",
-    print_name: "",
-    corresponding_address: "",
-    permanent_address: "",
-    branch: "",
-    branch_id: "",  // ✅ Add this
-    joining_date: "",
-    designation: "",
-    date_of_birth: "",
-    assign_role: "",
-    assign_role_id: "",
-    password: "",
-    fax: "",
-    emp_image: "",
-    emp_add_prof: "",
-    emp_id_prof: "",
-    status: true,
-  });
+  const handleAddNew = () => {
+    setIsEditMode(false);
+    setFormData({
+      id: null,
+      pan_card: "",
+      aadhar_card: "",
+      emp_name: "",
+      emp_id: "",
+      mobile_no: "",
+      Alternate_MobileL: "",  // ❌ Typo: should be "Alternate_Mobile"
+      email: "",
+      print_name: "",
+      corresponding_address: "",
+      permanent_address: "",
+      branch: "",
+      branch_id: "",  // ✅ Add this
+      joining_date: "",
+      designation: "",
+      date_of_birth: "",
+      assign_role: "",
+      assign_role_id: "",
+      password: "",
+      fax: "",
+      emp_image: "",
+      emp_add_prof: "",
+      emp_id_prof: "",
+      status: true,
+    });
     setProfileImage(null);
     setAddressProof(null);
     setIdProof(null);
     setIsModalOpen(true);
   };
 
- 
 
 
-const handleSave = async () => {
-  debugger
-  try {
-    const payload = {
-      pan_card: formData.pan_card,
-      aadhar_card: formData.aadhar_card,
-      emp_name: formData.emp_name,
-      mobile_no: formData.mobile_no,
-      Alternate_Mobile: formData.Alternate_Mobile,
-      email: formData.email,
-      corresponding_address: formData.corresponding_address,
-      permanent_address: formData.permanent_address,
-      branch: formData.branch,
-      branch_id: formData.branch_id,  // ✅ Add this line
-      joining_date: formData.joining_date,
-      designation: formData.designation,
-      date_of_birth: formData.date_of_birth,
-      assign_role: formData.assign_role,
-      assign_role_id: formData.assign_role_id,
-      password: formData.password,
-      fax: formData.fax,
-      addressProfiletype:formData.addressProfiletype,
-    IdProoftype:formData.IdProoftype,
-      status: formData.status,
-    };
 
-    // Encrypt payload
-    const encryptedData = encryptData(JSON.stringify(payload));
+  const handleSave = async () => {
+    debugger
+    try {
+      const payload = {
+        pan_card: formData.pan_card,
+        aadhar_card: formData.aadhar_card,
+        emp_name: formData.emp_name,
+        mobile_no: formData.mobile_no,
+        Alternate_Mobile: formData.Alternate_Mobile,
+        email: formData.email,
+        corresponding_address: formData.corresponding_address,
+        permanent_address: formData.permanent_address,
+        branch: formData.branch,
+        branch_id: formData.branch_id,  // ✅ Add this line
+        joining_date: formData.joining_date,
+        designation: formData.designation,
+        date_of_birth: formData.date_of_birth,
+        assign_role: formData.assign_role,
+        assign_role_id: formData.assign_role_id,
+        password: formData.password,
+        fax: formData.fax,
+        addressProfiletype: formData.addressProfiletype,
+        IdProoftype: formData.IdProoftype,
+        status: formData.status,
+      };
 
-    const formDataToSend = new FormData();
-    formDataToSend.append("data", encryptedData);
-    if (profileImage) formDataToSend.append("emp_image", profileImage);
-    if (addressProof) formDataToSend.append("emp_add_prof", addressProof);
-    if (idProof) formDataToSend.append("emp_id_prof", idProof);
+      // Encrypt payload
+      const encryptedData = encryptData(JSON.stringify(payload));
 
-    await axios.post(`${API}/Master/Employee_Profile/add-employee`, formDataToSend, {
-      headers: { "Content-Type": "multipart/form-data" },
-    });
+      const formDataToSend = new FormData();
+      formDataToSend.append("data", encryptedData);
+      if (profileImage) formDataToSend.append("emp_image", profileImage);
+      if (addressProof) formDataToSend.append("emp_add_prof", addressProof);
+      if (idProof) formDataToSend.append("emp_id_prof", idProof);
 
-    alert("Employee created successfully");
-    setIsModalOpen(false)
-    fetchEmployee(currentPage);
-  } catch (error) {
-    console.error("❌ Error saving employee:", error);
-    alert(error.response?.data?.message || "Error saving employee");
-  } finally {
-    setIsLoading(false);
-  }
-};
-
-const handleUpdate = async () => {
-  debugger;
-  try {
-    const payload = {
-      id: formData.id,
-      pan_card: formData.pan_card,
-      aadhar_card: formData.aadhar_card,
-      emp_name: formData.emp_name,
-      mobile_no: formData.mobile_no,
-      Alternate_Mobile: formData.Alternate_Mobile,
-      email: formData.email,
-      corresponding_address: formData.corresponding_address,
-      permanent_address: formData.permanent_address,
-      branch: formData.branch,
-      joining_date: formData.joining_date,
-      designation: formData.designation,
-      date_of_birth: formData.date_of_birth,
-      assign_role: formData.assign_role,
-      assign_role_id: formData.assign_role_id,
-      password: formData.password,
-      fax: formData.fax,
-      status: formData.status,
-    };
-
-    // Encrypt data
-    const encryptedData = encryptData(JSON.stringify(payload));
-
-    // Prepare FormData
-    const formDataToSend = new FormData();
-    formDataToSend.append("data", encryptedData);
-
-    // Append only changed files
-    if (profileImage) formDataToSend.append("emp_image", profileImage);
-    if (addressProof) formDataToSend.append("emp_add_prof", addressProof);
-    if (idProof) formDataToSend.append("emp_id_prof", idProof);
-
-    // API call
-    await axios.put(
-      `${API}/Master/Employee_Profile/update-employee`,
-      formDataToSend,
-      {
+      await axios.post(`${API}/Master/Employee_Profile/add-employee`, formDataToSend, {
         headers: { "Content-Type": "multipart/form-data" },
-      }
-    );
+      });
 
-    alert("✅ Employee updated successfully!");
-    setIsModalOpen(false);
-    fetchEmployee(currentPage);
-  } catch (err) {
-    console.error("❌ Error updating employee:", err);
-    alert(err.response?.data?.message || "Error updating employee");
-  }
-};
+      alert("Employee created successfully");
+      setIsModalOpen(false)
+      fetchEmployee(currentPage);
+    } catch (error) {
+      console.error("❌ Error saving employee:", error);
+      alert(error.response?.data?.message || "Error saving employee");
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const handleUpdate = async () => {
+    debugger;
+    try {
+      const payload = {
+        id: formData.id,
+        pan_card: formData.pan_card,
+        aadhar_card: formData.aadhar_card,
+        emp_name: formData.emp_name,
+        mobile_no: formData.mobile_no,
+        Alternate_Mobile: formData.Alternate_Mobile,
+        email: formData.email,
+        corresponding_address: formData.corresponding_address,
+        permanent_address: formData.permanent_address,
+        branch: formData.branch,
+        joining_date: formData.joining_date,
+        designation: formData.designation,
+        date_of_birth: formData.date_of_birth,
+        assign_role: formData.assign_role,
+        assign_role_id: formData.assign_role_id,
+        password: formData.password,
+        fax: formData.fax,
+        status: formData.status,
+      };
+
+      // Encrypt data
+      const encryptedData = encryptData(JSON.stringify(payload));
+
+      // Prepare FormData
+      const formDataToSend = new FormData();
+      formDataToSend.append("data", encryptedData);
+
+      // Append only changed files
+      if (profileImage) formDataToSend.append("emp_image", profileImage);
+      if (addressProof) formDataToSend.append("emp_add_prof", addressProof);
+      if (idProof) formDataToSend.append("emp_id_prof", idProof);
+
+      // API call
+      await axios.put(
+        `${API}/Master/Employee_Profile/update-employee`,
+        formDataToSend,
+        {
+          headers: { "Content-Type": "multipart/form-data" },
+        }
+      );
+
+      alert("✅ Employee updated successfully!");
+      setIsModalOpen(false);
+      fetchEmployee(currentPage);
+    } catch (err) {
+      console.error("❌ Error updating employee:", err);
+      alert(err.response?.data?.message || "Error updating employee");
+    }
+  };
   // 🔍 Handle Search
   const handleSearch = () => {
     // Implement search logic here
@@ -429,33 +448,33 @@ const handleUpdate = async () => {
     // You might want to call a search API or filter locally
   };
 
-const handleInputChange = (e) => {
-  const { name, value, type, checked } = e.target;
+  const handleInputChange = (e) => {
+    const { name, value, type, checked } = e.target;
 
-  if (name === "assign_role") {
-    const selectedRole = roles.find((role) => role.id === parseInt(value));
-    setFormData((prev) => ({
-      ...prev,
-      assign_role_id: selectedRole ? selectedRole.id : "",
-      assign_role: selectedRole ? selectedRole.role_name : "",
-    }));
-  } else if (name === "branch") {
-    // Find the selected branch object
-    const selectedBranch = branches.find((branch) => branch.id === parseInt(value));
-    setFormData((prev) => ({
-      ...prev,
-      branch_id: selectedBranch ? selectedBranch.id : "",
-      branch: selectedBranch ? selectedBranch.branch_name : "",
-    }));
-  } else {
-    setFormData((prev) => ({
-      ...prev,
-      [name]: type === "checkbox" ? checked : value,
-    }));
-  }
-};
+    if (name === "assign_role") {
+      const selectedRole = roles.find((role) => role.id === parseInt(value));
+      setFormData((prev) => ({
+        ...prev,
+        assign_role_id: selectedRole ? selectedRole.id : "",
+        assign_role: selectedRole ? selectedRole.role_name : "",
+      }));
+    } else if (name === "branch") {
+      // Find the selected branch object
+      const selectedBranch = branches.find((branch) => branch.id === parseInt(value));
+      setFormData((prev) => ({
+        ...prev,
+        branch_id: selectedBranch ? selectedBranch.id : "",
+        branch: selectedBranch ? selectedBranch.branch_name : "",
+      }));
+    } else {
+      setFormData((prev) => ({
+        ...prev,
+        [name]: type === "checkbox" ? checked : value,
+      }));
+    }
+  };
 
- const handleForceDownload = async (fileUrl, filename) => {
+  const handleForceDownload = async (fileUrl, filename) => {
     try {
       // Fetch the file as a blob (binary data)
       const response = await fetch(fileUrl, { mode: "cors" });
@@ -529,7 +548,7 @@ const handleInputChange = (e) => {
                 Add
               </button>
               <button
-               onClick={() => navigate("/")}
+                onClick={() => navigate("/")}
                 className="bg-[#C1121F] text-white text-[10px] w-[74px] h-[24px] rounded">
                 Exit
               </button>
@@ -545,7 +564,7 @@ const handleInputChange = (e) => {
             <div className="bg-white w-[1183px] max-h-[90vh] rounded-lg shadow-lg p-6 overflow-y-auto">
               {/* Title */}
               <h2 className="text-[#0A2478] text-[20px] font-semibold mb-6">
-                {mode==="edit" ? "Edit Employee Profile" : "Add Employee Profile"}
+                {mode === "edit" ? "Edit Employee Profile" : "Add Employee Profile"}
               </h2>
 
               <div className="flex gap-2">
@@ -553,102 +572,102 @@ const handleInputChange = (e) => {
                 <div className=" space-y-4 text-sm">
                   {/* PAN + Aadhaar + Name */}
                   <div className="flex gap-2">
-                   
- <div className="flex flex-col">
-                <label className="text-[14px] font-medium">PAN No.</label>
-                <div className="flex items-center mt-1 w-[220px]">
-                  <div className="relative flex-1">
-                    <input
-                      type="text"
-                      placeholder="Enter PAN"
+
+                    <div className="flex flex-col">
+                      <label className="text-[14px] font-medium">PAN No.</label>
+                      <div className="flex items-center mt-1 w-[220px]">
+                        <div className="relative flex-1">
+                          <input
+                            type="text"
+                            placeholder="Enter PAN"
                             name="pan_card"
                             disabled={mode === "view"}
-                      value={formData.pan_card}
-                      onChange={handleInputChange}
-                      className="border border-[#C4C4C4] border-r-0 rounded-l px-3 py-2 w-full pr-10 focus:outline-none focus:ring-1 focus:ring-blue-500 bg-white"
-                    />
+                            value={formData.pan_card}
+                            onChange={handleInputChange}
+                            className="border border-[#C4C4C4] border-r-0 rounded-l px-3 py-2 w-full pr-10 focus:outline-none focus:ring-1 focus:ring-blue-500 bg-white"
+                          />
 
-                    {/* Hidden file input */}
-                    <input
-                      type="file"
-                      accept="image/*,.pdf"
+                          {/* Hidden file input */}
+                          <input
+                            type="file"
+                            accept="image/*,.pdf"
                             ref={panFileInputRef}
-                             disabled={mode === "view"}
-                      onChange={handlePanFileChange}
-                      className="hidden"
-                    />
+                            disabled={mode === "view"}
+                            onChange={handlePanFileChange}
+                            className="hidden"
+                          />
 
-                    {/* Paperclip icon triggers file selection */}
-                    <FaPaperclip
-                      className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 cursor-pointer"
-                      size={16}
-                      onClick={() => panFileInputRef.current.click()}
-                    />
-                  </div>
+                          {/* Paperclip icon triggers file selection */}
+                          <FaPaperclip
+                            className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 cursor-pointer"
+                            size={16}
+                            onClick={() => panFileInputRef.current.click()}
+                          />
+                        </div>
 
-                  <button
-                    className="bg-[#0A2478] text-white px-5 py-2 rounded-r border border-gray-300 border-l-0 hover:bg-[#081c5b]"
-                    type="button"
-                  >
-                    Verify
-                  </button>
-                </div>
+                        <button
+                          className="bg-[#0A2478] text-white px-5 py-2 rounded-r border border-gray-300 border-l-0 hover:bg-[#081c5b]"
+                          type="button"
+                        >
+                          Verify
+                        </button>
+                      </div>
 
-                {/* Show selected file name */}
-                {formData.panFile && (
-                  <p className="text-xs text-gray-500 mt-1">
-                    Selected file: {formData.panFile.name}
-                  </p>
-                )}
-              </div>
+                      {/* Show selected file name */}
+                      {formData.panFile && (
+                        <p className="text-xs text-gray-500 mt-1">
+                          Selected file: {formData.panFile.name}
+                        </p>
+                      )}
+                    </div>
                     {/* Aadhaar */}
                     <div className="flex flex-col">
-                <label className="text-[14px] font-medium">Aadhar Card Number.</label>
-                <div className="flex items-center mt-1 w-[300px]">
-                  <div className="relative flex-1">
-                    <input
-                      type="text"
-                      placeholder="Enter Aadhar Number"
+                      <label className="text-[14px] font-medium">Aadhar Card Number.</label>
+                      <div className="flex items-center mt-1 w-[300px]">
+                        <div className="relative flex-1">
+                          <input
+                            type="text"
+                            placeholder="Enter Aadhar Number"
                             name="aadhar_card"
-                             disabled={mode === "view"}
-                      value={formData.aadhar_card}
-                      onChange={handleInputChange}
-                      className="border border-[#C4C4C4] border-r-0 rounded-l px-3 py-2 w-full pr-10 focus:outline-none focus:ring-1 focus:ring-blue-500 bg-white"
-                    />
+                            disabled={mode === "view"}
+                            value={formData.aadhar_card}
+                            onChange={handleInputChange}
+                            className="border border-[#C4C4C4] border-r-0 rounded-l px-3 py-2 w-full pr-10 focus:outline-none focus:ring-1 focus:ring-blue-500 bg-white"
+                          />
 
-                    {/* Hidden file input */}
-                    <input
-                      type="file"
-                      accept="image/*,.pdf"
+                          {/* Hidden file input */}
+                          <input
+                            type="file"
+                            accept="image/*,.pdf"
                             ref={aadharFileInputRef}
-                             disabled={mode === "view"}
-                      onChange={handleAadharFileChange}
-                      className="hidden"
-                    />
+                            disabled={mode === "view"}
+                            onChange={handleAadharFileChange}
+                            className="hidden"
+                          />
 
-                    {/* Paperclip icon triggers file selection */}
-                    <FaPaperclip
-                      className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 cursor-pointer"
-                      size={16}
-                      onClick={() => aadharFileInputRef.current.click()}
-                    />
-                  </div>
+                          {/* Paperclip icon triggers file selection */}
+                          <FaPaperclip
+                            className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 cursor-pointer"
+                            size={16}
+                            onClick={() => aadharFileInputRef.current.click()}
+                          />
+                        </div>
 
-                  <button
-                    className="bg-[#0A2478] text-white px-5 py-2 rounded-r border border-gray-300 border-l-0 hover:bg-[#081c5b]"
-                    type="button"
-                  >
-                    Verify
-                  </button>
-                </div>
+                        <button
+                          className="bg-[#0A2478] text-white px-5 py-2 rounded-r border border-gray-300 border-l-0 hover:bg-[#081c5b]"
+                          type="button"
+                        >
+                          Verify
+                        </button>
+                      </div>
 
-                {/* Show selected file name */}
-                {formData.aadharFile && (
-                  <p className="text-xs text-gray-500 mt-1">
-                    Selected file: {formData.aadharFile.name}
-                  </p>
-                )}
-              </div>
+                      {/* Show selected file name */}
+                      {formData.aadharFile && (
+                        <p className="text-xs text-gray-500 mt-1">
+                          Selected file: {formData.aadharFile.name}
+                        </p>
+                      )}
+                    </div>
 
                     {/* Name */}
                     <div className="flex flex-col gap-1">
@@ -657,7 +676,7 @@ const handleInputChange = (e) => {
                         type="text"
                         name="emp_name"
                         value={formData.emp_name}
-                         disabled={mode === "view"}
+                        disabled={mode === "view"}
                         onChange={handleInputChange}
                         placeholder="Name"
                         className="border border-[#C4C4C4] rounded-md px-3 py-2 focus:outline-none focus:ring-1 focus:ring-blue-500 w-[226px]"
@@ -667,27 +686,27 @@ const handleInputChange = (e) => {
 
                   {/* Employee ID, Mobile, Email */}
                   <div className="flex gap-2">
-                   
+
                     <div className="flex flex-col gap-1">
                       <label className="text-gray-700 font-medium">Mobile No*</label>
                       <input
                         type="text"
                         name="mobile_no"
                         value={formData.mobile_no}
-                         disabled={mode === "view"}
+                        disabled={mode === "view"}
                         onChange={handleInputChange}
                         placeholder="Mobile No"
                         className="border border-[#C4C4C4] rounded-md px-3 py-2 focus:outline-none focus:ring-1 focus:ring-blue-500"
                       />
                     </div>
-                     <div className="flex flex-col gap-1">
+                    <div className="flex flex-col gap-1">
                       <label className="text-gray-700 font-medium">Alternate Mobile No*</label>
                       <input
                         type="text"
                         name="Alternate_Mobile"
                         value={formData.Alternate_Mobile}
                         onChange={handleInputChange}
-                         disabled={mode === "view"}
+                        disabled={mode === "view"}
                         placeholder="Mobile No"
                         className="border border-[#C4C4C4] rounded-md px-3 py-2 focus:outline-none focus:ring-1 focus:ring-blue-500"
                       />
@@ -699,27 +718,27 @@ const handleInputChange = (e) => {
                         name="email"
                         value={formData.email}
                         onChange={handleInputChange}
-                         disabled={mode === "view"}
+                        disabled={mode === "view"}
                         placeholder="Email ID"
                         className="border border-[#C4C4C4] rounded-md px-3 py-2 focus:outline-none focus:ring-1 focus:ring-blue-500"
                       />
                     </div>
                     <div className="flex flex-col gap-1">
-  <label className="text-gray-700 font-medium">Date of Birth*</label>
-  <input
-    type="date"
-    name="date_of_birth"
-    value={
-      formData.date_of_birth
-        ? new Date(formData.date_of_birth).toISOString().split("T")[0]
-        : ""
-    }
-    disabled={mode === "view"}
-    onChange={handleInputChange}
-    className={`border border-[#C4C4C4] rounded-md px-3 py-2 focus:outline-none focus:ring-1 focus:ring-blue-500 
+                      <label className="text-gray-700 font-medium">Date of Birth*</label>
+                      <input
+                        type="date"
+                        name="date_of_birth"
+                        value={
+                          formData.date_of_birth
+                            ? new Date(formData.date_of_birth).toISOString().split("T")[0]
+                            : ""
+                        }
+                        disabled={mode === "view"}
+                        onChange={handleInputChange}
+                        className={`border border-[#C4C4C4] rounded-md px-3 py-2 focus:outline-none focus:ring-1 focus:ring-blue-500 
     }`}
-  />
-</div>
+                      />
+                    </div>
 
                   </div>
 
@@ -732,7 +751,7 @@ const handleInputChange = (e) => {
                         type="text"
                         name="corresponding_address"
                         value={formData.corresponding_address}
-                         disabled={mode === "view"}
+                        disabled={mode === "view"}
                         onChange={handleInputChange}
                         placeholder=" Corresponding Address*"
                         className="border border-[#C4C4C4] rounded-md px-3 py-2 focus:outline-none focus:ring-1 focus:ring-blue-500 w-[266px]"
@@ -744,7 +763,7 @@ const handleInputChange = (e) => {
                       <input
                         type="checkbox"
                         id="sameAddress"
-                         disabled={mode === "view"}
+                        disabled={mode === "view"}
                         name="sameAddress"
                         checked={formData.permanent_address === formData.corresponding_address}
                         onChange={(e) => {
@@ -767,7 +786,7 @@ const handleInputChange = (e) => {
                       <input
                         type="text"
                         name="permanent_address"
-                         disabled={mode === "view"}
+                        disabled={mode === "view"}
                         value={formData.permanent_address}
                         onChange={handleInputChange}
                         placeholder=" Permanent Address*"
@@ -780,35 +799,35 @@ const handleInputChange = (e) => {
                   <div className="flex gap-2">
                     <div className="flex flex-col gap-1">
                       <label className="text-gray-700 font-medium">Branch*</label>
-                   <select
-  name="branch"
-  value={formData.branch_id} // Changed from branch to branch_id
-  onChange={handleInputChange}
-  disabled={mode === "view"}
-  className="border border-[#C4C4C4] rounded-md px-3 py-2 focus:outline-none focus:ring-1 focus:ring-blue-500 w-[220px]"
->
-  <option value="" disabled>Select Branch</option>
-  {branches.map((branch) => (
-    <option key={branch.id} value={branch.id}>
-      {branch.branch_name} ({branch.branch_code})
-    </option>
-  ))}
-</select>
+                      <select
+                        name="branch"
+                        value={formData.branch_id} // Changed from branch to branch_id
+                        onChange={handleInputChange}
+                        disabled={mode === "view"}
+                        className="border border-[#C4C4C4] rounded-md px-3 py-2 focus:outline-none focus:ring-1 focus:ring-blue-500 w-[220px]"
+                      >
+                        <option value="" disabled>Select Branch</option>
+                        {branches.map((branch) => (
+                          <option key={branch.id} value={branch.id}>
+                            {branch.branch_name} ({branch.branch_code})
+                          </option>
+                        ))}
+                      </select>
                     </div>
                     <div className="flex flex-col gap-1">
                       <label className="text-gray-700 font-medium">Date of Joining</label>
-                     <input
-  type="date"
-  name="joining_date"
-  value={
-    formData.joining_date
-      ? new Date(formData.joining_date).toISOString().split("T")[0]
-      : ""
-  }
-  disabled={mode === "view"}
-  onChange={handleInputChange}
-  className="border border-[#C4C4C4] rounded-md px-3 py-2 focus:outline-none focus:ring-1 focus:ring-blue-500 w-[164px]"
-/>
+                      <input
+                        type="date"
+                        name="joining_date"
+                        value={
+                          formData.joining_date
+                            ? new Date(formData.joining_date).toISOString().split("T")[0]
+                            : ""
+                        }
+                        disabled={mode === "view"}
+                        onChange={handleInputChange}
+                        className="border border-[#C4C4C4] rounded-md px-3 py-2 focus:outline-none focus:ring-1 focus:ring-blue-500 w-[164px]"
+                      />
 
                     </div>
                     <div className="flex flex-col gap-1">
@@ -816,48 +835,49 @@ const handleInputChange = (e) => {
                       <select
                         name="designation"
                         value={formData.designation}
-                         disabled={mode === "view"}
+                        disabled={mode === "view"}
                         onChange={handleInputChange}
                         className="border border-[#C4C4C4] rounded-md px-3 py-2 focus:outline-none focus:ring-1 focus:ring-blue-500 w-[162px]"
                       >
                         <option value="" disabled>Select Designation</option>
-                        <option value="cashier">Cashier</option>
-                        <option value="branch manager">Branch Manager</option>
-                        <option value="executive">Executive</option>
-                        <option value="administrator">Administrator</option>
+                        {designations.map((d) => (
+                          <option key={d.id} value={d.designation}>
+                            {d.designation}
+                          </option>
+                        ))}
                       </select>
                     </div>
-                   
+
                   </div>
 
                   {/* Role, Password, Fax */}
                   <div className="flex gap-2">
                     <div className="flex flex-col gap-1">
-      <label className="text-gray-700 font-medium">Assign Role*</label>
-     <select
-  name="assign_role"
-  value={formData.assign_role_id}  // ✅ use role_id as value
-  onChange={handleInputChange}
-  disabled={mode === "view"}
-  className="border border-[#C4C4C4] rounded-md px-3 py-2 focus:outline-none focus:ring-1 focus:ring-blue-500 w-[174px]"
->
-  <option value="" disabled>
-    Select Role
-  </option>
-  {roles.map((role) => (
-    <option key={role.id} value={role.id}>
-      {role.role_name}
-    </option>
-  ))}
-</select>
-    </div>
+                      <label className="text-gray-700 font-medium">Assign Role*</label>
+                      <select
+                        name="assign_role"
+                        value={formData.assign_role_id}  // ✅ use role_id as value
+                        onChange={handleInputChange}
+                        disabled={mode === "view"}
+                        className="border border-[#C4C4C4] rounded-md px-3 py-2 focus:outline-none focus:ring-1 focus:ring-blue-500 w-[174px]"
+                      >
+                        <option value="" disabled>
+                          Select Role
+                        </option>
+                        {roles.map((role) => (
+                          <option key={role.id} value={role.id}>
+                            {role.role_name}
+                          </option>
+                        ))}
+                      </select>
+                    </div>
                     <div className="flex flex-col gap-1">
                       <label className="text-gray-700 font-medium">Password*</label>
                       <input
                         type="password"
                         name="password"
                         value={formData.password}
-                         disabled={mode === "view"}
+                        disabled={mode === "view"}
                         onChange={handleInputChange}
                         placeholder="Password"
                         className="border border-[#C4C4C4] rounded-md px-3 py-2 focus:outline-none focus:ring-1 focus:ring-blue-500 w-[220px]"
@@ -868,7 +888,7 @@ const handleInputChange = (e) => {
                       <input
                         type="text"
                         name="fax"
-                         disabled={mode === "view"}
+                        disabled={mode === "view"}
                         value={formData.fax}
                         onChange={handleInputChange}
                         placeholder="Fax"
@@ -882,175 +902,175 @@ const handleInputChange = (e) => {
                 <div className=" p-4">
                   <div>
                     <div className="flex justify-center">
-  {mode === "view" ? (
-    // 🟦 View mode: show saved image or default
-    formData.emp_image ? (
-      <img
-        src={formData.emp_image}
-        alt="Employee Profile"
-        className="w-[78px] h-[78px] rounded-lg object-cover border border-gray-300"
-      />
-    ) : (
-      <img
-        src={profileempty}
-        alt="Default Profile"
-        className="w-[78px] h-[78px]"
-      />
-    )
-  ) : mode === "edit" ? (
-    // 🟨 Edit mode: show new uploaded preview or existing image
-    profileImage ? (
-      <img
-        src={URL.createObjectURL(profileImage)}
-        alt="Profile Preview"
-        className="w-[78px] h-[78px] rounded-lg object-cover border border-gray-300"
-      />
-    ) : formData.emp_image ? (
-      <img
-        src={formData.emp_image}
-        alt="Existing Employee Profile"
-        className="w-[78px] h-[78px] rounded-lg object-cover border border-gray-300"
-      />
-    ) : (
-      <img
-        src={profileempty}
-        alt="Default Profile"
-        className="w-[78px] h-[78px]"
-      />
-    )
-  ) : (
-    // 🟩 Add mode: show uploaded preview or default
-    profileImage ? (
-      <img
-        src={URL.createObjectURL(profileImage)}
-        alt="Profile Preview"
-        className="w-[78px] h-[78px] rounded-lg object-cover border border-gray-300"
-      />
-    ) : (
-      <img
-        src={profileempty}
-        alt="Default Profile"
-        className="w-[78px] h-[78px]"
-      />
-    )
-  )}
-</div>
+                      {mode === "view" ? (
+                        // 🟦 View mode: show saved image or default
+                        formData.emp_image ? (
+                          <img
+                            src={formData.emp_image}
+                            alt="Employee Profile"
+                            className="w-[78px] h-[78px] rounded-lg object-cover border border-gray-300"
+                          />
+                        ) : (
+                          <img
+                            src={profileempty}
+                            alt="Default Profile"
+                            className="w-[78px] h-[78px]"
+                          />
+                        )
+                      ) : mode === "edit" ? (
+                        // 🟨 Edit mode: show new uploaded preview or existing image
+                        profileImage ? (
+                          <img
+                            src={URL.createObjectURL(profileImage)}
+                            alt="Profile Preview"
+                            className="w-[78px] h-[78px] rounded-lg object-cover border border-gray-300"
+                          />
+                        ) : formData.emp_image ? (
+                          <img
+                            src={formData.emp_image}
+                            alt="Existing Employee Profile"
+                            className="w-[78px] h-[78px] rounded-lg object-cover border border-gray-300"
+                          />
+                        ) : (
+                          <img
+                            src={profileempty}
+                            alt="Default Profile"
+                            className="w-[78px] h-[78px]"
+                          />
+                        )
+                      ) : (
+                        // 🟩 Add mode: show uploaded preview or default
+                        profileImage ? (
+                          <img
+                            src={URL.createObjectURL(profileImage)}
+                            alt="Profile Preview"
+                            className="w-[78px] h-[78px] rounded-lg object-cover border border-gray-300"
+                          />
+                        ) : (
+                          <img
+                            src={profileempty}
+                            alt="Default Profile"
+                            className="w-[78px] h-[78px]"
+                          />
+                        )
+                      )}
+                    </div>
 
                     <div className="flex flex-col p-5">
-                       <div className="flex  mt-2 mb-2">
-                      <label className="font-roboto font-bold text-[16px] leading-[100%] tracking-[0.03em] text-center">
-                        Upload Customer Profile
-                      </label>
-                    </div>
+                      <div className="flex  mt-2 mb-2">
+                        <label className="font-roboto font-bold text-[16px] leading-[100%] tracking-[0.03em] text-center">
+                          Upload Customer Profile
+                        </label>
+                      </div>
 
-                   <div className="flex w-[200px] border border-gray-400 rounded-[10px] overflow-hidden mt-3 ">
-  <label
-    htmlFor="profileImage"
-    className="bg-[#D9D9D9] px-6 py-2 text-sm text-black font-semibold cursor-pointer hover:bg-gray-300 transition-all duration-200"
-  >
-    Choose File
-  </label>
+                      <div className="flex w-[200px] border border-gray-400 rounded-[10px] overflow-hidden mt-3 ">
+                        <label
+                          htmlFor="profileImage"
+                          className="bg-[#D9D9D9] px-6 py-2 text-sm text-black font-semibold cursor-pointer hover:bg-gray-300 transition-all duration-200"
+                        >
+                          Choose File
+                        </label>
 
-  <input
-    id="profileImage"
+                        <input
+                          id="profileImage"
                           type="file"
-                           disabled={mode === "view"}
-    className="hidden"
-    onChange={(e) => handleFileChange(e, setProfileImage)}
-  />
+                          disabled={mode === "view"}
+                          className="hidden"
+                          onChange={(e) => handleFileChange(e, setProfileImage)}
+                        />
 
-  <span className="flex-1 px-4 py-2 text-gray-500 text-sm truncate">
-    {formData.emp_image || "Upload Customer Profile"}
-  </span>
-</div>
+                        <span className="flex-1 px-4 py-2 text-gray-500 text-sm truncate">
+                          {formData.emp_image || "Upload Customer Profile"}
+                        </span>
+                      </div>
 
                     </div>
-                   
+
 
                     {/* <h1 className="text-[14px] font-medium ">Add Proof</h1> */}
                     <h1 className="text-[14px] font-medium">Address Proof</h1>
 
-<select
-  disabled={mode === "view"}
-  value={formData.addressProfiletype}
-  onChange={(e) => setFormData({ ...formData, addressProfiletype: e.target.value })}
-  className="border border-gray-400 rounded-[10px] px-3 py-2 w-[300px] mt-1 bg-white"
->
-  <option value="">Select Address Proof</option>
-  {addrProofList.map((item) => (
-    <option key={item.id} value={item.proof_type}>
-      {item.proof_type}
-    </option>
-  ))}
-</select>
-                  
+                    <select
+                      disabled={mode === "view"}
+                      value={formData.addressProfiletype}
+                      onChange={(e) => setFormData({ ...formData, addressProfiletype: e.target.value })}
+                      className="border border-gray-400 rounded-[10px] px-3 py-2 w-[300px] mt-1 bg-white"
+                    >
+                      <option value="">Select Address Proof</option>
+                      {addrProofList.map((item) => (
+                        <option key={item.id} value={item.proof_type}>
+                          {item.proof_type}
+                        </option>
+                      ))}
+                    </select>
+
                     <div className="flex  border border-gray-400 rounded-[10px] overflow-hidden w-[300px] mt-1">
-  <label
-    htmlFor="addressProof"
-    className="bg-[#D9D9D9] px-6 py-2 text-sm text-black font-semibold cursor-pointer hover:bg-gray-300 transition-all duration-200 "
-  >
-    Choose File
-  </label>
+                      <label
+                        htmlFor="addressProof"
+                        className="bg-[#D9D9D9] px-6 py-2 text-sm text-black font-semibold cursor-pointer hover:bg-gray-300 transition-all duration-200 "
+                      >
+                        Choose File
+                      </label>
 
-  <input
-    id="addressProof"
+                      <input
+                        id="addressProof"
                         type="file"
-                         disabled={mode === "view"}
-    className="hidden"
-    onChange={(e) => handleFileChangeForAddProof(e, setAddressProof)}
-  />
+                        disabled={mode === "view"}
+                        className="hidden"
+                        onChange={(e) => handleFileChangeForAddProof(e, setAddressProof)}
+                      />
 
-  <span className="flex-1 px-4 py-2 text-gray-500 text-sm truncate">
-     {formData.emp_add_prof || "No file chosen"}
-  </span>
-</div>
-                  
-<h1 className="text-[14px] font-medium mt-3">ID Proof</h1>
-<select
-  disabled={mode === "view"}
-  value={formData.IdProoftype}
-  onChange={(e) => setFormData({ ...formData, IdProoftype: e.target.value })}
-  className="border border-gray-400 rounded-[10px] px-3 py-2 w-[300px] mt-1 bg-white"
->
-  <option value="">Select ID Proof</option>
-  {idProofList.map((item) => (
-    <option key={item.id} value={item.proof_type}>
-      {item.proof_type}
-    </option>
-  ))}
-</select>
+                      <span className="flex-1 px-4 py-2 text-gray-500 text-sm truncate">
+                        {formData.emp_add_prof || "No file chosen"}
+                      </span>
+                    </div>
 
-                      <div className="flex  border border-gray-400 rounded-[10px] overflow-hidden w-[300px] mt-1">
-  <label
-    htmlFor="idProof"
-    className="bg-[#D9D9D9] px-6 py-2 text-sm text-black font-semibold cursor-pointer hover:bg-gray-300 transition-all duration-200 "
-  >
-    Choose File
-  </label>
+                    <h1 className="text-[14px] font-medium mt-3">ID Proof</h1>
+                    <select
+                      disabled={mode === "view"}
+                      value={formData.IdProoftype}
+                      onChange={(e) => setFormData({ ...formData, IdProoftype: e.target.value })}
+                      className="border border-gray-400 rounded-[10px] px-3 py-2 w-[300px] mt-1 bg-white"
+                    >
+                      <option value="">Select ID Proof</option>
+                      {idProofList.map((item) => (
+                        <option key={item.id} value={item.proof_type}>
+                          {item.proof_type}
+                        </option>
+                      ))}
+                    </select>
 
-  <input
+                    <div className="flex  border border-gray-400 rounded-[10px] overflow-hidden w-[300px] mt-1">
+                      <label
+                        htmlFor="idProof"
+                        className="bg-[#D9D9D9] px-6 py-2 text-sm text-black font-semibold cursor-pointer hover:bg-gray-300 transition-all duration-200 "
+                      >
+                        Choose File
+                      </label>
+
+                      <input
                         id="idProof"
-                         disabled={mode === "view"}
-    type="file"
-    className="hidden"
-    onChange={(e) => handleFileChangeForIdProof(e, setIdProof)}
-  />
+                        disabled={mode === "view"}
+                        type="file"
+                        className="hidden"
+                        onChange={(e) => handleFileChangeForIdProof(e, setIdProof)}
+                      />
 
-  <span className="flex-1 px-4 py-2 text-gray-500 text-sm truncate">
-      {formData.emp_id_prof || "No file chosen"}
-  </span>
-</div>
+                      <span className="flex-1 px-4 py-2 text-gray-500 text-sm truncate">
+                        {formData.emp_id_prof || "No file chosen"}
+                      </span>
+                    </div>
 
                     {mode === "edit" && (
-  <div className="mt-4 text-sm w-fit flex justify-end">
-    <button
-      onClick={() => setIsDocumentHistory(true)}
-      className="bg-green-500 px-2 py-1 text-white rounded-lg hover:bg-green-600"
-    >
-      View Document History
-    </button>
-  </div>
-)}
+                      <div className="mt-4 text-sm w-fit flex justify-end">
+                        <button
+                          onClick={() => setIsDocumentHistory(true)}
+                          className="bg-green-500 px-2 py-1 text-white rounded-lg hover:bg-green-600"
+                        >
+                          View Document History
+                        </button>
+                      </div>
+                    )}
 
                   </div>
                 </div>
@@ -1069,25 +1089,25 @@ const handleInputChange = (e) => {
                   Is Active
                 </label>
                 <div className="flex gap-3">
-  {mode !== "view" && (
-  <button
-    className="bg-[#0A2478] text-white w-[92px] h-[32px] rounded hover:bg-[#081c5b]"
-    onClick={mode === "edit" ? handleUpdate : handleSave}
-  >
-    {mode === "edit" ? "Update" : "Save"}
-  </button>
-)}
-  <button
-  className="bg-[#C1121F] text-white w-[92px] h-[32px] rounded hover:bg-[#a00e18]"
-  onClick={() => {
-    setIsModalOpen(false);
-    setMode("add"); // 🟦 Reset mode to "add" when exiting
-  }}
->
-  Exit
-</button>
+                  {mode !== "view" && (
+                    <button
+                      className="bg-[#0A2478] text-white w-[92px] h-[32px] rounded hover:bg-[#081c5b]"
+                      onClick={mode === "edit" ? handleUpdate : handleSave}
+                    >
+                      {mode === "edit" ? "Update" : "Save"}
+                    </button>
+                  )}
+                  <button
+                    className="bg-[#C1121F] text-white w-[92px] h-[32px] rounded hover:bg-[#a00e18]"
+                    onClick={() => {
+                      setIsModalOpen(false);
+                      setMode("add"); // 🟦 Reset mode to "add" when exiting
+                    }}
+                  >
+                    Exit
+                  </button>
 
-</div>
+                </div>
 
               </div>
             </div>
@@ -1126,7 +1146,7 @@ const handleInputChange = (e) => {
         )
       }
 
-   {isViewDocumentHistory && (
+      {isViewDocumentHistory && (
         <div className="fixed inset-0 flex items-center justify-center z-50 bg-[#0101017A] backdrop-blur-md">
           <div className="bg-white rounded-xl w-[500px] shadow-lg p-6">
             <h2 className="text-lg font-bold text-[#1B2C79] mb-4">
@@ -1221,13 +1241,13 @@ const handleInputChange = (e) => {
                       className={`${index % 2 === 0 ? "bg-gray-50" : "bg-white"} hover:bg-gray-100`}
                     >
                       <td className="px-4 py-2 flex items-center justify-center gap-2">
-  <img
-    src={emp.emp_image}
-    alt={emp.emp_name}
-    className="w-10 h-10 rounded-full object-cover border border-gray-300"
-  />
- 
-</td>
+                        <img
+                          src={emp.emp_image}
+                          alt={emp.emp_name}
+                          className="w-10 h-10 rounded-full object-cover border border-gray-300"
+                        />
+
+                      </td>
 
                       <td className="px-4 py-2">{emp.emp_name}</td>
                       <td className="px-4 py-2">{emp.email}</td>
