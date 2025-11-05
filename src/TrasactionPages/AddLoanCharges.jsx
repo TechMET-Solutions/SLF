@@ -1,7 +1,7 @@
-import React, { useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
-import { IoIosAddCircleOutline, IoIosCloseCircleOutline } from "react-icons/io";
 import axios from "axios";
+import { useEffect, useState } from "react";
+import { IoIosAddCircleOutline, IoIosCloseCircleOutline } from "react-icons/io";
+import { useNavigate } from "react-router-dom";
 
 function AddLoanCharges() {
   const navigate = useNavigate();
@@ -376,9 +376,7 @@ function AddLoanCharges() {
           <div></div>
         </div>
       </div>
-       <h1 className="font-[Source_Sans_3] font-bold text-[24px] text-[#0A2478] mb-4 mt-6 px-30">
-        Charges Details
-      </h1>
+      
 
      
      {/* 🔹 Charges Details */}
@@ -422,7 +420,7 @@ function AddLoanCharges() {
                       <option value="">Select</option>
                       {chargesList.map((ch) => (
                         <option key={ch.id} value={ch.id}>
-                          {ch.description}
+                          {ch.code}
                         </option>
                       ))}
                     </select>

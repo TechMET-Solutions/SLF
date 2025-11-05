@@ -1,11 +1,11 @@
 import axios from "axios";
 import { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { API } from "../api";
 import GroupData from "../assets/Group 124.svg";
 import DeleteData from "../assets/deletimg.png";
 import EyeData from "../assets/eye.svg";
 import { decryptData, encryptData } from "../utils/cryptoHelper";
-import { useNavigate } from "react-router-dom";
 
 const ChargesProfileList = () => {
 
@@ -13,7 +13,7 @@ const ChargesProfileList = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [data, setData] = useState([]);
   const [editingId, setEditingId] = useState(null); // To track which profile is being edited
-
+  const [accountList, setAccountList] = useState([]);
   const [formData, setFormData] = useState({
     code: "",
     description: "",
@@ -26,7 +26,18 @@ const ChargesProfileList = () => {
   useEffect(() => {
     fetchChargeProfiles();
   }, []);
+ useEffect(() => {
+    const fetchAccounts = async () => {
+      try {
+        const res = await axios.get("http://localhost:5000/account-code/get");
+        setAccountList(res.data); // res.data = [ { id, name, ... } ]
+      } catch (err) {
+        console.log("Error fetching account list", err);
+      }
+    };
 
+    fetchAccounts();
+  }, []);
   // ✅ Fetch data
   const fetchChargeProfiles = async () => {
     try {
@@ -172,7 +183,7 @@ const ChargesProfileList = () => {
       {/* Modal */}
       {isModalOpen && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-sm">
-          <div className="bg-white w-[717px] rounded-lg shadow-lg h-[340px] p-10">
+          <div className="bg-white w-[717px] rounded-lg shadow-lg h-[400px] p-10">
             <h2 className="text-[#0A2478] text-[20px] font-semibold font-source mb-4">
               {editingId ? "Update" : "Add"} Charges Profile
             </h2>
@@ -189,6 +200,7 @@ const ChargesProfileList = () => {
                   className="border border-gray-300 rounded w-[280px] h-[38px] px-3"
                 />
               </div>
+            
               <div>
                 <label className="text-[14px]">Description *</label>
                 <input
@@ -209,19 +221,23 @@ const ChargesProfileList = () => {
                   className="border border-gray-300 rounded w-[280px] h-[38px] px-3"
                 />
               </div>
-              <div>
-                <label className="text-[12px] font-medium">Account</label>
-                <select
-                  name="account"
-                  value={formData.account}
-                  onChange={handleChange}
-                  className="border border-gray-300 rounded w-[280px] h-[38px] px-3"
-                >
-                  <option value="">-- Select --</option>
-                  <option value="Bad Loan">Bad Loan</option>
-                  <option value="Good Loan">Good Loan</option>
-                </select>
-              </div>
+             <div>
+      <label className="text-[12px] font-medium">Account</label>
+      <select
+        name="account"
+        value={formData.account}
+        onChange={handleChange}
+        className="border border-gray-300 rounded w-[280px] h-[38px] px-3"
+      >
+        <option value="">-- Select --</option>
+
+        {accountList.map((acc) => (
+          <option key={acc.id} value={acc.name}>
+            {acc.name}
+          </option>
+        ))}
+      </select>
+    </div>
             </div>
 
             <div className="flex justify-center gap-3 m-4">

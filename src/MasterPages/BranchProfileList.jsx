@@ -1,13 +1,13 @@
 import axios from "axios";
 import { useEffect, useState } from "react";
+import { FiEdit, FiEye } from "react-icons/fi";
+import { useNavigate } from "react-router-dom";
 import { API } from "../api";
 import { fetchBranchesApi, updateBranchApi, updateBranchStatusApi } from "../API/Master/Master_Profile/Branch_Details";
 import Loader from "../Component/Loader";
+import Pagination from "../Component/Pagination";
 import { encryptData } from "../utils/cryptoHelper";
 import { formatIndianDate } from "../utils/Helpers";
-import { FiEdit, FiEye, FiTrash2 } from "react-icons/fi";
-import Pagination from "../Component/Pagination";
-import { useNavigate } from "react-router-dom";
 
 const BranchProfileList = () => {
 
@@ -20,7 +20,7 @@ const BranchProfileList = () => {
     branch_name: "",
     print_name: "",
     address_line1: "",
-    address_line3: "",
+    // address_line3: "",
     mobile_no: "",
     lead_person: "",
     is_main: false,
@@ -346,7 +346,7 @@ const BranchProfileList = () => {
                   />
                 </div>
 
-                <div>
+                {/* <div>
                   <label className="text-[14px]">Address 3 *</label>
                   <input
                     type="text"
@@ -356,7 +356,7 @@ const BranchProfileList = () => {
                     placeholder="Address Line 3"
                     className="border border-gray-300 rounded px-3 py-2 mt-1 w-full"
                   />
-                </div>
+                </div> */}
 
                 <div>
                   <label className="text-[14px]">Mobile No. *</label>
