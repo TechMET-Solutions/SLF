@@ -1,14 +1,4 @@
-// import React from 'react'
 
-// const CustProfile = () => {
-//   return (
-//     <div>
-
-//     </div>
-//   )
-// }
-
-// export default CustProfile
 import JoditEditor from "jodit-react";
 import { useEffect, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
@@ -488,7 +478,7 @@ useEffect(() => {
 
                   <td className="px-4 py-2">{row.id}</td>
                   <td className="px-4 py-2">{row.firstName}</td>
-                  <td className="px-4 py-2">{row.middleName}</td>
+                  <td className="px-4 py-2">{row.middleNam}</td>
                   <td className="px-4 py-2">{row.lastName}</td>
                   <td className="px-4 py-2">{row.Permanent_City}</td>
                   <td className="px-4 py-2">{row.mobile}</td>
@@ -521,17 +511,17 @@ useEffect(() => {
         className="w-[17px] h-[17px] bg-[#6D5300] rounded-[2.31px] flex items-center justify-center cursor-pointer"
         onClick={() => handleOpenRemark(row)} // pass full row object
       >
-        <img src={msg} alt="action" className="w-[12px] h-[12px]" />
+        <img src={msg} alt="action" className="w-[12px] h-[12px]" title="Remark" />
       </div>
 
                       <div
                 className="w-[17px] h-[17px] bg-[#56A869] rounded-[2.31px] flex items-center justify-center cursor-pointer"
                 onClick={() => handleNavigateToProfile(row)}
               >
-                <img src={GroupData} alt="action" className="w-[12px] h-[12px]" />
+                <img src={GroupData} alt="action" className="w-[12px] h-[12px]" title="Edit"  />
               </div>
                       <div className="w-[17px] h-[17px] bg-[#83090B] rounded-[2.31px] flex items-center justify-center">
-                        <img src={print} alt="action" className="w-[12px] h-[12px]" />
+                        <img src={print} alt="action" className="w-[12px] h-[12px]"  title="Print" />
                       </div>
                     </div>
                   </td>

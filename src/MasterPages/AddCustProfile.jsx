@@ -520,7 +520,7 @@ const addBankDetails = async (customerId) => {
               
 
               <div className="flex flex-col">
-                <label className="text-[14px] font-medium">PAN No.</label>
+                <label className="text-[14px] font-medium">PAN Number <span className="text-red-500">*</span></label>
                 <div className="flex items-center mt-1 w-[220px]">
                   <div className="relative flex-1">
                     <input
@@ -654,7 +654,7 @@ const addBankDetails = async (customerId) => {
                 </label>
                 <div className="flex items-center mt-1 w-[220px]">
                   <input
-                    type="number"
+                    type="text"
                     name="mobile"
                     value={formData.mobile}
                     onChange={handleChange}
@@ -694,7 +694,7 @@ const addBankDetails = async (customerId) => {
                   Alternate Mobile No
                 </label>
                 <input
-                  type="number"
+                  type="text"
                   name="altMobile"
                   value={formData.altMobile}
                   onChange={handleChange}
@@ -739,7 +739,7 @@ const addBankDetails = async (customerId) => {
 
             <div className="flex items-end gap-4 w-full mt-5">
               <div className="flex flex-col">
-                <label className="text-[14px] font-medium">Marital</label>
+                <label className="text-[14px] font-medium">Marital Status</label>
                 <select
                   name="marital"
                   value={formData.marital}
@@ -822,7 +822,7 @@ const addBankDetails = async (customerId) => {
                   name="occupation"
                   value={formData.occupation}
                   onChange={handleChange}
-                  placeholder="Employee."
+                  placeholder="Eg.Employee."
                   className="border border-gray-300 rounded px-3 py-2 mt-1 w-[158px] bg-white"
                 />
               </div>
@@ -862,7 +862,7 @@ const addBankDetails = async (customerId) => {
                   name="firstName"
                   value={formData.firstName}
                   onChange={handleChange}
-                  placeholder="Customer First Name"
+                  placeholder="First Name"
                   className="border border-gray-300 rounded px-3 py-2 mt-1 w-[148px] bg-white"
                 />
               </div>
@@ -874,7 +874,7 @@ const addBankDetails = async (customerId) => {
                   name="middleName"
                   value={formData.middleName}
                   onChange={handleChange}
-                  placeholder="Customer Middle Name"
+                  placeholder="Middle Name"
                   className="border border-gray-300 rounded px-3 py-2 mt-1 w-[148px] bg-white"
                 />
               </div>
@@ -886,7 +886,7 @@ const addBankDetails = async (customerId) => {
                   name="lastName"
                   value={formData.lastName}
                   onChange={handleChange}
-                  placeholder="Customer Last Name"
+                  placeholder="Last Name"
                   className="border border-gray-300 rounded px-3 py-2 mt-1 w-[148px] bg-white"
                 />
               </div>
@@ -931,7 +931,7 @@ const addBankDetails = async (customerId) => {
                   name="fatherLastName"
                   value={formData.fatherLastName}
                   onChange={handleChange}
-                  placeholder="Customer Last Name"
+                  placeholder="Father/Husband's Last Name"
                   className="border border-gray-300 rounded px-3 py-2 mt-1 w-[200px] bg-white"
                 />
               </div>
@@ -946,7 +946,7 @@ const addBankDetails = async (customerId) => {
                   name="landline"
                   value={formData.landline}
                   onChange={handleChange}
-                  placeholder="+91 9658426853"
+                  placeholder="Eg.+91 9658426853"
                   className="border border-gray-300 rounded px-3 py-2 mt-1 w-[180px] bg-white"
                 />
               </div>
@@ -1240,7 +1240,7 @@ const addBankDetails = async (customerId) => {
                   name="Permanent_Resisince"
       value={formData.Permanent_Resisince}
       onChange={handleChange}
-                placeholder="Pincode"
+                placeholder="Eg.10"
                 className="border border-gray-300 px-3 py-2 mt-1 w-[196px] rounded-[8px] bg-white"
               />
             </div>
@@ -1328,7 +1328,7 @@ const addBankDetails = async (customerId) => {
                   name="Permanent_Businessworkingsince"
       value={formData.Permanent_Businessworkingsince}
       onChange={handleChange}
-                placeholder="Enter in year"
+                placeholder="Eg.10"
                 className="border border-gray-300 px-3 py-2 mt-1 w-[196px] rounded-[8px] bg-white"
               />
             </div>
@@ -1552,7 +1552,7 @@ const addBankDetails = async (customerId) => {
                name="Additional_AnyDetails1"
   value={formData.Additional_AnyDetails1}
   onChange={handleChange}
-              placeholder="0000 0000 0000"
+              placeholder="Any Details"
               className="border border-gray-300 px-3 py-2 mt-1 w-[200px] rounded-[8px] bg-white"
             />
           </div>
@@ -1665,7 +1665,7 @@ const addBankDetails = async (customerId) => {
                name="Additional_Reference1"
     value={formData.Additional_Reference1}
     onChange={handleChange}
-              placeholder=""
+              placeholder="Reference"
               className="border border-gray-300 px-3 py-2 mt-1 w-[200px] rounded-[8px] bg-white"
             />
           </div>
@@ -1677,7 +1677,7 @@ const addBankDetails = async (customerId) => {
                name="Additional_Reference2"
     value={formData.Additional_Reference2}
     onChange={handleChange}
-              placeholder=""
+              placeholder="Reference"
               className="border border-gray-300 px-3 py-2 mt-1 w-[200px] rounded-[8px] bg-white"
             />
           </div>
@@ -1718,7 +1718,7 @@ const addBankDetails = async (customerId) => {
                 name="Nominee_Relation"
     value={formData.Nominee_Relation}
     onChange={handleChange}
-                placeholder="Pincode"
+                placeholder="Relation"
                 className="border border-gray-300 px-3 py-2 mt-1 w-[90px] rounded-[8px] bg-white"
               />
             </div>
@@ -1735,7 +1735,7 @@ const addBankDetails = async (customerId) => {
                  name="Nominee_Address"
     value={formData.Nominee_Address}
     onChange={handleChange}
-                placeholder="Pincode"
+                placeholder="Address"
                 className="border border-gray-300 px-3 py-2 mt-1 w-[300px] rounded-[8px] bg-white"
               />
             </div>

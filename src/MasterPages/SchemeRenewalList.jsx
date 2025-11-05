@@ -362,7 +362,8 @@ useEffect(() => {
                                        
                                          <div
                                            className="w-5 h-5 bg-[#56A869] flex items-center justify-center rounded-[2px]"
-                                           onClick={() => navigate("/Add-Scheme-Details-Listform", { state: { type: "edit" ,data : row } })}
+                                      onClick={() => navigate("/Add-Scheme-Details-Listform", { state: { type: "edit", data: row } })}
+                                      title="Edit"
                                          >
                                            <img
                                              src={GroupData}

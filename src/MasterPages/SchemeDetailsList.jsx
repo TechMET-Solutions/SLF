@@ -178,26 +178,29 @@ const SchemeDetailsList = () => {
                     <div className="flex items-center gap-2">
 
                       {/* View button */}
-                      <div
-                        className="w-5 h-5 bg-[#646AD9] flex items-center justify-center rounded-[2px]"
-                        onClick={() => navigate("/Add-Scheme-Details-Listform", { state: { type: "view", data: row } })}
-                      >
-                        <img
-                          src={eyeIcon}
-                          alt="eye"
-                          className="w-3.5 h-2.5"
-                        />
-                      </div>
+                      
 
                       {/* Edit button */}
                       <div
                         className="w-5 h-5 bg-[#56A869] flex items-center justify-center rounded-[2px]"
                         onClick={() => navigate("/Add-Scheme-Details-Listform", { state: { type: "edit", data: row } })}
+                        title="Edit"
                       >
                         <img
                           src={GroupData}
                           alt="group"
                           className="w-3.5 h-3.5"
+                        />
+                      </div>
+                      <div
+                        className="w-5 h-5 bg-[#646AD9] flex items-center justify-center rounded-[2px]"
+                        onClick={() => navigate("/Add-Scheme-Details-Listform", { state: { type: "view", data: row } })}
+                         title="View"
+                      >
+                        <img
+                          src={eyeIcon}
+                          alt="eye"
+                          className="w-3.5 h-2.5"
                         />
                       </div>
 

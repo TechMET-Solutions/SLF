@@ -332,12 +332,14 @@ const Area = () => {
                         <button
                           className="bg-green-500 p-1.5 text-white rounded cursor-pointer"
                           onClick={() => handleOpenModal(row)}
+                          title="Edit"
                         >
                           <FiEdit className="text-white text-sm"/>
                         </button>
                         <button
                           className="bg-red-600 p-1.5 text-white rounded cursor-pointer"
                           onClick={() => handleDeleteClick(row.id)}
+                          title="Delete"
                         >
                           <FiTrash2 className="text-white text-sm"/>
                         </button>

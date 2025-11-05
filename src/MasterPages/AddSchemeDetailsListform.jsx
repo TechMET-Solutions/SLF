@@ -170,11 +170,32 @@ const AddSchemeDetailsListform = () => {
   console.log(interestRates, "interestRates")
   const [errors, setErrors] = useState({});
 
-  const handleInputChange = (e) => {
-    const { name, value } = e.target;
-    setFormData((prev) => ({ ...prev, [name]: value }));
-    if (errors[name]) setErrors((prev) => ({ ...prev, [name]: false }));
-  };
+  // const handleInputChange = (e) => {
+  //   const { name, value } = e.target;
+  //   setFormData((prev) => ({ ...prev, [name]: value }));
+  //   if (errors[name]) setErrors((prev) => ({ ...prev, [name]: false }));
+  // };
+const handleInputChange = (e) => {
+  const { name, value } = e.target;
+
+  // when calcBasisOn changes – auto update paymentBasisOn
+  if (name === "calcBasisOn") {
+    setFormData(prev => ({
+      ...prev,
+      calcBasisOn: value,
+      paymentBasisOn: value === "Daily" ? "Interest" : "EMI",
+    }));
+
+    if (errors[name]) setErrors(prev => ({ ...prev, [name]: false }));
+
+    return; // stop here (we already set)
+  }
+
+  // normal update
+  setFormData((prev) => ({ ...prev, [name]: value }));
+
+  if (errors[name]) setErrors((prev) => ({ ...prev, [name]: false }));
+};
 
 
   const onchange = (id, field, value) => {
@@ -336,31 +357,34 @@ const AddSchemeDetailsListform = () => {
 
           {/* Applicable From */}
           <div className="flex flex-col">
-            <label className="text-[14px] font-medium">
-              Applicable from
-              <span className="text-red-500">*</span>
-            </label>
-            <input
-              type="date"
-              name="applicableFrom"
-              value={formData.applicableFrom}
-              onChange={handleInputChange}
-              className={`border border-gray-300 rounded px-3 py-2 mt-1 w-[180px] bg-white ${errors.applicableFrom ? "border-red-500" : ""
-                }`}
-            />
-          </div>
+  <label className="text-[14px] font-medium">
+    Applicable From
+    <span className="text-red-500">*</span>
+  </label>
+  <input
+    type="date"
+    name="applicableFrom"
+    value={formData.applicableFrom}
+    onChange={handleInputChange}
+    min={new Date().toISOString().split("T")[0]} // restrict to today or later
+    className={`border border-gray-300 rounded px-3 py-2 mt-1 w-[180px] bg-white ${
+      errors.applicableFrom ? "border-red-500" : ""
+    }`}
+  />
+</div>
 
-          {/* Applicable To */}
-          <div className="flex flex-col">
-            <label className="text-[14px] font-medium">Applicable To</label>
-            <input
-              type="date"
-              name="applicableTo"
-              value={formData.applicableTo}
-              onChange={handleInputChange}
-              className="border border-gray-300 rounded px-3 py-2 mt-1 w-[180px] bg-white"
-            />
-          </div>
+<div className="flex flex-col">
+  <label className="text-[14px] font-medium">Applicable To</label>
+  <input
+    type="date"
+    name="applicableTo"
+    value={formData.applicableTo}
+    onChange={handleInputChange}
+    min={formData.applicableFrom || new Date().toISOString().split("T")[0]} // always after 'Applicable From'
+    className="border border-gray-300 rounded px-3 py-2 mt-1 w-[180px] bg-white"
+  />
+</div>
+
 
           {/* Calculation Basis (ALWAYS VISIBLE) */}
           <div className="flex flex-col">
@@ -400,22 +424,25 @@ const AddSchemeDetailsListform = () => {
               </div>
             </div>
           </div>
-
-          {/* Add Day Fiels */}
-          {/* {formData.calcBasisOn === "Daily" && (
-            <div className="flex flex-col">
-              <label className="text-[14px] font-medium">Add 1 Day</label>
-              <select
-                name="addOneDay"
-                value={formData.addOneDay || "No"}
-                onChange={handleInputChange}
-                className="border border-gray-300 rounded px-3 py-2 mt-1 bg-white"
-              >
-                <option value="No">No</option>
-                <option value="Yes">Yes</option>
-              </select>
-            </div>
-          )} */}
+          {
+            isDailyBasis && (
+              <div className="flex flex-col">
+            <label className="text-[14px] font-medium">Add 1 Day*</label>
+            <select
+              name="addOneDay"
+              value={formData.addOneDay}
+              onChange={handleInputChange}
+              className="border border-gray-300 rounded px-3 py-2 mt-1 w-[111px] bg-white"
+            >
+               <option value="">Select</option>
+              <option value="Yes">Yes</option>
+              <option value="No">No</option>
+            </select>
+          </div>
+            )
+          }
+ 
+         
 
 
         </div>
@@ -460,8 +487,8 @@ const AddSchemeDetailsListform = () => {
             </div>
           </div>
 
-
-          <div className="flex flex-col">
+          {isDailyBasis && (
+ <div className="flex flex-col">
             <label className="text-[14px] font-medium">Interest in Advance</label>
             <select
               name="interestInAdvance"
@@ -473,6 +500,9 @@ const AddSchemeDetailsListform = () => {
               <option value="No">No</option>
             </select>
           </div>
+
+          )}
+         
 
           {/* Pre Closer Min Days (NOW ALWAYS VISIBLE) */}
           <div className="flex flex-col">
@@ -499,6 +529,7 @@ const AddSchemeDetailsListform = () => {
               onChange={handleInputChange}
               className="border rounded-md px-2 py-1 w-[111px] h-[38px] text-sm mt-1"
             >
+              <option value="">Select</option>
               <option value="Amount">Amount</option>
               <option value="Percent">Percent</option>
             </select>
@@ -518,39 +549,35 @@ const AddSchemeDetailsListform = () => {
           </div>
 
           {/* Min Loan Amount */}
-          <div className="flex flex-col">
-            <label className="text-[14px] font-medium">
-              Min Loan Amount
-            </label>
-            <input
-              type="number"
-              name="minLoanAmount"
-              value={formData.minLoanAmount || ""}
-              onChange={handleInputChange}
-              className="border border-gray-300 rounded px-3 py-2 mt-1 w-[116px] bg-white"
-            />
-          </div>
+         
 
           {/* Payment Basis On */}
           <div className="flex flex-col">
-            <label className="text-xs font-medium mb-1">
-              Payment Basis On <span className="text-red-600">*</span>
-            </label>
+  <label className="text-xs font-medium mb-1">
+    Payment Basis On <span className="text-red-600">*</span>
+  </label>
+
+ <input
+  type="text"
+  name="paymentBasisOn"
+  value={formData.calcBasisOn === "Daily" ? "Interest" :
+         formData.calcBasisOn === "Monthly" ? "EMI" : ""}
+  readOnly
+  className="border border-gray-300 rounded px-3 py-2 w-[113px] bg-gray-100 text-sm"
+/>
+
+</div>
+
+           <div className="flex flex-col">
+            <label className="text-[14px] font-medium">For party Type*</label>
             <select
-              name="paymentBasisOn"
-              value={
-                formData.paymentBasisOn ||
-                (formData.calcBasisOn === "Monthly"
-                  ? "EMI"
-                  : formData.calcBasisOn === "Daily"
-                    ? "Interest"
-                    : "")
-              }
+              name="partyType"
+              value={formData.partyType}
               onChange={handleInputChange}
-              className="border border-gray-300 rounded px-3 py-2 w-[113px] bg-white text-sm"
+              className="border border-gray-300 rounded px-3 py-2 mt-1 w-[111px] bg-white"
             >
-              <option value="Interest" disabled={formData.calcBasisOn === "Daily"}>Interest</option>
-              <option value="EMI" disabled={formData.calcBasisOn === "Monthly"}>EMI</option>
+              <option value="individual">Individual</option>
+              <option value="cooperative">Corporate</option>
             </select>
           </div>
 
@@ -591,6 +618,18 @@ const AddSchemeDetailsListform = () => {
             />
           </div>
 
+ <div className="flex flex-col">
+            <label className="text-[14px] font-medium">
+              Min Loan Amount
+            </label>
+            <input
+              type="number"
+              name="minLoanAmount"
+              value={formData.minLoanAmount || ""}
+              onChange={handleInputChange}
+              className="border border-gray-300 rounded px-3 py-2 mt-1 w-[116px] bg-white"
+            />
+          </div>
 
           <div className="flex flex-col">
             <label className="text-[14px] font-medium">Max Loan Amount*</label>
@@ -604,7 +643,7 @@ const AddSchemeDetailsListform = () => {
           </div>
 
           {/* For party Type */}
-          <div className="flex flex-col">
+          {/* <div className="flex flex-col">
             <label className="text-[14px] font-medium">For party Type*</label>
             <select
               name="partyType"
@@ -615,7 +654,7 @@ const AddSchemeDetailsListform = () => {
               <option value="individual">Individual</option>
               <option value="cooperative">Corporate</option>
             </select>
-          </div>
+          </div> */}
 
           {/* Administrative Charges */}
           <div className="flex flex-col">
@@ -756,18 +795,36 @@ const AddSchemeDetailsListform = () => {
                             ? "months"
                             : formData.calcBasisOn === "Daily"
                               ? "days"
-                              : "years")
+                              : "")
                         }
                         onChange={(e) => onchange(rate.id, "type", e.target.value)}
                         className="border border-gray-300 rounded px-2 py-1 w-28"
                       >
-                        <option value="days" disabled={formData.calcBasisOn === "Monthly"}>
-                          Days
-                        </option>
-                        <option value="months" disabled={formData.calcBasisOn === "Daily"}>
-                          Months
-                        </option>
-                        <option value="years">Years</option>
+                      <option
+  value="days"
+  disabled={formData.calcBasisOn === "Monthly"}
+  className={
+    formData.calcBasisOn === "Monthly"
+      ? "opacity-50 cursor-not-allowed"
+      : ""
+  }
+>
+  Days
+</option>
+
+<option
+  value="months"
+  disabled={formData.calcBasisOn === "Daily"}
+  className={
+    formData.calcBasisOn === "Daily"
+      ? "opacity-50 cursor-not-allowed"
+      : ""
+  }
+>
+  Months
+</option>
+
+                        {/* <option value="years">Years</option> */}
                       </select>
                     </td>
 

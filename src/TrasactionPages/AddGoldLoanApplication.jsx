@@ -1,9 +1,9 @@
 import axios from "axios";
 import { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import profileempty from "../assets/profileempty.png";
 import timesvg from "../assets/timesvg.svg";
 import PledgeItemList from "./PledgeItemList";
-import { useNavigate } from "react-router-dom";
 
 const AddGoldLoanApplication = () => {
   const [schemes, setSchemes] = useState([]); // store all schemes
@@ -196,7 +196,8 @@ const AddGoldLoanApplication = () => {
     });
 
     // Calculate document charges (2% of loan)
-    const docCharges = (totalValuation * selectedScheme.docChargePercent) / 100;
+    const docCharges =
+  (totalValuation * (selectedScheme?.docChargePercent ?? 0)) / 100;
     const netPayable = totalValuation + docCharges;
 
     // Update all values in formData
@@ -759,7 +760,7 @@ const AddGoldLoanApplication = () => {
             <button
               className="bg-[#0A2478] text-white px-4 py-2 text-sm font-medium rounded-l-md border border-[#0A2478] hover:bg-[#081c5b] transition-all duration-200"
             >
-             {selectedScheme.docChargePercent}
+             {selectedScheme?.docChargePercent || 0 }
             </button>
 
             {/* Input Field */}

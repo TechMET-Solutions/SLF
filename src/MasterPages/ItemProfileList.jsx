@@ -1,13 +1,13 @@
-import { useState, useEffect } from "react";
+import { useEffect, useState } from "react";
+import { FiEdit } from "react-icons/fi";
+import { useNavigate } from "react-router-dom";
 import {
-  fetchItemsApi,
   addItemApi,
+  fetchItemsApi,
   updateItemApi,
   updateItemStatusApi,
 } from "../API/Master/Master_Profile/Item_Details";
 import Pagination from "../Component/Pagination";
-import { FiEdit } from "react-icons/fi";
-import { useNavigate } from "react-router-dom";
 
 const ItemProfileList = () => {
   useEffect(() => {
@@ -27,7 +27,7 @@ const ItemProfileList = () => {
     name: "",
     printName: "",
     remark: "",
-    addedBy: "Admin",
+    addedBy: "",
     status: 1,
   });
 
@@ -71,7 +71,7 @@ const ItemProfileList = () => {
         name: item.name,
         printName: item.print_name || "",
         remark: item.remark || "",
-        addedBy: item.added_by || "Admin",
+        addedBy: item.added_by || "",
         status: item.status,
       });
       setIsEditMode(true);
@@ -82,7 +82,7 @@ const ItemProfileList = () => {
         name: "",
         printName: "",
         remark: "",
-        addedBy: "Admin",
+        addedBy: "",
         status: 1,
       });
       setIsEditMode(false);
@@ -256,7 +256,7 @@ const ItemProfileList = () => {
                 />
               </div>
 
-              <div>
+              {/* <div>
                 <label className="text-[14px] font-medium">Added By</label>
                 <select
                   value={formData.addedBy}
@@ -269,7 +269,7 @@ const ItemProfileList = () => {
                   <option value="Manager">Manager</option>
                   <option value="EMG">EMG</option>
                 </select>
-              </div>
+              </div> */}
 
               <div className="col-span-3">
                 <label className="text-[14px] font-medium">Remark</label>
@@ -368,8 +368,9 @@ const ItemProfileList = () => {
                     </td>
                     <td className="px-4 py-2 text-[#1883EF] cursor-pointer">
                       <button
-                        className="bg-green-500 p-1.5 text-white rounded"
+                        className="bg-green-500 p-1.5 text-white rounded cursor-pointer"
                         onClick={() => handleOpenModal(row)}
+                        title="Edit"
                       >
                         <FiEdit className="text-white text-sm" />
                       </button>

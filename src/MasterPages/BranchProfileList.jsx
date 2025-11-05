@@ -1,13 +1,13 @@
 import axios from "axios";
 import { useEffect, useState } from "react";
+import { FiEdit, FiEye } from "react-icons/fi";
+import { useNavigate } from "react-router-dom";
 import { API } from "../api";
 import { fetchBranchesApi, updateBranchApi, updateBranchStatusApi } from "../API/Master/Master_Profile/Branch_Details";
 import Loader from "../Component/Loader";
-import { encryptData } from "../utils/cryptoHelper";
-import { formatIndianDate } from "../utils/Helpers";
-import { FiEdit, FiEye, FiTrash2 } from "react-icons/fi";
 import Pagination from "../Component/Pagination";
-import { useNavigate } from "react-router-dom";
+import { decryptData, encryptData } from "../utils/cryptoHelper";
+import { formatIndianDate } from "../utils/Helpers";
 
 const BranchProfileList = () => {
 
@@ -32,6 +32,29 @@ const BranchProfileList = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const [totalRecords, setTotalRecords] = useState(0);
   const recordsPerPage = 10;
+const [activeEmployees, setActiveEmployees] = useState([]);
+console.log(activeEmployees,"activeEmployees")
+  useEffect(() => {
+  getActiveEmp();
+}, []);
+
+;
+
+useEffect(() => {
+  getActiveEmp();
+}, []);
+
+ const getActiveEmp = async () => {
+  try {
+    const res = await axios.get(`${API}/Master/getActiveEmployees`);
+    const decrypted = decryptData(res.data.data); // no JSON.parse
+    console.log(decrypted);
+    setActiveEmployees(decrypted);
+  } catch (error) {
+    console.log(error);
+  }
+};
+
   const handleChange = (e) => {
     const { name, value, type, checked } = e.target;
     setBranchData((prev) => ({
@@ -363,18 +386,7 @@ const BranchProfileList = () => {
                   />
                 </div>
 
-                {/* <div>
-                  <label className="text-[14px]">Address 3 *</label>
-                  <input
-                    type="text"
-                    name="address_line3"
-                    value={branchData.address_line3}
-                    onChange={handleChange}
-                    placeholder="Address Line 3"
-                    className="border border-gray-300 rounded px-3 py-2 mt-1 w-full"
-                  />
-                </div> */}
-
+                
                 <div>
                   <label className="text-[14px]">Mobile No. *</label>
                   <input
@@ -386,25 +398,27 @@ const BranchProfileList = () => {
                     className="border border-gray-300 rounded px-3 py-2 mt-1 w-full"
                   />
                 </div>
+<div>
+  <label className="text-[14px]">Lead Person</label>
+  <select
+    name="lead_person"
+    value={branchData.lead_person}
+    onChange={handleChange}
+    className="border border-gray-300 rounded px-3 py-2 mt-1 w-full"
+  >
+    <option value="">Select Lead Person</option>
 
-                <div>
-                  <label className="text-[14px]">Lead Person</label>
-                  <select
-                    name="lead_person"
-                    value={branchData.lead_person}
-                    onChange={handleChange}
-                    className="border border-gray-300 rounded px-3 py-2 mt-1 w-full"
-                  >
-                    <option value="" disabled>
-                      Select Lead Person
-                    </option>
-                    <option value="john">John Doe</option>
-                    <option value="mary">Mary Smith</option>
-                    <option value="alex">Alex Johnson</option>
-                  </select>
-                </div>
+    {activeEmployees.map((emp) => (
+      <option key={emp.id} value={emp.id}>
+        {emp.emp_name}
+      </option>
+    ))}
+  </select>
+</div>
 
-                <div className="flex items-center mt-4 gap-2">
+<div className="flex  justify-center gap-10">
+
+    <div className="flex items-center mt-4 gap-2">
                   <input
                     type="checkbox"
                     name="is_main"
@@ -423,8 +437,10 @@ const BranchProfileList = () => {
                     onChange={handleChange}
                     className="w-4 h-4 accent-blue-900"
                   />
-                  <label className="text-[14px]">Status *</label>
+                  <label className="text-[14px]"> Is Active*</label>
                 </div>
+                  </div>
+              
               </div>
 
              <div className="flex justify-center gap-4 mt-6">
@@ -504,12 +520,13 @@ const BranchProfileList = () => {
                         <button
                           disabled={isViewMode}
                           className="bg-green-500 p-1.5 text-white rounded cursor-pointer"
-                          onClick={() => handleEdit(row)}                        >
+                          onClick={() => handleEdit(row)}
+                        title="Edit">
                           <FiEdit className="text-white text-sm" />
                         </button>
                         <button
                           className="bg-[#646AD9] p-1.5 text-white rounded cursor-pointer"
-                          onClick={() => handleView(row)}                        >
+                          onClick={() => handleView(row)}      title="view"                   >
                           <FiEye className="text-white text-sm" />
                         </button>
                       </div>

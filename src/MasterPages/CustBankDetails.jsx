@@ -297,6 +297,30 @@ const navigate = useNavigate();
               <div className="gap-4">
                 {/* Bank Name / Holder / Account No */}
                 <div className="flex gap-2">
+                   <div>
+                    <label className="text-[14px]">Account No*</label>
+                    <input
+                      name="accountNo"
+                      value={formData.accountNo}
+                      onChange={handleChange}
+                      type="text"
+                      disabled={mode === "view"}
+                      placeholder="Account No"
+                      className="border border-gray-300 rounded w-[238px] h-[38px] p-[10px_14px]"
+                    />
+                  </div>
+<div>
+                    <label className="text-[14px]">IFSC Code*</label>
+                    <input
+                      name="ifsc"
+                      value={formData.ifsc}
+                      onChange={handleChange}
+                      type="text"
+                      disabled={mode === "view"}
+                      placeholder="IFSC Code"
+                      className="border border-gray-300 rounded w-[238px] h-[38px] p-[10px_14px]"
+                    />
+                  </div>
                   <div>
                     <label className="text-[14px]">Bank Name*</label>
                     <input
@@ -310,7 +334,14 @@ const navigate = useNavigate();
                     />
                   </div>
 
-                  <div>
+                 
+
+                 
+                </div>
+
+                {/* IFSC / Address / Cheque */}
+                <div className="flex mt-5 gap-2">
+                   <div>
                     <label className="text-[14px]">Account Holder Name*</label>
                     <input
                       name="customerName"
@@ -322,35 +353,7 @@ const navigate = useNavigate();
                       className="border border-gray-300 rounded w-[300px] h-[38px] p-[10px_14px]"
                     />
                   </div>
-
-                  <div>
-                    <label className="text-[14px]">Account No*</label>
-                    <input
-                      name="accountNo"
-                      value={formData.accountNo}
-                      onChange={handleChange}
-                      type="text"
-                      disabled={mode === "view"}
-                      placeholder="Account No"
-                      className="border border-gray-300 rounded w-[238px] h-[38px] p-[10px_14px]"
-                    />
-                  </div>
-                </div>
-
-                {/* IFSC / Address / Cheque */}
-                <div className="flex mt-5 gap-2">
-                  <div>
-                    <label className="text-[14px]">IFSC Code*</label>
-                    <input
-                      name="ifsc"
-                      value={formData.ifsc}
-                      onChange={handleChange}
-                      type="text"
-                      disabled={mode === "view"}
-                      placeholder="IFSC Code"
-                      className="border border-gray-300 rounded w-[238px] h-[38px] p-[10px_14px]"
-                    />
-                  </div>
+                  
 
                   <div>
                     <label className="text-[14px]">Bank Address</label>
@@ -369,7 +372,7 @@ const navigate = useNavigate();
                   <div>
                     <label className="text-[14px]">Attach Cancel Cheque</label>
                     <div className="flex flex-col mt-1">
-                      <div className="flex items-center border border-gray-300 rounded w-[250px]">
+                      <div className="flex items-center border border-gray-300 rounded w-[230px]">
                         <label
                           htmlFor="uploadFile"
                           className={`${

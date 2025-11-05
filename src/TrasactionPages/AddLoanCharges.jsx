@@ -32,7 +32,7 @@ function AddLoanCharges() {
       netPayable: "",
     },
   ]);
-
+console.log(formData,chargesList,rows)
   // ✅ Fetch active charges from backend
   useEffect(() => {
     const fetchCharges = async () => {

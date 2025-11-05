@@ -13,6 +13,7 @@ const ChargesProfileList = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [data, setData] = useState([]);
   const [editingId, setEditingId] = useState(null); // To track which profile is being edited
+    const [isview, setIsview] = useState(null);
   const [accountList, setAccountList] = useState([]);
   const [formData, setFormData] = useState({
     code: "",
@@ -121,6 +122,54 @@ const ChargesProfileList = () => {
     });
     setIsModalOpen(true);
   };
+   const handleView = (profile) => {
+    setIsview(true);
+    setFormData({
+      code: profile.code,
+      description: profile.description,
+      amount: profile.amount,
+      account: profile.account,
+      isActive: profile.isActive,
+      addedBy: profile.addedBy || "",
+    });
+    setIsModalOpen(true);
+  };
+  const handleDelete = async (profile) => {
+     debugger
+  if (!window.confirm("Are you sure you want to delete this charge profile?")) {
+    return;
+  }
+
+  try {
+    // Prepare encrypted payload
+    const payload = {
+      id: profile.id,
+    };
+    const encryptedPayload = encryptData(JSON.stringify(payload));
+
+    // Call DELETE API
+    const response = await axios.delete("http://localhost:5000/Master/charge-profile/delete", {
+      data: { data: encryptedPayload },
+      headers: {
+        "Content-Type": "application/json",
+      },
+    });
+
+    // Decrypt response
+    const decryptedResponse = decryptData(response.data.data);
+   const result = typeof decryptedResponse === "string" ? JSON.parse(decryptedResponse) : decryptedResponse;
+
+    if (result.message) {
+      // Remove deleted profile from local state
+      // setChargeProfiles((prev) => prev.filter((p) => p.id !== profile.id));
+      alert(result.message);
+      fetchChargeProfiles()
+    }
+  } catch (err) {
+    console.error("Error deleting charge profile:", err);
+    alert("Failed to delete charge profile");
+  }
+};
 
   // ✅ Toggle active state
   const handleToggle = async (id, currentState) => {
@@ -184,9 +233,14 @@ const ChargesProfileList = () => {
       {isModalOpen && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-sm">
           <div className="bg-white w-[717px] rounded-lg shadow-lg h-[400px] p-10">
-            <h2 className="text-[#0A2478] text-[20px] font-semibold font-source mb-4">
-              {editingId ? "Update" : "Add"} Charges Profile
-            </h2>
+           <h2 className="text-[#0A2478] text-[20px] font-semibold font-source mb-4">
+  {isview
+    ? "View Charges Profile"
+    : editingId
+    ? "Update Charges Profile"
+    : "Add Charges Profile"}
+</h2>
+
 
             <div className="grid grid-cols-2 gap-4">
               {/* Form Fields */}
@@ -196,6 +250,7 @@ const ChargesProfileList = () => {
                   type="text"
                   name="code"
                   value={formData.code}
+                   disabled={isview}
                   onChange={handleChange}
                   className="border border-gray-300 rounded w-[280px] h-[38px] px-3"
                 />
@@ -207,6 +262,7 @@ const ChargesProfileList = () => {
                   type="text"
                   name="description"
                   value={formData.description}
+                     disabled={isview}
                   onChange={handleChange}
                   className="border border-gray-300 rounded w-[280px] h-[38px] px-3"
                 />
@@ -217,6 +273,7 @@ const ChargesProfileList = () => {
                   type="text"
                   name="amount"
                   value={formData.amount}
+                     disabled={isview}
                   onChange={handleChange}
                   className="border border-gray-300 rounded w-[280px] h-[38px] px-3"
                 />
@@ -225,7 +282,8 @@ const ChargesProfileList = () => {
       <label className="text-[12px] font-medium">Account</label>
       <select
         name="account"
-        value={formData.account}
+                  value={formData.account}
+                     disabled={isview}
         onChange={handleChange}
         className="border border-gray-300 rounded w-[280px] h-[38px] px-3"
       >
@@ -245,6 +303,7 @@ const ChargesProfileList = () => {
                 type="checkbox"
                 name="isActive"
                 checked={formData.isActive}
+                   disabled={isview}
                 onChange={handleChange}
                 className="w-5 h-5"
               />
@@ -252,18 +311,36 @@ const ChargesProfileList = () => {
             </div>
 
             <div className="flex justify-center gap-3 my-6">
-              <button
+              {
+                !isview && (
+                  <button
                 className="bg-[#0A2478] cursor-pointer text-white w-[92px] h-[30px] rounded"
                 onClick={handleSave}
               >
                 Save
               </button>
-              <button
-                className="bg-[#C1121F] cursor-pointer text-white w-[92px] h-[30px] rounded"
-                onClick={() => setIsModalOpen(false)}
-              >
-                Exit
-              </button>
+                )
+              }
+              
+             <button
+  className="bg-[#C1121F] cursor-pointer text-white w-[92px] h-[30px] rounded"
+  onClick={() => {
+    setIsModalOpen(false);    // close modal
+    setEditingId(null);       // reset edit tracking
+    setIsview(null);          // reset view mode
+    setFormData({             // reset form fields
+      code: "",
+      description: "",
+      amount: "",
+      account: "",
+      isActive: false,
+      addedBy: "",
+    });
+  }}
+>
+  Exit
+</button>
+
             </div>
           </div>
         </div>
@@ -298,16 +375,17 @@ const ChargesProfileList = () => {
                   <td className="px-4 py-2 text-[#1883EF] cursor-pointer">
                     <div className="flex gap-2">
                       <div
-                        className="w-[17px] h-[17px] bg-[#56A869] rounded flex items-center justify-center"
+                        className="w-[20px] h-[20px] bg-[#56A869] rounded flex items-center justify-center p-1"
                         onClick={() => handleEdit(row)}
                       >
-                        <img src={GroupData} alt="edit" className="w-[18px] h-[18px]" />
+                        <img src={GroupData} alt="edit" className="w-[18px] h-[18px]" title="Edit"/>
                       </div>
-                      <div className="w-[17px] h-[17px] bg-[#646AD9] rounded flex items-center justify-center">
-                        <img src={EyeData} alt="view" className="w-[18px] h-[18px]" />
+                      <div className="w-[20px] h-[20px] bg-[#646AD9] rounded flex items-center justify-center p-1" onClick={() => handleView(row)}>
+                        <img src={EyeData} alt="view" className="w-[18px] h-[18px]" title="view"/>
                       </div>
-                      <div className="w-[17px] h-[17px] bg-red-400 rounded flex items-center justify-center">
-                        <img src={DeleteData} alt="delete" className="w-[12px] h-[14px]" />
+                      <div className="w-[20px] h-[20px] bg-red-400 rounded flex items-center justify-center p-1"
+                       onClick={() => handleDelete(row)}>
+                        <img src={DeleteData} alt="delete" className="w-[12px] h-[14px]" title="Delete" />
                       </div>
                     </div>
                   </td>

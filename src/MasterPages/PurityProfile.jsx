@@ -1,21 +1,21 @@
 import { useEffect, useState } from "react";
+import { FiEdit, FiTrash2 } from "react-icons/fi";
+import { useNavigate } from "react-router-dom";
 import {
-  fetchPuritiesApi,
   addPurityApi,
+  deletePurityApi,
+  fetchPuritiesApi,
   updatePurityApi,
   updatePurityStatusApi,
-  deletePurityApi,
 } from "../API/Master/Master_Profile/Purity_Details";
-import { FiEdit, FiTrash2 } from "react-icons/fi";
 import blockimg from "../assets/blockimg.png";
 import Pagination from "../Component/Pagination";
-import { useNavigate } from "react-router-dom";
 
 const PurityProfile = () => {
   useEffect(() => {
     document.title = "SLF | Purity Profile ";
   }, []);
-  const navigate = useNavigate();
+ const navigate = useNavigate();
 
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [deleteModalOpen, setDeleteModalOpen] = useState(false);
@@ -179,8 +179,8 @@ const PurityProfile = () => {
                 Add
               </button>
               <button
-                onClick={() => navigate("/")}
-                className="w-[74px] h-[24px] cursor-pointer  rounded bg-[#C1121F] text-white text-[10px]">
+              onClick={() => navigate("/")}
+              className="w-[74px] h-[24px] cursor-pointer  rounded bg-[#C1121F] text-white text-[10px]">
                 Exit
               </button>
             </div>
@@ -197,7 +197,7 @@ const PurityProfile = () => {
               {isEditMode ? "Edit Purity" : "Add New Purity"}
             </h2>
             <div className="grid grid-cols-2 gap-4">
-              {/* <div>
+              <div>
                 <label className="text-[14px] font-medium">
                   Loan Type <span className="text-red-500">*</span>
                 </label>
@@ -208,20 +208,7 @@ const PurityProfile = () => {
                   onChange={(e) => setFormData({ ...formData, loan_type: e.target.value })}
                   className="border border-gray-300 rounded px-3 py-2 mt-1 w-full focus:outline-none focus:ring-2 focus:ring-[#0A2478]"
                 />
-              </div> */}
-              <div>
-                <label className="text-[14px] font-medium">
-                  Loan Type <span className="text-red-500">*</span>
-                </label>
-                <select
-                  value={formData.loan_type}
-                  onChange={(e) => setFormData({ ...formData, loan_type: e.target.value })}
-                  className="border border-gray-300 rounded px-3 py-2 mt-1 w-full focus:outline-none focus:ring-2 focus:ring-[#0A2478]"
-                >
-                  <option value="Gold">Gold</option>
-                </select>
               </div>
-
               <div>
                 <label className="text-[14px] font-medium">
                   Purity Name <span className="text-red-500">*</span>
@@ -312,54 +299,50 @@ const PurityProfile = () => {
 
       {/* Table */}
       <div className="flex justify-center">
-        <div className="overflow-x-auto mt-5 w-[1290px] h-[500px] ">
-          <table className="w-full border-collapse">
-            <thead className="bg-[#0A2478] text-white text-sm">
-              <tr>
-                <th className="px-4 py-2 text-left border-r border-gray-300 text-[13px]">Purity Name</th>
-                <th className="px-4 py-2 text-left border-r border-gray-300 text-[13px]">Purity Percent</th>
-                <th className="px-4 py-2 text-left border-r border-gray-300 text-[13px]">Product Name</th>
-                <th className="px-4 py-2 text-left border-r border-gray-300 text-[13px]">Added By</th>
-                <th className="px-4 py-2 text-left border-r border-gray-300 text-[13px]">Action</th>
-                <th className="px-4 py-2 text-left border-r border-gray-300 text-[13px]">Active</th>
-              </tr>
-            </thead>
-
-            <tbody className="text-[12px]">
-              {data.length === 0 && !isLoading ? (
+        <div className="overflow-x-auto mt-5 w-[1290px] h-[500px]">
+          {data.length === 0 && !isLoading ? (
+            <div className="flex justify-center items-center h-full">
+              <p className="text-lg text-gray-500">No Data Found</p>
+            </div>
+          ) : (
+            <table className="w-full border-collapse">
+              <thead className="bg-[#0A2478] text-white text-sm">
                 <tr>
-                  <td colSpan="6" className="text-center py-10 text-gray-500">
-                    No Data Found
-                  </td>
+                  <th className="px-4 py-2 text-left border-r border-gray-300 text-[13px]">Purity Name</th>
+                  <th className="px-4 py-2 text-left border-r border-gray-300 text-[13px]">Purity Percent</th>
+                  <th className="px-4 py-2 text-left border-r border-gray-300 text-[13px]">Product Name</th>
+                  <th className="px-4 py-2 text-left border-r border-gray-300 text-[13px]">Added By</th>
+                  <th className="px-4 py-2 text-left border-r border-gray-300 text-[13px]">Action</th>
+                  <th className="px-4 py-2 text-left border-r border-gray-300 text-[13px]">Active</th>
                 </tr>
-              ) : (
-                data.map((row, index) => (
+              </thead>
+              <tbody className="text-[12px]">
+                {data.map((row, index) => (
                   <tr
                     key={index}
-                    className={`${index % 2 === 0 ? "bg-gray-50" : "bg-white"}`}
+                    className={`border-b ${index % 2 === 0 ? "bg-gray-50" : "bg-white"
+                      }`}
                   >
                     <td className="px-4 py-2">{row.purity_name}</td>
                     <td className="px-4 py-2">{row.purity_percent}</td>
                     <td className="px-4 py-2">{row.loan_type}</td>
                     <td className="px-4 py-2">{row.added_by}</td>
-
                     <td className="px-4 py-2 text-center">
                       <div className="flex gap-2 justify-center">
                         <button
                           className="bg-[#3dbd5a] cursor-pointer p-1.5 text-white rounded-sm"
-                          onClick={() => handleOpenModal(row)}
+                          onClick={() => handleOpenModal(row)} title="Edit"
                         >
                           <FiEdit />
                         </button>
                         <button
                           className="bg-[#f51111ec] cursor-pointer p-1.5 text-white rounded-sm"
-                          onClick={() => handleDeleteClick(row.id)}
+                          onClick={() => handleDeleteClick(row.id)} title="Delete"
                         >
                           <FiTrash2 />
                         </button>
                       </div>
                     </td>
-
                     <td className="px-4 py-2 text-[#1883EF] cursor-pointer">
                       <button
                         onClick={() => handleToggleStatus(row)}
@@ -373,13 +356,12 @@ const PurityProfile = () => {
                       </button>
                     </td>
                   </tr>
-                ))
-              )}
-            </tbody>
-          </table>
+                ))}
+              </tbody>
+            </table>
+          )}
         </div>
       </div>
-
 
       <Pagination
         currentPage={currentPage}
