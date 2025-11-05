@@ -587,7 +587,7 @@ const EmployeeProfile = () => {
                             className="border border-[#C4C4C4] border-r-0 rounded-l px-3 py-2 w-full pr-10 focus:outline-none focus:ring-1 focus:ring-blue-500 bg-white"
                           />
 
-                          {/* Hidden file input */}
+                       
                           <input
                             type="file"
                             accept="image/*,.pdf"
@@ -597,7 +597,7 @@ const EmployeeProfile = () => {
                             className="hidden"
                           />
 
-                          {/* Paperclip icon triggers file selection */}
+                         
                           <FaPaperclip
                             className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 cursor-pointer"
                             size={16}
@@ -765,7 +765,11 @@ const EmployeeProfile = () => {
                         id="sameAddress"
                         disabled={mode === "view"}
                         name="sameAddress"
-                        checked={formData.permanent_address === formData.corresponding_address}
+                       checked={
+  formData.permanent_address &&
+  formData.permanent_address === formData.corresponding_address
+}
+
                         onChange={(e) => {
                           if (e.target.checked) {
                             setFormData(prev => ({ ...prev, permanent_address: prev.corresponding_address }));
@@ -1262,19 +1266,20 @@ const EmployeeProfile = () => {
                           <button
                             title="View"
                             onClick={() => handleView(emp)}
-                            className="bg-[#646AD9] p-1.5 rounded text-white hover:bg-[#5057c9]">
+                            className="bg-[#646AD9] p-1.5 rounded text-white hover:bg-[#5057c9] cursor-pointer"
+                          >
                             <FiEye />
                           </button>
                           <button
                             title="Edit"
-                            className="bg-green-500 p-1.5 rounded text-white hover:bg-green-600"
+                            className="bg-green-500 p-1.5 rounded text-white hover:bg-green-600 cursor-pointer"
                             onClick={() => handleEdit(emp)}
                           >
                             <FiEdit />
                           </button>
                           <button
                             title="Delete"
-                            className="bg-red-600 p-1.5 rounded text-white hover:bg-red-700"
+                            className="bg-red-600 p-1.5 rounded text-white hover:bg-red-700 cursor-pointer"
                             onClick={() => handleDeleteClick(emp.id)}
                           >
                             <FiTrash2 title="Delete" />

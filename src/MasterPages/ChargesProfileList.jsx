@@ -307,7 +307,7 @@ const ChargesProfileList = () => {
                 onChange={handleChange}
                 className="w-5 h-5"
               />
-              <label className="text-[12px] font-medium">is Active</label>
+              <label className="text-[14px] font-medium">is Active</label>
             </div>
 
             <div className="flex justify-center gap-3 my-6">

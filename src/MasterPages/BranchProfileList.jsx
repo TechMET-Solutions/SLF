@@ -1,3 +1,20 @@
+ 
+
+ const [activeEmployees, setActiveEmployees] = useState([]);
+console.log(activeEmployees,"activeEmployees")
+
+ const getActiveEmp = async () => {
+  try {
+    const res = await axios.get(`${API}/Master/getActiveEmployees`);
+    const decrypted = decryptData(res.data.data); // no JSON.parse
+    console.log(decrypted);
+    setActiveEmployees(decrypted);
+  } catch (error) {
+    console.log(error);
+  }
+};
+
+
 import axios from "axios";
 import { useEffect, useState } from "react";
 import { FiEdit, FiEye } from "react-icons/fi";
@@ -16,9 +33,6 @@ const BranchProfileList = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [isViewMode, setIsViewMode] = useState(false);
 
-// 🔍 Search states
-  const [searchCode, setSearchCode] = useState("");
-  const [searchName, setSearchName] = useState("");
 
   const [branchData, setBranchData] = useState({
     branch_code: "",
@@ -35,33 +49,28 @@ const BranchProfileList = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const [totalRecords, setTotalRecords] = useState(0);
   const recordsPerPage = 10;
-  const [activeEmployees, setActiveEmployees] = useState([]);
-  console.log(activeEmployees, "activeEmployees")
+const [activeEmployees, setActiveEmployees] = useState([]);
+console.log(activeEmployees,"activeEmployees")
   useEffect(() => {
-    getActiveEmp();
-  }, []);
+  getActiveEmp();
+}, []);
 
-  ;
+;
 
-  useEffect(() => {
-    getActiveEmp();
-  }, []);
+useEffect(() => {
+  getActiveEmp();
+}, []);
 
-  const getActiveEmp = async () => {
-    try {
-      const res = await axios.get(`${API}/Master/getActiveEmployees`);
-      const decrypted = decryptData(res.data.data); // no JSON.parse
-      console.log(decrypted);
-      setActiveEmployees(decrypted);
-    } catch (error) {
-      console.log(error);
-    }
-  };
-
-  const handleSearch = () => {
-    setCurrentPage(1); // Reset to first page when searching
-    fetchBranches(1);
-  };
+ const getActiveEmp = async () => {
+  try {
+    const res = await axios.get(`${API}/Master/getActiveEmployees`);
+    const decrypted = decryptData(res.data.data); // no JSON.parse
+    console.log(decrypted);
+    setActiveEmployees(decrypted);
+  } catch (error) {
+    console.log(error);
+  }
+};
 
   const handleChange = (e) => {
     const { name, value, type, checked } = e.target;
@@ -72,40 +81,83 @@ const BranchProfileList = () => {
   };
 
   const handleSave = async () => {
-    setIsLoading(true);
-    try {
-      const encrypted = encryptData({
-        ...branchData,
-        id: editBranchId, // include id when editing
-      });
+  const {
+    branch_code,
+    branch_name,
+    print_name,
+    address_line1,
+    mobile_no,
+    lead_person, // optional
+  } = branchData;
 
-      const url = isEditMode
-        ? `${API}/Master/Master_Profile/update_Branch`
-        : `${API}/Master/Master_Profile/add_Branch`;
+  // Individual field validation
+  if (!branch_code.trim()) {
+    alert("Branch Code is required.");
+    return;
+  }
 
-      await axios.post(url, { data: encrypted });
+  if (!branch_name.trim()) {
+    alert("Branch Name is required.");
+    return;
+  }
 
-      setIsModalOpen(false);
-      setIsEditMode(false);
-      setBranchData({
-        branch_code: "",
-        branch_name: "",
-        print_name: "",
-        address_line1: "",
-        // address_line3: "",
-        mobile_no: "",
-        lead_person: "",
-        is_main: false,
-        status: false,
-      });
-      fetchBranches();
-    } catch (error) {
-      console.error(error);
-      alert(isEditMode ? "Error updating branch" : "Error saving branch");
-    } finally {
-      setIsLoading(false);
-    }
-  };
+  if (!print_name.trim()) {
+    alert("Print Name is required.");
+    return;
+  }
+
+  if (!address_line1.trim()) {
+    alert("Address Line 1 is required.");
+    return;
+  }
+
+ if (!mobile_no.trim()) {
+  alert("Mobile Number is required.");
+  return;
+}
+
+// Check if mobile number is exactly 10 digits
+const mobileRegex = /^[0-9]{10}$/;
+if (!mobileRegex.test(mobile_no)) {
+  alert("Mobile Number must be a valid 10-digit number.");
+  return;
+}
+
+  setIsLoading(true);
+
+  try {
+    const encrypted = encryptData({
+      ...branchData,
+      id: editBranchId, // include id when editing
+    });
+
+    const url = isEditMode
+      ? `${API}/Master/Master_Profile/update_Branch`
+      : `${API}/Master/Master_Profile/add_Branch`;
+
+    await axios.post(url, { data: encrypted });
+
+    setIsModalOpen(false);
+    setIsEditMode(false);
+    setBranchData({
+      branch_code: "",
+      branch_name: "",
+      print_name: "",
+      address_line1: "",
+      mobile_no: "",
+      lead_person: "",
+      is_main: false,
+      status: false,
+    });
+    fetchBranches();
+  } catch (error) {
+    console.error(error);
+    alert(isEditMode ? "Error updating branch" : "Error saving branch");
+  } finally {
+    setIsLoading(false);
+  }
+};
+
 
   const [branches, setBranches] = useState([]);
 
@@ -115,10 +167,7 @@ const BranchProfileList = () => {
   const fetchBranches = async (page = 1) => {
     setIsLoading(true);
     try {
-      // Combine searchCode and searchName into a single search query
-      const search = searchCode || searchName;
-      const data = await fetchBranchesApi(page, recordsPerPage, search);
-
+      const data = await fetchBranchesApi(page, recordsPerPage);
       setBranches(data.branches);
       setTotalRecords(data.total);
     } catch (error) {
@@ -128,10 +177,10 @@ const BranchProfileList = () => {
     }
   };
 
-  // 🔁 Fetch branches when page changes
   useEffect(() => {
     fetchBranches(currentPage);
   }, [currentPage]);
+
 
   const totalPages = Math.ceil(totalRecords / recordsPerPage);
 
@@ -210,9 +259,8 @@ const BranchProfileList = () => {
       alert("Failed to update branch");
     }
   };
-
-
   return (
+
     <>
       <div className=" w-full">
         {/* middletopbar */}
@@ -248,8 +296,7 @@ const BranchProfileList = () => {
 
                 <input
                   type="text"
-                  value={searchCode}
-                  onChange={(e) => setSearchCode(e.target.value)}
+
                   style={{
                     width: "168.64px",
                     height: "27.49px",
@@ -277,8 +324,7 @@ const BranchProfileList = () => {
 
                 <input
                   type="text"
-                  value={searchName}
-                  onChange={(e) => setSearchName(e.target.value)}
+
                   style={{
                     width: "168.64px",
                     height: "27.49px",
@@ -288,7 +334,6 @@ const BranchProfileList = () => {
                   className="border border-gray-400 px-3 py-1 text-[11.25px] font-source"
                 />
                 <button
-                  onClick={handleSearch}
                   style={{
                     width: "84.36px",
                     height: "26.87px",
@@ -354,7 +399,7 @@ const BranchProfileList = () => {
               {/* Modal Body */}
               <div className="grid grid-cols-3 gap-4">
                 <div>
-                  <label className="text-[14px]">Code *</label>
+                  <label className="text-[14px]">Code <span className="text-red-500">*</span></label>
                   <input
                     type="text"
                     name="branch_code"
@@ -366,7 +411,7 @@ const BranchProfileList = () => {
                 </div>
 
                 <div>
-                  <label className="text-[14px]">Name *</label>
+                  <label className="text-[14px]">Branch Name <span className="text-red-500">*</span></label>
                   <input
                     type="text"
                     name="branch_name"
@@ -378,7 +423,7 @@ const BranchProfileList = () => {
                 </div>
 
                 <div>
-                  <label className="text-[14px]">Print Name *</label>
+                  <label className="text-[14px]">Print Name<span className="text-red-500">*</span></label>
                   <input
                     type="text"
                     name="print_name"
@@ -390,7 +435,7 @@ const BranchProfileList = () => {
                 </div>
 
                 <div>
-                  <label className="text-[14px]">Address *</label>
+                  <label className="text-[14px]">Address <span className="text-red-500">*</span></label>
                   <input
                     type="text"
                     name="address_line1"
@@ -401,9 +446,9 @@ const BranchProfileList = () => {
                   />
                 </div>
 
-
+                
                 <div>
-                  <label className="text-[14px]">Mobile No. *</label>
+                  <label className="text-[14px]">Mobile No<span className="text-red-500">*</span></label>
                   <input
                     type="text"
                     name="mobile_no"
@@ -413,57 +458,47 @@ const BranchProfileList = () => {
                     className="border border-gray-300 rounded px-3 py-2 mt-1 w-full"
                   />
                 </div>
-                <div>
-                  <label className="text-[14px]">Lead Person</label>
-                  <select
-                    name="lead_person"
-                    value={branchData.lead_person}
-                    onChange={handleChange}
-                    className="border border-gray-300 rounded px-3 py-2 mt-1 w-full"
-                  >
-                    <option value="">Select Lead Person</option>
+<div>
+  <label className="text-[14px]">Lead Person</label>
+  <select
+    name="lead_person"
+    value={branchData.lead_person}
+    onChange={handleChange}
+    className="border border-gray-300 rounded px-3 py-2 mt-1 w-full"
+  >
+    <option value="">Select Lead Person</option>
 
-                    {activeEmployees.map((emp) => (
-                      <option key={emp.id} value={emp.id}>
-                        {emp.emp_name}
-                      </option>
-                    ))}
-                  </select>
-                </div>
+    {activeEmployees.map((emp) => (
+      <option key={emp.id} value={emp.id}>
+        {emp.emp_name}
+      </option>
+    ))}
+  </select>
+</div>
 
-                <div className="flex  justify-center gap-10">
 
-                  <div className="flex items-center mt-4 gap-2">
-                    <input
-                      type="checkbox"
-                      name="is_main"
-                      checked={branchData.is_main}
-                      onChange={handleChange}
-                      className="w-4 h-4 accent-blue-900"
-                    />
-                    <label className="text-[14px]">Is Main <span className="text-red-500">*</span></label>
+
+  
+
+               
                   </div>
-
-                  <div className="flex items-center mt-4 gap-2">
-                    <input
-                      type="checkbox"
-                      name="status"
-                      checked={branchData.status}
-                      onChange={handleChange}
-                      className="w-4 h-4 accent-blue-900"
-                    />
-                    <label className="text-[14px]"> Is Active*</label>
-                  </div>
-                </div>
-
-              </div>
-
-              <div className="flex justify-center gap-4 mt-6">
+          
+ <div className="flex justify-center items-center mt-4 gap-2">
+  <input
+    type="checkbox"
+    name="is_main"
+    checked={branchData.is_main}
+    onChange={handleChange}
+    className="w-4 h-4 accent-blue-900"
+  />
+  <label className="text-[14px]">Is Main </label>
+</div>
+             <div className="flex justify-center gap-4 mt-6">
                 {!isViewMode && (
                   isEditMode ? (
                     <button
                       onClick={handleUpdateBranch}
-                      className="bg-blue-600 text-white cursor-pointer px-4 py-2 rounded-md"
+                      className="bg-[#0A2478] text-white cursor-pointer px-4 py-2 rounded-md"
                     >
                       Update Branch
                     </button>
@@ -536,12 +571,12 @@ const BranchProfileList = () => {
                           disabled={isViewMode}
                           className="bg-green-500 p-1.5 text-white rounded cursor-pointer"
                           onClick={() => handleEdit(row)}
-                          title="Edit">
+                        title="Edit">
                           <FiEdit className="text-white text-sm" />
                         </button>
                         <button
                           className="bg-[#646AD9] p-1.5 text-white rounded cursor-pointer"
-                          onClick={() => handleView(row)} title="view"                   >
+                          onClick={() => handleView(row)}      title="view"                   >
                           <FiEye className="text-white text-sm" />
                         </button>
                       </div>
@@ -577,8 +612,7 @@ const BranchProfileList = () => {
 
       <div className=" w-full relative">
         {isLoading && <Loader />}
-      </div>
-    </>
+      </div></>
 
   );
 };

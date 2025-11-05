@@ -15,6 +15,7 @@ import { useLocation, useNavigate } from "react-router-dom";
 import { API } from "../api";
 import profileempty from "../assets/profileempty.png";
 import timesvg from "../assets/timesvg.svg";
+import { decryptData } from "../utils/cryptoHelper";
 import PledgeItemList from "./PledgeItemList";
 
 const EditLoanApplication = () => {
@@ -59,80 +60,6 @@ const EditLoanApplication = () => {
 };
 
 
-  // const handleSaveLoan = async () => {
-  //   try {
-  //     const formDataToSend = new FormData();
-
-  //     // 👤 Borrower Details
-  //     formDataToSend.append("BorrowerId", selectedCustomer?.id || "");
-  //     formDataToSend.append("CoBorrowerId", selectedCoBorrower?.id || "");
-  //     formDataToSend.append("Borrower", formData.borrowerName || "");
-  //     formDataToSend.append("Scheme", formData.schemeName || "");
-  //     formDataToSend.append("Scheme_ID", selectedScheme?.id || "");
-  //     formDataToSend.append("Print_Name", formData.printName || "");
-  //     formDataToSend.append("Mobile_Number", formData.mobile || "");
-  //     formDataToSend.append("Alternate_Number", formData.altMobile || "");
-  //     formDataToSend.append("Co_Borrower", formData.CoBorrowerName || "");
-  //     formDataToSend.append("Relation", formData.CoBorrowerRelation || "");
-  //     formDataToSend.append("Nominee", formData.Nominee_Name || "");
-  //     formDataToSend.append("Nominee_Relation", formData.NomineeRelation || "");
-
-  //     // 💎 Ornament Photo
-  //     if (formData.OrnamentFile) {
-  //       formDataToSend.append("Ornament_Photo", formData.OrnamentFile);
-  //     }
-
-  //     // 📦 Pledge Items
-  //     formDataToSend.append("Pledge_Item_List", JSON.stringify(PledgeItem || []));
-
-  //     // 💰 Loan Details
-  //     formDataToSend.append("Loan_amount", formData.Loan_amount || 0);
-  //     formDataToSend.append("Doc_Charges", formData.Doc_Charges || 0);
-  //     formDataToSend.append("Net_Payable", formData.Net_Payable || 0);
-  //     formDataToSend.append("Valuer_1", "Not Assigned");
-  //     formDataToSend.append("Valuer_2", "Not Assigned");
-  //     formDataToSend.append("Loan_Tenure", selectedScheme?.loanPeriod || "");
-  //     formDataToSend.append("Min_Loan", selectedScheme?.minLoanAmount || "");
-  //     formDataToSend.append("Max_Loan", selectedScheme?.maxLoanAmount || "");
-
-  //     // 🧮 Effective Interest Rates (JSON)
-  //     const effectiveInterestRates =
-  //       selectedScheme?.effectiveInterestRates?.length > 0
-  //         ? selectedScheme.effectiveInterestRates
-  //         : [
-  //           { term: "0-30", rate: 12 },
-  //           { term: "31-90", rate: 14 },
-  //         ]; // fallback default
-  //     formDataToSend.append(
-  //       "Effective_Interest_Rates",
-  //       JSON.stringify(effectiveInterestRates)
-  //     );
-
-  //     // 🏢 Misc Info
-  //     formDataToSend.append("approved_by", "Admin");
-  //     formDataToSend.append("approval_date", new Date().toISOString().split("T")[0]);
-  //     formDataToSend.append("branch_id", 1);
-
-  //     // 🚀 API Request
-  //     const res = await axios.post(
-  //       "http://localhost:5000/Transactions/goldloan/addLoan",
-  //       formDataToSend,
-  //       {
-  //         headers: { "Content-Type": "multipart/form-data" },
-  //       }
-  //     );
-
-  //     alert("✅ Loan Application Saved Successfully!");
-  //     navigate("/Loan-Application")
-  //   } catch (error) {
-  //     console.error("❌ Error saving loan:", error);
-  //     alert("Failed to save loan. Check console for details.");
-  //   }
-  // };
-
-
-
-
   useEffect(() => {
     document.title = "SLF | Add Gold Loan Application ";
   }, []);
@@ -162,7 +89,22 @@ const EditLoanApplication = () => {
   const [selectedCoBorrower, setSelectedCoBorrower] = useState(null);
   // Fetch API when typing
 const [selectedCustomerForEdit, setselectedCustomerForEdit] = useState(null);
+ const [activeEmployees, setActiveEmployees] = useState([]);
+console.log(activeEmployees,"activeEmployees")
 
+ const getActiveEmp = async () => {
+  try {
+    const res = await axios.get(`${API}/Master/getActiveEmployees`);
+    const decrypted = decryptData(res.data.data); // no JSON.parse
+    console.log(decrypted);
+    setActiveEmployees(decrypted);
+  } catch (error) {
+    console.log(error);
+  }
+};
+
+
+  
   const [formData, setFormData] = useState({
     borrowerId: "",
     borrowerName: "",
@@ -185,10 +127,8 @@ const [selectedCustomerForEdit, setselectedCustomerForEdit] = useState(null);
     Loan_amount: "",
     Doc_Charges: "",
     Net_Payable: ""
-
-
   });
-     const location = useLocation();
+    const location = useLocation();
   const { loanId, loanData } = location.state || {};
    console.log(loanData,"loanData")
   console.log("LoanId => ", loanId);
@@ -209,6 +149,7 @@ const [selectedCustomerForEdit, setselectedCustomerForEdit] = useState(null);
 
   console.log(formData, "formData")
   useEffect(() => {
+  debugger
     let totalGross = 0;
     let totalNet = 0;
     let totalValuation = 0;
@@ -222,6 +163,7 @@ const [selectedCustomerForEdit, setselectedCustomerForEdit] = useState(null);
     // Calculate document charges (2% of loan)
     const docCharges = (totalValuation * 2) / 100;
     const netPayable = totalValuation + docCharges;
+
 
     // Update all values in formData
     setFormData((prev) => ({
@@ -866,7 +808,7 @@ setSelectedScheme(parsedScheme);
 
       </div>
 
-      <PledgeItemList rows={PledgeItem} setRows={setPledgeItem} />
+      <PledgeItemList rows={PledgeItem} setRows={setPledgeItem} selectedScheme={selectedScheme}/>
 
 
 
@@ -947,20 +889,40 @@ setSelectedScheme(parsedScheme);
           />
         </div>
 
-        <div className="flex flex-col">
+       <div className="flex flex-col">
           <label className="text-[14px] font-medium">Valuer 1* </label>
-          <select className="border border-gray-300 rounded-[8px] px-3 py-2  w-[256px] bg-white">
-            <option>Single</option>
-            <option>Married</option>
-          </select>
+          <select
+    name="value1"
+    value={formData.value1}
+    onChange={handleInputChange}
+    className="border border-gray-300 rounded px-3 py-2 mt-1 w-full"
+  >
+    <option value="">Select Lead Person</option>
+
+    {activeEmployees.map((emp) => (
+      <option key={emp.id} value={emp.id}>
+        {emp.emp_name}
+      </option>
+    ))}
+  </select>
         </div>
 
         <div className="flex flex-col">
           <label className="text-[14px] font-medium">Valuer 2* </label>
-          <select className="border border-gray-300 rounded-[8px] px-3 py-2  w-[256px] bg-white">
-            <option>Single</option>
-            <option>Married</option>
-          </select>
+            <select
+    name="value2"
+    value={formData.value2}
+    onChange={handleInputChange}
+    className="border border-gray-300 rounded px-3 py-2 mt-1 w-full"
+  >
+    <option value="">Select Lead Person</option>
+
+    {activeEmployees.map((emp) => (
+      <option key={emp.id} value={emp.id}>
+        {emp.emp_name}
+      </option>
+    ))}
+  </select>
         </div>
 
 

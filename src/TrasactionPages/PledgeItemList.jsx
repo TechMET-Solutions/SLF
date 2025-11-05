@@ -1,13 +1,36 @@
+import axios from "axios";
 import { useEffect, useState } from "react";
 import { IoMdAddCircleOutline } from "react-icons/io";
 import { MdOutlineCancel } from "react-icons/md";
-import axios from "axios";
+import { API } from "../api";
 import { decryptData } from "../utils/cryptoHelper"; // adjust the import path as needed
 
 const PledgeItemList = ({ rows, setRows, selectedScheme }) => {
-  console.log(selectedScheme,"selectedScheme   docChargePercent")
+  console.log(selectedScheme,"selectedScheme ")
   const [pledgeItems, setPledgeItems] = useState([]); // dynamic list of item names
+const [goldRate, setGoldRate] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
 
+  useEffect(() => {
+    // Fetch latest gold rate
+    const fetchGoldRate = async () => {
+      try {
+        const response = await axios.get(
+          "http://localhost:5000/Master/Master_Profile/latest-gold-rate"
+        );
+        // Store data in state
+        setGoldRate(response.data.data); // `data.data` because your API returns { data: rows }
+        setLoading(false);
+      } catch (err) {
+        console.error("Error fetching latest gold rate:", err);
+        setError("Failed to fetch gold rate");
+        setLoading(false);
+      }
+    };
+
+    fetchGoldRate();
+  }, []);
   // 🧩 Fetch & decrypt items from API
   useEffect(() => {
     const fetchPledgeItems = async () => {
@@ -49,35 +72,102 @@ const PledgeItemList = ({ rows, setRows, selectedScheme }) => {
     };
     setRows([...rows, newRow]);
   };
+ const [purities, setPurities] = useState([]);
+console.log(purities,"purities")
+  // Fetch purities
+ useEffect(() => {
+  const fetchPurities = async () => {
+    try {
+      const res = await axios.get(`${API}/Master/getall-purity`);
+      const decrypted = decryptData(res.data.data); // remove JSON.parse
+      setPurities(decrypted.items); // decrypted is already an object
+    } catch (err) {
+      console.error("Error fetching purities:", err);
+    }
+  };
+  fetchPurities();
+}, []);
+
 
   // 🧩 Delete row
   const handleDeleteRow = (id) => {
     const updatedRows = rows.filter((row) => row.id !== id);
     setRows(updatedRows);
   };
+// Assuming you have goldRate, purities, selectedScheme, and rows
+
+  const calculateRate = (purityName) => {
+  
+  // Check if any data is missing
+  if (!goldRate || !goldRate.gold_rate || !selectedScheme || !purityName) return 0;
+
+  // Convert gold_rate string to number
+  const rateValue = parseFloat(goldRate.gold_rate);
+
+  // Approved gold price per gram
+  const approvedGoldPrice =
+    rateValue * (parseFloat(selectedScheme.goldApprovePercent) / 100);
+
+  // Convert purity name like "22k" to number
+  const purityValue = parseInt(purityName.replace("k", "").trim());
+  if (isNaN(purityValue)) return 0;
+
+  // Calculate rate based on purity
+  const rate = (purityValue / 24) * approvedGoldPrice;
+
+  return rate;
+};
+
+
 
   // 🧩 Handle change
+// const handleChange = (index, field, value) => {
+//   const updatedRows = [...rows];
+//   updatedRows[index][field] = value;
+
+//   if (field === "purity") {
+//     updatedRows[index].rate = calculateRate(value);
+//     updatedRows[index].valuation = updatedRows[index].netWeight
+//       ? updatedRows[index].netWeight * updatedRows[index].rate
+//       : 0;
+//   }
+
+//   setRows(updatedRows);
+// };
+
   const handleChange = (index, field, value) => {
-    const updatedRows = [...rows];
-    updatedRows[index][field] = value;
+    debugger
+  const updatedRows = [...rows];
 
-    if (field === "purity" || field === "netWeight") {
-      const rateMap = {
-        "20K": 6000,
-        "22K": 6200,
-        "24K": 6400,
-      };
-      const rate = rateMap[updatedRows[index].purity] || "";
-      const netWeight = parseFloat(updatedRows[index].netWeight || 0);
-      const valuation = rate ? rate * netWeight : "";
-      updatedRows[index].rate = rate;
-      updatedRows[index].valuation = valuation;
+  // Convert value to number if it's numeric
+  const numericValue = field === "gross" || field === "netWeight" ? parseFloat(value) || 0 : value;
+
+  if (field === "netWeight") {
+    // Ensure netWeight is less than or equal to gross
+    if (numericValue > updatedRows[index].gross) {
+      alert("Net Weight cannot be greater than Gross");
+      return;
     }
+  }
 
-    setRows(updatedRows);
-  };
+  // Update the value
+  updatedRows[index][field] = numericValue;
 
-  // 🧩 Totals
+  // If purity changes, recalculate rate & valuation
+  if (field === "purity" || field === "netWeight") {
+    const rate = updatedRows[index].purity ? calculateRate(updatedRows[index].purity) : 0;
+    updatedRows[index].rate = rate;
+    updatedRows[index].valuation = updatedRows[index].netWeight
+  ? Math.round(updatedRows[index].netWeight * rate)
+  : 0;
+
+  }
+
+  setRows(updatedRows);
+};
+
+
+
   const totalGross = rows.reduce(
     (sum, row) => sum + parseFloat(row.gross || 0),
     0
@@ -165,23 +255,24 @@ const PledgeItemList = ({ rows, setRows, selectedScheme }) => {
                   />
                 </td>
 
-                <td className="px-4 py-2">
-                  <select
-                    value={row.purity}
-                    onChange={(e) =>
-                      handleChange(index, "purity", e.target.value)
-                    }
-                    className="border border-gray-300 rounded-md px-2 py-1 w-[120px] focus:outline-none focus:ring-1 focus:ring-blue-500"
-                  >
-                    <option value="">Select Purity</option>
-                    <option value="20K">Gold 20K</option>
-                    <option value="22K">Gold 22K</option>
-                    <option value="24K">Gold 24K</option>
-                  </select>
-                </td>
+               <td className="px-4 py-2">
+  <select
+    value={row.purity}
+    onChange={(e) => handleChange(index, "purity", e.target.value)}
+    className="border border-gray-300 rounded-md px-2 py-1 w-[120px] focus:outline-none focus:ring-1 focus:ring-blue-500"
+  >
+    <option value="">Select Purity</option>
+    {purities.map((p) => (
+      <option key={p.id} value={p.purity_name}>
+        {p.loan_type} {p.purity_name}
+      </option>
+    ))}
+  </select>
+</td>
 
-                <td className="px-4 py-2 text-center">{row.rate || "—"}</td>
-
+              <td className="px-4 py-2 text-center">
+  {row.purity ? calculateRate(row.purity).toFixed(2) : "—"}
+</td>
                 <td className="px-4 py-2 text-center">
                   {row.valuation ? row.valuation.toLocaleString() : "—"}
                 </td>

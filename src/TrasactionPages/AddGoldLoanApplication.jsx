@@ -1,14 +1,31 @@
 import axios from "axios";
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { API } from "../api";
 import profileempty from "../assets/profileempty.png";
 import timesvg from "../assets/timesvg.svg";
+import { decryptData } from "../utils/cryptoHelper";
 import PledgeItemList from "./PledgeItemList";
 
 const AddGoldLoanApplication = () => {
   const [schemes, setSchemes] = useState([]); // store all schemes
   const [selectedScheme, setSelectedScheme] = useState(null); // store selected scheme
   const navigate = useNavigate();
+  const [activeEmployees, setActiveEmployees] = useState([]);
+console.log(activeEmployees,"activeEmployees")
+ const getActiveEmp = async () => {
+  try {
+    const res = await axios.get(`${API}/Master/getActiveEmployees`);
+    const decrypted = decryptData(res.data.data); // no JSON.parse
+    console.log(decrypted);
+    setActiveEmployees(decrypted);
+  } catch (error) {
+    console.log(error);
+  }
+};
+  useEffect(() => {
+  getActiveEmp()
+},[])
   useEffect(() => {
     const fetchSchemes = async () => {
       try {
@@ -165,8 +182,9 @@ const AddGoldLoanApplication = () => {
     OrnamentPhoto: "",
     Loan_amount: "",
     Doc_Charges: "",
-    Net_Payable: ""
-
+    Net_Payable: "",
+    value1: "",
+    value2:""
 
   });
   const [PledgeItem, setPledgeItem] = useState([
@@ -185,29 +203,36 @@ const AddGoldLoanApplication = () => {
 
   console.log(formData, "formData")
   useEffect(() => {
-    let totalGross = 0;
-    let totalNet = 0;
-    let totalValuation = 0;
+  let totalGross = 0;
+  let totalNet = 0;
+  let totalValuation = 0;
 
-    PledgeItem.forEach((item) => {
-      totalGross += Number(item.gross) || 0;
-      totalNet += Number(item.netWeight) || 0;
-      totalValuation += Number(item.valuation) || 0;
-    });
+  PledgeItem.forEach((item) => {
+    totalGross += Number(item.gross) || 0;
+    totalNet += Number(item.netWeight) || 0;
+    totalValuation += Number(item.valuation) || 0;
+  });
 
-    // Calculate document charges (2% of loan)
-    const docCharges =
-  (totalValuation * (selectedScheme?.docChargePercent ?? 0)) / 100;
-    const netPayable = totalValuation + docCharges;
+  // Max loan check
+  const maxLoan = parseInt(selectedScheme?.maxLoanAmount, 10) || totalValuation;
+  const loanAmount = totalValuation > maxLoan ? maxLoan : totalValuation;
 
-    // Update all values in formData
-    setFormData((prev) => ({
-      ...prev,
-      Loan_amount: totalValuation.toFixed(2),
-      Doc_Charges: docCharges.toFixed(2),
-      Net_Payable: netPayable.toFixed(2),
-    }));
-  }, [PledgeItem]);
+  // Calculate document charges on capped loan amount
+  const docCharges =
+    (loanAmount * (selectedScheme?.docChargePercent ?? 0)) / 100;
+
+  // Subtract docCharges from loanAmount
+  const netPayable = loanAmount - docCharges;
+
+  setFormData((prev) => ({
+    ...prev,
+    Loan_amount: loanAmount.toFixed(2),
+    Doc_Charges: docCharges.toFixed(2),
+    Net_Payable: netPayable.toFixed(2),
+  }));
+}, [PledgeItem, selectedScheme]);
+
+
 
   console.log(formData, "formData")
 
@@ -728,24 +753,41 @@ const AddGoldLoanApplication = () => {
 
       <div className="flex  gap-2  ">
 
-        <div className="">
-          <div>
-            <label className="text-[14px] font-medium">Loan amount *</label>
-          </div>
+      <div className="">
+  <div>
+    <label className="text-[14px] font-medium">Loan amount *</label>
+  </div>
 
-          <input
-            type="text"
-            placeholder="Loan amount"
-            value={formData.Loan_amount}  // ← shows the value from state
-            onChange={(e) =>
-              setFormData((prev) => ({
-                ...prev,
-                Loan_amount: e.target.value, // ← updates state on typing
-              }))
-            }
-            className="border border-gray-300 px-3 py-2 w-[129px] rounded-[8px] bg-white h-[38px]"
-          />
-        </div>
+  <input
+    type="text"
+    placeholder="Loan amount"
+    value={formData.Loan_amount}
+    onChange={(e) => {
+      // Allow any input value
+      let inputLoan = parseFloat(e.target.value) || 0;
+
+      // Calculate document charges and round to nearest integer
+      const docCharges = Math.round(
+        (inputLoan * (selectedScheme?.docChargePercent ?? 0)) / 100
+      );
+
+      // Subtract docCharges from inputLoan
+      const netPayable = inputLoan - docCharges;
+
+      // Update state
+      setFormData((prev) => ({
+        ...prev,
+        Loan_amount: e.target.value, // keep exactly what user typed
+        Doc_Charges: docCharges,     // rounded value
+        Net_Payable: netPayable,     // Loan - Doc charges
+      }));
+    }}
+    className="border border-gray-300 px-3 py-2 w-[129px] rounded-[8px] bg-white h-[38px]"
+  />
+</div>
+
+
+
 
 
 
@@ -800,20 +842,49 @@ const AddGoldLoanApplication = () => {
         </div>
 
         <div className="flex flex-col">
-          <label className="text-[14px] font-medium">Valuer 1* </label>
-          <select className="border border-gray-300 rounded-[8px] px-3 py-2  w-[256px] bg-white">
-            <option>Single</option>
-            <option>Married</option>
-          </select>
-        </div>
+  <label className="text-[14px] font-medium">
+    Valuer 1
+    <span className="text-red-500">*</span>
+  </label>
+  <select
+    name="value1"
+    value={formData.value1}
+    onChange={handleInputChange}
+    className="border border-gray-300 rounded px-3 py-2 mt-1 w-full"
+  >
+    <option value="">Select valuer 1</option>
+    {activeEmployees.map((emp) => (
+      <option key={emp.id} value={emp.id}>
+        {emp.emp_name}
+      </option>
+    ))}
+  </select>
+</div>
 
-        <div className="flex flex-col">
-          <label className="text-[14px] font-medium">Valuer 2* </label>
-          <select className="border border-gray-300 rounded-[8px] px-3 py-2  w-[256px] bg-white">
-            <option>Single</option>
-            <option>Married</option>
-          </select>
-        </div>
+<div className="flex flex-col">
+  <label className="text-[14px] font-medium">
+    Valuer 2
+    {parseFloat(formData.Loan_amount) >= 20000 && (
+      <span className="text-red-500">*</span>
+    )}
+  </label>
+  <select
+    name="value2"
+    value={formData.value2}
+    onChange={handleInputChange}
+    className="border border-gray-300 rounded px-3 py-2 mt-1 w-full"
+    disabled={parseFloat(formData.Loan_amount) < 20000} // disable if loan < 20k
+  >
+    <option value="">Select valuer 2</option>
+    {activeEmployees.map((emp) => (
+      <option key={emp.id} value={emp.id}>
+        {emp.emp_name}
+      </option>
+    ))}
+  </select>
+</div>
+
+
 
 
       </div>

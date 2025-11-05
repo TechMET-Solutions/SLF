@@ -1,11 +1,10 @@
 import { useEffect, useState } from "react";
-import GroupData from "../assets/Group 124.svg";
-import { useNavigate } from "react-router-dom";
-import Rights from "../assets/Rights.png";
-import Pagination from "../Component/Pagination";
-import Loader from "../Component/Loader";
-import { addRolesApi, fetchRolesApi, updateRolesApi, updateRolesStatusApi } from "../API/Master/User_Management/Roles";
 import { FiEdit } from "react-icons/fi";
+import { useNavigate } from "react-router-dom";
+import { addRolesApi, fetchRolesApi, updateRolesApi, updateRolesStatusApi } from "../API/Master/User_Management/Roles";
+import Rights from "../assets/Rights.png";
+import Loader from "../Component/Loader";
+import Pagination from "../Component/Pagination";
 
 
 const UserRolePermission = () => {
@@ -244,9 +243,7 @@ const UserRolePermission = () => {
 
               <div className="flex gap-10 justify-center items-center mt-5">
                 <div className="flex items-center space-x-2">
-                  <label htmlFor="is_system_role" className="text-[14px]">
-                    Is System Role <span className="text-red-500">*</span>
-                  </label>
+                  
                   <input
                     type="checkbox"
                     id="is_system_role"
@@ -255,12 +252,13 @@ const UserRolePermission = () => {
                     onChange={handleInputChange}
                     className="w-[24px] h-[24px] accent-[#0A2478]"
                   />
+                  <label htmlFor="is_system_role" className="text-[14px]">
+                    Is System Role <span className="text-red-500">*</span>
+                  </label>
                 </div>
 
                 <div className="flex items-center space-x-2">
-                  <label htmlFor="is_active" className="text-[14px]">
-                    Is Active <span className="text-red-500">*</span>
-                  </label>
+                 
                   <input
                     type="checkbox"
                     id="is_active"
@@ -269,6 +267,9 @@ const UserRolePermission = () => {
                     onChange={handleInputChange}
                     className="w-[24px] h-[24px] accent-[#0A2478]"
                   />
+                   <label htmlFor="is_active" className="text-[14px]">
+                    Is Active <span className="text-red-500">*</span>
+                  </label>
                 </div>
               </div>
 
@@ -322,7 +323,7 @@ const UserRolePermission = () => {
                           }`}
                       >
                         <div
-                          className={`bg-white w-4 h-4 rounded-full shadow-md transform transition-transform duration-300 ease-in-out ${row.is_active === 1 ? "translate-x-6" : "translate-x-0"
+                          className={`bg-white w-4 h-4 rounded-full shadow-md transform transition-transform  cursor-pointer duration-300 ease-in-out ${row.is_active === 1 ? "translate-x-6" : "translate-x-0"
                             }`}
                         />
                       </button>
@@ -333,6 +334,7 @@ const UserRolePermission = () => {
                           title="Edit"
                           className="bg-green-500 p-1.5 rounded text-white hover:bg-green-600"
                           onClick={() => handleEdit(row)}
+                          
                         >
                           <FiEdit />
                         </button>
@@ -342,7 +344,8 @@ const UserRolePermission = () => {
   <div className="flex gap-2 justify-center">
     <button
       className="bg-[#56A869] rounded-[2.31px] flex items-center justify-center p-0.5"
-      onClick={() => navigate(`/User-Role`, { state: { row } })}
+                          onClick={() => navigate(`/User-Role`, { state: { row } })}
+                          title='Rights'
     >
       <img
         src={Rights}

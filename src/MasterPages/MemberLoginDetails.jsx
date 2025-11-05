@@ -140,7 +140,7 @@ const MemberLoginDetails = () => {
                         </div>
 
                         {/* Date & Activity Filters */}
-                        <div className="flex gap-5">
+                        {/* <div className="flex gap-5">
                             <input
                                 type="date"
                                 className="border border-gray-400 rounded px-3 py-1 text-[11.25px] w-[168px] h-[28px]"
@@ -152,7 +152,7 @@ const MemberLoginDetails = () => {
                                     <option value="login">Login</option>
                                 </select>
                             </div>
-                        </div>
+                        </div> */}
 
                         <button
                         onClick={() => navigate("/")}
@@ -164,100 +164,114 @@ const MemberLoginDetails = () => {
             </div>
 
             {/* Table */}
-            <div className="flex justify-center">
-                <div className="overflow-x-auto mt-5 w-[1290px] h-[500px]">
-                    <table className="w-full border-collapse">
-                        <thead className="bg-[#0A2478] text-white text-sm">
-                            <tr>
-                                <th className="px-4 py-2 border-r text-left">#</th>
-                                <th className="px-4 py-2 border-r text-left">Name</th>
-                                <th className="px-4 py-2 border-r text-left">User ID</th>
-                                <th className="px-4 py-2 border-r text-left">OTP Override</th>
-                                <th className="px-4 py-2 border-r text-left">Sender Mobile No 1</th>
-                                <th className="px-4 py-2 border-r text-left">Sender Mobile No 2</th>
-                                {/* <th className="px-4 py-2 border-r text-left">Action</th> */}
-                            </tr>
-                        </thead>
+         <div className="flex justify-center">
+  <div className="overflow-x-auto mt-5 w-full max-w-[1290px] h-[500px] border border-gray-300 rounded">
+    <table className="w-full border-collapse">
+      {/* Table Header */}
+      <thead className="bg-[#0A2478] text-white text-sm sticky top-0">
+        <tr>
+          <th className="px-4 py-2 border-r text-center">#</th>
+          <th className="px-4 py-2 border-r text-left">Name</th>
+          <th className="px-4 py-2 border-r text-left">User ID</th>
+          <th className="px-4 py-2 border-r text-center">OTP Override</th>
+          <th className="px-4 py-2 border-r text-center">Sender Mobile No 1</th>
+          <th className="px-4 py-2 border-r text-center">Sender Mobile No 2</th>
+        </tr>
+      </thead>
 
-                        <tbody className="text-[12px]">
-                            {employeeList.length > 0 ? (
-                                employeeList.map((row, index) => (
-                                    <tr
-                                        key={row.id || index}
-                                        className={`${index % 2 === 0 ? "bg-gray-50" : "bg-white"}`}
-                                    >
-                                        <td className="px-4 py-2 text-center">
-                                            <input
-                                                type="checkbox"
-                                                name={`select-${index}`}
-                                                className="w-5 h-5 accent-blue-900"
-                                            />
-                                        </td>
-                                        <td className="px-4 py-2">{row.emp_name}</td>
-                                        <td className="px-4 py-2">{row.email}</td>
-                                        <td className="px-4 py-2 text-center">
-  <input
-    type="checkbox"
-    checked={row.OTP_Override == 1}  // if db stores 0/1
-    onChange={(e) =>
-      updateOTP(row.id, e.target.checked) // send boolean
-    }
-    className="w-5 h-5 accent-blue-900"
-  />
+      {/* Table Body */}
+      <tbody className="text-[12px]">
+        {employeeList.length > 0 ? (
+          employeeList.map((row, index) => (
+            <tr
+              key={row.id || index}
+              className={`${index % 2 === 0 ? "bg-gray-50" : "bg-white"} hover:bg-gray-100`}
+            >
+              {/* Checkbox */}
+              <td className="px-4 py-2 text-center">
+                <input
+                  type="checkbox"
+                  name={`select-${index}`}
+                  className="w-5 h-5 accent-blue-900"
+                />
+              </td>
+
+              {/* Name */}
+              <td className="px-4 py-2">{row.emp_name}</td>
+
+              {/* User ID */}
+              <td className="px-4 py-2">{row.email}</td>
+
+              {/* OTP Override */}
+              <td className="px-4 py-2 text-center">
+                <input
+                  type="checkbox"
+                  checked={row.OTP_Override == 1} // if db stores 0/1
+                  onChange={(e) => updateOTP(row.id, e.target.checked)}
+                  className="w-5 h-5 accent-blue-900"
+                />
+              </td>
+
+              {/* Sender Mobile 1 */}
+             {/* Sender Mobile 1 */}
+<td className="px-4 py-2">
+  <div className="flex items-center gap-2">
+    <input
+      type="number"
+      value={row.sender_mobile1 || ""}
+      className="py-1 text-sm px-2 border rounded-sm no-spinner flex-1"
+      onChange={(e) => (row.sender_mobile1 = e.target.value)}
+    />
+    <button
+      className="text-blue-600 hover:text-blue-800"
+      onClick={() =>
+        updateSender(row.id, row.sender_mobile1, row.sender_mobile2)
+      }
+      title="Save Mobile 1"
+    >
+      <FaSave size={18} />
+    </button>
+  </div>
 </td>
 
-                                      <td className="px-4 py-2  items-center gap-2">
-  <input
-    type="number"
-    defaultValue={row.sender_mobile1}
-    className="py-1 text-sm px-2 border rounded-sm no-spinner"
-    onChange={(e)=> row.sender_mobile1 = e.target.value}
-  />
-
-  <button
-    className="text-blue-600"
-    onClick={()=> updateSender(row.id, row.sender_mobile1, row.sender_mobile2)}
-  >
-    <FaSave size={18} />
-  </button>
+{/* Sender Mobile 2 */}
+<td className="px-4 py-2">
+  <div className="flex items-center gap-2">
+    <input
+      type="number"
+      value={row.sender_mobile2 || ""}
+      className="py-1 text-sm px-2 border rounded-sm no-spinner flex-1"
+      onChange={(e) => (row.sender_mobile2 = e.target.value)}
+    />
+    <button
+      className="text-blue-600 hover:text-blue-800"
+      onClick={() =>
+        updateSender(row.id, row.sender_mobile1, row.sender_mobile2)
+      }
+      title="Save Mobile 2"
+    >
+      <FaSave size={18} />
+    </button>
+  </div>
 </td>
 
-<td className="px-4 py-2  items-center gap-2">
-  <input
-    type="number"
-    defaultValue={row.sender_mobile2}
-    className="py-1 text-sm px-2 border rounded-sm no-spinner"
-    onChange={(e)=> row.sender_mobile2 = e.target.value}
-  />
+            </tr>
+          ))
+        ) : (
+          <tr>
+            <td
+              colSpan="6"
+              className="text-center text-gray-500 py-6 font-medium"
+            >
+              No records found.
+            </td>
+          </tr>
+        )}
+      </tbody>
+    </table>
+  </div>
+</div>
 
-  <button
-    className="text-blue-600"
-    onClick={()=> updateSender(row.id, row.sender_mobile1, row.sender_mobile2)}
-  >
-    <FaSave size={18} />
-  </button>
-</td>
-
-
-
-
-                                        
-                                    </tr>
-                                ))
-                            ) : (
-                                <tr>
-                                    <td
-                                        colSpan="7"
-                                        className="text-center text-gray-500 py-6 font-medium"
-                                    >
-                                        No records found.
-                                    </td>
-                                </tr>
-                            )}
-                        </tbody>
-                    </table>
-                </div>
-            </div>
 
             {/* Pagination */}
             {showPagination && totalPages > 1 && (

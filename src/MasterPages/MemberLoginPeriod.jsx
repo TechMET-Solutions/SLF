@@ -1,10 +1,10 @@
-import { useEffect, useState } from "react";
 import axios from "axios";
-import { API } from "../api";
-import { encryptData, decryptData } from "../utils/cryptoHelper";
-import { TimePicker } from "../Component/TimePicker";
-import Pagination from "../Component/Pagination";
+import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { API } from "../api";
+import Pagination from "../Component/Pagination";
+import { TimePicker } from "../Component/TimePicker";
+import { decryptData, encryptData } from "../utils/cryptoHelper";
 
 const MemberLoginPeriod = () => {
   const [data, setData] = useState([]);
@@ -184,7 +184,8 @@ const MemberLoginPeriod = () => {
             className={`${index % 2 === 0 ? "bg-gray-50" : "bg-white"}`}
           >
             <td className="px-4 py-2 flex items-center justify-center">
-              <input type="checkbox" className="w-4 h-4 accent-blue-900" />
+              {/* <input type="checkbox" className="w-4 h-4 accent-blue-900" /> */}
+              {row.id}
             </td>
             <td className="px-4 py-2">{row.name}</td>
             <td className="px-4 py-2">{row.email}</td>
