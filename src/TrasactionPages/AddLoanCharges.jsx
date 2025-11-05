@@ -18,7 +18,7 @@ function AddLoanCharges() {
     remark: "",
   });
 
-  const [chargesList, setChargesList] = useState([]); // active charges from backend
+  const [chargesList, setChargesList] = useState([]);
   const [rows, setRows] = useState([
     {
       charges: "",
@@ -32,19 +32,18 @@ function AddLoanCharges() {
       netPayable: "",
     },
   ]);
-console.log(formData,chargesList,rows)
-  // ✅ Fetch active charges from backend
+
+  const [searchResults, setSearchResults] = useState([]);
+  const [loading, setLoading] = useState(false);
+
+  // ✅ Fetch active charges
   useEffect(() => {
     const fetchCharges = async () => {
       try {
         const res = await axios.get(
           "http://localhost:5000/Master/GetChargesProfile/Active"
         );
-        if (res.data.success) {
-          setChargesList(res.data.data);
-        } else {
-          console.error("⚠️ Unexpected response:", res.data);
-        }
+        if (res.data.success) setChargesList(res.data.data);
       } catch (error) {
         console.error("❌ Error fetching charges:", error);
       }
@@ -56,18 +55,52 @@ console.log(formData,chargesList,rows)
     document.title = "SLF | Loan Charges";
   }, []);
 
-  // ✅ Handle form field updates
-  const handleChange = (e) => {
+  // ✅ Handle input change
+  const handleChange = async (e) => {
     const { name, value } = e.target;
     setFormData((prev) => ({ ...prev, [name]: value }));
+
+    // 🔍 Trigger search when user types in Party Name, Scheme, or Loan No
+    if (["partyName", "scheme", "loanNo"].includes(name) && value.length >= 2) {
+      try {
+        setLoading(true);
+        const res = await axios.get(
+          `http://localhost:5000/Transactions/goldloan/search?keyword=${value}`
+        );
+        setSearchResults(res.data.data || []);
+      } catch (error) {
+        console.error("❌ Search Error:", error);
+        setSearchResults([]);
+      } finally {
+        setLoading(false);
+      }
+    } else {
+      setSearchResults([]);
+    }
   };
 
-  // ✅ Handle row field updates
+  // ✅ When user selects a search result
+  const handleSelectLoan = (loan) => {
+    setFormData({
+      ...formData,
+      partyName: loan.partyName,
+      scheme: loan.scheme,
+      loanNo: loan.loanNo,
+      loanDate: loan.loanDate || "",
+      loanAmt: loan.loanAmt || "",
+      pendingAmt: loan.pendingAmt || "",
+      documentNo: loan.documentNo || "",
+      documentDate: loan.documentDate || "",
+      remark: loan.remark || "",
+    });
+    setSearchResults([]);
+  };
+
+  // ✅ Handle row updates
   const handleRowChange = (index, field, value) => {
     const updatedRows = [...rows];
     updatedRows[index][field] = value;
 
-    // 🔹 Auto-fill account & gross amount when selecting a charge
     if (field === "charges") {
       const selected = chargesList.find((ch) => ch.id === parseInt(value));
       if (selected) {
@@ -76,7 +109,6 @@ console.log(formData,chargesList,rows)
       }
     }
 
-    // 🔹 Calculate CGST / SGST amounts & Net Payable
     const gross = parseFloat(updatedRows[index].grossAmount) || 0;
     const cgstPercent = parseFloat(updatedRows[index].cgstPercent) || 0;
     const sgstPercent = parseFloat(updatedRows[index].sgstPercent) || 0;
@@ -92,7 +124,6 @@ console.log(formData,chargesList,rows)
     setRows(updatedRows);
   };
 
-  // ✅ Add new row
   const handleAddRow = () => {
     setRows([
       ...rows,
@@ -110,45 +141,41 @@ console.log(formData,chargesList,rows)
     ]);
   };
 
-  // ✅ Remove selected row
   const handleRemoveRow = (index) => {
     if (rows.length === 1) return;
     setRows(rows.filter((_, i) => i !== index));
   };
 
-  // ✅ Total of all Net Payables
   const totalNetPayable = rows.reduce(
     (sum, r) => sum + (parseFloat(r.netPayable) || 0),
     0
   );
 
-  // ✅ Handle Submit
+  // ✅ Submit handler
   const handleSubmit = async () => {
     try {
       const payload = { ...formData, charges: rows };
-      console.log(payload);
+      console.log("📦 Payload:", payload);
+      alert("Data prepared for submission (check console)");
     } catch (err) {
       console.error("❌ Submit error:", err);
       alert("Error submitting charges!");
     }
   };
+
   return (
     <div className="min-h-screen w-full">
-      {/* 🔹 Header */}
+      {/* Header */}
       <div className="flex justify-center">
         <div className="flex items-center px-6 py-4 border-b mt-5 w-[1290px] h-[62px] border rounded-[11px] border-gray-200 justify-between">
-          <h2 className="text-red-600 font-bold text-[20px]">
-            Add Loan Charges
-          </h2>
-
+          <h2 className="text-red-600 font-bold text-[20px]">Add Loan Charges</h2>
           <div className="flex gap-3">
             <button
-              onClick={() => navigate("/add-loan-charge")}
+              onClick={handleSubmit}
               className="bg-[#0A2478] text-white text-sm rounded px-6 py-1 cursor-pointer"
             >
               Submit
             </button>
-
             <button
               onClick={() => navigate("/loan-charges-list")}
               className="bg-[#C1121F] text-white text-sm rounded px-6 py-1 cursor-pointer"
@@ -159,228 +186,84 @@ console.log(formData,chargesList,rows)
         </div>
       </div>
 
-      {/* 🔹Search*/}
-      <div className="bg-[#FFE6E6] mt-5 p-6 rounded-md w-full mx-auto pl-[120px] pr-[120px]">
-        <p className="font-[Source_Sans_3] font-bold text-[24px] text-[#0A2478] mb-4">
-          Search
-        </p>
+      {/* 🔹 Search Section */}
+      <div className="bg-[#FFE6E6] mt-5 p-6 rounded-md w-full mx-auto pl-[120px] pr-[120px] relative">
+        <p className="font-bold text-[24px] text-[#0A2478] mb-4">Search</p>
 
         <div className="flex gap-3">
-          <div>
-            <div className="">
-              <div>
-                <label className="text-[14px] font-medium">Party Name</label>
-              </div>
-
+          {["partyName", "scheme", "loanNo"].map((field, i) => (
+            <div key={i}>
+              <label className="text-[14px] font-medium capitalize">
+                {field === "partyName"
+                  ? "Party Name"
+                  : field === "scheme"
+                  ? "Scheme"
+                  : "Loan No"}
+              </label>
               <input
                 type="text"
-                name="Permanent_Address"
-                value={formData.Permanent_Address}
+                name={field}
+                value={formData[field]}
                 onChange={handleChange}
-                placeholder="Party Name"
-                className="border border-gray-300 px-3 py-2 mt-1 w-[385px]  bg-white rounded-[8px]"
-              />
-            </div>
-          </div>
-
-          <div>
-            <div className="">
-              <div>
-                <label className="text-[14px] font-medium">Schemes</label>
-              </div>
-
-              <input
-                type="text"
-                name="Permanent_Pincode"
-                value={formData.Permanent_Pincode}
-                onChange={handleChange}
-                placeholder="Schemes"
+                placeholder={field === "partyName" ? "Party Name" : field === "scheme" ? "Scheme" : "Loan No"}
                 className="border border-gray-300 px-3 py-2 mt-1 w-[385px] bg-white rounded-[8px]"
               />
             </div>
-          </div>
-          <div>
-            <div className="">
-              <div>
-                <label className="text-[14px] font-medium">Loan No</label>
-              </div>
-              <input
-                type="text"
-                name="Permanent_Pincode"
-                value={formData.Permanent_Pincode}
-                onChange={handleChange}
-                placeholder="Loan No"
-                className="border border-gray-300 px-3 py-2 mt-1 w-[385px] bg-white rounded-[8px]"
-              />
-            </div>
-          </div>
-
-          <div></div>
+          ))}
         </div>
+
+        {/* 🔽 Search Results Dropdown */}
+        {loading && (
+          <p className="absolute left-[130px] top-[120px] text-gray-500">Searching...</p>
+        )}
+        {searchResults.length > 0 && (
+          <div className="absolute bg-white shadow-lg rounded-md mt-2 w-[1180px] max-h-[200px] overflow-y-auto border border-gray-300 z-10">
+            {searchResults.map((loan) => (
+              <div
+                key={loan.id}
+                onClick={() => handleSelectLoan(loan)}
+                className="px-4 py-2 hover:bg-[#f0f0f0] cursor-pointer text-sm flex justify-between"
+              >
+                <span>Loan No: {loan.loanNo}</span>
+                <span>Scheme: {loan.scheme}</span>
+                <span>Party: {loan.partyName}</span>
+              </div>
+            ))}
+          </div>
+        )}
       </div>
-      {/* 🔹Loan Detils*/}
-      <div className="bg-[#F7F7FF]  p-6 rounded-md w-full mx-auto pl-[120px] pr-[120px]">
-        <p className="font-[Source_Sans_3] font-bold text-[24px] text-[#0A2478] mb-4">
-          Loan Detils
-        </p>
 
-        <div className="flex gap-3">
-          <div>
-            <div className="">
-              <div>
-                <label className="text-[14px] font-medium">Loan No</label>
-              </div>
-
+      {/* 🔹 Loan Details Section */}
+      <div className="bg-[#F7F7FF] p-6 rounded-md w-full mx-auto pl-[120px] pr-[120px] mt-5">
+        <p className="font-bold text-[24px] text-[#0A2478] mb-4">Loan Details</p>
+        <div className="flex flex-wrap gap-3">
+          {[
+            { name: "loanNo", label: "Loan No" },
+            { name: "loanDate", label: "Loan Date", type: "date" },
+            { name: "scheme", label: "Scheme" },
+            { name: "partyName", label: "Party Name", width: "w-[300px]" },
+            { name: "loanAmt", label: "Loan Amt.", type: "number" },
+            { name: "pendingAmt", label: "Pending Amt.", type: "number" },
+          ].map((field, i) => (
+            <div key={i}>
+              <label className="text-[14px] font-medium">{field.label}</label>
               <input
-                type="text"
-                name="Permanent_Address"
-                value={formData.Permanent_Address}
+                type={field.type || "text"}
+                name={field.name}
+                value={formData[field.name]}
                 onChange={handleChange}
-                placeholder="Loan No"
-                className="border border-gray-300 px-3 py-2 mt-1 w-[150px]  bg-white rounded-[8px]"
+                placeholder={field.label}
+                className={`border border-gray-300 px-3 py-2 mt-1 ${
+                  field.width || "w-[150px]"
+                } bg-white rounded-[8px]`}
               />
             </div>
-          </div>
-
-          <div>
-            <div className="">
-              <div>
-                <label className="text-[14px] font-medium">Loan Date</label>
-              </div>
-
-              <input
-                type="text"
-                name="Permanent_Pincode"
-                value={formData.Permanent_Pincode}
-                onChange={handleChange}
-                placeholder="Loan Date"
-                className="border border-gray-300 px-3 py-2 mt-1 w-[150px] bg-white rounded-[8px]"
-              />
-            </div>
-          </div>
-          <div>
-            <div className="">
-              <div>
-                <label className="text-[14px] font-medium">Scheme</label>
-              </div>
-              <input
-                type="text"
-                name="Permanent_Pincode"
-                value={formData.Permanent_Pincode}
-                onChange={handleChange}
-                placeholder="Scheme"
-                className="border border-gray-300 px-3 py-2 mt-1 w-[150 px] bg-white rounded-[8px]"
-              />
-            </div>
-          </div>
-          <div>
-            <div className="">
-              <div>
-                <label className="text-[14px] font-medium">Party Name</label>
-              </div>
-              <input
-                type="text"
-                name="Permanent_Pincode"
-                value={formData.Permanent_Pincode}
-                onChange={handleChange}
-                placeholder="Party Name"
-                className="border border-gray-300 px-3 py-2 mt-1 w-[300px] bg-white rounded-[8px]"
-              />
-            </div>
-          </div>
-          <div>
-            <div className="">
-              <div>
-                <label className="text-[14px] font-medium">Loan Amt.</label>
-              </div>
-              <input
-                type="text"
-                name="Permanent_Pincode"
-                value={formData.Permanent_Pincode}
-                onChange={handleChange}
-                placeholder="Loan Amt."
-                className="border border-gray-300 px-3 py-2 mt-1 w-[150 px] bg-white rounded-[8px]"
-              />
-            </div>
-          </div>
-          <div>
-            <div className="">
-              <div>
-                <label className="text-[14px] font-medium">Pending Amt.</label>
-              </div>
-              <input
-                type="text"
-                name="Permanent_Pincode"
-                value={formData.Permanent_Pincode}
-                onChange={handleChange}
-                placeholder="Pending Amt."
-                className="border border-gray-300 px-3 py-2 mt-1 w-[150 px] bg-white rounded-[8px]"
-              />
-            </div>
-          </div>
-
-          <div></div>
+          ))}
         </div>
       </div>
 
-      <div className="bg-[#FFE6E6]  p-6 rounded-md w-full mx-auto pl-[120px] pr-[120px]">
-        <div className="flex gap-3">
-          <div>
-            <div className="">
-              <div>
-                <label className="text-[14px] font-medium">Documnet No</label>
-              </div>
-
-              <input
-                type="text"
-                name="Permanent_Address"
-                value={formData.Permanent_Address}
-                onChange={handleChange}
-                className="border border-gray-300 px-3 py-2 mt-1 w-[385px]  bg-white rounded-[8px]"
-              />
-            </div>
-          </div>
-
-          <div>
-            <div className="">
-              <div>
-                <label className="text-[14px] font-medium">Document Date</label>
-              </div>
-
-              <input
-                type="text"
-                name="Permanent_Pincode"
-                value={formData.Permanent_Pincode}
-                onChange={handleChange}
-                className="border border-gray-300 px-3 py-2 mt-1 w-[385px] bg-white rounded-[8px]"
-              />
-            </div>
-          </div>
-          <div>
-            <div className="">
-              <div>
-                <label className="text-[14px] font-medium">
-                  Remark <spam className="text-red-600">*</spam>
-                </label>
-              </div>
-              <input
-                type="text"
-                name="Permanent_Pincode"
-                value={formData.Permanent_Pincode}
-                onChange={handleChange}
-                className="border border-gray-300 px-3 py-2 mt-1 w-[385px] bg-white rounded-[8px]"
-              />
-            </div>
-          </div>
-
-          <div></div>
-        </div>
-      </div>
-      
-
-     
-     {/* 🔹 Charges Details */}
-      <h1 className="font-[Source_Sans_3] font-bold text-[24px] text-[#0A2478] mb-4 mt-6 px-[120px]">
+      {/* Charges Table */}
+      <h1 className="font-bold text-[24px] text-[#0A2478] mb-4 mt-6 px-[120px]">
         Charges Details
       </h1>
 
@@ -389,26 +272,23 @@ console.log(formData,chargesList,rows)
           <table className="w-full border-collapse text-sm">
             <thead>
               <tr className="bg-[#0A2478] text-white text-center">
-                <th className="py-2 px-2 border">Sr No</th>
-                <th className="py-2 px-2 border">Charges</th>
-                <th className="py-2 px-2 border">Account</th>
-                <th className="py-2 px-2 border">Date</th>
-                <th className="py-2 px-2 border">Gross Amount</th>
-                <th className="py-2 px-2 border">CGST(%)</th>
-                <th className="py-2 px-2 border">CGST Amt</th>
-                <th className="py-2 px-2 border">SGST(%)</th>
-                <th className="py-2 px-2 border">SGST Amt</th>
-                <th className="py-2 px-2 border">Net Payable</th>
-                <th className="py-2 px-2 border">Action</th>
+                <th className="py-2 border">Sr No</th>
+                <th className="py-2 border">Charges</th>
+                <th className="py-2 border">Account</th>
+                <th className="py-2 border">Date</th>
+                <th className="py-2 border">Gross Amount</th>
+                <th className="py-2 border">CGST(%)</th>
+                <th className="py-2 border">CGST Amt</th>
+                <th className="py-2 border">SGST(%)</th>
+                <th className="py-2 border">SGST Amt</th>
+                <th className="py-2 border">Net Payable</th>
+                <th className="py-2 border">Action</th>
               </tr>
             </thead>
-
             <tbody>
               {rows.map((row, index) => (
                 <tr key={index} className="text-center bg-white">
                   <td className="py-2">{index + 1}</td>
-
-                  {/* Charges Select */}
                   <td className="py-2">
                     <select
                       value={row.charges}
@@ -425,8 +305,6 @@ console.log(formData,chargesList,rows)
                       ))}
                     </select>
                   </td>
-
-                  {/* Account */}
                   <td className="py-2">
                     <input
                       type="text"
@@ -435,8 +313,6 @@ console.log(formData,chargesList,rows)
                       className="border border-gray-300 rounded-md px-2 py-1 w-[120px] bg-gray-100"
                     />
                   </td>
-
-                  {/* Date */}
                   <td className="py-2">
                     <input
                       type="date"
@@ -447,8 +323,6 @@ console.log(formData,chargesList,rows)
                       className="border border-gray-300 rounded-md px-2 py-1"
                     />
                   </td>
-
-                  {/* Gross Amount */}
                   <td className="py-2">
                     <input
                       type="number"
@@ -459,8 +333,6 @@ console.log(formData,chargesList,rows)
                       className="border border-gray-300 rounded-md px-2 py-1 w-[100px]"
                     />
                   </td>
-
-                  {/* CGST (%) */}
                   <td className="py-2">
                     <input
                       type="number"
@@ -471,8 +343,6 @@ console.log(formData,chargesList,rows)
                       className="border border-gray-300 rounded-md px-2 py-1 w-[70px]"
                     />
                   </td>
-
-                  {/* CGST Amt */}
                   <td className="py-2">
                     <input
                       type="number"
@@ -481,8 +351,6 @@ console.log(formData,chargesList,rows)
                       className="border border-gray-300 rounded-md px-2 py-1 w-[90px] bg-gray-100"
                     />
                   </td>
-
-                  {/* SGST (%) */}
                   <td className="py-2">
                     <input
                       type="number"
@@ -493,8 +361,6 @@ console.log(formData,chargesList,rows)
                       className="border border-gray-300 rounded-md px-2 py-1 w-[70px]"
                     />
                   </td>
-
-                  {/* SGST Amt */}
                   <td className="py-2">
                     <input
                       type="number"
@@ -503,8 +369,6 @@ console.log(formData,chargesList,rows)
                       className="border border-gray-300 rounded-md px-2 py-1 w-[90px] bg-gray-100"
                     />
                   </td>
-
-                  {/* Net Payable */}
                   <td className="py-2">
                     <input
                       type="number"
@@ -513,8 +377,6 @@ console.log(formData,chargesList,rows)
                       className="border border-gray-300 rounded-md px-2 py-1 w-[120px] bg-gray-100"
                     />
                   </td>
-
-                  {/* Action */}
                   <td className="py-2 flex justify-center items-center gap-2">
                     <button
                       onClick={handleAddRow}
@@ -531,8 +393,6 @@ console.log(formData,chargesList,rows)
                   </td>
                 </tr>
               ))}
-
-              {/* Total Row */}
               <tr className="border font-semibold bg-gray-100">
                 <td colSpan="9" className="text-right pr-4 py-2">
                   Total
