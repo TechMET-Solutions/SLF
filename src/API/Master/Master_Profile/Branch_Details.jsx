@@ -4,26 +4,27 @@ import { API } from "../../../api";
 import { decryptData, encryptData } from "../../../utils/cryptoHelper";
 
 
-// ✅ Fetch branches API function
-export const fetchBranchesApi = async (page = 1, limit = 10) => {
+// ✅ Fetch branches API function (with search support)
+export const fetchBranchesApi = async (page = 1, limit = 10, search = "") => {
   try {
     const res = await axios.get(`${API}/Master/Master_Profile/get_Branches`, {
-      params: { page, limit },
+      params: { page, limit, search }, // 🔍 include search parameter
     });
 
     const decrypted = decryptData(res.data.data);
 
     if (!decrypted) {
       console.warn("Decryption failed or empty, returning empty array.");
-      return { branches: [], total: 0 };
+      return { branches: [], total: 0, page, limit };
     }
 
-    return decrypted;
+    return decrypted; // { branches, total, page, limit }
   } catch (error) {
     console.error("Error fetching branches:", error);
     throw error;
   }
 };
+
 
 export const updateBranchStatusApi = async (id, status) => {
   try {

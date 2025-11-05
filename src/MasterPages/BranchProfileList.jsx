@@ -16,6 +16,9 @@ const BranchProfileList = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [isViewMode, setIsViewMode] = useState(false);
 
+// 🔍 Search states
+  const [searchCode, setSearchCode] = useState("");
+  const [searchName, setSearchName] = useState("");
 
   const [branchData, setBranchData] = useState({
     branch_code: "",
@@ -32,28 +35,33 @@ const BranchProfileList = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const [totalRecords, setTotalRecords] = useState(0);
   const recordsPerPage = 10;
-const [activeEmployees, setActiveEmployees] = useState([]);
-console.log(activeEmployees,"activeEmployees")
+  const [activeEmployees, setActiveEmployees] = useState([]);
+  console.log(activeEmployees, "activeEmployees")
   useEffect(() => {
-  getActiveEmp();
-}, []);
+    getActiveEmp();
+  }, []);
 
-;
+  ;
 
-useEffect(() => {
-  getActiveEmp();
-}, []);
+  useEffect(() => {
+    getActiveEmp();
+  }, []);
 
- const getActiveEmp = async () => {
-  try {
-    const res = await axios.get(`${API}/Master/getActiveEmployees`);
-    const decrypted = decryptData(res.data.data); // no JSON.parse
-    console.log(decrypted);
-    setActiveEmployees(decrypted);
-  } catch (error) {
-    console.log(error);
-  }
-};
+  const getActiveEmp = async () => {
+    try {
+      const res = await axios.get(`${API}/Master/getActiveEmployees`);
+      const decrypted = decryptData(res.data.data); // no JSON.parse
+      console.log(decrypted);
+      setActiveEmployees(decrypted);
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  const handleSearch = () => {
+    setCurrentPage(1); // Reset to first page when searching
+    fetchBranches(1);
+  };
 
   const handleChange = (e) => {
     const { name, value, type, checked } = e.target;
@@ -107,7 +115,10 @@ useEffect(() => {
   const fetchBranches = async (page = 1) => {
     setIsLoading(true);
     try {
-      const data = await fetchBranchesApi(page, recordsPerPage);
+      // Combine searchCode and searchName into a single search query
+      const search = searchCode || searchName;
+      const data = await fetchBranchesApi(page, recordsPerPage, search);
+
       setBranches(data.branches);
       setTotalRecords(data.total);
     } catch (error) {
@@ -117,10 +128,10 @@ useEffect(() => {
     }
   };
 
+  // 🔁 Fetch branches when page changes
   useEffect(() => {
     fetchBranches(currentPage);
   }, [currentPage]);
-
 
   const totalPages = Math.ceil(totalRecords / recordsPerPage);
 
@@ -199,8 +210,9 @@ useEffect(() => {
       alert("Failed to update branch");
     }
   };
-  return (
 
+
+  return (
     <>
       <div className=" w-full">
         {/* middletopbar */}
@@ -236,7 +248,8 @@ useEffect(() => {
 
                 <input
                   type="text"
-
+                  value={searchCode}
+                  onChange={(e) => setSearchCode(e.target.value)}
                   style={{
                     width: "168.64px",
                     height: "27.49px",
@@ -264,7 +277,8 @@ useEffect(() => {
 
                 <input
                   type="text"
-
+                  value={searchName}
+                  onChange={(e) => setSearchName(e.target.value)}
                   style={{
                     width: "168.64px",
                     height: "27.49px",
@@ -274,6 +288,7 @@ useEffect(() => {
                   className="border border-gray-400 px-3 py-1 text-[11.25px] font-source"
                 />
                 <button
+                  onClick={handleSearch}
                   style={{
                     width: "84.36px",
                     height: "26.87px",
@@ -386,7 +401,7 @@ useEffect(() => {
                   />
                 </div>
 
-                
+
                 <div>
                   <label className="text-[14px]">Mobile No. *</label>
                   <input
@@ -398,52 +413,52 @@ useEffect(() => {
                     className="border border-gray-300 rounded px-3 py-2 mt-1 w-full"
                   />
                 </div>
-<div>
-  <label className="text-[14px]">Lead Person</label>
-  <select
-    name="lead_person"
-    value={branchData.lead_person}
-    onChange={handleChange}
-    className="border border-gray-300 rounded px-3 py-2 mt-1 w-full"
-  >
-    <option value="">Select Lead Person</option>
-
-    {activeEmployees.map((emp) => (
-      <option key={emp.id} value={emp.id}>
-        {emp.emp_name}
-      </option>
-    ))}
-  </select>
-</div>
-
-<div className="flex  justify-center gap-10">
-
-    <div className="flex items-center mt-4 gap-2">
-                  <input
-                    type="checkbox"
-                    name="is_main"
-                    checked={branchData.is_main}
+                <div>
+                  <label className="text-[14px]">Lead Person</label>
+                  <select
+                    name="lead_person"
+                    value={branchData.lead_person}
                     onChange={handleChange}
-                    className="w-4 h-4 accent-blue-900"
-                  />
-                  <label className="text-[14px]">Is Main <span className="text-red-500">*</span></label>
+                    className="border border-gray-300 rounded px-3 py-2 mt-1 w-full"
+                  >
+                    <option value="">Select Lead Person</option>
+
+                    {activeEmployees.map((emp) => (
+                      <option key={emp.id} value={emp.id}>
+                        {emp.emp_name}
+                      </option>
+                    ))}
+                  </select>
                 </div>
 
-                <div className="flex items-center mt-4 gap-2">
-                  <input
-                    type="checkbox"
-                    name="status"
-                    checked={branchData.status}
-                    onChange={handleChange}
-                    className="w-4 h-4 accent-blue-900"
-                  />
-                  <label className="text-[14px]"> Is Active*</label>
-                </div>
+                <div className="flex  justify-center gap-10">
+
+                  <div className="flex items-center mt-4 gap-2">
+                    <input
+                      type="checkbox"
+                      name="is_main"
+                      checked={branchData.is_main}
+                      onChange={handleChange}
+                      className="w-4 h-4 accent-blue-900"
+                    />
+                    <label className="text-[14px]">Is Main <span className="text-red-500">*</span></label>
                   </div>
-              
+
+                  <div className="flex items-center mt-4 gap-2">
+                    <input
+                      type="checkbox"
+                      name="status"
+                      checked={branchData.status}
+                      onChange={handleChange}
+                      className="w-4 h-4 accent-blue-900"
+                    />
+                    <label className="text-[14px]"> Is Active*</label>
+                  </div>
+                </div>
+
               </div>
 
-             <div className="flex justify-center gap-4 mt-6">
+              <div className="flex justify-center gap-4 mt-6">
                 {!isViewMode && (
                   isEditMode ? (
                     <button
@@ -521,12 +536,12 @@ useEffect(() => {
                           disabled={isViewMode}
                           className="bg-green-500 p-1.5 text-white rounded cursor-pointer"
                           onClick={() => handleEdit(row)}
-                        title="Edit">
+                          title="Edit">
                           <FiEdit className="text-white text-sm" />
                         </button>
                         <button
                           className="bg-[#646AD9] p-1.5 text-white rounded cursor-pointer"
-                          onClick={() => handleView(row)}      title="view"                   >
+                          onClick={() => handleView(row)} title="view"                   >
                           <FiEye className="text-white text-sm" />
                         </button>
                       </div>
@@ -562,7 +577,8 @@ useEffect(() => {
 
       <div className=" w-full relative">
         {isLoading && <Loader />}
-      </div></>
+      </div>
+    </>
 
   );
 };
