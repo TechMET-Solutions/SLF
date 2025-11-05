@@ -117,11 +117,11 @@ const LoanApplication = () => {
           limit: pagination.limit
         });
       } else {
-        throw new Error(response.data.message || "Failed to fetch loan applications");
+        throw new Error(response.data.message || "NO loan applications");
       }
     } catch (err) {
       console.error("Error fetching loan applications:", err);
-      setError(err.response?.data?.message || err.message || "Failed to fetch loan applications");
+      setError(err.response?.data?.message || err.message || "No loan applications");
       setLoanApplication([]);
     } finally {
       setLoading(false);
