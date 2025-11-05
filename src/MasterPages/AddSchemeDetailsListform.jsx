@@ -532,27 +532,27 @@ const AddSchemeDetailsListform = () => {
           </div>
 
           {/* Payment Basis On */}
-<div className="flex flex-col">
-  <label className="text-xs font-medium mb-1">
-    Payment Basis On <span className="text-red-600">*</span>
-  </label>
-  <select
-    name="paymentBasisOn"
-    value={
-      formData.paymentBasisOn ||
-      (formData.calcBasisOn === "Monthly"
-        ? "Interest"
-        : formData.calcBasisOn === "Daily"
-        ? "EMI"
-        : "")
-    }
-    onChange={handleInputChange}
-    className="border border-gray-300 rounded px-3 py-2 w-[113px] bg-white text-sm"
-  >
-    <option value="Interest" disabled={formData.calcBasisOn === "Daily"}>Interest</option>
-    <option value="EMI" disabled={formData.calcBasisOn === "Monthly"}>EMI</option>
-  </select>
-</div>
+          <div className="flex flex-col">
+            <label className="text-xs font-medium mb-1">
+              Payment Basis On <span className="text-red-600">*</span>
+            </label>
+            <select
+              name="paymentBasisOn"
+              value={
+                formData.paymentBasisOn ||
+                (formData.calcBasisOn === "Monthly"
+                  ? "EMI"
+                  : formData.calcBasisOn === "Daily"
+                    ? "Interest"
+                    : "")
+              }
+              onChange={handleInputChange}
+              className="border border-gray-300 rounded px-3 py-2 w-[113px] bg-white text-sm"
+            >
+              <option value="Interest" disabled={formData.calcBasisOn === "Daily"}>Interest</option>
+              <option value="EMI" disabled={formData.calcBasisOn === "Monthly"}>EMI</option>
+            </select>
+          </div>
 
 
           <div className="flex flex-col">
