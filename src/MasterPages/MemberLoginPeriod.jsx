@@ -163,60 +163,72 @@ const MemberLoginPeriod = () => {
       </div>
 
       {/* Table */}
-      <div className="flex justify-center">
-        <div className="overflow-x-auto mt-5 w-[1290px] h-[500px]">
-          <table className="w-full border-collapse">
-            <thead className="bg-[#0A2472] text-white text-sm">
-              <tr>
-                <th className="px-4 py-2 text-left border-r">Sr.</th>
-                <th className="px-4 py-2 text-left border-r">Name</th>
-                <th className="px-4 py-2 text-left border-r">User Id</th>
-                <th className="px-4 py-2 text-left border-r">Start Time</th>
-                <th className="px-4 py-2 text-left border-r">End Time</th>
-                <th className="px-4 py-2 text-left border-r">IP Address</th>
-              </tr>
-            </thead>
+     <div className="flex justify-center">
+  <div className="overflow-x-auto mt-5 w-[1290px] h-[500px]">
+    <table className="w-full border-collapse">
+      <thead className="bg-[#0A2472] text-white text-sm">
+        <tr>
+          <th className="px-4 py-2 text-left border-r">Sr.</th>
+          <th className="px-4 py-2 text-left border-r">Name</th>
+          <th className="px-4 py-2 text-left border-r">User Id</th>
+          <th className="px-4 py-2 text-left border-r">Start Time</th>
+          <th className="px-4 py-2 text-left border-r">End Time</th>
+          <th className="px-4 py-2 text-left border-r">IP Address</th>
+        </tr>
+      </thead>
 
-            <tbody className="text-[12px]">
-              {data.map((row, index) => (
-                <tr
-                  key={row.id}
-                  className={`${index % 2 === 0 ? "bg-gray-50" : "bg-white"}`}
-                >
-                  <td className="px-4 py-2 flex items-center justify-center">
-                    <input type="checkbox" className="w-4 h-4 accent-blue-900" />
-                  </td>
-                  <td className="px-4 py-2">{row.name}</td>
-                  <td className="px-4 py-2">{row.email}</td>
+      <tbody className="text-[12px]">
+        {data.map((row, index) => (
+          <tr
+            key={row.id}
+            className={`${index % 2 === 0 ? "bg-gray-50" : "bg-white"}`}
+          >
+            <td className="px-4 py-2 flex items-center justify-center">
+              <input type="checkbox" className="w-4 h-4 accent-blue-900" />
+            </td>
+            <td className="px-4 py-2">{row.name}</td>
+            <td className="px-4 py-2">{row.email}</td>
 
-                  {/* Start Time */}
-                  <td className="px-4 py-2">
-                    <TimePicker
-                      initialTime={row.startDate}
-                      onSave={(newTime) => {
-                        handleChange(index, "startDate", newTime);
-                        handleBlur(index);
-                      }}
-                      onCancel={() => console.log("Cancelled")}
-                    />
-                  </td>
+            {/* Start Time */}
+            <td className="px-4 py-2">
+              <TimePicker
+                initialTime={row.startDate}
+                onSave={(newTime) => {
+                  handleChange(index, "startDate", newTime);
+                  handleBlur(index);
+                }}
+              />
+            </td>
 
-                  <td className="px-4 py-2">
-                    <TimePicker
-                      initialTime={row.endDate}
-                      onSave={(newTime) => {
-                        handleChange(index, "endDate", newTime);
-                        handleBlur(index);
-                      }}
-                    />
-                  </td>
+            {/* End Time */}
+            <td className="px-4 py-2">
+              <TimePicker
+                initialTime={row.endDate}
+                onSave={(newTime) => {
+                  handleChange(index, "endDate", newTime);
+                  handleBlur(index);
+                }}
+              />
+            </td>
 
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
-      </div>
+            {/* ✅ Editable IP Address */}
+            <td className="px-4 py-2">
+              <input
+                type="text"
+                value={row.ipAddress}
+                onChange={(e) => handleChange(index, "ipAddress", e.target.value)}
+                onBlur={() => handleBlur(index)}
+                placeholder="Enter IP address"
+                className="border border-gray-300 rounded px-2 py-1 text-sm w-full focus:outline-none focus:ring-1 focus:ring-blue-500"
+              />
+            </td>
+          </tr>
+        ))}
+      </tbody>
+    </table>
+  </div>
+</div>
+
 
       {totalPages > 1 && (
         <Pagination
