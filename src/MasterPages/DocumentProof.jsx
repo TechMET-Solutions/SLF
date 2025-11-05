@@ -12,7 +12,6 @@ const DocumentProof = () => {
    const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [formData, setFormData] = useState({
     proof_type: "",
-    proof_number: "",
     is_id_proof: false,
     is_address_proof: false,
     added_by: "",
@@ -41,7 +40,6 @@ const DocumentProof = () => {
   const resetModal = () => {
   setFormData({
     proof_type: "",
-    proof_number: "",
     is_id_proof: false,
     is_address_proof: false,
     added_by: "",
@@ -68,7 +66,6 @@ const DocumentProof = () => {
 const handleEditClick = (doc) => {
   setFormData({
     proof_type: doc.proof_type || "",
-    proof_number: doc.proof_number || "",
     is_id_proof: doc.is_id_proof === 1,         // convert number → boolean
     is_address_proof: doc.is_address_proof === 1,
     added_by: doc.added_by || "",
@@ -107,7 +104,7 @@ const handleEditClick = (doc) => {
   const handleSubmit = async () => {
 
     try {
-      if (!formData.proof_type || !formData.proof_number || !file) {
+      if (!formData.proof_type) {
         alert("Please fill all required fields!");
         return;
       }
@@ -115,7 +112,7 @@ const handleEditClick = (doc) => {
       const encryptedData = encryptData(JSON.stringify(formData));
       const payload = new FormData();
       payload.append("data", encryptedData);
-      payload.append("file", file);
+     
 
       const response = await axios.post(`${API}/Master/Master_Profile/add_Document`, payload, {
         headers: { "Content-Type": "multipart/form-data" },
@@ -135,7 +132,7 @@ const handleEditClick = (doc) => {
   const handleUpdateSubmit = async () => {
     debugger
   try {
-    if (!formData.proof_type || !formData.proof_number) {
+    if (!formData.proof_type) {
       alert("Please fill all required fields!");
       return;
     }
@@ -151,11 +148,8 @@ const handleEditClick = (doc) => {
     const payload = new FormData();
     payload.append("data", encryptedData);
 
-    // only append file if user selected new file
-    if (file) {
-      payload.append("file", file);
-    }
-
+   
+   
     const response = await axios.post(
       `${API}/Master/Master_Profile/update_document`,
       payload,
@@ -293,65 +287,22 @@ const handleEditClick = (doc) => {
             <div className="">
               {/* Proof Type Dropdown */}
               <div>
-                <label className="text-[14px]">
-                  Proof Type Name <span className="text-red-500">*</span>
-                </label>
-                <select
-                  name="proof_type"
-                  value={formData.proof_type}
-                  onChange={handleChange}
-                  className="border border-gray-300 rounded px-3 py-2 mt-1 w-full"
-                >
-                  <option value="">Select proof type</option>
-                  <option value="Aadhar Card">Aadhar Card</option>
-                  <option value="PAN Card">PAN Card</option>
-                  <option value="Driving License">Driving License</option>
-                </select>
-              </div>
+  <label className="text-[14px]">
+    Proof Type Name <span className="text-red-500">*</span>
+  </label>
 
-              <div className="flex justify-between gap-10 mt-5">
-
-                <div className="col-span-2">
-                  <label className="text-[14px]">
-                    Upload Document <span className="text-red-500">*</span>
-                  </label>
-                  <div className="flex items-center border border-gray-300 rounded mt-1 w-full">
-                    <label
-                      htmlFor="uploadFile"
-                      className="bg-[#D9D9D9] px-4 py-2 cursor-pointer text-[10px] rounded-l border-r border-gray-300 w-[150px]"
-                    >
-                      Choose File
-                    </label>
-                    <input
-                      id="uploadFile"
-                      type="file"
-                      accept="image/*,.pdf"
-                      className="hidden"
-                      onChange={handleFileChange}
-                    />
-                    <span className="px-3 py-2 text-sm text-gray-500 w-full truncate">
-                      {fileName || "No file chosen"}
-                    </span>
-                  </div>
+  <input
+    type="text"
+    name="proof_type"
+    value={formData.proof_type}
+    onChange={handleChange}
+    placeholder="Enter Proof Type Name"
+    className="border border-gray-300 rounded px-3 py-2 mt-1 w-full"
+  />
+</div>
 
 
-
-                </div>
-                <div>
-                  <label className="text-[14px]">
-                    Number <span className="text-red-500">*</span>
-                  </label>
-                  <input
-                    type="text"
-                    name="proof_number"
-                    placeholder="Enter number"
-                    value={formData.proof_number}
-                    onChange={handleChange}
-                    className="border border-gray-300 rounded px-3 py-2  w-full"
-                  />
-                </div>
-              </div>
-
+             
 
               {/* Checkboxes */}
               <div className="flex justify-center gap-10">

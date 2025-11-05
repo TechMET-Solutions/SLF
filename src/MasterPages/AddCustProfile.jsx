@@ -5,6 +5,7 @@ import JoditEditor from "jodit-react";
 import { useEffect, useRef, useState } from "react";
 import { MdOutlineFileUpload } from "react-icons/md";
 import { useLocation, useNavigate } from "react-router-dom";
+import { API } from "../api";
 import profileempty from "../assets/profileempty.png";
 import righttick from "../assets/righttick.png";
 import send from "../assets/send.svg";
@@ -115,8 +116,34 @@ const [formData, setFormData] = useState({
       cancelCheque: null,
       
   });
-  
+  const [documents, setDocuments] = useState([]);      // main list from API
+const [idProofList, setIdProofList] = useState([]);  // filtered only id proof
+const [addrProofList, setAddrProofList] = useState([]); // filtered only address proof
 
+const fetchDocuments = async () => {
+  try {
+    // setLoading(true);
+
+    const response = await axios.get(`${API}/Master/getAllDocumentProofs`);
+
+    const docs = response.data.data;  // <-- already clean json
+
+    setDocuments(docs);
+
+    setIdProofList(docs.filter(x => x.is_id_proof === 1));
+    setAddrProofList(docs.filter(x => x.is_address_proof === 1));
+
+    // setLoading(false);
+  } catch (err) {
+    console.error("Error fetching documents:", err);
+    // setError("Failed to fetch documents");
+    // setLoading(false);
+  }
+};
+
+  useEffect(() => {
+    fetchDocuments()
+  },[])
 
 useEffect(() => {
   if (customerData) {
@@ -1493,22 +1520,27 @@ const addBankDetails = async (customerId) => {
   onChange={handleChange}
   className="border border-gray-300 px-3 py-2 mt-1 w-[200px] bg-white rounded-[8px]"
 >
-  <option value="">Select Proof</option>
-  <option value="Aadhar Card">Aadhar Card</option>
-  <option value="Bank Passbook">Bank Passbook</option>
-  <option value="Driving License">Driving License</option>
-  <option value="Electricity Bill">Electricity Bill</option>
-  <option value="Enrollment Number For Aadhar">Enrollment Number For Aadhar</option>
-  <option value="Govt. ID/ Defense ID">Govt. ID/ Defense ID</option>
-  <option value="PAN Card">PAN Card</option>
-  <option value="Passport">Passport</option>
-  <option value="Phone Bill">Phone Bill</option>
-  <option value="Ration Card">Ration Card</option>
-  <option value="Rent Agmt">Rent Agreement</option>
-  <option value="Shop Act License">Shop Act License</option>
-  <option value="Voter ID">Voter ID</option>
-  <option value="Others">Others</option>
+  <option value="">Select Address Proof</option>
+
+  {addrProofList.map(item => {
+    const proof = item.proof_type.toLowerCase();
+
+    return (
+      <option
+        key={item.id}
+        value={item.proof_type}
+
+       disabled={
+            (formData.panNo && proof.includes("pan")) ||
+            (formData.aadhar && (proof.includes("adhaar") || proof.includes("adhar")))
+          }
+      >
+        {item.proof_type}
+      </option>
+    );
+  })}
 </select>
+
 
 </div>
 
@@ -1550,8 +1582,9 @@ const addBankDetails = async (customerId) => {
   )}
 </div>
           {/* ID Proof */}
-         <div className="flex flex-col">
+       <div className="flex flex-col">
   <label className="text-[14px] font-medium">ID Proof</label>
+
   <select
     name="Additional_IDProof"
     value={formData.Additional_IDProof}
@@ -1559,16 +1592,26 @@ const addBankDetails = async (customerId) => {
     className="border border-gray-300 px-3 py-2 mt-1 w-[200px] bg-white rounded-[8px]"
   >
     <option value="">Select ID Proof</option>
-    <option value="Aadhar Card">Aadhar Card</option>
-    <option value="Driving License">Driving License</option>
-    <option value="Enrollment Number For Aadhar">Enrollment Number For Aadhar</option>
-    <option value="Govt. ID/ Defense ID">Govt. ID/ Defense ID</option>
-    <option value="PAN Card">PAN Card</option>
-    <option value="Passport">Passport</option>
-    <option value="Voter ID">Voter ID</option>
-    <option value="Others">Others</option>
+
+    {idProofList.map(item => {
+      const p = item.proof_type.toLowerCase();
+
+      return (
+        <option
+          key={item.id}
+          value={item.proof_type}
+          disabled={
+            (formData.panNo && p.includes("pan")) ||
+            (formData.aadhar && (p.includes("adhaar") || p.includes("adhar")))
+          }
+        >
+          {item.proof_type}
+        </option>
+      );
+    })}
   </select>
 </div>
+
 
 
           {/* ID Details */}

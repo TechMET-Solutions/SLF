@@ -80,7 +80,7 @@ const MemberBranchMapping = () => {
                   key={row.id}
                   className={`border-b ${index % 2 === 0 ? "bg-gray-50" : "bg-white"}`}
                 >
-                  <td className="px-4 py-2">{row.emp_id}</td>
+                  <td className="px-4 py-2">{row.id}</td>
                   <td className="px-4 py-2">{row.emp_name}</td>
                   <td className="px-4 py-2">{row.email}</td>
                   <td className="px-4 py-2">{row.mobile_no}</td>

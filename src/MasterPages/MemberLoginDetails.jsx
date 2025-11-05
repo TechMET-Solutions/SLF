@@ -1,10 +1,13 @@
 
 
+import axios from "axios";
 import { useEffect, useState } from "react";
+import { FaSave } from "react-icons/fa";
+import { useNavigate } from "react-router-dom";
+import { API } from "../api";
+import { fetchEmployeeProfileApi } from "../API/Master/Employee_Profile/EmployeeProfile";
 import Loader from "../Component/Loader";
 import Pagination from "../Component/Pagination";
-import { fetchEmployeeProfileApi } from "../API/Master/Employee_Profile/EmployeeProfile";
-import { useNavigate } from "react-router-dom";
 
 const MemberLoginDetails = () => {
     useEffect(() => {
@@ -15,6 +18,7 @@ const MemberLoginDetails = () => {
      const navigate = useNavigate();
 
     const [employeeList, setEmployeeList] = useState([]);
+    console.log(employeeList,"employeeList")
     const [isLoading, setIsLoading] = useState(false);
     const [searchTerm, setSearchTerm] = useState("");
     const [isModalOpen, setIsModalOpen] = useState(false);
@@ -64,6 +68,49 @@ const MemberLoginDetails = () => {
         );
     }
 
+
+    const updateSender = async (empId, sm1, sm2) => {
+      
+         if (sm1 && sm1.toString().length !== 10) {
+    alert("Sender Mobile 1 must be 10 digits");
+    return;
+  }
+
+  if (sm2 && sm2.toString().length !== 10) {
+    alert("Sender Mobile 2 must be 10 digits");
+    return;
+        }
+        
+  try {
+    await axios.post(`${API}/Master/Employee_Profile/updateSender`, {
+      empId: empId,
+      sender_mobile1: sm1,
+      sender_mobile2: sm2,
+    });
+
+    alert("Updated Successfully");
+    fetchEmployee(currentPage); // refresh
+  } catch (e) {
+    console.log(e);
+    alert("Update Failed");
+  }
+    };
+
+    const updateOTP = async (empId, boolValue) => {
+  try {
+    await axios.post(`${API}/Master/Employee_Profile/updateOTP`, {
+      empId: empId,
+      value: boolValue ? 1 : 0,   // convert boolean → 0/1
+    });
+
+    fetchEmployee(currentPage);
+  } catch (err) {
+    console.log(err);
+    alert("Update failed");
+  }
+};
+
+    
     return (
         <div className="min-h-screen w-full">
             {/* Top bar */}
@@ -149,19 +196,51 @@ const MemberLoginDetails = () => {
                                         <td className="px-4 py-2">{row.emp_name}</td>
                                         <td className="px-4 py-2">{row.email}</td>
                                         <td className="px-4 py-2 text-center">
-                                            <input
-                                                type="checkbox"
-                                                checked={row.otpOverride}
-                                                readOnly
-                                                className="w-5 h-5 accent-blue-900"
-                                            />
-                                        </td>
-                                        <td className="px-4 py-2">{row.sm1}
-                                            <input type="number" name="sm1" id="sm1" className="py-1 text-sm px-2 border rounded-sm no-spinner" />
-                                        </td>
-                                        <td className="px-4 py-2">{row.sm2}
-                                            <input type="number" name="sm2" id="sm2" className="py-1 text-sm px-2 border rounded-sm no-spinner" />
-                                        </td>
+  <input
+    type="checkbox"
+    checked={row.OTP_Override == 1}  // if db stores 0/1
+    onChange={(e) =>
+      updateOTP(row.id, e.target.checked) // send boolean
+    }
+    className="w-5 h-5 accent-blue-900"
+  />
+</td>
+
+                                      <td className="px-4 py-2  items-center gap-2">
+  <input
+    type="number"
+    defaultValue={row.sender_mobile1}
+    className="py-1 text-sm px-2 border rounded-sm no-spinner"
+    onChange={(e)=> row.sender_mobile1 = e.target.value}
+  />
+
+  <button
+    className="text-blue-600"
+    onClick={()=> updateSender(row.id, row.sender_mobile1, row.sender_mobile2)}
+  >
+    <FaSave size={18} />
+  </button>
+</td>
+
+<td className="px-4 py-2  items-center gap-2">
+  <input
+    type="number"
+    defaultValue={row.sender_mobile2}
+    className="py-1 text-sm px-2 border rounded-sm no-spinner"
+    onChange={(e)=> row.sender_mobile2 = e.target.value}
+  />
+
+  <button
+    className="text-blue-600"
+    onClick={()=> updateSender(row.id, row.sender_mobile1, row.sender_mobile2)}
+  >
+    <FaSave size={18} />
+  </button>
+</td>
+
+
+
+
                                         
                                     </tr>
                                 ))
