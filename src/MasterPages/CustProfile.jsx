@@ -488,7 +488,7 @@ useEffect(() => {
 
                   <td className="px-4 py-2">{row.id}</td>
                   <td className="px-4 py-2">{row.firstName}</td>
-                  <td className="px-4 py-2">{row.middleNam}</td>
+                  <td className="px-4 py-2">{row.middleName}</td>
                   <td className="px-4 py-2">{row.lastName}</td>
                   <td className="px-4 py-2">{row.Permanent_City}</td>
                   <td className="px-4 py-2">{row.mobile}</td>

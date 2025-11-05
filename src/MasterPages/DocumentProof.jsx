@@ -1,15 +1,17 @@
 import axios from "axios";
 import { useEffect, useState } from "react";
 import { API } from "../api";
-import GroupData from "../assets/Group 124.svg";
 import { decryptData, encryptData } from "../utils/cryptoHelper";
+import { FiEdit } from "react-icons/fi";
+import { useNavigate } from "react-router-dom";
 
 const DocumentProof = () => {
   useEffect(() => {
-    document.title = "SLF | Document Proof";
+    document.title = "SLF | Document Proof List";
   }, []);
+   const navigate = useNavigate();
   const [isModalOpen, setIsModalOpen] = useState(false);
-   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
+  const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [formData, setFormData] = useState({
     proof_type: "",
     is_id_proof: false,
@@ -20,7 +22,7 @@ const DocumentProof = () => {
   });
   const [selectedDataid, setselectedDataid] = useState(null);
 
-  console.log(formData,"formData")
+  console.log(formData, "formData")
   const [file, setFile] = useState(null);
   const [fileName, setFileName] = useState("No file chosen");
   const [previewUrl, setPreviewUrl] = useState("");
@@ -38,19 +40,19 @@ const DocumentProof = () => {
   };
 
   const resetModal = () => {
-  setFormData({
-    proof_type: "",
-    is_id_proof: false,
-    is_address_proof: false,
-    added_by: "",
-    modified_by: "",
-    status: "Active",
-  });
+    setFormData({
+      proof_type: "",
+      is_id_proof: false,
+      is_address_proof: false,
+      added_by: "",
+      modified_by: "",
+      status: "Active",
+    });
 
-  setFileName("");
+    setFileName("");
     setIsModalOpen(false);
     setIsEditModalOpen(false)
-};
+  };
 
   // handle file select
   const handleFileChange = (e) => {
@@ -63,21 +65,21 @@ const DocumentProof = () => {
       setFileName("No file chosen");
     }
   };
-const handleEditClick = (doc) => {
-  setFormData({
-    proof_type: doc.proof_type || "",
-    is_id_proof: doc.is_id_proof === 1,         // convert number → boolean
-    is_address_proof: doc.is_address_proof === 1,
-    added_by: doc.added_by || "",
-    modified_by: doc.modified_by || "",
-    status: doc.status === 1 ? "Active" : "Inactive",
-  });
-  setselectedDataid(doc.id)
+  const handleEditClick = (doc) => {
+    setFormData({
+      proof_type: doc.proof_type || "",
+      is_id_proof: doc.is_id_proof === 1,         // convert number → boolean
+      is_address_proof: doc.is_address_proof === 1,
+      added_by: doc.added_by || "",
+      modified_by: doc.modified_by || "",
+      status: doc.status === 1 ? "Active" : "Inactive",
+    });
+    setselectedDataid(doc.id)
 
-  setFileName(doc.file_path?.split("/")?.pop() || "");
-  setIsModalOpen(true);
-  setIsEditModalOpen(true);
-};
+    setFileName(doc.file_path?.split("/")?.pop() || "");
+    setIsModalOpen(true);
+    setIsEditModalOpen(true);
+  };
 
   const fetchDocuments = async () => {
     try {
@@ -112,7 +114,7 @@ const handleEditClick = (doc) => {
       const encryptedData = encryptData(JSON.stringify(formData));
       const payload = new FormData();
       payload.append("data", encryptedData);
-     
+
 
       const response = await axios.post(`${API}/Master/Master_Profile/add_Document`, payload, {
         headers: { "Content-Type": "multipart/form-data" },
@@ -131,42 +133,42 @@ const handleEditClick = (doc) => {
 
   const handleUpdateSubmit = async () => {
     debugger
-  try {
-    if (!formData.proof_type) {
-      alert("Please fill all required fields!");
-      return;
+    try {
+      if (!formData.proof_type) {
+        alert("Please fill all required fields!");
+        return;
+      }
+
+      // add id in object
+      const updatePayloadObject = {
+        ...formData,
+        id: selectedDataid,  // <-- this will come from selected row
+      };
+
+      const encryptedData = encryptData(JSON.stringify(updatePayloadObject));
+
+      const payload = new FormData();
+      payload.append("data", encryptedData);
+
+
+
+      const response = await axios.post(
+        `${API}/Master/Master_Profile/update_document`,
+        payload,
+        { headers: { "Content-Type": "multipart/form-data" } }
+      );
+
+      const result = response.data;
+      console.log("✅ UPDATE RESPONSE:", result);
+
+      alert("Document proof updated successfully!");
+      setIsModalOpen(false);
+      fetchDocuments();
+    } catch (error) {
+      console.error("❌ UPDATE Error:", error);
+      alert("Failed to update document proof.");
     }
-
-    // add id in object
-    const updatePayloadObject = {
-      ...formData,
-      id: selectedDataid,  // <-- this will come from selected row
-    };
-
-    const encryptedData = encryptData(JSON.stringify(updatePayloadObject));
-
-    const payload = new FormData();
-    payload.append("data", encryptedData);
-
-   
-   
-    const response = await axios.post(
-      `${API}/Master/Master_Profile/update_document`,
-      payload,
-      { headers: { "Content-Type": "multipart/form-data" } }
-    );
-
-    const result = response.data;
-    console.log("✅ UPDATE RESPONSE:", result);
-
-    alert("Document proof updated successfully!");
-    setIsModalOpen(false);
-    fetchDocuments();
-  } catch (error) {
-    console.error("❌ UPDATE Error:", error);
-    alert("Failed to update document proof.");
-  }
-};
+  };
 
 
   const updateDocumentStatus = async (id, currentStatus) => {
@@ -249,6 +251,7 @@ const handleEditClick = (doc) => {
               </button>
 
               <button
+              onClick={() => navigate("/")}
                 className="text-white px-[6.25px] py-[6.25px] rounded-[3.75px] bg-[#C1121F] w-[74px] h-[24px] opacity-100 text-[10px]"
               >
                 Exit
@@ -261,7 +264,7 @@ const handleEditClick = (doc) => {
         </div>
       </div>
 
-     
+
       {isModalOpen && (
         <div
           className="fixed inset-0 flex items-center justify-center z-50"
@@ -287,22 +290,22 @@ const handleEditClick = (doc) => {
             <div className="">
               {/* Proof Type Dropdown */}
               <div>
-  <label className="text-[14px]">
-    Proof Type Name <span className="text-red-500">*</span>
-  </label>
+                <label className="text-[14px]">
+                  Proof Type Name <span className="text-red-500">*</span>
+                </label>
 
-  <input
-    type="text"
-    name="proof_type"
-    value={formData.proof_type}
-    onChange={handleChange}
-    placeholder="Enter Proof Type Name"
-    className="border border-gray-300 rounded px-3 py-2 mt-1 w-full"
-  />
-</div>
+                <input
+                  type="text"
+                  name="proof_type"
+                  value={formData.proof_type}
+                  onChange={handleChange}
+                  placeholder="Enter Proof Type Name"
+                  className="border border-gray-300 rounded px-3 py-2 mt-1 w-full"
+                />
+              </div>
 
 
-             
+
 
               {/* Checkboxes */}
               <div className="flex justify-center gap-10">
@@ -339,24 +342,24 @@ const handleEditClick = (doc) => {
 
             {/* Buttons */}
             <div className="flex justify-center gap-4 mt-6">
-             { isEditModalOpen ? (
-  <button
-    className="bg-[#0A2478] text-white px-6 py-2 rounded"
-    onClick={handleUpdateSubmit}
-  >
-    Update
-  </button>
-) : (
-  <button
-    className="bg-[#0A2478] text-white px-6 py-2 rounded"
-    onClick={handleSubmit}
-  >
-    Submit
-  </button>
-)}
+              {isEditModalOpen ? (
+                <button
+                  className="bg-[#0A2478] text-white px-6 py-2 rounded"
+                  onClick={handleUpdateSubmit}
+                >
+                  Update
+                </button>
+              ) : (
+                <button
+                  className="bg-[#0A2478] text-white px-6 py-2 rounded"
+                  onClick={handleSubmit}
+                >
+                  Submit
+                </button>
+              )}
               <button
                 className="bg-[#C1121F] text-white px-6 py-2 rounded"
-               onClick={resetModal}
+                onClick={resetModal}
               >
                 Exit
               </button>
@@ -385,7 +388,7 @@ const handleEditClick = (doc) => {
               {documents.map((row, index) => (
                 <tr
                   key={row.id}
-                  className={`border-b ${index % 2 === 0 ? "bg-gray-50" : "bg-white"}`}
+                  className={`${index % 2 === 0 ? "bg-gray-50" : "bg-white"}`}
                 >
                   <td className="px-4 py-2">
                     {row.is_id_proof && row.is_address_proof
@@ -405,11 +408,11 @@ const handleEditClick = (doc) => {
 
                   {/* Action icons */}
                   <td className="px-4 py-2 text-[#1883EF] cursor-pointer">
-                    <div className="flex gap-2 justify-center">
-                      <div className="w-[17px] h-[17px] bg-[#56A869] rounded-[2.31px] flex items-center justify-center p-0.5" onClick={() => handleEditClick(row)}>
-                        <img src={GroupData} alt="view" className="w-[18px] h-[18px] "  />
-                      </div>
-                    </div>
+                    <button
+                      className="bg-green-500 p-1.5 text-white rounded cursor-pointer"
+                      onClick={() => handleEditClick(row)}            >
+                      <FiEdit className="text-white text-sm" />
+                    </button>
                   </td>
 
                   {/* Toggle */}

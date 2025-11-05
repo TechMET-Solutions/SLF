@@ -654,7 +654,7 @@ const addBankDetails = async (customerId) => {
                 </label>
                 <div className="flex items-center mt-1 w-[220px]">
                   <input
-                    type="text"
+                    type="number"
                     name="mobile"
                     value={formData.mobile}
                     onChange={handleChange}
@@ -694,7 +694,7 @@ const addBankDetails = async (customerId) => {
                   Alternate Mobile No
                 </label>
                 <input
-                  type="text"
+                  type="number"
                   name="altMobile"
                   value={formData.altMobile}
                   onChange={handleChange}
