@@ -73,9 +73,8 @@ const FormField = ({
           name={field.name}
           value={formData[field.name] || ""}
           onChange={handleInputChange}
-          className={`px-2 py-1 border rounded text-xs ${
-            errors[field.name] ? "border-red-500" : "border-gray-300"
-          }`}
+          className={`px-2 py-1 border rounded text-xs ${errors[field.name] ? "border-red-500" : "border-gray-300"
+            }`}
         >
           <option value="">Select {field.label}</option>
           {field.options.map((opt) => (
@@ -91,9 +90,8 @@ const FormField = ({
             name={field.name}
             value={formData[field.name] || ""}
             onChange={handleInputChange}
-            className={`px-2 py-1 border rounded text-xs w-full pr-10 ${
-              errors[field.name] ? "border-red-500" : "border-gray-300"
-            }`}
+            className={`px-2 py-1 border rounded text-xs w-full pr-10 ${errors[field.name] ? "border-red-500" : "border-gray-300"
+              }`}
           />
           {suffixFields.includes(field.name) && (
             <span
@@ -117,21 +115,21 @@ const AddSchemeDetailsListform = () => {
   const navigate = useNavigate();
   const location = useLocation();
   const { type, data } = location.state || {};
-const isViewMode = type === "view";
+  const isViewMode = type === "view";
   const [formData, setFormData] = useState({
     schemeName: "",
     description: "",
     product: "Gold",
     applicableFrom: "",
     applicableTo: "",
-    calcBasisOn: "",
+    calcBasisOn: "Daily",
     calcMethod: "",
     paymentFrequency: "",
     // KEEP these fields always visible as per the user's request
-    interestInAdvance: "", 
-    preCloserMinDays: "", 
+    interestInAdvance: "",
+    preCloserMinDays: "",
     penaltyType: "Amount",
-    addOneDay:"",
+    addOneDay: "",
     penalty: "",
     minLoanAmount: "",
     loanPeriod: "",
@@ -165,11 +163,11 @@ const isViewMode = type === "view";
       }
     }
   }, [data]);
-console.log(formData,"formData")
+  console.log(formData, "formData")
   const [interestRates, setInterestRates] = useState([
     {},
   ]);
-  console.log(interestRates,"interestRates")
+  console.log(interestRates, "interestRates")
   const [errors, setErrors] = useState({});
 
   const handleInputChange = (e) => {
@@ -178,42 +176,42 @@ console.log(formData,"formData")
     if (errors[name]) setErrors((prev) => ({ ...prev, [name]: false }));
   };
 
-  
-const onchange = (id, field, value) => {
-  setInterestRates((prevRates) =>
-    prevRates.map((rate) =>
-      rate.id === id ? { ...rate, [field]: value } : rate
-    )
-  );
-};
+
+  const onchange = (id, field, value) => {
+    setInterestRates((prevRates) =>
+      prevRates.map((rate) =>
+        rate.id === id ? { ...rate, [field]: value } : rate
+      )
+    );
+  };
 
 
-  
+
   const handleSave = async () => {
-  try {
-    if (type === "edit") {
-      const response = await axios.put(`${API}/Scheme/updateScheme`, {
-        id: data.id,
-        formData,
-        interestRates,
-      });
-      alert("✅ Scheme updated successfully!");
-    } else {
-      const response = await axios.post(`${API}/Scheme/addScheme`, {
-        formData,
-        interestRates,
-      });
-      alert("✅ Scheme added successfully!");
+    try {
+      if (type === "edit") {
+        const response = await axios.put(`${API}/Scheme/updateScheme`, {
+          id: data.id,
+          formData,
+          interestRates,
+        });
+        alert("✅ Scheme updated successfully!");
+      } else {
+        const response = await axios.post(`${API}/Scheme/addScheme`, {
+          formData,
+          interestRates,
+        });
+        alert("✅ Scheme added successfully!");
+      }
+
+      navigate("/Scheme-Details-List");
+    } catch (error) {
+      console.error("Error saving scheme:", error);
+      alert("❌ Failed to save scheme.");
     }
+  };
 
-    navigate("/Scheme-Details-List");
-  } catch (error) {
-    console.error("Error saving scheme:", error);
-    alert("❌ Failed to save scheme.");
-  }
-};
 
-  
   const addRow = () => {
     setInterestRates((prev) => [
       ...prev,
@@ -240,12 +238,12 @@ const onchange = (id, field, value) => {
   const handleCalcBasisChange = (value) => {
     setFormData((prev) => {
       const updated = { ...prev, calcBasisOn: prev.calcBasisOn === value ? "" : value };
-      
+
       // Clear Interest Type when Daily is selected, as it will be hidden.
       if (value === "Daily") {
         updated.interestType = "";
       }
-      
+
       return updated;
     });
   };
@@ -267,7 +265,7 @@ const onchange = (id, field, value) => {
             }}
             className="text-red-600"
           >
-            Add Scheme Details form
+            Add Scheme Details Form
           </h2>
 
           <div className="flex items-center gap-6">
@@ -284,12 +282,12 @@ const onchange = (id, field, value) => {
                 Save
               </button>
 
-             <button
-      className="text-white px-[6.25px] py-[6.25px] rounded-[3.75px] bg-[#C1121F] w-[74px] h-[24px] opacity-100 text-[10px]"
-      onClick={() => navigate("/Scheme-Details-List")}
-    >
-      Exit
-    </button>
+              <button
+                className="text-white px-[6.25px] py-[6.25px] rounded-[3.75px] bg-[#C1121F] w-[74px] h-[24px] opacity-100 text-[10px]"
+                onClick={() => navigate("/Scheme-Details-List")}
+              >
+                Exit
+              </button>
             </div>
           </div>
         </div>
@@ -311,9 +309,8 @@ const onchange = (id, field, value) => {
                 disabled={isViewMode}
                 value={formData.schemeName}
                 onChange={handleInputChange}
-                className={`border border-gray-300 rounded-[8px] px-3 py-2 w-full bg-white focus:outline-none focus:ring-1 focus:ring-blue-500 ${
-                  errors.schemeName ? "border-red-500" : ""
-                }`}
+                className={`border border-gray-300 rounded-[8px] px-3 py-2 w-full bg-white focus:outline-none focus:ring-1 focus:ring-blue-500 ${errors.schemeName ? "border-red-500" : ""
+                  }`}
               />
             </div>
           </div>
@@ -330,14 +327,13 @@ const onchange = (id, field, value) => {
               disabled={isViewMode}
               onChange={handleInputChange}
               placeholder=""
-              className={`border border-gray-300 rounded px-3 py-2 mt-1 w-[350px] bg-white ${
-                errors.description ? "border-red-500" : ""
-              }`}
+              className={`border border-gray-300 rounded px-3 py-2 mt-1 w-[350px] bg-white ${errors.description ? "border-red-500" : ""
+                }`}
             />
           </div>
 
-          
-         
+
+
           {/* Applicable From */}
           <div className="flex flex-col">
             <label className="text-[14px] font-medium">
@@ -349,9 +345,8 @@ const onchange = (id, field, value) => {
               name="applicableFrom"
               value={formData.applicableFrom}
               onChange={handleInputChange}
-              className={`border border-gray-300 rounded px-3 py-2 mt-1 w-[180px] bg-white ${
-                errors.applicableFrom ? "border-red-500" : ""
-              }`}
+              className={`border border-gray-300 rounded px-3 py-2 mt-1 w-[180px] bg-white ${errors.applicableFrom ? "border-red-500" : ""
+                }`}
             />
           </div>
 
@@ -369,56 +364,58 @@ const onchange = (id, field, value) => {
 
           {/* Calculation Basis (ALWAYS VISIBLE) */}
           <div className="flex flex-col">
-            <label className="text-[14px] mb-5 font-medium">
-              Cal. basis on
-              <span className="text-red-500">*</span>
+            <label className="text-[14px] mb-2 font-medium">
+              Cal. basis on <span className="text-red-500">*</span>
             </label>
-            <div className="flex gap-4 mb-2 mt-1">
-              <label className="flex gap-2 items-center">
-                <input
-                  type="checkbox"
-                  name="calcBasisOn"
-                  value="Daily"
-                  checked={formData.calcBasisOn === "Daily"}
-                  onChange={() => handleCalcBasisChange("Daily")}
-                  className="accent-[#0A2478]"
-                />
-                <span className="text-[14px]">Daily</span>
-              </label>
 
-              <label className="flex items-center gap-2">
-                <input
-                  type="checkbox"
-                  name="calcBasisOn"
-                  value="Monthly"
-                  checked={formData.calcBasisOn === "Monthly"}
-                  onChange={() => handleCalcBasisChange("Monthly")}
-                  className="accent-[#0A2478]"
-                />
-                <span className="text-[14px]">Monthly</span>
-              </label>
+            <div className="flex items-center gap-2 mt-1">
+              <div
+                className="w-[160px] h-[38px] rounded-full cursor-pointer flex bg-[#0A2478] p-1"
+                onClick={() =>
+                  handleCalcBasisChange(
+                    formData.calcBasisOn === "Daily" ? "Monthly" : "Daily"
+                  )
+                }
+              >
+                <div className="w-1/2 flex items-center justify-center">
+                  <span
+                    className={`text-sm font-medium transition-all duration-200 rounded-full w-full text-center py-1 ${formData.calcBasisOn === "Daily"
+                      ? "bg-white text-[#0A2478]"
+                      : "text-white"
+                      }`}
+                  >
+                    Daily
+                  </span>
+                </div>
+                <div className="w-1/2 flex items-center justify-center">
+                  <span
+                    className={`text-sm font-medium transition-all duration-200 rounded-full w-full text-center py-1 ${formData.calcBasisOn === "Monthly"
+                      ? "bg-white text-[#0A2478]"
+                      : "text-white"
+                      }`}
+                  >
+                    Monthly
+                  </span>
+                </div>
+              </div>
             </div>
-            {errors.calcBasisOn && (
-              <p className="text-red-500 text-xs mt-1">
-                This field is required
-              </p>
-            )}
           </div>
 
-         {formData.calcBasisOn === "Daily" && (
-  <div className="flex flex-col">
-    <label className="text-[14px] font-medium">Add 1 Day</label>
-    <select
-      name="addOneDay"
-      value={formData.addOneDay || "No"}
-      onChange={handleInputChange}
-      className="border border-gray-300 rounded px-3 py-2 mt-1 bg-white"
-    >
-      <option value="No">No</option>
-      <option value="Yes">Yes</option>
-    </select>
-  </div>
-)}
+          {/* Add Day Fiels */}
+          {/* {formData.calcBasisOn === "Daily" && (
+            <div className="flex flex-col">
+              <label className="text-[14px] font-medium">Add 1 Day</label>
+              <select
+                name="addOneDay"
+                value={formData.addOneDay || "No"}
+                onChange={handleInputChange}
+                className="border border-gray-300 rounded px-3 py-2 mt-1 bg-white"
+              >
+                <option value="No">No</option>
+                <option value="Yes">Yes</option>
+              </select>
+            </div>
+          )} */}
 
 
         </div>
@@ -442,28 +439,28 @@ const onchange = (id, field, value) => {
           </div>
 
           <div className="flex flex-col">
-                          <label className="text-[14px] font-medium">
-                           Payment Frequency<span className="text-red-500">*</span>
-                          </label>
-                          <div className="flex items-center w-[220px]">
-                           <input
-              type="text"
-              name="paymentFrequency"
-              value={formData.paymentFrequency}
-              onChange={handleInputChange}
-              placeholder=""
-              className="border border-gray-300  px-3 py-2 w-[132px] bg-white"
-            />
-                            <button className="bg-[#0A2478] text-white px-4 py-2 rounded-r-[8px] border border-gray-300 border-l-0 hover:bg-[#081c5b] flex items-center gap-2">
-                              
-                             <button className="bg-[#0A2478] text-white  hover:bg-[#081c5b] flex items-center gap-2">
-  <span>{formData.calcBasisOn === "Daily" ? "D" : formData.calcBasisOn === "Monthly" ? "M" : "-"}</span>
-</button>
-                            </button>
-                          </div>
-                        </div>
+            <label className="text-[14px] font-medium">
+              Payment Frequency<span className="text-red-500">*</span>
+            </label>
+            <div className="flex items-center w-[220px]">
+              <input
+                type="text"
+                name="paymentFrequency"
+                value={formData.paymentFrequency}
+                onChange={handleInputChange}
+                placeholder=""
+                className="border border-gray-300  px-3 py-2 w-[132px] bg-white"
+              />
+              <button className="bg-[#0A2478] text-white px-4 py-2 rounded-r-[8px] border border-gray-300 border-l-0 hover:bg-[#081c5b] flex items-center gap-2">
 
-         
+                <button className="bg-[#0A2478] text-white  hover:bg-[#081c5b] flex items-center gap-2">
+                  <span>{formData.calcBasisOn === "Daily" ? "D" : formData.calcBasisOn === "Monthly" ? "M" : "-"}</span>
+                </button>
+              </button>
+            </div>
+          </div>
+
+
           <div className="flex flex-col">
             <label className="text-[14px] font-medium">Interest in Advance</label>
             <select
@@ -491,7 +488,7 @@ const onchange = (id, field, value) => {
             />
           </div>
 
-        
+
           <div className="flex flex-col">
             <label className="text-xs font-medium mb-1">
               Penalty Type <span className="text-red-600">*</span>
@@ -535,47 +532,54 @@ const onchange = (id, field, value) => {
           </div>
 
           {/* Payment Basis On */}
-              <div className="flex flex-col">
+<div className="flex flex-col">
   <label className="text-xs font-medium mb-1">
     Payment Basis On <span className="text-red-600">*</span>
   </label>
   <select
     name="paymentBasisOn"
-    value={formData.paymentBasisOn || ""}
+    value={
+      formData.paymentBasisOn ||
+      (formData.calcBasisOn === "Monthly"
+        ? "Interest"
+        : formData.calcBasisOn === "Daily"
+        ? "EMI"
+        : "")
+    }
     onChange={handleInputChange}
     className="border border-gray-300 rounded px-3 py-2 w-[113px] bg-white text-sm"
   >
-    <option value="">Select</option>
-    <option value="Interest">Interest</option>
-    <option value="EMI">EMI</option>
+    <option value="Interest" disabled={formData.calcBasisOn === "Daily"}>Interest</option>
+    <option value="EMI" disabled={formData.calcBasisOn === "Monthly"}>EMI</option>
   </select>
 </div>
 
+
           <div className="flex flex-col">
-                          <label className="text-[14px] font-medium">
-                          Loan Period<span className="text-red-500">*</span>
-                          </label>
-                          <div className="flex items-center w-[220px]">
-                           <input
-              type="text"
-              name="loanPeriod"
-              value={formData.loanPeriod}
-              onChange={handleInputChange}
-              placeholder=""
-              className="border border-gray-300  px-3 py-2 w-[113px] bg-white"
-            />
-                            <button className="bg-[#0A2478] text-white px-4 py-2 rounded-r-[8px] border border-gray-300 border-l-0 hover:bg-[#081c5b] flex items-center gap-2">
-                            <button className="bg-[#0A2478] text-white     hover:bg-[#081c5b] flex items-center gap-2">
-  <span>{formData.calcBasisOn === "Daily" ? "D" : formData.calcBasisOn === "Monthly" ? "M" : "-"}</span>
-</button>
-                            </button>
-                          </div>
-                        </div>
+            <label className="text-[14px] font-medium">
+              Loan Period<span className="text-red-500">*</span>
+            </label>
+            <div className="flex items-center w-[220px]">
+              <input
+                type="text"
+                name="loanPeriod"
+                value={formData.loanPeriod}
+                onChange={handleInputChange}
+                placeholder=""
+                className="border border-gray-300  px-3 py-2 w-[113px] bg-white"
+              />
+              <button className="bg-[#0A2478] text-white px-4 py-2 rounded-r-[8px] border border-gray-300 border-l-0 hover:bg-[#081c5b] flex items-center gap-2">
+                <button className="bg-[#0A2478] text-white     hover:bg-[#081c5b] flex items-center gap-2">
+                  <span>{formData.calcBasisOn === "Daily" ? "D" : formData.calcBasisOn === "Monthly" ? "M" : "-"}</span>
+                </button>
+              </button>
+            </div>
+          </div>
         </div>
 
         {/* Third Row (Adjusted for conditional fields) */}
         <div className="flex items-end gap-4 w-full mt-5">
-         
+
           <div className="flex flex-col">
             <label className="text-[14px] font-medium">Gold approve %</label>
             <input
@@ -587,7 +591,7 @@ const onchange = (id, field, value) => {
             />
           </div>
 
-          
+
           <div className="flex flex-col">
             <label className="text-[14px] font-medium">Max Loan Amount*</label>
             <input
@@ -701,104 +705,114 @@ const onchange = (id, field, value) => {
           </div>
         </div>
 
-       
-
         <div>
-    <h3 className="text-md font-semibold mb-4">Interest Rate</h3>
-    <div className="flex justify-between items-center mb-3">
-      
-    </div>
-    <div className="overflow-x-auto border rounded-lg">
-    <table className="w-full border-collapse bg-white">
-      <thead>
-        <tr style={{ backgroundColor: "#0A2478", color: "white" }}>
-          <th className="p-3 border-r">From</th>
-          <th className="p-3 border-r">To</th>
-          <th className="p-3 border-r">Type</th>
-          <th className="p-3 border-r">Add int %</th>
-          <th className="p-3">Actions</th>
-        </tr>
-      </thead>
+          <h3 className="text-md font-semibold mb-4">Interest Rate</h3>
+          <div className="flex justify-between items-center mb-3">
 
-      <tbody>
-        {interestRates.map((rate, i) => (
-          <tr key={rate.id} className={i % 2 ? "bg-gray-50" : ""}>
-            
-            {/* From input */}
-            <td className="p-3 text-center">
-              <input
-                type="number"
-                value={rate.from || ""}
-                onChange={(e) => onchange(rate.id, "from", e.target.value)}
-                className="border border-gray-300 rounded px-2 py-1 w-[200px] text-center"
-                placeholder="From"
-              />
-            </td>
+          </div>
+          <div className="overflow-x-auto border rounded-lg">
+            <table className="w-full border-collapse bg-white">
+              <thead>
+                <tr style={{ backgroundColor: "#0A2478", color: "white" }}>
+                  <th className="p-3 border-r">From</th>
+                  <th className="p-3 border-r">To</th>
+                  <th className="p-3 border-r">Type</th>
+                  <th className="p-3 border-r">Add int %</th>
+                  <th className="p-3">Actions</th>
+                </tr>
+              </thead>
 
-            {/* To input */}
-            <td className="p-3 text-center">
-              <input
-                type="number"
-                value={rate.to || ""}
-                onChange={(e) => onchange(rate.id, "to", e.target.value)}
-                className="border border-gray-300 rounded px-2 py-1 w-[200px] text-center"
-                placeholder="To"
-              />
-            </td>
+              <tbody>
+                {interestRates.map((rate, i) => (
+                  <tr key={rate.id} className={i % 2 ? "bg-gray-50" : ""}>
 
-            {/* Type dropdown */}
-            <td className="p-3 text-center">
-              <select
-                value={rate.type || "days"}
-                onChange={(e) => onchange(rate.id, "type", e.target.value)}
-                className="border border-gray-300 rounded px-2 py-1 w-28"
-              >
-                <option value="days">Days</option>
-                <option value="months">Months</option>
-                <option value="years">Years</option>
-              </select>
-            </td>
+                    {/* From input */}
+                    <td className="p-3 text-center">
+                      <input
+                        type="number"
+                        value={rate.from || ""}
+                        onChange={(e) => onchange(rate.id, "from", e.target.value)}
+                        className="border border-gray-300 rounded px-2 py-1 w-[200px] text-center"
+                        placeholder="From"
+                      />
+                    </td>
 
-            {/* Add int % input */}
-            <td className="p-3 text-center">
-              <input
-                type="number"
-                value={rate.addInt || ""}
-                onChange={(e) => onchange(rate.id, "addInt", e.target.value)}
-                className="border border-gray-300 rounded px-2 py-1 w-24 text-center"
-                placeholder="%"
-              />
-            </td>
+                    {/* To input */}
+                    <td className="p-3 text-center">
+                      <input
+                        type="number"
+                        value={rate.to || ""}
+                        onChange={(e) => onchange(rate.id, "to", e.target.value)}
+                        className="border border-gray-300 rounded px-2 py-1 w-[200px] text-center"
+                        placeholder="To"
+                      />
+                    </td>
 
-            {/* Action buttons */}
-            <td className="p-3 text-center">
-              <div className="flex justify-center gap-2">
-                <button
-                  type="button"
-                  onClick={addRow}
-                  className="text-white p-1 rounded flex items-center justify-center"
-                  style={{ backgroundColor: "#0A2478" }}
-                  title="Add row"
-                >
-                  <IoMdAddCircleOutline className="h-5 w-5" />
-                </button>
-                <button
-                  type="button"
-                  onClick={() => removeRow(rate.id)}
-                  className="text-white p-1 rounded flex items-center justify-center"
-                  style={{ backgroundColor: "#C1121F" }}
-                  title="Delete row"
-                >
-                  <IoIosCloseCircleOutline className="h-5 w-5" />
-                </button>
-              </div>
-            </td>
-          </tr>
-        ))}
-      </tbody>
-    </table>
-  </div>
-  </div>
+                    <td className="p-3 text-center">
+                      <select
+                        value={
+                          rate.type ||
+                          (formData.calcBasisOn === "Monthly"
+                            ? "months"
+                            : formData.calcBasisOn === "Daily"
+                              ? "days"
+                              : "years")
+                        }
+                        onChange={(e) => onchange(rate.id, "type", e.target.value)}
+                        className="border border-gray-300 rounded px-2 py-1 w-28"
+                      >
+                        <option value="days" disabled={formData.calcBasisOn === "Monthly"}>
+                          Days
+                        </option>
+                        <option value="months" disabled={formData.calcBasisOn === "Daily"}>
+                          Months
+                        </option>
+                        <option value="years">Years</option>
+                      </select>
+                    </td>
+
+
+
+                    {/* Add int % input */}
+                    <td className="p-3 text-center">
+                      <input
+                        type="number"
+                        value={rate.addInt || ""}
+                        onChange={(e) => onchange(rate.id, "addInt", e.target.value)}
+                        className="border border-gray-300 rounded px-2 py-1 w-24 text-center"
+                        placeholder="%"
+                      />
+                    </td>
+
+                    {/* Action buttons */}
+                    <td className="p-3 text-center">
+                      <div className="flex justify-center gap-2">
+                        <button
+                          type="button"
+                          onClick={addRow}
+                          className="text-white p-1 rounded flex items-center justify-center"
+                          style={{ backgroundColor: "#0A2478" }}
+                          title="Add row"
+                        >
+                          <IoMdAddCircleOutline className="h-5 w-5" />
+                        </button>
+                        <button
+                          type="button"
+                          onClick={() => removeRow(rate.id)}
+                          className="text-white p-1 rounded flex items-center justify-center"
+                          style={{ backgroundColor: "#C1121F" }}
+                          title="Delete row"
+                        >
+                          <IoIosCloseCircleOutline className="h-5 w-5" />
+                        </button>
+                      </div>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        </div>
       </div>
     </div>
   );
