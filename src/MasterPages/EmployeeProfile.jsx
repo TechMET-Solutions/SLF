@@ -2,6 +2,7 @@ import axios from "axios";
 import { useEffect, useRef, useState } from "react";
 import { FaPaperclip } from "react-icons/fa";
 import { FiEdit, FiEye, FiTrash2 } from "react-icons/fi";
+import { useNavigate } from "react-router-dom";
 import { API } from "../api";
 import {
   deleteEmployeeApi,
@@ -11,7 +12,6 @@ import blockimg from "../assets/blockimg.png";
 import profileempty from "../assets/profileempty.png";
 import Pagination from "../Component/Pagination";
 import { encryptData } from "../utils/cryptoHelper";
-import { useNavigate } from "react-router-dom";
 
 const EmployeeProfile = () => {
 
@@ -54,13 +54,40 @@ const EmployeeProfile = () => {
      assign_role_id: "",
     password: "",
     fax: "",
+    addressProfiletype: "",
+    IdProoftype:"",
     status: true,
   });
+const [documents, setDocuments] = useState([]);      // main list from API
+const [idProofList, setIdProofList] = useState([]);  // filtered only id proof
+const [addrProofList, setAddrProofList] = useState([]); // filtered only address proof
 
+const fetchDocuments = async () => {
+  try {
+    // setLoading(true);
+
+    const response = await axios.get(`${API}/Master/getAllDocumentProofs`);
+
+    const docs = response.data.data;  // <-- already clean json
+
+    setDocuments(docs);
+
+    setIdProofList(docs.filter(x => x.is_id_proof === 1));
+    setAddrProofList(docs.filter(x => x.is_address_proof === 1));
+
+    // setLoading(false);
+  } catch (err) {
+    console.error("Error fetching documents:", err);
+    // setError("Failed to fetch documents");
+    // setLoading(false);
+  }
+};
 
 const [roles, setRoles] = useState([]);
 const [branches, setBranches] = useState([]);
-
+  useEffect(() => {
+   fetchDocuments()
+ },[])
   useEffect(() => {
     const loadRoles = async () => {
       const fetchedRoles = await fetchAllRoles();
@@ -313,6 +340,8 @@ const handleSave = async () => {
       assign_role_id: formData.assign_role_id,
       password: formData.password,
       fax: formData.fax,
+      addressProfiletype:formData.addressProfiletype,
+    IdProoftype:formData.IdProoftype,
       status: formData.status,
     };
 
@@ -340,7 +369,59 @@ const handleSave = async () => {
   }
 };
 
+const handleUpdate = async () => {
+  debugger;
+  try {
+    const payload = {
+      id: formData.id,
+      pan_card: formData.pan_card,
+      aadhar_card: formData.aadhar_card,
+      emp_name: formData.emp_name,
+      mobile_no: formData.mobile_no,
+      Alternate_Mobile: formData.Alternate_Mobile,
+      email: formData.email,
+      corresponding_address: formData.corresponding_address,
+      permanent_address: formData.permanent_address,
+      branch: formData.branch,
+      joining_date: formData.joining_date,
+      designation: formData.designation,
+      date_of_birth: formData.date_of_birth,
+      assign_role: formData.assign_role,
+      assign_role_id: formData.assign_role_id,
+      password: formData.password,
+      fax: formData.fax,
+      status: formData.status,
+    };
 
+    // Encrypt data
+    const encryptedData = encryptData(JSON.stringify(payload));
+
+    // Prepare FormData
+    const formDataToSend = new FormData();
+    formDataToSend.append("data", encryptedData);
+
+    // Append only changed files
+    if (profileImage) formDataToSend.append("emp_image", profileImage);
+    if (addressProof) formDataToSend.append("emp_add_prof", addressProof);
+    if (idProof) formDataToSend.append("emp_id_prof", idProof);
+
+    // API call
+    await axios.put(
+      `${API}/Master/Employee_Profile/update-employee`,
+      formDataToSend,
+      {
+        headers: { "Content-Type": "multipart/form-data" },
+      }
+    );
+
+    alert("✅ Employee updated successfully!");
+    setIsModalOpen(false);
+    fetchEmployee(currentPage);
+  } catch (err) {
+    console.error("❌ Error updating employee:", err);
+    alert(err.response?.data?.message || "Error updating employee");
+  }
+};
   // 🔍 Handle Search
   const handleSearch = () => {
     // Implement search logic here
@@ -886,7 +967,22 @@ const handleInputChange = (e) => {
                     </div>
                    
 
-                    <h1 className="text-[14px] font-medium ">Add Proof</h1>
+                    {/* <h1 className="text-[14px] font-medium ">Add Proof</h1> */}
+                    <h1 className="text-[14px] font-medium">Address Proof</h1>
+
+<select
+  disabled={mode === "view"}
+  value={formData.addressProfiletype}
+  onChange={(e) => setFormData({ ...formData, addressProfiletype: e.target.value })}
+  className="border border-gray-400 rounded-[10px] px-3 py-2 w-[300px] mt-1 bg-white"
+>
+  <option value="">Select Address Proof</option>
+  {addrProofList.map((item) => (
+    <option key={item.id} value={item.proof_type}>
+      {item.proof_type}
+    </option>
+  ))}
+</select>
                   
                     <div className="flex  border border-gray-400 rounded-[10px] overflow-hidden w-[300px] mt-1">
   <label
@@ -908,7 +1004,21 @@ const handleInputChange = (e) => {
      {formData.emp_add_prof || "No file chosen"}
   </span>
 </div>
-                    <h1 className="text-[14px] font-medium mt-2">Id Proof</h1>
+                  
+<h1 className="text-[14px] font-medium mt-3">ID Proof</h1>
+<select
+  disabled={mode === "view"}
+  value={formData.IdProoftype}
+  onChange={(e) => setFormData({ ...formData, IdProoftype: e.target.value })}
+  className="border border-gray-400 rounded-[10px] px-3 py-2 w-[300px] mt-1 bg-white"
+>
+  <option value="">Select ID Proof</option>
+  {idProofList.map((item) => (
+    <option key={item.id} value={item.proof_type}>
+      {item.proof_type}
+    </option>
+  ))}
+</select>
 
                       <div className="flex  border border-gray-400 rounded-[10px] overflow-hidden w-[300px] mt-1">
   <label
