@@ -121,7 +121,7 @@ const LoanApplication = () => {
       }
     } catch (err) {
       console.error("Error fetching loan applications:", err);
-      setError(err.response?.data?.message || err.message || "No loan applications");
+      setError( "No loan applications");
       setLoanApplication([]);
     } finally {
       setLoading(false);
@@ -654,14 +654,14 @@ const LoanApplication = () => {
         </div>
       )}
 
-      {/* Error Message */}
+      {/* Error Message
       {error && (
         <div className="flex justify-center mt-4">
           <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded w-[1290px] text-sm">
             <strong>Error: </strong>{error}
           </div>
         </div>
-      )}
+      )} */}
 
       <div className="flex justify-center text-center">
         <div className="overflow-x-auto mt-5 w-[1290px] min-h-[500px]">
