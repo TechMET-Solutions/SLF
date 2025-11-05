@@ -64,6 +64,7 @@ import ViewBidderDetails from "./TrasactionPages/ViewBidderDetails";
 import ViewCreditNote from "./TrasactionPages/ViewCreditNote";
 import ViewLoanCharges from "./TrasactionPages/ViewLoanCharges";
 import ViewLoanDetails from "./TrasactionPages/ViewLoanDeatils";
+import EmployeeDesignation from "./MasterPages/EmployeeDesignation";
 
 function App() {
   return (
@@ -113,10 +114,8 @@ function App() {
           {/* Employee Profile */}
           <Route path="/Employee-Profile-list" element={<EmployeeProfile />} />
           <Route path="/Member-Login-Period" element={<MemberLoginPeriod />} />
-          <Route
-            path="/Member-Login-Details"
-            element={<MemberLoginDetails />}
-          />
+          <Route path="/Member-Login-Details" element={<MemberLoginDetails />} />
+          <Route path="/Employee-Designation" element={<EmployeeDesignation />} />
 
           {/* User Management */}
           <Route
@@ -132,7 +131,7 @@ function App() {
             path="/Add-Member-Branch-Mapping"
             element={<AddMemberBranchMapping />}
           />
-        <Route path="/Edit-Loan-Application" element={<EditLoanApplication />} />
+          <Route path="/Edit-Loan-Application" element={<EditLoanApplication />} />
           {/* Loan Application */}
           <Route path="/Loan-Application" element={<LoanApplication />} />
           <Route path="/Cancelled-Loan" element={<CancelledLoan />} />
@@ -154,7 +153,7 @@ function App() {
           <Route path="/Print-Credit-Note" element={<PrintCreditNote />} />
           <Route path="/Appraisal-Note" element={<AppraisalNote />} />
           <Route path="/Print-Loan-Application" element={<PrintLoanApplication />} />
-                    <Route path="/Add-Loan-Repayment" element={<AddLoanRepayment />} />
+          <Route path="/Add-Loan-Repayment" element={<AddLoanRepayment />} />
 
 
 
@@ -164,10 +163,10 @@ function App() {
           <Route path="/Add-Auction-Creation" element={<AddAuctionCreation />} />
           <Route path="/Auction-Items-List" element={<AuctionItemsList />} />
           <Route path="/Gold-Ornament-Bill" element={<GoldOrnamentBill />} />
-          <Route path="/Bidder-Registration-List" element={ <BidderRegistrationList/>} />
-          <Route path="/Bidder-Registration" element={ <BidderRegistration/>} />
-          <Route path="/View-Bidder-Details/:id" element={ <ViewBidderDetails/>} />
-          <Route path="/EditBidderDetails/:id" element={ <EditBidderDetails/>} />
+          <Route path="/Bidder-Registration-List" element={<BidderRegistrationList />} />
+          <Route path="/Bidder-Registration" element={<BidderRegistration />} />
+          <Route path="/View-Bidder-Details/:id" element={<ViewBidderDetails />} />
+          <Route path="/EditBidderDetails/:id" element={<EditBidderDetails />} />
           <Route path="/Credit-Note" element={<CreditNote />} />
           <Route path="/Debit-Note" element={<DebitNote />} />
 

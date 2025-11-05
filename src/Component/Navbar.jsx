@@ -240,6 +240,13 @@ const Navbar = () => {
                       >
                         Member Login Details
                       </Link>
+                      <Link
+                        to="/Employee-Designation"
+                        className="px-4 py-2 hover:bg-gray-100 text-sm"
+                        onClick={() => setIsMasterOpen(false)}
+                      >
+                        Employee Designation
+                      </Link>
                     </div>
                   )}
                 </div>
