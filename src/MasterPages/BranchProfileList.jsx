@@ -1,19 +1,3 @@
- 
-
- const [activeEmployees, setActiveEmployees] = useState([]);
-console.log(activeEmployees,"activeEmployees")
-
- const getActiveEmp = async () => {
-  try {
-    const res = await axios.get(`${API}/Master/getActiveEmployees`);
-    const decrypted = decryptData(res.data.data); // no JSON.parse
-    console.log(decrypted);
-    setActiveEmployees(decrypted);
-  } catch (error) {
-    console.log(error);
-  }
-};
-
 
 import axios from "axios";
 import { useEffect, useState } from "react";
