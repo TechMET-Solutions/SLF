@@ -139,6 +139,7 @@ function ViewLoanCharges() {
         remark: loanData.remark,
         charges_details: rows,
         updated_by: "Admin",
+        total_charges: totalNetPayable.toFixed(2)
       };
 
       const res = await axios.put(`http://localhost:5000/loan-charges/update/${loanId}`, payload);
