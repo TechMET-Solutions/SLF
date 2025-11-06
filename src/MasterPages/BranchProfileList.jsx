@@ -17,6 +17,9 @@ const BranchProfileList = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [isViewMode, setIsViewMode] = useState(false);
 
+  const [searchCode, setSearchCode] = useState("");
+  const [searchName, setSearchName] = useState("");
+
 
   const [branchData, setBranchData] = useState({
     branch_code: "",
@@ -33,28 +36,33 @@ const BranchProfileList = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const [totalRecords, setTotalRecords] = useState(0);
   const recordsPerPage = 10;
-const [activeEmployees, setActiveEmployees] = useState([]);
-console.log(activeEmployees,"activeEmployees")
+  const [activeEmployees, setActiveEmployees] = useState([]);
+  console.log(activeEmployees, "activeEmployees")
   useEffect(() => {
-  getActiveEmp();
-}, []);
+    getActiveEmp();
+  }, []);
 
-;
+  ;
 
-useEffect(() => {
-  getActiveEmp();
-}, []);
+  useEffect(() => {
+    getActiveEmp();
+  }, []);
 
- const getActiveEmp = async () => {
-  try {
-    const res = await axios.get(`${API}/Master/getActiveEmployees`);
-    const decrypted = decryptData(res.data.data); // no JSON.parse
-    console.log(decrypted);
-    setActiveEmployees(decrypted);
-  } catch (error) {
-    console.log(error);
-  }
-};
+  const getActiveEmp = async () => {
+    try {
+      const res = await axios.get(`${API}/Master/getActiveEmployees`);
+      const decrypted = decryptData(res.data.data); // no JSON.parse
+      console.log(decrypted);
+      setActiveEmployees(decrypted);
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  const handleSearch = () => {
+    setCurrentPage(1); // Reset to first page when searching
+    fetchBranches(1);
+  };
 
   const handleChange = (e) => {
     const { name, value, type, checked } = e.target;
@@ -65,82 +73,82 @@ useEffect(() => {
   };
 
   const handleSave = async () => {
-  const {
-    branch_code,
-    branch_name,
-    print_name,
-    address_line1,
-    mobile_no,
-    lead_person, // optional
-  } = branchData;
+    const {
+      branch_code,
+      branch_name,
+      print_name,
+      address_line1,
+      mobile_no,
+      lead_person, // optional
+    } = branchData;
 
-  // Individual field validation
-  if (!branch_code.trim()) {
-    alert("Branch Code is required.");
-    return;
-  }
+    // Individual field validation
+    if (!branch_code.trim()) {
+      alert("Branch Code is required.");
+      return;
+    }
 
-  if (!branch_name.trim()) {
-    alert("Branch Name is required.");
-    return;
-  }
+    if (!branch_name.trim()) {
+      alert("Branch Name is required.");
+      return;
+    }
 
-  if (!print_name.trim()) {
-    alert("Print Name is required.");
-    return;
-  }
+    if (!print_name.trim()) {
+      alert("Print Name is required.");
+      return;
+    }
 
-  if (!address_line1.trim()) {
-    alert("Address Line 1 is required.");
-    return;
-  }
+    if (!address_line1.trim()) {
+      alert("Address Line 1 is required.");
+      return;
+    }
 
- if (!mobile_no.trim()) {
-  alert("Mobile Number is required.");
-  return;
-}
+    if (!mobile_no.trim()) {
+      alert("Mobile Number is required.");
+      return;
+    }
 
-// Check if mobile number is exactly 10 digits
-const mobileRegex = /^[0-9]{10}$/;
-if (!mobileRegex.test(mobile_no)) {
-  alert("Mobile Number must be a valid 10-digit number.");
-  return;
-}
+    // Check if mobile number is exactly 10 digits
+    const mobileRegex = /^[0-9]{10}$/;
+    if (!mobileRegex.test(mobile_no)) {
+      alert("Mobile Number must be a valid 10-digit number.");
+      return;
+    }
 
-  setIsLoading(true);
+    setIsLoading(true);
 
-  try {
-    const encrypted = encryptData({
-      ...branchData,
-      id: editBranchId, // include id when editing
-    });
+    try {
+      const encrypted = encryptData({
+        ...branchData,
+        id: editBranchId, // include id when editing
+      });
 
-    const url = isEditMode
-      ? `${API}/Master/Master_Profile/update_Branch`
-      : `${API}/Master/Master_Profile/add_Branch`;
+      const url = isEditMode
+        ? `${API}/Master/Master_Profile/update_Branch`
+        : `${API}/Master/Master_Profile/add_Branch`;
 
-    await axios.post(url, { data: encrypted });
+      await axios.post(url, { data: encrypted });
 
-    setIsModalOpen(false);
-    setIsEditMode(false);
-    setBranchData({
-      branch_code: "",
-      branch_name: "",
-      print_name: "",
-      address_line1: "",
-      mobile_no: "",
-      lead_person: "",
-      is_main: false,
-      status: false,
-    });
-    fetchBranches();
-  } catch (error) {
-    console.error(error);
-    alert(isEditMode ? "Error updating branch" : "Error saving branch");
-  } finally {
-    setIsLoading(false);
-  }
-};
+      setIsModalOpen(false);
+      setIsEditMode(false);
+      setBranchData({
+        branch_code: "",
+        branch_name: "",
+        print_name: "",
+        address_line1: "",
+        mobile_no: "",
+        lead_person: "",
+        is_main: false,
+        status: false,
+      });
+      fetchBranches();
+    } catch (error) {
+      console.error(error);
+      alert(isEditMode ? "Error updating branch" : "Error saving branch");
+    } finally {
+      setIsLoading(false);
+    }
+  };
 
 
   const [branches, setBranches] = useState([]);
@@ -148,10 +156,12 @@ if (!mobileRegex.test(mobile_no)) {
   const [isEditMode, setIsEditMode] = useState(false);
   const [editBranchId, setEditBranchId] = useState(null);
   console.log(branches, "branches")
+
   const fetchBranches = async (page = 1) => {
     setIsLoading(true);
     try {
-      const data = await fetchBranchesApi(page, recordsPerPage);
+      const search = searchCode || searchName;
+      const data = await fetchBranchesApi(page, recordsPerPage, search);
       setBranches(data.branches);
       setTotalRecords(data.total);
     } catch (error) {
@@ -161,6 +171,7 @@ if (!mobileRegex.test(mobile_no)) {
     }
   };
 
+  
   useEffect(() => {
     fetchBranches(currentPage);
   }, [currentPage]);
@@ -264,23 +275,22 @@ if (!mobileRegex.test(mobile_no)) {
             </h2>
 
             <div className="flex gap-3">
+              {/* 🔹 Branch Code Search */}
               <div className="flex gap-5 items-center">
                 <p
                   style={{
                     fontFamily: "Source Sans 3, sans-serif",
                     fontWeight: 400,
-                    fontStyle: "normal",
                     fontSize: "11.25px",
-                    lineHeight: "15px",
-                    letterSpacing: "0em",
                   }}
                 >
                   Code
                 </p>
-
                 <input
                   type="text"
-
+                  value={searchCode}
+                  onChange={(e) => setSearchCode(e.target.value)}
+                  placeholder="Search by Code"
                   style={{
                     width: "168.64px",
                     height: "27.49px",
@@ -289,26 +299,24 @@ if (!mobileRegex.test(mobile_no)) {
                   }}
                   className="border border-gray-400 px-3 py-1 text-[11.25px] font-source"
                 />
-
               </div>
 
+              {/* 🔹 Branch Name Search */}
               <div className="flex gap-5 items-center">
                 <p
                   style={{
                     fontFamily: "Source Sans 3, sans-serif",
                     fontWeight: 400,
-                    fontStyle: "normal",
                     fontSize: "11.25px",
-                    lineHeight: "15px",
-                    letterSpacing: "0em",
                   }}
                 >
                   Name
                 </p>
-
                 <input
                   type="text"
-
+                  value={searchName}
+                  onChange={(e) => setSearchName(e.target.value)}
+                  placeholder="Search by Name"
                   style={{
                     width: "168.64px",
                     height: "27.49px",
@@ -318,6 +326,7 @@ if (!mobileRegex.test(mobile_no)) {
                   className="border border-gray-400 px-3 py-1 text-[11.25px] font-source"
                 />
                 <button
+                  onClick={handleSearch}
                   style={{
                     width: "84.36px",
                     height: "26.87px",
@@ -327,31 +336,30 @@ if (!mobileRegex.test(mobile_no)) {
                 >
                   Search
                 </button>
-
               </div>
-              <div className="flex justify-center cursor-pointer item-center gap-5">
-                <button
-                  style={{
-                    width: "74px",
-                    height: "24px",
-                    borderRadius: "3.75px",
+            </div>
 
-                    gap: "6.25px",
-                  }}
-                  onClick={() => setIsModalOpen(true)}
-                  className="bg-[#0A2478] text-white text-[11.25px] font-source font-normal flex items-center justify-center"
-                >
-                  Add
-                </button>
+            <div className="flex justify-center cursor-pointer item-center gap-5">
+              <button
+                style={{
+                  width: "74px",
+                  height: "24px",
+                  borderRadius: "3.75px",
 
-                <button
-                  onClick={() => navigate("/")}
-                  className="text-white px-[6.25px] cursor-pointer  py-[6.25px] rounded-[3.75px] bg-[#C1121F] w-[74px] h-[24px] opacity-100 text-[10px]"
-                >
-                  Exit
-                </button>
+                  gap: "6.25px",
+                }}
+                onClick={() => setIsModalOpen(true)}
+                className="bg-[#0A2478] text-white text-[11.25px] font-source font-normal flex items-center justify-center"
+              >
+                Add
+              </button>
 
-              </div>
+              <button
+                onClick={() => navigate("/")}
+                className="text-white px-[6.25px] cursor-pointer  py-[6.25px] rounded-[3.75px] bg-[#C1121F] w-[74px] h-[24px] opacity-100 text-[10px]"
+              >
+                Exit
+              </button>
 
             </div>
           </div>
@@ -430,7 +438,7 @@ if (!mobileRegex.test(mobile_no)) {
                   />
                 </div>
 
-                
+
                 <div>
                   <label className="text-[14px]">Mobile No<span className="text-red-500">*</span></label>
                   <input
@@ -442,42 +450,42 @@ if (!mobileRegex.test(mobile_no)) {
                     className="border border-gray-300 rounded px-3 py-2 mt-1 w-full"
                   />
                 </div>
-<div>
-  <label className="text-[14px]">Lead Person</label>
-  <select
-    name="lead_person"
-    value={branchData.lead_person}
-    onChange={handleChange}
-    className="border border-gray-300 rounded px-3 py-2 mt-1 w-full"
-  >
-    <option value="">Select Lead Person</option>
+                <div>
+                  <label className="text-[14px]">Lead Person</label>
+                  <select
+                    name="lead_person"
+                    value={branchData.lead_person}
+                    onChange={handleChange}
+                    className="border border-gray-300 rounded px-3 py-2 mt-1 w-full"
+                  >
+                    <option value="">Select Lead Person</option>
 
-    {activeEmployees.map((emp) => (
-      <option key={emp.id} value={emp.id}>
-        {emp.emp_name}
-      </option>
-    ))}
-  </select>
-</div>
+                    {activeEmployees.map((emp) => (
+                      <option key={emp.id} value={emp.id}>
+                        {emp.emp_name}
+                      </option>
+                    ))}
+                  </select>
+                </div>
 
 
 
-  
 
-               
-                  </div>
-          
- <div className="flex justify-center items-center mt-4 gap-2">
-  <input
-    type="checkbox"
-    name="is_main"
-    checked={branchData.is_main}
-    onChange={handleChange}
-    className="w-4 h-4 accent-blue-900"
-  />
-  <label className="text-[14px]">Is Main </label>
-</div>
-             <div className="flex justify-center gap-4 mt-6">
+
+
+              </div>
+
+              <div className="flex justify-center items-center mt-4 gap-2">
+                <input
+                  type="checkbox"
+                  name="is_main"
+                  checked={branchData.is_main}
+                  onChange={handleChange}
+                  className="w-4 h-4 accent-blue-900"
+                />
+                <label className="text-[14px]">Is Main </label>
+              </div>
+              <div className="flex justify-center gap-4 mt-6">
                 {!isViewMode && (
                   isEditMode ? (
                     <button
@@ -555,12 +563,12 @@ if (!mobileRegex.test(mobile_no)) {
                           disabled={isViewMode}
                           className="bg-green-500 p-1.5 text-white rounded cursor-pointer"
                           onClick={() => handleEdit(row)}
-                        title="Edit">
+                          title="Edit">
                           <FiEdit className="text-white text-sm" />
                         </button>
                         <button
                           className="bg-[#646AD9] p-1.5 text-white rounded cursor-pointer"
-                          onClick={() => handleView(row)}      title="view"                   >
+                          onClick={() => handleView(row)} title="view"                   >
                           <FiEye className="text-white text-sm" />
                         </button>
                       </div>
