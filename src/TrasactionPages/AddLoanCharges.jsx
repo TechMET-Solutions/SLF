@@ -61,7 +61,7 @@ function AddLoanCharges() {
     setFormData((prev) => ({ ...prev, [name]: value }));
 
     // 🔍 Trigger search when user types in Party Name (Borrower) or Loan No (ID)
-    if (["partyName", "loanNo"].includes(name) && value.length >= 2) {
+    if (["partyName", "loanNo"].includes(name) && value.length >= 1) { // Changed from 2 to 1
       try {
         setLoading(true);
         const res = await axios.get(
@@ -248,7 +248,7 @@ function AddLoanCharges() {
                 <span><strong>ID:</strong> {loan.id}</span>
                 <span><strong>Borrower:</strong> {loan.Borrower}</span>
                 <span><strong>Scheme:</strong> {loan.Scheme}</span>
-                <span><strong>Amount:</strong> {loan.Loan_amount}</span>
+                <span><strong>Amount:</strong> ₹{loan.Loan_amount}</span>
               </div>
             ))}
           </div>
