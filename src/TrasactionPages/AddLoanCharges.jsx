@@ -356,7 +356,7 @@ function AddLoanCharges() {
 
   {/* Remark Section */}
   <div className="flex flex-col mt-6">
-    <label className="text-[14px] font-medium mb-1">Remark</label>
+    <label className="text-[14px] font-medium mb-1">Remark <span className="text-red-600">*</span></label>
     <textarea
       name="remark"
       value={formData.remark}
