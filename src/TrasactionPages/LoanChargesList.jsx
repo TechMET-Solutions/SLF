@@ -385,6 +385,24 @@ function LoanChargesList() {
     fetchData();
   }, []);
 
+  const handleEditClick = (row) => {
+      navigate("/edit-loan-charge", {
+        state: {
+          loanId: row.Loan_No,
+          loanData: row
+        }
+      });
+    } 
+  const handleViewClick = (row) => {
+      navigate("/view-loan-charge", {
+        state: {
+          loanId: row.Loan_No,
+          loanData: row
+        }
+      });
+    } 
+ 
+
   // 🔹 Pagination Logic
   const [currentPage, setCurrentPage] = useState(1);
   const rowsPerPage = 5;
@@ -479,14 +497,15 @@ function LoanChargesList() {
 
                 <td className="px-4 py-2 flex items-center gap-2">
                   <button
-                    onClick={() => navigate(`/view-loan-charge/${row.id}`)}
+                    onClick={() => handleViewClick(row)}
                     className="bg-blue-500 hover:bg-blue-600 p-1.5 rounded text-white"
                     title="View"
                   >
                     <FiEye className="text-sm" />
                   </button>
                   <button
-                    onClick={() => navigate(`/edit-loan-charge/${row.id}`)}
+                  onClick={() => handleEditClick(row)}
+                    // onClick={() => navigate(`/edit-loan-charge/${row.id}`)}
                     className="bg-green-500 hover:bg-green-600 p-1.5 rounded text-white"
                     title="Edit"
                   >
