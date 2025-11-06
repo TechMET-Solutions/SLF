@@ -1,12 +1,12 @@
 import { useEffect, useState } from "react";
 import { FiEdit, FiEye } from "react-icons/fi";
 import { useNavigate } from "react-router-dom";
-import { fetchBidderApi } from "../API/Transaction/Auction/BidderApi"; 
+import { fetchBidderApi } from "../API/Transaction/Auction/BidderApi";
 
 const BidderRegistrationList = () => {
   const navigate = useNavigate();
-  const [data, setData] = useState([]); 
-  const [loading, setLoading] = useState(true); 
+  const [data, setData] = useState([]);
+  const [loading, setLoading] = useState(true);
 
   // 🔹 Fetch bidders from backend
   useEffect(() => {
@@ -66,9 +66,8 @@ const BidderRegistrationList = () => {
                 data.map((item, index) => (
                   <tr
                     key={item.id}
-                    className={`${
-                      index % 2 === 0 ? "bg-gray-50" : "bg-white"
-                    } hover:bg-blue-50 transition-colors duration-150`}
+                    className={`${index % 2 === 0 ? "bg-gray-50" : "bg-white"
+                      } hover:bg-blue-50 transition-colors duration-150`}
                   >
                     <td className="px-4 py-2">{item.id}</td>
                     <td className="px-4 py-2">{item.bidder_name}</td>
@@ -85,14 +84,22 @@ const BidderRegistrationList = () => {
                     <td className="px-6 py-2">{item.email}</td>
                     <td className="px-4 py-2 flex justify-center gap-2">
                       <button
-                        onClick={() => navigate(`/View-Bidder-Details/${item.id}`)}
+                        onClick={() =>
+                          navigate('/View-Bidder-Details', {
+                            state: { bidderId: item.id }
+                          })
+                        }
                         className="bg-blue-500 hover:bg-blue-600 p-2 rounded text-white"
                         title="View"
                       >
                         <FiEye className="text-sm" />
                       </button>
                       <button
-                        onClick={() => navigate(`/EditBidderDetails/${item.id}`)}
+                        onClick={() =>
+                          navigate('/EditBidderDetails', {
+                            state: { bidderId: item.id }
+                          })
+                        }
                         className="bg-green-500 hover:bg-green-600 p-2 rounded text-white"
                         title="Edit"
                       >

@@ -4,10 +4,11 @@ import { MdDelete, MdOutlineFileUpload } from "react-icons/md";
 import profileempty from '../assets/profileempty.png';
 import { updateBidderApi, viewBidderApi } from '../API/Transaction/Auction/BidderApi'
 import { useNavigate, useParams } from 'react-router-dom';
-
+const location = useLocation();
+const { bidderId } = location.state;
 const EditBidderDetails = () => {
     const navigate = useNavigate();
-    const { id } = useParams(); // 🔹 Get bidder ID from route
+    const { id } = bidderId; // 🔹 Get bidder ID from route
     const [bidderPhoto, setBidderPhoto] = useState(null);
 
     const [formData, setFormData] = useState({
