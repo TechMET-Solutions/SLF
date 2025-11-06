@@ -2,15 +2,15 @@ import { useEffect, useRef, useState } from 'react';
 import { IoMdImage } from "react-icons/io";
 import { MdDelete, MdOutlineFileUpload } from "react-icons/md";
 import profileempty from '../assets/profileempty.png';
-import { updateBidderApi, viewBidderApi } from '../API/Transaction/Auction/BidderApi'
-import { useNavigate, useParams } from 'react-router-dom';
-const location = useLocation();
-const { bidderId } = location.state;
+import { updateBidderApi, viewBidderApi } from '../API/Transaction/Auction/BidderApi';
+import { useLocation, useNavigate } from 'react-router-dom';
+
 const EditBidderDetails = () => {
     const navigate = useNavigate();
-    const { id } = bidderId; // 🔹 Get bidder ID from route
-    const [bidderPhoto, setBidderPhoto] = useState(null);
+    const location = useLocation();
+    const { bidderId } = location.state || {};
 
+    const [bidderPhoto, setBidderPhoto] = useState(null);
     const [formData, setFormData] = useState({
         bidder_name: "",
         mobile_no: "",
@@ -30,7 +30,6 @@ const EditBidderDetails = () => {
         account_holder_name: "",
         bank_address: "",
     });
-
     // File Refs
     const aadharRef = useRef(null);
     const panRef = useRef(null);

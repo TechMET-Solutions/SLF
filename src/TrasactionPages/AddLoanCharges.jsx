@@ -153,33 +153,34 @@ function AddLoanCharges() {
   );
 
   // ✅ Submit handler
-  const handleSubmit = async () => {
-    try {
-      const payload = {
-        loan_no: formData.loanNo,
-        loan_date: formData.loanDate,
-        scheme: formData.scheme,
-        party_name: formData.partyName,
-        loan_amt: formData.loanAmt,
-        pending_amt: formData.pendingAmt,
-        remark: formData.remark,
-        charges_details: rows,
-        added_by: "Admin",
-      };
+const handleSubmit = async () => {
+  try {
+    const payload = {
+      loan_no: formData.loanNo,
+      loan_date: formData.loanDate,
+      scheme: formData.scheme,
+      party_name: formData.partyName,
+      loan_amt: formData.loanAmt,
+      pending_amt: formData.pendingAmt,
+      remark: formData.remark,
+      charges_details: rows,
+      total_charges: totalNetPayable.toFixed(2), // Added total charges
+      added_by: "Admin",
+    };
 
-      const res = await axios.post("http://localhost:5000/loan-charges/add", payload);
+    const res = await axios.post("http://localhost:5000/loan-charges/add", payload);
 
-      if (res.data.success) {
-        alert("✅ Loan charges added successfully!");
-        navigate("/loan-charges-list");
-      } else {
-        alert("⚠️ Failed to add loan charges");
-      }
-    } catch (err) {
-      console.error("❌ Submit Error:", err);
-      alert("Server error while submitting loan charges!");
+    if (res.data.success) {
+      alert("✅ Loan charges added successfully!");
+      navigate("/loan-charges-list");
+    } else {
+      alert("⚠️ Failed to add loan charges");
     }
-  };
+  } catch (err) {
+    console.error("❌ Submit Error:", err);
+    alert("Server error while submitting loan charges!");
+  }
+};
 
   return (
     <div className="min-h-screen w-full">
