@@ -501,7 +501,7 @@ function LoanChargesList() {
                   currentRows.map((row, index) => (
                     <tr
                       key={row.id}
-                      className={`border-b ${
+                      className={`${
                         index % 2 === 0 ? "bg-gray-50" : "bg-white"
                       }`}
                     >

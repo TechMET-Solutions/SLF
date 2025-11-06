@@ -206,166 +206,166 @@ function AddLoanCharges() {
 
       {/* 🔹 Search Section */}
       <div className="bg-[#FFE6E6] mt-5 p-6 rounded-md w-full mx-auto px-[120px] relative">
-  <p className="font-bold text-[24px] text-[#0A2478] mb-6">Search Loan Applications</p>
+        <p className="font-bold text-[24px] text-[#0A2478] mb-6">Search Loan Applications</p>
 
-  {/* 🔹 Search Fields Row */}
-  <div className="flex items-end justify-start gap-6 flex-wrap">
-    {/* Party Name Field */}
-    <div className="flex flex-col">
-      <label className="text-[14px] font-medium mb-1">Party Name</label>
-      <input
-        type="text"
-        name="partyName"
-        value={formData.partyName}
-        onChange={handleChange}
-        placeholder="Enter Party Name"
-        className="border border-gray-300 px-3 py-2 w-[350px] bg-white rounded-[8px]"
-      />
-    </div>
+        {/* 🔹 Search Fields Row */}
+        <div className="flex items-end justify-start gap-6 flex-wrap">
+          {/* Party Name Field */}
+          <div className="flex flex-col">
+            <label className="text-[14px] font-medium mb-1">Party Name</label>
+            <input
+              type="text"
+              name="partyName"
+              value={formData.partyName}
+              onChange={handleChange}
+              placeholder="Enter Party Name"
+              className="border border-gray-300 px-3 py-2 w-[350px] bg-white rounded-[8px]"
+            />
+          </div>
 
-    {/* Loan No Field */}
-    <div className="flex flex-col">
-      <label className="text-[14px] font-medium mb-1">Loan No</label>
-      <input
-        type="text"
-        name="loanNo"
-        value={formData.loanNo}
-        onChange={handleChange}
-        placeholder="Enter Loan No"
-        className="border border-gray-300 px-3 py-2 w-[350px] bg-white rounded-[8px]"
-      />
-    </div>
-  </div>
-
-  {/* 🔹 Loading Indicator */}
-  {loading && (
-    <p className="absolute left-[130px] top-[130px] text-gray-500 text-sm">Searching...</p>
-  )}
-
-  {/* 🔹 Search Results Dropdown */}
-  {searchResults.length > 0 && (
-    <div className="absolute bg-white shadow-lg rounded-md mt-3 left-[120px] w-[calc(100%-240px)] max-h-[220px] overflow-y-auto border border-gray-300 z-10">
-      <div className="sticky top-0 bg-[#F7F7FF] font-medium text-sm grid grid-cols-4 gap-4 px-4 py-2 border-b border-gray-200">
-        <span>ID</span>
-        <span>Borrower</span>
-        <span>Scheme</span>
-        <span>Amount</span>
-      </div>
-
-      {searchResults.map((loan) => (
-        <div
-          key={loan.id}
-          onClick={() => handleSelectLoan(loan)}
-          className="px-4 py-2 hover:bg-[#f0f0f0] cursor-pointer text-sm grid grid-cols-4 gap-4 border-b border-gray-100"
-        >
-          <span>{loan.id}</span>
-          <span>{loan.Borrower}</span>
-          <span>{loan.Scheme}</span>
-          <span>₹{loan.Loan_amount}</span>
+          {/* Loan No Field */}
+          <div className="flex flex-col">
+            <label className="text-[14px] font-medium mb-1">Loan No</label>
+            <input
+              type="text"
+              name="loanNo"
+              value={formData.loanNo}
+              onChange={handleChange}
+              placeholder="Enter Loan No"
+              className="border border-gray-300 px-3 py-2 w-[350px] bg-white rounded-[8px]"
+            />
+          </div>
         </div>
-      ))}
-    </div>
-  )}
-</div>
+
+        {/* 🔹 Loading Indicator */}
+        {loading && (
+          <p className="absolute left-[130px] top-[130px] text-gray-500 text-sm">Searching...</p>
+        )}
+
+        {/* 🔹 Search Results Dropdown */}
+        {searchResults.length > 0 && (
+          <div className="absolute bg-white shadow-lg rounded-md mt-3 left-[120px] w-[calc(100%-240px)] max-h-[220px] overflow-y-auto border border-gray-300 z-10">
+            <div className="sticky top-0 bg-[#F7F7FF] font-medium text-sm grid grid-cols-4 gap-4 px-4 py-2 border-b border-gray-200">
+              <span>ID</span>
+              <span>Borrower</span>
+              <span>Scheme</span>
+              <span>Amount</span>
+            </div>
+
+            {searchResults.map((loan) => (
+              <div
+                key={loan.id}
+                onClick={() => handleSelectLoan(loan)}
+                className="px-4 py-2 hover:bg-[#f0f0f0] cursor-pointer text-sm grid grid-cols-4 gap-4 border-b border-gray-100"
+              >
+                <span>{loan.id}</span>
+                <span>{loan.Borrower}</span>
+                <span>{loan.Scheme}</span>
+                <span>₹{loan.Loan_amount}</span>
+              </div>
+            ))}
+          </div>
+        )}
+      </div>
 
 
       {/* 🔹 Loan Details Section */}
       <div className="bg-[#F7F7FF] p-8 rounded-md w-full mx-auto px-[120px] ">
-  {/* Section Title */}
-  <p className="font-bold text-[24px] text-[#0A2478] mb-6">Loan Details</p>
+        {/* Section Title */}
+        <p className="font-bold text-[24px] text-[#0A2478] mb-6">Loan Details</p>
 
-  {/* Loan Fields Row */}
-  <div className="flex flex-wrap items-end justify-between gap-6">
-    {/* Loan No */}
-    <div className="flex flex-col">
-      <label className="text-[14px] font-medium mb-1">Loan No</label>
-      <input
-        type="text"
-        name="loanNo"
-        value={formData.loanNo}
-        onChange={handleChange}
-        placeholder="Loan No"
-        className="border border-gray-300 px-3 py-2 w-[180px] bg-white rounded-[8px]"
-      />
-    </div>
+        {/* Loan Fields Row */}
+        <div className="flex flex-wrap items-end justify-between gap-6">
+          {/* Loan No */}
+          <div className="flex flex-col">
+            <label className="text-[14px] font-medium mb-1">Loan No</label>
+            <input
+              type="text"
+              name="loanNo"
+              value={formData.loanNo}
+              onChange={handleChange}
+              placeholder="Loan No"
+              className="border border-gray-300 px-3 py-2 w-[180px] bg-white rounded-[8px]"
+            />
+          </div>
 
-    {/* Loan Date */}
-    <div className="flex flex-col">
-      <label className="text-[14px] font-medium mb-1">Loan Date</label>
-      <input
-        type="date"
-        name="loanDate"
-        value={formData.loanDate}
-        onChange={handleChange}
-        className="border border-gray-300 px-3 py-2 w-[180px] bg-white rounded-[8px]"
-      />
-    </div>
+          {/* Loan Date */}
+          <div className="flex flex-col">
+            <label className="text-[14px] font-medium mb-1">Loan Date</label>
+            <input
+              type="date"
+              name="loanDate"
+              value={formData.loanDate}
+              onChange={handleChange}
+              className="border border-gray-300 px-3 py-2 w-[180px] bg-white rounded-[8px]"
+            />
+          </div>
 
-    {/* Scheme */}
-    <div className="flex flex-col">
-      <label className="text-[14px] font-medium mb-1">Scheme</label>
-      <input
-        type="text"
-        name="scheme"
-        value={formData.scheme}
-        onChange={handleChange}
-        placeholder="Scheme"
-        className="border border-gray-300 px-3 py-2 w-[180px] bg-white rounded-[8px]"
-      />
-    </div>
+          {/* Scheme */}
+          <div className="flex flex-col">
+            <label className="text-[14px] font-medium mb-1">Scheme</label>
+            <input
+              type="text"
+              name="scheme"
+              value={formData.scheme}
+              onChange={handleChange}
+              placeholder="Scheme"
+              className="border border-gray-300 px-3 py-2 w-[180px] bg-white rounded-[8px]"
+            />
+          </div>
 
-    {/* Party Name */}
-    <div className="flex flex-col">
-      <label className="text-[14px] font-medium mb-1">Party Name</label>
-      <input
-        type="text"
-        name="partyName"
-        value={formData.partyName}
-        onChange={handleChange}
-        placeholder="Party Name"
-        className="border border-gray-300 px-3 py-2 w-[280px] bg-white rounded-[8px]"
-      />
-    </div>
+          {/* Party Name */}
+          <div className="flex flex-col">
+            <label className="text-[14px] font-medium mb-1">Party Name</label>
+            <input
+              type="text"
+              name="partyName"
+              value={formData.partyName}
+              onChange={handleChange}
+              placeholder="Party Name"
+              className="border border-gray-300 px-3 py-2 w-[280px] bg-white rounded-[8px]"
+            />
+          </div>
 
-    {/* Loan Amount */}
-    <div className="flex flex-col">
-      <label className="text-[14px] font-medium mb-1">Loan Amt.</label>
-      <input
-        type="number"
-        name="loanAmt"
-        value={formData.loanAmt}
-        onChange={handleChange}
-        placeholder="Loan Amt."
-        className="border border-gray-300 px-3 py-2 w-[150px] bg-white rounded-[8px]"
-      />
-    </div>
+          {/* Loan Amount */}
+          <div className="flex flex-col">
+            <label className="text-[14px] font-medium mb-1">Loan Amt.</label>
+            <input
+              type="number"
+              name="loanAmt"
+              value={formData.loanAmt}
+              onChange={handleChange}
+              placeholder="Loan Amt."
+              className="border border-gray-300 px-3 py-2 w-[150px] bg-white rounded-[8px]"
+            />
+          </div>
 
-    {/* Pending Amount */}
-    <div className="flex flex-col">
-      <label className="text-[14px] font-medium mb-1">Pending Amt.</label>
-      <input
-        type="number"
-        name="pendingAmt"
-        value={formData.pendingAmt}
-        onChange={handleChange}
-        placeholder="Pending Amt."
-        className="border border-gray-300 px-3 py-2 w-[150px] bg-white rounded-[8px]"
-      />
-    </div>
-  </div>
+          {/* Pending Amount */}
+          <div className="flex flex-col">
+            <label className="text-[14px] font-medium mb-1">Pending Amt.</label>
+            <input
+              type="number"
+              name="pendingAmt"
+              value={formData.pendingAmt}
+              onChange={handleChange}
+              placeholder="Pending Amt."
+              className="border border-gray-300 px-3 py-2 w-[150px] bg-white rounded-[8px]"
+            />
+          </div>
+        </div>
 
-  {/* Remark Section */}
-  <div className="flex flex-col mt-6">
-    <label className="text-[14px] font-medium mb-1">Remark <span className="text-red-600">*</span></label>
-    <textarea
-      name="remark"
-      value={formData.remark}
-      onChange={handleChange}
-      placeholder="Enter any remark"
-      className="border border-gray-300 px-3 py-2 w-[600px] h-[90px] bg-white rounded-[8px]"
-    ></textarea>
-  </div>
-</div>
+        {/* Remark Section */}
+        <div className="flex flex-col mt-6">
+          <label className="text-[14px] font-medium mb-1">Remark <span className="text-red-600">*</span></label>
+          <textarea
+            name="remark"
+            value={formData.remark}
+            onChange={handleChange}
+            placeholder="Enter any remark"
+            className="border border-gray-300 px-3 py-2 w-[600px] h-[90px] bg-white rounded-[8px]"
+          ></textarea>
+        </div>
+      </div>
 
 
       {/* Charges Table Section */}
