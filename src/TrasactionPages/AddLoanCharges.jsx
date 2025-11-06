@@ -13,8 +13,6 @@ function AddLoanCharges() {
     loanDate: "",
     loanAmt: "",
     pendingAmt: "",
-    documentNo: "",
-    documentDate: "",
     remark: "",
   });
 
@@ -40,9 +38,7 @@ function AddLoanCharges() {
   useEffect(() => {
     const fetchCharges = async () => {
       try {
-        const res = await axios.get(
-          "http://localhost:5000/Master/GetChargesProfile/Active"
-        );
+        const res = await axios.get("http://localhost:5000/Master/GetChargesProfile/Active");
         if (res.data.success) setChargesList(res.data.data);
       } catch (error) {
         console.error("❌ Error fetching charges:", error);
@@ -60,8 +56,8 @@ function AddLoanCharges() {
     const { name, value } = e.target;
     setFormData((prev) => ({ ...prev, [name]: value }));
 
-    // 🔍 Trigger search when user types in Party Name (Borrower) or Loan No (ID)
-    if (["partyName", "loanNo"].includes(name) && value.length >= 1) { // Changed from 2 to 1
+    // 🔍 Search logic
+    if (["partyName", "loanNo"].includes(name) && value.length >= 1) {
       try {
         setLoading(true);
         const res = await axios.get(
@@ -88,22 +84,20 @@ function AddLoanCharges() {
       loanNo: loan.id.toString() || "",
       loanDate: formatDate(loan.created_at) || "",
       loanAmt: loan.Loan_amount || "",
-      pendingAmt: loan.Loan_amount || "", // You might want to calculate pending amount based on your business logic
-      documentNo: `DOC-${loan.id}` || "",
-      documentDate: formatDate(loan.created_at) || "",
+      pendingAmt: loan.Loan_amount || "",
       remark: loan.remark || "",
     });
     setSearchResults([]);
   };
 
-  // ✅ Format date for input fields
+  // ✅ Format date
   const formatDate = (dateString) => {
     if (!dateString) return "";
     const date = new Date(dateString);
-    return date.toISOString().split('T')[0];
+    return date.toISOString().split("T")[0];
   };
 
-  // ✅ Handle row updates
+  // ✅ Handle table row changes
   const handleRowChange = (index, field, value) => {
     const updatedRows = [...rows];
     updatedRows[index][field] = value;
@@ -161,20 +155,29 @@ function AddLoanCharges() {
   // ✅ Submit handler
   const handleSubmit = async () => {
     try {
-      const payload = { 
-        ...formData, 
-        charges: rows,
-        loanApplicationId: formData.loanNo // Adding loan application ID for reference
+      const payload = {
+        loan_no: formData.loanNo,
+        loan_date: formData.loanDate,
+        scheme: formData.scheme,
+        party_name: formData.partyName,
+        loan_amt: formData.loanAmt,
+        pending_amt: formData.pendingAmt,
+        remark: formData.remark,
+        charges_details: rows,
+        added_by: "Admin",
       };
-      console.log("📦 Payload:", payload);
-      
-      // Here you would typically send the data to your backend
-      // const response = await axios.post("http://localhost:5000/api/loan-charges", payload);
-      
-      alert("Data prepared for submission (check console)");
+
+      const res = await axios.post("http://localhost:5000/loan-charges/add", payload);
+
+      if (res.data.success) {
+        alert("✅ Loan charges added successfully!");
+        navigate("/loan-charges-list");
+      } else {
+        alert("⚠️ Failed to add loan charges");
+      }
     } catch (err) {
-      console.error("❌ Submit error:", err);
-      alert("Error submitting charges!");
+      console.error("❌ Submit Error:", err);
+      alert("Server error while submitting loan charges!");
     }
   };
 
@@ -206,7 +209,6 @@ function AddLoanCharges() {
         <p className="font-bold text-[24px] text-[#0A2478] mb-4">Search Loan Applications</p>
 
         <div className="flex gap-3">
-          {/* Party Name (Borrower) Search */}
           <div>
             <label className="text-[14px] font-medium">Party Name (Borrower)</label>
             <input
@@ -218,8 +220,7 @@ function AddLoanCharges() {
               className="border border-gray-300 px-3 py-2 mt-1 w-[385px] bg-white rounded-[8px]"
             />
           </div>
-          
-          {/* Loan No (ID) Search */}
+
           <div>
             <label className="text-[14px] font-medium">Loan No (ID)</label>
             <input
@@ -233,7 +234,6 @@ function AddLoanCharges() {
           </div>
         </div>
 
-        {/* 🔽 Search Results Dropdown */}
         {loading && (
           <p className="absolute left-[130px] top-[120px] text-gray-500">Searching...</p>
         )}
@@ -282,9 +282,20 @@ function AddLoanCharges() {
             </div>
           ))}
         </div>
+
+        <div className="flex flex-col mt-4">
+          <label className="text-[14px] font-medium">Remark</label>
+          <textarea
+            name="remark"
+            value={formData.remark}
+            onChange={handleChange}
+            placeholder="Enter any remark"
+            className="border border-gray-300 px-3 py-2 mt-1 w-[500px] h-[80px] bg-white rounded-[8px]"
+          ></textarea>
+        </div>
       </div>
 
-      {/* Charges Table */}
+      {/* Charges Table Section */}
       <h1 className="font-bold text-[24px] text-[#0A2478] mb-4 mt-6 px-[120px]">
         Charges Details
       </h1>
