@@ -107,15 +107,15 @@ function ViewLoanCharges() {
           <Detail label="Party Name" value={loanData.party_name} />
           <Detail label="Loan Amount" value={loanData.loan_amt} />
           <Detail label="Pending Amount" value={loanData.pending_amt} />
+          <Detail label="Remark" value={loanData.remark} />
         </div>
       </div>
 
       {/* 🔹 Document Section */}
-      <div className="bg-[#FFE6E6] p-6 rounded-md w-full mx-auto mt-6 pl-[120px] pr-[120px]">
+      <div className="bg-[#FFE6E6] p-6 rounded-md w-full mx-auto pl-[120px] pr-[120px]">
         <div className="grid grid-cols-6 gap-6">
           <Detail label="Document No" value={loanData.id} />
           <Detail label="Document Date" value={formatIndianDate(loanData.created_at)} />
-          <Detail label="Remark" value={loanData.remark} />
         </div>
       </div>
 
