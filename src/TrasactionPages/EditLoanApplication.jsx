@@ -103,7 +103,8 @@ console.log(activeEmployees,"activeEmployees")
   }
 };
 
-
+ const location = useLocation();
+  const { loanId, loanData } = location.state || {};
   
   const [formData, setFormData] = useState({
     borrowerId: "",
@@ -124,12 +125,11 @@ console.log(activeEmployees,"activeEmployees")
     Nominee_Name: "",
     NomineeRelation: "",
     OrnamentPhoto: "",
-    Loan_amount: "",
+    Loan_amount: loanData.Loan_amount,
     Doc_Charges: "",
     Net_Payable: ""
   });
-    const location = useLocation();
-  const { loanId, loanData } = location.state || {};
+   
 
   
    console.log(loanData,"loanData")
@@ -150,31 +150,31 @@ console.log(activeEmployees,"activeEmployees")
   ]);
 
   console.log(formData, "formData")
-  useEffect(() => {
-  debugger
-    let totalGross = 0;
-    let totalNet = 0;
-    let totalValuation = 0;
+  // useEffect(() => {
+  // debugger
+  //   let totalGross = 0;
+  //   let totalNet = 0;
+  //   let totalValuation = 0;
 
-    PledgeItem.forEach((item) => {
-      totalGross += Number(item.gross) || 0;
-      totalNet += Number(item.netWeight) || 0;
-      totalValuation += Number(item.valuation) || 0;
-    });
+  //   PledgeItem.forEach((item) => {
+  //     totalGross += Number(item.gross) || 0;
+  //     totalNet += Number(item.netWeight) || 0;
+  //     totalValuation += Number(item.valuation) || 0;
+  //   });
 
-    // Calculate document charges (2% of loan)
-    const docCharges = (totalValuation * 2) / 100;
-    const netPayable = totalValuation + docCharges;
+  //   // Calculate document charges (2% of loan)
+  //   const docCharges = (totalValuation * 2) / 100;
+  //   const netPayable = totalValuation + docCharges;
 
 
-    // Update all values in formData
-    setFormData((prev) => ({
-      ...prev,
-      Loan_amount: totalValuation.toFixed(2),
-      Doc_Charges: docCharges.toFixed(2),
-      Net_Payable: netPayable.toFixed(2),
-    }));
-  }, [PledgeItem]);
+  //   // Update all values in formData
+  //   setFormData((prev) => ({
+  //     ...prev,
+  //     Loan_amount: totalValuation.toFixed(2),
+  //     Doc_Charges: docCharges.toFixed(2),
+  //     Net_Payable: netPayable.toFixed(2),
+  //   }));
+  // }, [PledgeItem]);
 useEffect(() => {
   if (loanId) {
     fetchLoanDetails(loanId);
