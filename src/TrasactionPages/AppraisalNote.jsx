@@ -1,6 +1,6 @@
-import React, { useEffect, useState } from "react";
-import { useLocation, useNavigate } from "react-router-dom";
 import axios from "axios";
+import { useEffect, useState } from "react";
+import { useLocation, useNavigate } from "react-router-dom";
 
 const AppraisalNote = () => {
   const navigate = useNavigate();
@@ -119,9 +119,7 @@ const AppraisalNote = () => {
                   <th className="border border-gray-300 p-2">
                     Gross Wt (in Gms)
                   </th>
-                  <th className="border border-gray-300 p-2">
-                    Stone/Dirt/Wax wt (in Gms)
-                  </th>
+                 
                   <th className="border border-gray-300 p-2">Net Wt (in Gms)</th>
                   <th className="border border-gray-300 p-2">Rate Per Gram</th>
                   <th className="border border-gray-300 p-2">
@@ -143,14 +141,12 @@ const AppraisalNote = () => {
                       <td className="border border-gray-300 p-2">
                         {item.grossWeight || "N/A"}
                       </td>
-                      <td className="border border-gray-300 p-2">
-                        {item.stoneDirtWax || "N/A"}
-                      </td>
+                    
                       <td className="border border-gray-300 p-2">
                         {item.netWeight || "N/A"}
                       </td>
                       <td className="border border-gray-300 p-2">
-                        {item.ratePerGram || "N/A"}
+                        {item?.ratePerGram.toFixed(2) || "N/A"}
                       </td>
                       <td className="border border-gray-300 p-2">
                         {item.eligibleAmount || "N/A"}
@@ -172,30 +168,40 @@ const AppraisalNote = () => {
                 )}
 
                 {/* Total Row */}
-                <tr className="font-semibold bg-[#f9f9f9]">
-                  <td className="border border-gray-300 p-2 text-center pr-4">
-                    Total
-                  </td>
-                  <td className="border border-gray-300 p-2"></td>
-                  <td className="border border-gray-300 p-2">
-                    {appraisalData?.ornaments
-                      ?.reduce((acc, item) => acc + (parseFloat(item.gross) || 0), 0)
-                      .toFixed(3) || "0.000"}
-                  </td>
-                  <td className="border border-gray-300 p-2">.000</td>
-                  <td className="border border-gray-300 p-2">
-                    {appraisalData?.ornaments
-                      ?.reduce((acc, item) => acc + (parseFloat(item.netWeight) || 0), 0)
-                      .toFixed(3) || "0.000"}
-                  </td>
-                  <td className="border border-gray-300 p-2"></td>
-                  <td className="border border-gray-300 p-2">
-                    {appraisalData?.ornaments
-                      ?.reduce((acc, item) => acc + (parseFloat(item.valuation) || 0), 0)
-                      .toFixed(2) || "0.00"}
-                  </td>
-                  <td className="border border-gray-300 p-2"></td>
-                </tr>
+                {/* Total Row */}
+<tr className="font-semibold bg-[#f9f9f9]">
+  <td className="border border-gray-300 p-2 text-center">Total</td>
+
+  {/* blank */}
+  <td className="border border-gray-300 p-2"></td>
+
+  {/* Gross Total */}
+  <td className="border border-gray-300 p-2">
+    {appraisalData?.ornaments
+      ?.reduce((acc, item) => acc + Number(item.grossWeight || 0), 0)
+      .toFixed(2)}
+  </td>
+
+  {/* Net Total */}
+  <td className="border border-gray-300 p-2">
+    {appraisalData?.ornaments
+      ?.reduce((acc, item) => acc + Number(item.netWeight || 0), 0)
+      .toFixed(2)}
+  </td>
+
+  {/* rate total blank */}
+  <td className="border border-gray-300 p-2"></td>
+
+  {/* Eligible loan total */}
+  <td className="border border-gray-300 p-2">
+    {appraisalData?.ornaments
+      ?.reduce((acc, item) => acc + Number(item.eligibleAmount || 0), 0)
+      .toFixed(2)}
+  </td>
+
+  <td className="border border-gray-300 p-2"></td>
+</tr>
+
               </tbody>
             </table>
           </div>

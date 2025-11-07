@@ -5,6 +5,7 @@ import { useLocation, useNavigate } from "react-router-dom";
 import profileempty from "../assets/profileempty.png";
 const ViewLoanDetails = () => {
   const [loanData, setLoanData] = useState(null);
+  console.log(loanData,"loanData")
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const navigate = useNavigate();
@@ -43,8 +44,7 @@ const ViewLoanDetails = () => {
       (sum, row) => sum + parseFloat(row.customerAmount || 0),
       0
     );
-   
-  // Get loan ID from URL params or location state
+
   const { loanId } = location.state || {};
 
   useEffect(() => {
@@ -218,7 +218,7 @@ const ViewLoanDetails = () => {
   // Parse the JSON strings from API
   const pledgeItems = parseJSONData(loanData.Pledge_Item_List);
   const interestRates = parseJSONData(loanData.Effective_Interest_Rates);
-
+console.log(interestRates,"interestRates")
   // Calculate totals from pledge items
   const totalNos = pledgeItems.reduce((sum, item) => sum + (parseInt(item.nos) || 0), 0);
   const totalGross = pledgeItems.reduce((sum, item) => sum + (parseFloat(item.gross) || 0), 0);
@@ -719,29 +719,31 @@ const ViewLoanDetails = () => {
                 </div>
               </div>
 
-              {/* Dynamic Interest Rates */}
-              {interestRates.length > 0 ? (
-                interestRates.map((rate, index) => (
-                  <div
-                    key={index}
-                    className={`flex ${index % 2 === 0 ? 'bg-[#FFCDCD]' : 'bg-[#E5E5FF]'}`}
-                  >
-                    <div className="flex-1 p-2 border-r border-white text-center">
-                      {rate.term} DAYS
-                    </div>
-                    <div className="w-40 p-2 text-center">
-                      {rate.rate}%
-                    </div>
-                  </div>
-                ))
-              ) : (
-                <div className="flex bg-[#FFCDCD]">
-                  <div className="flex-1 p-2 border-r border-white text-center">
-                    No rates available
-                  </div>
-                  <div className="w-40 p-2 text-center">-</div>
-                </div>
-              )}
+           
+            {interestRates.length > 0 ? (
+  interestRates.map((rate, index) => (
+    <div
+      key={index}
+      className={`flex ${index % 2 === 0 ? 'bg-[#FFCDCD]' : 'bg-[#E5E5FF]'}`}
+    >
+      <div className="flex-1 p-2 border-r border-white text-center">
+        {rate.from} - {rate.to} DAYS
+      </div>
+
+      <div className="w-40 p-2 text-center">
+        {rate.addInt}%
+      </div>
+    </div>
+  ))
+) : (
+  <div className="flex bg-[#FFCDCD]">
+    <div className="flex-1 p-2 border-r border-white text-center">
+      No rates available
+    </div>
+    <div className="w-40 p-2 text-center">-</div>
+  </div>
+)}
+
             </div>
           </div>
         </div>

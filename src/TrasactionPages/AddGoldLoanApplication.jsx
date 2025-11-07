@@ -162,9 +162,6 @@ console.log(activeEmployees,"activeEmployees")
 
   console.log(selectedCustomer,"selectedCustomer")
   const [selectedCoBorrower, setSelectedCoBorrower] = useState(null);
-  // Fetch API when typing
-
-
   const [formData, setFormData] = useState({
     borrowerName: "",
     borrowerAddress: "",

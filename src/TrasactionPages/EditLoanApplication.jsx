@@ -103,6 +103,12 @@ console.log(activeEmployees,"activeEmployees")
   }
 };
 
+
+  useEffect(() => {
+  getActiveEmp()
+},[])
+
+
  const location = useLocation();
   const { loanId, loanData } = location.state || {};
   
@@ -127,12 +133,15 @@ console.log(activeEmployees,"activeEmployees")
     OrnamentPhoto: "",
     Loan_amount: loanData.Loan_amount,
     Doc_Charges: "",
-    Net_Payable: ""
+    Net_Payable: "",
+    value1: "",
+    value2: "",
+    Effective_Interest_Rates:""
   });
    
 
   
-   console.log(loanData,"loanData")
+   console.log(formData,"formData")
   console.log("LoanId => ", loanId);
   console.log("LoanData => ", loanData);
   const [PledgeItem, setPledgeItem] = useState([
@@ -182,11 +191,12 @@ useEffect(() => {
 }, [loanId]);
 
     const fetchLoanDetails = async (id) => {
-        debugger
+       
   try {
     const res = await axios.get(`${API}/Transactions/goldloan/getLoan/${id}`);
     const data = res.data.loanApplication;
-      const SchemaData = res.data.schemeData;
+    const SchemaData = res.data.schemeData;
+
    const parsedScheme = {
   ...SchemaData,
   interestRates: SchemaData?.interestRates
@@ -218,7 +228,11 @@ setSelectedScheme(parsedScheme);
       OrnamentPhoto: data.Ornament_Photo || "",
       Loan_amount: data.Loan_amount || "",
       Doc_Charges: data.Doc_Charges || "",
-      Net_Payable: data.Net_Payable || ""
+      Net_Payable: data.Net_Payable || "",
+      value1: data.Valuer_1 || "",
+      value2: data.Valuer_2 || "",
+      Effective_Interest_Rates:data.Effective_Interest_Rates || ""
+      
     });
 
     // set pledge items
@@ -259,7 +273,9 @@ setSelectedScheme(parsedScheme);
     formDataToSend.append("Relation", formData.CoBorrowerRelation || "");
     formDataToSend.append("Nominee", formData.Nominee_Name || "");
     formDataToSend.append("Nominee_Relation", formData.NomineeRelation || "");
-
+ formDataToSend.append("Valuer_1", formData.value1 || "");
+    formDataToSend.append("Valuer_2", formData.value2 || "");
+    //  formDataToSend.append("Effective_Interest_Rates", selectedScheme?.interestRates || "");
     // new ornament photo update (optional)
     if(formData.OrnamentFile) {
       formDataToSend.append("Ornament_Photo", formData.OrnamentFile); 
@@ -270,7 +286,7 @@ setSelectedScheme(parsedScheme);
     formDataToSend.append("Doc_Charges", formData.Doc_Charges || 0);
     formDataToSend.append("Net_Payable", formData.Net_Payable || 0);
 
-    formDataToSend.append("Effective_Interest_Rates", JSON.stringify(selectedScheme?.effectiveInterestRates));
+    formDataToSend.append("Effective_Interest_Rates", JSON.stringify(selectedScheme?.interestRates));
 
     const res = await axios.put(
       `http://localhost:5000/Transactions/goldloan/updateLoan/${loanId}`,
@@ -419,6 +435,7 @@ setSelectedScheme(parsedScheme);
       }));
     }
   };
+ 
 
 
   return (
@@ -826,17 +843,31 @@ setSelectedScheme(parsedScheme);
           </div>
 
           <input
-            type="text"
-            placeholder="Loan amount"
-            value={formData.Loan_amount}  // ← shows the value from state
-            onChange={(e) =>
-              setFormData((prev) => ({
-                ...prev,
-                Loan_amount: e.target.value, // ← updates state on typing
-              }))
-            }
-            className="border border-gray-300 px-3 py-2 w-[129px] rounded-[8px] bg-white h-[38px]"
-          />
+    type="text"
+    placeholder="Loan amount"
+    value={formData.Loan_amount}
+    onChange={(e) => {
+      // Allow any input value
+      let inputLoan = parseFloat(e.target.value) || 0;
+
+      // Calculate document charges and round to nearest integer
+      const docCharges = Math.round(
+        (inputLoan * (selectedScheme?.docChargePercent ?? 0)) / 100
+      );
+
+      // Subtract docCharges from inputLoan
+      const netPayable = inputLoan - docCharges;
+
+      // Update state
+      setFormData((prev) => ({
+        ...prev,
+        Loan_amount: e.target.value, // keep exactly what user typed
+        Doc_Charges: docCharges,     // rounded value
+        Net_Payable: netPayable,     // Loan - Doc charges
+      }));
+    }}
+    className="border border-gray-300 px-3 py-2 w-[129px] rounded-[8px] bg-white h-[38px]"
+  />
         </div>
 
 
@@ -852,7 +883,7 @@ setSelectedScheme(parsedScheme);
             <button
               className="bg-[#0A2478] text-white px-4 py-2 text-sm font-medium rounded-l-md border border-[#0A2478] hover:bg-[#081c5b] transition-all duration-200"
             >
-              2%
+{selectedScheme?.docChargePercent}
             </button>
 
             {/* Input Field */}
@@ -892,40 +923,39 @@ setSelectedScheme(parsedScheme);
         </div>
 
        <div className="flex flex-col">
-          <label className="text-[14px] font-medium">Valuer 1* </label>
-          <select
+  <label className="text-[14px] font-medium">Valuer 1*</label>
+  <select
     name="value1"
     value={formData.value1}
     onChange={handleInputChange}
     className="border border-gray-300 rounded px-3 py-2 mt-1 w-full"
   >
-    <option value="">Select Lead Person</option>
-
+    <option value="">Select Valuer 1</option>
     {activeEmployees.map((emp) => (
-      <option key={emp.id} value={emp.id}>
-        {emp.emp_name}
-      </option>
+       <option key={emp.id} value={emp.emp_name}>
+      {emp.emp_name}
+    </option>
     ))}
   </select>
-        </div>
+</div>
 
-        <div className="flex flex-col">
-          <label className="text-[14px] font-medium">Valuer 2* </label>
-            <select
+<div className="flex flex-col">
+  <label className="text-[14px] font-medium">Valuer 2*</label>
+  <select
     name="value2"
     value={formData.value2}
     onChange={handleInputChange}
     className="border border-gray-300 rounded px-3 py-2 mt-1 w-full"
   >
-    <option value="">Select Lead Person</option>
-
+    <option value="">Select Valuer 2</option>
     {activeEmployees.map((emp) => (
-      <option key={emp.id} value={emp.id}>
-        {emp.emp_name}
-      </option>
+       <option key={emp.id} value={emp.emp_name}>
+      {emp.emp_name}
+    </option>
     ))}
   </select>
-        </div>
+</div>
+
 
 
       </div>

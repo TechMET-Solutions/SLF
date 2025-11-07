@@ -72,7 +72,8 @@ function AddLoanRepayment() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
 const [isClose, setIsClose] = useState(false);
-const [isAdvInt, setIsAdvInt] = useState(false);
+  const [isAdvInt, setIsAdvInt] = useState(false);
+  const [isAdvIntCheck, setIsAdvIntCheck] = useState(false);
   useEffect(() => {
     if (loanId) {
       fetchLoanData();
@@ -237,6 +238,60 @@ intPaidUpto.setDate(intPaidUpto.getDate() + daysPaidFor);
     balanceLoanAmt: balanceLoanAmt.toFixed(2),
     pendingDays: daysPaidFor,
     intPaidUpto
+  }));
+};
+
+  const handlePayAmountChangeForNotAdvance = (value) => {
+  debugger;
+  let payAmount = Number(value || 0);
+  let charges = Number(data.loanApplication.total_unpaid_charges || 0);
+  let pendingInt = Number(loanInfo.pendingInt || 0);
+  let pendingLoanAmount = Number(data.loanApplication.LoanPendingAmount || 0);
+
+  let dailyIntAmt = (pendingLoanAmount * loanInfoForAdj.interestPercent) / 100 / 365;
+
+  let remainingPay = parseFloat(payAmount) || 0;
+
+  // Step 1: Deduct charges
+  let chargesAdjusted = 0;
+  if (remainingPay >= charges) {
+    chargesAdjusted = charges;
+    remainingPay -= charges;
+  } else {
+    chargesAdjusted = remainingPay;
+    remainingPay = 0;
+  }
+
+  // Step 2: Deduct interest
+  let interestAdjusted = 0;
+  let daysPaidFor = 0;
+  if (remainingPay > 0) {
+    interestAdjusted = Math.min(remainingPay, pendingInt);
+    remainingPay -= interestAdjusted;
+
+    // Calculate exact days of interest paid (fractional)
+    daysPaidFor = Math.floor(interestAdjusted / dailyIntAmt);
+  }
+
+  // Step 3: Loan principal adjusted
+  let loanAmtAdjusted = remainingPay;
+
+  // Step 4: Remaining balance
+  let balanceLoanAmt = pendingLoanAmount - loanAmtAdjusted;
+
+  // Step 5: Calculate date up to interest is paid
+  let intPaidUpto = new Date(data.loanApplication.approval_date);
+  intPaidUpto.setDate(intPaidUpto.getDate() + daysPaidFor);
+
+  setloanInfoForAdj((prev) => ({
+    ...prev,
+    payAmount,
+    chargesAdjusted: chargesAdjusted.toFixed(2),
+    pendingInt: interestAdjusted.toFixed(2),
+    loanAmountPaid: loanAmtAdjusted.toFixed(2),
+    balanceLoanAmt: balanceLoanAmt.toFixed(2),
+    pendingDays: daysPaidFor,
+    intPaidUpto,
   }));
 };
 
@@ -890,9 +945,22 @@ if (checked) setIsAdvInt(false);
     </div>
             )
           }
+          <div className="flex items-center gap-2">
+  <input
+    type="checkbox"
+    checked={isAdvIntCheck}
+    onChange={(e) => setIsAdvIntCheck(e.target.checked)}
+  />
+  <label className="text-gray-900 font-medium">
+    Take Advance Interest
+  </label>
+</div>
           {
-           isAdvInt && (
-              <div className="flex flex-wrap gap-x-6 gap-y-4">
+            isAdvInt && isAdvIntCheck &&  (
+              <>
+              
+
+               <div className="flex flex-wrap gap-x-6 gap-y-4 mt-5">
       {/* Pay Amount */}
       <div className="flex flex-col gap-1 w-[150px]">
         <label className="text-gray-900 font-medium">Pay Amount</label>
@@ -985,9 +1053,95 @@ if (checked) setIsAdvInt(false);
         />
       </div>
     </div>
+              
+              
+              </>
+             
             )
           }
-      
+      { isAdvInt && !isAdvIntCheck && (
+  <div className="flex flex-wrap gap-x-6 gap-y-4">
+    {/* Pay Amount */}
+    <div className="flex flex-col gap-1 w-[150px]">
+      <label className="text-gray-900 font-medium">Pay Amount</label>
+      <input
+        type="text"
+        value={loanInfoForAdj.payAmount}
+        onChange={(e) => handlePayAmountChangeForNotAdvance(e.target.value)}
+        className="border border-gray-300 rounded-md px-3 py-2 focus:ring-1 focus:ring-blue-500 focus:outline-none"
+      />
+    </div>
+
+    {/* Interest Adjusted */}
+    <div className="flex flex-col gap-1 w-[150px]">
+      <label className="text-gray-900 font-medium">Interest Adjusted</label>
+      <input
+        type="text"
+        value={loanInfoForAdj.pendingInt}
+        onChange={(e) =>
+          setloanInfoForAdj((prev) => ({ ...prev, pendingInt: e.target.value }))
+        }
+        className="border border-gray-300 rounded-md px-3 py-2 focus:ring-1 focus:ring-blue-500 focus:outline-none"
+      />
+    </div>
+
+    {/* Loan Amt Adjusted */}
+    <div className="flex flex-col gap-1 w-[150px]">
+      <label className="text-gray-900 font-medium">Loan Amt Adjusted</label>
+      <input
+        type="text"
+        value={loanInfoForAdj.loanAmountPaid}
+        className="border border-gray-300 rounded-md px-3 py-2 focus:ring-1 focus:ring-blue-500 focus:outline-none"
+      />
+    </div>
+
+    {/* Balance Loan Amt */}
+    <div className="flex flex-col gap-1 w-[150px]">
+      <label className="text-gray-900 font-medium">Balance Loan Amt</label>
+      <input
+        type="text"
+        value={loanInfoForAdj.balanceLoanAmt}
+        className="border border-gray-300 rounded-md px-3 py-2 focus:ring-1 focus:ring-blue-500 focus:outline-none"
+      />
+    </div>
+
+    {/* Charges Adjusted */}
+    <div className="flex flex-col gap-1 w-[150px]">
+      <label className="text-gray-900 font-medium">Charges Adjusted</label>
+      <input
+        type="text"
+        value={loanInfoForAdj.chargesAdjusted}
+        disabled
+        className="border border-gray-300 disabled:bg-gray-100 rounded-md px-3 py-2 focus:ring-1 focus:ring-blue-500 focus:outline-none"
+      />
+    </div>
+
+    {/* Interest Paid For */}
+    <div className="flex flex-col gap-1 w-[150px]">
+      <label className="text-gray-900 font-medium">Interest Paid For</label>
+      <input
+        type="text"
+        value={loanInfoForAdj.pendingDays}
+        className="border border-gray-300 rounded-md px-3 py-2 focus:ring-1 focus:ring-blue-500 focus:outline-none"
+      />
+    </div>
+
+    {/* Int. Paid Upto (Date Picker) */}
+    <div className="flex flex-col gap-1 w-[150px]">
+      <label className="text-gray-900 font-medium">Int. Paid Upto</label>
+      <DatePicker
+        selected={loanInfoForAdj.intPaidUpto}
+        onChange={(date) =>
+          setloanInfoForAdj((prev) => ({ ...prev, intPaidUpto: date }))
+        }
+        dateFormat="dd/MM/yyyy"
+        disabled
+        className="border border-gray-300 disabled:bg-gray-100 rounded-md px-3 py-2 w-full focus:ring-1 focus:ring-blue-500 focus:outline-none"
+      />
+    </div>
+  </div>
+)}
+
 
       {/* <p className="text-sm text-gray-500 mt-1 ml-1">Amount in words</p> */}
 <div className="text-sm text-gray-500 mt-1 ml-1">
