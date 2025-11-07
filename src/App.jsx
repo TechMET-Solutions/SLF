@@ -3,6 +3,7 @@ import {
   Route,
   BrowserRouter as Router,
   Routes,
+  useLocation,
 } from "react-router-dom";
 import "./App.css";
 import Navbar from "./Component/Navbar";
@@ -65,13 +66,28 @@ import ViewCreditNote from "./TrasactionPages/ViewCreditNote";
 import ViewLoanCharges from "./TrasactionPages/ViewLoanCharges";
 import ViewLoanDetails from "./TrasactionPages/ViewLoanDeatils";
 import EmployeeDesignation from "./MasterPages/EmployeeDesignation";
+import LoginPage from "./Component/LoginPage";
+
+function LayoutWithNavbar({ children }) {
+  const location = useLocation();
+  const hideNavbar = location.pathname === "/login";
+
+  return (
+    <>
+      {!hideNavbar && <Navbar />}
+      {children}
+    </>
+  );
+}
 
 function App() {
   return (
     <>
       <Router>
-        <Navbar />
+        {/* <Navbar /> */}
+        <LayoutWithNavbar>
         <Routes>
+          <Route path="/login" element={<LoginPage />} />
           <Route path="/" element={<Dashboard />} />
 
           {/* Master Profile */}
@@ -173,6 +189,7 @@ function App() {
           {/* Default Route */}
           <Route path="*" element={<Navigate to="/" />} />
         </Routes>
+          </LayoutWithNavbar>
       </Router>
     </>
   );
