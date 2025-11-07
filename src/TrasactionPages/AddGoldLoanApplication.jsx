@@ -2,11 +2,11 @@ import axios from "axios";
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { API } from "../api";
+import envImg from "../assets/envImg.jpg";
 import profileempty from "../assets/profileempty.png";
 import timesvg from "../assets/timesvg.svg";
 import { decryptData } from "../utils/cryptoHelper";
 import PledgeItemList from "./PledgeItemList";
-
 const AddGoldLoanApplication = () => {
   const [schemes, setSchemes] = useState([]); // store all schemes
   const [selectedScheme, setSelectedScheme] = useState(null); // store selected scheme
@@ -59,6 +59,7 @@ console.log(activeEmployees,"activeEmployees")
   };
 
   const handleSaveLoan = async () => {
+    debugger
     try {
       const formDataToSend = new FormData();
 
@@ -88,8 +89,8 @@ console.log(activeEmployees,"activeEmployees")
       formDataToSend.append("Loan_amount", formData.Loan_amount || 0);
       formDataToSend.append("Doc_Charges", formData.Doc_Charges || 0);
       formDataToSend.append("Net_Payable", formData.Net_Payable || 0);
-      formDataToSend.append("Valuer_1", "Not Assigned");
-      formDataToSend.append("Valuer_2", "Not Assigned");
+      formDataToSend.append("Valuer_1", formData.value1);
+      formDataToSend.append("Valuer_2", formData.value2);
       formDataToSend.append("Loan_Tenure", selectedScheme?.loanPeriod || "");
       formDataToSend.append("Min_Loan", selectedScheme?.minLoanAmount || "");
       formDataToSend.append("Max_Loan", selectedScheme?.maxLoanAmount || "");
@@ -158,6 +159,8 @@ console.log(activeEmployees,"activeEmployees")
   console.log(results, "results")
   const [loading, setLoading] = useState(false);
   const [selectedCustomer, setSelectedCustomer] = useState(null);
+
+  console.log(selectedCustomer,"selectedCustomer")
   const [selectedCoBorrower, setSelectedCoBorrower] = useState(null);
   // Fetch API when typing
 
@@ -187,6 +190,10 @@ console.log(activeEmployees,"activeEmployees")
     value2:""
 
   });
+   const [remarkModel, setSelectedremarkModel] = useState(false);
+  const [selectedBorrowerRemark, setSelectedBorrowerRemark] = useState(null);
+   const [selectedCoBorrowerRemark, setSelectedCoBorrowerRemark] = useState(null);
+  const [showCustomerModal, setShowCustomerModal] = useState(false);
   const [PledgeItem, setPledgeItem] = useState([
     {
       id: 1,
@@ -306,7 +313,13 @@ console.log(activeEmployees,"activeEmployees")
     setRows(updatedRows);
   };
 
-  const handleSelectCustomer = (customer) => {
+  const handleSelectCustomer = (customer ,type) => {
+    setSelectedremarkModel(true)
+   if (type === "Borrower") {
+    setSelectedBorrowerRemark(customer.Remark);
+  }
+
+ 
     setSelectedCustomer(customer);
     setSearchTerm(customer.firstName); // show name in input
     setResults([]); // hide dropdown
@@ -328,7 +341,11 @@ console.log(activeEmployees,"activeEmployees")
     }));
   };
 
-  const handleSelectCoborrower = (customer) => {
+  const handleSelectCoborrower = (customer,type) => {
+ setSelectedremarkModel(true)
+     if (type === "CoBorrower") {
+    setSelectedCoBorrowerRemark(customer.Remark);
+  }
     setSelectedCoBorrower(customer);
     setSearchTermForCoBorrower(customer.firstName); // show name in input
     setResults2([]);
@@ -434,7 +451,7 @@ console.log(activeEmployees,"activeEmployees")
                       {results.map((customer) => (
                         <li
                           key={customer.id}
-                          onClick={() => handleSelectCustomer(customer)}
+                          onClick={() => handleSelectCustomer(customer,"Borrower")}
                           className="px-3 py-2 hover:bg-blue-100 cursor-pointer"
                         >
                           {customer.firstName}{" "}
@@ -448,16 +465,13 @@ console.log(activeEmployees,"activeEmployees")
                 </div>
 
 
-                <button
-                  className="bg-[#0A2478] text-white px-4 py-3 rounded-r border border-gray-300 border-l-0 hover:bg-[#081c5b]"
-                  type="button"
-                >
-                  <img
-                    src={timesvg}
-                    alt="eye"
-
-                  />
-                </button>
+               <button
+  className="bg-[#0A2478] text-white px-4 py-3 rounded-r border border-gray-300 border-l-0 hover:bg-[#081c5b]"
+  type="button"
+  onClick={() => setShowCustomerModal(true)}   // <--- ADD
+>
+  <img src={timesvg} alt="eye" />
+</button>
               </div>
 
             </div>
@@ -542,7 +556,7 @@ console.log(activeEmployees,"activeEmployees")
               </label>
               <div className="flex items-center mt-1 w-[220px]">
                 <div className="relative flex-1">
-                  <input
+                   <input
                     type="text"
                     placeholder="Enter Co-Borrower Name"
                     name="CoBorrowerName"
@@ -567,7 +581,7 @@ console.log(activeEmployees,"activeEmployees")
                       {results2.map((customer) => (
                         <li
                           key={customer.id}
-                          onClick={() => handleSelectCoborrower(customer)}
+                          onClick={() => handleSelectCoborrower(customer,"CoBorrower")}
                           className="px-3 py-2 hover:bg-blue-100 cursor-pointer"
                         >
                           {customer.firstName}{" "}
@@ -581,7 +595,13 @@ console.log(activeEmployees,"activeEmployees")
                 </div>
 
 
-
+               <button
+  className="bg-[#0A2478] text-white px-4 py-3 rounded-r border border-gray-300 border-l-0 hover:bg-[#081c5b]"
+  type="button"
+  onClick={() => setShowCustomerModal(true)}   // <--- ADD
+>
+  <img src={timesvg} alt="eye" />
+</button>
               </div>
 
             </div>
@@ -847,18 +867,19 @@ console.log(activeEmployees,"activeEmployees")
     <span className="text-red-500">*</span>
   </label>
   <select
-    name="value1"
-    value={formData.value1}
-    onChange={handleInputChange}
-    className="border border-gray-300 rounded px-3 py-2 mt-1 w-full"
-  >
-    <option value="">Select valuer 1</option>
-    {activeEmployees.map((emp) => (
-      <option key={emp.id} value={emp.id}>
-        {emp.emp_name}
-      </option>
-    ))}
-  </select>
+  name="value1"
+  value={formData.value1}
+  onChange={handleInputChange}
+  className="border border-gray-300 rounded px-3 py-2 mt-1 w-full"
+>
+  <option value="">Select valuer 1</option>
+  {activeEmployees.map((emp) => (
+    <option key={emp.id} value={emp.emp_name}>
+      {emp.emp_name}
+    </option>
+  ))}
+</select>
+
 </div>
 
 <div className="flex flex-col">
@@ -869,20 +890,21 @@ console.log(activeEmployees,"activeEmployees")
     )}
   </label>
   <select
-    name="value2"
-    value={formData.value2}
-    onChange={handleInputChange}
-    className="border border-gray-300 rounded px-3 py-2 mt-1 w-full"
-    disabled={parseFloat(formData.Loan_amount) < 20000} // disable if loan < 20k
-  >
-    <option value="">Select valuer 2</option>
-    {activeEmployees.map((emp) => (
-      <option key={emp.id} value={emp.id}>
-        {emp.emp_name}
-      </option>
-    ))}
-  </select>
+  name="value2"
+  value={formData.value2}
+  onChange={handleInputChange}
+  className="border border-gray-300 rounded px-3 py-2 mt-1 w-full"
+>
+  <option value="">Select valuer 2</option>
+  {activeEmployees.map((emp) => (
+    <option key={emp.id} value={emp.emp_name}>
+      {emp.emp_name}
+    </option>
+  ))}
+</select>
+
 </div>
+
 
 
 
@@ -968,6 +990,215 @@ console.log(activeEmployees,"activeEmployees")
           </div>
         </div>
       </div>
+     {showCustomerModal && selectedCustomer && (
+  <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-[999]">
+    <div className="bg-white rounded-lg p-6 shadow-2xl relative w-[1080px] max-h-[96vh] overflow-auto">
+
+      {/* header */}
+      <div className="flex items-center justify-between mb-5">
+        <h2 className="text-[20px] font-semibold text-[#0A2478]">
+          Loan History
+        </h2>
+
+        <button
+          onClick={() => setShowCustomerModal(false)}
+          className="text-red-600 font-bold text-[20px] hover:opacity-70"
+        >
+          ×
+        </button>
+      </div>
+
+      {/* top profile images */}
+      <div className="flex gap-16">
+
+        {/* profile + signature */}
+        <div className="flex flex-col items-center">
+          <img
+            src={selectedCustomer.profileImage}
+            alt="Customer"
+            className="w-[112px] h-[112px] border rounded-md object-cover shadow-sm"
+          />
+          <img
+            src={selectedCustomer.signature}
+            alt="Signature"
+            className="w-[111px] h-[33px] border rounded-md mt-4 object-contain shadow-sm bg-white"
+          />
+        </div>
+
+        {/* 2 proof images */}
+        <div className="flex flex-col items-center">
+          {selectedCustomer?.Additional_UploadDocumentFile1 ? (
+            <img
+              src={selectedCustomer.Additional_UploadDocumentFile1}
+              alt="Address Proof"
+              className="w-[112px] h-[112px] border rounded-md object-cover shadow-sm"
+            />
+          ) : (
+            <p className="text-red-600 text-sm font-semibold">
+              Address Proof not uploaded..
+            </p>
+          )}
+
+          {selectedCustomer?.Additional_UploadDocumentFile2 ? (
+            <img
+              src={selectedCustomer.Additional_UploadDocumentFile2}
+              alt="ID Proof"
+              className="w-[111px] h-[33px] border rounded-md mt-4 object-contain shadow-sm bg-white"
+            />
+          ) : (
+            <p className="text-red-600 text-sm font-semibold mt-4">
+              ID Proof not uploaded..
+            </p>
+          )}
+        </div>
+
+      </div>
+
+      {/* bank table */}
+      <div className="mt-6 border rounded-md shadow-sm overflow-x-auto overflow-y-auto h-auto">
+        <table className="w-full border-collapse">
+          <thead className="bg-[#0A2478] text-white text-sm">
+            <tr>
+              <th className="px-4 py-2 text-left text-[13px] border-r">Bank Name</th>
+              <th className="px-4 py-2 text-left text-[13px] border-r">Name</th>
+              <th className="px-4 py-2 text-left text-[13px] border-r">Account No.</th>
+              <th className="px-4 py-2 text-left text-[13px] border-r">IFSC</th>
+              <th className="px-4 py-2 text-left text-[13px] border-r">Bank Address</th>
+              <th className="px-4 py-2 text-left text-[13px]">Cancel Cheque</th>
+            </tr>
+          </thead>
+
+          <tbody className="text-[12px]">
+            <tr className="border-b bg-gray-50">
+              <td className="px-4 py-2">HDFC Bank</td>
+              <td className="px-4 py-2">Rahul Sharma</td>
+              <td className="px-4 py-2">123456789012</td>
+              <td className="px-4 py-2">HDFC0000123</td>
+              <td className="px-4 py-2">Bandra West, Mumbai</td>
+              <td className="px-4 py-2">
+                <img
+                  src={"/assets/cancel_cheque.png"}
+                  alt="Cancel Cheque"
+                  className="w-[80px] h-[35px] object-cover border rounded"
+                />
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      {/* loan table */}
+      <div className="mt-6 border rounded-md shadow-sm overflow-x-auto overflow-y-auto h-auto">
+        <table className="w-full border-collapse">
+          <thead className="bg-[#0A2478] text-white text-sm">
+            <tr>
+              <th className="px-4 py-2 text-left text-[13px] border-r">Loan No</th>
+              <th className="px-4 py-2 text-left text-[13px] border-r">Loan Date</th>
+              <th className="px-4 py-2 text-left text-[13px] border-r">Loan Amount</th>
+              <th className="px-4 py-2 text-left text-[13px] border-r">Scheme</th>
+              <th className="px-4 py-2 text-left text-[13px] border-r">Int. Due Date</th>
+              <th className="px-4 py-2 text-left text-[13px] border-r">Pending Interest</th>
+              <th className="px-4 py-2 text-left text-[13px] border-r">Total Due</th>
+              <th className="px-4 py-2 text-left text-[13px] border-r">Status</th>
+              <th className="px-4 py-2 text-left text-[13px]">Ornaments Image</th>
+            </tr>
+          </thead>
+
+          <tbody className="text-[12px]">
+            <tr className="border-b bg-gray-50">
+              <td className="px-4 py-2">LN-0001</td>
+              <td className="px-4 py-2">05-11-2025</td>
+              <td className="px-4 py-2">₹1,50,000</td>
+              <td className="px-4 py-2">Gold Scheme A</td>
+              <td className="px-4 py-2">15-11-2025</td>
+              <td className="px-4 py-2">₹4,200</td>
+              <td className="px-4 py-2">₹1,54,200</td>
+              <td className="px-4 py-2 text-green-600 font-semibold">Active</td>
+              <td className="px-4 py-2">
+                <img
+                  src={"/assets/ornament1.png"}
+                  alt="Ornament"
+                  className="w-[80px] h-[45px] object-cover border rounded"
+                />
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div className="mt-8 flex justify-center">
+        <button
+          onClick={() => setShowCustomerModal(false)}
+          className="bg-[#C1121F] text-white px-10 py-2 rounded hover:bg-[#C1121F]"
+        >
+          Close
+        </button>
+      </div>
+
+    </div>
+  </div>
+)}
+
+      
+
+        {remarkModel && (
+              <div
+                className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50"
+                style={{
+                  background: "#0101017A",
+                  backdropFilter: "blur(6.8px)",
+                }}
+              >
+                <div className="bg-white w-[829px] h-[356px] p-6 shadow-lg relative rounded-[8px]">
+                  <h2 className="font-semibold text-[24px] leading-[100%] tracking-[0.03em] mb-4 text-[#0A2478]"
+                    style={{ fontFamily: 'Source Sans 3' }}>
+                    Remark
+                  </h2>
+      
+                  
+                    <div className="w-[728px] border border-gray-300 p-5 resize-none h-[183px] rounded-[16px] flex justify-between">
+                      <div>
+                        
+                        {selectedBorrowerRemark && (
+  <div className="text-gray-700 mb-2">
+    <b>Borrower:</b>
+    <div
+      dangerouslySetInnerHTML={{ __html: selectedBorrowerRemark }}
+    />
+  </div>
+)}
+
+{selectedCoBorrowerRemark && (
+  <div className="text-gray-700 mb-2">
+    <b>Co-Borrower:</b>
+    <div
+      dangerouslySetInnerHTML={{ __html: selectedCoBorrowerRemark }}
+    />
+  </div>
+)}
+                      </div>
+                      <div>
+                        <img src={envImg} alt="envelope" className="w-[156px] h-[156px] rounded-[10px]" />
+                      </div>
+                    </div>
+                 
+      
+                  <div className="flex justify-center mt-4 gap-2">
+                    <button
+                      className="px-4 py-2 rounded w-[119px] h-[38px] bg-[#C1121F] text-white font-semibold cursor-pointer hover:bg-[#a50e1a]"
+                      onClick={() => {
+                        setSelectedremarkModel(false);
+                        setSelectedBorrowerRemark(null);
+                        setSelectedCoBorrowerRemark(null);
+                      }}
+                    >
+                      Close
+                    </button>
+                  </div>
+                </div>
+              </div>
+            )}
+
     </div>
   )
 }

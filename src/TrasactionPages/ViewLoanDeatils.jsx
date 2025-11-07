@@ -1,16 +1,48 @@
-import { useEffect, useState } from "react";
-import { useNavigate, useLocation } from "react-router-dom";
 import axios from "axios";
+import { useEffect, useState } from "react";
+import { IoIosAddCircleOutline, IoIosCloseCircleOutline } from "react-icons/io";
+import { useLocation, useNavigate } from "react-router-dom";
 import profileempty from "../assets/profileempty.png";
-import { IoMdAddCircleOutline } from "react-icons/io";
-import { MdOutlineCancel } from "react-icons/md";
-
 const ViewLoanDetails = () => {
   const [loanData, setLoanData] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const navigate = useNavigate();
   const location = useLocation();
+
+  const dummyBanks = [
+    { id: 1, name: "HDFC Bank" },
+    { id: 2, name: "SBI Bank" },
+    { id: 3, name: "ICICI Bank" },
+  ];
+  
+  const paidByOptions = ["Cash", "Bank Transfer", "UPI", "Online Payment"];
+  
+    const [rows, setRows] = useState([
+      { paidBy: "", utrNumber: "", bank: "", customerAmount: "" },
+    ]);
+  
+    console.log(rows,"rows")
+  
+    const handleRowChange = (index, field, value) => {
+      const updatedRows = [...rows];
+      updatedRows[index][field] = value;
+      setRows(updatedRows);
+    };
+  
+    const handleAddRow = () => {
+      setRows([...rows, { paidBy: "", utrNumber: "", bank: "", customerAmount: "" }]);
+    };
+  
+    const handleRemoveRow = (index) => {
+      const updatedRows = rows.filter((_, i) => i !== index);
+      setRows(updatedRows);
+    };
+  
+    const totalAmount = rows.reduce(
+      (sum, row) => sum + parseFloat(row.customerAmount || 0),
+      0
+    );
    
   // Get loan ID from URL params or location state
   const { loanId } = location.state || {};
@@ -26,18 +58,37 @@ const ViewLoanDetails = () => {
   }, [loanId]);
 
   const fetchLoanData = async () => {
-    try {
-      setLoading(true);
-      const response = await axios.get(`http://localhost:5000/Transactions/goldloan/getLoan/${loanId}`);
-      setLoanData(response.data.loanApplication); // Access the data property
-      setError(null);
-    } catch (err) {
-      console.error("❌ Error fetching loan data:", err);
-      setError("Failed to load loan data");
-    } finally {
-      setLoading(false);
+  try {
+    setLoading(true);
+    const response = await axios.get(
+      `http://localhost:5000/Transactions/goldloan/getLoan/${loanId}`
+    );
+
+    let data = response.data.loanApplication;
+
+    // parse payment
+    if (data.payments_Details) {
+      try {
+        const parsed = JSON.parse(data.payments_Details);
+        if (Array.isArray(parsed) && parsed.length > 0) {
+          setRows(parsed);  // <---- update rows state here
+        }
+      } catch (e) {
+        console.warn("JSON parse failed on payments_Details", e);
+      }
     }
-  };
+
+    setLoanData(data);
+    setError(null);
+  } catch (err) {
+    console.error("❌ Error fetching loan data:", err);
+    setError("Failed to load loan data");
+  } finally {
+    setLoading(false);
+  }
+};
+
+
 
   // Parse JSON strings from API response
   const parseJSONData = (data) => {
@@ -331,7 +382,7 @@ const ViewLoanDetails = () => {
               <img
                 src={
                   loanData.Ornament_Photo
-                    ? `http://localhost:5000/uploads/ornaments/${loanData.Ornament_Photo}`
+                    ? `${loanData.Ornament_Photo}`
                     : profileempty
                 }
                 alt="Ornament"
@@ -442,7 +493,7 @@ const ViewLoanDetails = () => {
         </div>
 
         {/* Loan Amount Section */}
-        <div>
+        <div className="pl-[45px]">
           <div className="w-full px-14 flex items-start gap-4 text-xs">
             <div className="flex flex-col w-40">
               <label className="text-[13px] font-semibold">
@@ -509,11 +560,123 @@ const ViewLoanDetails = () => {
             {numberToWords(loanData.Loan_amount)}
           </div>
         </div>
-
+<div className="px-[100px] mt-6">
+      <h1 className="font-bold text-[24px] text-[#0A2478] mb-4">Payment Details</h1>
+      <div className="border border-gray-300 rounded-md overflow-hidden shadow-sm">
+        <table className="w-full border-collapse text-sm">
+          <thead>
+            <tr className="bg-[#0A2478] text-white text-center">
+              <th className="py-2 border">Sr No</th>
+              <th className="py-2 border">Paid By</th>
+              <th className="py-2 border">UTR Number</th>
+              <th className="py-2 border">Bank</th>
+              <th className="py-2 border">Customer Bank</th>
+              <th className="py-2 border">Customer Amount</th>
+              <th className="py-2 border">Action</th>
+            </tr>
+          </thead>
+          <tbody>
+            {rows.map((row, index) => (
+              <tr key={index} className="text-center bg-white">
+                <td className="py-2">{index + 1}</td>
+                <td className="py-2">
+                  <select
+                    value={row.paidBy}
+                    disabled
+                    onChange={(e) => handleRowChange(index, "paidBy", e.target.value)}
+                    className="border border-gray-300 rounded-md px-2 py-1 w-[120px]"
+                  >
+                    <option value="">Select</option>
+                    {paidByOptions.map((option, i) => (
+                      <option key={i} value={option}>
+                        {option}
+                      </option>
+                    ))}
+                  </select>
+                </td>
+                <td className="py-2">
+                  <input
+                    type="text"
+                    disabled
+                    value={row.utrNumber}
+                    onChange={(e) => handleRowChange(index, "utrNumber", e.target.value)}
+                    className="border border-gray-300 rounded-md px-2 py-1 w-[150px]"
+                  />
+                </td>
+                <td className="py-2">
+                  <select
+                    value={row.bank}
+                    disabled
+                    onChange={(e) => handleRowChange(index, "bank", e.target.value)}
+                    className="border border-gray-300 rounded-md px-2 py-1 w-[140px]"
+                  >
+                    <option value="">Select Bank</option>
+                    {dummyBanks.map((b) => (
+                      <option key={b.id} value={b.name}>
+                        {b.name}
+                      </option>
+                    ))}
+                  </select>
+                </td>
+                <td className="py-2">
+                  <select
+                    value={row.customerBank}
+                    disabled
+                    onChange={(e) => handleRowChange(index, "customerBank", e.target.value)}
+                    className="border border-gray-300 rounded-md px-2 py-1 w-[140px]"
+                  >
+                    <option value="">Select Customer Bank</option>
+                    {dummyBanks.map((b) => (
+                      <option key={b.id} value={b.name}>
+                        {b.name}
+                      </option>
+                    ))}
+                  </select>
+                </td>
+                <td className="py-2">
+                  <input
+                    type="number"
+                    value={row.customerAmount}
+                    disabled
+                    onChange={(e) =>
+                      handleRowChange(index, "customerAmount", e.target.value)
+                    }
+                    className="border border-gray-300 rounded-md px-2 py-1 w-[120px]"
+                  />
+                </td>
+                <td className="py-2 flex justify-center items-center gap-2">
+                  <button
+                    onClick={handleAddRow}
+                    disabled
+                    className="bg-[#0A2478] text-white px-2 py-2 rounded hover:bg-blue-700"
+                  >
+                    <IoIosAddCircleOutline size={17} />
+                  </button>
+                  <button
+                    onClick={() => handleRemoveRow(index)}
+                    disabled
+                    className="bg-red-600 text-white px-2 py-2 rounded hover:bg-red-700"
+                  >
+                    <IoIosCloseCircleOutline size={17} />
+                  </button>
+                </td>
+              </tr>
+            ))}
+            <tr className="border font-semibold bg-gray-100">
+              <td colSpan="5" className="text-right pr-4 py-2">
+                Total
+              </td>
+              <td className="text-center">{totalAmount.toFixed(2)}</td>
+              <td></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
         {/* ===== Scheme Details & Effective Interest Rates ===== */}
-        <div className="flex gap-8 text-xs mx-14">
+        <div className="flex gap-8 text-xs mx-14 justify-center">
           {/* Scheme Details Table */}
-          <div className="w-1/2">
+          <div className="w-[550px]">
             <h2 className="font-semibold text-[20px] mb-1 text-[#0A2478]">
               Scheme Details
             </h2>
@@ -542,7 +705,7 @@ const ViewLoanDetails = () => {
           </div>
 
           {/* Effective Interest Rates Table */}
-          <div className="w-1/2">
+          <div className="w-[700px]">
             <h2 className="font-semibold text-[20px] mb-1 text-[#0A2478]">
               Effective Interest Rates
             </h2>

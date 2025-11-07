@@ -1,8 +1,8 @@
-import React, { useEffect, useState } from "react";
 import axios from "axios";
-import { useNavigate } from "react-router-dom";
+import { useEffect, useState } from "react";
+import { FiEdit, FiEye, FiTrash2 } from "react-icons/fi";
 import { HiMagnifyingGlass } from "react-icons/hi2";
-import { FiEye, FiEdit, FiTrash2 } from "react-icons/fi";
+import { useNavigate } from "react-router-dom";
 import blockimg from "../assets/blockimg.png";
 
 const BASE_URL = "http://localhost:5000/loan-charges";
@@ -139,9 +139,6 @@ function LoanChargesList() {
             Loan Charges List
           </h2>
 
-          {/* 🔹 Search Box */}
-          
-
           <div className="flex gap-3">
             <div className="flex items-right">
             <input
@@ -208,7 +205,7 @@ function LoanChargesList() {
                     >
                       <td className="px-4 py-2">{row.loan_no}</td>
                       <td className="px-4 py-2">{row.party_name}</td>
-                      <td className="px-4 py-2">{row.loan_amt}</td>
+                      <td className="px-4 py-2">{row.total_charges}</td>
                       <td className="px-4 py-2">{row.loan_date}</td>
                       <td className="px-4 py-2">{row.added_by_email || "-"}</td>
 

@@ -130,6 +130,8 @@ console.log(activeEmployees,"activeEmployees")
   });
     const location = useLocation();
   const { loanId, loanData } = location.state || {};
+
+  
    console.log(loanData,"loanData")
   console.log("LoanId => ", loanId);
   console.log("LoanData => ", loanData);

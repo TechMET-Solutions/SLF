@@ -1,12 +1,13 @@
-import React, { useEffect, useState } from "react";
-import { useLocation } from "react-router-dom";
 import axios from "axios";
+import { useEffect, useState } from "react";
+import { useLocation } from "react-router-dom";
 
 function NOC() {
     const location = useLocation();
     const { loanId } = location.state || {};
     const [loading, setLoading] = useState(false);
     const [loanData, setLoanData] = useState({});
+    console.log(loanData,"loanData")
     const [error, setError] = useState(null);
 
     useEffect(() => {
@@ -40,6 +41,18 @@ function NOC() {
 
     if (loading) return <div>Loading...</div>;
     if (error) return <div>{error}</div>;
+    const payments = loanData?.payments_Details
+  ? JSON.parse(loanData.payments_Details)
+        : [];
+    console.log(payments, "payments")
+    
+    const totalCash = payments
+  .filter(p => p.paidBy?.toLowerCase() === "cash")
+  .reduce((sum, p) => sum + Number(p.customerAmount || 0), 0);
+
+const totalBank = payments
+  .filter(p => p.paidBy?.toLowerCase() !== "cash")
+  .reduce((sum, p) => sum + Number(p.customerAmount || 0), 0);
     return (
         <div className="flex flex-col items-center mt-5">
             {/* Header Section */}
@@ -111,7 +124,7 @@ function NOC() {
 
                         <tr className="border text-center">
                             <td className="border px-2 py-1 font-semibold">CASH</td>
-                            <td className="border px-2 py-1">0 /-</td>
+                            <td className="border px-2 py-1">{totalCash}/-</td>
                             <td className="border px-2 py-1 font-semibold">CASH</td>
                             <td className="border px-2 py-1">0 /-</td>
                             <td className="border px-2 py-1 font-semibold">CASH</td>
@@ -120,7 +133,7 @@ function NOC() {
 
                         <tr className="border text-center">
                             <td className="border px-2 py-1 font-semibold">TOTAL BANK</td>
-                            <td className="border px-2 py-1">35,000.00</td>
+                            <td className="border px-2 py-1">{totalBank}</td>
                             <td className="border px-2 py-1 font-semibold">BANK</td>
                             <td className="border px-2 py-1"></td>
                             <td className="border px-2 py-1 font-semibold">BANK</td>
@@ -128,24 +141,21 @@ function NOC() {
 
                         </tr>
 
-                        {/* Bank Details Rows */}
-                        <tr className="border text-left">
-                            <td className="border px-2 py-1 font-semibold">Bank 01 Details</td>
-                            <td colSpan="6" className="border px-2 py-1">
-                                ANIL BARFILAL KANOJIYA &nbsp; | &nbsp; AXIS BANK &nbsp; | &nbsp;
-                                779010100051527 &nbsp; | &nbsp; UTIB0000779 &nbsp; | &nbsp; ₹35,000 /-
-                            </td>
-                        </tr>
+                      
+                        {payments.map((p, i) => (
+  <tr key={i} className="border text-left">
+    <td className="border px-2 py-1 font-semibold">
+      Bank {String(i + 1).padStart(2, "0")} Details
+    </td>
+  <td colSpan="6" className="border px-2 py-1">
+  {loanData.Print_Name} &nbsp; | &nbsp;
+  {p.paidBy === "Cash" ? "Cash" : p.bank} &nbsp; | &nbsp;
+  UTR : {p.utrNumber} &nbsp; | &nbsp;
+  Amount : ₹{p.customerAmount}
+</td>
 
-                        <tr className="border">
-                            <td className="border px-2 py-1 font-semibold">Bank 02 Details</td>
-                            <td colSpan="6" className="border px-2 py-1"></td>
-                        </tr>
-
-                        <tr className="border">
-                            <td className="border px-2 py-1 font-semibold">Bank 03 Details</td>
-                            <td colSpan="6" className="border px-2 py-1"></td>
-                        </tr>
+  </tr>
+))}
 
                         {/* Marathi Declaration */}
                         <tr>

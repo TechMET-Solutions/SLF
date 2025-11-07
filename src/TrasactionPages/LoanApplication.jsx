@@ -171,6 +171,7 @@ const LoanApplication = () => {
   };
 
   const handleOpenRemark = async (row) => {
+    debugger
     setLoadingRemark(true);
     try {
       let response;
@@ -178,7 +179,7 @@ const LoanApplication = () => {
 
       if (status === "cancelled") {
         response = await axios.get(`${API}/Transactions/goldloan/remark/${row.Loan_No}`);
-      } else if (status === "pending") {
+      } else if (status === "pending" || status === "approved") {
         response = await axios.get(`${API}/Transactions/Customer/remark/${row.BorrowerId}`);
       }
 
@@ -654,24 +655,12 @@ const LoanApplication = () => {
         </div>
       )}
 
-      {/* Error Message
-      {error && (
-        <div className="flex justify-center mt-4">
-          <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded w-[1290px] text-sm">
-            <strong>Error: </strong>{error}
-          </div>
-        </div>
-      )} */}
 
       <div className="flex justify-center text-center">
         <div className="overflow-x-auto mt-5 w-[1290px] min-h-[500px]">
           {loading ? (
             <div className="flex justify-center items-center h-64">
               <div className="text-lg text-gray-600">Loading loan applications...</div>
-            </div>
-          ) : loanApplication.length === 0 ? (
-            <div className="flex justify-center items-center h-64">
-              <div className="text-lg text-gray-600">No loan applications found</div>
             </div>
           ) : (
             <table className="w-full border-collapse border border-gray-300">

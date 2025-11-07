@@ -1,9 +1,8 @@
-import { useEffect, useState } from "react";
-import { useNavigate, useLocation } from "react-router-dom";
 import axios from "axios";
-import profileempty from "../assets/profileempty.png";
-import emptyImg from "../assets/profileempty.png";
-import envImg from "../assets/envImg.jpg"
+import { useEffect, useState } from "react";
+import { useLocation, useNavigate } from "react-router-dom";
+import envImg from "../assets/envImg.jpg";
+import { default as profileempty } from "../assets/profileempty.png";
 
 const ViewLoanDetails = () => {
     const [loanData, setLoanData] = useState(null);
@@ -355,7 +354,7 @@ const ViewLoanDetails = () => {
                             <img
                                 src={
                                     loanData.Ornament_Photo
-                                        ? `http://localhost:5000/uploads/ornaments/${loanData.Ornament_Photo}`
+                                        ? `${loanData.Ornament_Photo}`
                                         : profileempty
                                 }
                                 alt="Ornament"
@@ -466,7 +465,7 @@ const ViewLoanDetails = () => {
                 </div>
 
                 {/* Loan Amount Section */}
-                <div>
+                <div className="pl-[45px]">
                     <div className="w-full px-14 flex items-start gap-4 text-xs">
                         <div className="flex flex-col w-40">
                             <label className="text-[13px] font-semibold">
@@ -535,9 +534,9 @@ const ViewLoanDetails = () => {
                 </div>
 
                 {/* ===== Scheme Details & Effective Interest Rates ===== */}
-                <div className="flex gap-8 text-xs mx-14">
+                <div className="flex gap-8 text-xs mx-14 justify-center">
                     {/* Scheme Details Table */}
-                    <div className="w-1/2">
+                    <div className="w-[550px]">
                         <h2 className="font-semibold text-[20px] mb-1 text-[#0A2478]">
                             Scheme Details
                         </h2>
@@ -566,7 +565,7 @@ const ViewLoanDetails = () => {
                     </div>
 
                     {/* Effective Interest Rates Table */}
-                    <div className="w-1/2">
+                    <div className="w-[700px]">
                         <h2 className="font-semibold text-[20px] mb-1 text-[#0A2478]">
                             Effective Interest Rates
                         </h2>
