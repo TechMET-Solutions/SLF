@@ -380,7 +380,59 @@ console.log(activeEmployees,"activeEmployees")
     }
   };
 
+ const numberToWords = (num) => {
+    if (!num || isNaN(num)) return '';
 
+    const numValue = typeof num === 'string' ? parseFloat(num.replace(/,/g, '')) : num;
+    if (numValue === 0) return 'Zero';
+
+    const ones = ['', 'One', 'Two', 'Three', 'Four', 'Five', 'Six', 'Seven', 'Eight', 'Nine'];
+    const tens = ['', '', 'Twenty', 'Thirty', 'Forty', 'Fifty', 'Sixty', 'Seventy', 'Eighty', 'Ninety'];
+    const teens = ['Ten', 'Eleven', 'Twelve', 'Thirteen', 'Fourteen', 'Fifteen', 'Sixteen', 'Seventeen', 'Eighteen', 'Nineteen'];
+
+    const convertMillions = (n) => {
+      if (n >= 10000000) {
+        return convertMillions(Math.floor(n / 10000000)) + ' Crore ' + convertLakhs(n % 10000000);
+      } else {
+        return convertLakhs(n);
+      }
+    };
+
+    const convertLakhs = (n) => {
+      if (n >= 100000) {
+        return convertLakhs(Math.floor(n / 100000)) + ' Lakh ' + convertThousands(n % 100000);
+      } else {
+        return convertThousands(n);
+      }
+    };
+
+    const convertThousands = (n) => {
+      if (n >= 1000) {
+        return convertHundreds(Math.floor(n / 1000)) + ' Thousand ' + convertHundreds(n % 1000);
+      } else {
+        return convertHundreds(n);
+      }
+    };
+
+    const convertHundreds = (n) => {
+      if (n > 99) {
+        return ones[Math.floor(n / 100)] + ' Hundred ' + convertTens(n % 100);
+      } else {
+        return convertTens(n);
+      }
+    };
+
+    const convertTens = (n) => {
+      if (n < 10) return ones[n];
+      else if (n >= 10 && n < 20) return teens[n - 10];
+      else {
+        return tens[Math.floor(n / 10)] + ' ' + ones[n % 10];
+      }
+    };
+
+    let words = convertMillions(numValue);
+    return words.trim() + ' only';
+  };
   return (
     <div className="min-h-screen w-full pl-[5%]">
       {/* ===== Top Bar ===== */}
@@ -914,9 +966,9 @@ console.log(activeEmployees,"activeEmployees")
 
 
 
-      <div>
-        <p className="mt-5 mb-5">Thirty One Thousand Five Hundred only</p>
-      </div>
+      <p className="mt-5 mb-5">
+  {numberToWords( Number(formData.Loan_amount) || 0 )}
+</p>
 
       <div className="flex gap-20 mb-10">
 
