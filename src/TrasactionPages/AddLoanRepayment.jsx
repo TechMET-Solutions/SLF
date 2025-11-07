@@ -124,50 +124,83 @@ console.log(loanInfo, "loanInfo")
     const { name, value } = e.target;
     setLoanInfo((prev) => ({ ...prev, [name]: value }));
   };
-  useEffect(() => {
-  debugger
-  if (!data?.loanApplication?.LoanPendingAmount || !data?.loanApplication?.approval_date) return;
+//   useEffect(() => {
+//   debugger
+//   if (!data?.loanApplication?.LoanPendingAmount || !data?.loanApplication?.approval_date) return;
 
   
-  const approvalDate = new Date(data.loanApplication.approval_date);
+//   const approvalDate = new Date(data.loanApplication.approval_date);
+//   const today = new Date();
+//   const diffMs = today - approvalDate;
+//   const pendingDays = Math.floor(diffMs / (1000 * 60 * 60 * 24));
+
+  
+//   const slabs = JSON.parse(data.schemeData.interestRates);
+
+//   const currentSlab = slabs.find(s => pendingDays >= Number(s.from) && pendingDays <= Number(s.to));
+//   const interestPercent = currentSlab ? Number(currentSlab.addInt) : 0;
+
+//   // 4) calculate
+//   const pendingLoanAmount = Number(data.loanApplication.LoanPendingAmount);
+//   const dailyIntAmt = (pendingLoanAmount * interestPercent / 100) / 365;
+//   const pendingInt = dailyIntAmt * pendingDays;
+
+//   setloanInfoForAdj(prev => ({
+//     ...prev,
+//     pendingDays,
+//     pendingInt: pendingInt.toFixed(2),
+//     interestPercent
+//   }));
+// }, [data]);
+
+// final logic
+ useEffect(() => {
+  if (!data?.loanApplication?.LoanPendingAmount) return;
+
   const today = new Date();
-  const diffMs = today - approvalDate;
-  const pendingDays = Math.floor(diffMs / (1000 * 60 * 60 * 24));
+  const interestPaidUpto = new Date(data?.loanApplication?.InterestPaidUpto);
 
-  
-  const slabs = JSON.parse(data.schemeData.interestRates);
+  // use InterestPaidUpto for days calculation
+  const diffMs = today - interestPaidUpto;
+  const pendingDays = diffMs > 0
+    ? Math.floor(diffMs / (1000 * 60 * 60 * 24))
+    : 0; // if future, 0 days
 
-  const currentSlab = slabs.find(s => pendingDays >= Number(s.from) && pendingDays <= Number(s.to));
+  const slabs = JSON.parse(data.schemeData.interestRates || "[]");
+  const currentSlab = slabs.find(
+    (s) => pendingDays >= Number(s.from) && pendingDays <= Number(s.to)
+  );
   const interestPercent = currentSlab ? Number(currentSlab.addInt) : 0;
 
-  // 4) calculate
   const pendingLoanAmount = Number(data.loanApplication.LoanPendingAmount);
-  const dailyIntAmt = (pendingLoanAmount * interestPercent / 100) / 365;
+  const dailyIntAmt = (pendingLoanAmount * interestPercent) / 100 / 365;
   const pendingInt = dailyIntAmt * pendingDays;
 
   setloanInfoForAdj(prev => ({
     ...prev,
     pendingDays,
     pendingInt: pendingInt.toFixed(2),
-    interestPercent
+    interestPercent,
+    intPaidUpto: interestPaidUpto  // set same date
   }));
 }, [data]);
 
-// final logic
- const handlePayAmountChange = (value) => {
+  
+
+  const handlePayAmountChange = (value) => {
   debugger
   let payAmount = parseFloat(value || 0);
   let charges = Number(data.loanApplication.total_unpaid_charges || 0); // unpaid charges
   let pendingLoanAmount = Number(data.loanApplication.LoanPendingAmount || 0);
   let interestPercent = Number(loanInfoForAdj.interestPercent || 0);
 
-  // daily interest for the loan
+
   let dailyIntAmt = (pendingLoanAmount * interestPercent) / 100 / 365;
 
-  // total interest for 365 days
+  
   let totalYearInterest = dailyIntAmt * 365;
 
-  // Always update the input value
+ 
   setloanInfoForAdj(prev => ({
     ...prev,
     payAmount: value,
@@ -175,24 +208,25 @@ console.log(loanInfo, "loanInfo")
 
   let remainingPay = payAmount;
 
-  // Step 1: Deduct unpaid charges first
+  
   let chargesAdjusted = Math.min(remainingPay, charges);
   remainingPay -= chargesAdjusted;
 
-  // Step 2: Deduct interest next
+ 
   let interestAdjusted = Math.min(remainingPay, totalYearInterest);
   remainingPay -= interestAdjusted;
 
-  // Step 3: Calculate how many days of interest are paid
-  let daysPaidFor = Math.floor(interestAdjusted / dailyIntAmt);
+  
+  let daysPaidFor = Math.round((interestAdjusted / dailyIntAmt) * 1000) / 1000;
+daysPaidFor = Math.round(daysPaidFor);
 
-  // Step 4: Deduct remaining amount from principal
+ 
   let loanAmtAdjusted = remainingPay;
   let balanceLoanAmt = pendingLoanAmount - loanAmtAdjusted;
 
-  // Step 5: Calculate date up to which interest is paid
-  let intPaidUpto = new Date(data.loanApplication.approval_date);
-  intPaidUpto.setDate(intPaidUpto.getDate() + daysPaidFor);
+  
+ let intPaidUpto = new Date(data.loanApplication.InterestPaidUpto); // <-- change here
+intPaidUpto.setDate(intPaidUpto.getDate() + daysPaidFor);
 
   // Update state
   setloanInfoForAdj(prev => ({
@@ -206,39 +240,100 @@ console.log(loanInfo, "loanInfo")
   }));
 };
 
-  
- const validatePayAmount = () => {
-debugger
-  let payAmount = Number(loanInfoForAdj.payAmount || 0);
+const validatePayAmount = () => {
+  let payAmount = Number(Number(loanInfoForAdj.payAmount || 0).toFixed(2));
+
   let charges = Number(data.loanApplication.total_unpaid_charges || 0);
   let pendingLoanAmount = Number(data.loanApplication.LoanPendingAmount || 0);
   let interestPercent = Number(loanInfoForAdj.interestPercent || 0);
 
   let dailyIntAmt = (pendingLoanAmount * interestPercent) / 100 / 365;
 
-  // cut charges
   let remainingPay = payAmount - charges;
-  if (remainingPay < 0) return; // charges yet not covered, no need of validation
+  if (remainingPay < 0) return;
 
-  // interest we can cover
+  // ******************
+  // SPECIAL CASE: FULL PAYOFF (loan + interest fully paid)
+  if (remainingPay >= pendingLoanAmount) {
+    // this means principal is cleared
+    return; // <-- VALID. DON'T ALERT
+  }
+  // ******************
+
   let days = Math.floor(remainingPay / dailyIntAmt);
   let exactInterestForDays = days * dailyIntAmt;
-
   let totalRequired = charges + exactInterestForDays;
 
-  // remaining after exact interest?
-  let diff = payAmount - totalRequired;
+  let diff = Number((payAmount - totalRequired).toFixed(2));
+  let dailyInt2 = Number(dailyIntAmt.toFixed(2));
 
-  // if diff is +-1 rupee ok small tolerance
-  if (Math.abs(diff) > 1) {
+  const tol = 0.02;
+  const isZeroOK = Math.abs(diff - 0) <= tol;
+  const isOneDayOK = Math.abs(diff - dailyInt2) <= tol;
 
-    // suggest nearest valid top & bottom
+  if (!isZeroOK && !isOneDayOK) {
     let lowerValid = totalRequired.toFixed(2);
     let upperValid = (totalRequired + dailyIntAmt).toFixed(2);
 
     alert(`Amount not valid — please enter either ${lowerValid} or ${upperValid}`);
   }
 };
+
+
+
+ const numberToWords = (num) => {
+    if (!num || isNaN(num)) return '';
+
+    const numValue = typeof num === 'string' ? parseFloat(num.replace(/,/g, '')) : num;
+    if (numValue === 0) return 'Zero';
+
+    const ones = ['', 'One', 'Two', 'Three', 'Four', 'Five', 'Six', 'Seven', 'Eight', 'Nine'];
+    const tens = ['', '', 'Twenty', 'Thirty', 'Forty', 'Fifty', 'Sixty', 'Seventy', 'Eighty', 'Ninety'];
+    const teens = ['Ten', 'Eleven', 'Twelve', 'Thirteen', 'Fourteen', 'Fifteen', 'Sixteen', 'Seventeen', 'Eighteen', 'Nineteen'];
+
+    const convertMillions = (n) => {
+      if (n >= 10000000) {
+        return convertMillions(Math.floor(n / 10000000)) + ' Crore ' + convertLakhs(n % 10000000);
+      } else {
+        return convertLakhs(n);
+      }
+    };
+
+    const convertLakhs = (n) => {
+      if (n >= 100000) {
+        return convertLakhs(Math.floor(n / 100000)) + ' Lakh ' + convertThousands(n % 100000);
+      } else {
+        return convertThousands(n);
+      }
+    };
+
+    const convertThousands = (n) => {
+      if (n >= 1000) {
+        return convertHundreds(Math.floor(n / 1000)) + ' Thousand ' + convertHundreds(n % 1000);
+      } else {
+        return convertHundreds(n);
+      }
+    };
+
+    const convertHundreds = (n) => {
+      if (n > 99) {
+        return ones[Math.floor(n / 100)] + ' Hundred ' + convertTens(n % 100);
+      } else {
+        return convertTens(n);
+      }
+    };
+
+    const convertTens = (n) => {
+      if (n < 10) return ones[n];
+      else if (n >= 10 && n < 20) return teens[n - 10];
+      else {
+        return tens[Math.floor(n / 10)] + ' ' + ones[n % 10];
+      }
+    };
+
+    let words = convertMillions(numValue);
+    return words.trim() + ' only';
+  };
 
 
 
@@ -894,44 +989,82 @@ if (checked) setIsAdvInt(false);
           }
       
 
-      <p className="text-sm text-gray-500 mt-1 ml-1">Amount in words</p>
-
+      {/* <p className="text-sm text-gray-500 mt-1 ml-1">Amount in words</p> */}
+<div className="text-sm text-gray-500 mt-1 ml-1">
+            {numberToWords(loanInfoForAdj.payAmount)}
+          </div>
       {/* Row 2: Payment Details (Individual Fields) */}
       <div className="flex flex-wrap gap-x-6 gap-y-4 mt-4">
         {/* Mode of Payment */}
-        <div className="flex flex-col gap-1 w-[200px]">
-          <label className="text-gray-900 font-medium">Mode of Payment</label>
-          <select
-  className="border border-gray-300 rounded-md px-3 py-2 focus:ring-1 focus:ring-blue-500 focus:outline-none"
-  disabled={isClose}
-  value={paymentInfo.mode}
-  onChange={(e) =>
-    setPaymentInfo({ ...paymentInfo, mode: e.target.value })
-  }
->
-  <option>--Select--</option>
-  <option>Cash</option>
-  <option>Net Banking</option>
-  <option>Credit Note</option>
-</select>
+        {/* Mode of Payment */}
+<div className="flex flex-col gap-1 w-[200px]">
+  <label className="text-gray-900 font-medium">Mode of Payment</label>
+  <select
+    className="border border-gray-300 rounded-md px-3 py-2 focus:ring-1 focus:ring-blue-500 focus:outline-none"
+    
+    value={paymentInfo.mode}
+    onChange={(e) =>
+      setPaymentInfo({ ...paymentInfo, mode: e.target.value })
+    }
+  >
+    <option value="">--Select--</option>
+    <option value="Cash">Cash</option>
+    <option value="Net Banking">Net Banking</option>
+    <option value="Credit Note">Credit Note</option>
+  </select>
+</div>
 
-        </div>
 
-        {/* Type of Payment */}
-        <div className="flex flex-col gap-1 w-[150px]">
-          <label className="text-gray-900 font-medium">Type of Payment</label>
-          <input
-  type="text"
-  placeholder="Cash"
-  className="border border-gray-300 rounded-md px-3 py-2 focus:ring-1 focus:ring-blue-500 focus:outline-none"
-  disabled={isClose}
-  value={paymentInfo.type}
-  onChange={(e) =>
-    setPaymentInfo({ ...paymentInfo, type: e.target.value })
-  }
-/>
+{/* Type of Payment dynamic */}
+{paymentInfo.mode === "Cash" && (
+  <div className="flex flex-col gap-1 w-[150px]">
+    <label className="text-gray-900 font-medium">Type of Payment</label>
+    <select
+      className="border border-gray-300 rounded-md px-3 py-2 focus:ring-1 focus:ring-blue-500 focus:outline-none"
+     
+      value={paymentInfo.type}
+      onChange={(e)=>setPaymentInfo({...paymentInfo,type:e.target.value})}
+    >
+      <option value="">--Select--</option>
+      <option value="Cash">Cash</option>
+      
+    </select>
+  </div>
+)}
 
-        </div>
+{paymentInfo.mode === "Net Banking" && (
+  <div className="flex flex-col gap-1 w-[200px]">
+    <label className="text-gray-900 font-medium">Bank Details</label>
+        <select
+      className="border border-gray-300 rounded-md px-3 py-2 focus:ring-1 focus:ring-blue-500 focus:outline-none"
+     
+      value={paymentInfo.type}
+      onChange={(e)=>setPaymentInfo({...paymentInfo,type:e.target.value})}
+    >
+      <option value="">--Select--</option>
+      <option value="HDFC">HDFC</option>
+      <option value="SBI">SBI</option>
+    </select>
+  </div>
+)}
+
+{paymentInfo.mode === "Credit Note" && (
+  <div className="flex flex-col gap-1 w-[200px]">
+    <label className="text-gray-900 font-medium">Select Credit Note</label>
+    <select
+      className="border border-gray-300 rounded-md px-3 py-2 focus:ring-1 focus:ring-blue-500 focus:outline-none"
+     
+      value={paymentInfo.creditNote}
+      onChange={(e)=>setPaymentInfo({...paymentInfo,creditNote:e.target.value})}
+    >
+      <option value="">--Select--</option>
+      <option value="CRN001">CRN001</option>
+      <option value="CRN002">CRN002</option>
+      {/* map your API credit notes here */}
+    </select>
+  </div>
+)}
+
 
         {/* Payment Ref. No */}
         <div className="flex flex-col gap-1 w-[200px]">
@@ -940,7 +1073,7 @@ if (checked) setIsAdvInt(false);
   type="text"
   placeholder="Reference Number"
   className="border border-gray-300 rounded-md px-3 py-2 focus:ring-1 focus:ring-blue-500 focus:outline-none"
-  disabled={isClose}
+ 
   value={paymentInfo.refNo}
   onChange={(e) =>
     setPaymentInfo({ ...paymentInfo, refNo: e.target.value })
@@ -956,7 +1089,7 @@ if (checked) setIsAdvInt(false);
   type="text"
   placeholder="Name"
   className="border border-gray-300 rounded-md px-3 py-2 focus:ring-1 focus:ring-blue-500 focus:outline-none"
-  disabled={isClose}
+ 
   value={paymentInfo.madeBy}
   onChange={(e) =>
     setPaymentInfo({ ...paymentInfo, madeBy: e.target.value })
