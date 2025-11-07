@@ -121,15 +121,15 @@ function EmployeeDesignation() {
                     <h2 className="text-red-600 font-bold text-[20px] leading-[148%] font-source">
                         Employee Designation
                     </h2>
-
                     <div className="flex items-center gap-6">
                         <div className="flex gap-3 items-center">
-                            <p className="text-[11.25px] font-source">Designation *</p>
+                            <p className="text-[11.25px] font-source">Designation  <span className="text-red-500">*</span></p>
                             <input
                                 type="text"
                                 value={designation}
                                 onChange={(e) => setDesignation(e.target.value)}
                                 className="border border-gray-400 rounded px-3 py-1 text-[11.25px] w-[168px] h-[28px]"
+                                required
                             />
                         </div>
 
@@ -216,7 +216,7 @@ function EmployeeDesignation() {
                                 <p className="text-[22px] font-medium"> Are you sure you want to delete this designation?</p>
                                 <p className="text-[17px] text-gray-600 mt-2">You won't be able to revert this action.</p>
                             </div>
-                            </div>
+                        </div>
                         <div className="mt-6 flex flex-col items-center gap-4">
                             <button
                                 className="bg-[#F11717] text-white px-5 py-2 rounded text-[18px] cursor-pointer"

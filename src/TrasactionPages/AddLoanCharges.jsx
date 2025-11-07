@@ -206,7 +206,7 @@ const handleSubmit = async () => {
       </div>
 
       {/* 🔹 Search Section */}
-      <div className="bg-[#FFE6E6] mt-5 p-6 rounded-md w-full mx-auto px-[120px] relative">
+      <div className="bg-[#FFE6E6] mt-5 p-6 rounded-md w-full mx-auto px-[120px] ">
         <p className="font-bold text-[24px] text-[#0A2478] mb-6">Search Loan Applications</p>
 
         {/* 🔹 Search Fields Row */}
@@ -246,7 +246,7 @@ const handleSubmit = async () => {
         {/* 🔹 Search Results Dropdown */}
         {searchResults.length > 0 && (
           <div className="absolute bg-white shadow-lg rounded-md mt-3 left-[120px] w-[calc(100%-240px)] max-h-[220px] overflow-y-auto border border-gray-300 z-10">
-            <div className="sticky top-0 bg-[#F7F7FF] font-medium text-sm grid grid-cols-4 gap-4 px-4 py-2 border-b border-gray-200">
+            <div className="top-0 bg-[#F7F7FF] font-medium text-sm grid grid-cols-4 gap-4 px-4 py-2 border-b border-gray-200">
               <span>ID</span>
               <span>Borrower</span>
               <span>Scheme</span>

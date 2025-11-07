@@ -5,26 +5,34 @@ import { API } from "../../../api";
 
 const API_BASE = `${API}/Master/Master_Profile`;
 
-// 🔹 Fetch All Items
-export const fetchItemsApi = async () => {
+// 🔹 Fetch All or Searched Items with Pagination
+export const fetchItemsApi = async (search = "", page = 1, limit = 10) => {
   try {
-    const encryptedPayload = encryptData({});
+    // 🔒 Encrypt request payload (if needed)
+    const encryptedPayload = encryptData({ search, page, limit });
+
+    // ⚡ Send request with query parameters
     const response = await axios({
       method: "get",
       url: `${API_BASE}/all_Item`,
       headers: { "Content-Type": "application/json" },
+      params: { search, page, limit }, // ✅ pass search & pagination
       data: { data: encryptedPayload },
     });
 
+    // 🔓 Decrypt the backend response
     if (response.data?.data) {
-      return decryptData(response.data.data);
+      const decryptedData = decryptData(response.data.data);
+      return decryptedData;
     }
-    return [];
+
+    return { items: [], total: 0, page: 1, limit: 10, showPagination: false };
   } catch (error) {
     console.error("❌ Error fetching items:", error);
-    return [];
+    return { items: [], total: 0, page: 1, limit: 10, showPagination: false };
   }
 };
+
 
 // 🔹 Add New Item
 export const addItemApi = async (payload) => {

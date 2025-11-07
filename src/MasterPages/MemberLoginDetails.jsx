@@ -168,7 +168,7 @@ const MemberLoginDetails = () => {
   <div className="overflow-x-auto mt-5 w-full max-w-[1290px] h-[500px] border border-gray-300 rounded">
     <table className="w-full border-collapse">
       {/* Table Header */}
-      <thead className="bg-[#0A2478] text-white text-sm sticky top-0">
+      <thead className="bg-[#0A2478] text-white text-sm top-0">
         <tr>
           <th className="px-4 py-2 border-r text-center">#</th>
           <th className="px-4 py-2 border-r text-left">Name</th>

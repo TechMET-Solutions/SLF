@@ -253,7 +253,7 @@ const UserRolePermission = () => {
                     className="w-[24px] h-[24px] accent-[#0A2478]"
                   />
                   <label htmlFor="is_system_role" className="text-[14px]">
-                    Is System Role <span className="text-red-500">*</span>
+                    Is System Role 
                   </label>
                 </div>
 
@@ -268,7 +268,7 @@ const UserRolePermission = () => {
                     className="w-[24px] h-[24px] accent-[#0A2478]"
                   />
                    <label htmlFor="is_active" className="text-[14px]">
-                    Is Active <span className="text-red-500">*</span>
+                    Is Active 
                   </label>
                 </div>
               </div>
