@@ -18,27 +18,27 @@ const CustProfile = () => {
   const [data, setData] = useState([]);
   const [isModalOpenForBlock, setIsModalOpenForblock] = useState(false);
   const [selectedCustomer, setSelectedCustomer] = useState(null);
-  
-  // New state for filters
-  const [documentType, setDocumentType] = useState("");
+
+  // State for search
   const [searchValue, setSearchValue] = useState("");
-  
+  const [searchField, setSearchField] = useState("partyUID"); // default search by Party UID
+
   const [page, setPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
 
-  // Updated fetch function with filters
-  const fetchCustomers = async (pageNumber = 1, docType = documentType, search = searchValue) => {
+  // Fetch function with search
+  const fetchCustomers = async (pageNumber = 1, search = searchValue, field = searchField) => {
     try {
       const params = {
         page: pageNumber,
-        limit: 10
+        limit: 10,
+        searchField: field
       };
       
-      // Add filters if provided
-      if (docType) params.documentType = docType;
+      // Add search if provided
       if (search) params.searchValue = search;
       
-      const response = await axios.get(`http://localhost:5000/Master/doc/listByDocument`, { params });
+      const response = await axios.get(`http://localhost:5000/Master/doc/searchCustomers`, { params });
       setData(response.data.data);
       setTotalPages(response.data.totalPages);
       setPage(response.data.currentPage);
@@ -50,15 +50,14 @@ const CustProfile = () => {
   // Handle search
   const handleSearch = () => {
     setPage(1); // Reset to first page when searching
-    fetchCustomers(1, documentType, searchValue);
+    fetchCustomers(1, searchValue, searchField);
   };
 
-  // Handle filter change
-  const handleFilterChange = (e) => {
-    const value = e.target.value;
-    setDocumentType(value);
-    setPage(1); // Reset to first page when filter changes
-    fetchCustomers(1, value, searchValue);
+  // Handle search field change
+  const handleSearchFieldChange = (e) => {
+    const field = e.target.value;
+    setSearchField(field);
+    setSearchValue(""); // Clear search value when field changes
   };
 
   // Handle search input change
@@ -73,6 +72,18 @@ const CustProfile = () => {
     }
   };
 
+  // Clear search
+  const handleClearSearch = () => {
+    setSearchField("partyUID");
+    setSearchValue("");
+    setPage(1);
+    fetchCustomers(1, "", "partyUID");
+  };
+
+  useEffect(() => {
+    fetchCustomers(page);
+  }, [page]);
+  
   useEffect(() => {
     document.title = "SLF | Customer List";
     fetchCustomers();
@@ -94,7 +105,7 @@ const CustProfile = () => {
           block: false,
         });
         alert("Customer unblocked successfully");
-        fetchCustomers(page); // Refresh data
+        fetchCustomers(page, searchValue, searchField);
       } catch (err) {
         console.error("Error unblocking customer:", err);
         alert("Failed to unblock customer");
@@ -110,7 +121,7 @@ const CustProfile = () => {
       });
       alert("Customer blocked successfully");
       setIsModalOpenForblock(false);
-      fetchCustomers(page); // Refresh data
+      fetchCustomers(page, searchValue, searchField);
     } catch (err) {
       console.error("Error blocking customer:", err);
       alert("Failed to block customer");
@@ -130,6 +141,26 @@ const CustProfile = () => {
         type: "edit"
       } 
     });
+  };
+
+  // Get placeholder text based on selected search field
+  const getPlaceholderText = () => {
+    switch (searchField) {
+      case 'partyUID':
+        return 'Search by Party UID...';
+      case 'fname':
+        return 'Search by First Name...';
+      case 'mname':
+        return 'Search by Middle Name...';
+      case 'lname':
+        return 'Search by Last Name...';
+      case 'city':
+        return 'Search by City...';
+      case 'mobile':
+        return 'Search by Mobile Number...';
+      default:
+        return 'Search...';
+    }
   };
 
   return (
@@ -156,30 +187,31 @@ const CustProfile = () => {
             {/* Search section */}
             <div className="flex gap-5">
               <div className="flex gap-3 items-center">
-                <p className="text-[11.25px] font-source">Field</p>
+                <p className="text-[11.25px] font-source">Search By</p>
                 <select
-                  value={documentType}
-                  onChange={handleFilterChange}
+                  value={searchField}
+                  onChange={handleSearchFieldChange}
                   style={{
-                    width: "168.64px",
+                    width: "140px",
                     height: "27.49px",
                     borderRadius: "5px",
                     borderWidth: "0.62px",
                   }}
                   className="border border-gray-400 px-3 py-1 text-[11.25px] font-source"
                 >
-                  <option value="">All Documents</option>
-                  <option value="aadhar">Aadhar Card</option>
-                  <option value="pan">PAN Card</option>
-                  <option value="dl">Driving License</option>
-                  <option value="passport">Passport</option>
+                  <option value="partyUID">Party UID</option>
+                  <option value="fname">F Name</option>
+                  <option value="mname">M Name</option>
+                  <option value="lname">L Name</option>
+                  <option value="city">City</option>
+                  <option value="mobile">Mobile Number</option>
                 </select>
               </div>
 
               <div className="flex gap-3 items-center">
                 <input
                   type="text"
-                  placeholder="Search..."
+                  placeholder={getPlaceholderText()}
                   value={searchValue}
                   onChange={handleSearchInputChange}
                   onKeyPress={handleKeyPress}
@@ -202,6 +234,18 @@ const CustProfile = () => {
                   className="bg-[#0b2c69] text-white text-[11.25px] font-source font-normal flex items-center justify-center"
                 >
                   Search
+                </button>
+
+                <button
+                  onClick={handleClearSearch}
+                  style={{
+                    width: "84.36px",
+                    height: "26.87px",
+                    borderRadius: "5px",
+                  }}
+                  className="bg-[#6c757d] text-white text-[11.25px] font-source font-normal flex items-center justify-center"
+                >
+                  Clear
                 </button>
               </div>
             </div>
@@ -231,7 +275,125 @@ const CustProfile = () => {
         </div>
       </div>
 
-      {/* Rest of your modals and table remain the same */}
+      {/* modelforAdd */}
+      {isModalOpen && (
+        <div className="fixed inset-0 flex items-center justify-center z-50"
+          style={{
+            background: "#0101017A",
+            backdropFilter: "blur(6.8px)",
+          }}>
+          <div className="bg-white w-[717px] rounded-lg shadow-lg h-[322px] p-10">
+            <h2
+              className="text-[#0A2478] mb-4"
+              style={{
+                fontFamily: "Source Sans 3, sans-serif",
+                fontWeight: 600,
+                fontSize: "20px",
+                lineHeight: "24px",
+                letterSpacing: "0%",
+              }}
+            >
+              Add New Account Group
+            </h2>
+
+            <div className="grid grid-cols-2 gap-4">
+              <div>
+                <label className="text-[14px]">Group Name <span className="text-red-500">*</span></label>
+                <input
+                  type="text"
+                  placeholder="Interest Accrued on FDR"
+                  className="border border-gray-300 rounded"
+                  style={{
+                    width: "280px",
+                    height: "38px",
+                    padding: "10px 14px",
+                    borderRadius: "5px",
+                    borderWidth: "1px",
+                    opacity: 1,
+                  }}
+                />
+              </div>
+              <div>
+                <label className="text-[14px]">Account Type <span className="text-red-500">*</span></label>
+                <input
+                  type="text"
+                  placeholder="Current Assets"
+                  className="border border-gray-300 rounded"
+                  style={{
+                    width: "280px",
+                    height: "38px",
+                    padding: "10px 14px",
+                    borderRadius: "5px",
+                    borderWidth: "1px",
+                    opacity: 1,
+                  }}
+                />
+              </div>
+              <div>
+                <label className="text-[12px] font-medium">Under</label>
+                <select className="border border-gray-300 rounded px-2 py-1 w-full mt-1 text-[12px]" style={{
+                  width: "280px",
+                  height: "38px",
+                  padding: "10px 14px",
+                  borderRadius: "5px",
+                  borderWidth: "1px",
+                  opacity: 1,
+                }}>
+                  <option>Balance Sheet</option>
+                  <option>Income Statement</option>
+                </select>
+              </div>
+              <div>
+                <label className="text-[12px] font-medium">Comments</label>
+                <input
+                  type="text"
+                  className="border border-gray-300 rounded px-2 py-1 w-full mt-1 text-[12px]"
+                  placeholder="Test"
+                  style={{
+                    width: "280px",
+                    height: "38px",
+                    padding: "10px 14px",
+                    borderRadius: "5px",
+                    borderWidth: "1px",
+                    opacity: 1,
+                  }}
+                />
+              </div>
+            </div>
+            <div className="flex justify-center gap-5 items-center">
+              <div className="flex justify-end gap-3 mt-6 item-center">
+                <button
+                  className="bg-[#0A2478] text-white"
+                  style={{
+                    width: "92.66px",
+                    height: "30.57px",
+                    borderRadius: "4.67px",
+                    opacity: 1,
+                  }}
+                  onClick={() => setIsModalOpen(false)}
+                >
+                  Save
+                </button>
+
+                <button
+                  className="text-white"
+                  style={{
+                    backgroundColor: "#C1121F",
+                    width: "92.66px",
+                    height: "30.57px",
+                    borderRadius: "4.67px",
+                    opacity: 1,
+                  }}
+                  onClick={() => setIsModalOpen(false)}
+                >
+                  Exit
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
       {isModalOpenForRemark && (
         <div className="fixed inset-0 flex items-center justify-center z-50"
           style={{
@@ -418,7 +580,7 @@ const CustProfile = () => {
           onClick={() => {
             const newPage = Math.max(page - 1, 1);
             setPage(newPage);
-            fetchCustomers(newPage, documentType, searchValue);
+            fetchCustomers(newPage, searchValue, searchField);
           }}
           disabled={page === 1}
           className="px-3 py-1 border rounded-md disabled:opacity-50"
@@ -432,7 +594,7 @@ const CustProfile = () => {
               key={i + 1}
               onClick={() => {
                 setPage(i + 1);
-                fetchCustomers(i + 1, documentType, searchValue);
+                fetchCustomers(i + 1, searchValue, searchField);
               }}
               className={`px-3 py-1 border rounded-md ${
                 page === i + 1 ? "bg-[#0b2c69] text-white" : ""
@@ -447,7 +609,7 @@ const CustProfile = () => {
           onClick={() => {
             const newPage = Math.min(page + 1, totalPages);
             setPage(newPage);
-            fetchCustomers(newPage, documentType, searchValue);
+            fetchCustomers(newPage, searchValue, searchField);
           }}
           disabled={page === totalPages}
           className="px-3 py-1 border rounded-md disabled:opacity-50"
