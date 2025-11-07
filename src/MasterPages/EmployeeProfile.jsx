@@ -564,9 +564,12 @@ const EmployeeProfile = () => {
             <div className="bg-white w-[1183px] max-h-[90vh] rounded-lg shadow-lg p-6 overflow-y-auto">
               {/* Title */}
               <h2 className="text-[#0A2478] text-[20px] font-semibold mb-6">
-                {mode === "edit" ? "Edit Employee Profile" : "Add Employee Profile"}
+                {mode === "edit"
+                  ? "Edit Employee Profile"
+                  : mode === "view"
+                    ? "View Employee Profile"
+                    : "Add Employee Profile"}
               </h2>
-
               <div className="flex gap-2">
                 {/* Left Form */}
                 <div className=" space-y-4 text-sm">
@@ -574,7 +577,7 @@ const EmployeeProfile = () => {
                   <div className="flex gap-2">
 
                     <div className="flex flex-col">
-                      <label className="text-[14px] font-medium">PAN No.</label>
+                      <label className="text-[14px] font-medium">PAN No. <span className="text-red-500">*</span></label>
                       <div className="flex items-center mt-1 w-[220px]">
                         <div className="relative flex-1">
                           <input
@@ -587,7 +590,7 @@ const EmployeeProfile = () => {
                             className="border border-[#C4C4C4] border-r-0 rounded-l px-3 py-2 w-full pr-10 focus:outline-none focus:ring-1 focus:ring-blue-500 bg-white"
                           />
 
-                       
+
                           <input
                             type="file"
                             accept="image/*,.pdf"
@@ -597,7 +600,7 @@ const EmployeeProfile = () => {
                             className="hidden"
                           />
 
-                         
+
                           <FaPaperclip
                             className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 cursor-pointer"
                             size={16}
@@ -622,11 +625,11 @@ const EmployeeProfile = () => {
                     </div>
                     {/* Aadhaar */}
                     <div className="flex flex-col">
-                      <label className="text-[14px] font-medium">Aadhar Card Number.</label>
+                      <label className="text-[14px] font-medium">Aadhar Card Number. <span className="text-red-500">*</span></label>
                       <div className="flex items-center mt-1 w-[300px]">
                         <div className="relative flex-1">
                           <input
-                            type="text"
+                            type="number"
                             placeholder="Enter Aadhar Number"
                             name="aadhar_card"
                             disabled={mode === "view"}
@@ -688,9 +691,9 @@ const EmployeeProfile = () => {
                   <div className="flex gap-2">
 
                     <div className="flex flex-col gap-1">
-                      <label className="text-gray-700 font-medium">Mobile No*</label>
+                      <label className="text-gray-700 font-medium">Mobile No <span className="text-red-500">*</span></label>
                       <input
-                        type="text"
+                        type="number"
                         name="mobile_no"
                         value={formData.mobile_no}
                         disabled={mode === "view"}
@@ -700,9 +703,9 @@ const EmployeeProfile = () => {
                       />
                     </div>
                     <div className="flex flex-col gap-1">
-                      <label className="text-gray-700 font-medium">Alternate Mobile No*</label>
+                      <label className="text-gray-700 font-medium">Alternate Mobile No</label>
                       <input
-                        type="text"
+                        type="number"
                         name="Alternate_Mobile"
                         value={formData.Alternate_Mobile}
                         onChange={handleInputChange}
@@ -712,7 +715,7 @@ const EmployeeProfile = () => {
                       />
                     </div>
                     <div className="flex flex-col gap-1">
-                      <label className="text-gray-700 font-medium">Email ID*</label>
+                      <label className="text-gray-700 font-medium">Email ID <span className="text-red-500">*</span></label>
                       <input
                         type="email"
                         name="email"
@@ -724,7 +727,7 @@ const EmployeeProfile = () => {
                       />
                     </div>
                     <div className="flex flex-col gap-1">
-                      <label className="text-gray-700 font-medium">Date of Birth*</label>
+                      <label className="text-gray-700 font-medium">Date of Birth <span className="text-red-500">*</span></label>
                       <input
                         type="date"
                         name="date_of_birth"
@@ -744,49 +747,10 @@ const EmployeeProfile = () => {
 
                   {/* Address */}
                   <div className="flex gap-4">
-                    {/* Corresponding Address */}
-                    <div className="flex flex-col gap-1">
-                      <label className="text-gray-700 font-medium">Corresponding Address*</label>
-                      <input
-                        type="text"
-                        name="corresponding_address"
-                        value={formData.corresponding_address}
-                        disabled={mode === "view"}
-                        onChange={handleInputChange}
-                        placeholder=" Corresponding Address*"
-                        className="border border-[#C4C4C4] rounded-md px-3 py-2 focus:outline-none focus:ring-1 focus:ring-blue-500 w-[266px]"
-                      />
-                    </div>
-
-                    {/* Radio Option */}
-                    <div className="flex gap-3 items-center">
-                      <input
-                        type="checkbox"
-                        id="sameAddress"
-                        disabled={mode === "view"}
-                        name="sameAddress"
-                       checked={
-  formData.permanent_address &&
-  formData.permanent_address === formData.corresponding_address
-}
-
-                        onChange={(e) => {
-                          if (e.target.checked) {
-                            setFormData(prev => ({ ...prev, permanent_address: prev.corresponding_address }));
-                          } else {
-                            setFormData(prev => ({ ...prev, permanent_address: "" }));
-                          }
-                        }}
-                        className="border accent-blue-900 w-5 h-5"
-                      />
-                      <label htmlFor="sameAddress" className="text-gray-700 font-medium">
-                        Permanent Address same as<br></br> Correspondence Address?
-                      </label>
-                    </div>
 
                     {/* Permanent Address */}
                     <div className="flex flex-col gap-1">
-                      <label className="text-gray-700 font-medium">Permanent Address*</label>
+                      <label className="text-gray-700 font-medium">Permanent Address <span className="text-red-500">*</span></label>
                       <input
                         type="text"
                         name="permanent_address"
@@ -797,12 +761,53 @@ const EmployeeProfile = () => {
                         className="border border-[#C4C4C4] rounded-md px-3 py-2 focus:outline-none focus:ring-1 focus:ring-blue-500 w-[259px]"
                       />
                     </div>
+
+
+                    {/* Radio Option */}
+                    <div className="flex gap-3 items-center">
+                      <input
+                        type="checkbox"
+                        id="sameAddress"
+                        disabled={mode === "view"}
+                        name="sameAddress"
+                        checked={
+                          formData.corresponding_address &&
+                          formData.corresponding_address === formData.permanent_address
+                        }
+
+                        onChange={(e) => {
+                          if (e.target.checked) {
+                            setFormData(prev => ({ ...prev, corresponding_address: prev.permanent_address }));
+                          } else {
+                            setFormData(prev => ({ ...prev, corresponding_address: "" }));
+                          }
+                        }}
+                        className="border accent-blue-900 w-5 h-5"
+                      />
+                      <label htmlFor="sameAddress" className="text-gray-700 font-medium">
+                        Permanent Address same as<br></br> Correspondence Address?
+                      </label>
+                    </div>
+
+                    {/* Corresponding Address */}
+                    <div className="flex flex-col gap-1">
+                      <label className="text-gray-700 font-medium">Corresponding Address <span className="text-red-500">*</span></label>
+                      <input
+                        type="text"
+                        name="corresponding_address"
+                        value={formData.corresponding_address}
+                        disabled={mode === "view"}
+                        onChange={handleInputChange}
+                        placeholder=" Corresponding Address*"
+                        className="border border-[#C4C4C4] rounded-md px-3 py-2 focus:outline-none focus:ring-1 focus:ring-blue-500 w-[266px]"
+                      />
+                    </div>
                   </div>
 
                   {/* Branch, Joining Date, Designation, DOB */}
                   <div className="flex gap-2">
                     <div className="flex flex-col gap-1">
-                      <label className="text-gray-700 font-medium">Branch*</label>
+                      <label className="text-gray-700 font-medium">Branch <span className="text-red-500">*</span></label>
                       <select
                         name="branch"
                         value={formData.branch_id} // Changed from branch to branch_id
@@ -819,7 +824,7 @@ const EmployeeProfile = () => {
                       </select>
                     </div>
                     <div className="flex flex-col gap-1">
-                      <label className="text-gray-700 font-medium">Date of Joining</label>
+                      <label className="text-gray-700 font-medium">Date of Joining <span className="text-red-500">*</span></label>
                       <input
                         type="date"
                         name="joining_date"
@@ -835,7 +840,7 @@ const EmployeeProfile = () => {
 
                     </div>
                     <div className="flex flex-col gap-1">
-                      <label className="text-gray-700 font-medium">Designation*</label>
+                      <label className="text-gray-700 font-medium">Designation <span className="text-red-500">*</span></label>
                       <select
                         name="designation"
                         value={formData.designation}
@@ -857,7 +862,7 @@ const EmployeeProfile = () => {
                   {/* Role, Password, Fax */}
                   <div className="flex gap-2">
                     <div className="flex flex-col gap-1">
-                      <label className="text-gray-700 font-medium">Assign Role*</label>
+                      <label className="text-gray-700 font-medium">Assign Role <span className="text-red-500">*</span></label>
                       <select
                         name="assign_role"
                         value={formData.assign_role_id}  // ✅ use role_id as value
@@ -876,7 +881,7 @@ const EmployeeProfile = () => {
                       </select>
                     </div>
                     <div className="flex flex-col gap-1">
-                      <label className="text-gray-700 font-medium">Password*</label>
+                      <label className="text-gray-700 font-medium">Password <span className="text-red-500">*</span></label>
                       <input
                         type="password"
                         name="password"
@@ -888,7 +893,7 @@ const EmployeeProfile = () => {
                       />
                     </div>
                     <div className="flex flex-col gap-1">
-                      <label className="text-gray-700 font-medium">Fax*</label>
+                      <label className="text-gray-700 font-medium">Fax</label>
                       <input
                         type="text"
                         name="fax"
@@ -1082,7 +1087,7 @@ const EmployeeProfile = () => {
 
               {/* Bottom Actions */}
               <div className="flex flex-col gap-3 items-center justify-between mt-6">
-                <label className="flex items-center gap-2 text-gray-700 font-medium">
+                {/* <label className="flex items-center gap-2 text-gray-700 font-medium">
                   <input
                     type="checkbox"
                     name="status"
@@ -1091,7 +1096,7 @@ const EmployeeProfile = () => {
                     className="w-5 h-5 accent-blue-900"
                   />
                   Is Active
-                </label>
+                </label> */}
                 <div className="flex gap-3">
                   {mode !== "view" && (
                     <button
@@ -1258,8 +1263,8 @@ const EmployeeProfile = () => {
                       <td className="px-4 py-2">{emp.mobile_no}</td>
                       <td className="px-4 py-2">{new Date(emp.joining_date).toLocaleDateString()}</td>
                       <td className="px-4 py-2">{new Date(emp.date_of_birth).toLocaleDateString()}</td>
-                      <td className="px-4 py-2 max-w-[200px] truncate" title={emp.corresponding_address}>
-                        {emp.corresponding_address}
+                      <td className="px-4 py-2 max-w-[200px] truncate" title={emp.permanent_address}>
+                        {emp.permanent_address}
                       </td>
                       <td className="px-4 py-2">
                         <div className="flex gap-2 justify-center">

@@ -257,7 +257,7 @@ const UserRolePermission = () => {
                   </label>
                 </div>
 
-                <div className="flex items-center space-x-2">
+                {/* <div className="flex items-center space-x-2">
                  
                   <input
                     type="checkbox"
@@ -270,7 +270,7 @@ const UserRolePermission = () => {
                    <label htmlFor="is_active" className="text-[14px]">
                     Is Active 
                   </label>
-                </div>
+                </div> */}
               </div>
 
               {/* Modal Footer */}

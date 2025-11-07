@@ -178,7 +178,7 @@ function LoanChargesList() {
                   <th className="px-4 py-2 text-left border-r">Loan No</th>
                   <th className="px-10 py-2 text-left border-r">Party Name</th>
                   <th className="px-4 py-2 text-left border-r">Amount</th>
-                  <th className="px-4 py-2 text-left border-r">Doc Date</th>
+                  <th className="px-4 py-2 text-left border-r">Added On</th>
                   <th className="px-4 py-2 text-left border-r">Added By Email</th>
                   <th className="px-4 py-2 text-left border-r">Action</th>
                 </tr>
