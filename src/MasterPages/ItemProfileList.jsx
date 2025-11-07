@@ -8,6 +8,7 @@ import {
   updateItemStatusApi,
 } from "../API/Master/Master_Profile/Item_Details";
 import Pagination from "../Component/Pagination";
+import axios from "axios";
 
 const ItemProfileList = () => {
   useEffect(() => {
@@ -37,14 +38,25 @@ const ItemProfileList = () => {
   const [showPagination, setShowPagination] = useState(false);
   const itemsPerPage = 10;
 
-  const fetchAllItems = async (page = 1) => {
+  // 🔹 Fetch All Items or Search Items
+  const fetchAllItems = async (page = 1, code = searchCode, name = searchName) => {
     try {
-      const result = await fetchItemsApi(page, itemsPerPage, searchCode, searchName);
-      if (result?.items) {
-        setData(result.items);
-        setTotalItems(result.total);
-        setCurrentPage(result.page);
-        setShowPagination(result.showPagination || false);
+      // Build search parameters
+      const params = {
+        page: page,
+        limit: itemsPerPage
+      };
+      
+      if (code) params.searchCode = code;
+      if (name) params.searchName = name;
+      
+      const response = await axios.get(`http://localhost:5000/Master/Master_Profile/searchItems`, { params });
+      
+      if (response.data?.items) {
+        setData(response.data.items);
+        setTotalItems(response.data.total);
+        setCurrentPage(response.data.currentPage);
+        setShowPagination(response.data.showPagination || false);
       } else {
         setData([]);
         setShowPagination(false);
@@ -56,11 +68,23 @@ const ItemProfileList = () => {
     }
   };
 
+  // 🔹 Handle Search
+  const handleSearch = () => {
+    setCurrentPage(1);
+    fetchAllItems(1, searchCode, searchName);
+  };
+
+  // 🔹 Clear Search
+  const handleClearSearch = () => {
+    setSearchCode("");
+    setSearchName("");
+    setCurrentPage(1);
+    fetchAllItems(1, "", "");
+  };
 
   useEffect(() => {
     fetchAllItems();
   }, []);
-
 
   // 🔹 Open Modal
   const handleOpenModal = (item = null) => {
@@ -115,7 +139,7 @@ const ItemProfileList = () => {
       }
 
       setIsModalOpen(false);
-      fetchAllItems(currentPage);
+      fetchAllItems(currentPage, searchCode, searchName);
     } catch (error) {
       console.error("❌ Error saving item:", error);
     }
@@ -126,7 +150,7 @@ const ItemProfileList = () => {
     try {
       const newStatus = item.status === 1 ? 0 : 1;
       await updateItemStatusApi(item.id, newStatus);
-      fetchAllItems(currentPage);
+      fetchAllItems(currentPage, searchCode, searchName);
     } catch (error) {
       console.error("❌ Error toggling status:", error);
     }
@@ -137,7 +161,14 @@ const ItemProfileList = () => {
 
   const handlePageChange = (page) => {
     if (page < 1 || page > totalPages) return;
-    fetchAllItems(page);
+    fetchAllItems(page, searchCode, searchName);
+  };
+
+  // 🔹 Handle Enter Key Press in Search Inputs
+  const handleKeyPress = (e) => {
+    if (e.key === 'Enter') {
+      handleSearch();
+    }
   };
 
   return (
@@ -165,7 +196,12 @@ const ItemProfileList = () => {
                 type="text"
                 value={searchCode}
                 onChange={(e) => setSearchCode(e.target.value)}
+                onKeyPress={handleKeyPress}
                 className="border border-gray-400 px-3 py-1 text-[11.25px] rounded"
+                style={{
+                  width: "120px",
+                  height: "27.49px",
+                }}
               />
             </div>
 
@@ -175,12 +211,32 @@ const ItemProfileList = () => {
                 type="text"
                 value={searchName}
                 onChange={(e) => setSearchName(e.target.value)}
+                onKeyPress={handleKeyPress}
                 className="border border-gray-400 px-3 py-1 text-[11.25px] rounded"
+                style={{
+                  width: "120px",
+                  height: "27.49px",
+                }}
               />
               <button
-                className="bg-[#0b2c69] text-white text-[11.25px] px-4 py-1 rounded cursor-pointer"
+                onClick={handleSearch}
+                className="bg-[#0b2c69] text-white text-[11.25px] px-3 py-1 rounded cursor-pointer"
+                style={{
+                  width: "70px",
+                  height: "27.49px",
+                }}
               >
                 Search
+              </button>
+              <button
+                onClick={handleClearSearch}
+                className="bg-[#6c757d] text-white text-[11.25px] px-3 py-1 rounded cursor-pointer"
+                style={{
+                  width: "70px",
+                  height: "27.49px",
+                }}
+              >
+                Clear
               </button>
             </div>
 
@@ -189,12 +245,21 @@ const ItemProfileList = () => {
               <button
                 onClick={() => handleOpenModal()}
                 className="bg-[#0A2478] text-white text-[11.25px] px-4 py-1 rounded cursor-pointer"
+                style={{
+                  width: "60px",
+                  height: "27.49px",
+                }}
               >
                 Add
               </button>
               <button
                 onClick={() => navigate("/")}
-                className="bg-[#C1121F] text-white text-[10px] px-4 py-1 rounded cursor-pointer">
+                className="bg-[#C1121F] text-white text-[10px] px-4 py-1 rounded cursor-pointer"
+                style={{
+                  width: "60px",
+                  height: "27.49px",
+                }}
+              >
                 Exit
               </button>
             </div>
@@ -255,21 +320,6 @@ const ItemProfileList = () => {
                   className="border border-gray-300 rounded w-full px-3 py-2 mt-1"
                 />
               </div>
-
-              {/* <div>
-                <label className="text-[14px] font-medium">Added By</label>
-                <select
-                  value={formData.addedBy}
-                  onChange={(e) =>
-                    setFormData({ ...formData, addedBy: e.target.value })
-                  }
-                  className="border border-gray-300 rounded w-full px-3 py-2 mt-1"
-                >
-                  <option value="Admin">Admin</option>
-                  <option value="Manager">Manager</option>
-                  <option value="EMG">EMG</option>
-                </select>
-              </div> */}
 
               <div className="col-span-3">
                 <label className="text-[14px] font-medium">Remark</label>
@@ -394,7 +444,6 @@ const ItemProfileList = () => {
           </table>
         </div>
       </div>
-
 
       <Pagination
         currentPage={currentPage}
