@@ -3,9 +3,13 @@ import { IoMdImage } from "react-icons/io";
 import profileempty from "../assets/profileempty.png";
 import { viewBidderApi } from "../API/Transaction/Auction/BidderApi"; // adjust import path
 import { useParams } from "react-router-dom";
+import { useLocation, useNavigate } from 'react-router-dom';
 
 const ViewBidderDetails = () => {
-  const { id } = useParams();
+  const location = useLocation();
+  const { item } = location.state || {};
+  const id = item;
+  console.log("id ",id);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
 

@@ -165,8 +165,8 @@ function App() {
           <Route path="/Gold-Ornament-Bill" element={<GoldOrnamentBill />} />
           <Route path="/Bidder-Registration-List" element={<BidderRegistrationList />} />
           <Route path="/Bidder-Registration" element={<BidderRegistration />} />
-          <Route path="/View-Bidder-Details/:id" element={<ViewBidderDetails />} />
-          <Route path="/EditBidderDetails/:id" element={<EditBidderDetails />} />
+          <Route path="/View-Bidder-Details" element={<ViewBidderDetails />} />
+          <Route path="/EditBidderDetails" element={<EditBidderDetails />} />
           <Route path="/Credit-Note" element={<CreditNote />} />
           <Route path="/Debit-Note" element={<DebitNote />} />
 

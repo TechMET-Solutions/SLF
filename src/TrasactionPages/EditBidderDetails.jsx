@@ -9,7 +9,8 @@ const EditBidderDetails = () => {
     const navigate = useNavigate();
     const location = useLocation();
     const { bidderId } = location.state || {};
-
+    console.log("bidderId",bidderId);
+    const id = bidderId;
     const [bidderPhoto, setBidderPhoto] = useState(null);
     const [formData, setFormData] = useState({
         bidder_name: "",

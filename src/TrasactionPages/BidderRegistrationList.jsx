@@ -86,7 +86,7 @@ const BidderRegistrationList = () => {
                       <button
                         onClick={() =>
                           navigate('/View-Bidder-Details', {
-                            state: { bidderId: item.id }
+                            state: { item: item.id }
                           })
                         }
                         className="bg-blue-500 hover:bg-blue-600 p-2 rounded text-white"
