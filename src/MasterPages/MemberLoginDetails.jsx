@@ -1,5 +1,3 @@
-
-
 import axios from "axios";
 import { useEffect, useState } from "react";
 import { FaSave } from "react-icons/fa";
@@ -10,137 +8,137 @@ import Loader from "../Component/Loader";
 import Pagination from "../Component/Pagination";
 
 const MemberLoginDetails = () => {
-    useEffect(() => {
-        document.title = "SLF | Member Login Details";
-        fetchEmployee(); // ✅ load initial data
-    }, []);
+  useEffect(() => {
+    document.title = "SLF | Member Login Details";
+    fetchEmployee(); // ✅ load initial data
+  }, []);
 
-     const navigate = useNavigate();
+  const navigate = useNavigate();
 
-    const [employeeList, setEmployeeList] = useState([]);
-    console.log(employeeList,"employeeList")
-    const [isLoading, setIsLoading] = useState(false);
-    const [searchTerm, setSearchTerm] = useState("");
-    const [isModalOpen, setIsModalOpen] = useState(false);
+  const [employeeList, setEmployeeList] = useState([]);
+  console.log(employeeList, "employeeList")
+  const [isLoading, setIsLoading] = useState(false);
+  const [searchTerm, setSearchTerm] = useState("");
+  const [isModalOpen, setIsModalOpen] = useState(false);
 
-    // Pagination states
-    const [currentPage, setCurrentPage] = useState(1);
-    const [totalItems, setTotalItems] = useState(0);
-    const [showPagination, setShowPagination] = useState(false);
-    const itemsPerPage = 10;
-    const totalPages = Math.ceil(totalItems / itemsPerPage);
+  // Pagination states
+  const [currentPage, setCurrentPage] = useState(1);
+  const [totalItems, setTotalItems] = useState(0);
+  const [showPagination, setShowPagination] = useState(false);
+  const itemsPerPage = 10;
+  const totalPages = Math.ceil(totalItems / itemsPerPage);
 
-    // ✅ Fetch employee list
-    const fetchEmployee = async (page = 1) => {
-        setIsLoading(true);
-        try {
-            const result = await fetchEmployeeProfileApi(page, itemsPerPage);
+  // ✅ Fetch employee list
+  const fetchEmployee = async (page = 1) => {
+    setIsLoading(true);
+    try {
+      const result = await fetchEmployeeProfileApi(page, itemsPerPage);
 
-            if (result?.items?.length) {
-                setEmployeeList(result.items);
-                setTotalItems(result.total || result.items.length);
-                setCurrentPage(result.page || 1);
-                setShowPagination(result.showPagination ?? result.total > itemsPerPage);
-            } else {
-                setEmployeeList([]);
-                setShowPagination(false);
-            }
-        } catch (error) {
-            console.error("❌ Error fetching employees:", error);
-            setEmployeeList([]);
-            setShowPagination(false);
-        } finally {
-            setIsLoading(false);
-        }
-    };
+      if (result?.items?.length) {
+        setEmployeeList(result.items);
+        setTotalItems(result.total || result.items.length);
+        setCurrentPage(result.page || 1);
+        setShowPagination(result.showPagination ?? result.total > itemsPerPage);
+      } else {
+        setEmployeeList([]);
+        setShowPagination(false);
+      }
+    } catch (error) {
+      console.error("❌ Error fetching employees:", error);
+      setEmployeeList([]);
+      setShowPagination(false);
+    } finally {
+      setIsLoading(false);
+    }
+  };
 
-    const handlePageChange = (page) => {
-        if (page < 1 || page > totalPages) return;
-        setCurrentPage(page);
-        fetchEmployee(page);
-    };
+  const handlePageChange = (page) => {
+    if (page < 1 || page > totalPages) return;
+    setCurrentPage(page);
+    fetchEmployee(page);
+  };
 
-    if (isLoading) {
-        return (
-            <div className="text-center py-10">
-                <Loader />
-            </div>
-        );
+  if (isLoading) {
+    return (
+      <div className="text-center py-10">
+        <Loader />
+      </div>
+    );
+  }
+
+
+  const updateSender = async (empId, sm1, sm2) => {
+
+    if (sm1 && sm1.toString().length !== 10) {
+      alert("Sender Mobile 1 must be 10 digits");
+      return;
     }
 
+    if (sm2 && sm2.toString().length !== 10) {
+      alert("Sender Mobile 2 must be 10 digits");
+      return;
+    }
 
-    const updateSender = async (empId, sm1, sm2) => {
-      
-         if (sm1 && sm1.toString().length !== 10) {
-    alert("Sender Mobile 1 must be 10 digits");
-    return;
-  }
+    try {
+      await axios.post(`${API}/Master/Employee_Profile/updateSender`, {
+        empId: empId,
+        sender_mobile1: sm1,
+        sender_mobile2: sm2,
+      });
 
-  if (sm2 && sm2.toString().length !== 10) {
-    alert("Sender Mobile 2 must be 10 digits");
-    return;
-        }
-        
-  try {
-    await axios.post(`${API}/Master/Employee_Profile/updateSender`, {
-      empId: empId,
-      sender_mobile1: sm1,
-      sender_mobile2: sm2,
-    });
+      alert("Updated Successfully");
+      fetchEmployee(currentPage); // refresh
+    } catch (e) {
+      console.log(e);
+      alert("Update Failed");
+    }
+  };
 
-    alert("Updated Successfully");
-    fetchEmployee(currentPage); // refresh
-  } catch (e) {
-    console.log(e);
-    alert("Update Failed");
-  }
-    };
+  const updateOTP = async (empId, boolValue) => {
+    try {
+      await axios.post(`${API}/Master/Employee_Profile/updateOTP`, {
+        empId: empId,
+        value: boolValue ? 1 : 0,   // convert boolean → 0/1
+      });
 
-    const updateOTP = async (empId, boolValue) => {
-  try {
-    await axios.post(`${API}/Master/Employee_Profile/updateOTP`, {
-      empId: empId,
-      value: boolValue ? 1 : 0,   // convert boolean → 0/1
-    });
+      fetchEmployee(currentPage);
+    } catch (err) {
+      console.log(err);
+      alert("Update failed");
+    }
+  };
 
-    fetchEmployee(currentPage);
-  } catch (err) {
-    console.log(err);
-    alert("Update failed");
-  }
-};
 
-    
-    return (
-        <div className="min-h-screen w-full">
-            {/* Top bar */}
-            <div className="flex justify-center">
-                <div className="flex items-center px-6 py-4 border-b mt-5 w-[1290px] h-[62px] border rounded-[11px] border-gray-200 justify-between shadow">
-                    <h2 className="text-red-600 font-bold text-[20px] leading-[148%] font-source">
-                        Member Login Details
-                    </h2>
+  return (
+    <div className="min-h-screen w-full">
+      {/* Top bar */}
+      <div className="flex justify-center">
+        <div className="flex items-center px-6 py-4 border-b mt-5 w-[1290px] h-[62px] border rounded-[11px] border-gray-200 justify-between shadow">
+          <h2 className="text-red-600 font-bold text-[20px] leading-[148%] font-source">
+            Member Login Details
+          </h2>
 
-                    {/* Search & Actions */}
-                    <div className="flex items-center gap-6">
-                        {/* Search */}
-                        <div className="flex gap-3 items-center">
-                            <input
-                                type="text"
-                                value={searchTerm}
-                                onChange={(e) => setSearchTerm(e.target.value)}
-                                placeholder="Search by name..."
-                                className="border border-gray-400 rounded px-3 py-1 text-[11.25px] w-[168px] h-[28px]"
-                            />
-                            <button
-                                onClick={() => setIsModalOpen(true)}
-                                className="bg-[#0A2478] text-white text-[11.25px] w-[74px] h-[24px] rounded flex items-center justify-center"
-                            >
-                                Search
-                            </button>
-                        </div>
+          {/* Search & Actions */}
+          <div className="flex items-center gap-6">
+            {/* Search */}
+            <div className="flex gap-3 items-center">
+              <input
+                type="text"
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+                placeholder="Search by name..."
+                className="border border-gray-400 rounded px-3 py-1 text-[11.25px] w-[168px] h-[28px]"
+              />
+              <button
+                onClick={() => setIsModalOpen(true)}
+                className="bg-[#0A2478] text-white text-[11.25px] w-[74px] h-[24px] rounded flex items-center justify-center"
+              >
+                Search
+              </button>
+            </div>
 
-                        {/* Date & Activity Filters */}
-                        {/* <div className="flex gap-5">
+            {/* Date & Activity Filters */}
+            {/* <div className="flex gap-5">
                             <input
                                 type="date"
                                 className="border border-gray-400 rounded px-3 py-1 text-[11.25px] w-[168px] h-[28px]"
@@ -154,137 +152,152 @@ const MemberLoginDetails = () => {
                             </div>
                         </div> */}
 
-                        <button
-                        onClick={() => navigate("/")}
-                        className="bg-[#C1121F] text-white text-[10px] w-[74px] h-[24px] rounded">
-                            Exit
-                        </button>
-                    </div>
-                </div>
-            </div>
-
-            {/* Table */}
-         <div className="flex justify-center">
-  <div className="overflow-x-auto mt-5 w-full max-w-[1290px] h-[500px] border border-gray-300 rounded">
-    <table className="w-full border-collapse">
-      {/* Table Header */}
-      <thead className="bg-[#0A2478] text-white text-sm top-0">
-        <tr>
-          <th className="px-4 py-2 border-r text-center">#</th>
-          <th className="px-4 py-2 border-r text-left">Name</th>
-          <th className="px-4 py-2 border-r text-left">User ID</th>
-          <th className="px-4 py-2 border-r text-center">OTP Override</th>
-          <th className="px-4 py-2 border-r text-center">Sender Mobile No 1</th>
-          <th className="px-4 py-2 border-r text-center">Sender Mobile No 2</th>
-        </tr>
-      </thead>
-
-      {/* Table Body */}
-      <tbody className="text-[12px]">
-        {employeeList.length > 0 ? (
-          employeeList.map((row, index) => (
-            <tr
-              key={row.id || index}
-              className={`${index % 2 === 0 ? "bg-gray-50" : "bg-white"} hover:bg-gray-100`}
-            >
-              {/* Checkbox */}
-              <td className="px-4 py-2 text-center">
-                <input
-                  type="checkbox"
-                  name={`select-${index}`}
-                  className="w-5 h-5 accent-blue-900"
-                />
-              </td>
-
-              {/* Name */}
-              <td className="px-4 py-2">{row.emp_name}</td>
-
-              {/* User ID */}
-              <td className="px-4 py-2">{row.email}</td>
-
-              {/* OTP Override */}
-              <td className="px-4 py-2 text-center">
-                <input
-                  type="checkbox"
-                  checked={row.OTP_Override == 1} // if db stores 0/1
-                  onChange={(e) => updateOTP(row.id, e.target.checked)}
-                  className="w-5 h-5 accent-blue-900"
-                />
-              </td>
-
-              {/* Sender Mobile 1 */}
-             {/* Sender Mobile 1 */}
-<td className="px-4 py-2">
-  <div className="flex items-center gap-2">
-    <input
-      type="number"
-      value={row.sender_mobile1 || ""}
-      className="py-1 text-sm px-2 border rounded-sm no-spinner flex-1"
-      onChange={(e) => (row.sender_mobile1 = e.target.value)}
-    />
-    <button
-      className="text-blue-600 hover:text-blue-800"
-      onClick={() =>
-        updateSender(row.id, row.sender_mobile1, row.sender_mobile2)
-      }
-      title="Save Mobile 1"
-    >
-      <FaSave size={18} />
-    </button>
-  </div>
-</td>
-
-{/* Sender Mobile 2 */}
-<td className="px-4 py-2">
-  <div className="flex items-center gap-2">
-    <input
-      type="number"
-      value={row.sender_mobile2 || ""}
-      className="py-1 text-sm px-2 border rounded-sm no-spinner flex-1"
-      onChange={(e) => (row.sender_mobile2 = e.target.value)}
-    />
-    <button
-      className="text-blue-600 hover:text-blue-800"
-      onClick={() =>
-        updateSender(row.id, row.sender_mobile1, row.sender_mobile2)
-      }
-      title="Save Mobile 2"
-    >
-      <FaSave size={18} />
-    </button>
-  </div>
-</td>
-
-            </tr>
-          ))
-        ) : (
-          <tr>
-            <td
-              colSpan="6"
-              className="text-center text-gray-500 py-6 font-medium"
-            >
-              No records found.
-            </td>
-          </tr>
-        )}
-      </tbody>
-    </table>
-  </div>
-</div>
-
-
-            {/* Pagination */}
-            {showPagination && totalPages > 1 && (
-                <div className="flex justify-center mt-4">
-                    <Pagination
-                        currentPage={currentPage}
-                        totalPages={totalPages}
-                        onPageChange={handlePageChange}
-                    />
-                </div>
-            )}
+            <button
+              onClick={() => navigate("/")}
+              className="bg-[#C1121F] text-white text-[10px] w-[74px] h-[24px] rounded">
+              Exit
+            </button>
+          </div>
         </div>
-    );
+      </div>
+
+      {/* Table */}
+      <div className="flex justify-center">
+        <div className="overflow-x-auto mt-5 w-full max-w-[1290px] h-[500px] border border-gray-300 rounded">
+          <table className="w-full border-collapse">
+            {/* Table Header */}
+            <thead className="bg-[#0A2478] text-white text-sm top-0">
+              <tr>
+                <th className="px-4 py-2 border-r text-center">#</th>
+                <th className="px-4 py-2 border-r text-left">Name</th>
+                <th className="px-4 py-2 border-r text-left">User ID</th>
+                <th className="px-4 py-2 border-r text-center">OTP Override</th>
+                <th className="px-4 py-2 border-r text-center">Sender Mobile No 1</th>
+                <th className="px-4 py-2 border-r text-center">Sender Mobile No 2</th>
+              </tr>
+            </thead>
+
+            {/* Table Body */}
+            <tbody className="text-[12px]">
+              {employeeList.length > 0 ? (
+                employeeList.map((row, index) => (
+                  <tr
+                    key={row.id || index}
+                    className={`${index % 2 === 0 ? "bg-gray-50" : "bg-white"} hover:bg-gray-100`}
+                  >
+                    {/* Checkbox */}
+                    <td className="px-4 py-2 text-center">
+                      <input
+                        type="checkbox"
+                        name={`select-${index}`}
+                        className="w-5 h-5 accent-blue-900"
+                      />
+                    </td>
+
+                    {/* Name */}
+                    <td className="px-4 py-2">{row.emp_name}</td>
+
+                    {/* User ID */}
+                    <td className="px-4 py-2">{row.email}</td>
+
+                    {/* OTP Override */}
+                    <td className="px-4 py-2 text-center">
+                      <input
+                        type="checkbox"
+                        checked={row.OTP_Override == 1} // if db stores 0/1
+                        onChange={(e) => updateOTP(row.id, e.target.checked)}
+                        className="w-5 h-5 accent-blue-900"
+                      />
+                    </td>
+
+                    {/* Sender Mobile 1 */}
+                    <td className="px-4 py-2">
+                      <div className="flex items-center gap-2">
+                        <input
+                          type="text"
+                          maxLength="10"
+                          pattern="[0-9]*"
+                          value={row.sender_mobile1 || ""}
+                          className="py-1 text-sm px-2 border rounded-sm no-spinner flex-1"
+                          onChange={(e) => {
+                            const value = e.target.value.replace(/\D/g, '');
+                            setEmployeeList(employeeList.map(emp => {
+                              if (emp.id === row.id) {
+                                return { ...emp, sender_mobile1: value };
+                              }
+                              return emp;
+                            }));
+                          }}
+                        />
+                        <button
+                          className="text-blue-600 hover:text-blue-800"
+                          onClick={() => updateSender(row.id, row.sender_mobile1, row.sender_mobile2)}
+                          title="Save Mobile 1"
+                        >
+                          <FaSave size={18} />
+                        </button>
+                      </div>
+                    </td>
+
+                    {/* Sender Mobile 2 */}
+                    <td className="px-4 py-2">
+                      <div className="flex items-center gap-2">
+                        <input
+                          type="text"
+                          maxLength="10"
+                          pattern="[0-9]*"
+                          value={row.sender_mobile2 || ""}
+                          className="py-1 text-sm px-2 border rounded-sm no-spinner flex-1"
+                          onChange={(e) => {
+                            const value = e.target.value.replace(/\D/g, '');
+                            setEmployeeList(employeeList.map(emp => {
+                              if (emp.id === row.id) {
+                                return { ...emp, sender_mobile2: value };
+                              }
+                              return emp;
+                            }));
+                          }}
+                        />
+                        <button
+                          className="text-blue-600 hover:text-blue-800"
+                          onClick={() => updateSender(row.id, row.sender_mobile1, row.sender_mobile2)}
+                          title="Save Mobile 2"
+                        >
+                          <FaSave size={18} />
+                        </button>
+                      </div>
+                    </td>
+
+                  </tr>
+                ))
+              ) : (
+                <tr>
+                  <td
+                    colSpan="6"
+                    className="text-center text-gray-500 py-6 font-medium"
+                  >
+                    No records found.
+                  </td>
+                </tr>
+              )}
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+
+      {/* Pagination */}
+      {showPagination && totalPages > 1 && (
+        <div className="flex justify-center mt-4">
+          <Pagination
+            currentPage={currentPage}
+            totalPages={totalPages}
+            onPageChange={handlePageChange}
+          />
+        </div>
+      )}
+    </div>
+  );
 };
 
 export default MemberLoginDetails;
