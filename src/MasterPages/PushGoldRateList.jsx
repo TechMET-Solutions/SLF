@@ -87,7 +87,7 @@ const PushGoldRateList = () => {
           <div className="flex items-center gap-6">
             <div className="flex gap-5">
               <div className="flex gap-3 items-center">
-                <p className="text-[11.25px] font-source">Push Date *</p>
+                <p className="text-[11.25px] font-source">Push Date <span className="text-red-500">*</span></p>
                 <input
                   type="date"
                   value={pushDate}
@@ -96,9 +96,9 @@ const PushGoldRateList = () => {
                 />
               </div>
               <div className="flex gap-3 items-center">
-                <p className="text-[11.25px] font-source">Gold Rate *</p>
+                <p className="text-[11.25px] font-source">Gold Rate <span className="text-red-500">*</span></p>
                 <input
-                  type="text"
+                  type="number"
                   value={goldRate}
                   onChange={(e) => setGoldRate(e.target.value)}
                   className="border border-gray-400 rounded px-3 py-1 text-[11.25px] w-[168px] h-[28px]"

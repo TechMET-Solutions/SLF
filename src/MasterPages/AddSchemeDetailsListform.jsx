@@ -427,7 +427,7 @@ const handleInputChange = (e) => {
           {
             isDailyBasis && (
               <div className="flex flex-col">
-            <label className="text-[14px] font-medium">Add 1 Day*</label>
+            <label className="text-[14px] font-medium">Add 1 Day <span className="text-red-500">*</span></label>
             <select
               name="addOneDay"
               value={formData.addOneDay}
@@ -451,7 +451,7 @@ const handleInputChange = (e) => {
         <div className="flex items-end gap-4 w-full mt-5">
           {/* Calculation Method */}
           <div className="flex flex-col">
-            <label className="text-[14px] font-medium">Calc. Method</label>
+            <label className="text-[14px] font-medium">Calc. Method <span className="text-red-500">*</span></label>
             <select
               name="calcMethod"
               value={formData.calcMethod}
@@ -489,7 +489,7 @@ const handleInputChange = (e) => {
 
           {isDailyBasis && (
  <div className="flex flex-col">
-            <label className="text-[14px] font-medium">Interest in Advance</label>
+            <label className="text-[14px] font-medium">Interest in Advance <span className="text-red-500">*</span></label>
             <select
               name="interestInAdvance"
               value={formData.interestInAdvance || ""}
@@ -537,7 +537,7 @@ const handleInputChange = (e) => {
 
           <div className="flex flex-col">
             <label className="text-[14px] font-medium">
-              Penalty
+              Penalty <span className="text-red-500">*</span>
             </label>
             <input
               type="number"
@@ -568,18 +568,7 @@ const handleInputChange = (e) => {
 
 </div>
 
-           <div className="flex flex-col">
-            <label className="text-[14px] font-medium">For party Type*</label>
-            <select
-              name="partyType"
-              value={formData.partyType}
-              onChange={handleInputChange}
-              className="border border-gray-300 rounded px-3 py-2 mt-1 w-[111px] bg-white"
-            >
-              <option value="individual">Individual</option>
-              <option value="cooperative">Corporate</option>
-            </select>
-          </div>
+          
 
 
           <div className="flex flex-col">
@@ -632,7 +621,7 @@ const handleInputChange = (e) => {
           </div>
 
           <div className="flex flex-col">
-            <label className="text-[14px] font-medium">Max Loan Amount*</label>
+            <label className="text-[14px] font-medium">Max Loan Amount <span className="text-red-500">*</span></label>
             <input
               type="number"
               name="maxLoanAmount"
@@ -642,9 +631,8 @@ const handleInputChange = (e) => {
             />
           </div>
 
-          {/* For party Type */}
-          {/* <div className="flex flex-col">
-            <label className="text-[14px] font-medium">For party Type*</label>
+           <div className="flex flex-col">
+            <label className="text-[14px] font-medium">For party Type <span className="text-red-500">*</span></label>
             <select
               name="partyType"
               value={formData.partyType}
@@ -654,7 +642,7 @@ const handleInputChange = (e) => {
               <option value="individual">Individual</option>
               <option value="cooperative">Corporate</option>
             </select>
-          </div> */}
+          </div>
 
           {/* Administrative Charges */}
           <div className="flex flex-col">
@@ -703,7 +691,7 @@ const handleInputChange = (e) => {
 
         {/* Document Charges (ALWAYS VISIBLE) */}
         <div className="mb-6 mt-6">
-          <h3 className="text-lg font-semibold mb-4">Document Charge</h3>
+          <h3 className="text-xl font-semibold text-[#0A2478] mb-4">Document Charge</h3>
           <div className="flex gap-25 items-end">
             <div className="flex items-center gap-2">
               <label className="text-sm font-medium whitespace-nowrap">
@@ -745,7 +733,7 @@ const handleInputChange = (e) => {
         </div>
 
         <div>
-          <h3 className="text-md font-semibold mb-4">Interest Rate</h3>
+          <h3 className="text-xl font-semibold text-[#0A2478] mb-4">Interest Rate</h3>
           <div className="flex justify-between items-center mb-3">
 
           </div>

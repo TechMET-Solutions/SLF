@@ -293,7 +293,7 @@ const ItemProfileList = () => {
                 }
                 className="w-5 h-5 accent-blue-900"
               />
-              <label className="text-[14px] font-medium">Active</label>
+              <label className="text-[14px] font-medium">is Active</label>
             </div>
 
             <div className="flex justify-center gap-4">

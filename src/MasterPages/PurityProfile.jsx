@@ -25,7 +25,7 @@ const PurityProfile = () => {
   const [data, setData] = useState([]);
   const [formData, setFormData] = useState({
     id: null,
-    loan_type: "",
+    loan_type: "Gold",
     purity_name: "",
     purity_percent: "",
     added_by: "Admin",
@@ -94,7 +94,7 @@ const PurityProfile = () => {
         id: null,
         purity_name: "",
         purity_percent: "",
-        loan_type: "",
+        loan_type: "Gold",
         added_by: "Admin",
         status: 1,
       });
@@ -203,6 +203,7 @@ const PurityProfile = () => {
                 </label>
                 <input
                   type="text"
+                  name="loan_type"
                   placeholder="Gold"
                   value={formData.loan_type}
                   onChange={(e) => setFormData({ ...formData, loan_type: e.target.value })}
@@ -226,7 +227,7 @@ const PurityProfile = () => {
                   Purity Percent <span className="text-red-500">*</span>
                 </label>
                 <input
-                  type="text"
+                  type="number"
                   placeholder="Purity Percent"
                   value={formData.purity_percent}
                   onChange={(e) =>

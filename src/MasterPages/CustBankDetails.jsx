@@ -298,7 +298,7 @@ const navigate = useNavigate();
                 {/* Bank Name / Holder / Account No */}
                 <div className="flex gap-2">
                    <div>
-                    <label className="text-[14px]">Account No*</label>
+                    <label className="text-[14px]">Account No <span className="text-red-500">*</span></label>
                     <input
                       name="accountNo"
                       value={formData.accountNo}
@@ -310,7 +310,7 @@ const navigate = useNavigate();
                     />
                   </div>
 <div>
-                    <label className="text-[14px]">IFSC Code*</label>
+                    <label className="text-[14px]">IFSC Code <span className="text-red-500">*</span></label>
                     <input
                       name="ifsc"
                       value={formData.ifsc}
@@ -322,7 +322,7 @@ const navigate = useNavigate();
                     />
                   </div>
                   <div>
-                    <label className="text-[14px]">Bank Name*</label>
+                    <label className="text-[14px]">Bank Name <span className="text-red-500">*</span></label>
                     <input
                       name="bankName"
                       value={formData.bankName}
@@ -342,7 +342,7 @@ const navigate = useNavigate();
                 {/* IFSC / Address / Cheque */}
                 <div className="flex mt-5 gap-2">
                    <div>
-                    <label className="text-[14px]">Account Holder Name*</label>
+                    <label className="text-[14px]">Account Holder Name <span className="text-red-500">*</span></label>
                     <input
                       name="customerName"
                       value={formData.customerName}
@@ -356,7 +356,7 @@ const navigate = useNavigate();
                   
 
                   <div>
-                    <label className="text-[14px]">Bank Address</label>
+                    <label className="text-[14px]">Bank Address <span className="text-red-500">*</span></label>
                     <input
                       name="bankAddress"
                       value={formData.bankAddress}
@@ -370,7 +370,7 @@ const navigate = useNavigate();
 
                   {/* File Upload */}
                   <div>
-                    <label className="text-[14px]">Attach Cancel Cheque</label>
+                    <label className="text-[14px]">Attach Cancel Cheque <span className="text-red-500">*</span></label>
                     <div className="flex flex-col mt-1">
                       <div className="flex items-center border border-gray-300 rounded w-[230px]">
                         <label
