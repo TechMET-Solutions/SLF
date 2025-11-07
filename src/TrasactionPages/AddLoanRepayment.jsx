@@ -100,7 +100,13 @@ const [isAdvInt, setIsAdvInt] = useState(false);
     chargesAdjusted: 0,
     intPaidUpto: new Date(),
  });
-  
+  const [paymentInfo, setPaymentInfo] = useState({
+  mode: "",
+  type: "",
+  refNo: "",
+  madeBy: ""
+});
+
 
 console.log(loanInfo, "loanInfo")
   const fetchLoanData = async () => {
@@ -201,52 +207,141 @@ console.log(loanInfo, "loanInfo")
 };
 
   
- 
+ const validatePayAmount = () => {
+debugger
+  let payAmount = Number(loanInfoForAdj.payAmount || 0);
+  let charges = Number(data.loanApplication.total_unpaid_charges || 0);
+  let pendingLoanAmount = Number(data.loanApplication.LoanPendingAmount || 0);
+  let interestPercent = Number(loanInfoForAdj.interestPercent || 0);
+
+  let dailyIntAmt = (pendingLoanAmount * interestPercent) / 100 / 365;
+
+  // cut charges
+  let remainingPay = payAmount - charges;
+  if (remainingPay < 0) return; // charges yet not covered, no need of validation
+
+  // interest we can cover
+  let days = Math.floor(remainingPay / dailyIntAmt);
+  let exactInterestForDays = days * dailyIntAmt;
+
+  let totalRequired = charges + exactInterestForDays;
+
+  // remaining after exact interest?
+  let diff = payAmount - totalRequired;
+
+  // if diff is +-1 rupee ok small tolerance
+  if (Math.abs(diff) > 1) {
+
+    // suggest nearest valid top & bottom
+    let lowerValid = totalRequired.toFixed(2);
+    let upperValid = (totalRequired + dailyIntAmt).toFixed(2);
+
+    alert(`Amount not valid — please enter either ${lowerValid} or ${upperValid}`);
+  }
+};
 
 
 
 
-useEffect(() => {
-    if (!data?.loanApplication?.LoanPendingAmount || !data?.loanApplication?.approval_date)
-      return;
 
-    const approvalDate = new Date(data.loanApplication.approval_date);
-    const today = new Date();
+// useEffect(() => {
+//     if (!data?.loanApplication?.LoanPendingAmount || !data?.loanApplication?.approval_date)
+//       return;
 
-    // 1) Calculate pending days
-    const diffMs = today - approvalDate;
-    const pendingDays = Math.floor(diffMs / (1000 * 60 * 60 * 24));
+//     const approvalDate = new Date(data.loanApplication.approval_date);
+//     const today = new Date();
 
-    // 2) Parse interest slab
-    const slabs = JSON.parse(data.schemeData.interestRates || "[]");
-    const currentSlab = slabs.find(
-      (s) => pendingDays >= Number(s.from) && pendingDays <= Number(s.to)
-    );
-    const interestPercent = currentSlab ? Number(currentSlab.addInt) : 0;
+//     // 1) Calculate pending days
+//     const diffMs = today - approvalDate;
+//     const pendingDays = Math.floor(diffMs / (1000 * 60 * 60 * 24));
 
-    // 3) Calculate pending interest
-    const pendingLoanAmount = Number(data.loanApplication.LoanPendingAmount);
-    const dailyIntAmt = (pendingLoanAmount * interestPercent) / 100 / 365;
-    const pendingInt = dailyIntAmt * pendingDays;
+//     // 2) Parse interest slab
+//     const slabs = JSON.parse(data.schemeData.interestRates || "[]");
+//     const currentSlab = slabs.find(
+//       (s) => pendingDays >= Number(s.from) && pendingDays <= Number(s.to)
+//     );
+//     const interestPercent = currentSlab ? Number(currentSlab.addInt) : 0;
 
-    // 4) Charges
-    const totalUnpaidCharges = Number(data.loanApplication.total_unpaid_charges || 0);
+//     // 3) Calculate pending interest
+//     const pendingLoanAmount = Number(data.loanApplication.LoanPendingAmount);
+//     const dailyIntAmt = (pendingLoanAmount * interestPercent) / 100 / 365;
+//     const pendingInt = dailyIntAmt * pendingDays;
 
-    // 5) Pay Amount = pendingLoanAmount + pendingInt + charges (if any)
-    const payAmount = pendingLoanAmount + pendingInt + totalUnpaidCharges;
+//     // 4) Charges
+//     const totalUnpaidCharges = Number(data.loanApplication.total_unpaid_charges || 0);
 
-    // 6) Set all values in state
+//     // 5) Pay Amount = pendingLoanAmount + pendingInt + charges (if any)
+//     const payAmount = pendingLoanAmount + pendingInt + totalUnpaidCharges;
+
+//     // 6) Set all values in state
+//     setLoanInfo({
+//       pendingDays,
+//       pendingInt: pendingInt.toFixed(2),
+//       interestPercent,
+//       loanAmountPaid: pendingLoanAmount.toFixed(2),
+//       payAmount: payAmount.toFixed(2),
+//       balanceLoanAmt: 0,
+//       chargesAdjusted: totalUnpaidCharges.toFixed(2),
+//       intPaidUpto: today,
+//     });
+//   }, [data]);
+
+  useEffect(() => {
+  if (!data?.loanApplication?.LoanPendingAmount || !data?.loanApplication?.approval_date)
+    return;
+
+  const approvalDate = new Date(data.loanApplication.approval_date);
+  const today = new Date();
+  const interestPaidUpto = new Date(data.loanApplication.InterestPaidUpto);
+
+  const pendingLoanAmount = Number(data.loanApplication.LoanPendingAmount);
+  const totalUnpaidCharges = Number(data.loanApplication.total_unpaid_charges || 0);
+
+  // *** override case: future interest already paid ***
+  if (interestPaidUpto > today) {
     setLoanInfo({
-      pendingDays,
-      pendingInt: pendingInt.toFixed(2),
-      interestPercent,
+      pendingDays: 0,
+      pendingInt: "0.00",
+      interestPercent: 0,
       loanAmountPaid: pendingLoanAmount.toFixed(2),
-      payAmount: payAmount.toFixed(2),
+      payAmount: (pendingLoanAmount + totalUnpaidCharges).toFixed(2),
       balanceLoanAmt: 0,
       chargesAdjusted: totalUnpaidCharges.toFixed(2),
-      intPaidUpto: today,
+      intPaidUpto: interestPaidUpto,
     });
-  }, [data]);
+    return;
+  }
+
+  // 1) pending days
+  const diffMs = today - approvalDate;
+  const pendingDays = Math.floor(diffMs / (1000 * 60 * 60 * 24));
+
+  // 2) interest slab
+  const slabs = JSON.parse(data.schemeData.interestRates || "[]");
+  const currentSlab = slabs.find(
+    (s) => pendingDays >= Number(s.from) && pendingDays <= Number(s.to)
+  );
+  const interestPercent = currentSlab ? Number(currentSlab.addInt) : 0;
+
+  // 3) interest
+  const dailyIntAmt = (pendingLoanAmount * interestPercent) / 100 / 365;
+  const pendingInt = dailyIntAmt * pendingDays;
+
+  // 4) total pay
+  const payAmount = pendingLoanAmount + pendingInt + totalUnpaidCharges;
+
+  // 5) set state
+  setLoanInfo({
+    pendingDays,
+    pendingInt: pendingInt.toFixed(2),
+    interestPercent,
+    loanAmountPaid: pendingLoanAmount.toFixed(2),
+    payAmount: payAmount.toFixed(2),
+    balanceLoanAmt: 0,
+    chargesAdjusted: totalUnpaidCharges.toFixed(2),
+    intPaidUpto: today,
+  });
+}, [data]);
 
    const formatCurrency = (amount) => {
     if (!amount || isNaN(amount)) return '0.00';
@@ -706,14 +801,18 @@ if (checked) setIsAdvInt(false);
       {/* Pay Amount */}
       <div className="flex flex-col gap-1 w-[150px]">
         <label className="text-gray-900 font-medium">Pay Amount</label>
-       <input
+      <input
   type="text"
   value={loanInfoForAdj.payAmount}
   onChange={(e) => handlePayAmountChange(e.target.value)}
+  onBlur={validatePayAmount}
   className="border border-gray-300 disabled:bg-gray-100 rounded-md px-3 py-2 focus:ring-1 focus:ring-blue-500 focus:outline-none"
 />
 
+
       </div>
+
+                
 
       {/* Interest Adjusted */}
       <div className="flex flex-col gap-1 w-[150px]">
@@ -803,47 +902,67 @@ if (checked) setIsAdvInt(false);
         <div className="flex flex-col gap-1 w-[200px]">
           <label className="text-gray-900 font-medium">Mode of Payment</label>
           <select
-            className="border border-gray-300 rounded-md px-3 py-2 focus:ring-1 focus:ring-blue-500 focus:outline-none"
-            disabled={isClose}
-          >
-            <option>--Select--</option>
-            <option>Cash</option>
-            <option>Net Banking</option>
-            <option>Credit Note</option>
-          </select>
+  className="border border-gray-300 rounded-md px-3 py-2 focus:ring-1 focus:ring-blue-500 focus:outline-none"
+  disabled={isClose}
+  value={paymentInfo.mode}
+  onChange={(e) =>
+    setPaymentInfo({ ...paymentInfo, mode: e.target.value })
+  }
+>
+  <option>--Select--</option>
+  <option>Cash</option>
+  <option>Net Banking</option>
+  <option>Credit Note</option>
+</select>
+
         </div>
 
         {/* Type of Payment */}
         <div className="flex flex-col gap-1 w-[150px]">
           <label className="text-gray-900 font-medium">Type of Payment</label>
           <input
-            type="text"
-            placeholder="Cash"
-            className="border border-gray-300 rounded-md px-3 py-2 focus:ring-1 focus:ring-blue-500 focus:outline-none"
-            disabled={isClose}
-          />
+  type="text"
+  placeholder="Cash"
+  className="border border-gray-300 rounded-md px-3 py-2 focus:ring-1 focus:ring-blue-500 focus:outline-none"
+  disabled={isClose}
+  value={paymentInfo.type}
+  onChange={(e) =>
+    setPaymentInfo({ ...paymentInfo, type: e.target.value })
+  }
+/>
+
         </div>
 
         {/* Payment Ref. No */}
         <div className="flex flex-col gap-1 w-[200px]">
           <label className="text-gray-900 font-medium">Payment Ref. No</label>
-          <input
-            type="text"
-            placeholder="Reference Number"
-            className="border border-gray-300 rounded-md px-3 py-2 focus:ring-1 focus:ring-blue-500 focus:outline-none"
-            disabled={isClose}
-          />
+         <input
+  type="text"
+  placeholder="Reference Number"
+  className="border border-gray-300 rounded-md px-3 py-2 focus:ring-1 focus:ring-blue-500 focus:outline-none"
+  disabled={isClose}
+  value={paymentInfo.refNo}
+  onChange={(e) =>
+    setPaymentInfo({ ...paymentInfo, refNo: e.target.value })
+  }
+/>
+
         </div>
 
         {/* Payment Made By */}
         <div className="flex flex-col gap-1 w-[200px]">
           <label className="text-gray-900 font-medium">Payment Made By</label>
           <input
-            type="text"
-            placeholder="Name"
-            className="border border-gray-300 rounded-md px-3 py-2 focus:ring-1 focus:ring-blue-500 focus:outline-none"
-            disabled={isClose}
-          />
+  type="text"
+  placeholder="Name"
+  className="border border-gray-300 rounded-md px-3 py-2 focus:ring-1 focus:ring-blue-500 focus:outline-none"
+  disabled={isClose}
+  value={paymentInfo.madeBy}
+  onChange={(e) =>
+    setPaymentInfo({ ...paymentInfo, madeBy: e.target.value })
+  }
+/>
+
         </div>
       </div>
     </div>
