@@ -1,21 +1,21 @@
-import axios from 'axios';
-import JoditEditor from 'jodit-react';
-import { useEffect, useRef, useState } from 'react';
+import axios from "axios";
+import JoditEditor from "jodit-react";
+import { useEffect, useRef, useState } from "react";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import { CiBarcode, CiEdit, CiSearch } from "react-icons/ci";
 import { MdOutlineCancel } from "react-icons/md";
-import { useNavigate } from 'react-router-dom';
+import { useNavigate } from "react-router-dom";
 import calender from "../assets/calender.png";
 import envImg from "../assets/envImg.jpg";
 import goldlogo from "../assets/gold_print.svg";
 
-import { CgSoftwareUpload } from 'react-icons/cg';
+import { CgSoftwareUpload } from "react-icons/cg";
 import { IoChevronDownOutline } from "react-icons/io5"; // better arrow icon
-import { PiPrinterLight } from 'react-icons/pi';
-import { RiMessage2Line } from 'react-icons/ri';
-import { API } from '../api';
-import { formatIndianDate } from '../utils/Helpers';
+import { PiPrinterLight } from "react-icons/pi";
+import { RiMessage2Line } from "react-icons/ri";
+import { API } from "../api";
+import { formatIndianDate } from "../utils/Helpers";
 const LoanApplication = () => {
   useEffect(() => {
     document.title = "SLF | Loan Application";
@@ -51,21 +51,48 @@ const LoanApplication = () => {
     page: 1,
     totalPages: 1,
     total: 0,
-    limit: 10
+    limit: 10,
   });
   const [filters, setFilters] = useState({
     search: "",
     status: "",
-    field: ""
+    field: "",
   });
   const [remarkData, setRemarkData] = useState(null);
   const [loadingRemark, setLoadingRemark] = useState(false);
 
-  const options = [
-    "01", "02", "03", "04", "11", "13",
-    "BGR-01", "BGR-02", "COR-01", "COR-02",
-    "IND-01", "IND-02", "IND-03", "IND-04"
-  ];
+  
+
+  // Schemes fetched from backend (replaces static `options`)
+  const [schemes, setSchemes] = useState([]);
+  const [schemesLoading, setSchemesLoading] = useState(false);
+  const [schemesError, setSchemesError] = useState("");
+
+  // Fetch active schemes from server. Backend route expected: SchemeRouter.get('/active', ...)
+  useEffect(() => {
+    let mounted = true;
+    const fetchSchemes = async () => {
+      setSchemesLoading(true);
+      setSchemesError("");
+      try {
+        const resp = await axios.get(`${API}/Scheme/active`);
+        // Try common response shapes: { success, data } or direct array
+        const payload =
+          resp.data && resp.data.success ? resp.data.data : resp.data;
+        if (mounted) setSchemes(Array.isArray(payload) ? payload : []);
+      } catch (err) {
+        console.error("Failed to load schemes:", err);
+        if (mounted) setSchemesError("Failed to load schemes");
+      } finally {
+        if (mounted) setSchemesLoading(false);
+      }
+    };
+
+    fetchSchemes();
+    return () => {
+      mounted = false;
+    };
+  }, []);
 
   // Jodit Editor configuration
   const editorConfig = {
@@ -74,16 +101,28 @@ const LoanApplication = () => {
     placeholder: "Type your cancellation remark here...",
     toolbarAdaptive: false,
     buttons: [
-      "bold", "italic", "underline", "strikethrough",
-      "ul", "ol", "outdent", "indent",
-      "font", "fontsize", "brush", "paragraph",
-      "link", "align", "undo", "redo"
+      "bold",
+      "italic",
+      "underline",
+      "strikethrough",
+      "ul",
+      "ol",
+      "outdent",
+      "indent",
+      "font",
+      "fontsize",
+      "brush",
+      "paragraph",
+      "link",
+      "align",
+      "undo",
+      "redo",
     ],
-    removeButtons: ['image', 'file', 'video', 'source'],
+    removeButtons: ["image", "file", "video", "source"],
     showXPathInStatusbar: false,
     askBeforePasteHTML: false,
     askBeforePasteFromWord: false,
-    defaultActionOnPaste: "insert_clear_html"
+    defaultActionOnPaste: "insert_clear_html",
   };
 
   // Create axios instance with base configuration
@@ -91,8 +130,8 @@ const LoanApplication = () => {
     baseURL: API,
     timeout: 10000,
     headers: {
-      'Content-Type': 'application/json',
-    }
+      "Content-Type": "application/json",
+    },
   });
 
   // Fetch loan applications from API using Axios
@@ -103,10 +142,12 @@ const LoanApplication = () => {
       const params = {
         page: page.toString(),
         limit: pagination.limit.toString(),
-        ...(status && { status })
+        ...(status && { status }),
       };
 
-      const response = await apiClient.get('/Transactions/goldloan/all', { params });
+      const response = await apiClient.get("/Transactions/goldloan/all", {
+        params,
+      });
 
       if (response.data.success) {
         setLoanApplication(response.data.data);
@@ -114,14 +155,14 @@ const LoanApplication = () => {
           page: response.data.page,
           totalPages: response.data.totalPages,
           total: response.data.total,
-          limit: pagination.limit
+          limit: pagination.limit,
         });
       } else {
         throw new Error(response.data.message || "NO loan applications");
       }
     } catch (err) {
       console.error("Error fetching loan applications:", err);
-      setError( "No loan applications");
+      setError("No loan applications");
       setLoanApplication([]);
     } finally {
       setLoading(false);
@@ -132,7 +173,9 @@ const LoanApplication = () => {
   const fetchLoanDocuments = async (loanId) => {
     setDocumentsLoading(true);
     try {
-      const response = await apiClient.get(`/Transactions/get-loan-documents/${loanId}`);
+      const response = await apiClient.get(
+        `/Transactions/get-loan-documents/${loanId}`
+      );
 
       if (response.data.success) {
         setUploadedDocuments(response.data.data || []);
@@ -171,27 +214,31 @@ const LoanApplication = () => {
   };
 
   const handleOpenRemark = async (row) => {
-    debugger
+    debugger;
     setLoadingRemark(true);
     try {
       let response;
       const status = row.Status.toLowerCase();
 
       if (status === "cancelled") {
-        response = await axios.get(`${API}/Transactions/goldloan/remark/${row.Loan_No}`);
+        response = await axios.get(
+          `${API}/Transactions/goldloan/remark/${row.Loan_No}`
+        );
       } else if (status === "pending" || status === "approved") {
-        response = await axios.get(`${API}/Transactions/Customer/remark/${row.BorrowerId}`);
+        response = await axios.get(
+          `${API}/Transactions/Customer/remark/${row.BorrowerId}`
+        );
       }
 
       if (response.data.success) {
         setRemarkData(response.data.data);
         setIsRemarkOpen(true);
       } else {
-        throw new Error(response.data.message || 'Failed to fetch remark');
+        throw new Error(response.data.message || "Failed to fetch remark");
       }
     } catch (error) {
-      console.error('Error fetching remark:', error);
-      alert('Failed to fetch remark: ' + (error.message || 'Unknown error'));
+      console.error("Error fetching remark:", error);
+      alert("Failed to fetch remark: " + (error.message || "Unknown error"));
     } finally {
       setLoadingRemark(false);
     }
@@ -204,7 +251,7 @@ const LoanApplication = () => {
     const plainTextRemark = cancelRemark;
 
     if (!plainTextRemark) {
-      alert('Please provide a cancellation remark');
+      alert("Please provide a cancellation remark");
       return;
     }
 
@@ -217,16 +264,16 @@ const LoanApplication = () => {
         selectedCancelLoan.loan_id,
         selectedCancelLoan.Loan_ID,
         selectedCancelLoan.LoanId,
-        selectedCancelLoan.Loan_No
+        selectedCancelLoan.Loan_No,
       ].filter(Boolean);
 
       if (possibleIdFields.length === 0) {
-        throw new Error('No valid ID field found in loan data');
+        throw new Error("No valid ID field found in loan data");
       }
 
       const loanId = possibleIdFields[0];
 
-      const response = await apiClient.put('/Transactions/goldloan/cancel', {
+      const response = await apiClient.put("/Transactions/goldloan/cancel", {
         id: loanId,
         remark: plainTextRemark,
       });
@@ -236,22 +283,27 @@ const LoanApplication = () => {
         setDeleteModalOpen(false);
         setSelectedCancelLoan(null);
         setCancelRemark("");
-        setSuccessMessage('Loan application cancelled successfully');
+        setSuccessMessage("Loan application cancelled successfully");
         setTimeout(() => setSuccessMessage(""), 3000);
       } else {
-        throw new Error(response.data.message || 'Failed to cancel loan application');
+        throw new Error(
+          response.data.message || "Failed to cancel loan application"
+        );
       }
     } catch (err) {
-      console.error('Error cancelling loan application:', err);
-      let errorMessage = 'Failed to cancel loan application';
+      console.error("Error cancelling loan application:", err);
+      let errorMessage = "Failed to cancel loan application";
 
       if (err.response) {
-        errorMessage = err.response.data?.message || `Server error: ${err.response.status}`;
+        errorMessage =
+          err.response.data?.message || `Server error: ${err.response.status}`;
         if (err.response.status === 400) {
-          errorMessage = `Bad Request: ${err.response.data?.message || 'Invalid data sent to server'}`;
+          errorMessage = `Bad Request: ${
+            err.response.data?.message || "Invalid data sent to server"
+          }`;
         }
       } else if (err.request) {
-        errorMessage = 'No response from server. Please check your connection.';
+        errorMessage = "No response from server. Please check your connection.";
       } else {
         errorMessage = err.message;
       }
@@ -282,31 +334,35 @@ const LoanApplication = () => {
   // Handle upload submission
   const handleUploadSubmit = async () => {
     if (!selectedFile) {
-      alert('Please select a file to upload');
+      alert("Please select a file to upload");
       return;
     }
 
     if (!fileDescription.trim()) {
-      alert('Please enter a file description');
+      alert("Please enter a file description");
       return;
     }
 
     setUploadLoading(true);
     try {
       const formData = new FormData();
-      formData.append('document', selectedFile);
-      formData.append('loan_id', selectedUploadLoan.Loan_No);
-      formData.append('file_description', fileDescription);
-      formData.append('uploaded_by', 'Admin'); // You can replace this with actual user data
+      formData.append("document", selectedFile);
+      formData.append("loan_id", selectedUploadLoan.Loan_No);
+      formData.append("file_description", fileDescription);
+      formData.append("uploaded_by", "Admin"); // You can replace this with actual user data
 
-      const response = await apiClient.post('/Transactions/goldloan/add-loan-document', formData, {
-        headers: {
-          'Content-Type': 'multipart/form-data',
+      const response = await apiClient.post(
+        "/Transactions/goldloan/add-loan-document",
+        formData,
+        {
+          headers: {
+            "Content-Type": "multipart/form-data",
+          },
         }
-      });
+      );
 
       if (response.data.success) {
-        setSuccessMessage('File uploaded successfully!');
+        setSuccessMessage("File uploaded successfully!");
         setFileDescription("");
         setSelectedFile(null);
 
@@ -315,20 +371,22 @@ const LoanApplication = () => {
 
         // Clear file input
         const fileInput = document.querySelector('input[type="file"]');
-        if (fileInput) fileInput.value = '';
+        if (fileInput) fileInput.value = "";
 
         setTimeout(() => setSuccessMessage(""), 3000);
       } else {
-        throw new Error(response.data.message || 'Upload failed');
+        throw new Error(response.data.message || "Upload failed");
       }
     } catch (error) {
-      console.error('Upload error:', error);
-      let errorMessage = 'Failed to upload file';
+      console.error("Upload error:", error);
+      let errorMessage = "Failed to upload file";
 
       if (error.response) {
-        errorMessage = error.response.data?.message || `Server error: ${error.response.status}`;
+        errorMessage =
+          error.response.data?.message ||
+          `Server error: ${error.response.status}`;
       } else if (error.request) {
-        errorMessage = 'No response from server. Please check your connection.';
+        errorMessage = "No response from server. Please check your connection.";
       } else {
         errorMessage = error.message;
       }
@@ -344,7 +402,7 @@ const LoanApplication = () => {
     // Since the document field contains the filename/path, you can construct the URL
     // Adjust this based on how you serve uploaded files
     const fileUrl = `${API}/ImagesFolders/loan_documents/${document.document}`; // Adjust path as needed
-    window.open(fileUrl, '_blank');
+    window.open(fileUrl, "_blank");
   };
 
   // Handle cancel for upload modal
@@ -361,15 +419,15 @@ const LoanApplication = () => {
       navigate("/Cancelled-Loan", {
         state: {
           loanId: row.Loan_No,
-          loanData: row
-        }
+          loanData: row,
+        },
       });
     } else {
       navigate("/View-Loan-Details", {
         state: {
           loanId: row.Loan_No,
-          loanData: row
-        }
+          loanData: row,
+        },
       });
     }
   };
@@ -390,15 +448,18 @@ const LoanApplication = () => {
   };
 
   const getStatusText = (status) => {
-    return status?.charAt(0).toUpperCase() + status?.slice(1).toLowerCase() || "Unknown";
+    return (
+      status?.charAt(0).toUpperCase() + status?.slice(1).toLowerCase() ||
+      "Unknown"
+    );
   };
 
   // Format date for display
   const formatDate = (dateString) => {
-    if (!dateString) return '—';
+    if (!dateString) return "—";
     try {
       const date = new Date(dateString);
-      return date.toLocaleDateString('en-IN');
+      return date.toLocaleDateString("en-IN");
     } catch {
       return dateString;
     }
@@ -426,8 +487,11 @@ const LoanApplication = () => {
         buttons.push(
           <button
             key={i}
-            className={`px-3 py-1 border rounded-md ${currentPage === i ? "bg-[#0b2c69] text-white" : "hover:bg-gray-100"
-              }`}
+            className={`px-3 py-1 border rounded-md ${
+              currentPage === i
+                ? "bg-[#0b2c69] text-white"
+                : "hover:bg-gray-100"
+            }`}
             onClick={() => handlePageChange(i)}
           >
             {i}
@@ -438,8 +502,9 @@ const LoanApplication = () => {
       buttons.push(
         <button
           key={1}
-          className={`px-3 py-1 border rounded-md ${currentPage === 1 ? "bg-[#0b2c69] text-white" : "hover:bg-gray-100"
-            }`}
+          className={`px-3 py-1 border rounded-md ${
+            currentPage === 1 ? "bg-[#0b2c69] text-white" : "hover:bg-gray-100"
+          }`}
           onClick={() => handlePageChange(1)}
         >
           1
@@ -461,8 +526,11 @@ const LoanApplication = () => {
         buttons.push(
           <button
             key={i}
-            className={`px-3 py-1 border rounded-md ${currentPage === i ? "bg-[#0b2c69] text-white" : "hover:bg-gray-100"
-              }`}
+            className={`px-3 py-1 border rounded-md ${
+              currentPage === i
+                ? "bg-[#0b2c69] text-white"
+                : "hover:bg-gray-100"
+            }`}
             onClick={() => handlePageChange(i)}
           >
             {i}
@@ -481,8 +549,11 @@ const LoanApplication = () => {
       buttons.push(
         <button
           key={totalPages}
-          className={`px-3 py-1 border rounded-md ${currentPage === totalPages ? "bg-[#0b2c69] text-white" : "hover:bg-gray-100"
-            }`}
+          className={`px-3 py-1 border rounded-md ${
+            currentPage === totalPages
+              ? "bg-[#0b2c69] text-white"
+              : "hover:bg-gray-100"
+          }`}
           onClick={() => handlePageChange(totalPages)}
         >
           {totalPages}
@@ -527,7 +598,9 @@ const LoanApplication = () => {
                 <select
                   name="field"
                   value={filters.field}
-                  onChange={(e) => setFilters({ ...filters, field: e.target.value })}
+                  onChange={(e) =>
+                    setFilters({ ...filters, field: e.target.value })
+                  }
                   className="border border-gray-300 rounded pl-2 w-[111px] h-[31px] text-[12px]"
                 >
                   <option value="">Field</option>
@@ -539,13 +612,15 @@ const LoanApplication = () => {
                 </select>
               </div>
 
-              <div className='flex gap-2'>
+              <div className="flex gap-2">
                 <input
                   type="text"
-                  placeholder='Search'
+                  placeholder="Search"
                   value={filters.search}
-                  onChange={(e) => setFilters({ ...filters, search: e.target.value })}
-                  onKeyPress={(e) => e.key === 'Enter' && handleSearch()}
+                  onChange={(e) =>
+                    setFilters({ ...filters, search: e.target.value })
+                  }
+                  onKeyPress={(e) => e.key === "Enter" && handleSearch()}
                   style={{
                     width: "134.64px",
                     height: "31.49px",
@@ -563,47 +638,61 @@ const LoanApplication = () => {
                   className="bg-[#0b2c69] text-white text-[11.25px] font-source font-normal flex items-center justify-center hover:bg-[#0a1f5a]"
                   onClick={handleSearch}
                 >
-                  <CiSearch className='w-[14px] h-[14px] font-bold' />
+                  <CiSearch className="w-[14px] h-[14px] font-bold" />
                 </button>
               </div>
 
               <div className="relative w-[111px]">
-  <button
-    className="border border-black rounded h-[31px] w-full text-left text-[12px] flex items-center justify-between px-2 transition-colors duration-200 hover:border-gray-400"
-    onClick={() => setIsOpen(!isOpen)}
-  >
-    <span className="truncate">{selected || "Scheme"}</span>
-    <IoChevronDownOutline
-      className={`w-3 h-3 transition-transform duration-200 ${
-        isOpen ? "rotate-180" : "rotate-0"
-      }`}
-    />
-  </button>
+                <button
+                  className="border border-black rounded h-[31px] w-full text-left text-[12px] flex items-center justify-between px-2 transition-colors duration-200 hover:border-gray-400"
+                  onClick={() => setIsOpen(!isOpen)}
+                >
+                  <span className="truncate">{selected || "Scheme"}</span>
+                  <IoChevronDownOutline
+                    className={`w-3 h-3 transition-transform duration-200 ${
+                      isOpen ? "rotate-180" : "rotate-0"
+                    }`}
+                  />
+                </button>
 
-  {isOpen && (
-    <ul className="absolute z-10 w-full max-h-40 overflow-y-auto border border-gray-300 bg-white mt-1 rounded shadow-lg">
-      {options.map((opt, index) => (
-        <li
-          key={index}
-          className="px-2 py-1  cursor-pointer text-[12px]"
-          onClick={() => {
-            setSelected(opt);
-            setIsOpen(false);
-          }}
-        >
-          {opt}
-        </li>
-      ))}
-    </ul>
-  )}
-</div>
+                {isOpen && (
+                  <ul className="absolute z-10 w-full max-h-40 overflow-y-auto border border-gray-300 bg-white mt-1 rounded shadow-lg">
+                    {schemesLoading ? (
+                      <li className="px-2 py-1 text-[12px]">Loading...</li>
+                    ) : schemesError ? (
+                      <li className="px-2 py-1 text-[12px]">{schemesError}</li>
+                    ) : schemes && schemes.length > 0 ? (
+                      schemes.map((s, index) => {
+                        // derive a human label from common possible fields
+                        const label = typeof s === 'string' ? s : (s.schemeName || s.SchemeName || s.name || s.schemeCode || s.scheme_code || s.code || JSON.stringify(s));
+                        return (
+                          <li
+                            key={s.id || index}
+                            className="px-2 py-1 cursor-pointer text-[12px]"
+                            onClick={() => {
+                              setSelected(label);
+                              setIsOpen(false);
+                            }}
+                          >
+                            {label}
+                          </li>
+                        );
+                      })
+                    ) : (
+                      <li className="px-2 py-1 text-[12px]">No schemes available</li>
+                    )}
+                  </ul>
+                )}
+              </div>
             </div>
 
             <div className="flex gap-5 items-center">
-              <div className='relative w-[134px]'>
-                <div className='border rounded-[8px] h-[31px] border-[#D0D5DD] p-2 flex justify-between items-center'>
-                  <p className='text-[12px] font-semibold'>
-                    {selectedDate ? selectedDate.toLocaleDateString() : "Loan Date"}
+              <div className="relative w-[134px]">
+                <div className="border rounded-[8px] h-[31px] border-[#D0D5DD] p-2 flex justify-between items-center">
+                  <p className="text-[12px] font-semibold">
+                    {selectedDate
+                      ? selectedDate.toLocaleDateString()
+                      : "Loan Date"}
                   </p>
                   <img
                     src={calender}
@@ -650,51 +739,83 @@ const LoanApplication = () => {
       {successMessage && (
         <div className="flex justify-center mt-4">
           <div className="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded w-[1290px] text-sm">
-            <strong>Success: </strong>{successMessage}
+            <strong>Success: </strong>
+            {successMessage}
           </div>
         </div>
       )}
-
 
       <div className="flex justify-center text-center">
         <div className="overflow-x-auto mt-5 w-[1290px] min-h-[500px]">
           {loading ? (
             <div className="flex justify-center items-center h-64">
-              <div className="text-lg text-gray-600">Loading loan applications...</div>
+              <div className="text-lg text-gray-600">
+                Loading loan applications...
+              </div>
             </div>
           ) : (
             <table className="w-full border-collapse border border-gray-300">
               <thead className="bg-[#0A2478] text-white text-sm">
                 <tr>
-                  <th className="px-4 py-2 border-r border-gray-300 text-[14px] w-[103px]">Loan No</th>
-                  <th className="px-4 py-2 border-r border-gray-300 text-[14px] w-[204px]">Party Name</th>
-                  <th className="px-4 py-2 border-r border-gray-300 text-[14px] w-[101px]">Loan Date</th>
-                  <th className="px-4 py-2 border-r border-gray-300 text-[14px] w-[104px]">Loan Amount</th>
+                  <th className="px-4 py-2 border-r border-gray-300 text-[14px] w-[103px]">
+                    Loan No
+                  </th>
+                  <th className="px-4 py-2 border-r border-gray-300 text-[14px] w-[204px]">
+                    Party Name
+                  </th>
+                  <th className="px-4 py-2 border-r border-gray-300 text-[14px] w-[101px]">
+                    Loan Date
+                  </th>
+                  <th className="px-4 py-2 border-r border-gray-300 text-[14px] w-[104px]">
+                    Loan Amount
+                  </th>
                   <th className="px-4 py-2 border-r border-gray-300 text-[14px] w-[128px]">
                     <select
                       className="rounded text-[13px] w-full bg-transparent text-white focus:outline-none"
                       value={filters.status}
                       onChange={(e) => handleStatusFilterChange(e.target.value)}
                     >
-                      <option value="" className="text-black bg-white">All Status</option>
-                      <option value="Pending" className="text-black bg-white">Pending</option>
-                      <option value="Approved" className="text-black bg-white">Approved</option>
-                      <option value="Cancelled" className="text-black bg-white">Cancelled</option>
-                      <option value="Closed" className="text-black bg-white">Closed</option>
+                      <option value="" className="text-black bg-white">
+                        All Status
+                      </option>
+                      <option value="Pending" className="text-black bg-white">
+                        Pending
+                      </option>
+                      <option value="Approved" className="text-black bg-white">
+                        Approved
+                      </option>
+                      <option value="Cancelled" className="text-black bg-white">
+                        Cancelled
+                      </option>
+                      <option value="Closed" className="text-black bg-white">
+                        Closed
+                      </option>
                     </select>
                   </th>
-                  <th className="px-4 py-2 border-r border-gray-300 text-[14px] w-[187px]">Added By</th>
-                  <th className="px-4 py-2 border-r border-gray-300 text-[14px] w-[176px]">Approved By</th>
-                  <th className="px-4 py-2 border-r border-gray-300 text-[14px] w-[156px]">Action</th>
-                  <th className="px-4 py-2 border-r border-gray-300 text-[14px] w-[156px]">Payment</th>
-                  <th className="px-4 py-2 border-r border-gray-300 text-[13px] w-[111px]">Loan Repayment</th>
+                  <th className="px-4 py-2 border-r border-gray-300 text-[14px] w-[187px]">
+                    Added By
+                  </th>
+                  <th className="px-4 py-2 border-r border-gray-300 text-[14px] w-[176px]">
+                    Approved By
+                  </th>
+                  <th className="px-4 py-2 border-r border-gray-300 text-[14px] w-[156px]">
+                    Action
+                  </th>
+                  <th className="px-4 py-2 border-r border-gray-300 text-[14px] w-[156px]">
+                    Payment
+                  </th>
+                  <th className="px-4 py-2 border-r border-gray-300 text-[13px] w-[111px]">
+                    Loan Repayment
+                  </th>
                 </tr>
               </thead>
               <tbody className="text-[12px]">
                 {loanApplication.map((row, index) => (
                   <tr
                     key={index}
-                    className={`border-b ${index % 2 === 0 ? "bg-gray-50" : "bg-white"} hover:bg-gray-100`}
+                    className={`border-b ${
+                      index % 2 === 0 ? "bg-gray-50" : "bg-white"
+                    } hover:bg-gray-100`}
                   >
                     <td
                       className="px-4 py-2 text-blue-600 cursor-pointer hover:underline font-medium"
@@ -703,9 +824,17 @@ const LoanApplication = () => {
                       {row.Loan_No}
                     </td>
                     <td className="px-4 py-2">{row.Party_Name}</td>
-                    <td className="px-4 py-2">{formatIndianDate(row.Loan_Date)}</td>
-                    <td className="px-4 py-2 font-medium">₹{row.Loan_Amount?.toLocaleString("en-IN")}</td>
-                    <td className={`px-4 py-2 font-semibold ${getStatusColor(row.Status)}`}>
+                    <td className="px-4 py-2">
+                      {formatIndianDate(row.Loan_Date)}
+                    </td>
+                    <td className="px-4 py-2 font-medium">
+                      ₹{row.Loan_Amount?.toLocaleString("en-IN")}
+                    </td>
+                    <td
+                      className={`px-4 py-2 font-semibold ${getStatusColor(
+                        row.Status
+                      )}`}
+                    >
                       {getStatusText(row.Status)}
                     </td>
                     <td className="px-4 py-2">{row.Added_By || "N/A"}</td>
@@ -716,7 +845,12 @@ const LoanApplication = () => {
                       {(() => {
                         const st = (row.Status || "").toLowerCase();
 
-                        const IconButton = ({ onClick, title, children, bg = "" }) => (
+                        const IconButton = ({
+                          onClick,
+                          title,
+                          children,
+                          bg = "",
+                        }) => (
                           <div
                             title={title}
                             onClick={onClick}
@@ -727,26 +861,33 @@ const LoanApplication = () => {
                         );
 
                         // navigation handlers using state
-                        const goEdit = (loan) => () => navigate("/Edit-Loan-Application", {
-                          state: {
-                            loanId: loan.Loan_No,
-                            loanData: loan
-                          }
-                        });
-                        const goUpload = (loan) => () => handleUploadClick(loan);
-                        const goPrint = (loan) => () => navigate("/Print-Loan-Application", { state: {  loanId: loan.Loan_No, } });
-                        const goGold = (loan) => () => navigate("/Appraisal-Note", {
-                          state: {
-                            loanId: loan.Loan_No,
-                            loanData: loan
-                          }
-                        });
-                        const goBarcode = (loan) => () => navigate("/Barcode", {
-                          state: {
-                            loanId: loan.Loan_No,
-                            loanData: loan
-                          }
-                        });
+                        const goEdit = (loan) => () =>
+                          navigate("/Edit-Loan-Application", {
+                            state: {
+                              loanId: loan.Loan_No,
+                              loanData: loan,
+                            },
+                          });
+                        const goUpload = (loan) => () =>
+                          handleUploadClick(loan);
+                        const goPrint = (loan) => () =>
+                          navigate("/Print-Loan-Application", {
+                            state: { loanId: loan.Loan_No },
+                          });
+                        const goGold = (loan) => () =>
+                          navigate("/Appraisal-Note", {
+                            state: {
+                              loanId: loan.Loan_No,
+                              loanData: loan,
+                            },
+                          });
+                        const goBarcode = (loan) => () =>
+                          navigate("/Barcode", {
+                            state: {
+                              loanId: loan.Loan_No,
+                              loanData: loan,
+                            },
+                          });
                         const goCancel = (loan) => () => {
                           setSelectedCancelLoan(loan);
                           setCancelRemark("");
@@ -757,19 +898,43 @@ const LoanApplication = () => {
                         if (st === "approved") {
                           return (
                             <div className="flex gap-2 justify-center">
-                              <IconButton onClick={goPrint(row)} title="Print" bg="bg-blue-500 text-white">
+                              <IconButton
+                                onClick={goPrint(row)}
+                                title="Print"
+                                bg="bg-blue-500 text-white"
+                              >
                                 <PiPrinterLight className="w-[20px] h-[20px]" />
                               </IconButton>
-                              <IconButton onClick={goUpload(row)} title="Upload" bg="bg-green-600 text-white">
+                              <IconButton
+                                onClick={goUpload(row)}
+                                title="Upload"
+                                bg="bg-green-600 text-white"
+                              >
                                 <CgSoftwareUpload className="w-[20px] h-[20px]" />
                               </IconButton>
-                              <IconButton onClick={() => handleOpenRemark(row)} title="Message" bg="bg-yellow-400">
+                              <IconButton
+                                onClick={() => handleOpenRemark(row)}
+                                title="Message"
+                                bg="bg-yellow-400"
+                              >
                                 <RiMessage2Line className="w-[20px] h-[20px]" />
                               </IconButton>
-                              <IconButton onClick={goGold(row)} title="Gold Details" bg="border" >
-                                <img src={goldlogo} alt="gold" className="w-[20px] h-[20px]" />
+                              <IconButton
+                                onClick={goGold(row)}
+                                title="Gold Details"
+                                bg="border"
+                              >
+                                <img
+                                  src={goldlogo}
+                                  alt="gold"
+                                  className="w-[20px] h-[20px]"
+                                />
                               </IconButton>
-                              <IconButton onClick={goBarcode(row)} title="Barcode" bg="bg-gray-200">
+                              <IconButton
+                                onClick={goBarcode(row)}
+                                title="Barcode"
+                                bg="bg-gray-200"
+                              >
                                 <CiBarcode className="w-[20px] h-[20px]" />
                               </IconButton>
                             </div>
@@ -779,19 +944,43 @@ const LoanApplication = () => {
                         if (st === "pending") {
                           return (
                             <div className="flex gap-2 justify-center">
-                              <IconButton onClick={goEdit(row)} title="Edit" bg="bg-blue-500 text-white">
+                              <IconButton
+                                onClick={goEdit(row)}
+                                title="Edit"
+                                bg="bg-blue-500 text-white"
+                              >
                                 <CiEdit className="w-[20px] h-[20px]" />
                               </IconButton>
-                              <IconButton onClick={goUpload(row)} title="Upload" bg="bg-green-600 text-white">
+                              <IconButton
+                                onClick={goUpload(row)}
+                                title="Upload"
+                                bg="bg-green-600 text-white"
+                              >
                                 <CgSoftwareUpload className="w-[20px] h-[20px]" />
                               </IconButton>
-                              <IconButton onClick={() => handleOpenRemark(row)} title="Message" bg="bg-yellow-400">
+                              <IconButton
+                                onClick={() => handleOpenRemark(row)}
+                                title="Message"
+                                bg="bg-yellow-400"
+                              >
                                 <RiMessage2Line className="w-[20px] h-[20px]" />
                               </IconButton>
-                              <IconButton onClick={goGold(row)} title="Gold Details" bg="border">
-                                <img src={goldlogo} alt="gold" className="w-[20px] h-[20px]" />
+                              <IconButton
+                                onClick={goGold(row)}
+                                title="Gold Details"
+                                bg="border"
+                              >
+                                <img
+                                  src={goldlogo}
+                                  alt="gold"
+                                  className="w-[20px] h-[20px]"
+                                />
                               </IconButton>
-                              <IconButton onClick={goCancel(row)} title="Cancel" bg="bg-red-600 text-white">
+                              <IconButton
+                                onClick={goCancel(row)}
+                                title="Cancel"
+                                bg="bg-red-600 text-white"
+                              >
                                 <MdOutlineCancel className="w-[20px] h-[20px]" />
                               </IconButton>
                             </div>
@@ -801,7 +990,11 @@ const LoanApplication = () => {
                         if (st === "cancelled") {
                           return (
                             <div className="flex gap-2 justify-center">
-                              <IconButton onClick={() => handleOpenRemark(row)} title="Message" bg="bg-yellow-400">
+                              <IconButton
+                                onClick={() => handleOpenRemark(row)}
+                                title="Message"
+                                bg="bg-yellow-400"
+                              >
                                 <RiMessage2Line className="w-[20px] h-[20px]" />
                               </IconButton>
                             </div>
@@ -811,22 +1004,50 @@ const LoanApplication = () => {
                         if (st === "closed") {
                           return (
                             <div className="flex gap-2 justify-center">
-                              <IconButton onClick={goEdit(row)} title="Edit" bg="bg-blue-500 text-white">
+                              <IconButton
+                                onClick={goEdit(row)}
+                                title="Edit"
+                                bg="bg-blue-500 text-white"
+                              >
                                 <CiEdit className="w-[20px] h-[20px]" />
                               </IconButton>
-                              <IconButton onClick={goUpload(row)} title="Upload" bg="bg-green-600 text-white">
+                              <IconButton
+                                onClick={goUpload(row)}
+                                title="Upload"
+                                bg="bg-green-600 text-white"
+                              >
                                 <CgSoftwareUpload className="w-[20px] h-[20px]" />
                               </IconButton>
-                              <IconButton onClick={() => handleOpenRemark(row)} title="Message" bg="bg-yellow-400">
+                              <IconButton
+                                onClick={() => handleOpenRemark(row)}
+                                title="Message"
+                                bg="bg-yellow-400"
+                              >
                                 <RiMessage2Line className="w-[20px] h-[20px]" />
                               </IconButton>
-                              <IconButton onClick={goPrint(row)} title="Print" bg="bg-blue-300 text-white">
+                              <IconButton
+                                onClick={goPrint(row)}
+                                title="Print"
+                                bg="bg-blue-300 text-white"
+                              >
                                 <PiPrinterLight className="w-[20px] h-[20px]" />
                               </IconButton>
-                              <IconButton onClick={goGold(row)} title="Gold Details" bg="border">
-                                <img src={goldlogo} alt="gold" className="w-[20px] h-[20px]" />
+                              <IconButton
+                                onClick={goGold(row)}
+                                title="Gold Details"
+                                bg="border"
+                              >
+                                <img
+                                  src={goldlogo}
+                                  alt="gold"
+                                  className="w-[20px] h-[20px]"
+                                />
                               </IconButton>
-                              <IconButton onClick={goBarcode(row)} title="Barcode" bg="bg-gray-200">
+                              <IconButton
+                                onClick={goBarcode(row)}
+                                title="Barcode"
+                                bg="bg-gray-200"
+                              >
                                 <CiBarcode className="w-[20px] h-[20px]" />
                               </IconButton>
                             </div>
@@ -835,7 +1056,11 @@ const LoanApplication = () => {
 
                         return (
                           <div className="flex gap-2 justify-center">
-                            <IconButton onClick={() => handleOpenRemark(row)} title="Message" bg="bg-yellow-400">
+                            <IconButton
+                              onClick={() => handleOpenRemark(row)}
+                              title="Message"
+                              bg="bg-yellow-400"
+                            >
                               <RiMessage2Line className="w-[20px] h-[20px]" />
                             </IconButton>
                           </div>
@@ -851,12 +1076,14 @@ const LoanApplication = () => {
                           return (
                             <span
                               className="text-blue-600 cursor-pointer hover:underline"
-                              onClick={() => navigate(`/NOC`, {
-                                state: {
-                                  loanId: row.Loan_No,
-                                  loanData: row
-                                }
-                              })}
+                              onClick={() =>
+                                navigate(`/NOC`, {
+                                  state: {
+                                    loanId: row.Loan_No,
+                                    loanData: row,
+                                  },
+                                })
+                              }
                             >
                               NOC
                             </span>
@@ -869,12 +1096,14 @@ const LoanApplication = () => {
                           return (
                             <span
                               className="text-blue-600 cursor-pointer hover:underline"
-                              onClick={() => navigate(`/Gold-Loan-Approval`, {
-                                state: {
-                                  loanId: row.Loan_No,
-                                  loanData: row
-                                }
-                              })}
+                              onClick={() =>
+                                navigate(`/Gold-Loan-Approval`, {
+                                  state: {
+                                    loanId: row.Loan_No,
+                                    loanData: row,
+                                  },
+                                })
+                              }
                             >
                               Approve
                             </span>
@@ -883,12 +1112,14 @@ const LoanApplication = () => {
                         return (
                           <span
                             className="text-blue-600 cursor-pointer hover:underline"
-                            onClick={() => navigate(`/Loan-Enquiry`, {
-                              state: {
-                                loanId: row.Loan_No,
-                                loanData: row
-                              }
-                            })}
+                            onClick={() =>
+                              navigate(`/Loan-Enquiry`, {
+                                state: {
+                                  loanId: row.Loan_No,
+                                  loanData: row,
+                                },
+                              })
+                            }
                           >
                             view
                           </span>
@@ -904,12 +1135,14 @@ const LoanApplication = () => {
                           return (
                             <button
                               className="bg-[#0A2478] text-white px-3 py-1 rounded text-[11px] hover:bg-[#091f6c]"
-                              onClick={() => navigate(`/Add-Loan-Repayment`, {
-                                state: {
-                                  loanId: row.Loan_No,
-                                  loanData: row
-                                }
-                              })}
+                              onClick={() =>
+                                navigate(`/Add-Loan-Repayment`, {
+                                  state: {
+                                    loanId: row.Loan_No,
+                                    loanData: row,
+                                  },
+                                })
+                              }
                             >
                               Repay
                             </button>
@@ -933,7 +1166,8 @@ const LoanApplication = () => {
             {renderPaginationButtons()}
           </div>
           <div className="ml-4 text-sm text-gray-600">
-            Page {pagination.page} of {pagination.totalPages} ({pagination.total} total records)
+            Page {pagination.page} of {pagination.totalPages} (
+            {pagination.total} total records)
           </div>
         </div>
       )}
@@ -948,8 +1182,10 @@ const LoanApplication = () => {
           }}
         >
           <div className="bg-white w-[829px] h-[356px] p-6 shadow-lg relative rounded-[8px]">
-            <h2 className="font-semibold text-[24px] leading-[100%] tracking-[0.03em] mb-4 text-[#0A2478]"
-              style={{ fontFamily: 'Source Sans 3' }}>
+            <h2
+              className="font-semibold text-[24px] leading-[100%] tracking-[0.03em] mb-4 text-[#0A2478]"
+              style={{ fontFamily: "Source Sans 3" }}
+            >
               Remark
             </h2>
 
@@ -960,7 +1196,7 @@ const LoanApplication = () => {
             ) : (
               <div className="w-[728px] border border-gray-300 p-5 resize-none h-[183px] rounded-[16px] flex justify-between">
                 <div>
-                  <p className='text-black font-bold text-[14px]'>
+                  <p className="text-black font-bold text-[14px]">
                     Remark for Loan #{remarkData?.id}
                   </p>
                   <p
@@ -971,7 +1207,11 @@ const LoanApplication = () => {
                   ></p>
                 </div>
                 <div>
-                  <img src={envImg} alt="envelope" className="w-[156px] h-[156px] rounded-[10px]" />
+                  <img
+                    src={envImg}
+                    alt="envelope"
+                    className="w-[156px] h-[156px] rounded-[10px]"
+                  />
                 </div>
               </div>
             )}
@@ -1009,7 +1249,8 @@ const LoanApplication = () => {
                 You won't be able to revert this action
               </p>
               <p className="text-sm text-gray-600 mt-2">
-                Loan: {selectedCancelLoan.Party_Name} (#{selectedCancelLoan.Loan_No})
+                Loan: {selectedCancelLoan.Party_Name} (#
+                {selectedCancelLoan.Loan_No})
               </p>
             </div>
 
@@ -1023,7 +1264,7 @@ const LoanApplication = () => {
                   value={cancelRemark}
                   config={editorConfig}
                   onBlur={(newContent) => setCancelRemark(newContent)}
-                  onChange={(newContent) => { }}
+                  onChange={(newContent) => {}}
                 />
               </div>
               <p className="text-xs text-gray-500 mt-1">
@@ -1035,7 +1276,9 @@ const LoanApplication = () => {
               <button
                 className="bg-[#0A2478] text-white px-5 py-2 rounded-md text-[15px] font-semibold hover:bg-[#091E5E] disabled:opacity-50 disabled:cursor-not-allowed"
                 onClick={handleDeleteConfirm}
-                disabled={cancelLoading || !cancelRemark.replace(/<[^>]*>/g, '').trim()}
+                disabled={
+                  cancelLoading || !cancelRemark.replace(/<[^>]*>/g, "").trim()
+                }
               >
                 {cancelLoading ? "Submitting..." : "Submit"}
               </button>
@@ -1090,7 +1333,9 @@ const LoanApplication = () => {
                   <button
                     className="bg-[#0A2478] text-white px-5 py-2 rounded-md hover:bg-[#091E5E] flex-shrink-0 disabled:opacity-50"
                     onClick={handleUploadSubmit}
-                    disabled={uploadLoading || !selectedFile || !fileDescription.trim()}
+                    disabled={
+                      uploadLoading || !selectedFile || !fileDescription.trim()
+                    }
                   >
                     {uploadLoading ? "Uploading..." : "Upload Files"}
                   </button>
@@ -1103,11 +1348,21 @@ const LoanApplication = () => {
               <table className="w-full border-collapse text-[14px]">
                 <thead>
                   <tr className="bg-[#0A2478] text-white">
-                    <th className="p-3 border border-gray-300 font-semibold">File Name</th>
-                    <th className="p-3 border border-gray-300 font-semibold">File Description</th>
-                    <th className="p-3 border border-gray-300 font-semibold">Uploaded Date</th>
-                    <th className="p-3 border border-gray-300 font-semibold">Uploaded By</th>
-                    <th className="p-3 border border-gray-300 font-semibold">Actions</th>
+                    <th className="p-3 border border-gray-300 font-semibold">
+                      File Name
+                    </th>
+                    <th className="p-3 border border-gray-300 font-semibold">
+                      File Description
+                    </th>
+                    <th className="p-3 border border-gray-300 font-semibold">
+                      Uploaded Date
+                    </th>
+                    <th className="p-3 border border-gray-300 font-semibold">
+                      Uploaded By
+                    </th>
+                    <th className="p-3 border border-gray-300 font-semibold">
+                      Actions
+                    </th>
                   </tr>
                 </thead>
 
