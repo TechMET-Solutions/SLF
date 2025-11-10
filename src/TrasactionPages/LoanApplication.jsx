@@ -11,11 +11,12 @@ import envImg from "../assets/envImg.jpg";
 import goldlogo from "../assets/gold_print.svg";
 
 import { CgSoftwareUpload } from "react-icons/cg";
-import { IoChevronDownOutline } from "react-icons/io5"; // better arrow icon
+import { IoChevronDownOutline } from "react-icons/io5";
 import { PiPrinterLight } from "react-icons/pi";
 import { RiMessage2Line } from "react-icons/ri";
 import { API } from "../api";
 import { formatIndianDate } from "../utils/Helpers";
+
 const LoanApplication = () => {
   useEffect(() => {
     document.title = "SLF | Loan Application";
@@ -23,7 +24,7 @@ const LoanApplication = () => {
 
   const navigate = useNavigate();
   const [isOpen, setIsOpen] = useState(false);
-  const [selected, setSelected] = useState("");
+  const [selectedScheme, setSelectedScheme] = useState("");
   const [selectedDate, setSelectedDate] = useState(null);
   const [open, setOpen] = useState(false);
   const [isRemarkOpen, setIsRemarkOpen] = useState(false);
@@ -53,22 +54,31 @@ const LoanApplication = () => {
     total: 0,
     limit: 10,
   });
+  
   const [filters, setFilters] = useState({
-    search: "",
     status: "",
+    loan_no: "",
+    party_name: "",
+    loan_date: "",
+    loan_amount_min: "",
+    loan_amount_max: "",
+    added_by: "",
+    approved_by: "",
+    scheme_id: "",
+    borrower_id: "",
     field: "",
+    search: ""
   });
+
   const [remarkData, setRemarkData] = useState(null);
   const [loadingRemark, setLoadingRemark] = useState(false);
 
-  
-
-  // Schemes fetched from backend (replaces static `options`)
+  // Schemes fetched from backend
   const [schemes, setSchemes] = useState([]);
   const [schemesLoading, setSchemesLoading] = useState(false);
   const [schemesError, setSchemesError] = useState("");
 
-  // Fetch active schemes from server. Backend route expected: SchemeRouter.get('/active', ...)
+  // Fetch active schemes from server
   useEffect(() => {
     let mounted = true;
     const fetchSchemes = async () => {
@@ -76,9 +86,7 @@ const LoanApplication = () => {
       setSchemesError("");
       try {
         const resp = await axios.get(`${API}/Scheme/active`);
-        // Try common response shapes: { success, data } or direct array
-        const payload =
-          resp.data && resp.data.success ? resp.data.data : resp.data;
+        const payload = resp.data && resp.data.success ? resp.data.data : resp.data;
         if (mounted) setSchemes(Array.isArray(payload) ? payload : []);
       } catch (err) {
         console.error("Failed to load schemes:", err);
@@ -135,19 +143,41 @@ const LoanApplication = () => {
   });
 
   // Fetch loan applications from API using Axios
-  const fetchLoanApplications = async (page = 1, status = "") => {
+  const fetchLoanApplications = async (page = 1) => {
     setLoading(true);
     setError("");
     try {
-      const params = {
+      // Build query parameters
+      const params = new URLSearchParams({
         page: page.toString(),
-        limit: pagination.limit.toString(),
-        ...(status && { status }),
-      };
-
-      const response = await apiClient.get("/Transactions/goldloan/all", {
-        params,
+        limit: pagination.limit.toString()
       });
+
+      // Add filters to query params if they have values
+      Object.entries(filters).forEach(([key, value]) => {
+        if (value && key !== 'field' && key !== 'search') {
+          params.append(key, value);
+        }
+      });
+
+      // Add scheme filter if selected
+      if (selectedScheme) {
+        const selectedSchemeObj = schemes.find(s => {
+          const label = typeof s === 'string' ? s : (s.schemeName || s.SchemeName || s.name || s.schemeCode || s.scheme_code || s.code || JSON.stringify(s));
+          return label === selectedScheme;
+        });
+        
+        if (selectedSchemeObj && selectedSchemeObj.id) {
+          params.append('scheme_id', selectedSchemeObj.id);
+        }
+      }
+
+      // Add date filter if selected
+      if (selectedDate) {
+        params.append('loan_date', selectedDate.toISOString().split('T')[0]);
+      }
+
+      const response = await apiClient.get(`/Transactions/goldloan/all?${params}`);
 
       if (response.data.success) {
         setLoanApplication(response.data.data);
@@ -158,7 +188,7 @@ const LoanApplication = () => {
           limit: pagination.limit,
         });
       } else {
-        throw new Error(response.data.message || "NO loan applications");
+        throw new Error(response.data.message || "No loan applications");
       }
     } catch (err) {
       console.error("Error fetching loan applications:", err);
@@ -167,6 +197,70 @@ const LoanApplication = () => {
     } finally {
       setLoading(false);
     }
+  };
+
+  // Handle filter changes
+  const handleFilterChange = (key, value) => {
+    setFilters(prev => ({
+      ...prev,
+      [key]: value
+    }));
+  };
+
+  // Handle status filter change
+  const handleStatusFilterChange = (status) => {
+    handleFilterChange('status', status);
+    // Apply filter immediately when status changes
+    setTimeout(() => fetchLoanApplications(1), 100);
+  };
+
+  // Handle scheme selection
+  const handleSchemeSelect = (schemeLabel) => {
+    setSelectedScheme(schemeLabel);
+    setIsOpen(false);
+    // Apply filter immediately when scheme is selected
+    setTimeout(() => fetchLoanApplications(1), 100);
+  };
+
+  // Handle date selection
+  const handleDateSelect = (date) => {
+    setSelectedDate(date);
+    setOpen(false);
+    // Apply filter immediately when date is selected
+    setTimeout(() => fetchLoanApplications(1), 100);
+  };
+
+  // Clear date filter
+  const clearDateFilter = () => {
+    setSelectedDate(null);
+    setTimeout(() => fetchLoanApplications(1), 100);
+  };
+
+  // Clear scheme filter
+  const clearSchemeFilter = () => {
+    setSelectedScheme("");
+    setTimeout(() => fetchLoanApplications(1), 100);
+  };
+
+  // Clear all filters
+  const clearAllFilters = () => {
+    setFilters({
+      status: "",
+      loan_no: "",
+      party_name: "",
+      loan_date: "",
+      loan_amount_min: "",
+      loan_amount_max: "",
+      added_by: "",
+      approved_by: "",
+      scheme_id: "",
+      borrower_id: "",
+      field: "",
+      search: ""
+    });
+    setSelectedDate(null);
+    setSelectedScheme("");
+    setTimeout(() => fetchLoanApplications(1), 100);
   };
 
   // Fetch uploaded documents for a loan
@@ -190,31 +284,38 @@ const LoanApplication = () => {
     }
   };
 
-  // Initial fetch
+  // Initial fetch and when filters change
   useEffect(() => {
     fetchLoanApplications();
   }, []);
 
-  // Handle filter changes
-  const handleStatusFilterChange = (status) => {
-    setFilters({ ...filters, status });
-    fetchLoanApplications(1, status);
-  };
-
-  // Handle search
+  // Update search functionality
   const handleSearch = () => {
-    fetchLoanApplications(1, filters.status);
+    if (filters.field && filters.search) {
+      const searchValue = filters.search;
+      const fieldMappings = {
+        loan_no: 'loan_no',
+        party_name: 'party_name', 
+        added_by: 'added_by',
+        approved_by: 'approved_by'
+      };
+      
+      if (fieldMappings[filters.field]) {
+        handleFilterChange(fieldMappings[filters.field], searchValue);
+      }
+    }
+    
+    fetchLoanApplications(1);
   };
 
   // Handle pagination
   const handlePageChange = (newPage) => {
     if (newPage >= 1 && newPage <= pagination.totalPages) {
-      fetchLoanApplications(newPage, filters.status);
+      fetchLoanApplications(newPage);
     }
   };
 
   const handleOpenRemark = async (row) => {
-    debugger;
     setLoadingRemark(true);
     try {
       let response;
@@ -279,7 +380,7 @@ const LoanApplication = () => {
       });
 
       if (response.data.success) {
-        fetchLoanApplications(pagination.page, filters.status);
+        fetchLoanApplications(pagination.page);
         setDeleteModalOpen(false);
         setSelectedCancelLoan(null);
         setCancelRemark("");
@@ -349,7 +450,7 @@ const LoanApplication = () => {
       formData.append("document", selectedFile);
       formData.append("loan_id", selectedUploadLoan.Loan_No);
       formData.append("file_description", fileDescription);
-      formData.append("uploaded_by", "Admin"); // You can replace this with actual user data
+      formData.append("uploaded_by", "Admin");
 
       const response = await apiClient.post(
         "/Transactions/goldloan/add-loan-document",
@@ -399,9 +500,7 @@ const LoanApplication = () => {
 
   // Handle document download/view
   const handleDocumentAction = (document) => {
-    // Since the document field contains the filename/path, you can construct the URL
-    // Adjust this based on how you serve uploaded files
-    const fileUrl = `${API}/ImagesFolders/loan_documents/${document.document}`; // Adjust path as needed
+    const fileUrl = `${API}/ImagesFolders/loan_documents/${document.document}`;
     window.open(fileUrl, "_blank");
   };
 
@@ -598,17 +697,14 @@ const LoanApplication = () => {
                 <select
                   name="field"
                   value={filters.field}
-                  onChange={(e) =>
-                    setFilters({ ...filters, field: e.target.value })
-                  }
+                  onChange={(e) => handleFilterChange('field', e.target.value)}
                   className="border border-gray-300 rounded pl-2 w-[111px] h-[31px] text-[12px]"
                 >
                   <option value="">Field</option>
                   <option value="loan_no">Loan No</option>
                   <option value="party_name">Party Name</option>
-                  <option value="loan_date">Loan Date</option>
-                  <option value="added_on">Added on</option>
                   <option value="added_by">Added By</option>
+                  <option value="approved_by">Approved By</option>
                 </select>
               </div>
 
@@ -617,9 +713,7 @@ const LoanApplication = () => {
                   type="text"
                   placeholder="Search"
                   value={filters.search}
-                  onChange={(e) =>
-                    setFilters({ ...filters, search: e.target.value })
-                  }
+                  onChange={(e) => handleFilterChange('search', e.target.value)}
                   onKeyPress={(e) => e.key === "Enter" && handleSearch()}
                   style={{
                     width: "134.64px",
@@ -642,12 +736,13 @@ const LoanApplication = () => {
                 </button>
               </div>
 
+              {/* Scheme Filter */}
               <div className="relative w-[111px]">
                 <button
                   className="border border-black rounded h-[31px] w-full text-left text-[12px] flex items-center justify-between px-2 transition-colors duration-200 hover:border-gray-400"
                   onClick={() => setIsOpen(!isOpen)}
                 >
-                  <span className="truncate">{selected || "Scheme"}</span>
+                  <span className="truncate">{selectedScheme || "Scheme"}</span>
                   <IoChevronDownOutline
                     className={`w-3 h-3 transition-transform duration-200 ${
                       isOpen ? "rotate-180" : "rotate-0"
@@ -663,16 +758,12 @@ const LoanApplication = () => {
                       <li className="px-2 py-1 text-[12px]">{schemesError}</li>
                     ) : schemes && schemes.length > 0 ? (
                       schemes.map((s, index) => {
-                        // derive a human label from common possible fields
                         const label = typeof s === 'string' ? s : (s.schemeName || s.SchemeName || s.name || s.schemeCode || s.scheme_code || s.code || JSON.stringify(s));
                         return (
                           <li
                             key={s.id || index}
-                            className="px-2 py-1 cursor-pointer text-[12px]"
-                            onClick={() => {
-                              setSelected(label);
-                              setIsOpen(false);
-                            }}
+                            className="px-2 py-1 cursor-pointer text-[12px] hover:bg-gray-100"
+                            onClick={() => handleSchemeSelect(label)}
                           >
                             {label}
                           </li>
@@ -683,10 +774,20 @@ const LoanApplication = () => {
                     )}
                   </ul>
                 )}
+                {selectedScheme && (
+                  <button
+                    onClick={clearSchemeFilter}
+                    className="absolute -right-2 -top-2 bg-red-500 text-white rounded-full w-4 h-4 text-xs flex items-center justify-center"
+                    title="Clear scheme filter"
+                  >
+                    ×
+                  </button>
+                )}
               </div>
             </div>
 
             <div className="flex gap-5 items-center">
+              {/* Date Filter */}
               <div className="relative w-[134px]">
                 <div className="border rounded-[8px] h-[31px] border-[#D0D5DD] p-2 flex justify-between items-center">
                   <p className="text-[12px] font-semibold">
@@ -694,27 +795,45 @@ const LoanApplication = () => {
                       ? selectedDate.toLocaleDateString()
                       : "Loan Date"}
                   </p>
-                  <img
-                    src={calender}
-                    alt="calendar"
-                    className="w-[18px] h-[18px] cursor-pointer"
-                    onClick={() => setOpen(!open)}
-                  />
+                  <div className="flex items-center">
+                    {selectedDate && (
+                      <button
+                        onClick={clearDateFilter}
+                        className="text-red-500 mr-1 text-xs"
+                        title="Clear date filter"
+                      >
+                        ×
+                      </button>
+                    )}
+                    <img
+                      src={calender}
+                      alt="calendar"
+                      className="w-[18px] h-[18px] cursor-pointer"
+                      onClick={() => setOpen(!open)}
+                    />
+                  </div>
                 </div>
 
                 {open && (
                   <div className="absolute top-10 right-0 z-50 bg-white border border-gray-300 rounded shadow-lg">
                     <DatePicker
                       selected={selectedDate}
-                      onChange={(date) => {
-                        setSelectedDate(date);
-                        setOpen(false);
-                      }}
+                      onChange={handleDateSelect}
                       inline
                     />
                   </div>
                 )}
               </div>
+
+              {/* Clear All Filters Button */}
+              {(selectedDate || selectedScheme || filters.status || Object.values(filters).some(val => val && val !== 'field' && val !== 'search')) && (
+                <button
+                  onClick={clearAllFilters}
+                  className="bg-gray-500 text-white px-3 py-1 rounded text-[12px] hover:bg-gray-600"
+                >
+                  Clear All
+                </button>
+              )}
             </div>
           </div>
 
@@ -741,6 +860,30 @@ const LoanApplication = () => {
           <div className="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded w-[1290px] text-sm">
             <strong>Success: </strong>
             {successMessage}
+          </div>
+        </div>
+      )}
+
+      {/* Active Filters Display */}
+      {(selectedDate || selectedScheme || filters.status) && (
+        <div className="flex justify-center mt-2">
+          <div className="w-[1290px] bg-blue-50 border border-blue-200 rounded p-2 text-sm">
+            <span className="font-semibold text-blue-800">Active Filters: </span>
+            {selectedDate && (
+              <span className="bg-blue-100 text-blue-800 px-2 py-1 rounded mx-1 text-xs">
+                Date: {selectedDate.toLocaleDateString()}
+              </span>
+            )}
+            {selectedScheme && (
+              <span className="bg-blue-100 text-blue-800 px-2 py-1 rounded mx-1 text-xs">
+                Scheme: {selectedScheme}
+              </span>
+            )}
+            {filters.status && (
+              <span className="bg-blue-100 text-blue-800 px-2 py-1 rounded mx-1 text-xs">
+                Status: {filters.status}
+              </span>
+            )}
           </div>
         </div>
       )}
@@ -1331,7 +1474,7 @@ const LoanApplication = () => {
                     className="border border-[#BEBEBE] rounded-md p-2 w-full text-[14px] file:mr-4 file:py-1 file:px-2 file:text-sm file:bg-gray-400 file:text-[#4A4A4A]"
                   />
                   <button
-                    className="bg-[#0A2478] text-white px-5 py-2 rounded-md hover:bg-[#091E5E] flex-shrink-0 disabled:opacity-50"
+                    className="bg-[#0A2478] text-white px-5 py-2 rounded-md hover:bg-[#091f6c] flex-shrink-0 disabled:opacity-50"
                     onClick={handleUploadSubmit}
                     disabled={
                       uploadLoading || !selectedFile || !fileDescription.trim()
