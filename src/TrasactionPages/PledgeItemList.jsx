@@ -17,7 +17,7 @@ const [goldRate, setGoldRate] = useState(null);
     const fetchGoldRate = async () => {
       try {
         const response = await axios.get(
-          "http://localhost:5000/Master/Master_Profile/latest-gold-rate"
+          `${API}/Master/Master_Profile/latest-gold-rate`
         );
         // Store data in state
         setGoldRate(response.data.data); // `data.data` because your API returns { data: rows }
@@ -36,7 +36,7 @@ const [goldRate, setGoldRate] = useState(null);
     const fetchPledgeItems = async () => {
       try {
         const response = await axios.get(
-          "http://localhost:5000/Master/Master_Profile/all_Item"
+          `${API}/Master/Master_Profile/all_Item`
         );
 
         if (response.data?.data) {

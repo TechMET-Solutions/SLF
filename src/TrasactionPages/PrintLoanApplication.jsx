@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
 import { useNavigate, useLocation } from "react-router-dom";
+import { API } from "../api";
 
 function PrintLoanApplication() {
   const navigate = useNavigate();
@@ -15,7 +16,7 @@ function PrintLoanApplication() {
     try {
       setLoading(true);
       const response = await axios.get(
-        `http://localhost:5000/Transactions/goldloan/getLoan/${loanId}`
+        `${API}/Transactions/goldloan/getLoan/${loanId}`
       );
       setLoanData(response.data.loanApplication || {});
       setError(null);

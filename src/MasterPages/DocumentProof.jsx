@@ -176,7 +176,7 @@ const handleEditClick = (doc) => {
       const encryptedPayload = encryptData(JSON.stringify(payload));
 
       const response = await axios.post(
-        "http://localhost:5000/Master/Master_Profile/update_document_status",
+        `${API}/Master/Master_Profile/update_document_status`,
         { data: encryptedPayload }
       );
 

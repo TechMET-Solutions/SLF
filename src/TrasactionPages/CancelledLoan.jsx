@@ -3,6 +3,7 @@ import { useEffect, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import envImg from "../assets/envImg.jpg";
 import { default as profileempty } from "../assets/profileempty.png";
+import { API } from "../api";
 
 const ViewLoanDetails = () => {
     const [loanData, setLoanData] = useState(null);
@@ -27,7 +28,7 @@ const ViewLoanDetails = () => {
     const fetchLoanData = async () => {
         try {
             setLoading(true);
-            const response = await axios.get(`http://localhost:5000/Transactions/goldloan/getLoan/${loanId}`);
+            const response = await axios.get(`${API}/Transactions/goldloan/getLoan/${loanId}`);
             setLoanData(response.data.loanApplication); // Access the data property
             setError(null);
         } catch (err) {

@@ -30,7 +30,7 @@ const ChargesProfileList = () => {
   useEffect(() => {
     const fetchAccounts = async () => {
       try {
-        const res = await axios.get("http://localhost:5000/account-code/get");
+        const res = await axios.get(`${API}/account-code/get`);
         setAccountList(res.data); // res.data = [ { id, name, ... } ]
       } catch (err) {
         console.log("Error fetching account list", err);
@@ -149,7 +149,7 @@ const ChargesProfileList = () => {
       const encryptedPayload = encryptData(JSON.stringify(payload));
 
       // Call DELETE API
-      const response = await axios.delete("http://localhost:5000/Master/charge-profile/delete", {
+      const response = await axios.delete(`${API}/Master/charge-profile/delete`, {
         data: { data: encryptedPayload },
         headers: {
           "Content-Type": "application/json",

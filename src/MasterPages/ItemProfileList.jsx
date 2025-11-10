@@ -9,6 +9,7 @@ import {
 } from "../API/Master/Master_Profile/Item_Details";
 import Pagination from "../Component/Pagination";
 import axios from "axios";
+import { API } from "../api";
 
 const ItemProfileList = () => {
   useEffect(() => {
@@ -50,7 +51,7 @@ const ItemProfileList = () => {
       if (code) params.searchCode = code;
       if (name) params.searchName = name;
       
-      const response = await axios.get(`http://localhost:5000/Master/Master_Profile/searchItems`, { params });
+      const response = await axios.get(`${API}/Master/Master_Profile/searchItems`, { params });
       
       if (response.data?.items) {
         setData(response.data.items);

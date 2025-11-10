@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import axios from "axios";
 import { formatIndianDate } from "../utils/Helpers";
+import { API } from "../api";
 
 function ViewLoanCharges() {
   const navigate = useNavigate();
@@ -28,7 +29,7 @@ function ViewLoanCharges() {
   const fetchLoanCharges = async () => {
     try {
       setLoading(true);
-      const response = await axios.get(`http://localhost:5000/loan-charges/getById/${loanId}`);
+      const response = await axios.get(`${API}/loan-charges/getById/${loanId}`);
 
       console.log("✅ Loan Charges Response:", response.data);
 

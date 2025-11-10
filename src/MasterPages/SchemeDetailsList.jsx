@@ -4,6 +4,7 @@ import { useNavigate } from "react-router-dom"; // Add this import
 import GroupData from "../assets/Group 124.svg";
 import eyeIcon from "../assets/Vectorimg.png";
 import { formatIndianDate } from "../utils/Helpers";
+import { API } from "../api";
 const SchemeDetailsList = () => {
   useEffect(() => {
     document.title = "SLF | Scheme Details List";
@@ -16,7 +17,7 @@ const SchemeDetailsList = () => {
   useEffect(() => {
     const fetchSchemes = async () => {
       try {
-        const response = await axios.get("http://localhost:5000/Scheme/getAllSchemes");
+        const response = await axios.get(`${API}/Scheme/getAllSchemes`);
         const schemes = response.data.map((item) => ({
           ...item,
           intCompound: item.calcMethod === "compound", // optional double-check
@@ -37,7 +38,7 @@ const SchemeDetailsList = () => {
 
     try {
       // 🔄 Update status in backend
-      const res = await axios.patch("http://localhost:5000/Scheme/statusScheme", {
+      const res = await axios.patch(`${API}/Scheme/statusScheme`, {
         id: row.id,
         status: newStatus,
       });

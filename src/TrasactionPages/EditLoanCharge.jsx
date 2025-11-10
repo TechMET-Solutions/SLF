@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import axios from "axios";
 import { IoIosAddCircleOutline, IoIosCloseCircleOutline } from "react-icons/io";
+import { API } from "../api";
 
 function ViewLoanCharges() {
   const navigate = useNavigate();
@@ -17,7 +18,7 @@ function ViewLoanCharges() {
   useEffect(() => {
     const fetchCharges = async () => {
       try {
-        const res = await axios.get("http://localhost:5000/Master/GetChargesProfile/Active");
+        const res = await axios.get(`${API}/Master/GetChargesProfile/Active`);
         if (res.data.success) setChargesList(res.data.data);
       } catch (error) {
         console.error("❌ Error fetching charges:", error);
@@ -32,7 +33,7 @@ function ViewLoanCharges() {
       if (!loanId) return;
       try {
         setLoading(true);
-        const res = await axios.get(`http://localhost:5000/loan-charges/getById/${loanId}`);
+        const res = await axios.get(`${API}/loan-charges/getById/${loanId}`);
         if (res.data.success) {
           const data = res.data.data;
           setLoanData({
@@ -142,7 +143,7 @@ function ViewLoanCharges() {
         total_charges: totalNetPayable.toFixed(2)
       };
 
-      const res = await axios.put(`http://localhost:5000/loan-charges/update/${loanId}`, payload);
+      const res = await axios.put(`${API}/loan-charges/update/${loanId}`, payload);
       if (res.data.success) {
         alert("✅ Loan charges updated successfully!");
         navigate("/loan-charges-list");

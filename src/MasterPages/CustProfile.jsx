@@ -7,6 +7,7 @@ import print from "../assets/print.png";
 import axios from "axios";
 import blockimg from "../assets/blockimg.png";
 import { formatIndianDate } from "../utils/Helpers";
+import { API } from "../api";
 
 const CustProfile = () => {
   const navigate = useNavigate();
@@ -38,7 +39,7 @@ const CustProfile = () => {
       // Add search if provided
       if (search) params.searchValue = search;
       
-      const response = await axios.get(`http://localhost:5000/Master/doc/searchCustomers`, { params });
+      const response = await axios.get(`${API}/Master/doc/searchCustomers`, { params });
       setData(response.data.data);
       setTotalPages(response.data.totalPages);
       setPage(response.data.currentPage);
@@ -100,7 +101,7 @@ const CustProfile = () => {
       setIsModalOpenForblock(true);
     } else {
       try {
-        await axios.post(`http://localhost:5000/Master/doc/blockUnblockCustomer`, {
+        await axios.post(`${API}/Master/doc/blockUnblockCustomer`, {
           id: row.id,
           block: false,
         });
@@ -115,7 +116,7 @@ const CustProfile = () => {
 
   const handleBlockConfirm = async () => {
     try {
-      await axios.post(`http://localhost:5000/Master/doc/blockUnblockCustomer`, {
+      await axios.post(`${API}/Master/doc/blockUnblockCustomer`, {
         id: selectedCustomer.id,
         block: true,
       });

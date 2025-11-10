@@ -29,7 +29,7 @@ console.log(activeEmployees,"activeEmployees")
   useEffect(() => {
     const fetchSchemes = async () => {
       try {
-        const response = await axios.get("http://localhost:5000/Scheme/getAllSchemes");
+        const response = await axios.get(`${API}/Scheme/getAllSchemes`);
         const fetchedSchemes = response.data.map((item) => ({
           ...item,
           intCompound: item.calcMethod === "Compound",
@@ -115,7 +115,7 @@ console.log(activeEmployees,"activeEmployees")
 
       // 🚀 API Request
       const res = await axios.post(
-        "http://localhost:5000/Transactions/goldloan/addLoan",
+        `${API}/Transactions/goldloan/addLoan`,
         formDataToSend,
         {
           headers: { "Content-Type": "multipart/form-data" },
@@ -251,7 +251,7 @@ console.log(activeEmployees,"activeEmployees")
       try {
         setLoading(true);
         const res = await axios.get(
-          `http://localhost:5000/Master/doc/Customer_list?search=${searchTerm}`
+          `${API}/Master/doc/Customer_list?search=${searchTerm}`
         );
         setResults(res.data);
       } catch (err) {
@@ -274,7 +274,7 @@ console.log(activeEmployees,"activeEmployees")
       try {
         setLoading(true);
         const res = await axios.get(
-          `http://localhost:5000/Master/doc/Customer_list?search=${searchTermForCoBorrower}`
+          `${API}/Master/doc/Customer_list?search=${searchTermForCoBorrower}`
         );
         setResults2(res.data);
       } catch (err) {

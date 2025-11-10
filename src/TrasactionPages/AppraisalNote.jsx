@@ -1,6 +1,7 @@
 import axios from "axios";
 import { useEffect, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
+import { API } from "../api";
 
 const AppraisalNote = () => {
   const navigate = useNavigate();
@@ -18,7 +19,7 @@ const AppraisalNote = () => {
     const fetchAppraisalNote = async () => {
       try {
         const response = await axios.get(
-          `http://localhost:5000/Transactions/goldloan/appraisal-note/${loanId}`
+          `${API}/Transactions/goldloan/appraisal-note/${loanId}`
         );
         console.log("✅ Appraisal Note API Response:", response.data);
         if (response.data.success) {

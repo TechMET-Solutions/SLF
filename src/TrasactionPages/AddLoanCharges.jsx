@@ -2,6 +2,7 @@ import axios from "axios";
 import { useEffect, useState } from "react";
 import { IoIosAddCircleOutline, IoIosCloseCircleOutline } from "react-icons/io";
 import { useNavigate } from "react-router-dom";
+import { API } from "../api";
 
 function AddLoanCharges() {
   const navigate = useNavigate();
@@ -38,7 +39,7 @@ function AddLoanCharges() {
   useEffect(() => {
     const fetchCharges = async () => {
       try {
-        const res = await axios.get("http://localhost:5000/Master/GetChargesProfile/Active");
+        const res = await axios.get(`${API}/Master/GetChargesProfile/Active`);
         if (res.data.success) setChargesList(res.data.data);
       } catch (error) {
         console.error("❌ Error fetching charges:", error);
@@ -61,7 +62,7 @@ function AddLoanCharges() {
       try {
         setLoading(true);
         const res = await axios.get(
-          `http://localhost:5000/Transactions/goldloan/search?search=${value}`
+          `${API}/Transactions/goldloan/search?search=${value}`
         );
         setSearchResults(res.data || []);
       } catch (error) {
@@ -168,7 +169,7 @@ const handleSubmit = async () => {
       added_by: "Admin",
     };
 
-    const res = await axios.post("http://localhost:5000/loan-charges/add", payload);
+    const res = await axios.post(`${API}/loan-charges/add`, payload);
 
     if (res.data.success) {
       alert("✅ Loan charges added successfully!");

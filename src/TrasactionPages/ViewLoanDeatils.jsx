@@ -3,6 +3,7 @@ import { useEffect, useState } from "react";
 import { IoIosAddCircleOutline, IoIosCloseCircleOutline } from "react-icons/io";
 import { useLocation, useNavigate } from "react-router-dom";
 import profileempty from "../assets/profileempty.png";
+import { API } from "../api";
 const ViewLoanDetails = () => {
   const [loanData, setLoanData] = useState(null);
   console.log(loanData,"loanData")
@@ -61,7 +62,7 @@ const ViewLoanDetails = () => {
   try {
     setLoading(true);
     const response = await axios.get(
-      `http://localhost:5000/Transactions/goldloan/getLoan/${loanId}`
+      `${API}/Transactions/goldloan/getLoan/${loanId}`
     );
 
     let data = response.data.loanApplication;

@@ -1,6 +1,7 @@
 import axios from "axios";
 import { useEffect, useState } from "react";
 import { useLocation } from "react-router-dom";
+import { API } from "../api";
 
 function NOC() {
     const location = useLocation();
@@ -21,7 +22,7 @@ function NOC() {
         try {
             setLoading(true);
             const response = await axios.get(
-                `http://localhost:5000/Transactions/goldloan/getLoan/${loanId}`
+                `${API}/Transactions/goldloan/getLoan/${loanId}`
             );
 
             

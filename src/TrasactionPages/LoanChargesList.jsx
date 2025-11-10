@@ -4,8 +4,9 @@ import { FiEdit, FiEye, FiTrash2 } from "react-icons/fi";
 import { HiMagnifyingGlass } from "react-icons/hi2";
 import { useNavigate } from "react-router-dom";
 import blockimg from "../assets/blockimg.png";
+import { API } from "../api";
 
-const BASE_URL = "http://localhost:5000/loan-charges";
+const BASE_URL = `${API}/loan-charges`;
 
 function Pagination({ currentPage, totalPages, onPageChange }) {
   return (

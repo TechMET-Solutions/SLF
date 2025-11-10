@@ -3,6 +3,7 @@ import { useEffect, useState } from "react";
 import { IoIosAddCircleOutline, IoIosCloseCircleOutline } from "react-icons/io";
 import { useLocation, useNavigate } from "react-router-dom";
 import profileempty from "../assets/profileempty.png";
+import { API } from "../api";
 const GoldLoanApproval = () => {
 
   const dummyBanks = [
@@ -70,7 +71,7 @@ const paidByOptions = ["Cash", "Bank Transfer", "UPI", "Online Payment"];
   const fetchLoanData = async () => {
     try {
       setLoading(true);
-      const response = await axios.get(`http://localhost:5000/Transactions/goldloan/getLoan/${loanId}`);
+      const response = await axios.get(`${API}/Transactions/goldloan/getLoan/${loanId}`);
       setLoanData(response.data.loanApplication); // Access the data property
       setLoanSchemeData(response.data.schemeData)
       setError(null);
@@ -206,7 +207,7 @@ if (totalAmount !== loanAmount) {
       const payload = { id: loanData.id, approved_by, rows };
 
       const res = await axios.put(
-        "http://localhost:5000/Transactions/goldloan/approve-loan",
+        `${API}/Transactions/goldloan/approve-loan`,
         payload
       );
 

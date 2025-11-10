@@ -21,7 +21,7 @@ const SchemeRoleMapping = () => {
   // ✅ Fetch all schemes
   const fetchSchemes = async () => {
     try {
-      const response = await axios.get("http://localhost:5000/Scheme/getAllSchemes");
+      const response = await axios.get(`${API}/Scheme/getAllSchemes`);
       if (response.data && Array.isArray(response.data)) {
         const formattedSchemes = response.data.map((item) => ({
           id: item.id,

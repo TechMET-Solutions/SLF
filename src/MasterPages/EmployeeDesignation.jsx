@@ -4,6 +4,7 @@ import Pagination from "../Component/Pagination";
 import { FiEdit, FiTrash2 } from "react-icons/fi";
 import axios from "axios";
 import blockimg from "../assets/blockimg.png";
+import { API } from "../api";
 
 
 function EmployeeDesignation() {
@@ -19,7 +20,7 @@ function EmployeeDesignation() {
     const itemsPerPage = 5;
     const navigate = useNavigate();
 
-    const BASE_URL = "http://localhost:5000/Master/Employee_Profile";
+    const BASE_URL = `${API}/Master/Employee_Profile`;
 
     useEffect(() => {
         document.title = "SLF | Employee Designation";
