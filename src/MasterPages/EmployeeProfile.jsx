@@ -64,34 +64,24 @@ const EmployeeProfile = () => {
 
   const fetchDocuments = async () => {
     try {
-      // setLoading(true);
-
       const response = await axios.get(`${API}/Master/getAllDocumentProofs`);
-
-      const docs = response.data.data;  // <-- already clean json
-
+      const docs = response.data.data;
       setDocuments(docs);
-
       setIdProofList(docs.filter(x => x.is_id_proof === 1));
       setAddrProofList(docs.filter(x => x.is_address_proof === 1));
-
-      // setLoading(false);
     } catch (err) {
       console.error("Error fetching documents:", err);
-      // setError("Failed to fetch documents");
-      // setLoading(false);
     }
   };
 
   const [roles, setRoles] = useState([]);
   const [branches, setBranches] = useState([]);
-
-  // added: designations state
   const [designations, setDesignations] = useState([]);
 
   useEffect(() => {
     fetchDocuments()
   }, [])
+  
   useEffect(() => {
     const loadRoles = async () => {
       const fetchedRoles = await fetchAllRoles();
@@ -99,7 +89,6 @@ const EmployeeProfile = () => {
     };
     loadRoles();
     fetchBranches();
-    // added: fetch designations
     fetchDesignations();
   }, []);
 
@@ -126,11 +115,9 @@ const EmployeeProfile = () => {
     }
   };
 
-  // added: fetchDesignations implementation
   const fetchDesignations = async () => {
     try {
       const res = await axios.get(`${API}/Master/Employee_Profile/get-designation`);
-      // response shape: { data: [...], current_page:..., ... }
       const items = res.data?.data || res.data?.data?.data || [];
       setDesignations(items);
     } catch (err) {
@@ -178,35 +165,35 @@ const EmployeeProfile = () => {
   const handlePageChange = (page) => {
     if (page < 1 || page > totalPages) return;
     setCurrentPage(page);
-    fetchEmployee(page);
+    fetchEmployee(page, searchTerm);
   };
 
   const handleFileChange = (e, setProfileImage) => {
-    if (!e?.target?.files?.[0]) return; // safety check
+    if (!e?.target?.files?.[0]) return;
     const file = e.target.files[0];
     setProfileImage(file);
     setFormData((prev) => ({ ...prev, emp_image: file.name }));
   };
 
   const handleFileChangeForAddProof = (e, setAddressProof) => {
-    if (!e?.target?.files?.[0]) return; // safety check
+    if (!e?.target?.files?.[0]) return;
     const file = e.target.files[0];
     setAddressProof(file);
     setFormData((prev) => ({ ...prev, emp_add_prof: file.name }));
   };
 
   const handleFileChangeForIdProof = (e, setIdProof) => {
-    if (!e?.target?.files?.[0]) return; // safety check
+    if (!e?.target?.files?.[0]) return;
     const file = e.target.files[0];
     setIdProof(file);
     setFormData((prev) => ({ ...prev, emp_id_prof: file.name }));
   };
 
-  // ✅ Fetch employee list
-  const fetchEmployee = async (page = 1) => {
-    // setIsLoading(true);
+  // ✅ Fetch employee list with filters
+  const fetchEmployee = async (page = 1, filters = {}) => {
+    setIsLoading(true);
     try {
-      const result = await fetchEmployeeProfileApi(page, itemsPerPage);
+      const result = await fetchEmployeeProfileApi(page, itemsPerPage, filters);
       if (result?.items) {
         setEmployeeList(result.items);
         setTotalItems(result.total || result.data.length);
@@ -245,20 +232,11 @@ const EmployeeProfile = () => {
     }
   };
 
-
-
   const handleToggleStatus = async (emp) => {
     try {
-      // 🧩 Flip the current status (1 → 0 or 0 → 1)
       const newStatus = emp.status ? 0 : 1;
-
-      // 📨 Call backend API
       const response = await updateEmployeeStatus(emp.id, newStatus);
-
-      // 🔐 If response is encrypted, decrypt it (if needed)
       console.log("✅ Status updated response:", response);
-
-      // 🧠 Update the state to reflect new status instantly
       setEmployeeList((prev) =>
         prev.map((e) =>
           e.id === emp.id ? { ...e, status: newStatus } : e
@@ -268,6 +246,7 @@ const EmployeeProfile = () => {
       console.error("❌ Error toggling employee status:", error);
     }
   };
+
   // 🗑️ Show delete confirmation modal
   const handleDeleteClick = (id) => {
     setDeleteId(id);
@@ -280,7 +259,7 @@ const EmployeeProfile = () => {
       await deleteEmployeeApi(deleteId);
       setDeleteModalOpen(false);
       setDeleteId(null);
-      fetchEmployee(currentPage);
+      fetchEmployee(currentPage, searchTerm);
     } catch (error) {
       console.error("❌ Error deleting employee:", error);
       alert("Error deleting employee");
@@ -299,8 +278,6 @@ const EmployeeProfile = () => {
     setIsModalOpen(true);
   };
 
-
-
   const handleAddNew = () => {
     setIsEditMode(false);
     setFormData({
@@ -310,13 +287,13 @@ const EmployeeProfile = () => {
       emp_name: "",
       emp_id: "",
       mobile_no: "",
-      Alternate_MobileL: "",  // ❌ Typo: should be "Alternate_Mobile"
+      Alternate_Mobile: "",
       email: "",
       print_name: "",
       corresponding_address: "",
       permanent_address: "",
       branch: "",
-      branch_id: "",  // ✅ Add this
+      branch_id: "",
       joining_date: "",
       designation: "",
       date_of_birth: "",
@@ -335,76 +312,69 @@ const EmployeeProfile = () => {
     setIsModalOpen(true);
   };
 
-
   const handleSave = async () => {
-  debugger;
-  try {
-    setIsLoading(true);
+    debugger;
+    try {
+      setIsLoading(true);
 
-    // 🔹 Validation (BEFORE sending API request)
-    const mobileRegex = /^[0-9]{10}$/;
-    const aadharRegex = /^[0-9]{12}$/;
+      const mobileRegex = /^[0-9]{10}$/;
+      const aadharRegex = /^[0-9]{12}$/;
 
-    if (!mobileRegex.test(formData.mobile_no)) {
-      alert("Mobile Number must be a valid 10-digit number.");
-      return;
+      if (!mobileRegex.test(formData.mobile_no)) {
+        alert("Mobile Number must be a valid 10-digit number.");
+        return;
+      }
+
+      if (!aadharRegex.test(formData.aadhar_card)) {
+        alert("Aadhar Number must be a valid 12-digit number.");
+        return;
+      }
+
+      const payload = {
+        pan_card: formData.pan_card,
+        aadhar_card: formData.aadhar_card,
+        emp_name: formData.emp_name,
+        mobile_no: formData.mobile_no,
+        Alternate_Mobile: formData.Alternate_Mobile,
+        email: formData.email,
+        corresponding_address: formData.corresponding_address,
+        permanent_address: formData.permanent_address,
+        branch: formData.branch,
+        branch_id: formData.branch_id,
+        joining_date: formData.joining_date,
+        designation: formData.designation,
+        date_of_birth: formData.date_of_birth,
+        assign_role: formData.assign_role,
+        assign_role_id: formData.assign_role_id,
+        password: formData.password,
+        fax: formData.fax,
+        addressProfiletype: formData.addressProfiletype,
+        IdProoftype: formData.IdProoftype,
+        status: formData.status,
+      };
+
+      const encryptedData = encryptData(JSON.stringify(payload));
+      const formDataToSend = new FormData();
+      formDataToSend.append("data", encryptedData);
+      if (profileImage) formDataToSend.append("emp_image", profileImage);
+      if (addressProof) formDataToSend.append("emp_add_prof", addressProof);
+      if (idProof) formDataToSend.append("emp_id_prof", idProof);
+
+      await axios.post(`${API}/Master/Employee_Profile/add-employee`, formDataToSend, {
+        headers: { "Content-Type": "multipart/form-data" },
+      });
+
+      alert("✅ Employee created successfully!");
+      setIsModalOpen(false);
+      fetchEmployee(currentPage, searchTerm);
+
+    } catch (error) {
+      console.error("❌ Error saving employee:", error);
+      alert(error.response?.data?.message || "Error saving employee");
+    } finally {
+      setIsLoading(false);
     }
-
-    if (!aadharRegex.test(formData.aadhar_card)) {
-      alert("Aadhar Number must be a valid 12-digit number.");
-      return;
-    }
-
-    // 🔹 Build payload
-    const payload = {
-      pan_card: formData.pan_card,
-      aadhar_card: formData.aadhar_card,
-      emp_name: formData.emp_name,
-      mobile_no: formData.mobile_no,
-      Alternate_Mobile: formData.Alternate_Mobile,
-      email: formData.email,
-      corresponding_address: formData.corresponding_address,
-      permanent_address: formData.permanent_address,
-      branch: formData.branch,
-      branch_id: formData.branch_id,
-      joining_date: formData.joining_date,
-      designation: formData.designation,
-      date_of_birth: formData.date_of_birth,
-      assign_role: formData.assign_role,
-      assign_role_id: formData.assign_role_id,
-      password: formData.password,
-      fax: formData.fax,
-      addressProfiletype: formData.addressProfiletype,
-      IdProoftype: formData.IdProoftype,
-      status: formData.status,
-    };
-
-    // 🔹 Encrypt payload
-    const encryptedData = encryptData(JSON.stringify(payload));
-
-    // 🔹 Prepare form data
-    const formDataToSend = new FormData();
-    formDataToSend.append("data", encryptedData);
-    if (profileImage) formDataToSend.append("emp_image", profileImage);
-    if (addressProof) formDataToSend.append("emp_add_prof", addressProof);
-    if (idProof) formDataToSend.append("emp_id_prof", idProof);
-
-    // 🔹 API call
-    await axios.post(`${API}/Master/Employee_Profile/add-employee`, formDataToSend, {
-      headers: { "Content-Type": "multipart/form-data" },
-    });
-
-    alert("✅ Employee created successfully!");
-    setIsModalOpen(false);
-    fetchEmployee(currentPage);
-
-  } catch (error) {
-    console.error("❌ Error saving employee:", error);
-    alert(error.response?.data?.message || "Error saving employee");
-  } finally {
-    setIsLoading(false);
-  }
-};
+  };
 
   const handleUpdate = async () => {
     debugger;
@@ -430,19 +400,13 @@ const EmployeeProfile = () => {
         status: formData.status,
       };
 
-      // Encrypt data
       const encryptedData = encryptData(JSON.stringify(payload));
-
-      // Prepare FormData
       const formDataToSend = new FormData();
       formDataToSend.append("data", encryptedData);
-
-      // Append only changed files
       if (profileImage) formDataToSend.append("emp_image", profileImage);
       if (addressProof) formDataToSend.append("emp_add_prof", addressProof);
       if (idProof) formDataToSend.append("emp_id_prof", idProof);
 
-      // API call
       await axios.put(
         `${API}/Master/Employee_Profile/update-employee`,
         formDataToSend,
@@ -453,17 +417,29 @@ const EmployeeProfile = () => {
 
       alert("✅ Employee updated successfully!");
       setIsModalOpen(false);
-      fetchEmployee(currentPage);
+      fetchEmployee(currentPage, searchTerm);
     } catch (err) {
       console.error("❌ Error updating employee:", err);
       alert(err.response?.data?.message || "Error updating employee");
     }
   };
+
   // 🔍 Handle Search
   const handleSearch = () => {
-    // Implement search logic here
-    console.log("Searching with:", searchTerm);
-    // You might want to call a search API or filter locally
+    setCurrentPage(1); // Reset to first page when searching
+    const filters = {};
+    
+    if (searchTerm.empId) filters.id = searchTerm.empId;
+    if (searchTerm.empName) filters.name = searchTerm.empName;
+    
+    fetchEmployee(1, filters);
+  };
+
+  // 🔄 Handle Clear Search
+  const handleClearSearch = () => {
+    setSearchTerm({ empId: "", empName: "" });
+    setCurrentPage(1);
+    fetchEmployee(1); // Fetch without filters
   };
 
   const handleInputChange = (e) => {
@@ -477,7 +453,6 @@ const EmployeeProfile = () => {
         assign_role: selectedRole ? selectedRole.role_name : "",
       }));
     } else if (name === "branch") {
-      // Find the selected branch object
       const selectedBranch = branches.find((branch) => branch.id === parseInt(value));
       setFormData((prev) => ({
         ...prev,
@@ -494,21 +469,14 @@ const EmployeeProfile = () => {
 
   const handleForceDownload = async (fileUrl, filename) => {
     try {
-      // Fetch the file as a blob (binary data)
       const response = await fetch(fileUrl, { mode: "cors" });
       const blob = await response.blob();
-
-      // Create a temporary object URL
       const blobUrl = window.URL.createObjectURL(blob);
-
-      // Create a temporary link element
       const link = document.createElement("a");
       link.href = blobUrl;
       link.download = filename || "document";
       document.body.appendChild(link);
       link.click();
-
-      // Cleanup
       link.remove();
       window.URL.revokeObjectURL(blobUrl);
     } catch (error) {
@@ -516,7 +484,6 @@ const EmployeeProfile = () => {
       alert("Failed to download file.");
     }
   };
-
 
   return (
     <div className="min-h-screen w-full">
@@ -552,9 +519,16 @@ const EmployeeProfile = () => {
 
             <div className="flex gap-3">
               <button
+                onClick={handleSearch}
                 className="bg-[#0A2478] text-white text-[11.25px] w-[74px] h-[24px] rounded flex items-center justify-center"
               >
                 Search
+              </button>
+              <button
+                onClick={handleClearSearch}
+                className="bg-gray-500 text-white text-[11.25px] w-[74px] h-[24px] rounded flex items-center justify-center"
+              >
+                Clear
               </button>
             </div>
 
@@ -840,7 +814,7 @@ const EmployeeProfile = () => {
                       <label className="text-gray-700 font-medium">Branch <span className="text-red-500">*</span></label>
                       <select
                         name="branch"
-                        value={formData.branch_id} // Changed from branch to branch_id
+                        value={formData.branch_id}
                         onChange={handleInputChange}
                         disabled={mode === "view"}
                         className="border border-[#C4C4C4] rounded-md px-3 py-2 focus:outline-none focus:ring-1 focus:ring-blue-500 w-[220px]"
@@ -895,7 +869,7 @@ const EmployeeProfile = () => {
                       <label className="text-gray-700 font-medium">Assign Role <span className="text-red-500">*</span></label>
                       <select
                         name="assign_role"
-                        value={formData.assign_role_id}  // ✅ use role_id as value
+                        value={formData.assign_role_id}
                         onChange={handleInputChange}
                         disabled={mode === "view"}
                         className="border border-[#C4C4C4] rounded-md px-3 py-2 focus:outline-none focus:ring-1 focus:ring-blue-500 w-[174px]"
@@ -942,7 +916,6 @@ const EmployeeProfile = () => {
                   <div>
                     <div className="flex justify-center">
                       {mode === "view" ? (
-                        // 🟦 View mode: show saved image or default
                         formData.emp_image ? (
                           <img
                             src={formData.emp_image}
@@ -957,7 +930,6 @@ const EmployeeProfile = () => {
                           />
                         )
                       ) : mode === "edit" ? (
-                        // 🟨 Edit mode: show new uploaded preview or existing image
                         profileImage ? (
                           <img
                             src={URL.createObjectURL(profileImage)}
@@ -978,7 +950,6 @@ const EmployeeProfile = () => {
                           />
                         )
                       ) : (
-                        // 🟩 Add mode: show uploaded preview or default
                         profileImage ? (
                           <img
                             src={URL.createObjectURL(profileImage)}
@@ -1026,7 +997,6 @@ const EmployeeProfile = () => {
                     </div>
 
 
-                    {/* <h1 className="text-[14px] font-medium ">Add Proof</h1> */}
                     <h1 className="text-[14px] font-medium">Address Proof</h1>
 
                     <select
@@ -1117,16 +1087,6 @@ const EmployeeProfile = () => {
 
               {/* Bottom Actions */}
               <div className="flex flex-col gap-3 items-center justify-between mt-6">
-                {/* <label className="flex items-center gap-2 text-gray-700 font-medium">
-                  <input
-                    type="checkbox"
-                    name="status"
-                    checked={!!formData.status}
-                    onChange={(e) => setFormData(prev => ({ ...prev, status: e.target.checked }))}
-                    className="w-5 h-5 accent-blue-900"
-                  />
-                  Is Active
-                </label> */}
                 <div className="flex gap-3">
                   {mode !== "view" && (
                     <button
@@ -1140,7 +1100,7 @@ const EmployeeProfile = () => {
                     className="bg-[#C1121F] text-white w-[92px] h-[32px] rounded hover:bg-[#a00e18]"
                     onClick={() => {
                       setIsModalOpen(false);
-                      setMode("add"); // 🟦 Reset mode to "add" when exiting
+                      setMode("add");
                     }}
                   >
                     Exit

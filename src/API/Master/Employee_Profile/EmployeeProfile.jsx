@@ -5,17 +5,28 @@ import { API } from "../../../api";
 const API_BASE = `${API}/Master/Employee_Profile`;
 
 // 🔹 Fetch All employee Profiles with Pagination
-export const fetchEmployeeProfileApi = async (page = 1, limit = 10) => {
+export const fetchEmployeeProfileApi = async (page = 1, limit = 10, filters = {}) => {
   try {
+    // Build query string with filters
+    const queryParams = new URLSearchParams({
+      page: page.toString(),
+      limit: limit.toString(),
+    });
+
+    // Add filters to query params
+    if (filters.id) queryParams.append('id', filters.id);
+    if (filters.name) queryParams.append('name', filters.name);
+    if (filters.search) queryParams.append('search', filters.search);
+
     const encryptedPayload = encryptData({});
     const response = await axios({
       method: "get",
-      url: `${API_BASE}/getAll-employees?page=${page}&limit=${limit}`,
+      url: `${API_BASE}/getAll-employees?${queryParams.toString()}`,
       headers: { "Content-Type": "application/json" },
       data: { data: encryptedPayload },
     });
 
-    if (response.data?.data) {
+    if (response.data?.data) {  
       return decryptData(response.data.data);
     }
     console.log(response.data)
