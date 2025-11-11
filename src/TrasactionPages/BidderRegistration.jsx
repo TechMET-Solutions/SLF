@@ -67,6 +67,17 @@ const BidderRegistration = () => {
         return;
       }
 
+           // 🔹 Validation (BEFORE sending API request)
+      const mobileRegex = /^[0-9]{10}$/;
+      if (!mobileRegex.test(formData.mobile_no)) {
+        alert("Mobile Number must be a valid 10-digit number.");
+        return;
+      }
+      if (!mobileRegex.test(formData.alt_mob_no)) {
+        alert("Alt Mobile Number must be a valid 10-digit number.");
+        return;
+      }
+
       const data = new FormData();
       Object.entries(formData).forEach(([key, value]) => data.append(key, value));
 

@@ -336,57 +336,75 @@ const EmployeeProfile = () => {
   };
 
 
-
-
   const handleSave = async () => {
-    debugger
-    try {
-      const payload = {
-        pan_card: formData.pan_card,
-        aadhar_card: formData.aadhar_card,
-        emp_name: formData.emp_name,
-        mobile_no: formData.mobile_no,
-        Alternate_Mobile: formData.Alternate_Mobile,
-        email: formData.email,
-        corresponding_address: formData.corresponding_address,
-        permanent_address: formData.permanent_address,
-        branch: formData.branch,
-        branch_id: formData.branch_id,  // ✅ Add this line
-        joining_date: formData.joining_date,
-        designation: formData.designation,
-        date_of_birth: formData.date_of_birth,
-        assign_role: formData.assign_role,
-        assign_role_id: formData.assign_role_id,
-        password: formData.password,
-        fax: formData.fax,
-        addressProfiletype: formData.addressProfiletype,
-        IdProoftype: formData.IdProoftype,
-        status: formData.status,
-      };
+  debugger;
+  try {
+    setIsLoading(true);
 
-      // Encrypt payload
-      const encryptedData = encryptData(JSON.stringify(payload));
+    // 🔹 Validation (BEFORE sending API request)
+    const mobileRegex = /^[0-9]{10}$/;
+    const aadharRegex = /^[0-9]{12}$/;
 
-      const formDataToSend = new FormData();
-      formDataToSend.append("data", encryptedData);
-      if (profileImage) formDataToSend.append("emp_image", profileImage);
-      if (addressProof) formDataToSend.append("emp_add_prof", addressProof);
-      if (idProof) formDataToSend.append("emp_id_prof", idProof);
-
-      await axios.post(`${API}/Master/Employee_Profile/add-employee`, formDataToSend, {
-        headers: { "Content-Type": "multipart/form-data" },
-      });
-
-      alert("Employee created successfully");
-      setIsModalOpen(false)
-      fetchEmployee(currentPage);
-    } catch (error) {
-      console.error("❌ Error saving employee:", error);
-      alert(error.response?.data?.message || "Error saving employee");
-    } finally {
-      setIsLoading(false);
+    if (!mobileRegex.test(formData.mobile_no)) {
+      alert("Mobile Number must be a valid 10-digit number.");
+      return;
     }
-  };
+
+    if (!aadharRegex.test(formData.aadhar_card)) {
+      alert("Aadhar Number must be a valid 12-digit number.");
+      return;
+    }
+
+    // 🔹 Build payload
+    const payload = {
+      pan_card: formData.pan_card,
+      aadhar_card: formData.aadhar_card,
+      emp_name: formData.emp_name,
+      mobile_no: formData.mobile_no,
+      Alternate_Mobile: formData.Alternate_Mobile,
+      email: formData.email,
+      corresponding_address: formData.corresponding_address,
+      permanent_address: formData.permanent_address,
+      branch: formData.branch,
+      branch_id: formData.branch_id,
+      joining_date: formData.joining_date,
+      designation: formData.designation,
+      date_of_birth: formData.date_of_birth,
+      assign_role: formData.assign_role,
+      assign_role_id: formData.assign_role_id,
+      password: formData.password,
+      fax: formData.fax,
+      addressProfiletype: formData.addressProfiletype,
+      IdProoftype: formData.IdProoftype,
+      status: formData.status,
+    };
+
+    // 🔹 Encrypt payload
+    const encryptedData = encryptData(JSON.stringify(payload));
+
+    // 🔹 Prepare form data
+    const formDataToSend = new FormData();
+    formDataToSend.append("data", encryptedData);
+    if (profileImage) formDataToSend.append("emp_image", profileImage);
+    if (addressProof) formDataToSend.append("emp_add_prof", addressProof);
+    if (idProof) formDataToSend.append("emp_id_prof", idProof);
+
+    // 🔹 API call
+    await axios.post(`${API}/Master/Employee_Profile/add-employee`, formDataToSend, {
+      headers: { "Content-Type": "multipart/form-data" },
+    });
+
+    alert("✅ Employee created successfully!");
+    setIsModalOpen(false);
+    fetchEmployee(currentPage);
+
+  } catch (error) {
+    console.error("❌ Error saving employee:", error);
+    alert(error.response?.data?.message || "Error saving employee");
+  } finally {
+    setIsLoading(false);
+  }
+};
 
   const handleUpdate = async () => {
     debugger;
