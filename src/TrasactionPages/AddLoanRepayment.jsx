@@ -3,9 +3,9 @@ import { useEffect, useState } from "react";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import { IoMdDownload, IoMdPrint } from "react-icons/io";
-import { useLocation } from "react-router-dom";
-import profileempty from "../assets/profileempty.png";
+import { useLocation, useNavigate } from "react-router-dom";
 import { API } from "../api";
+import profileempty from "../assets/profileempty.png";
 
 const installments = [
   {
@@ -39,22 +39,7 @@ function AddLoanRepayment() {
     document.title = "SLF | Add Loan Repayment";
   }, []);
 
-  const initialLoanInfo = {
-    loanNo: "",
-    customerName: "",
-    mobileNumber: "",
-    loanDate: "",
-    loanAmount: "",
-    interestRate: "",
-    scheme: "",
-    pendingLoanAmount: "",
-    pendingInt: "",
-    pendingDays: "",
-    loanAmountPaid: "",
-    chargesDue: "",
-    lastInterestPaidDate: "",
-    lastInterestPaidUpto: "",
-  };
+ 
   // ✅ Initialize formData state
   const [formData, setFormData] = useState({
     Borrower_ProfileImg: "",
@@ -67,7 +52,7 @@ function AddLoanRepayment() {
  
  const location = useLocation();
   const { loanId, loanData } = location.state || {};  // <-- here you get it from navigate
-
+const navigate = useNavigate();
   const [data, setData] = useState(null);
   console.log(data,"data")
   const [loading, setLoading] = useState(false);
@@ -92,6 +77,9 @@ const [isClose, setIsClose] = useState(false);
     chargesAdjusted: 0,
     intPaidUpto: new Date(),
  });
+  console.log(loanInfo,"loanInfo")
+  const [intrestPercentage, setintrestPercentage] = useState(null);
+  console.log(intrestPercentage,"intrestPercentage")
    const [loanInfoForAdj, setloanInfoForAdj] = useState({
     pendingDays: 0,
     pendingInt: 0,
@@ -101,7 +89,8 @@ const [isClose, setIsClose] = useState(false);
     balanceLoanAmt: 0,
     chargesAdjusted: 0,
     intPaidUpto: new Date(),
- });
+   });
+  console.log(loanInfoForAdj,"loanInfoForAdj")
   const [paymentInfo, setPaymentInfo] = useState({
   mode: "",
   type: "",
@@ -109,12 +98,28 @@ const [isClose, setIsClose] = useState(false);
   madeBy: ""
 });
 
+const handleAdvIntCheck = (e) => {
+  const checked = e.target.checked;
+  setIsAdvIntCheck(checked);
+
+  // reset here
+  setloanInfoForAdj({
+    pendingDays: 0,
+    pendingInt: 0,
+    interestPercent: 0,
+    loanAmountPaid: 0,
+    payAmount: 0,
+    balanceLoanAmt: 0,
+    chargesAdjusted: 0,
+    intPaidUpto: new Date(),
+  });
+};
 
 console.log(loanInfo, "loanInfo")
   const fetchLoanData = async () => {
     try {
       setLoading(true);
-      const res = await axios.get(`${API}/Transactions/goldloan/getLoanRepayment/${loanId}`);
+      const res = await axios.get(`http://localhost:5000/Transactions/goldloan/getLoanRepayment/${loanId}`);
       setData(res.data);
     } catch (err) {
       setError("Failed to load loan data");
@@ -126,36 +131,7 @@ console.log(loanInfo, "loanInfo")
     const { name, value } = e.target;
     setLoanInfo((prev) => ({ ...prev, [name]: value }));
   };
-//   useEffect(() => {
-//   debugger
-//   if (!data?.loanApplication?.LoanPendingAmount || !data?.loanApplication?.approval_date) return;
 
-  
-//   const approvalDate = new Date(data.loanApplication.approval_date);
-//   const today = new Date();
-//   const diffMs = today - approvalDate;
-//   const pendingDays = Math.floor(diffMs / (1000 * 60 * 60 * 24));
-
-  
-//   const slabs = JSON.parse(data.schemeData.interestRates);
-
-//   const currentSlab = slabs.find(s => pendingDays >= Number(s.from) && pendingDays <= Number(s.to));
-//   const interestPercent = currentSlab ? Number(currentSlab.addInt) : 0;
-
-//   // 4) calculate
-//   const pendingLoanAmount = Number(data.loanApplication.LoanPendingAmount);
-//   const dailyIntAmt = (pendingLoanAmount * interestPercent / 100) / 365;
-//   const pendingInt = dailyIntAmt * pendingDays;
-
-//   setloanInfoForAdj(prev => ({
-//     ...prev,
-//     pendingDays,
-//     pendingInt: pendingInt.toFixed(2),
-//     interestPercent
-//   }));
-// }, [data]);
-
-// final logic
  useEffect(() => {
   if (!data?.loanApplication?.LoanPendingAmount) return;
 
@@ -180,29 +156,46 @@ console.log(loanInfo, "loanInfo")
 
   setloanInfoForAdj(prev => ({
     ...prev,
-    pendingDays,
-    pendingInt: pendingInt.toFixed(2),
-    interestPercent,
+    // pendingDays,
+    // pendingInt: pendingInt.toFixed(2),
+    // interestPercent,
     intPaidUpto: interestPaidUpto  // set same date
   }));
-}, [data]);
-
+ }, [data]);
   
-
-  const handlePayAmountChange = (value) => {
-  debugger
+  
+  
+const handlePayAmountChange = (value) => {
+  debugger;
   let payAmount = parseFloat(value || 0);
-  let charges = Number(data.loanApplication.total_unpaid_charges || 0); // unpaid charges
+  let charges = Number(data.loanApplication.total_unpaid_charges || 0);
   let pendingLoanAmount = Number(data.loanApplication.LoanPendingAmount || 0);
-  let interestPercent = Number(loanInfoForAdj.interestPercent || 0);
+  let interestPercent = Number(loanInfo.interestPercent || 0);
 
+  const cleanDate = (d) => new Date(d.getFullYear(), d.getMonth(), d.getDate());
 
-  let dailyIntAmt = (pendingLoanAmount * interestPercent) / 100 / 365;
+  const approvalDate = cleanDate(new Date(data.loanApplication.approval_date)); // e.g. 10-11-2025
+  const interestPaidUpto = cleanDate(new Date(data.loanApplication.InterestPaidUpto)); // e.g. 12-11-2025
 
-  
-  let totalYearInterest = dailyIntAmt * 365;
+  // --- 1 year from approval ---
+  const oneYearFromApproval = new Date(approvalDate);
+  oneYearFromApproval.setFullYear(oneYearFromApproval.getFullYear() + 1); // 10-11-2026
 
- 
+  // ✅ STEP 1: Always calculate full 1-year interest
+  const totalDaysInYear = Math.floor((oneYearFromApproval - approvalDate) / (1000 * 60 * 60 * 24));
+  const dailyIntAmt = (pendingLoanAmount * interestPercent) / 100 / 365;
+  const totalYearInterest = dailyIntAmt * totalDaysInYear;
+
+  // ✅ STEP 2: Find how many days are already covered (approval → InterestPaidUpto)
+  const daysAlreadyPaid = Math.floor((interestPaidUpto - approvalDate) / (1000 * 60 * 60 * 24));
+
+  // ✅ STEP 3: Remaining days from InterestPaidUpto → 1-year-end
+  const remainingDays = Math.max(totalDaysInYear - daysAlreadyPaid, 0);
+
+  // ✅ STEP 4: Remaining interest = total - already-paid
+  const totalRemainingInterest = dailyIntAmt * remainingDays;
+
+  // --- Adjustment Starts ---
   setloanInfoForAdj(prev => ({
     ...prev,
     payAmount: value,
@@ -210,27 +203,26 @@ console.log(loanInfo, "loanInfo")
 
   let remainingPay = payAmount;
 
-  
+  // 1️⃣ Adjust charges
   let chargesAdjusted = Math.min(remainingPay, charges);
   remainingPay -= chargesAdjusted;
 
- 
-  let interestAdjusted = Math.min(remainingPay, totalYearInterest);
+  // 2️⃣ Adjust remaining interest
+  let interestAdjusted = Math.min(remainingPay, totalRemainingInterest);
   remainingPay -= interestAdjusted;
 
-  
-  let daysPaidFor = Math.round((interestAdjusted / dailyIntAmt) * 1000) / 1000;
-daysPaidFor = Math.round(daysPaidFor);
+  // 3️⃣ Days covered by new interest payment
+  let daysPaidFor = Math.floor(interestAdjusted / dailyIntAmt);
 
- 
+  // 4️⃣ Adjust principal
   let loanAmtAdjusted = remainingPay;
   let balanceLoanAmt = pendingLoanAmount - loanAmtAdjusted;
 
-  
- let intPaidUpto = new Date(data.loanApplication.InterestPaidUpto); // <-- change here
-intPaidUpto.setDate(intPaidUpto.getDate() + daysPaidFor);
+  // 5️⃣ Update new InterestPaidUpto
+  let newIntPaidUpto = new Date(interestPaidUpto);
+  newIntPaidUpto.setDate(newIntPaidUpto.getDate() + daysPaidFor);
 
-  // Update state
+  // ✅ STEP 6: Update everything in state
   setloanInfoForAdj(prev => ({
     ...prev,
     chargesAdjusted: chargesAdjusted.toFixed(2),
@@ -238,9 +230,16 @@ intPaidUpto.setDate(intPaidUpto.getDate() + daysPaidFor);
     loanAmountPaid: loanAmtAdjusted.toFixed(2),
     balanceLoanAmt: balanceLoanAmt.toFixed(2),
     pendingDays: daysPaidFor,
-    intPaidUpto
+    intPaidUpto: newIntPaidUpto,
+    totalYearInterest: totalYearInterest.toFixed(2),
+    totalRemainingInterest: totalRemainingInterest.toFixed(2),
+    remainingInterestDays: remainingDays,
+    alreadyPaidDays: daysAlreadyPaid
   }));
 };
+
+
+
 
   const handlePayAmountChangeForNotAdvance = (value) => {
   debugger;
@@ -249,7 +248,7 @@ intPaidUpto.setDate(intPaidUpto.getDate() + daysPaidFor);
   let pendingInt = Number(loanInfo.pendingInt || 0);
   let pendingLoanAmount = Number(data.loanApplication.LoanPendingAmount || 0);
 
-  let dailyIntAmt = (pendingLoanAmount * loanInfoForAdj.interestPercent) / 100 / 365;
+  let dailyIntAmt = (pendingLoanAmount * loanInfo.interestPercent) / 100 / 365;
 
   let remainingPay = parseFloat(payAmount) || 0;
 
@@ -271,7 +270,7 @@ intPaidUpto.setDate(intPaidUpto.getDate() + daysPaidFor);
     remainingPay -= interestAdjusted;
 
     // Calculate exact days of interest paid (fractional)
-    daysPaidFor = Math.floor(interestAdjusted / dailyIntAmt);
+    daysPaidFor = Math.round(interestAdjusted / dailyIntAmt);
   }
 
   // Step 3: Loan principal adjusted
@@ -281,7 +280,7 @@ intPaidUpto.setDate(intPaidUpto.getDate() + daysPaidFor);
   let balanceLoanAmt = pendingLoanAmount - loanAmtAdjusted;
 
   // Step 5: Calculate date up to interest is paid
-  let intPaidUpto = new Date(data.loanApplication.approval_date);
+  let intPaidUpto = new Date(data.loanApplication.InterestPaidUpto);
   intPaidUpto.setDate(intPaidUpto.getDate() + daysPaidFor);
 
   setloanInfoForAdj((prev) => ({
@@ -296,12 +295,13 @@ intPaidUpto.setDate(intPaidUpto.getDate() + daysPaidFor);
   }));
 };
 
-const validatePayAmount = () => {
+  const validatePayAmount = () => {
+  debugger
   let payAmount = Number(Number(loanInfoForAdj.payAmount || 0).toFixed(2));
 
   let charges = Number(data.loanApplication.total_unpaid_charges || 0);
   let pendingLoanAmount = Number(data.loanApplication.LoanPendingAmount || 0);
-  let interestPercent = Number(loanInfoForAdj.interestPercent || 0);
+  let interestPercent = Number(loanInfo.interestPercent || 0);
 
   let dailyIntAmt = (pendingLoanAmount * interestPercent) / 100 / 365;
 
@@ -316,7 +316,7 @@ const validatePayAmount = () => {
   }
   // ******************
 
-  let days = Math.floor(remainingPay / dailyIntAmt);
+  let days = Math.cell(remainingPay / dailyIntAmt);
   let exactInterestForDays = days * dailyIntAmt;
   let totalRequired = charges + exactInterestForDays;
 
@@ -393,95 +393,127 @@ const validatePayAmount = () => {
 
 
 
+//   useEffect(() => {
+//   debugger
+//   if (!data?.loanApplication?.LoanPendingAmount || !data?.loanApplication?.approval_date)
+//     return;
 
+//   // --- parse dates ---
+//   const approvalDate = new Date(data.loanApplication.approval_date);
 
-// useEffect(() => {
-//     if (!data?.loanApplication?.LoanPendingAmount || !data?.loanApplication?.approval_date)
-//       return;
+//   const today = new Date();
+//   today.setHours(0, 0, 0, 0); // normalize to midnight
 
-//     const approvalDate = new Date(data.loanApplication.approval_date);
-//     const today = new Date();
+//   const interestPaidUpto = new Date(data.loanApplication.InterestPaidUpto || today);
+//   interestPaidUpto.setHours(0, 0, 0, 0); // normalize to midnight
 
-//     // 1) Calculate pending days
-//     const diffMs = today - approvalDate;
-//     const pendingDays = Math.floor(diffMs / (1000 * 60 * 60 * 24));
+//   const pendingLoanAmount = Number(data.loanApplication.LoanPendingAmount);
+//   const totalUnpaidCharges = Number(data.loanApplication.total_unpaid_charges || 0);
 
-//     // 2) Parse interest slab
-//     const slabs = JSON.parse(data.schemeData.interestRates || "[]");
-//     const currentSlab = slabs.find(
-//       (s) => pendingDays >= Number(s.from) && pendingDays <= Number(s.to)
-//     );
-//     const interestPercent = currentSlab ? Number(currentSlab.addInt) : 0;
+//   // --- override case: future interest already paid ---
+//   // if (interestPaidUpto > today) {
+//   //   setLoanInfo({
+//   //     pendingDays: 0,
+//   //     pendingInt: "0.00",
+//   //     interestPercent: 0,
+//   //     loanAmountPaid: pendingLoanAmount.toFixed(2),
+//   //     payAmount: (pendingLoanAmount + totalUnpaidCharges).toFixed(2),
+//   //     balanceLoanAmt: 0,
+//   //     chargesAdjusted: totalUnpaidCharges.toFixed(2),
+//   //     intPaidUpto: interestPaidUpto.toISOString().slice(0, 10),
+//   //   });
+//   //   return;
+//   // }
 
-//     // 3) Calculate pending interest
-//     const pendingLoanAmount = Number(data.loanApplication.LoanPendingAmount);
-//     const dailyIntAmt = (pendingLoanAmount * interestPercent) / 100 / 365;
-//     const pendingInt = dailyIntAmt * pendingDays;
+//   // --- 1) calculate pending days ---
+//   const diffMs = today - interestPaidUpto;
+//   const pendingDays = Math.max(Math.round(diffMs / (1000 * 60 * 60 * 24)), 0);
 
-//     // 4) Charges
-//     const totalUnpaidCharges = Number(data.loanApplication.total_unpaid_charges || 0);
+//   // --- 2) determine interest slab ---
+//   const slabs = JSON.parse(data.schemeData.interestRates || "[]");
+//   const currentSlab = slabs.find(
+//     (s) => pendingDays >= Number(s.from) && pendingDays <= Number(s.to)
+//   );
+//   const interestPercent = currentSlab ? Number(currentSlab.addInt) : 0;
+//   setintrestPercentage(interestPercent);
 
-//     // 5) Pay Amount = pendingLoanAmount + pendingInt + charges (if any)
-//     const payAmount = pendingLoanAmount + pendingInt + totalUnpaidCharges;
+//   // --- 3) calculate interest ---
+//   const dailyIntAmt = (pendingLoanAmount * interestPercent) / 100 / 365;
+//   const pendingInt = dailyIntAmt * pendingDays;
 
-//     // 6) Set all values in state
-//     setLoanInfo({
-//       pendingDays,
-//       pendingInt: pendingInt.toFixed(2),
-//       interestPercent,
-//       loanAmountPaid: pendingLoanAmount.toFixed(2),
-//       payAmount: payAmount.toFixed(2),
-//       balanceLoanAmt: 0,
-//       chargesAdjusted: totalUnpaidCharges.toFixed(2),
-//       intPaidUpto: today,
-//     });
-//   }, [data]);
+//   // --- 4) total payable ---
+//   const payAmount = pendingLoanAmount + pendingInt + totalUnpaidCharges;
 
-  useEffect(() => {
+//   // --- 5) set state ---
+//   setLoanInfo({
+//     pendingDays,
+//     pendingInt: pendingInt.toFixed(2),
+//     interestPercent,
+//     loanAmountPaid: pendingLoanAmount.toFixed(2),
+//     payAmount: payAmount.toFixed(2),
+//     balanceLoanAmt: 0,
+//     chargesAdjusted: totalUnpaidCharges.toFixed(2),
+//     intPaidUpto: today.toISOString().slice(0, 10),
+//   });
+
+// }, [data]);
+useEffect(() => {
   if (!data?.loanApplication?.LoanPendingAmount || !data?.loanApplication?.approval_date)
     return;
 
   const approvalDate = new Date(data.loanApplication.approval_date);
   const today = new Date();
-  const interestPaidUpto = new Date(data.loanApplication.InterestPaidUpto);
+  today.setHours(0, 0, 0, 0);
+
+  const interestPaidUpto = new Date(data.loanApplication.InterestPaidUpto || today);
+  interestPaidUpto.setHours(0, 0, 0, 0);
 
   const pendingLoanAmount = Number(data.loanApplication.LoanPendingAmount);
   const totalUnpaidCharges = Number(data.loanApplication.total_unpaid_charges || 0);
 
-  // *** override case: future interest already paid ***
+  const slabs = JSON.parse(data.schemeData.interestRates || "[]");
+
+  // ✅ CASE 1: Already paid future interest
   if (interestPaidUpto > today) {
+    // Find next interest slab (optional)
+    const currentSlab = slabs.find(
+      (s) =>
+        Number(s.from) <= 0 && // from 0 days onward
+        Number(s.to) >= 0
+    );
+    const interestPercent = currentSlab ? Number(currentSlab.addInt) : 0;
+    setintrestPercentage(interestPercent);
+
     setLoanInfo({
       pendingDays: 0,
       pendingInt: "0.00",
-      interestPercent: 0,
+      interestPercent,
       loanAmountPaid: pendingLoanAmount.toFixed(2),
       payAmount: (pendingLoanAmount + totalUnpaidCharges).toFixed(2),
       balanceLoanAmt: 0,
       chargesAdjusted: totalUnpaidCharges.toFixed(2),
-      intPaidUpto: interestPaidUpto,
+      intPaidUpto: interestPaidUpto.toISOString().slice(0, 10),
     });
+
     return;
   }
 
-  // 1) pending days
-  const diffMs = today - approvalDate;
-  const pendingDays = Math.floor(diffMs / (1000 * 60 * 60 * 24));
+  // ✅ CASE 2: Normal pending case (interest due till today)
+  const diffMs = today - interestPaidUpto;
+  const pendingDays = Math.max(Math.round(diffMs / (1000 * 60 * 60 * 24)), 0);
 
-  // 2) interest slab
-  const slabs = JSON.parse(data.schemeData.interestRates || "[]");
   const currentSlab = slabs.find(
     (s) => pendingDays >= Number(s.from) && pendingDays <= Number(s.to)
   );
   const interestPercent = currentSlab ? Number(currentSlab.addInt) : 0;
+  setintrestPercentage(interestPercent);
 
-  // 3) interest
+  // Calculate daily and total interest
   const dailyIntAmt = (pendingLoanAmount * interestPercent) / 100 / 365;
   const pendingInt = dailyIntAmt * pendingDays;
 
-  // 4) total pay
   const payAmount = pendingLoanAmount + pendingInt + totalUnpaidCharges;
 
-  // 5) set state
   setLoanInfo({
     pendingDays,
     pendingInt: pendingInt.toFixed(2),
@@ -490,7 +522,7 @@ const validatePayAmount = () => {
     payAmount: payAmount.toFixed(2),
     balanceLoanAmt: 0,
     chargesAdjusted: totalUnpaidCharges.toFixed(2),
-    intPaidUpto: today,
+    intPaidUpto: today.toISOString().slice(0, 10),
   });
 }, [data]);
 
@@ -520,6 +552,68 @@ const parseJSONData = (value) => {
   const totalGross = pledgeItems?.reduce((sum, item) => sum + (parseFloat(item.gross) || 0), 0);
   const totalNetWeight = pledgeItems?.reduce((sum, item) => sum + (parseFloat(item.netWeight) || 0), 0);
   const totalValuation = pledgeItems?.reduce((sum, item) => sum + (parseFloat(item.valuation) || 0), 0);
+
+// const handleRepaymentSubmit = () => {
+//   debugger;
+
+//   if (!isClose) return; // only close-loan case
+
+//   const finalObject = {
+//     loanId: data?.loanApplication?.id,
+//     closeLoan: true,
+//     paymentInfo: paymentInfo,
+//     closeInfo: loanInfo,
+//     status: "Closed"
+//   };
+
+//   console.log("SEND TO BACKEND:", finalObject);
+
+//   axios
+//     .post(`${API}/Transactions/loanRepayment`, finalObject)
+//     .then(res => {
+//       console.log("RESPONSE:", res.data);
+
+//       if (res.status === 200) {
+//         alert("Repayment Successfully!");
+//         navigate("/Loan-Application");
+//       }
+//     })
+//     .catch(err => {
+//       console.log("ERROR:", err);
+//       alert("Something went wrong");
+//     });
+// };
+  const handleRepaymentSubmit = () => {
+  debugger
+
+  const finalObject = {
+    loanId: data?.loanApplication?.id,
+    AdvanceInt: isAdvIntCheck,
+    paymentInfo: paymentInfo,
+    loanInfo: loanInfoForAdj,
+    uptoInterest:loanInfo.pendingInt
+    // status: "Closed"
+  };
+
+  console.log("SEND TO BACKEND:", finalObject);
+
+  axios
+    .post(`${API}/Transactions/loanRepaymentForAdjLoan`, finalObject)
+    .then(res => {
+      console.log("RESPONSE:", res.data);
+
+      if (res.status === 200) {
+        alert("Repayment Successfully!");
+        navigate("/Loan-Application");
+      }
+    })
+    .catch(err => {
+      console.log("ERROR:", err);
+      alert("Something went wrong");
+    });
+};
+
+
   return (
     <div className="flex flex-col items-center mt-5">
       {/* Header Section */}
@@ -529,9 +623,13 @@ const parseJSONData = (value) => {
         </h2>
 
         <div className="flex items-center gap-5">
-          <button className="bg-[#0A2478] text-white text-[10px] w-[74px] h-[24px] rounded-[3.75px]  transition">
-            Submit
-          </button>
+         <button
+  className="bg-[#0A2478] text-white text-[10px] w-[74px] h-[24px] rounded-[3.75px] transition"
+  onClick={handleRepaymentSubmit}
+>
+  Submit
+</button>
+
           <button className="bg-[#C1121F] text-white text-[10px] w-[74px] h-[24px] rounded-[3.75px]  transition">
             Close
           </button>
@@ -606,7 +704,7 @@ const parseJSONData = (value) => {
     value={
       data?.loanApplication?.approval_date
         ? new Date(
-            data.loanApplication.approval_date.replace(" ", "T")
+            data?.loanApplication?.approval_date.replace(" ", "T")
           ).toISOString().slice(0,10)
         : ""
     }
@@ -630,7 +728,9 @@ const parseJSONData = (value) => {
         className="border border-gray-300 disabled:bg-gray-100 rounded-l-md px-3 py-2 w-full focus:ring-1 focus:outline-none"
       />
       <button className="bg-[#0A2478] text-white px-2 py-2 rounded-r-md hover:bg-[#081c5b] text-xs w-[40px]">
-        {loanInfo.interestRate || "18%"}
+    {intrestPercentage ? `${intrestPercentage}%` : "-"}
+
+
       </button>
     </div>
   </div>
@@ -717,6 +817,17 @@ const parseJSONData = (value) => {
       onChange={handleChange}
       className="border border-gray-300 disabled:bg-gray-100 rounded-md px-3 py-2 focus:ring-1 focus:ring-blue-500 focus:outline-none"
     />
+                </div>
+                <div className="flex flex-col" style={{ width: "130px" }}>
+    <label className="text-gray-800 font-medium">Advance Interest</label>
+    <input
+      type="text"
+                    name="chargesDue"
+                    disabled
+      value={data?.loanApplication?.AdvanceInterestPaid}
+      onChange={handleChange}
+      className="border border-gray-300 disabled:bg-gray-100 rounded-md px-3 py-2 focus:ring-1 focus:ring-blue-500 focus:outline-none"
+    />
   </div>
 
 </div>
@@ -725,17 +836,24 @@ const parseJSONData = (value) => {
      <div className="flex gap-4">
 
   {/* Last Interest Paid Date */}
-  <div className="flex flex-col" style={{ width: "150px" }}>
-    <label className="text-gray-800 font-medium">Last Interest Paid Date</label>
-    <input
-      type="date"
-      name="lastInterestPaidDate"
-                    value={loanInfo.lastInterestPaidDate}
-                      disabled
-      onChange={handleChange}
-      className="border border-gray-300 disabled:bg-gray-100 rounded-md px-3 py-2 focus:ring-1 focus:ring-blue-500 focus:outline-none"
-    />
-  </div>
+ <div className="flex flex-col" style={{ width: "150px" }}>
+  <label className="text-gray-800 font-medium">Last Interest Paid Date</label>
+  <input
+    type="date"
+    name="LastInterestPaidDate"
+    value={
+      data?.loanApplication?.LastInterestPaidDate
+        ? new Date(data.loanApplication.LastInterestPaidDate)
+            .toISOString()
+            .slice(0, 10)
+        : ""
+    }
+    disabled
+    onChange={handleChange}
+    className="border border-gray-300 disabled:bg-gray-100 rounded-md px-3 py-2 focus:ring-1 focus:ring-blue-500 focus:outline-none"
+  />
+</div>
+
 
   {/* Last Interest Paid Upto */}
   <div className="flex flex-col" style={{ width: "150px" }}>
@@ -946,16 +1064,21 @@ if (checked) setIsAdvInt(false);
     </div>
             )
           }
-          <div className="flex items-center gap-2">
-  <input
-    type="checkbox"
-    checked={isAdvIntCheck}
-    onChange={(e) => setIsAdvIntCheck(e.target.checked)}
-  />
-  <label className="text-gray-900 font-medium">
-    Take Advance Interest
-  </label>
-</div>
+         {isAdvInt && (
+  <div className="flex items-center gap-2 mt-5 mb-5">
+    <input
+  type="checkbox"
+  checked={isAdvIntCheck}
+  onChange={handleAdvIntCheck}
+/>
+
+    <label className="text-gray-900 font-medium">
+      Take Advance Interest
+    </label>
+  </div>
+)}
+
+          
           {
             isAdvInt && isAdvIntCheck &&  (
               <>
