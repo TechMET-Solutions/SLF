@@ -7,6 +7,7 @@ import profileempty from "../assets/profileempty.png";
 import timesvg from "../assets/timesvg.svg";
 import { decryptData } from "../utils/cryptoHelper";
 import PledgeItemList from "./PledgeItemList";
+import { MdOutlineFileUpload } from "react-icons/md";
 const AddGoldLoanApplication = () => {
   const [schemes, setSchemes] = useState([]); // store all schemes
   const [selectedScheme, setSelectedScheme] = useState(null); // store selected scheme
@@ -790,20 +791,30 @@ console.log(activeEmployees,"activeEmployees")
             />
 
             {/* File Upload */}
-            <div className="flex items-center border border-gray-300 rounded mt-2 w-[140px]">
+            <div className="mt-2">
               <label
                 htmlFor="ornamentFile"
-                className="bg-[#D9D9D9] p-1 cursor-pointer text-[10px] rounded-l border-r border w-[120px] text-black font-bold h-[21px] flex items-center justify-center"
+                className="w-[150px] h-[35px] border rounded-[8px] bg-[#0A2478] text-[12px] text-white flex justify-center items-center gap-2 cursor-pointer"
               >
-                Choose File
+                <p>Choose File</p>
+                <MdOutlineFileUpload />
               </label>
+
               <input
-                id="ornamentFile"
                 type="file"
-                accept="image/*"
-                className="hidden"
+                id="ornamentFile"
+                name="OrnamentFile"
                 onChange={(e) => handleOrnamentUpload(e)}
+                className="hidden"
               />
+              {formData.OrnamentFile && (
+                <p className="text-[13px] text-gray-700">
+                  Selected File:{" "}
+                  <span className="font-medium text-[#0A2478]">
+                    {formData.OrnamentFile.name}
+                  </span>
+                </p>
+              )}
             </div>
           </div>
 

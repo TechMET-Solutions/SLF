@@ -1,14 +1,3 @@
-// import React from 'react'
-
-// const EditLoanApplication = () => {
-//   return (
-//     <div>
-      
-//     </div>
-//   )
-// }
-
-// export default EditLoanApplication
 import axios from "axios";
 import { useEffect, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
@@ -17,11 +6,12 @@ import profileempty from "../assets/profileempty.png";
 import timesvg from "../assets/timesvg.svg";
 import { decryptData } from "../utils/cryptoHelper";
 import PledgeItemList from "./PledgeItemList";
+import { MdOutlineFileUpload } from "react-icons/md";
 
 const EditLoanApplication = () => {
   const [schemes, setSchemes] = useState([]); // store all schemes
-    const [selectedScheme, setSelectedScheme] = useState(null); // store selected scheme
-    console.log(selectedScheme,"selectedScheme")
+  const [selectedScheme, setSelectedScheme] = useState(null); // store selected scheme
+  console.log(selectedScheme, "selectedScheme")
   const navigate = useNavigate();
   useEffect(() => {
     const fetchSchemes = async () => {
@@ -41,27 +31,27 @@ const EditLoanApplication = () => {
   }, []);
 
   const handleSchemeChange = (e) => {
-  const schemeId = e.target.value;
+    const schemeId = e.target.value;
 
-  const selected = schemes.find((x) => x.id == schemeId);
+    const selected = schemes.find((x) => x.id == schemeId);
 
-  if (!selected) return;
+    if (!selected) return;
 
-  const parsedScheme = {
-    ...selected,
-    interestRates: Array.isArray(selected.interestRates)
-      ? selected.interestRates
-      : selected.interestRates
-      ? JSON.parse(selected.interestRates)
-      : []
+    const parsedScheme = {
+      ...selected,
+      interestRates: Array.isArray(selected.interestRates)
+        ? selected.interestRates
+        : selected.interestRates
+          ? JSON.parse(selected.interestRates)
+          : []
+    };
+
+    setSelectedScheme(parsedScheme);
   };
-
-  setSelectedScheme(parsedScheme);
-};
 
 
   useEffect(() => {
-    document.title = "SLF | Add Gold Loan Application ";
+    document.title = "SLF | Edit Gold Loan Application ";
   }, []);
 
   const [rows, setRows] = useState([
@@ -88,30 +78,30 @@ const EditLoanApplication = () => {
   const [selectedCustomer, setSelectedCustomer] = useState(null);
   const [selectedCoBorrower, setSelectedCoBorrower] = useState(null);
   // Fetch API when typing
-const [selectedCustomerForEdit, setselectedCustomerForEdit] = useState(null);
- const [activeEmployees, setActiveEmployees] = useState([]);
-console.log(activeEmployees,"activeEmployees")
+  const [selectedCustomerForEdit, setselectedCustomerForEdit] = useState(null);
+  const [activeEmployees, setActiveEmployees] = useState([]);
+  console.log(activeEmployees, "activeEmployees")
 
- const getActiveEmp = async () => {
-  try {
-    const res = await axios.get(`${API}/Master/getActiveEmployees`);
-    const decrypted = decryptData(res.data.data); // no JSON.parse
-    console.log(decrypted);
-    setActiveEmployees(decrypted);
-  } catch (error) {
-    console.log(error);
-  }
-};
+  const getActiveEmp = async () => {
+    try {
+      const res = await axios.get(`${API}/Master/getActiveEmployees`);
+      const decrypted = decryptData(res.data.data); // no JSON.parse
+      console.log(decrypted);
+      setActiveEmployees(decrypted);
+    } catch (error) {
+      console.log(error);
+    }
+  };
 
 
   useEffect(() => {
-  getActiveEmp()
-},[])
+    getActiveEmp()
+  }, [])
 
 
- const location = useLocation();
+  const location = useLocation();
   const { loanId, loanData } = location.state || {};
-  
+
   const [formData, setFormData] = useState({
     borrowerId: "",
     borrowerName: "",
@@ -136,12 +126,12 @@ console.log(activeEmployees,"activeEmployees")
     Net_Payable: "",
     value1: "",
     value2: "",
-    Effective_Interest_Rates:""
+    Effective_Interest_Rates: ""
   });
-   
 
-  
-   console.log(formData,"formData")
+
+
+  console.log(formData, "formData")
   console.log("LoanId => ", loanId);
   console.log("LoanData => ", loanData);
   const [PledgeItem, setPledgeItem] = useState([
@@ -184,124 +174,124 @@ console.log(activeEmployees,"activeEmployees")
   //     Net_Payable: netPayable.toFixed(2),
   //   }));
   // }, [PledgeItem]);
-useEffect(() => {
-  if (loanId) {
-    fetchLoanDetails(loanId);
-  }
-}, [loanId]);
+  useEffect(() => {
+    if (loanId) {
+      fetchLoanDetails(loanId);
+    }
+  }, [loanId]);
 
-    const fetchLoanDetails = async (id) => {
-       
-  try {
-    const res = await axios.get(`${API}/Transactions/goldloan/getLoan/${id}`);
-    const data = res.data.loanApplication;
-    const SchemaData = res.data.schemeData;
+  const fetchLoanDetails = async (id) => {
 
-   const parsedScheme = {
-  ...SchemaData,
-  interestRates: SchemaData?.interestRates
-    ? JSON.parse(SchemaData.interestRates)
-    : []
-};
+    try {
+      const res = await axios.get(`${API}/Transactions/goldloan/getLoan/${id}`);
+      const data = res.data.loanApplication;
+      const SchemaData = res.data.schemeData;
 
-setSelectedScheme(parsedScheme);
-    // set formData
-    setFormData({
-      borrowerId
-: data.BorrowerId,
-       CoBorrowerId:data.CoBorrowerId,
-      borrowerName: data.Borrower || "",
-      borrowerAddress: data.Address,     // if you are not getting from api leave empty
-      schemeId: data.Scheme_ID || "",
-      schemeName: data.Scheme || "",
-      printName: data.Print_Name || "",
-      mobile: data.Mobile_Number || "",
-      altMobile: data.Alternate_Number || "",
-      Borrower_ProfileImg: data.borrower_profileImage || "",
-      Borrower_signature: data.borrower_signature || "",
-      CoBorrowerName: data.Co_Borrower || "",
-      CoBorrower_ProfileImg: data.coborrower_profileImage || "",
-      CoBorrower_signature: data.coborrower_signature || "",
-      CoBorrowerRelation: data.Relation || "",
-      Nominee_Name: data.Nominee || "",
-      NomineeRelation: data.Nominee_Relation || "",
-      OrnamentPhoto: data.Ornament_Photo || "",
-      Loan_amount: data.Loan_amount || "",
-      Doc_Charges: data.Doc_Charges || "",
-      Net_Payable: data.Net_Payable || "",
-      value1: data.Valuer_1 || "",
-      value2: data.Valuer_2 || "",
-      Effective_Interest_Rates:data.Effective_Interest_Rates || ""
-      
-    });
+      const parsedScheme = {
+        ...SchemaData,
+        interestRates: SchemaData?.interestRates
+          ? JSON.parse(SchemaData.interestRates)
+          : []
+      };
 
-    // set pledge items
-   if (data.Pledge_Item_List) {
-  let parsed = [];
+      setSelectedScheme(parsedScheme);
+      // set formData
+      setFormData({
+        borrowerId
+          : data.BorrowerId,
+        CoBorrowerId: data.CoBorrowerId,
+        borrowerName: data.Borrower || "",
+        borrowerAddress: data.Address,     // if you are not getting from api leave empty
+        schemeId: data.Scheme_ID || "",
+        schemeName: data.Scheme || "",
+        printName: data.Print_Name || "",
+        mobile: data.Mobile_Number || "",
+        altMobile: data.Alternate_Number || "",
+        Borrower_ProfileImg: data.borrower_profileImage || "",
+        Borrower_signature: data.borrower_signature || "",
+        CoBorrowerName: data.Co_Borrower || "",
+        CoBorrower_ProfileImg: data.coborrower_profileImage || "",
+        CoBorrower_signature: data.coborrower_signature || "",
+        CoBorrowerRelation: data.Relation || "",
+        Nominee_Name: data.Nominee || "",
+        NomineeRelation: data.Nominee_Relation || "",
+        OrnamentPhoto: data.Ornament_Photo || "",
+        Loan_amount: data.Loan_amount || "",
+        Doc_Charges: data.Doc_Charges || "",
+        Net_Payable: data.Net_Payable || "",
+        value1: data.Valuer_1 || "",
+        value2: data.Valuer_2 || "",
+        Effective_Interest_Rates: data.Effective_Interest_Rates || ""
 
-  try {
-    parsed = JSON.parse(data.Pledge_Item_List);
-  } catch (err) {
-    console.log("error parsing pledge list", err);
-  }
+      });
 
-  setPledgeItem(parsed);
-}
-    // set selected customer objects if you need for autocomplete
-    setSelectedCustomer(data.BorrowerId);
-    setSelectedCoBorrower(data.CoBorrowerId);
+      // set pledge items
+      if (data.Pledge_Item_List) {
+        let parsed = [];
 
-  } catch (err) {
-    console.log("error => ", err);
-  }
-};
+        try {
+          parsed = JSON.parse(data.Pledge_Item_List);
+        } catch (err) {
+          console.log("error parsing pledge list", err);
+        }
+
+        setPledgeItem(parsed);
+      }
+      // set selected customer objects if you need for autocomplete
+      setSelectedCustomer(data.BorrowerId);
+      setSelectedCoBorrower(data.CoBorrowerId);
+
+    } catch (err) {
+      console.log("error => ", err);
+    }
+  };
 
   const handleUpdateLoan = async () => {
-  debugger
-  try {
-    const formDataToSend = new FormData();
+    debugger
+    try {
+      const formDataToSend = new FormData();
 
-    formDataToSend.append("BorrowerId", formData.borrowerId|| "");
-    formDataToSend.append("CoBorrowerId", formData.CoBorrowerId || "");
-    formDataToSend.append("Borrower", formData.borrowerName || "");
-    formDataToSend.append("Scheme", formData.schemeName || "");
-    formDataToSend.append("Scheme_ID", selectedScheme?.id || "");
-    formDataToSend.append("Print_Name", formData.printName || "");
-    formDataToSend.append("Mobile_Number", formData.mobile || "");
-    formDataToSend.append("Alternate_Number", formData.altMobile || "");
-    formDataToSend.append("Co_Borrower", formData.CoBorrowerName || "");
-    formDataToSend.append("Relation", formData.CoBorrowerRelation || "");
-    formDataToSend.append("Nominee", formData.Nominee_Name || "");
-    formDataToSend.append("Nominee_Relation", formData.NomineeRelation || "");
- formDataToSend.append("Valuer_1", formData.value1 || "");
-    formDataToSend.append("Valuer_2", formData.value2 || "");
-    //  formDataToSend.append("Effective_Interest_Rates", selectedScheme?.interestRates || "");
-    // new ornament photo update (optional)
-    if(formData.OrnamentFile) {
-      formDataToSend.append("Ornament_Photo", formData.OrnamentFile); 
+      formDataToSend.append("BorrowerId", formData.borrowerId || "");
+      formDataToSend.append("CoBorrowerId", formData.CoBorrowerId || "");
+      formDataToSend.append("Borrower", formData.borrowerName || "");
+      formDataToSend.append("Scheme", formData.schemeName || "");
+      formDataToSend.append("Scheme_ID", selectedScheme?.id || "");
+      formDataToSend.append("Print_Name", formData.printName || "");
+      formDataToSend.append("Mobile_Number", formData.mobile || "");
+      formDataToSend.append("Alternate_Number", formData.altMobile || "");
+      formDataToSend.append("Co_Borrower", formData.CoBorrowerName || "");
+      formDataToSend.append("Relation", formData.CoBorrowerRelation || "");
+      formDataToSend.append("Nominee", formData.Nominee_Name || "");
+      formDataToSend.append("Nominee_Relation", formData.NomineeRelation || "");
+      formDataToSend.append("Valuer_1", formData.value1 || "");
+      formDataToSend.append("Valuer_2", formData.value2 || "");
+      //  formDataToSend.append("Effective_Interest_Rates", selectedScheme?.interestRates || "");
+      // new ornament photo update (optional)
+      if (formData.OrnamentFile) {
+        formDataToSend.append("Ornament_Photo", formData.OrnamentFile);
+      }
+
+      formDataToSend.append("Pledge_Item_List", JSON.stringify(PledgeItem || []));
+      formDataToSend.append("Loan_amount", formData.Loan_amount || 0);
+      formDataToSend.append("Doc_Charges", formData.Doc_Charges || 0);
+      formDataToSend.append("Net_Payable", formData.Net_Payable || 0);
+
+      formDataToSend.append("Effective_Interest_Rates", JSON.stringify(selectedScheme?.interestRates));
+
+      const res = await axios.put(
+        `${API}/Transactions/goldloan/updateLoan/${loanId}`,
+        formDataToSend,
+        { headers: { "Content-Type": "multipart/form-data" } }
+      );
+
+      alert("✅ Loan Updated Successfully!");
+      navigate("/Loan-Application");
+
+    } catch (err) {
+      console.log(err);
+      alert("Update failed");
     }
-
-    formDataToSend.append("Pledge_Item_List", JSON.stringify(PledgeItem || []));
-    formDataToSend.append("Loan_amount", formData.Loan_amount || 0);
-    formDataToSend.append("Doc_Charges", formData.Doc_Charges || 0);
-    formDataToSend.append("Net_Payable", formData.Net_Payable || 0);
-
-    formDataToSend.append("Effective_Interest_Rates", JSON.stringify(selectedScheme?.interestRates));
-
-    const res = await axios.put(
-     `${API}/Transactions/goldloan/updateLoan/${loanId}`,
-      formDataToSend,
-      { headers: { "Content-Type": "multipart/form-data" } }
-    );
-
-    alert("✅ Loan Updated Successfully!");
-    navigate("/Loan-Application");
-
-  } catch (err) {
-    console.log(err);
-    alert("Update failed");
-  }
-};
+  };
 
 
   console.log(formData, "formData")
@@ -384,7 +374,7 @@ setSelectedScheme(parsedScheme);
 
     setFormData((prev) => ({
       ...prev,
-      borrowerId: customer.id     ,   
+      borrowerId: customer.id,
       borrowerName: customer.firstName || "",
       printName: customer.printName || "",
       mobile: customer.mobile || "",
@@ -406,7 +396,7 @@ setSelectedScheme(parsedScheme);
     setResults2([]);
     setFormData((prev) => ({
       ...prev,
-     
+
       CoBorrowerName: customer.firstName || "",
       CoBorrower_ProfileImg: customer.profileImage || "",
       CoBorrower_signature: customer.signature || "",
@@ -435,7 +425,7 @@ setSelectedScheme(parsedScheme);
       }));
     }
   };
- 
+
 
 
   return (
@@ -484,21 +474,21 @@ setSelectedScheme(parsedScheme);
               <div className="flex items-center mt-1 w-[220px]">
                 <div className="relative flex-1">
                   <input
-  type="text"
-  placeholder="Enter Borrower Name"
-  name="Borrower_Name"
-  value={formData.borrowerName}     // <-- use the field from your data
-  onChange={(e) => {
-    setFormData({
-      ...formData,
-      borrowerName: e.target.value,
-       
-    });
-    setSearchTerm(e.target.value); // if you still need this for searching
-    setSelectedCustomer(null);
-  }}
-  className="border border-gray-300 rounded-l px-3 py-2 w-full focus:outline-none focus:ring-1 focus:ring-blue-500 bg-white"
-/>
+                    type="text"
+                    placeholder="Enter Borrower Name"
+                    name="Borrower_Name"
+                    value={formData.borrowerName}     // <-- use the field from your data
+                    onChange={(e) => {
+                      setFormData({
+                        ...formData,
+                        borrowerName: e.target.value,
+
+                      });
+                      setSearchTerm(e.target.value); // if you still need this for searching
+                      setSelectedCustomer(null);
+                    }}
+                    className="border border-gray-300 rounded-l px-3 py-2 w-full focus:outline-none focus:ring-1 focus:ring-blue-500 bg-white"
+                  />
 
 
                   {/* Loading */}
@@ -547,17 +537,17 @@ setSelectedScheme(parsedScheme);
             <div className="mb-6">
               <label className="text-[14px] font-medium block mb-1">Scheme*</label>
               <select
-  className="border border-gray-300 px-3 py-2 w-[200px] bg-white rounded-[8px]"
-  onChange={handleSchemeChange}
-  value={selectedScheme?.id || ""}     // << this line makes it selected
->
-  <option value="" disabled>Select Scheme</option>
-  {schemes.map((scheme) => (
-    <option key={scheme.id} value={scheme.id}>
-      {scheme.schemeName}
-    </option>
-  ))}
-</select>
+                className="border border-gray-300 px-3 py-2 w-[200px] bg-white rounded-[8px]"
+                onChange={handleSchemeChange}
+                value={selectedScheme?.id || ""}     // << this line makes it selected
+              >
+                <option value="" disabled>Select Scheme</option>
+                {schemes.map((scheme) => (
+                  <option key={scheme.id} value={scheme.id}>
+                    {scheme.schemeName}
+                  </option>
+                ))}
+              </select>
 
             </div>
 
@@ -622,21 +612,21 @@ setSelectedScheme(parsedScheme);
               <div className="flex items-center mt-1 w-[220px]">
                 <div className="relative flex-1">
                   <input
-  type="text"
-  placeholder="Enter Co-Borrower Name"
-  name="CoBorrowerName"
-  value={formData.CoBorrowerName}        // <-- show the existing value
-  onChange={(e) => {
-    setFormData({
-      ...formData,
-      CoBorrowerName: e.target.value,    // <-- update formData also
-    });
+                    type="text"
+                    placeholder="Enter Co-Borrower Name"
+                    name="CoBorrowerName"
+                    value={formData.CoBorrowerName}        // <-- show the existing value
+                    onChange={(e) => {
+                      setFormData({
+                        ...formData,
+                        CoBorrowerName: e.target.value,    // <-- update formData also
+                      });
 
-    setSearchTermForCoBorrower(e.target.value); // if you use this for search
-    setSelectedCoBorrower(null);
-  }}
-  className="border border-gray-300 rounded-l px-3 py-2 w-full focus:outline-none focus:ring-1 focus:ring-blue-500 bg-white"
-/>
+                      setSearchTermForCoBorrower(e.target.value); // if you use this for search
+                      setSelectedCoBorrower(null);
+                    }}
+                    className="border border-gray-300 rounded-l px-3 py-2 w-full focus:outline-none focus:ring-1 focus:ring-blue-500 bg-white"
+                  />
 
                   {/* Loading */}
                   {loading && (
@@ -805,20 +795,30 @@ setSelectedScheme(parsedScheme);
             />
 
             {/* File Upload */}
-            <div className="flex items-center border border-gray-300 rounded mt-2 w-[140px]">
+            <div className="mt-2">
               <label
                 htmlFor="ornamentFile"
-                className="bg-[#D9D9D9] p-1 cursor-pointer text-[10px] rounded-l border-r border w-[120px] text-black font-bold h-[21px] flex items-center justify-center"
+                className="w-[150px] h-[35px] border rounded-[8px] bg-[#0A2478] text-[12px] text-white flex justify-center items-center gap-2 cursor-pointer"
               >
-                Choose File
+                <p>Choose File</p>
+                <MdOutlineFileUpload />
               </label>
+
               <input
-                id="ornamentFile"
                 type="file"
-                accept="image/*"
-                className="hidden"
+                id="ornamentFile"
+                name="OrnamentFile"
                 onChange={(e) => handleOrnamentUpload(e)}
+                className="hidden"
               />
+              {formData.OrnamentFile && (
+                <p className="text-[13px] text-gray-700">
+                  Selected File:{" "}
+                  <span className="font-medium text-[#0A2478]">
+                    {formData.OrnamentFile.name}
+                  </span>
+                </p>
+              )}
             </div>
           </div>
 
@@ -827,7 +827,7 @@ setSelectedScheme(parsedScheme);
 
       </div>
 
-      <PledgeItemList rows={PledgeItem} setRows={setPledgeItem} selectedScheme={selectedScheme}/>
+      <PledgeItemList rows={PledgeItem} setRows={setPledgeItem} selectedScheme={selectedScheme} />
 
 
 
@@ -843,31 +843,31 @@ setSelectedScheme(parsedScheme);
           </div>
 
           <input
-    type="text"
-    placeholder="Loan amount"
-    value={formData.Loan_amount}
-    onChange={(e) => {
-      // Allow any input value
-      let inputLoan = parseFloat(e.target.value) || 0;
+            type="text"
+            placeholder="Loan amount"
+            value={formData.Loan_amount}
+            onChange={(e) => {
+              // Allow any input value
+              let inputLoan = parseFloat(e.target.value) || 0;
 
-      // Calculate document charges and round to nearest integer
-      const docCharges = Math.round(
-        (inputLoan * (selectedScheme?.docChargePercent ?? 0)) / 100
-      );
+              // Calculate document charges and round to nearest integer
+              const docCharges = Math.round(
+                (inputLoan * (selectedScheme?.docChargePercent ?? 0)) / 100
+              );
 
-      // Subtract docCharges from inputLoan
-      const netPayable = inputLoan - docCharges;
+              // Subtract docCharges from inputLoan
+              const netPayable = inputLoan - docCharges;
 
-      // Update state
-      setFormData((prev) => ({
-        ...prev,
-        Loan_amount: e.target.value, // keep exactly what user typed
-        Doc_Charges: docCharges,     // rounded value
-        Net_Payable: netPayable,     // Loan - Doc charges
-      }));
-    }}
-    className="border border-gray-300 px-3 py-2 w-[129px] rounded-[8px] bg-white h-[38px]"
-  />
+              // Update state
+              setFormData((prev) => ({
+                ...prev,
+                Loan_amount: e.target.value, // keep exactly what user typed
+                Doc_Charges: docCharges,     // rounded value
+                Net_Payable: netPayable,     // Loan - Doc charges
+              }));
+            }}
+            className="border border-gray-300 px-3 py-2 w-[129px] rounded-[8px] bg-white h-[38px]"
+          />
         </div>
 
 
@@ -883,7 +883,7 @@ setSelectedScheme(parsedScheme);
             <button
               className="bg-[#0A2478] text-white px-4 py-2 text-sm font-medium rounded-l-md border border-[#0A2478] hover:bg-[#081c5b] transition-all duration-200"
             >
-{selectedScheme?.docChargePercent}
+              {selectedScheme?.docChargePercent}
             </button>
 
             {/* Input Field */}
@@ -922,39 +922,39 @@ setSelectedScheme(parsedScheme);
           />
         </div>
 
-       <div className="flex flex-col">
-  <label className="text-[14px] font-medium">Valuer 1*</label>
-  <select
-    name="value1"
-    value={formData.value1}
-    onChange={handleInputChange}
-    className="border border-gray-300 rounded px-3 py-2 mt-1 w-full"
-  >
-    <option value="">Select Valuer 1</option>
-    {activeEmployees.map((emp) => (
-       <option key={emp.id} value={emp.emp_name}>
-      {emp.emp_name}
-    </option>
-    ))}
-  </select>
-</div>
+        <div className="flex flex-col">
+          <label className="text-[14px] font-medium">Valuer 1*</label>
+          <select
+            name="value1"
+            value={formData.value1}
+            onChange={handleInputChange}
+            className="border border-gray-300 rounded px-3 py-2 mt-1 w-full"
+          >
+            <option value="">Select Valuer 1</option>
+            {activeEmployees.map((emp) => (
+              <option key={emp.id} value={emp.emp_name}>
+                {emp.emp_name}
+              </option>
+            ))}
+          </select>
+        </div>
 
-<div className="flex flex-col">
-  <label className="text-[14px] font-medium">Valuer 2*</label>
-  <select
-    name="value2"
-    value={formData.value2}
-    onChange={handleInputChange}
-    className="border border-gray-300 rounded px-3 py-2 mt-1 w-full"
-  >
-    <option value="">Select Valuer 2</option>
-    {activeEmployees.map((emp) => (
-       <option key={emp.id} value={emp.emp_name}>
-      {emp.emp_name}
-    </option>
-    ))}
-  </select>
-</div>
+        <div className="flex flex-col">
+          <label className="text-[14px] font-medium">Valuer 2*</label>
+          <select
+            name="value2"
+            value={formData.value2}
+            onChange={handleInputChange}
+            className="border border-gray-300 rounded px-3 py-2 mt-1 w-full"
+          >
+            <option value="">Select Valuer 2</option>
+            {activeEmployees.map((emp) => (
+              <option key={emp.id} value={emp.emp_name}>
+                {emp.emp_name}
+              </option>
+            ))}
+          </select>
+        </div>
 
 
 
