@@ -15,7 +15,7 @@ const PurityProfile = () => {
   useEffect(() => {
     document.title = "SLF | Purity Profile ";
   }, []);
- const navigate = useNavigate();
+  const navigate = useNavigate();
 
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [deleteModalOpen, setDeleteModalOpen] = useState(false);
@@ -179,8 +179,8 @@ const PurityProfile = () => {
                 Add
               </button>
               <button
-              onClick={() => navigate("/")}
-              className="w-[74px] h-[24px] cursor-pointer  rounded bg-[#C1121F] text-white text-[10px]">
+                onClick={() => navigate("/")}
+                className="w-[74px] h-[24px] cursor-pointer  rounded bg-[#C1121F] text-white text-[10px]">
                 Exit
               </button>
             </div>
@@ -233,6 +233,10 @@ const PurityProfile = () => {
                   onChange={(e) =>
                     setFormData({ ...formData, purity_percent: e.target.value })
                   }
+                  style={{
+                    MozAppearance: "textfield",
+                  }}
+                  onWheel={(e) => e.target.blur()}
                   className="border border-gray-300 rounded px-3 py-2 mt-1 w-full focus:outline-none focus:ring-2 focus:ring-[#0A2478]"
                 />
               </div>

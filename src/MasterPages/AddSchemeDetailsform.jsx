@@ -176,6 +176,10 @@ const AddSchemeDetailsform = () => {
               <input
                 type="number"
                 placeholder="185"
+                style={{
+                  MozAppearance: "textfield",
+                }}
+                onWheel={(e) => e.target.blur()}
                 className="flex-1 w-15 border border-gray-300 rounded-l-md px-2 py-1 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
               />
               <button className="bg-[#0A2478] text-white px-4 py-2 rounded-r-md hover:bg-[#081c5b] transition-colors duration-200 text-sm font-medium">
@@ -215,6 +219,10 @@ const AddSchemeDetailsform = () => {
             </label>
             <input
               type="number"
+              style={{
+                MozAppearance: "textfield",
+              }}
+              onWheel={(e) => e.target.blur()}
               name="preCloserMinDays"
               value={formData.preCloserMinDays || ""}
               onChange={handleInputChange}
@@ -240,6 +248,10 @@ const AddSchemeDetailsform = () => {
               name="penalty"
               value={formData.penalty || ""}
               onChange={handleInputChange}
+              style={{
+                MozAppearance: "textfield",
+              }}
+              onWheel={(e) => e.target.blur()}
               className="border border-gray-300 rounded w-15 px-2 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent text-xs"
             />
           </div>
@@ -252,6 +264,10 @@ const AddSchemeDetailsform = () => {
               name="minLoanAmount"
               value={formData.minLoanAmount || ""}
               onChange={handleInputChange}
+              style={{
+                MozAppearance: "textfield",
+              }}
+              onWheel={(e) => e.target.blur()}
               className="border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent rounded w-29 px-2 py-2 text-xs"
             />
           </div>
@@ -277,6 +293,10 @@ const AddSchemeDetailsform = () => {
               <input
                 type="number"
                 placeholder="185"
+                style={{
+                  MozAppearance: "textfield",
+                }}
+                onWheel={(e) => e.target.blur()}
                 className="flex-1 w-15 border border-gray-300 rounded-l-md px-2 py-1 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
               />
               <button className="bg-[#0A2478] text-white px-4 py-2 rounded-r-md hover:bg-[#081c5b] transition-colors duration-200 text-sm font-medium">
@@ -292,6 +312,10 @@ const AddSchemeDetailsform = () => {
               name="goldApprove"
               value={formData.goldApprove || ""}
               onChange={handleInputChange}
+              style={{
+                MozAppearance: "textfield",
+              }}
+              onWheel={(e) => e.target.blur()}
               className="border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent rounded w-20 px-4 py-2 text-xs"
             />
           </div>
@@ -310,6 +334,10 @@ const AddSchemeDetailsform = () => {
               name="maxLoanAmount"
               value={formData.maxLoanAmount || ""}
               onChange={handleInputChange}
+              style={{
+                MozAppearance: "textfield",
+              }}
+              onWheel={(e) => e.target.blur()}
               className="border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent rounded px-2 py-2 text-xs"
             />
           </div>

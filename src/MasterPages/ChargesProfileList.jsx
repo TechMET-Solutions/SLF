@@ -276,6 +276,10 @@ const ChargesProfileList = () => {
                   value={formData.amount}
                   disabled={isview}
                   onChange={handleChange}
+                  style={{
+                        MozAppearance: "textfield",
+                      }}
+                      onWheel={(e) => e.target.blur()}
                   className="border border-gray-300 rounded w-[280px] h-[38px] px-3"
                 />
               </div>

@@ -175,27 +175,27 @@ const AddSchemeDetailsListform = () => {
   //   setFormData((prev) => ({ ...prev, [name]: value }));
   //   if (errors[name]) setErrors((prev) => ({ ...prev, [name]: false }));
   // };
-const handleInputChange = (e) => {
-  const { name, value } = e.target;
+  const handleInputChange = (e) => {
+    const { name, value } = e.target;
 
-  // when calcBasisOn changes – auto update paymentBasisOn
-  if (name === "calcBasisOn") {
-    setFormData(prev => ({
-      ...prev,
-      calcBasisOn: value,
-      paymentBasisOn: value === "Daily" ? "Interest" : "EMI",
-    }));
+    // when calcBasisOn changes – auto update paymentBasisOn
+    if (name === "calcBasisOn") {
+      setFormData(prev => ({
+        ...prev,
+        calcBasisOn: value,
+        paymentBasisOn: value === "Daily" ? "Interest" : "EMI",
+      }));
 
-    if (errors[name]) setErrors(prev => ({ ...prev, [name]: false }));
+      if (errors[name]) setErrors(prev => ({ ...prev, [name]: false }));
 
-    return; // stop here (we already set)
-  }
+      return; // stop here (we already set)
+    }
 
-  // normal update
-  setFormData((prev) => ({ ...prev, [name]: value }));
+    // normal update
+    setFormData((prev) => ({ ...prev, [name]: value }));
 
-  if (errors[name]) setErrors((prev) => ({ ...prev, [name]: false }));
-};
+    if (errors[name]) setErrors((prev) => ({ ...prev, [name]: false }));
+  };
 
 
   const onchange = (id, field, value) => {
@@ -357,33 +357,32 @@ const handleInputChange = (e) => {
 
           {/* Applicable From */}
           <div className="flex flex-col">
-  <label className="text-[14px] font-medium">
-    Applicable From
-    <span className="text-red-500">*</span>
-  </label>
-  <input
-    type="date"
-    name="applicableFrom"
-    value={formData.applicableFrom}
-    onChange={handleInputChange}
-    min={new Date().toISOString().split("T")[0]} // restrict to today or later
-    className={`border border-gray-300 rounded px-3 py-2 mt-1 w-[180px] bg-white ${
-      errors.applicableFrom ? "border-red-500" : ""
-    }`}
-  />
-</div>
+            <label className="text-[14px] font-medium">
+              Applicable From
+              <span className="text-red-500">*</span>
+            </label>
+            <input
+              type="date"
+              name="applicableFrom"
+              value={formData.applicableFrom}
+              onChange={handleInputChange}
+              min={new Date().toISOString().split("T")[0]} // restrict to today or later
+              className={`border border-gray-300 rounded px-3 py-2 mt-1 w-[180px] bg-white ${errors.applicableFrom ? "border-red-500" : ""
+                }`}
+            />
+          </div>
 
-<div className="flex flex-col">
-  <label className="text-[14px] font-medium">Applicable To</label>
-  <input
-    type="date"
-    name="applicableTo"
-    value={formData.applicableTo}
-    onChange={handleInputChange}
-    min={formData.applicableFrom || new Date().toISOString().split("T")[0]} // always after 'Applicable From'
-    className="border border-gray-300 rounded px-3 py-2 mt-1 w-[180px] bg-white"
-  />
-</div>
+          <div className="flex flex-col">
+            <label className="text-[14px] font-medium">Applicable To</label>
+            <input
+              type="date"
+              name="applicableTo"
+              value={formData.applicableTo}
+              onChange={handleInputChange}
+              min={formData.applicableFrom || new Date().toISOString().split("T")[0]} // always after 'Applicable From'
+              className="border border-gray-300 rounded px-3 py-2 mt-1 w-[180px] bg-white"
+            />
+          </div>
 
 
           {/* Calculation Basis (ALWAYS VISIBLE) */}
@@ -427,22 +426,22 @@ const handleInputChange = (e) => {
           {
             isDailyBasis && (
               <div className="flex flex-col">
-            <label className="text-[14px] font-medium">Add 1 Day <span className="text-red-500">*</span></label>
-            <select
-              name="addOneDay"
-              value={formData.addOneDay}
-              onChange={handleInputChange}
-              className="border border-gray-300 rounded px-3 py-2 mt-1 w-[111px] bg-white"
-            >
-               <option value="">Select</option>
-              <option value="Yes">Yes</option>
-              <option value="No">No</option>
-            </select>
-          </div>
+                <label className="text-[14px] font-medium">Add 1 Day <span className="text-red-500">*</span></label>
+                <select
+                  name="addOneDay"
+                  value={formData.addOneDay}
+                  onChange={handleInputChange}
+                  className="border border-gray-300 rounded px-3 py-2 mt-1 w-[111px] bg-white"
+                >
+                  <option value="">Select</option>
+                  <option value="Yes">Yes</option>
+                  <option value="No">No</option>
+                </select>
+              </div>
             )
           }
- 
-         
+
+
 
 
         </div>
@@ -488,21 +487,21 @@ const handleInputChange = (e) => {
           </div>
 
           {isDailyBasis && (
- <div className="flex flex-col">
-            <label className="text-[14px] font-medium">Interest in Advance <span className="text-red-500">*</span></label>
-            <select
-              name="interestInAdvance"
-              value={formData.interestInAdvance || ""}
-              onChange={handleInputChange}
-              className="border rounded-md px-2 py-1 w-[126px] h-[38px] text-sm mt-1"
-            >
-              <option value="Yes">Yes</option>
-              <option value="No">No</option>
-            </select>
-          </div>
+            <div className="flex flex-col">
+              <label className="text-[14px] font-medium">Interest in Advance <span className="text-red-500">*</span></label>
+              <select
+                name="interestInAdvance"
+                value={formData.interestInAdvance || ""}
+                onChange={handleInputChange}
+                className="border rounded-md px-2 py-1 w-[126px] h-[38px] text-sm mt-1"
+              >
+                <option value="Yes">Yes</option>
+                <option value="No">No</option>
+              </select>
+            </div>
 
           )}
-         
+
 
           {/* Pre Closer Min Days (NOW ALWAYS VISIBLE) */}
           <div className="flex flex-col">
@@ -514,6 +513,10 @@ const handleInputChange = (e) => {
               name="preCloserMinDays"
               value={formData.preCloserMinDays || ""}
               onChange={handleInputChange}
+              style={{
+                MozAppearance: "textfield",
+              }}
+              onWheel={(e) => e.target.blur()}
               className="border border-gray-300 rounded px-3 py-2 mt-1 w-[130px] bg-white"
             />
           </div>
@@ -544,31 +547,35 @@ const handleInputChange = (e) => {
               name="penalty"
               value={formData.penalty || ""}
               onChange={handleInputChange}
+              style={{
+                MozAppearance: "textfield",
+              }}
+              onWheel={(e) => e.target.blur()}
               className="border border-gray-300 rounded px-3 py-2 mt-1 w-[75px] bg-white"
             />
           </div>
 
           {/* Min Loan Amount */}
-         
+
 
           {/* Payment Basis On */}
           <div className="flex flex-col">
-  <label className="text-xs font-medium mb-1">
-    Payment Basis On <span className="text-red-600">*</span>
-  </label>
+            <label className="text-xs font-medium mb-1">
+              Payment Basis On <span className="text-red-600">*</span>
+            </label>
 
- <input
-  type="text"
-  name="paymentBasisOn"
-  value={formData.calcBasisOn === "Daily" ? "Interest" :
-         formData.calcBasisOn === "Monthly" ? "EMI" : ""}
-  readOnly
-  className="border border-gray-300 rounded px-3 py-2 w-[113px] bg-gray-100 text-sm"
-/>
+            <input
+              type="text"
+              name="paymentBasisOn"
+              value={formData.calcBasisOn === "Daily" ? "Interest" :
+                formData.calcBasisOn === "Monthly" ? "EMI" : ""}
+              readOnly
+              className="border border-gray-300 rounded px-3 py-2 w-[113px] bg-gray-100 text-sm"
+            />
 
-</div>
+          </div>
 
-          
+
 
 
           <div className="flex flex-col">
@@ -603,11 +610,15 @@ const handleInputChange = (e) => {
               name="goldApprovePercent"
               value={formData.goldApprovePercent}
               onChange={handleInputChange}
+              style={{
+                MozAppearance: "textfield",
+              }}
+              onWheel={(e) => e.target.blur()}
               className="border border-gray-300 rounded px-3 py-2 mt-1 w-[100px] bg-white"
             />
           </div>
 
- <div className="flex flex-col">
+          <div className="flex flex-col">
             <label className="text-[14px] font-medium">
               Min Loan Amount
             </label>
@@ -616,6 +627,10 @@ const handleInputChange = (e) => {
               name="minLoanAmount"
               value={formData.minLoanAmount || ""}
               onChange={handleInputChange}
+              style={{
+                MozAppearance: "textfield",
+              }}
+              onWheel={(e) => e.target.blur()}
               className="border border-gray-300 rounded px-3 py-2 mt-1 w-[116px] bg-white"
             />
           </div>
@@ -627,11 +642,15 @@ const handleInputChange = (e) => {
               name="maxLoanAmount"
               value={formData.maxLoanAmount}
               onChange={handleInputChange}
+              style={{
+                MozAppearance: "textfield",
+              }}
+              onWheel={(e) => e.target.blur()}
               className="border border-gray-300 rounded px-3 py-2 mt-1 w-[150px] bg-white"
             />
           </div>
 
-           <div className="flex flex-col">
+          <div className="flex flex-col">
             <label className="text-[14px] font-medium">For party Type <span className="text-red-500">*</span></label>
             <select
               name="partyType"
@@ -654,6 +673,10 @@ const handleInputChange = (e) => {
               name="administrativeCharges"
               value={formData.administrativeCharges}
               onChange={handleInputChange}
+              style={{
+                MozAppearance: "textfield",
+              }}
+              onWheel={(e) => e.target.blur()}
               className="border border-gray-300 rounded px-3 py-2 mt-1 w-[151px] bg-white"
             />
           </div>
@@ -702,6 +725,10 @@ const handleInputChange = (e) => {
                 name="docChargePercent"
                 value={formData.docChargePercent}
                 onChange={handleInputChange}
+                style={{
+                  MozAppearance: "textfield",
+                }}
+                onWheel={(e) => e.target.blur()}
                 className="p-2 border border-gray-300 rounded text-sm w-50"
               />
             </div>
@@ -714,6 +741,10 @@ const handleInputChange = (e) => {
                 name="docChargeMin"
                 value={formData.docChargeMin}
                 onChange={handleInputChange}
+                style={{
+                  MozAppearance: "textfield",
+                }}
+                onWheel={(e) => e.target.blur()}
                 className="p-2 border border-gray-300 rounded text-sm w-50"
               />
             </div>
@@ -726,6 +757,10 @@ const handleInputChange = (e) => {
                 name="docChargeMax"
                 value={formData.docChargeMax}
                 onChange={handleInputChange}
+                style={{
+                  MozAppearance: "textfield",
+                }}
+                onWheel={(e) => e.target.blur()}
                 className="p-2 border border-gray-300 rounded text-sm w-50"
               />
             </div>
@@ -761,6 +796,10 @@ const handleInputChange = (e) => {
                         onChange={(e) => onchange(rate.id, "from", e.target.value)}
                         className="border border-gray-300 rounded px-2 py-1 w-[200px] text-center"
                         placeholder="From"
+                        style={{
+                          MozAppearance: "textfield",
+                        }}
+                        onWheel={(e) => e.target.blur()}
                       />
                     </td>
 
@@ -772,6 +811,10 @@ const handleInputChange = (e) => {
                         onChange={(e) => onchange(rate.id, "to", e.target.value)}
                         className="border border-gray-300 rounded px-2 py-1 w-[200px] text-center"
                         placeholder="To"
+                        style={{
+                          MozAppearance: "textfield",
+                        }}
+                        onWheel={(e) => e.target.blur()}
                       />
                     </td>
 
@@ -788,29 +831,29 @@ const handleInputChange = (e) => {
                         onChange={(e) => onchange(rate.id, "type", e.target.value)}
                         className="border border-gray-300 rounded px-2 py-1 w-28"
                       >
-                      <option
-  value="days"
-  disabled={formData.calcBasisOn === "Monthly"}
-  className={
-    formData.calcBasisOn === "Monthly"
-      ? "opacity-50 cursor-not-allowed"
-      : ""
-  }
->
-  Days
-</option>
+                        <option
+                          value="days"
+                          disabled={formData.calcBasisOn === "Monthly"}
+                          className={
+                            formData.calcBasisOn === "Monthly"
+                              ? "opacity-50 cursor-not-allowed"
+                              : ""
+                          }
+                        >
+                          Days
+                        </option>
 
-<option
-  value="months"
-  disabled={formData.calcBasisOn === "Daily"}
-  className={
-    formData.calcBasisOn === "Daily"
-      ? "opacity-50 cursor-not-allowed"
-      : ""
-  }
->
-  Months
-</option>
+                        <option
+                          value="months"
+                          disabled={formData.calcBasisOn === "Daily"}
+                          className={
+                            formData.calcBasisOn === "Daily"
+                              ? "opacity-50 cursor-not-allowed"
+                              : ""
+                          }
+                        >
+                          Months
+                        </option>
 
                         {/* <option value="years">Years</option> */}
                       </select>
@@ -826,6 +869,10 @@ const handleInputChange = (e) => {
                         onChange={(e) => onchange(rate.id, "addInt", e.target.value)}
                         className="border border-gray-300 rounded px-2 py-1 w-24 text-center"
                         placeholder="%"
+                        style={{
+                          MozAppearance: "textfield",
+                        }}
+                        onWheel={(e) => e.target.blur()}
                       />
                     </td>
 

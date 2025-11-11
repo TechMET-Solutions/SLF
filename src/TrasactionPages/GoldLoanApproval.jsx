@@ -7,24 +7,24 @@ import { API } from "../api";
 const GoldLoanApproval = () => {
 
   const dummyBanks = [
-  { id: 1, name: "HDFC Bank" },
-  { id: 2, name: "SBI Bank" },
-  { id: 3, name: "ICICI Bank" },
-];
-const branches = [
-  { id: 1, name: "Bhagur" },
-  { id: 2, name: "Nashik Road" },
-  { id: 3, name: "Mumbai" },
-  { id: 4, name: "Pune" },
-];
+    { id: 1, name: "HDFC Bank" },
+    { id: 2, name: "SBI Bank" },
+    { id: 3, name: "ICICI Bank" },
+  ];
+  const branches = [
+    { id: 1, name: "Bhagur" },
+    { id: 2, name: "Nashik Road" },
+    { id: 3, name: "Mumbai" },
+    { id: 4, name: "Pune" },
+  ];
 
-const paidByOptions = ["Cash", "Bank Transfer", "UPI", "Online Payment"];
+  const paidByOptions = ["Cash", "Bank Transfer", "UPI", "Online Payment"];
 
   const [rows, setRows] = useState([
     { paidBy: "", utrNumber: "", bank: "", customerAmount: "" },
   ]);
 
-  console.log(rows,"rows")
+  console.log(rows, "rows")
 
   const handleRowChange = (index, field, value) => {
     const updatedRows = [...rows];
@@ -48,13 +48,13 @@ const paidByOptions = ["Cash", "Bank Transfer", "UPI", "Online Payment"];
 
   const [loanData, setLoanData] = useState(null);
   const [loanSchemeData, setLoanSchemeData] = useState(null);
-  console.log(loanSchemeData,"loanschemedata")
-  console.log(loanData,"LoanData")
+  console.log(loanSchemeData, "loanschemedata")
+  console.log(loanData, "LoanData")
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const navigate = useNavigate();
   const location = useLocation();
-   
+
   // Get loan ID from URL params or location state
   const { loanId } = location.state || {};
 
@@ -187,15 +187,15 @@ const paidByOptions = ["Cash", "Bank Transfer", "UPI", "Online Payment"];
     if (!loanData || !loanData.id) return setError("Loan ID missing");
 
 
-  const loanAmount = Number(loanData.Loan_amount || 0);
+    const loanAmount = Number(loanData.Loan_amount || 0);
 
-  // ✅ check here
-if (totalAmount !== loanAmount) {
-  alert(
-    `Total Payment Details amount (${totalAmount}) must be equal to Loan Amount (${loanAmount})`
-  );
-  return;
-}
+    // ✅ check here
+    if (totalAmount !== loanAmount) {
+      alert(
+        `Total Payment Details amount (${totalAmount}) must be equal to Loan Amount (${loanAmount})`
+      );
+      return;
+    }
 
 
     const confirmApprove = window.confirm("Approve this loan application?");
@@ -556,7 +556,7 @@ if (totalAmount !== loanAmount) {
               </label>
               <div className="flex mt-1">
                 <div className="bg-[#0B2B68] text-white px-2 py-1 rounded-l-md text-sm flex items-center justify-center">
-                 {loanSchemeData.docChargePercent}
+                  {loanSchemeData.docChargePercent}
                 </div>
                 <input
                   type="text"
@@ -602,48 +602,48 @@ if (totalAmount !== loanAmount) {
             {numberToWords(loanData.Loan_amount)}
           </div>
         </div>
- <div className="px-[100px] mt-6">
-      <h1 className="font-bold text-[24px] text-[#0A2478] mb-4">Payment Details</h1>
-      <div className="border border-gray-300 rounded-md overflow-hidden shadow-sm">
-        <table className="w-full border-collapse text-sm">
-          <thead>
-            <tr className="bg-[#0A2478] text-white text-center">
-              <th className="py-2 border">Sr No</th>
-              <th className="py-2 border">Paid By</th>
-              <th className="py-2 border">UTR Number</th>
-              <th className="py-2 border">Bank</th>
-              <th className="py-2 border">Customer Bank</th>
-              <th className="py-2 border">Customer Amount</th>
-              <th className="py-2 border">Action</th>
-            </tr>
-          </thead>
-          <tbody>
-            {rows.map((row, index) => (
-              <tr key={index} className="text-center bg-white">
-                <td className="py-2">{index + 1}</td>
-                <td className="py-2">
-                  <select
-                    value={row.paidBy}
-                    onChange={(e) => handleRowChange(index, "paidBy", e.target.value)}
-                    className="border border-gray-300 rounded-md px-2 py-1 w-[120px]"
-                  >
-                    <option value="">Select</option>
-                    {paidByOptions.map((option, i) => (
-                      <option key={i} value={option}>
-                        {option}
-                      </option>
-                    ))}
-                  </select>
-                </td>
-                <td className="py-2">
-                  <input
-                    type="text"
-                    value={row.utrNumber}
-                    onChange={(e) => handleRowChange(index, "utrNumber", e.target.value)}
-                    className="border border-gray-300 rounded-md px-2 py-1 w-[150px]"
-                  />
-                </td>
-                {/* <td className="py-2">
+        <div className="px-[100px] mt-6">
+          <h1 className="font-bold text-[24px] text-[#0A2478] mb-4">Payment Details</h1>
+          <div className="border border-gray-300 rounded-md overflow-hidden shadow-sm">
+            <table className="w-full border-collapse text-sm">
+              <thead>
+                <tr className="bg-[#0A2478] text-white text-center">
+                  <th className="py-2 border">Sr No</th>
+                  <th className="py-2 border">Paid By</th>
+                  <th className="py-2 border">UTR Number</th>
+                  <th className="py-2 border">Bank</th>
+                  <th className="py-2 border">Customer Bank</th>
+                  <th className="py-2 border">Customer Amount</th>
+                  <th className="py-2 border">Action</th>
+                </tr>
+              </thead>
+              <tbody>
+                {rows.map((row, index) => (
+                  <tr key={index} className="text-center bg-white">
+                    <td className="py-2">{index + 1}</td>
+                    <td className="py-2">
+                      <select
+                        value={row.paidBy}
+                        onChange={(e) => handleRowChange(index, "paidBy", e.target.value)}
+                        className="border border-gray-300 rounded-md px-2 py-1 w-[120px]"
+                      >
+                        <option value="">Select</option>
+                        {paidByOptions.map((option, i) => (
+                          <option key={i} value={option}>
+                            {option}
+                          </option>
+                        ))}
+                      </select>
+                    </td>
+                    <td className="py-2">
+                      <input
+                        type="text"
+                        value={row.utrNumber}
+                        onChange={(e) => handleRowChange(index, "utrNumber", e.target.value)}
+                        className="border border-gray-300 rounded-md px-2 py-1 w-[150px]"
+                      />
+                    </td>
+                    {/* <td className="py-2">
                   <select
                     value={row.bank}
                     onChange={(e) => handleRowChange(index, "bank", e.target.value)}
@@ -657,36 +657,36 @@ if (totalAmount !== loanAmount) {
                     ))}
                   </select>
                 </td> */}
-                <td className="py-2">
-  {row.paidBy === "Cash" ? (
-   <select
-      value={row.customerBank}
-      onChange={(e) => handleRowChange(index, "customerBank", e.target.value)}
-      className="border border-gray-300 rounded-md px-2 py-1 w-[140px]"
-    >
-      <option value="">Select Branch</option>
-      {branches.map((b) => (
-        <option key={b.id} value={b.name}>{b.name}</option>
-      ))}
-    </select>
-  ) : (
-     <select
-                    value={row.bank}
-                    onChange={(e) => handleRowChange(index, "bank", e.target.value)}
-                    className="border border-gray-300 rounded-md px-2 py-1 w-[140px]"
-                  >
-                    <option value="">Select Bank</option>
-                    {dummyBanks.map((b) => (
-                      <option key={b.id} value={b.name}>
-                        {b.name}
-                      </option>
-                    ))}
-                  </select>
-  )}
-</td>
+                    <td className="py-2">
+                      {row.paidBy === "Cash" ? (
+                        <select
+                          value={row.customerBank}
+                          onChange={(e) => handleRowChange(index, "customerBank", e.target.value)}
+                          className="border border-gray-300 rounded-md px-2 py-1 w-[140px]"
+                        >
+                          <option value="">Select Branch</option>
+                          {branches.map((b) => (
+                            <option key={b.id} value={b.name}>{b.name}</option>
+                          ))}
+                        </select>
+                      ) : (
+                        <select
+                          value={row.bank}
+                          onChange={(e) => handleRowChange(index, "bank", e.target.value)}
+                          className="border border-gray-300 rounded-md px-2 py-1 w-[140px]"
+                        >
+                          <option value="">Select Bank</option>
+                          {dummyBanks.map((b) => (
+                            <option key={b.id} value={b.name}>
+                              {b.name}
+                            </option>
+                          ))}
+                        </select>
+                      )}
+                    </td>
 
-                <td className="py-2">
-                  {/* <select
+                    <td className="py-2">
+                      {/* <select
                     value={row.customerBank}
                     onChange={(e) => handleRowChange(index, "customerBank", e.target.value)}
                     className="border border-gray-300 rounded-md px-2 py-1 w-[140px]"
@@ -698,60 +698,64 @@ if (totalAmount !== loanAmount) {
                       </option>
                     ))}
                   </select> */}
-                  {row.paidBy === "Cash" ? (
-  <p>-- </p>
-  ) : (
-    <select
-                    value={row.customerBank}
-                    onChange={(e) => handleRowChange(index, "customerBank", e.target.value)}
-                    className="border border-gray-300 rounded-md px-2 py-1 w-[140px]"
-                  >
-                    <option value="">Select Customer Bank</option>
-                    {dummyBanks.map((b) => (
-                      <option key={b.id} value={b.name}>
-                        {b.name}
-                      </option>
-                    ))}
-                  </select> 
-  )}
-                </td>
-                <td className="py-2">
-                  <input
-                    type="number"
-                    value={row.customerAmount}
-                    onChange={(e) =>
-                      handleRowChange(index, "customerAmount", e.target.value)
-                    }
-                    className="border border-gray-300 rounded-md px-2 py-1 w-[120px]"
-                  />
-                </td>
-                <td className="py-2 flex justify-center items-center gap-2">
-                  <button
-                    onClick={handleAddRow}
-                    className="bg-[#0A2478] text-white px-2 py-2 rounded hover:bg-blue-700"
-                  >
-                    <IoIosAddCircleOutline size={17} />
-                  </button>
-                  <button
-                    onClick={() => handleRemoveRow(index)}
-                    className="bg-red-600 text-white px-2 py-2 rounded hover:bg-red-700"
-                  >
-                    <IoIosCloseCircleOutline size={17} />
-                  </button>
-                </td>
-              </tr>
-            ))}
-            <tr className="border font-semibold bg-gray-100">
-              <td colSpan="5" className="text-right pr-4 py-2">
-                Total
-              </td>
-              <td className="text-center">{totalAmount.toFixed(2)}</td>
-              <td></td>
-            </tr>
-          </tbody>
-        </table>
-      </div>
-    </div>
+                      {row.paidBy === "Cash" ? (
+                        <p>-- </p>
+                      ) : (
+                        <select
+                          value={row.customerBank}
+                          onChange={(e) => handleRowChange(index, "customerBank", e.target.value)}
+                          className="border border-gray-300 rounded-md px-2 py-1 w-[140px]"
+                        >
+                          <option value="">Select Customer Bank</option>
+                          {dummyBanks.map((b) => (
+                            <option key={b.id} value={b.name}>
+                              {b.name}
+                            </option>
+                          ))}
+                        </select>
+                      )}
+                    </td>
+                    <td className="py-2">
+                      <input
+                        type="number"
+                        value={row.customerAmount}
+                        onChange={(e) =>
+                          handleRowChange(index, "customerAmount", e.target.value)
+                        }
+                        style={{
+                          MozAppearance: "textfield",
+                        }}
+                        onWheel={(e) => e.target.blur()}
+                        className="border border-gray-300 rounded-md px-2 py-1 w-[120px]"
+                      />
+                    </td>
+                    <td className="py-2 flex justify-center items-center gap-2">
+                      <button
+                        onClick={handleAddRow}
+                        className="bg-[#0A2478] text-white px-2 py-2 rounded hover:bg-blue-700"
+                      >
+                        <IoIosAddCircleOutline size={17} />
+                      </button>
+                      <button
+                        onClick={() => handleRemoveRow(index)}
+                        className="bg-red-600 text-white px-2 py-2 rounded hover:bg-red-700"
+                      >
+                        <IoIosCloseCircleOutline size={17} />
+                      </button>
+                    </td>
+                  </tr>
+                ))}
+                <tr className="border font-semibold bg-gray-100">
+                  <td colSpan="5" className="text-right pr-4 py-2">
+                    Total
+                  </td>
+                  <td className="text-center">{totalAmount.toFixed(2)}</td>
+                  <td></td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
         {/* ===== Scheme Details & Effective Interest Rates ===== */}
         <div className="flex gap-8 text-xs mx-14 justify-center">
           {/* Scheme Details Table */}

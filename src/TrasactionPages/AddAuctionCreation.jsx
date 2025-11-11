@@ -106,17 +106,17 @@ function AddAuctionCreation() {
           <h2 className="text-red-600 font-bold text-[20px]">
             Auction Creation
           </h2>
-           {/* 🔹 Search Box */}
-    <div className="flex items-right gap-3 ml-130">
-      <input
-        type="text"
-        placeholder="Loan No"
-        className="border border-gray-300 rounded-l-md px-3 py-2 text-sm w-56  focus:outline-none focus:ring-2 focus:ring-[#0A2478] placeholder-gray-500"
-      />
-      <button className="bg-[#0A2478] px-3 py-2 rounded-r-md flex items-center justify-center">
-        <HiMagnifyingGlass className="text-white w-5 h-5" />
-      </button>
-    </div>
+          {/* 🔹 Search Box */}
+          <div className="flex items-right gap-3 ml-130">
+            <input
+              type="text"
+              placeholder="Loan No"
+              className="border border-gray-300 rounded-l-md px-3 py-2 text-sm w-56  focus:outline-none focus:ring-2 focus:ring-[#0A2478] placeholder-gray-500"
+            />
+            <button className="bg-[#0A2478] px-3 py-2 rounded-r-md flex items-center justify-center">
+              <HiMagnifyingGlass className="text-white w-5 h-5" />
+            </button>
+          </div>
           <div className="flex gap-3">
             <button className="bg-[#0A2478] text-white text-sm rounded px-4 py-2 cursor-pointer">
               Submit
@@ -182,6 +182,10 @@ function AddAuctionCreation() {
             name="fees"
             value={formData.fees}
             onChange={handleInputChange}
+            style={{
+              MozAppearance: "textfield",
+            }}
+            onWheel={(e) => e.target.blur()}
             className=" no-spinner border border-gray-300 rounded px-3 w-30 py-2 text-xs focus:outline-none focus:ring-2 focus:ring-blue-500"
             placeholder="Enter fees"
           />
@@ -196,6 +200,10 @@ function AddAuctionCreation() {
             name="charges"
             value={formData.charges}
             onChange={handleInputChange}
+            style={{
+              MozAppearance: "textfield",
+            }}
+            onWheel={(e) => e.target.blur()}
             className="  no-spinner border border-gray-300 rounded px-3 w-30 py-2 text-xs focus:outline-none focus:ring-2 focus:ring-blue-500"
           />
         </div>
@@ -241,9 +249,8 @@ function AddAuctionCreation() {
               {data.map((row, index) => (
                 <tr
                   key={row.id}
-                  className={`border-b ${
-                    index % 2 === 0 ? "bg-gray-50" : "bg-white"
-                  }`}
+                  className={`border-b ${index % 2 === 0 ? "bg-gray-50" : "bg-white"
+                    }`}
                 >
                   <td className="px-4 py-2 flex items-center justify-center">
                     <input type="checkbox" />

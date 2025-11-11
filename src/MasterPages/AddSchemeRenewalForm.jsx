@@ -2,8 +2,8 @@ import { useEffect, useState } from "react";
 
 const AddSchemeRenewalForm = () => {
     useEffect(() => {
-    document.title = "SLF | Add Scheme Renewal Form";
-  }, []);
+        document.title = "SLF | Add Scheme Renewal Form";
+    }, []);
     const [data, setData] = useState([
         { id: 1, from: 0, to: 62, type: "Days", addInt: 15 },
         { id: 2, from: 63, to: 123, type: "Days", addInt: 18 },
@@ -49,7 +49,7 @@ const AddSchemeRenewalForm = () => {
                             Scheme Description*
                         </label>
                         <input
-                            type="text" 
+                            type="text"
                             placeholder="Description"
                             className="w-full border border-gray-300 rounded-md px-3 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                         />
@@ -63,6 +63,10 @@ const AddSchemeRenewalForm = () => {
                         <input
                             type="number"
                             placeholder="00"
+                            style={{
+                                MozAppearance: "textfield",
+                            }}
+                            onWheel={(e) => e.target.blur()}
                             className="w-full border border-gray-300 rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                         />
                     </div>
@@ -75,6 +79,10 @@ const AddSchemeRenewalForm = () => {
                         <input
                             type="number"
                             placeholder="185"
+                            style={{
+                                MozAppearance: "textfield",
+                            }}
+                            onWheel={(e) => e.target.blur()}
                             className="w-full border border-gray-300 rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                         />
                     </div>
@@ -112,6 +120,10 @@ const AddSchemeRenewalForm = () => {
                             <input
                                 type="number"
                                 placeholder="185"
+                                style={{
+                                    MozAppearance: "textfield",
+                                }}
+                                onWheel={(e) => e.target.blur()}
                                 className="flex-1 border border-gray-300 max-w-[100px] rounded-l-md px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                             />
                             <button className="bg-[#0A2478] text-white px-4 py-2 rounded-r-md hover:bg-[#081c5b] transition-colors duration-200 text-sm font-medium">
@@ -150,6 +162,10 @@ const AddSchemeRenewalForm = () => {
                         <input
                             type="number"
                             placeholder="85"
+                            style={{
+                                MozAppearance: "textfield",
+                            }}
+                            onWheel={(e) => e.target.blur()}
                             className="w-full border border-gray-300 rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                         />
                     </div>
@@ -162,6 +178,10 @@ const AddSchemeRenewalForm = () => {
                         <input
                             type="number"
                             placeholder="50000"
+                            style={{
+                                MozAppearance: "textfield",
+                            }}
+                            onWheel={(e) => e.target.blur()}
                             className="w-full border border-gray-300 rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                         />
                     </div>
@@ -174,6 +194,10 @@ const AddSchemeRenewalForm = () => {
                         <input
                             type="number"
                             placeholder="2000000"
+                            style={{
+                                MozAppearance: "textfield",
+                            }}
+                            onWheel={(e) => e.target.blur()}
                             className="w-full border border-gray-300 rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                         />
                     </div>
@@ -186,6 +210,10 @@ const AddSchemeRenewalForm = () => {
                         <input
                             type="number"
                             placeholder="30"
+                            style={{
+                                MozAppearance: "textfield",
+                            }}
+                            onWheel={(e) => e.target.blur()}
                             className="w-full border border-gray-300 rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                         />
                     </div>
@@ -242,9 +270,8 @@ const AddSchemeRenewalForm = () => {
                             {data.map((row, index) => (
                                 <tr
                                     key={row.id}
-                                    className={`${
-                                        index % 2 === 0 ? "bg-gray-50" : "bg-white"
-                                    }`}
+                                    className={`${index % 2 === 0 ? "bg-gray-50" : "bg-white"
+                                        }`}
                                 >
                                     <td className="px-4 py-2 border-r border-gray-200">{row.from}</td>
                                     <td className="px-4 py-2 border-r border-gray-200">{row.to}</td>
@@ -270,11 +297,11 @@ const AddSchemeRenewalForm = () => {
                     />
                 </div>
 
-                  <div>
+                <div>
                     <h3 className="font-semibold">Renewal List</h3>
-                   
-                   <table className="w-full border border-gray-300 text-sm">
-                    <thead className="bg-[#0A2478] text-white">
+
+                    <table className="w-full border border-gray-300 text-sm">
+                        <thead className="bg-[#0A2478] text-white">
                             <tr>
                                 <th className="px-4 py-2 border-r border-gray-200">App. From</th>
                                 <th className="px-4 py-2 border-r border-gray-200">App .To</th>
@@ -283,7 +310,7 @@ const AddSchemeRenewalForm = () => {
                             </tr>
                         </thead>
 
-                   </table>
+                    </table>
                 </div>
             </div>
         </div>

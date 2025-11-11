@@ -580,6 +580,10 @@ const AddCustProfile = () => {
                       value={formData.aadhar}
                       onChange={handleChange}
                       className="border border-gray-300 border-r-0 rounded-l px-3 py-2 w-full pr-10 focus:outline-none focus:ring-1 focus:ring-blue-500 bg-white"
+                      style={{
+                        MozAppearance: "textfield",
+                      }}
+                      onWheel={(e) => e.target.blur()}
                     />
 
                     {/* Hidden file input */}
@@ -679,6 +683,10 @@ const AddCustProfile = () => {
                     value={formData.otp}
                     onChange={handleChange}
                     className="border border-gray-300 rounded-[8px] px-3 py-2 w-full bg-white focus:outline-none focus:ring-1 focus:ring-blue-500"
+                    style={{
+                      MozAppearance: "textfield",
+                    }}
+                    onWheel={(e) => e.target.blur()}
                   />
                   <img
                     src={righttick}
@@ -948,6 +956,10 @@ const AddCustProfile = () => {
                   onChange={handleChange}
                   placeholder="Eg.+91 9658426853"
                   className="border border-gray-300 rounded px-3 py-2 mt-1 w-[180px] bg-white"
+                  style={{
+                    MozAppearance: "textfield",
+                  }}
+                  onWheel={(e) => e.target.blur()}
                 />
               </div>
 

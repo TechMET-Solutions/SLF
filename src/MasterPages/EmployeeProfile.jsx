@@ -653,6 +653,10 @@ const EmployeeProfile = () => {
                             disabled={mode === "view"}
                             value={formData.aadhar_card}
                             onChange={handleInputChange}
+                            style={{
+                        MozAppearance: "textfield",
+                      }}
+                      onWheel={(e) => e.target.blur()}
                             className="border border-[#C4C4C4] border-r-0 rounded-l px-3 py-2 w-full pr-10 focus:outline-none focus:ring-1 focus:ring-blue-500 bg-white"
                           />
 
@@ -717,6 +721,10 @@ const EmployeeProfile = () => {
                         disabled={mode === "view"}
                         onChange={handleInputChange}
                         placeholder="Mobile No"
+                        style={{
+                        MozAppearance: "textfield",
+                      }}
+                      onWheel={(e) => e.target.blur()}
                         className="border border-[#C4C4C4] rounded-md px-3 py-2 focus:outline-none focus:ring-1 focus:ring-blue-500"
                       />
                     </div>
@@ -729,6 +737,10 @@ const EmployeeProfile = () => {
                         onChange={handleInputChange}
                         disabled={mode === "view"}
                         placeholder="Mobile No"
+                        style={{
+                        MozAppearance: "textfield",
+                      }}
+                      onWheel={(e) => e.target.blur()}
                         className="border border-[#C4C4C4] rounded-md px-3 py-2 focus:outline-none focus:ring-1 focus:ring-blue-500"
                       />
                     </div>

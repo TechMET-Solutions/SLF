@@ -67,7 +67,7 @@ const BidderRegistration = () => {
         return;
       }
 
-           // 🔹 Validation (BEFORE sending API request)
+      // 🔹 Validation (BEFORE sending API request)
       const mobileRegex = /^[0-9]{10}$/;
       if (!mobileRegex.test(formData.mobile_no)) {
         alert("Mobile Number must be a valid 10-digit number.");
@@ -77,6 +77,13 @@ const BidderRegistration = () => {
         alert("Alt Mobile Number must be a valid 10-digit number.");
         return;
       }
+
+      const aadharRegex = /^[0-9]{12}$/;
+      if (!aadharRegex.test(formData.aadhar_no)) {
+        alert("Aadhaar Number must be a valid 12-digit number.");
+        return;
+      }
+
 
       const data = new FormData();
       Object.entries(formData).forEach(([key, value]) => data.append(key, value));
@@ -148,24 +155,32 @@ const BidderRegistration = () => {
                 <div className="px-3 mb-6 w-[220px]">
                   <label className="text-gray-900 font-medium">Mobile Number <span className='text-red-600'>*</span></label>
                   <input
-                    type="tel"
+                    type="number"
                     name="mobile_no"
                     value={formData.mobile_no}
                     onChange={handleChange}
                     placeholder="Mobile Number"
                     className="border border-gray-300 rounded-md px-3 py-1.5 w-full"
+                    style={{
+                      MozAppearance: "textfield",
+                    }}
+                    onWheel={(e) => e.target.blur()}
                   />
                 </div>
 
                 <div className="px-3 mb-6 w-[220px]">
                   <label className="text-gray-900 font-medium">Alternate Mobile Number</label>
                   <input
-                    type="tel"
+                    type="number"
                     name="alt_mob_no"
                     value={formData.alt_mob_no}
                     onChange={handleChange}
                     placeholder="Alternate Mobile Number"
                     className="border border-gray-300 rounded-md px-3 py-1.5 w-full"
+                    style={{
+                      MozAppearance: "textfield",
+                    }}
+                    onWheel={(e) => e.target.blur()}
                   />
                 </div>
 
@@ -212,12 +227,16 @@ const BidderRegistration = () => {
                 <div className="px-3 mb-6 w-[180px]">
                   <label className="text-gray-900 font-medium">Landline No 1 <span className='text-red-600'>*</span></label>
                   <input
-                    type="tel"
+                    type="number"
                     name="landline_no"
                     value={formData.landline_no}
                     onChange={handleChange}
                     placeholder="203-53363"
                     className="border border-gray-300 rounded-md px-3 py-1.5 w-full"
+                    style={{
+                      MozAppearance: "textfield",
+                    }}
+                    onWheel={(e) => e.target.blur()}
                   />
                 </div>
 
@@ -225,12 +244,16 @@ const BidderRegistration = () => {
                 <div className="px-3 mb-6 w-[180px]">
                   <label className="text-gray-900 font-medium">Landline No 2</label>
                   <input
-                    type="tel"
+                    type="number"
                     name="landline_no2"
                     value={formData.landline_no2}
                     onChange={handleChange}
                     placeholder="203-53363"
                     className="border border-gray-300 rounded-md px-3 py-1.5 w-full"
+                    style={{
+                      MozAppearance: "textfield",
+                    }}
+                    onWheel={(e) => e.target.blur()}
                   />
                 </div>
 
@@ -264,12 +287,16 @@ const BidderRegistration = () => {
                 <div className="px-3 mb-6 w-[220px]">
                   <label className="text-gray-900 font-medium">Aadhar No <span className='text-red-600'>*</span></label>
                   <input
-                    type="text"
+                    type="number"
                     name="aadhar_no"
                     value={formData.aadhar_no}
                     onChange={handleChange}
                     placeholder="Aadhar no"
                     className="border border-gray-300 rounded-md px-3 py-1.5 w-full"
+                    style={{
+                      MozAppearance: "textfield",
+                    }}
+                    onWheel={(e) => e.target.blur()}
                   />
                 </div>
 
@@ -404,16 +431,20 @@ const BidderRegistration = () => {
                 name="account_no"
                 value={formData.account_no}
                 onChange={handleChange}
-                type="text"
+                type="number"
                 placeholder="521753215"
                 className="border border-gray-300 rounded-md px-3 py-2 w-full"
+                style={{
+                  MozAppearance: "textfield",
+                }}
+                onWheel={(e) => e.target.blur()}
               />
             </div>
             {/* IFSC Number */}
             <div className="flex flex-col gap-2 px-3 mb-6 w-[200px]">
               <label className="text-gray-900 font-medium">IFSC Number <span className='text-red-600'>*</span></label>
               <input
-              name="ifsc_code"
+                name="ifsc_code"
                 value={formData.ifsc_code}
                 onChange={handleChange}
                 type="text"
@@ -426,7 +457,7 @@ const BidderRegistration = () => {
             <div className="flex flex-col gap-2 px-3 mb-6 w-[280px]">
               <label className="text-gray-900 font-medium">Account Holder Name <span className='text-red-600'>*</span></label>
               <input
-              name="account_holder_name"
+                name="account_holder_name"
                 value={formData.account_holder_name}
                 onChange={handleChange}
                 type="text"
@@ -439,7 +470,7 @@ const BidderRegistration = () => {
             <div className="flex flex-col gap-2 px-3 mb-6 w-[250px]">
               <label className="text-gray-900 font-medium">Bank Name <span className='text-red-600'>*</span></label>
               <input
-              name="bank_name"
+                name="bank_name"
                 value={formData.bank_name}
                 onChange={handleChange}
                 type="text"
@@ -452,7 +483,7 @@ const BidderRegistration = () => {
             <div className="flex flex-col gap-2 px-3 mb-6 w-[320px]">
               <label className="text-gray-900 font-medium">Bank Address <span className='text-red-600'>*</span></label>
               <input
-              name="bank_address"
+                name="bank_address"
                 value={formData.bank_address}
                 onChange={handleChange}
                 type="text"

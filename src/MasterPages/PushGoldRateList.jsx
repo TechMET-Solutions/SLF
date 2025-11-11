@@ -101,6 +101,10 @@ const PushGoldRateList = () => {
                   type="number"
                   value={goldRate}
                   onChange={(e) => setGoldRate(e.target.value)}
+                  style={{
+                    MozAppearance: "textfield",
+                  }}
+                  onWheel={(e) => e.target.blur()}
                   className="border border-gray-400 rounded px-3 py-1 text-[11.25px] w-[168px] h-[28px]"
                 />
               </div>

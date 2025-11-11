@@ -239,6 +239,10 @@ function ViewLoanCharges() {
               name="loanAmt"
               value={loanData.loanAmt}
               onChange={handleChange}
+              style={{
+                MozAppearance: "textfield",
+              }}
+              onWheel={(e) => e.target.blur()}
               className="border border-gray-300 px-3 py-2 w-[150px] bg-white rounded-[8px]"
             />
           </div>
@@ -250,6 +254,10 @@ function ViewLoanCharges() {
               name="pendingAmt"
               value={loanData.pendingAmt}
               onChange={handleChange}
+              style={{
+                MozAppearance: "textfield",
+              }}
+              onWheel={(e) => e.target.blur()}
               className="border border-gray-300 px-3 py-2 w-[150px] bg-white rounded-[8px]"
             />
           </div>
@@ -328,6 +336,10 @@ function ViewLoanCharges() {
                       type="number"
                       value={row.grossAmount}
                       onChange={(e) => handleRowChange(index, "grossAmount", e.target.value)}
+                      style={{
+                        MozAppearance: "textfield",
+                      }}
+                      onWheel={(e) => e.target.blur()}
                       className="border border-gray-300 rounded-md px-2 py-1 w-[100px]"
                     />
                   </td>
@@ -336,6 +348,10 @@ function ViewLoanCharges() {
                       type="number"
                       value={row.cgstPercent}
                       onChange={(e) => handleRowChange(index, "cgstPercent", e.target.value)}
+                      style={{
+                        MozAppearance: "textfield",
+                      }}
+                      onWheel={(e) => e.target.blur()}
                       className="border border-gray-300 rounded-md px-2 py-1 w-[70px]"
                     />
                   </td>
@@ -343,6 +359,10 @@ function ViewLoanCharges() {
                     <input
                       type="number"
                       value={row.cgstAmount}
+                      style={{
+                        MozAppearance: "textfield",
+                      }}
+                      onWheel={(e) => e.target.blur()}
                       readOnly
                       className="border border-gray-300 rounded-md px-2 py-1 w-[90px] bg-gray-100"
                     />
@@ -351,6 +371,10 @@ function ViewLoanCharges() {
                     <input
                       type="number"
                       value={row.sgstPercent}
+                      style={{
+                        MozAppearance: "textfield",
+                      }}
+                      onWheel={(e) => e.target.blur()}
                       onChange={(e) => handleRowChange(index, "sgstPercent", e.target.value)}
                       className="border border-gray-300 rounded-md px-2 py-1 w-[70px]"
                     />
@@ -359,6 +383,10 @@ function ViewLoanCharges() {
                     <input
                       type="number"
                       value={row.sgstAmount}
+                      style={{
+                        MozAppearance: "textfield",
+                      }}
+                      onWheel={(e) => e.target.blur()}
                       readOnly
                       className="border border-gray-300 rounded-md px-2 py-1 w-[90px] bg-gray-100"
                     />
@@ -367,6 +395,10 @@ function ViewLoanCharges() {
                     <input
                       type="number"
                       value={row.netPayable}
+                      style={{
+                        MozAppearance: "textfield",
+                      }}
+                      onWheel={(e) => e.target.blur()}
                       readOnly
                       className="border border-gray-300 rounded-md px-2 py-1 w-[120px] bg-gray-100"
                     />

@@ -642,6 +642,10 @@ console.log(interestRates,"interestRates")
                     onChange={(e) =>
                       handleRowChange(index, "customerAmount", e.target.value)
                     }
+                    style={{
+                        MozAppearance: "textfield",
+                      }}
+                      onWheel={(e) => e.target.blur()}
                     className="border border-gray-300 rounded-md px-2 py-1 w-[120px]"
                   />
                 </td>

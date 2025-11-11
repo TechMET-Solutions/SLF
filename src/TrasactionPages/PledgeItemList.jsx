@@ -240,6 +240,10 @@ console.log(purities,"purities")
                     onChange={(e) =>
                       handleChange(index, "gross", e.target.value)
                     }
+                    style={{
+                        MozAppearance: "textfield",
+                      }}
+                      onWheel={(e) => e.target.blur()}
                     className="border border-gray-300 rounded-md px-2 py-1 w-[100px] focus:outline-none focus:ring-1 focus:ring-blue-500"
                   />
                 </td>
@@ -251,6 +255,10 @@ console.log(purities,"purities")
                     onChange={(e) =>
                       handleChange(index, "netWeight", e.target.value)
                     }
+                    style={{
+                        MozAppearance: "textfield",
+                      }}
+                      onWheel={(e) => e.target.blur()}
                     className="border border-gray-300 rounded-md px-2 py-1 w-[100px] focus:outline-none focus:ring-1 focus:ring-blue-500"
                   />
                 </td>
