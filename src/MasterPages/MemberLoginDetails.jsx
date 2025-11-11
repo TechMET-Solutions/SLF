@@ -3,23 +3,16 @@ import { useEffect, useState } from "react";
 import { FaSave } from "react-icons/fa";
 import { useNavigate } from "react-router-dom";
 import { API } from "../api";
-import { fetchEmployeeProfileApi } from "../API/Master/Employee_Profile/EmployeeProfile";
+import { encryptData, decryptData } from "../../src/utils/cryptoHelper";
 import Loader from "../Component/Loader";
 import Pagination from "../Component/Pagination";
 
 const MemberLoginDetails = () => {
-  useEffect(() => {
-    document.title = "SLF | Member Login Details";
-    fetchEmployee(); // ✅ load initial data
-  }, []);
-
   const navigate = useNavigate();
 
   const [employeeList, setEmployeeList] = useState([]);
-  console.log(employeeList, "employeeList")
   const [isLoading, setIsLoading] = useState(false);
   const [searchTerm, setSearchTerm] = useState("");
-  const [isModalOpen, setIsModalOpen] = useState(false);
 
   // Pagination states
   const [currentPage, setCurrentPage] = useState(1);
@@ -28,11 +21,51 @@ const MemberLoginDetails = () => {
   const itemsPerPage = 10;
   const totalPages = Math.ceil(totalItems / itemsPerPage);
 
-  // ✅ Fetch employee list
-  const fetchEmployee = async (page = 1) => {
+  // API Base URL
+  const API_BASE = `${API}/Master/Employee_Profile`;
+
+  // ✅ Fetch employee list with search
+  const fetchEmployeeProfileApi = async (page = 1, limit = 10, search = "") => {
+    try {
+      // Build query string with search parameter
+      const queryParams = new URLSearchParams({
+        page: page.toString(),
+        limit: limit.toString(),
+      });
+
+      // Add search filter if provided
+      if (search && search.trim()) {
+        queryParams.append('search', search.trim());
+      }
+
+      const encryptedPayload = encryptData({});
+      const response = await axios({
+        method: "get",
+        url: `${API_BASE}/getAll-employees?${queryParams.toString()}`,
+        headers: { "Content-Type": "application/json" },
+        data: { data: encryptedPayload },
+      });
+
+      if (response.data?.data) {  
+        return decryptData(response.data.data);
+      }
+      console.log("API Response:", response.data);
+      return { items: [], total: 0, page: 1, showPagination: false };
+    } catch (error) {
+      console.error("❌ Error fetching employee profiles:", error);
+      return { items: [], total: 0, page: 1, showPagination: false };
+    }
+  };
+
+  useEffect(() => {
+    document.title = "SLF | Member Login Details";
+    fetchEmployee(); // ✅ load initial data
+  }, []);
+
+  const fetchEmployee = async (page = 1, search = "") => {
     setIsLoading(true);
     try {
-      const result = await fetchEmployeeProfileApi(page, itemsPerPage);
+      const result = await fetchEmployeeProfileApi(page, itemsPerPage, search);
 
       if (result?.items?.length) {
         setEmployeeList(result.items);
@@ -52,23 +85,28 @@ const MemberLoginDetails = () => {
     }
   };
 
+  // 🔍 Handle search
+  const handleSearch = () => {
+    setCurrentPage(1); // Reset to first page when searching
+    fetchEmployee(1, searchTerm);
+  };
+
+  // 🔄 Clear search
+  const handleClearSearch = () => {
+    setSearchTerm("");
+    setCurrentPage(1);
+    fetchEmployee(1, "");
+  };
+
+  // 📄 Handle page change
   const handlePageChange = (page) => {
     if (page < 1 || page > totalPages) return;
     setCurrentPage(page);
-    fetchEmployee(page);
+    fetchEmployee(page, searchTerm);
   };
 
-  if (isLoading) {
-    return (
-      <div className="text-center py-10">
-        <Loader />
-      </div>
-    );
-  }
-
-
+  // 📱 Update sender mobile numbers
   const updateSender = async (empId, sm1, sm2) => {
-
     if (sm1 && sm1.toString().length !== 10) {
       alert("Sender Mobile 1 must be 10 digits");
       return;
@@ -80,34 +118,42 @@ const MemberLoginDetails = () => {
     }
 
     try {
-      await axios.post(`${API}/Master/Employee_Profile/updateSender`, {
+      await axios.post(`${API_BASE}/updateSender`, {
         empId: empId,
         sender_mobile1: sm1,
         sender_mobile2: sm2,
       });
 
       alert("Updated Successfully");
-      fetchEmployee(currentPage); // refresh
+      fetchEmployee(currentPage, searchTerm); // refresh with current search
     } catch (e) {
       console.log(e);
       alert("Update Failed");
     }
   };
 
+  // 🔐 Update OTP override
   const updateOTP = async (empId, boolValue) => {
     try {
-      await axios.post(`${API}/Master/Employee_Profile/updateOTP`, {
+      await axios.post(`${API_BASE}/updateOTP`, {
         empId: empId,
         value: boolValue ? 1 : 0,   // convert boolean → 0/1
       });
 
-      fetchEmployee(currentPage);
+      fetchEmployee(currentPage, searchTerm); // refresh with current search
     } catch (err) {
       console.log(err);
       alert("Update failed");
     }
   };
 
+  if (isLoading) {
+    return (
+      <div className="text-center py-10">
+        <Loader />
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen w-full">
@@ -126,40 +172,37 @@ const MemberLoginDetails = () => {
                 type="text"
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
-                placeholder="Search by name..."
-                className="border border-gray-400 rounded px-3 py-1 text-[11.25px] w-[168px] h-[28px]"
+                onKeyPress={(e) => e.key === 'Enter' && handleSearch()}
+                placeholder="Search by employee name..."
+                className="border border-gray-400 rounded px-3 py-1 text-[11.25px] w-[168px] h-[28px] focus:outline-none focus:ring-1 focus:ring-blue-500"
               />
               <button
-                onClick={() => setIsModalOpen(true)}
-                className="bg-[#0A2478] text-white text-[11.25px] w-[74px] h-[24px] rounded flex items-center justify-center"
+                onClick={handleSearch}
+                className="bg-[#0A2478] text-white text-[11.25px] w-[74px] h-[24px] rounded flex items-center justify-center hover:bg-[#071b5e] transition"
               >
                 Search
               </button>
+              {searchTerm && (
+                <button
+                  onClick={handleClearSearch}
+                  className="bg-gray-500 text-white text-[11.25px] w-[74px] h-[24px] rounded flex items-center justify-center hover:bg-gray-600 transition"
+                >
+                  Clear
+                </button>
+              )}
             </div>
-
-            {/* Date & Activity Filters */}
-            {/* <div className="flex gap-5">
-                            <input
-                                type="date"
-                                className="border border-gray-400 rounded px-3 py-1 text-[11.25px] w-[168px] h-[28px]"
-                            />
-                            <div className="flex gap-3 items-center border border-gray-400 rounded pl-3 py-1 text-[11.25px] w-[140px] h-[28px]">
-                                <p className="text-[11.25px] font-source">Activity</p>
-                                <select className="border-none bg-transparent outline-none">
-                                    <option value="#">-- Select --</option>
-                                    <option value="login">Login</option>
-                                </select>
-                            </div>
-                        </div> */}
 
             <button
               onClick={() => navigate("/")}
-              className="bg-[#C1121F] text-white text-[10px] w-[74px] h-[24px] rounded">
+              className="bg-[#C1121F] text-white text-[10px] w-[74px] h-[24px] rounded hover:bg-[#9a0f19] transition"
+            >
               Exit
             </button>
           </div>
         </div>
       </div>
+
+    
 
       {/* Table */}
       <div className="flex justify-center">
@@ -185,17 +228,13 @@ const MemberLoginDetails = () => {
                     key={row.id || index}
                     className={`${index % 2 === 0 ? "bg-gray-50" : "bg-white"} hover:bg-gray-100`}
                   >
-                    {/* Checkbox */}
+                    {/* Serial Number */}
                     <td className="px-4 py-2 text-center">
-                      <input
-                        type="checkbox"
-                        name={`select-${index}`}
-                        className="w-5 h-5 accent-blue-900"
-                      />
+                      {(currentPage - 1) * itemsPerPage + index + 1}
                     </td>
 
                     {/* Name */}
-                    <td className="px-4 py-2">{row.emp_name}</td>
+                    <td className="px-4 py-2 font-medium">{row.emp_name}</td>
 
                     {/* User ID */}
                     <td className="px-4 py-2">{row.email}</td>
@@ -206,7 +245,7 @@ const MemberLoginDetails = () => {
                         type="checkbox"
                         checked={row.OTP_Override == 1} // if db stores 0/1
                         onChange={(e) => updateOTP(row.id, e.target.checked)}
-                        className="w-5 h-5 accent-blue-900"
+                        className="w-5 h-5 accent-blue-900 cursor-pointer"
                       />
                     </td>
 
@@ -218,7 +257,7 @@ const MemberLoginDetails = () => {
                           maxLength="10"
                           pattern="[0-9]*"
                           value={row.sender_mobile1 || ""}
-                          className="py-1 text-sm px-2 border rounded-sm no-spinner flex-1"
+                          className="py-1 text-sm px-2 border rounded-sm no-spinner flex-1 focus:outline-none focus:ring-1 focus:ring-blue-500"
                           onChange={(e) => {
                             const value = e.target.value.replace(/\D/g, '');
                             setEmployeeList(employeeList.map(emp => {
@@ -230,7 +269,7 @@ const MemberLoginDetails = () => {
                           }}
                         />
                         <button
-                          className="text-blue-600 hover:text-blue-800"
+                          className="text-blue-600 hover:text-blue-800 transition"
                           onClick={() => updateSender(row.id, row.sender_mobile1, row.sender_mobile2)}
                           title="Save Mobile 1"
                         >
@@ -247,7 +286,7 @@ const MemberLoginDetails = () => {
                           maxLength="10"
                           pattern="[0-9]*"
                           value={row.sender_mobile2 || ""}
-                          className="py-1 text-sm px-2 border rounded-sm no-spinner flex-1"
+                          className="py-1 text-sm px-2 border rounded-sm no-spinner flex-1 focus:outline-none focus:ring-1 focus:ring-blue-500"
                           onChange={(e) => {
                             const value = e.target.value.replace(/\D/g, '');
                             setEmployeeList(employeeList.map(emp => {
@@ -259,7 +298,7 @@ const MemberLoginDetails = () => {
                           }}
                         />
                         <button
-                          className="text-blue-600 hover:text-blue-800"
+                          className="text-blue-600 hover:text-blue-800 transition"
                           onClick={() => updateSender(row.id, row.sender_mobile1, row.sender_mobile2)}
                           title="Save Mobile 2"
                         >
@@ -267,7 +306,6 @@ const MemberLoginDetails = () => {
                         </button>
                       </div>
                     </td>
-
                   </tr>
                 ))
               ) : (
@@ -276,7 +314,7 @@ const MemberLoginDetails = () => {
                     colSpan="6"
                     className="text-center text-gray-500 py-6 font-medium"
                   >
-                    No records found.
+                    {searchTerm ? "No employees found matching your search." : "No records found."}
                   </td>
                 </tr>
               )}
@@ -284,7 +322,6 @@ const MemberLoginDetails = () => {
           </table>
         </div>
       </div>
-
 
       {/* Pagination */}
       {showPagination && totalPages > 1 && (
