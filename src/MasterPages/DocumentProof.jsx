@@ -104,10 +104,16 @@ const handleEditClick = (doc) => {
   const handleSubmit = async () => {
 
     try {
-      if (!formData.proof_type) {
-        alert("Please fill all required fields!");
-        return;
-      }
+      if (!formData.proof_type?.trim()) {
+  alert("Please select or enter the Proof Type!");
+  return;
+}
+
+// ✅ Check that at least one proof type is true
+if (!formData.is_id_proof && !formData.is_address_proof) {
+  alert("Please select at least one: ID Proof or Address Proof!");
+  return;
+}
 
       const encryptedData = encryptData(JSON.stringify(formData));
       const payload = new FormData();

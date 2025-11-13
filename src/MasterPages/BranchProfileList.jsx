@@ -275,69 +275,88 @@ const BranchProfileList = () => {
             </h2>
 
             <div className="flex gap-3">
-              {/* 🔹 Branch Code Search */}
-              <div className="flex gap-5 items-center">
-                <p
-                  style={{
-                    fontFamily: "Source Sans 3, sans-serif",
-                    fontWeight: 400,
-                    fontSize: "11.25px",
-                  }}
-                >
-                  Code
-                </p>
-                <input
-                  type="text"
-                  value={searchCode}
-                  onChange={(e) => setSearchCode(e.target.value)}
-                  placeholder="Search by Code"
-                  style={{
-                    width: "168.64px",
-                    height: "27.49px",
-                    borderRadius: "5px",
-                    borderWidth: "0.62px",
-                  }}
-                  className="border border-gray-400 px-3 py-1 text-[11.25px] font-source"
-                />
-              </div>
+  {/* 🔹 Branch Code Search */}
+  <div className="flex gap-5 items-center">
+    <p
+      style={{
+        fontFamily: "Source Sans 3, sans-serif",
+        fontWeight: 400,
+        fontSize: "11.25px",
+      }}
+    >
+      Code
+    </p>
+    <input
+      type="text"
+      value={searchCode}
+      onChange={(e) => setSearchCode(e.target.value)}
+      placeholder="Search by Code"
+      style={{
+        width: "168.64px",
+        height: "27.49px",
+        borderRadius: "5px",
+        borderWidth: "0.62px",
+      }}
+      className="border border-gray-400 px-3 py-1 text-[11.25px] font-source"
+    />
+  </div>
 
-              {/* 🔹 Branch Name Search */}
-              <div className="flex gap-5 items-center">
-                <p
-                  style={{
-                    fontFamily: "Source Sans 3, sans-serif",
-                    fontWeight: 400,
-                    fontSize: "11.25px",
-                  }}
-                >
-                  Name
-                </p>
-                <input
-                  type="text"
-                  value={searchName}
-                  onChange={(e) => setSearchName(e.target.value)}
-                  placeholder="Search by Name"
-                  style={{
-                    width: "168.64px",
-                    height: "27.49px",
-                    borderRadius: "5px",
-                    borderWidth: "0.62px",
-                  }}
-                  className="border border-gray-400 px-3 py-1 text-[11.25px] font-source"
-                />
-                <button
-                  onClick={handleSearch}
-                  style={{
-                    width: "84.36px",
-                    height: "26.87px",
-                    borderRadius: "5px",
-                  }}
-                  className="bg-[#0b2c69] cursor-pointer text-white text-[11.25px] font-source font-normal flex items-center justify-center"
-                >
-                  Search
-                </button>
-              </div>
-            </div>
+  {/* 🔹 Branch Name Search */}
+  <div className="flex gap-3 items-center">
+    <p
+      style={{
+        fontFamily: "Source Sans 3, sans-serif",
+        fontWeight: 400,
+        fontSize: "11.25px",
+      }}
+    >
+      Name
+    </p>
+    <input
+      type="text"
+      value={searchName}
+      onChange={(e) => setSearchName(e.target.value)}
+      placeholder="Search by Name"
+      style={{
+        width: "168.64px",
+        height: "27.49px",
+        borderRadius: "5px",
+        borderWidth: "0.62px",
+      }}
+      className="border border-gray-400 px-3 py-1 text-[11.25px] font-source"
+    />
+
+    {/* 🔹 Search Button */}
+    <button
+      onClick={handleSearch}
+      style={{
+        width: "84.36px",
+        height: "26.87px",
+        borderRadius: "5px",
+      }}
+      className="bg-[#0b2c69] cursor-pointer text-white text-[11.25px] font-source font-normal flex items-center justify-center"
+    >
+      Search
+    </button>
+
+    {/* 🔹 Clear Button */}
+    <button
+      onClick={() => {
+        setSearchCode("");
+                    setSearchName("");
+                    fetchBranches()
+      }}
+      style={{
+        width: "84.36px",
+        height: "26.87px",
+        borderRadius: "5px",
+      }}
+      className="bg-gray-400 hover:bg-gray-500 cursor-pointer text-white text-[11.25px] font-source font-normal flex items-center justify-center"
+    >
+      Clear
+    </button>
+  </div>
+</div>
 
             <div className="flex justify-center cursor-pointer item-center gap-5">
               <button

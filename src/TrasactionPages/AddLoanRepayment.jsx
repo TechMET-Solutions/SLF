@@ -38,8 +38,6 @@ function AddLoanRepayment() {
   useEffect(() => {
     document.title = "SLF | Add Loan Repayment";
   }, []);
-
- 
   // ✅ Initialize formData state
   const [formData, setFormData] = useState({
     Borrower_ProfileImg: "",
@@ -48,8 +46,6 @@ function AddLoanRepayment() {
     CoBorrower_signature: "",
     OrnamentPhoto: "",
   });
-
- 
  const location = useLocation();
   const { loanId, loanData } = location.state || {};  // <-- here you get it from navigate
 const navigate = useNavigate();
@@ -65,18 +61,34 @@ const [isClose, setIsClose] = useState(false);
       fetchLoanData();
     }
   }, [loanId]);
+//  const [loanInfo, setLoanInfo] = useState({
+//     pendingDays: 0,
+//     pendingInt: 0,
+//     interestPercent: 0,
+//     loanAmountPaid: 0,
+//     payAmount: 0,
+//     balanceLoanAmt: 0,
+//     chargesAdjusted: 0,
+//     intPaidUpto: new Date(),
+  //  });
+const [loanInfo, setLoanInfo] = useState({
+  pendingDays: 0,
+  pendingDaysUptoToday: 0,
+  pendingInt: 0,
+  preCloseInt: 0,
+  interestPaidDaysPreClose: 0,           // 🆕 total pre-close days
+  interestPaidUptoPreClose: new Date(),  // 🆕 date up to which interest applied for pre-close
+  interestPercent: 0,
+  loanAmountPaid: 0,
+  payAmount: 0,
+  balanceLoanAmt: 0,
+  chargesAdjusted: 0,
+  intPaidUpto: new Date(),
+  interestUptoToday: new Date(),
+});
 
-
- const [loanInfo, setLoanInfo] = useState({
-    pendingDays: 0,
-    pendingInt: 0,
-    interestPercent: 0,
-    loanAmountPaid: 0,
-    payAmount: 0,
-    balanceLoanAmt: 0,
-    chargesAdjusted: 0,
-    intPaidUpto: new Date(),
- });
+  
+  
   console.log(loanInfo,"loanInfo")
   const [intrestPercentage, setintrestPercentage] = useState(null);
   console.log(intrestPercentage,"intrestPercentage")
@@ -163,8 +175,6 @@ console.log(loanInfo, "loanInfo")
   }));
  }, [data]);
   
-  
-  
 const handlePayAmountChange = (value) => {
   debugger;
   let payAmount = parseFloat(value || 0);
@@ -236,11 +246,8 @@ const handlePayAmountChange = (value) => {
     remainingInterestDays: remainingDays,
     alreadyPaidDays: daysAlreadyPaid
   }));
-};
-
-
-
-
+  };
+  
   const handlePayAmountChangeForNotAdvance = (value) => {
   debugger;
   let payAmount = Number(value || 0);
@@ -335,8 +342,6 @@ const handlePayAmountChange = (value) => {
   }
 };
 
-
-
  const numberToWords = (num) => {
     if (!num || isNaN(num)) return '';
 
@@ -391,60 +396,63 @@ const handlePayAmountChange = (value) => {
     return words.trim() + ' only';
   };
 
-
-
-//   useEffect(() => {
-//   debugger
+// useEffect(() => {
 //   if (!data?.loanApplication?.LoanPendingAmount || !data?.loanApplication?.approval_date)
 //     return;
 
-//   // --- parse dates ---
 //   const approvalDate = new Date(data.loanApplication.approval_date);
-
 //   const today = new Date();
-//   today.setHours(0, 0, 0, 0); // normalize to midnight
+//   today.setHours(0, 0, 0, 0);
 
 //   const interestPaidUpto = new Date(data.loanApplication.InterestPaidUpto || today);
-//   interestPaidUpto.setHours(0, 0, 0, 0); // normalize to midnight
+//   interestPaidUpto.setHours(0, 0, 0, 0);
 
 //   const pendingLoanAmount = Number(data.loanApplication.LoanPendingAmount);
 //   const totalUnpaidCharges = Number(data.loanApplication.total_unpaid_charges || 0);
 
-//   // --- override case: future interest already paid ---
-//   // if (interestPaidUpto > today) {
-//   //   setLoanInfo({
-//   //     pendingDays: 0,
-//   //     pendingInt: "0.00",
-//   //     interestPercent: 0,
-//   //     loanAmountPaid: pendingLoanAmount.toFixed(2),
-//   //     payAmount: (pendingLoanAmount + totalUnpaidCharges).toFixed(2),
-//   //     balanceLoanAmt: 0,
-//   //     chargesAdjusted: totalUnpaidCharges.toFixed(2),
-//   //     intPaidUpto: interestPaidUpto.toISOString().slice(0, 10),
-//   //   });
-//   //   return;
-//   // }
+//   const slabs = JSON.parse(data.schemeData.interestRates || "[]");
 
-//   // --- 1) calculate pending days ---
+//   // ✅ CASE 1: Already paid future interest
+//   if (interestPaidUpto > today) {
+//     // Find next interest slab (optional)
+//     const currentSlab = slabs.find(
+//       (s) =>
+//         Number(s.from) <= 0 && // from 0 days onward
+//         Number(s.to) >= 0
+//     );
+//     const interestPercent = currentSlab ? Number(currentSlab.addInt) : 0;
+//     setintrestPercentage(interestPercent);
+
+//     setLoanInfo({
+//       pendingDays: 0,
+//       pendingInt: "0.00",
+//       interestPercent,
+//       loanAmountPaid: pendingLoanAmount.toFixed(2),
+//       payAmount: (pendingLoanAmount + totalUnpaidCharges).toFixed(2),
+//       balanceLoanAmt: 0,
+//       chargesAdjusted: totalUnpaidCharges.toFixed(2),
+//       intPaidUpto: interestPaidUpto.toISOString().slice(0, 10),
+//     });
+
+//     return;
+//   }
+
+//   // ✅ CASE 2: Normal pending case (interest due till today)
 //   const diffMs = today - interestPaidUpto;
 //   const pendingDays = Math.max(Math.round(diffMs / (1000 * 60 * 60 * 24)), 0);
 
-//   // --- 2) determine interest slab ---
-//   const slabs = JSON.parse(data.schemeData.interestRates || "[]");
 //   const currentSlab = slabs.find(
 //     (s) => pendingDays >= Number(s.from) && pendingDays <= Number(s.to)
 //   );
 //   const interestPercent = currentSlab ? Number(currentSlab.addInt) : 0;
 //   setintrestPercentage(interestPercent);
 
-//   // --- 3) calculate interest ---
+//   // Calculate daily and total interest
 //   const dailyIntAmt = (pendingLoanAmount * interestPercent) / 100 / 365;
 //   const pendingInt = dailyIntAmt * pendingDays;
 
-//   // --- 4) total payable ---
 //   const payAmount = pendingLoanAmount + pendingInt + totalUnpaidCharges;
 
-//   // --- 5) set state ---
 //   setLoanInfo({
 //     pendingDays,
 //     pendingInt: pendingInt.toFixed(2),
@@ -455,7 +463,6 @@ const handlePayAmountChange = (value) => {
 //     chargesAdjusted: totalUnpaidCharges.toFixed(2),
 //     intPaidUpto: today.toISOString().slice(0, 10),
 //   });
-
 // }, [data]);
 useEffect(() => {
   if (!data?.loanApplication?.LoanPendingAmount || !data?.loanApplication?.approval_date)
@@ -470,61 +477,107 @@ useEffect(() => {
 
   const pendingLoanAmount = Number(data.loanApplication.LoanPendingAmount);
   const totalUnpaidCharges = Number(data.loanApplication.total_unpaid_charges || 0);
-
+  const preCloseMinDays = Number(data.schemeData?.preCloserMinDays || 0);
   const slabs = JSON.parse(data.schemeData.interestRates || "[]");
 
   // ✅ CASE 1: Already paid future interest
   if (interestPaidUpto > today) {
-    // Find next interest slab (optional)
     const currentSlab = slabs.find(
-      (s) =>
-        Number(s.from) <= 0 && // from 0 days onward
-        Number(s.to) >= 0
+      (s) => Number(s.from) <= 0 && Number(s.to) >= 0
     );
     const interestPercent = currentSlab ? Number(currentSlab.addInt) : 0;
     setintrestPercentage(interestPercent);
 
     setLoanInfo({
       pendingDays: 0,
+      pendingDaysUptoToday: 0,
       pendingInt: "0.00",
+      preCloseInt: "0.00",
+      interestPaidDaysPreClose: 0,
+      interestPaidUptoPreClose: interestPaidUpto.toISOString().slice(0, 10),
       interestPercent,
       loanAmountPaid: pendingLoanAmount.toFixed(2),
       payAmount: (pendingLoanAmount + totalUnpaidCharges).toFixed(2),
       balanceLoanAmt: 0,
       chargesAdjusted: totalUnpaidCharges.toFixed(2),
       intPaidUpto: interestPaidUpto.toISOString().slice(0, 10),
+      interestUptoToday: today.toISOString().slice(0, 10),
     });
-
     return;
   }
 
-  // ✅ CASE 2: Normal pending case (interest due till today)
+  // ✅ CASE 2: Normal case (interest due till today)
   const diffMs = today - interestPaidUpto;
   const pendingDays = Math.max(Math.round(diffMs / (1000 * 60 * 60 * 24)), 0);
 
+  // 🧮 For reference: total days from approval to today
+  const diffFromApprovalMs = today - approvalDate;
+  const pendingDaysUptoToday = Math.max(Math.round(diffFromApprovalMs / (1000 * 60 * 60 * 24)), 0);
+
+  // ✅ Find normal interest slab
   const currentSlab = slabs.find(
     (s) => pendingDays >= Number(s.from) && pendingDays <= Number(s.to)
   );
   const interestPercent = currentSlab ? Number(currentSlab.addInt) : 0;
   setintrestPercentage(interestPercent);
 
-  // Calculate daily and total interest
+  // ✅ Normal interest calculation
   const dailyIntAmt = (pendingLoanAmount * interestPercent) / 100 / 365;
   const pendingInt = dailyIntAmt * pendingDays;
 
-  const payAmount = pendingLoanAmount + pendingInt + totalUnpaidCharges;
+  // ✅ Pre-closure logic
+  const minInterestDate = new Date(approvalDate);
+  minInterestDate.setDate(minInterestDate.getDate() + preCloseMinDays);
 
+  let preCloseInt = 0;
+  let preCloseDays = 0;
+  let intPaidUptoDate = today;
+  let interestPaidDaysPreClose = 0;
+  let interestPaidUptoPreClose = today;
+
+  if (today < minInterestDate) {
+    // Before minimum closure period → charge for minimum preCloseMinDays
+    preCloseDays = preCloseMinDays;
+    const preCloseDailyInt = (pendingLoanAmount * interestPercent) / 100 / 365;
+    preCloseInt = preCloseDailyInt * preCloseMinDays;
+
+    intPaidUptoDate = minInterestDate;
+    interestPaidDaysPreClose = preCloseMinDays;
+    interestPaidUptoPreClose = minInterestDate;
+  } else {
+    // Normal case after pre-close window
+    preCloseDays = pendingDays;
+    preCloseInt = pendingInt;
+    intPaidUptoDate = today;
+    interestPaidDaysPreClose = pendingDays;
+    interestPaidUptoPreClose = today;
+  }
+
+  // ✅ Decide which interest to apply in payAmount
+  const finalInterest =
+    Number(preCloseInt) > Number(pendingInt) ? preCloseInt : pendingInt;
+
+  const payAmount = pendingLoanAmount + finalInterest + totalUnpaidCharges;
+
+  // ✅ Store all data together
   setLoanInfo({
     pendingDays,
+    pendingDaysUptoToday,
     pendingInt: pendingInt.toFixed(2),
+    preCloseInt: preCloseInt.toFixed(2),
+    interestPaidDaysPreClose,
+    interestPaidUptoPreClose: interestPaidUptoPreClose.toISOString().slice(0, 10),
     interestPercent,
     loanAmountPaid: pendingLoanAmount.toFixed(2),
     payAmount: payAmount.toFixed(2),
     balanceLoanAmt: 0,
     chargesAdjusted: totalUnpaidCharges.toFixed(2),
-    intPaidUpto: today.toISOString().slice(0, 10),
+    intPaidUpto: intPaidUptoDate.toISOString().slice(0, 10),
+    interestUptoToday: today.toISOString().slice(0, 10),
   });
 }, [data]);
+
+
 
    const formatCurrency = (amount) => {
     if (!amount || isNaN(amount)) return '0.00';
@@ -995,14 +1048,19 @@ if (checked) setIsAdvInt(false);
 
       {/* Interest Adjusted */}
       <div className="flex flex-col gap-1 w-[150px]">
-        <label className="text-gray-900 font-medium">Interest Adjusted</label>
-        <input
-          type="text"
-          value={loanInfo.pendingInt}
-          className="border border-gray-300 disabled:bg-gray-100 rounded-md px-3 py-2 focus:ring-1 focus:ring-blue-500 focus:outline-none"
-          disabled={isClose}
-        />
-      </div>
+  <label className="text-gray-900 font-medium">Interest Amount</label>
+  <input
+    type="text"
+    value={
+      Number(loanInfo.preCloseInt) > Number(loanInfo.pendingInt)
+        ? loanInfo.preCloseInt
+        : loanInfo.pendingInt
+    }
+    className="border border-gray-300 disabled:bg-gray-100 rounded-md px-3 py-2 focus:ring-1 focus:ring-blue-500 focus:outline-none"
+    disabled={isClose}
+  />
+</div>
+
 
       {/* Loan Amt Adjusted */}
       <div className="flex flex-col gap-1 w-[150px]">
@@ -1039,28 +1097,39 @@ if (checked) setIsAdvInt(false);
 
       {/* Interest Paid For */}
       <div className="flex flex-col gap-1 w-[150px]">
-        <label className="text-gray-900 font-medium">Interest Paid For</label>
-        <input
-          type="text"
-          value={loanInfo.pendingDays}
-          className="border border-gray-300 disabled:bg-gray-100 rounded-md px-3 py-2 focus:ring-1 focus:ring-blue-500 focus:outline-none"
-          disabled={isClose}
-        />
-      </div>
+  <label className="text-gray-900 font-medium">Interest Paid For</label>
+  <input
+    type="text"
+    value={
+      Number(loanInfo.interestPaidDaysPreClose) > Number(loanInfo.pendingDays)
+        ? loanInfo.interestPaidDaysPreClose
+        : loanInfo.pendingDays
+    }
+    className="border border-gray-300 disabled:bg-gray-100 rounded-md px-3 py-2 focus:ring-1 focus:ring-blue-500 focus:outline-none"
+    disabled={isClose}
+  />
+</div>
+
 
       {/* Int. Paid Upto (Date Picker) */}
-      <div className="flex flex-col gap-1 w-[150px]">
-        <label className="text-gray-900 font-medium">Int. Paid Upto</label>
-        <DatePicker
-          selected={loanInfo.intPaidUpto}
-          onChange={(date) =>
-            setLoanInfo((prev) => ({ ...prev, intPaidUpto: date }))
-          }
-          dateFormat="dd/MM/yyyy"
-          className="border border-gray-300 disabled:bg-gray-100 rounded-md px-3 py-2 w-full focus:ring-1 focus:ring-blue-500 focus:outline-none"
-          disabled={isClose}
-        />
-      </div>
+     <div className="flex flex-col gap-1 w-[150px]">
+  <label className="text-gray-900 font-medium">Int. Paid Upto</label>
+  <DatePicker
+    selected={
+      new Date(loanInfo.interestPaidUptoPreClose) >
+      new Date(loanInfo.intPaidUpto)
+        ? new Date(loanInfo.interestPaidUptoPreClose)
+        : new Date(loanInfo.intPaidUpto)
+    }
+    onChange={(date) =>
+      setLoanInfo((prev) => ({ ...prev, intPaidUpto: date }))
+    }
+    dateFormat="dd/MM/yyyy"
+    className="border border-gray-300 disabled:bg-gray-100 rounded-md px-3 py-2 w-full focus:ring-1 focus:ring-blue-500 focus:outline-none"
+    disabled={isClose}
+  />
+</div>
+
     </div>
             )
           }

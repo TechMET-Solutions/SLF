@@ -1,15 +1,14 @@
+import axios from "axios";
 import { useEffect, useState } from "react";
 import { FiEdit } from "react-icons/fi";
 import { useNavigate } from "react-router-dom";
+import { API } from "../api";
 import {
   addItemApi,
-  fetchItemsApi,
   updateItemApi,
-  updateItemStatusApi,
+  updateItemStatusApi
 } from "../API/Master/Master_Profile/Item_Details";
 import Pagination from "../Component/Pagination";
-import axios from "axios";
-import { API } from "../api";
 
 const ItemProfileList = () => {
   useEffect(() => {
@@ -117,7 +116,19 @@ const ItemProfileList = () => {
 
   // 🔹 Save Item (Add / Edit)
   const handleSave = async () => {
-    if (!formData.code || !formData.name) return;
+     if (!formData.code?.trim()) {
+    alert("Please enter the Code.");
+    return;
+  }
+  if (!formData.name?.trim()) {
+    alert("Please enter the Name.");
+    return;
+  }
+  if (!formData.printName?.trim()) {
+    alert("Please enter the Print Name.");
+    return;
+  }
+  
 
     const payload = {
       code: formData.code,

@@ -104,10 +104,21 @@ const PurityProfile = () => {
 
   // 💾 Save or Update
   const handleSave = async () => {
-    if (!formData.purity_name || !formData.purity_percent || !formData.loan_type) {
-      alert("Please fill all required fields");
-      return;
-    }
+    if (!formData.purity_name?.trim()) {
+  alert("Please enter the Purity Name.");
+  return;
+}
+
+if (!formData.purity_percent?.trim()) {
+  alert("Please enter the Purity Percent.");
+  return;
+}
+
+if (!formData.loan_type?.trim()) {
+  alert("Please select the Loan Type.");
+  return;
+}
+
 
     setIsLoading(true);
     try {
