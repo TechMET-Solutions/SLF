@@ -143,10 +143,15 @@ const LoanApplication = () => {
   });
 
   // Fetch loan applications from API using Axios
-  const fetchLoanApplications = async (page = 1) => {
+  const fetchLoanApplications = async (page = 1, immediateFilters = null, immediateDate = undefined, immediateScheme = undefined) => {
     setLoading(true);
     setError("");
     try {
+      // Use immediate values if provided, otherwise use current state
+      const activeFilters = immediateFilters !== null ? immediateFilters : filters;
+      const activeDate = immediateDate !== undefined ? immediateDate : selectedDate;
+      const activeScheme = immediateScheme !== undefined ? immediateScheme : selectedScheme;
+      
       // Build query parameters
       const params = new URLSearchParams({
         page: page.toString(),
@@ -154,17 +159,17 @@ const LoanApplication = () => {
       });
 
       // Add filters to query params if they have values
-      Object.entries(filters).forEach(([key, value]) => {
+      Object.entries(activeFilters).forEach(([key, value]) => {
         if (value && key !== 'field' && key !== 'search') {
           params.append(key, value);
         }
       });
 
       // Add scheme filter if selected
-      if (selectedScheme) {
+      if (activeScheme) {
         const selectedSchemeObj = schemes.find(s => {
           const label = typeof s === 'string' ? s : (s.schemeName || s.SchemeName || s.name || s.schemeCode || s.scheme_code || s.code || JSON.stringify(s));
-          return label === selectedScheme;
+          return label === activeScheme;
         });
         
         if (selectedSchemeObj && selectedSchemeObj.id) {
@@ -173,8 +178,8 @@ const LoanApplication = () => {
       }
 
       // Add date filter if selected
-      if (selectedDate) {
-        params.append('loan_date', selectedDate.toISOString().split('T')[0]);
+      if (activeDate) {
+        params.append('loan_date', activeDate.toISOString().split('T')[0]);
       }
 
       const response = await apiClient.get(`/Transactions/goldloan/all?${params}`);
@@ -199,7 +204,12 @@ const LoanApplication = () => {
     }
   };
 
-  // Handle filter changes
+  // Initial fetch
+  useEffect(() => {
+    fetchLoanApplications();
+  }, []);
+
+  // Handle filter changes - only update state, don't call API
   const handleFilterChange = (key, value) => {
     setFilters(prev => ({
       ...prev,
@@ -207,44 +217,80 @@ const LoanApplication = () => {
     }));
   };
 
-  // Handle status filter change
-  const handleStatusFilterChange = (status) => {
-    handleFilterChange('status', status);
-    // Apply filter immediately when status changes
-    setTimeout(() => fetchLoanApplications(1), 100);
+  // Handle search button click - call API with updated filters
+  const handleSearch = () => {
+    if (filters.field && filters.search) {
+      const searchValue = filters.search;
+      const fieldMappings = {
+        loan_no: 'loan_no',
+        party_name: 'party_name', 
+        added_by: 'added_by',
+        approved_by: 'approved_by'
+      };
+      
+      if (fieldMappings[filters.field]) {
+        const updatedFilters = {
+          ...filters,
+          [fieldMappings[filters.field]]: searchValue
+        };
+        
+        setFilters(updatedFilters);
+        // Pass the updated filters directly to the API call
+        fetchLoanApplications(1, updatedFilters, selectedDate, selectedScheme);
+      }
+    } else {
+      // If no search criteria, just refresh with current filters
+      fetchLoanApplications(1, filters, selectedDate, selectedScheme);
+    }
   };
 
-  // Handle scheme selection
+  // Handle status filter change - immediate API call with new status
+  const handleStatusFilterChange = (status) => {
+    const updatedFilters = {
+      ...filters,
+      status: status
+    };
+    
+    setFilters(updatedFilters);
+    // Pass updated filters directly to API call
+    fetchLoanApplications(1, updatedFilters, selectedDate, selectedScheme);
+  };
+
+  // Scheme selection - immediate API call with new scheme
   const handleSchemeSelect = (schemeLabel) => {
     setSelectedScheme(schemeLabel);
     setIsOpen(false);
-    // Apply filter immediately when scheme is selected
-    setTimeout(() => fetchLoanApplications(1), 100);
+    
+    // Pass scheme directly as override parameter
+    fetchLoanApplications(1, filters, selectedDate, schemeLabel);
   };
 
-  // Handle date selection
+  // Date selection - immediate API call with new date
   const handleDateSelect = (date) => {
     setSelectedDate(date);
     setOpen(false);
-    // Apply filter immediately when date is selected
-    setTimeout(() => fetchLoanApplications(1), 100);
+    
+    // Pass date directly as override parameter
+    fetchLoanApplications(1, filters, date, selectedScheme);
   };
 
   // Clear date filter
   const clearDateFilter = () => {
     setSelectedDate(null);
-    setTimeout(() => fetchLoanApplications(1), 100);
+    // Pass null date to ensure it's cleared
+    fetchLoanApplications(1, filters, null, selectedScheme);
   };
 
   // Clear scheme filter
   const clearSchemeFilter = () => {
     setSelectedScheme("");
-    setTimeout(() => fetchLoanApplications(1), 100);
+    // Pass empty string to ensure scheme is cleared
+    fetchLoanApplications(1, filters, selectedDate, "");
   };
 
   // Clear all filters
   const clearAllFilters = () => {
-    setFilters({
+    const clearedFilters = {
       status: "",
       loan_no: "",
       party_name: "",
@@ -257,10 +303,13 @@ const LoanApplication = () => {
       borrower_id: "",
       field: "",
       search: ""
-    });
+    };
+    
+    setFilters(clearedFilters);
     setSelectedDate(null);
     setSelectedScheme("");
-    setTimeout(() => fetchLoanApplications(1), 100);
+    // Pass null/empty values to ensure everything is cleared
+    fetchLoanApplications(1, clearedFilters, null, "");
   };
 
   // Fetch uploaded documents for a loan
@@ -282,30 +331,6 @@ const LoanApplication = () => {
     } finally {
       setDocumentsLoading(false);
     }
-  };
-
-  // Initial fetch and when filters change
-  useEffect(() => {
-    fetchLoanApplications();
-  }, []);
-
-  // Update search functionality
-  const handleSearch = () => {
-    if (filters.field && filters.search) {
-      const searchValue = filters.search;
-      const fieldMappings = {
-        loan_no: 'loan_no',
-        party_name: 'party_name', 
-        added_by: 'added_by',
-        approved_by: 'approved_by'
-      };
-      
-      if (fieldMappings[filters.field]) {
-        handleFilterChange(fieldMappings[filters.field], searchValue);
-      }
-    }
-    
-    fetchLoanApplications(1);
   };
 
   // Handle pagination
@@ -1183,7 +1208,7 @@ const LoanApplication = () => {
                                 <img
                                   src={goldlogo}
                                   alt="gold"
-                                  className="w-[20px] h-[20px]"
+                                  className="w-[20px] h-[20px]" 
                                 />
                               </IconButton>
                               <IconButton
