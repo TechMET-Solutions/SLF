@@ -31,76 +31,50 @@ function CreditNote() {
     <div className="min-h-screen w-full">
       <div className="flex flex-col items-center w-full bg-white">
         {/* Header */}
+
         <div className="flex justify-center">
           <div className="flex items-center justify-between border border-gray-200 rounded-[10px] px-4 py-2 mt-4 w-[1290px] h-[62px] shadow-sm">
+
             {/* Title */}
-            <h2 className="text-[#C1121F] font-bold text-[20px] whitespace-nowrap mr-4">
-              Credit Note
+            <h2 className="text-[#C1121F] font-bold text-[20px] whitespace-nowrap">
+              Customer Credit Notes
             </h2>
 
-            <div className="flex justify-between w-full items-center gap-4">
-              {/* Filters */}
-              <div className="flex  gap-3">
-                <div className="flex items-center gap-2">
-                  <label className="text-xs text-gray-600 whitespace-nowrap">
-                    Customer No.
-                  </label>
-                  <select className="border border-gray-300 rounded-md h-[30px] w-[90px] px-2 text-sm focus:outline-none">
-                    <option value="">02P560396</option>
-                    <option value="">02P560397</option>
-                  </select>
-                </div>
-
-                <div className="flex items-center gap-2">
-                  <label className="text-xs text-gray-600 whitespace-nowrap">
-                    Customer Name
-                  </label>
-                  <select className="border border-gray-300 rounded-md h-[30px] w-[90px] px-2 text-sm focus:outline-none">
-                    <option value="">MAHESH DONDE</option>
-                    <option value="">OM NAIK</option>
-                  </select>
-                </div>
-
-                <div className="flex items-center gap-2">
-                  <label className="text-xs text-gray-600 whitespace-nowrap">
-                    Date
-                  </label>
-                  <select className="border border-gray-300 rounded-md h-[30px] w-[80px] px-2 text-sm focus:outline-none">
-                    <option value="">25-07-2025</option>
-                    <option value="">26-07-2025</option>
-                  </select>
-                </div>
-              </div>
+            {/* Right Section */}
+            <div className="flex items-center gap-3">
 
               {/* Search Box */}
-              <div className="flex items-center gap-2">
-                <div className="flex items-center border border-gray-300 rounded-md h-[32px] w-[230px] px-2">
-                  <FaMagnifyingGlass className="text-gray-600 mr-2 text-sm" />
-                  <input
-                    type="text"
-                    placeholder="Search"
-                    className="w-full outline-none text-sm"
-                  />
-                </div>
-
-                {/* Search Button */}
-                <button className="bg-[#0A2478] hover:bg-[#091d5f] text-white text-sm rounded-md px-6 py-[6px]">
-                  Search
-                </button>
+              <div className="flex items-center border border-gray-300 rounded-md h-[32px] w-[230px] px-2">
+                <FaMagnifyingGlass className="text-gray-600 mr-2 text-sm" />
+                <input
+                  type="text"
+                  placeholder="Search"
+                  className="w-full outline-none text-sm"
+                />
               </div>
 
-              {/* Add Credit Note Button */}
-              <div>
-                <button
-                  onClick={() => navigate("/add-credit-note-page")}
-                  className="bg-[#0A2478] hover:bg-[#091d5f] text-white text-sm rounded-md px-4 py-[6px]"
-                >
-                  Add Credit Note
-                </button>
-              </div>
+              {/* Search Button */}
+              <button className="bg-[#0A2478] hover:bg-[#091d5f] text-white text-sm rounded-md px-6 py-[6px]">
+                Search
+              </button>
+
+              {/* Clear Button */}
+              <button className="border border-[#0A2478] text-[#0A2478] bg-white text-sm rounded-md px-6 py-[6px]">
+                Clear
+              </button>
+
+              {/* Add Credit Note */}
+              <button
+                onClick={() => navigate("/add-credit-note-page")}
+                className="bg-[#0A2478] hover:bg-[#091d5f] text-white text-sm rounded-md px-4 py-[6px]"
+              >
+                Add Credit Note
+              </button>
+
             </div>
           </div>
         </div>
+
 
         {/* Table */}
         <div className="p-6 w-[1335px]">
