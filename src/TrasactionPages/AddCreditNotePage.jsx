@@ -127,7 +127,12 @@ const AddCreditNotePage = () => {
                 Reason for Credit Note <span className="text-red-500">*</span>
               </label>
               <select className="w-[200px] border bg-white border-gray-300 px-2 py-1 rounded-[8px]">
-                <option>--Select--</option>
+                <option disabled>--Select--</option>
+                <option >Excess Payment Received</option>
+                <option >Auction Settlement Difference</option>
+                <option >Interest Reversal</option>
+                <option >Service Charge Reversal</option>
+                <option >Other</option>
               </select>
             </div>
 
@@ -179,7 +184,10 @@ const AddCreditNotePage = () => {
                 Mode of Payment <span className="text-red-500">*</span>
               </label>
               <select className="w-[200px] border bg-white border-gray-300 px-2 py-1 rounded-[8px]">
-                <option>--Select--</option>
+                <option disabled>--Select--</option>
+                <option>Bank Transfer</option>
+                <option>Account Adjustment</option>
+                <option>Other</option>
               </select>
             </div>
 
