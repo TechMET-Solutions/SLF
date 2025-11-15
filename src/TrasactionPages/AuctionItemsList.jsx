@@ -1,15 +1,15 @@
-import React, { useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
-import { IoIosArrowDown } from "react-icons/io";
-import Bill from "../assets/bill-gen1.svg"
-
+import { useEffect, useState } from "react";
+import { useLocation, useNavigate } from "react-router-dom";
+import Bill from "../assets/bill-gen1.svg";
+import Bill2 from "../assets/genrateinvoice.png";
 function AuctionItemsList() {
     useEffect(() => {
         document.title = "SLF | Auction Creation";
     }, []);
 
     const navigate = useNavigate();
-
+const location = useLocation();
+    const { loanIds } = location.state || {};
     const [formData, setFormData] = useState({
         venue: "",
         date: "",
@@ -18,85 +18,29 @@ function AuctionItemsList() {
         charges: "",
     });
 
-    // ✅ Dummy auction data
-    const [data] = useState([
-        {
-            "loan_no": "02A5602234",
-            "item_id": "AUC-ITEM-001",
-            "item_name": "Gold Necklace with Pendant",
-            "gross_weight": 120.00,
-            "net_weight": 118.50,
-            "amount": "5,92,500",
-            "status": "Close",
-            "outstanding_amt": "4,50,000",
-            "valuation_gold_rate": "4,50,000",
-            "total_amt": "4,50,000",
-            "assign_bidder": "Mahesh Tarle",
-            "invoice": true,
-            "remark": ""
-        },
-        {
-            "loan_no": "02A5602234",
-            "item_id": "AUC-ITEM-002",
-            "item_name": "Gold Bangles (Pair)",
-            "gross_weight": 81.50,
-            "net_weight": 79.00,
-            "amount": "4,02,900",
-            "status": "Close",
-            "outstanding_amt": "4,50,000",
-            "valuation_gold_rate": "4,50,000",
-            "total_amt": "3,20,000",
-            "assign_bidder": "Mahesh Tarle",
-            "invoice": true,
-            "remark": ""
-        },
-        {
-            "loan_no": "02A5602234",
-            "item_id": "AUC-ITEM-003",
-            "item_name": "Gold Earrings (Set of 2)",
-            "gross_weight": 36.20,
-            "net_weight": 34.80,
-            "amount": "1,80,960",
-            "status": "Open",
-            "outstanding_amt": "4,50,000",
-            "valuation_gold_rate": "4,50,000",
-            "total_amt": "1,40,000",
-            "assign_bidder": "Mahesh Tarle",
-            "invoice": true,
-            "remark": ""
-        },
-        {
-            "loan_no": "02A5602234",
-            "item_id": "AUC-ITEM-004",
-            "item_name": "Gold Chain",
-            "gross_weight": 62.00,
-            "net_weight": 60.50,
-            "amount": "3,02,500",
-            "status": "Open",
-            "outstanding_amt": "4,50,000",
-            "valuation_gold_rate": "4,50,000",
-            "total_amt": "2,60,000",
-            "assign_bidder": "Mahesh Tarle",
-            "invoice": true,
-            "remark": ""
-        },
-        {
-            "loan_no": "02A5602234",
-            "item_id": "AUC-ITEM-005",
-            "item_name": "Gold Bracelet",
-            "gross_weight": 42.00,
-            "net_weight": 40.80,
-            "amount": "2,04,000",
-            "status": "Close",
-            "outstanding_amt": "4,50,000",
-            "valuation_gold_rate": "4,50,000",
-            "total_amt": "1,75,000",
-            "assign_bidder": "Mahesh Tarle",
-            "invoice": true,
-            "remark": ""
-        }
-    ]
-    );
+    const [data, setData] = useState([])
+    const [dataWithBidderCost, setDataWithBidderCost] = useState(data);
+
+const handleBidderCostChange = (itemId, value) => {
+  setDataWithBidderCost(prev =>
+    prev.map(item =>
+      item.item_id === itemId ? { ...item, bidderCost: value } : item
+    )
+  );
+};
+    console.log(data,"data")
+     useEffect(() => {
+    if (loanIds && loanIds.length > 0) {
+        const idsString = loanIds.join(",");  // "5,4"
+
+        fetch(`http://localhost:5000/Transactions/loan-applications/by-ids?ids=${idsString}`)
+            .then(res => res.json())
+            .then(data => {
+                setData(data.loans)
+                console.log("All Loans Data:", data);
+            });
+    }
+}, [loanIds]);
 
     return (
         <div className="min-h-screen w-full">
@@ -131,41 +75,96 @@ function AuctionItemsList() {
                         <thead className="bg-[#0A2478] text-white text-sm">
                             <tr>
                                 <th className="px-4 py-2 text-left border-r">Loan No.</th>
-                                <th className="px-4 py-2 text-left border-r">Item Id</th>
+                                
                                 <th className="px-4 py-2 text-left border-r">Item Name</th>
                                 <th className="px-4 py-2 text-left border-r">Gross weight</th>
                                 <th className="px-4 py-2 text-left border-r">Net weight</th>
                                 <th className="px-4 py-2 text-left border-r">Amount</th>
-                                <th className="px-4 py-2 text-left border-r">Status</th>
                                 <th className="px-4 py-2 text-left border-r">Outstanding Amt</th>
                                 <th className="px-4 py-2 text-left border-r">Valuation Gold Rate</th>
-                                <th className="px-4 py-2 text-left border-r">Total Amt</th>
+                                <th className="px-4 py-2 text-left border-r">Bidding Close Amt</th>
+                                {/* <th className="px-4 py-2 text-left border-r">Total Amt</th> */}
                                 <th className="px-4 py-2 text-left border-r">Assign Bidder</th>
                                 <th className="px-4 py-2 text-left border-r">Invoice</th>
+                                <th className="px-4 py-2 text-left border-r">Credit Note</th>
                                 <th className="px-4 py-2 text-left border-r">Remark</th>
                             </tr>
                         </thead>
 
                         <tbody className="text-[13px]">
 
-                            {data.map((item) => (
+                            {data?.map((item) => (
                                 <tr key={item.item_id}>
-                                    <td className="px-4 py-2">{item.loan_no}</td>
-                                    <td className="px-4 py-2">{item.item_id}</td>
-                                    <td className="px-4 py-2">{item.item_name}</td>
-                                    <td className="px-4 py-2">{item.gross_weight}</td>
-                                    <td className="px-4 py-2">{item.net_weight}</td>
-                                    <td className="px-4 py-2">{item.amount}</td>
-                                    <td className={item.status === "Open" ? "text-green-600 px-4 py-2" : "text-red-600 px-4 py-2"}>
-                                        {item.status}
-                                    </td>
+                                    <td className="px-4 py-2">{item.id}</td>
+                                 
+                                   <td className="px-4 py-2">
+    {(() => {
+        try {
+            const list = JSON.parse(item.Pledge_Item_List);
+            return list[0]?.particular || "-";
+        } catch {
+            return "-";
+        }
+    })()}
+</td>
+
+                                   <td className="px-4 py-2">
+  {(() => {
+    try {
+      const list = JSON.parse(item.Pledge_Item_List);
+      return list.reduce((sum, x) => sum + Number(x.gross || 0), 0);
+    } catch {
+      return "-";
+    }
+  })()}
+</td>
+
+                                   <td className="px-4 py-2">
+  {(() => {
+    try {
+      const list = JSON.parse(item.Pledge_Item_List);
+      return list.reduce((sum, x) => sum + Number(x.netWeight || 0), 0);
+    } catch {
+      return "-";
+    }
+  })()}
+</td>
+
+                                    <td className="px-4 py-2">{item.Loan_amount}</td>
                                     <td className="px-4 py-2">{item.outstanding_amt}</td>
-                                    <td className="px-4 py-2">{item.valuation_gold_rate}</td>
-                                    <td className="px-4 py-2">{item.total_amt}</td>
-                                    <td className="px-4 py-2">{item.assign_bidder}</td>
+                                   
+                                  <td className="px-4 py-2">
+  {(() => {
+    try {
+      const list = JSON.parse(item.Pledge_Item_List);
+      return list.reduce((sum, x) => sum + Number(x.valuation || 0), 0);
+    } catch {
+      return "-";
+    }
+  })()}
+</td>
+
+                                  <td className="px-4 py-2">
+    <input
+        type="number"
+        value={item.bidderCost || ""}
+        onChange={(e) => handleBidderCostChange(item.item_id, e.target.value)}
+        className="border rounded px-2 py-1 w-24 text-sm"
+        placeholder="Enter cost"
+    />
+</td>
+
+                                    <td className="px-4 py-2">---</td>
                                     <td className="px-4 py-2">
                                         <img src={Bill} alt="bill" />
+                                        <img src={Bill2} alt="bill" />
                                     </td>
+                                   <td className="px-4 py-2">
+  <div className="w-[18.5px] h-[18.5px] border flex items-center justify-center text-[5px]">
+    credit
+  </div>
+</td>
+
                                     <td className="px-4 py-2">{item.remark}</td>
                                 </tr>
                             ))}

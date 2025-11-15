@@ -131,7 +131,7 @@ console.log(loanInfo, "loanInfo")
   const fetchLoanData = async () => {
     try {
       setLoading(true);
-      const res = await axios.get(`http://localhost:5000/Transactions/goldloan/getLoanRepayment/${loanId}`);
+      const res = await axios.get(`${API}/Transactions/goldloan/getLoanRepayment/${loanId}`);
       setData(res.data);
     } catch (err) {
       setError("Failed to load loan data");

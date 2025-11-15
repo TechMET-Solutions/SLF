@@ -1,6 +1,7 @@
-import React, { useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useEffect, useState } from "react";
 import { IoIosArrowDown } from "react-icons/io";
+import { useNavigate } from "react-router-dom";
+import { API } from "../api";
 
 function AuctionCreation() {
     useEffect(() => {
@@ -18,28 +19,27 @@ function AuctionCreation() {
     });
 
     // ✅ Dummy auction data
-    const [data] = useState([
-        {
-            id: 1,
-            auction_id: "AUC-2025-014",
-            venue: "MG Road, Nashik, Maharashtra 422007",
-            date: "25/10/2025",
-            time: "10:30 AM",
-            fees: "500",
-            auction_items: "Gold Necklace, Gold Bangles...",
-            status: "open", // can be 'open' or 'close'
-        },
-        {
-            id: 2,
-            auction_id: "AUC-2025-014",
-            venue: "MG Road, Nashik, Maharashtra 422007",
-            date: "25/10/2025",
-            time: "10:30 AM",
-            fees: "500",
-            auction_items: "Gold Necklace, Gold Bangles...",
-            status: "closed", // can be 'open' or 'close'
-        },
-    ]);
+  const [data, setData] = useState([]);
+
+useEffect(() => {
+  fetchAuctions();
+}, []);
+
+const fetchAuctions = async () => {
+  try {
+    const res = await fetch(`${API}/Transactions/GetAuction`, {
+      method: "GET",
+      headers: { "Content-Type": "application/json" }
+    });
+
+    const json = await res.json();
+    if (json.success) {
+      setData(json.data);
+    }
+  } catch (error) {
+    console.log("Error fetching auctions:", error);
+  }
+};
 
     return (
         <div className="min-h-screen w-full">
@@ -90,12 +90,37 @@ function AuctionCreation() {
                                     className={`${index % 2 === 0 ? "bg-gray-50" : "bg-white"
                                         } hover:bg-gray-100 transition`}
                                 >
-                                    <td className="px-4 py-2 cursor-pointer text-blue-400" onClick={() => { navigate("/Auction-Items-List") }}>{row.auction_id}</td>
+                                    <td
+  className="px-4 py-2 cursor-pointer text-blue-400"
+  onClick={() => {
+    navigate("/Auction-Items-List", {
+      state: {
+        loanIds: row.loanIds   // ⬅ PASS ARRAY HERE
+      }
+    });
+  }}
+>
+  {row.id}
+</td>
+
                                     <td className="px-4 py-2">{row.venue}</td>
                                     <td className="px-4 py-2">{row.date}</td>
                                     <td className="px-4 py-2">{row.time}</td>
                                     <td className="px-4 py-2">{row.fees}</td>
-                                    <td className="px-4 py-2">{row.auction_items}</td>
+                                 <td className="px-4 py-2">
+    {(() => {
+        try {
+            const loanItems = JSON.parse(row.loanDetails);
+            const itemNames = loanItems
+                .flatMap(l => l.pledge_items.map(p => p.particular))
+                .join(", ");
+
+            return itemNames || "No Items";
+        } catch (error) {
+            return "Invalid Data";
+        }
+    })()}
+</td>
                                     <td className={row.status === "open" ? "text-green-600 px-4 py-2" : "text-red-600 px-4 py-2"}>
                                         {row.status}
                                     </td>                </tr>

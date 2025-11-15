@@ -1,7 +1,7 @@
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
+import { HiMagnifyingGlass, HiMiniArrowsUpDown } from "react-icons/hi2";
 import { useNavigate } from "react-router-dom";
-import { HiMiniArrowsUpDown } from "react-icons/hi2";
-import { HiMagnifyingGlass } from "react-icons/hi2";
+import { API } from "../api";
 
 
 function AddAuctionCreation() {
@@ -18,86 +18,189 @@ function AddAuctionCreation() {
     fees: "",
     charges: "",
   });
+  const [loanData, setLoanData] = useState([]);
+  console.log(loanData,"loanData")
+  const [page, setPage] = useState(1);
+  const [limit] = useState(10);
+  const [totalPages, setTotalPages] = useState(1);
+  const [loading, setLoading] = useState(false);
+  const [search, setSearch] = useState("");
+
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
     setFormData((prev) => ({ ...prev, [name]: value }));
   };
+const [selectedLoans, setSelectedLoans] = useState([]);
 
+  
+  const handleSelectLoan = (loanId) => {
+  setSelectedLoans((prev) =>
+    prev.includes(loanId)
+      ? prev.filter((id) => id !== loanId)
+      : [...prev, loanId]
+  );
+};
+
+  
   // ✅ Dummy loan data
-  const [data] = useState([
-    {
-      id: 1,
-      loanScheme: "Gold Loan",
-      loanNo: "LN00123",
-      loanDate: "2025-03-10",
-      extendedDate: "2025-09-10",
-      customerName: "Rohan Sharma",
-      valuation: "₹1,50,000",
-      mobileNo: "9876543210",
-      totalAmt: "₹1,80,000",
-      loanAmtPaid: "₹1,20,000",
-      outstandingAmt: "₹60,000",
-      branch: "Nashik Main",
-    },
-    {
-      id: 2,
-      loanScheme: "Silver Loan",
-      loanNo: "LN00124",
-      loanDate: "2025-04-15",
-      extendedDate: "2025-09-15",
-      customerName: "Vikas Kohli",
-      valuation: "₹2,00,000",
-      mobileNo: "9988776655",
-      totalAmt: "₹2,40,000",
-      loanAmtPaid: "₹1,50,000",
-      outstandingAmt: "₹90,000",
-      branch: "Pune East",
-    },
-    {
-      id: 3,
-      loanScheme: "Diamond Loan",
-      loanNo: "LN00125",
-      loanDate: "2025-05-05",
-      extendedDate: "2025-09-25",
-      customerName: "Harsh Pandya",
-      valuation: "₹3,00,000",
-      mobileNo: "9123456780",
-      totalAmt: "₹3,50,000",
-      loanAmtPaid: "₹2,80,000",
-      outstandingAmt: "₹70,000",
-      branch: "Mumbai West",
-    },
-    {
-      id: 4,
-      loanScheme: "Diamond Loan",
-      loanNo: "LN00125",
-      loanDate: "2025-05-05",
-      extendedDate: "2025-09-25",
-      customerName: "Raj Panta",
-      valuation: "₹3,00,000",
-      mobileNo: "9123456780",
-      totalAmt: "₹3,50,000",
-      loanAmtPaid: "₹2,80,000",
-      outstandingAmt: "₹70,000",
-      branch: "Mumbai West",
-    },
-    {
-      id: 4,
-      loanScheme: "Diamond Loan",
-      loanNo: "LN00125",
-      loanDate: "2025-05-05",
-      extendedDate: "2025-09-25",
-      customerName: "Poonam Soni",
-      valuation: "₹3,00,000",
-      mobileNo: "9123456780",
-      totalAmt: "₹3,50,000",
-      loanAmtPaid: "₹2,80,000",
-      outstandingAmt: "₹70,000",
-      branch: "Mumbai West",
-    },
-  ]);
+  // const [data] = useState([
+  //   {
+  //     id: 1,
+  //     loanScheme: "Gold Loan",
+  //     loanNo: "LN00123",
+  //     loanDate: "2025-03-10",
+  //     extendedDate: "2025-09-10",
+  //     customerName: "Rohan Sharma",
+  //     valuation: "₹1,50,000",
+  //     mobileNo: "9876543210",
+  //     totalAmt: "₹1,80,000",
+  //     loanAmtPaid: "₹1,20,000",
+  //     outstandingAmt: "₹60,000",
+  //     branch: "Nashik Main",
+  //   },
+  //   {
+  //     id: 2,
+  //     loanScheme: "Silver Loan",
+  //     loanNo: "LN00124",
+  //     loanDate: "2025-04-15",
+  //     extendedDate: "2025-09-15",
+  //     customerName: "Vikas Kohli",
+  //     valuation: "₹2,00,000",
+  //     mobileNo: "9988776655",
+  //     totalAmt: "₹2,40,000",
+  //     loanAmtPaid: "₹1,50,000",
+  //     outstandingAmt: "₹90,000",
+  //     branch: "Pune East",
+  //   },
+  //   {
+  //     id: 3,
+  //     loanScheme: "Diamond Loan",
+  //     loanNo: "LN00125",
+  //     loanDate: "2025-05-05",
+  //     extendedDate: "2025-09-25",
+  //     customerName: "Harsh Pandya",
+  //     valuation: "₹3,00,000",
+  //     mobileNo: "9123456780",
+  //     totalAmt: "₹3,50,000",
+  //     loanAmtPaid: "₹2,80,000",
+  //     outstandingAmt: "₹70,000",
+  //     branch: "Mumbai West",
+  //   },
+  //   {
+  //     id: 4,
+  //     loanScheme: "Diamond Loan",
+  //     loanNo: "LN00125",
+  //     loanDate: "2025-05-05",
+  //     extendedDate: "2025-09-25",
+  //     customerName: "Raj Panta",
+  //     valuation: "₹3,00,000",
+  //     mobileNo: "9123456780",
+  //     totalAmt: "₹3,50,000",
+  //     loanAmtPaid: "₹2,80,000",
+  //     outstandingAmt: "₹70,000",
+  //     branch: "Mumbai West",
+  //   },
+  //   {
+  //     id: 4,
+  //     loanScheme: "Diamond Loan",
+  //     loanNo: "LN00125",
+  //     loanDate: "2025-05-05",
+  //     extendedDate: "2025-09-25",
+  //     customerName: "Poonam Soni",
+  //     valuation: "₹3,00,000",
+  //     mobileNo: "9123456780",
+  //     totalAmt: "₹3,50,000",
+  //     loanAmtPaid: "₹2,80,000",
+  //     outstandingAmt: "₹70,000",
+  //     branch: "Mumbai West",
+  //   },
+  // ]);
+ const fetchLoans = async () => {
+    try {
+      setLoading(true);
 
+      const url = `${API}/Transactions/getApprovedLoanApplications/all?page=${page}&limit=${limit}&search=${search}`;
+
+      const res = await fetch(url);
+      const json = await res.json();
+
+      if (json.success) {
+        setLoanData(json.data);
+        setTotalPages(json.totalPages || 1);
+      }
+    } catch (err) {
+      console.log("Error fetching loans", err);
+    }
+
+    setLoading(false);
+  };
+
+  useEffect(() => {
+    fetchLoans();
+  }, [page]); // Fetch loans when page changes
+
+const prepareLoanDetails = () => {
+  return selectedLoans.map((loanId) => {
+    const loan = loanData.find(l => l.id === loanId);
+
+    let pledgeItems = [];
+    try {
+      pledgeItems = JSON.parse(JSON.parse(loan.Pledge_Item_List));
+    } catch (e) {
+      pledgeItems = [];
+    }
+
+    return {
+      loanId: loanId,
+      pledge_items: pledgeItems
+    };
+  });
+};
+
+  
+  
+ const handleSubmitAuction = async () => {
+  if (!formData.venue || !formData.date || !formData.time || !formData.fees || !formData.charges) {
+    alert("Please fill all fields");
+    return;
+  }
+
+  if (selectedLoans.length === 0) {
+    alert("Please select at least one loan");
+    return;
+  }
+
+  const loanDetails = prepareLoanDetails();
+
+  const auctionData = {
+    ...formData,
+    loanIds: selectedLoans,
+    loanDetails: loanDetails
+  };
+
+  try {
+    const res = await fetch(`${API}/Transactions/createAuction`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(auctionData),
+    });
+
+    const json = await res.json();
+    if (json.success) {
+      alert("Auction Created Successfully!");
+      navigate("/Auction-Creation");
+    } else {
+      alert("Error: " + json.message);
+    }
+  } catch (err) {
+    console.log(err);
+  }
+};
+
+
+  
+  
   return (
     <div className="min-h-screen w-full">
       {/* 🔹 Header */}
@@ -118,7 +221,7 @@ function AddAuctionCreation() {
             </button>
           </div>
           <div className="flex gap-3">
-            <button className="bg-[#0A2478] text-white text-sm rounded px-4 py-2 cursor-pointer">
+            <button className="bg-[#0A2478] text-white text-sm rounded px-4 py-2 cursor-pointer" onClick={handleSubmitAuction}>
               Submit
             </button>
             <button
@@ -246,26 +349,42 @@ function AddAuctionCreation() {
             </thead>
 
             <tbody className="text-[12px]">
-              {data.map((row, index) => (
+              {loanData?.map((row, index) => (
                 <tr
                   key={row.id}
                   className={`border-b ${index % 2 === 0 ? "bg-gray-50" : "bg-white"
                     }`}
                 >
                   <td className="px-4 py-2 flex items-center justify-center">
-                    <input type="checkbox" />
+                    <input
+  type="checkbox"
+  checked={selectedLoans.includes(row.id)}
+  onChange={() => handleSelectLoan(row.id)}
+/>
+
                   </td>
-                  <td className="px-4 py-2">{row.loanScheme}</td>
-                  <td className="px-4 py-2">{row.loanNo}</td>
-                  <td className="px-4 py-2">{row.loanDate}</td>
-                  <td className="px-4 py-2">{row.extendedDate}</td>
-                  <td className="px-4 py-2">{row.customerName}</td>
-                  <td className="px-4 py-2">{row.valuation}</td>
-                  <td className="px-4 py-2">{row.mobileNo}</td>
-                  <td className="px-4 py-2">{row.totalAmt}</td>
-                  <td className="px-4 py-2">{row.loanAmtPaid}</td>
-                  <td className="px-4 py-2">{row.outstandingAmt}</td>
-                  <td className="px-4 py-2">{row.branch}</td>
+                  <td className="px-4 py-2">{row.Scheme}</td>
+                  <td className="px-4 py-2">{row.id}</td>
+                  <td className="px-4 py-2">{row.approval_date}</td>
+                  <td className="px-4 py-2">-</td>
+                  <td className="px-4 py-2">{row.Borrower}</td>
+                 <td className="px-4 py-2">
+  { (() => {
+      try {
+        const items = JSON.parse(JSON.parse(row.Pledge_Item_List));
+        return items[0]?.valuation || "--";
+      } catch (e) {
+        return "--";
+      }
+    })()
+  }
+</td>
+
+                  <td className="px-4 py-2">{row.Mobile_Number}</td>
+                  <td className="px-4 py-2">{row.Loan_amount}</td>
+                  <td className="px-4 py-2">{row.LoanAmountPaid}</td>
+                  <td className="px-4 py-2">-</td>
+                  <td className="px-4 py-2">{row.branch_id}</td>
                 </tr>
               ))}
             </tbody>

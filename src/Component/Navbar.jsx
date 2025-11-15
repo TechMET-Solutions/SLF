@@ -396,7 +396,7 @@ const Navbar = () => {
                       >
                         Bidder Registration
                       </Link>
-                      <Link
+                      {/* <Link
                         to="/Auction-Application-List"
                         className="px-4 py-2 hover:bg-gray-100 text-left"
                         onClick={() => {
@@ -405,6 +405,16 @@ const Navbar = () => {
                         }}
                       >
                        Auction Application
+                      </Link> */}
+                       <Link
+                        to="/Auction_Application_form"
+                        className="px-4 py-2 hover:bg-gray-100 text-left"
+                        onClick={() => {
+                          setIsTransactionsOpen(false);
+                          setIsAuctionOpen(false);
+                        }}
+                      >
+                          Auction Application
                       </Link>
                       <Link
                         to="/Credit-Note"

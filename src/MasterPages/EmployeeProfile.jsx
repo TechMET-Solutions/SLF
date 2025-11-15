@@ -4,12 +4,14 @@ import { FaPaperclip } from "react-icons/fa";
 import { FiEdit, FiEye, FiTrash2 } from "react-icons/fi";
 import { useNavigate } from "react-router-dom";
 import { API } from "../api";
+
 import {
   deleteEmployeeApi,
   fetchEmployeeProfileApi
 } from "../API/Master/Employee_Profile/EmployeeProfile";
 import blockimg from "../assets/blockimg.png";
 import profileempty from "../assets/profileempty.png";
+import righttick from "../assets/righttick.png";
 import Pagination from "../Component/Pagination";
 import { encryptData } from "../utils/cryptoHelper";
 
@@ -37,6 +39,7 @@ const EmployeeProfile = () => {
     pan_card: "",
     aadhar_card: "",
     aadharFile: null,
+    otp:"",
     emp_name: "",
     emp_id: "",
     mobile_no: "",
@@ -484,7 +487,88 @@ const EmployeeProfile = () => {
       alert("Failed to download file.");
     }
   };
+const verifyPan = async () => {
+  debugger
+  if (!formData.panNo) {
+    alert("Enter PAN Number");
+    return;
+  }
 
+  try {
+    const res = await axios.post(`${API}/kyc/pan/verify`, {
+      pan: formData.panNo,
+      name: "---"
+    });
+
+    const data = res.data.data;
+
+    // Split registered name
+    // const nameParts = splitFullName(data.registered_name);
+
+    // // Update form data
+    // setFormData({
+    //   ...formData,
+    //   printName: data.registered_name,
+    //   firstName: nameParts.firstName,
+    //   middleName: nameParts.middleName,
+    //   lastName: nameParts.lastName
+    // });
+
+    alert("PAN Verified Successfully!");
+
+  } catch (error) {
+    console.log(error);
+    alert("PAN Verification Failed");
+  }
+  };
+  
+  const sendAadhaarOTP = async () => {
+    if (!formData.aadhar || formData.aadhar.length !== 12) {
+      alert("Enter valid 12-digit Aadhaar");
+      return;
+    }
+  
+    try {
+      const res = await axios.post(`${API}/kyc/aadhaar/send-otp`, {
+        aadhaar_number: formData.aadhar
+      });
+  
+      setFormData({
+        ...formData,
+        refId: res.data.data.ref_id
+      });
+  
+      alert("OTP Sent to Aadhaar Mobile!");
+  
+    } catch (error) {
+      console.log(error);
+      alert("Failed to send OTP");
+    }
+  };
+  
+  const verifyAadhaarOtp = async () => {
+    if (!formData.otp || formData.otp.length < 6) {
+      alert("Please enter a valid OTP");
+      return;
+    }
+  
+    try {
+      const res = await axios.post(`${API}/kyc/aadhaar/verify-otp`, {
+        otp: formData.otp,
+        ref_id: formData.refId
+      });
+  
+      if (res.data.status) {
+        alert("Aadhaar Verified Successfully!");
+        // Optional: Set success flag
+        // setFormData({ ...formData, aadhaarVerified: true });
+      }
+  
+    } catch (error) {
+      alert("OTP Verification Failed!");
+      console.error(error);
+    }
+  };
   return (
     <div className="min-h-screen w-full">
       {/* Top bar */}
@@ -552,7 +636,7 @@ const EmployeeProfile = () => {
       {/* Add/Edit Modal */}
       {
         isModalOpen && (
-          <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-sm">
+          <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-sm" onClick={()=>setIsModalOpen(false)}>
             <div className="bg-white w-[1183px] max-h-[90vh] rounded-lg shadow-lg p-6 overflow-y-auto">
               {/* Title */}
               <h2 className="text-[#0A2478] text-[20px] font-semibold mb-6">
@@ -601,11 +685,12 @@ const EmployeeProfile = () => {
                         </div>
 
                         <button
-                          className="bg-[#0A2478] text-white px-5 py-2 rounded-r border border-gray-300 border-l-0 hover:bg-[#081c5b]"
-                          type="button"
-                        >
-                          Verify
-                        </button>
+  className="bg-[#0A2478] text-white px-5 py-2 rounded-r border border-gray-300 border-l-0 hover:bg-[#081c5b]"
+  type="button"
+  onClick={verifyPan}
+>
+  Verify
+</button>
                       </div>
 
                       {/* Show selected file name */}
@@ -652,12 +737,13 @@ const EmployeeProfile = () => {
                           />
                         </div>
 
-                        <button
-                          className="bg-[#0A2478] text-white px-5 py-2 rounded-r border border-gray-300 border-l-0 hover:bg-[#081c5b]"
-                          type="button"
-                        >
-                          Verify
-                        </button>
+                       <button
+  className="bg-[#0A2478] text-white px-5 py-2 rounded-r border border-gray-300 border-l-0 hover:bg-[#081c5b]"
+  type="button"
+  onClick={sendAadhaarOTP}
+>
+  Send OTP
+</button>
                       </div>
 
                       {/* Show selected file name */}
@@ -667,7 +753,31 @@ const EmployeeProfile = () => {
                         </p>
                       )}
                     </div>
+ <div className="flex flex-col">
+                <label className="text-[14px] font-medium">Verify OTP</label>
+                <div className="relative mt-1 w-[100px]">
+                  <input
+                    type="number"
+                    placeholder="Enter OTP"
+                    name="otp"
+                    value={formData.otp}
+                    onChange={handleInputChange}
+                    className="border border-gray-300 rounded-[8px] px-3 py-2 w-full bg-white focus:outline-none focus:ring-1 focus:ring-blue-500"
+                    style={{
+                      MozAppearance: "textfield",
+                    }}
+                    onWheel={(e) => e.target.blur()}
+                  />
+                  <img
+  src={righttick}
+  alt="tick"
+  onClick={verifyAadhaarOtp}
+  className="absolute right-3 top-1/2 -translate-y-1/2 w-[13px] h-[13px] 
+  cursor-pointer hover:scale-110 transition-all"
+/>
 
+                </div>
+              </div>
                     {/* Name */}
                     <div className="flex flex-col gap-1">
                       <label className="text-gray-700 font-medium">Name*</label>
@@ -678,7 +788,7 @@ const EmployeeProfile = () => {
                         disabled={mode === "view"}
                         onChange={handleInputChange}
                         placeholder="Name"
-                        className="border border-[#C4C4C4] rounded-md px-3 py-2 focus:outline-none focus:ring-1 focus:ring-blue-500 w-[226px]"
+                        className="border border-[#C4C4C4] rounded-md px-3 py-2 focus:outline-none focus:ring-1 focus:ring-blue-500 w-[100px]"
                       />
                     </div>
                   </div>

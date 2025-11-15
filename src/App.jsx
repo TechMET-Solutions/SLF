@@ -68,7 +68,7 @@ import ViewLoanDetails from "./TrasactionPages/ViewLoanDeatils";
 import EmployeeDesignation from "./MasterPages/EmployeeDesignation";
 import LoginPage from "./Component/LoginPage";
 import AuctionApplication from "./TrasactionPages/AuctionApplication";
-
+import Auction_Application_form from "./TrasactionPages/Auction_Application_form";
 function LayoutWithNavbar({ children }) {
   const location = useLocation();
   const hideNavbar = location.pathname === "/login";
@@ -171,7 +171,7 @@ function App() {
           <Route path="/Appraisal-Note" element={<AppraisalNote />} />
           <Route path="/Print-Loan-Application" element={<PrintLoanApplication />} />
           <Route path="/Add-Loan-Repayment" element={<AddLoanRepayment />} />
-
+  <Route path="/Auction_Application_form" element={<Auction_Application_form />} />
 
 
 
