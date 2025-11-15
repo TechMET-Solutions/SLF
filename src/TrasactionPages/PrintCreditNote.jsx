@@ -28,261 +28,179 @@ const PrintCreditNote = () => {
         </div>
       </div>
 
-      <div className="w-full bg-white shadow-md py-5 ">
+      <div className="w-full bg-white shadow-md py-5">
+        
         {/* Credit Note Details */}
-        <section className="bg-[#ECECF6] p-4  px-18 border-gray-300">
-          <h3 className="font-semibold font-weight-600 text-[20px] text-[#0A2478] mb-3">
+        <section className="bg-[#ECECF6] p-4 px-18 border-gray-300">
+          <h3 className="font-semibold text-[20px] text-[#0A2478] mb-3">
             Credit Note Details
           </h3>
+
           <div className="flex flex-wrap gap-4 text-sm">
             <div>
-              <div className="font-semibold text-xs mb-1">
-                Credit Note No.<span className="text-red-600">*</span>
-              </div>
-              <input className="w-[250px] border border-gray-300 bg-white px-2 py-1 rounded-[8px]" />
+              <div className="font-semibold text-xs mb-1">Credit Note No.</div>
+              <p className="w-[250px] py-1">CN-00125</p>
             </div>
+
             <div>
               <div className="text-xs font-semibold mb-1">Date Of Issue</div>
-              <input
-                type="date"
-                className="w-[250px]  font-weight-600 bg-white px-2 py-1 rounded-[8px] border border-gray-300"
-              />
+              <p className="w-[250px] py-1">2025-03-10</p>
             </div>
+
             <div>
               <div className="text-xs font-semibold mb-1">
                 Reference Invoice/Receipt No.
               </div>
-              <input className="w-[250px] border border-gray-300 bg-white px-2 py-1 rounded-[8px]" />
+              <p className="w-[250px] py-1">INV-5689</p>
             </div>
+
             <div>
-              <div className="flex items-center gap-2 text-xs font-semibold mb-1">
-                Reference Date
-              </div>
-              <div className="flex items-center gap-2">
-                <input
-                  type="date"
-                  className="w-[250px] border border-gray-300 px-2 bg-white py-1 rounded-[8px]"
-                />
-                {/* <FaCalendarAlt /> */}
-              </div>
+              <div className="text-xs font-semibold mb-1">Reference Date</div>
+              <p className="w-[250px] py-1">2025-03-05</p>
             </div>
           </div>
         </section>
 
         {/* Customer Details */}
-        <section className="bg-[#FFE6E6] p-4  px-18 border-gray-300">
+        <section className="bg-[#FFE6E6] p-4 px-18 border-gray-300">
           <h3 className="font-semibold text-[20px] text-[#0A2478] mb-3">
             Customer Details
           </h3>
+
           <div className="flex flex-wrap gap-5 text-sm">
             <div>
               <div className="text-xs font-semibold mb-1">Customer Name</div>
-              <input className="w-[280px] border bg-white border-gray-300 px-2 py-1 rounded-[8px]" />
+              <p className="w-[200px] py-1">Rohan Sharma</p>
             </div>
+
             <div>
               <div className="text-xs font-semibold mb-1">
                 Customer ID/Loan Account No.
               </div>
-              <input className="w-[220px] border bg-white border-gray-300 px-2 py-1 rounded-[8px]" />
+              <p className="w-[220px] py-1">LN-908722</p>
             </div>
+
             <div>
               <div className="text-xs font-semibold mb-1">Address</div>
-              <input className="w-[300px] border bg-white border-gray-300 px-2 py-1 rounded-[8px]" />
+              <p className="w-[300px] py-1">MG Road, Pune</p>
             </div>
+
             <div>
               <div className="text-xs font-semibold mb-1">City</div>
-              <input className="w-[140px] border bg-white border-gray-300 px-2 py-1 rounded-[8px]" />
+              <p className="w-[140px] py-1">Pune</p>
             </div>
+
             <div>
               <div className="text-xs font-semibold mb-1">State</div>
-              <input className="w-[140px] border bg-white border-gray-300 px-2 py-1 rounded-[8px]" />
+              <p className="w-[140px] py-1">Maharashtra</p>
             </div>
+
             <div>
               <div className="text-xs font-semibold mb-1">Pin code</div>
-              <input className="w-[140px] border bg-white border-gray-300 px-2 py-1 rounded-[8px]" />
+              <p className="w-[140px] py-1">411001</p>
             </div>
+
             <div>
               <div className="text-xs font-semibold mb-1">Mobile Number</div>
-              <input className="w-[150px] border bg-white border-gray-300 px-2 py-1 rounded-[8px]" />
+              <p className="w-[150px] py-1">9876543210</p>
             </div>
+
             <div>
               <div className="text-xs font-semibold mb-1">Email ID</div>
-              <input className="w-[200px] border bg-white rounded-[8px] border-gray-300 px-2 py-1 " />
+              <p className="w-[200px] py-1">rohan@gmail.com</p>
             </div>
           </div>
         </section>
 
-        {/* Reason for Credit Note */}
+        {/* Payment / Adjustment */}
         <section className="bg-[#ECECF6] p-4 px-18 border-gray-300">
           <h3 className="font-semibold text-[20px] text-[#0A2478] mb-3">
-            Reason for Credit Note
+            Payment / Adjustment Details
           </h3>
-          <div className="flex flex-wrap gap-6 mb-4 text-sm">
-            <label className="flex items-center font-semibold gap-3 pb-3">
-              <input
-                type="radio"
-                name="reason"
-                className="text-blue-600 w-[25px] h-[25px] accent-blue-600"
-              />
-              <span>Excess Payment Received</span>
-            </label>
 
-            <label className="flex items-center font-semibold gap-3 pb-3">
-              <input
-                type="radio"
-                name="reason"
-                className="text-blue-600 w-[25px] h-[25px] accent-blue-600"
-              />
-              <span>Auction Settlement Difference</span>
-            </label>
-
-            <label className="flex items-center font-semibold gap-3 pb-3">
-              <input
-                type="radio"
-                name="reason"
-                className="text-blue-600 w-[25px] h-[25px] accent-blue-600"
-              />
-              <span>Interest Reversal</span>
-            </label>
-
-            <label className="flex items-center font-semibold gap-3 pb-3">
-              <input
-                type="radio"
-                name="reason"
-                className="text-blue-600 w-[25px] h-[25px] accent-blue-600"
-              />
-              <span>Service Charge Reversal</span>
-            </label>
-
-            <label className="flex items-center font-semibold gap-3 pb-3">
-              <input
-                type="radio"
-                name="reason"
-                className="text-blue-600 w-[25px] h-[25px] accent-blue-600"
-              />
-              <span>Other</span>
-            </label>
-          </div>
           <div className="flex flex-wrap gap-4 text-sm">
             <div>
-              <div className="text-xs font-semibold mb-1">
-                Description / Remarks
-              </div>
-              <input className="w-[250px] border border-gray-300 bg-white px-2 py-1 rounded-[8px]" />
+              <div className="text-xs font-semibold mb-1">Reason for Credit Note</div>
+              <p className="w-[220px] py-1">Billing Error</p>
             </div>
+
+            <div>
+              <div className="text-xs font-semibold mb-1">Description / Remarks</div>
+              <p className="w-[280px] py-1">
+                Excess payment adjustment
+              </p>
+            </div>
+
+            <div>
+              <div className="text-xs font-semibold mb-1">Original Amount (₹)</div>
+              <p className="w-[200px] py-1">₹12,000</p>
+            </div>
+
             <div>
               <div className="text-xs font-semibold mb-1">
-                Original Amount (₹)
+                Adjusted / Credited Amount (₹)
               </div>
-              <input className="w-[200px] border border-gray-300 bg-white px-2 py-1 rounded-[8px]" />
+              <p className="w-[200px] py-1">₹2,000</p>
             </div>
-            <div>
-              <div className="text-xs font-semibold mb-1">
-                Adjustment / Credit Amount (₹)
-              </div>
-              <input className="w-[200px] border border-gray-300 bg-white px-2 py-1 rounded-[8px]" />
-            </div>
+
             <div>
               <div className="text-xs font-semibold mb-1">
                 Net Amount After Adjustment (₹)
               </div>
-              <input className="w-[200px] border border-gray-300 bg-white px-2 py-1 rounded-[8px]" />
+              <p className="w-[200px] py-1">₹10,000</p>
             </div>
-          </div>
-        </section>
 
-        {/* Payment / Adjustment Details */}
-        <section className="bg-[#FFE6E6] p-4 px-18 border-gray-300">
-          <h3 className="font-semibold text-[20px] text-[#0A2478] mb-3">
-            Payment / Adjustment Details
-          </h3>
-          <div className="flex flex-wrap gap-6 mb-4 text-sm">
-            <label className="flex items-center font-semibold gap-3 pb-4">
-              <input
-                type="radio"
-                name="paymentType"
-                className="text-blue-600 w-[25px] h-[25px] accent-blue-600"
-              />
-              <span>Bank Transfer</span>
-            </label>
-
-            <label className="flex items-center font-semibold gap-3 pb-4">
-              <input
-                type="radio"
-                name="paymentType"
-                className="text-blue-600 w-[25px] h-[25px] accent-blue-600"
-              />
-              <span>Account Adjustment</span>
-            </label>
-
-            <label className="flex items-center font-semibold gap-3 pb-4">
-              <input
-                type="radio"
-                name="paymentType"
-                className="text-blue-600 w-[25px] h-[25px] accent-blue-600"
-              />
-              <span>Cheque</span>
-            </label>
-
-            <label className="flex items-center font-semibold gap-3 pb-4">
-              <input
-                type="radio"
-                name="paymentType"
-                className="text-blue-600 w-[25px] h-[25px] accent-blue-600"
-              />
-              <span>Other</span>
-            </label>
-          </div>
-
-          <div className="flex flex-wrap gap-4 text-sm">
             <div>
-              <div className="text-xs font-semibold mb-1">Bank Name</div>
-              <input className="w-[250px] border border-gray-300 bg-white px-2 py-1 rounded-[8px]" />
+              <div className="text-xs font-semibold mb-1">Mode of Payment</div>
+              <p className="w-[220px] py-1">Bank Transfer</p>
             </div>
+
+            <div>
+              <div classnName="text-xs font-semibold mb-1">Bank Name</div>
+              <p className="w-[250px] py-1">HDFC Bank</p>
+            </div>
+
             <div>
               <div className="text-xs font-semibold mb-1">
                 Account No. (Last 4 digits)
               </div>
-              <input className="w-[200px] border border-gray-300 bg-white px-2 py-1 rounded-[8px]" />
+              <p className="w-[200px] py-1">4521</p>
             </div>
+
             <div>
-              <div className="text-xs font-semibold mb-1">
-                Transaction / UTR No.
-              </div>
-              <input className="w-[200px] border border-gray-300 bg-white px-2 py-1 rounded-[8px]" />
+              <div className="text-xs font-semibold mb-1">Transaction / UTR No.</div>
+              <p className="w-[200px] py-1">UTR892345</p>
             </div>
+
             <div>
               <div className="text-xs font-semibold mb-1">Transaction Date</div>
-              <input
-                type="date"
-                className="w-[200px] border border-gray-300 bg-white px-2 py-1 rounded-[8px]"
-              />
+              <p className="w-[200px] py-1">2025-03-10</p>
             </div>
           </div>
         </section>
 
-        {/* Authorization & Verification */}
+        {/* Authorization */}
         <section className="bg-[#eef2ff] p-4 px-18">
           <h3 className="font-semibold text-[20px] text-[#0A2478] mb-3">
             Authorization & Verification
           </h3>
+
           <div className="flex flex-wrap gap-5 text-sm">
             <div>
-              <div className="text-xs font-semibold  mb-1">
-                Prepared By (Name):<span className="text-red-500">*</span>
-              </div>
-              <input className="w-[200px] border border-gray-300 bg-white px-2 py-1 rounded-[8px]" />
+              <div className="text-xs font-semibold mb-1">Prepared By (Name)</div>
+              <p className="w-[200px] py-1">Amit Deshmukh</p>
             </div>
+
             <div>
-              <div className="text-xs font-semibold  mb-1">Designation:</div>
-              <input className="w-[200px] border border-gray-300 bg-white px-2 py-1 rounded-[8px]" />
+              <div className="text-xs font-semibold mb-1">Designation</div>
+              <p className="w-[200px] py-1">Senior Accountant</p>
             </div>
+
             <div>
               <div className="text-xs font-semibold mb-1">
-                Verified By (Accounts Dept.):
-                <span className="text-red-500">*</span>
+                Verified By (Accounts Dept.)
               </div>
-              <input className="w-[200px] border border-gray-300 bg-white px-2 py-1 rounded-[8px]" />
+              <p className="w-[200px] py-1">Priya K</p>
             </div>
           </div>
         </section>
