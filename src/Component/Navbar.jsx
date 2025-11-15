@@ -397,6 +397,16 @@ const Navbar = () => {
                         Bidder Registration
                       </Link>
                       <Link
+                        to="/Auction-Application-List"
+                        className="px-4 py-2 hover:bg-gray-100 text-left"
+                        onClick={() => {
+                          setIsTransactionsOpen(false);
+                          setIsAuctionOpen(false);
+                        }}
+                      >
+                       Auction Application
+                      </Link>
+                      <Link
                         to="/Credit-Note"
                         className="px-4 py-2 hover:bg-gray-100 text-left"
                         onClick={() => {
@@ -405,16 +415,6 @@ const Navbar = () => {
                         }}
                       >
                         Credit Note
-                      </Link>
-                      <Link
-                        to="/Debit-Note"
-                        className="px-4 py-2 hover:bg-gray-100 text-left"
-                        onClick={() => {
-                          setIsTransactionsOpen(false);
-                          setIsAuctionOpen(false);
-                        }}
-                      >
-                        Debit Note
                       </Link>
                     </div>
                   )}
