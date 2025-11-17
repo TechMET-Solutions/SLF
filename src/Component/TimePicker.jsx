@@ -66,7 +66,7 @@ export const TimePicker = ({
 
       {/* Dropdown */}
       {isOpen && (
-        <div className="absolute mt-1 left-0 bg-white border rounded-lg shadow-lg w-56 p-3">
+        <div className="absolute mt-1 left-0 bg-white border rounded-lg z-10 shadow-lg w-56 p-3">
           <div className="flex justify-center items-center gap-5">
             {/* Hours */}
             <div className="flex flex-col items-center">

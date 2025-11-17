@@ -64,7 +64,7 @@ const Navbar = () => {
   }, []);
 
   return (
-    <div className="flex justify-center ">
+    <div className="flex justify-center relative z-20 overflow-visible">
       <div className="bg-[#0A2478] text-white flex items-center justify-between relative mt-5 p-5 w-[1360px] h-[50px] rounded-[10px]">
         {/* Left side placeholder */}
         <div className="flex items-center gap-3">
