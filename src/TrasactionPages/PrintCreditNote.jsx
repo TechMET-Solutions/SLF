@@ -164,69 +164,72 @@ const PrintCreditNote = () => {
           </div>
         </section>
 
-        {/* Payment / Adjustment */}
+       
+        {/* PAYMENT DETAILS */}
         <section className="bg-[#ECECF6] p-4 px-18 border-gray-300">
           <h3 className="font-semibold text-[20px] text-[#0A2478] mb-3">
             Payment / Adjustment Details
           </h3>
 
-          {/* Row 1: reason, description, original, credited, net amount (full width) */}
           <div className="flex flex-wrap gap-4 text-sm">
             <div>
-              <div className="text-xs font-semibold mb-1">Reason for credit Note</div>
-              <p>{data.reason}</p>
+              <div className="text-xs font-semibold mb-1">Reason</div>
+              <p className="w-[220px] py-1">{data.reason}</p>
             </div>
 
             <div>
               <div className="text-xs font-semibold mb-1">Description</div>
-              <p>{data.description}</p>
+              <p className="w-[300px] py-1">{data.description}</p>
             </div>
 
             <div>
               <div className="text-xs font-semibold mb-1">Original Amount</div>
-              <p>₹{data.original_amount}</p>
+              <p className="w-[200px] py-1">₹{data.original_amount}</p>
             </div>
 
             <div>
-              <div className="text-xs font-semibold mb-1">Credited Amount</div>
-              <p>₹{data.adjustment_amount}</p>
-            </div>
-
-            <div className="w-full">
               <div className="text-xs font-semibold mb-1">
-                Net Amount After Adjustment (₹)
+                Adjusted Amount
               </div>
-              <p className="py-1 font-semibold">₹{data.net_amount}</p>
+              <p className="w-[200px] py-1">₹{data.adjustment_amount}</p>
             </div>
-          </div>
 
-          {/* Row 2: start new line for payment details */}
-          <div className="flex flex-wrap gap-4 text-sm mt-4">
+            <div>
+              <div className="text-xs font-semibold mb-1">
+                Net Amount
+              </div>
+              <p className="w-[200px] py-1">₹{data.net_amount}</p>
+            </div>
+
             <div>
               <div className="text-xs font-semibold mb-1">Mode of Payment</div>
-              <p>{data.mode_of_payment}</p>
+              <p className="w-[200px] py-1">{data.mode_of_payment}</p>
             </div>
 
             <div>
               <div className="text-xs font-semibold mb-1">Bank Name</div>
-              <p>{data.bank_name}</p>
+              <p className="w-[200px] py-1">{data.bank_name}</p>
             </div>
 
             <div>
               <div className="text-xs font-semibold mb-1">
-                Account No. (Last 4 digits)
+                Account No.
               </div>
-              <p>{data.account_no}</p>
+              <p className="w-[200px] py-1">{data.account_no}</p>
             </div>
 
             <div>
-              <div className="text-xs font-semibold mb-1">Transaction No.</div>
-              <p>{data.transaction_no}</p>
+              <div className="text-xs font-semibold mb-1">
+                Transaction No.
+              </div>
+              <p className="w-[200px] py-1">{data.transaction_no}</p>
             </div>
 
             <div>
-              <div className="text-xs font-semibold mb-1">Transaction Date</div>
-              <p>{data.transaction_date}</p>
+              <div className="text-xs font-semibold mb-1">
+                Transaction Date
+              </div>
+              <p className="w-[200px] py-1">{data.transaction_date}</p>
             </div>
           </div>
         </section>
