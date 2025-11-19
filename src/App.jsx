@@ -38,14 +38,20 @@ import UserRolePermission from "./MasterPages/UserRolePermission";
 import ViewSchemeDetailsform from "./MasterPages/ViewSchemeDetailsform";
 import EditLoanApplication from "./TrasactionPages/EditLoanApplication";
 // Transaction Pages
+import LoginPage from "./Component/LoginPage";
+import EmployeeDesignation from "./MasterPages/EmployeeDesignation";
+
 import AddAuctionCreation from "./TrasactionPages/AddAuctionCreation";
 import AddCreditNotePage from "./TrasactionPages/AddCreditNotePage";
 import AddGoldLoanApplication from "./TrasactionPages/AddGoldLoanApplication";
 import AddLoanCharges from "./TrasactionPages/AddLoanCharges";
 import AddLoanRepayment from "./TrasactionPages/AddLoanRepayment";
 import AppraisalNote from "./TrasactionPages/AppraisalNote";
+import AuctionApplication from "./TrasactionPages/AuctionApplication";
 import AuctionCreation from "./TrasactionPages/AuctionCreation";
 import AuctionItemsList from "./TrasactionPages/AuctionItemsList";
+import Auction_Application_form from "./TrasactionPages/Auction_Application_form";
+import Auction_Bidder_List from "./TrasactionPages/Auction_Bidder_List";
 import BidderRegistration from "./TrasactionPages/BidderRegistration";
 import BidderRegistrationList from "./TrasactionPages/BidderRegistrationList";
 import CancelledLoan from "./TrasactionPages/CancelledLoan";
@@ -54,8 +60,10 @@ import DebitNote from "./TrasactionPages/DebitNote";
 import EditBidderDetails from "./TrasactionPages/EditBidderDetails";
 import EditLoanCharges from "./TrasactionPages/EditLoanCharge";
 import EditLoanDetails from "./TrasactionPages/EditLoanDetails";
+import GenrateBill from "./TrasactionPages/GenrateBill";
 import GoldLoanApproval from "./TrasactionPages/GoldLoanApproval";
 import GoldOrnamentBill from "./TrasactionPages/GoldOrnamentBill";
+import InvoicePrint from "./TrasactionPages/InvoicePrint";
 import LoanApplication from "./TrasactionPages/LoanApplication";
 import LoanChargesList from "./TrasactionPages/LoanChargesList";
 import NOC from "./TrasactionPages/NOC";
@@ -65,10 +73,6 @@ import ViewBidderDetails from "./TrasactionPages/ViewBidderDetails";
 import ViewCreditNote from "./TrasactionPages/ViewCreditNote";
 import ViewLoanCharges from "./TrasactionPages/ViewLoanCharges";
 import ViewLoanDetails from "./TrasactionPages/ViewLoanDeatils";
-import EmployeeDesignation from "./MasterPages/EmployeeDesignation";
-import LoginPage from "./Component/LoginPage";
-import AuctionApplication from "./TrasactionPages/AuctionApplication";
-import Auction_Application_form from "./TrasactionPages/Auction_Application_form";
 function LayoutWithNavbar({ children }) {
   const location = useLocation();
   const hideNavbar = location.pathname === "/login";
@@ -99,12 +103,14 @@ function App() {
           <Route path="/Document-Proof-List" element={<DocumentProof />} />
           <Route path="/Customer-Profile-List" element={<CustProfile />} />
           <Route path="/Add-Customer-Profile" element={<AddCustProfile />} />
-          <Route path="/Product-Purity-profile" element={<PurityProfile />} />
+            <Route path="//Product-Purity" element={<PurityProfile />} />
+            {/* <Route path="/Product-Purity-profile" element={<PurityProfile />} /> */}
+              {/* <Route path="/Product-Purity-Silver" element={<PurityProfileSilver />} /> */}
           <Route
             path="/Charges-Profile-List"
             element={<ChargesProfileList />}
           />
-          <Route path="/Push-Gold-Rate-List" element={<PushGoldRateList />} />
+          <Route path="/Push-Rate-List" element={<PushGoldRateList />} />
 
           {/* Schema Mapping */}
           <Route path="/Scheme-Renewal-List" element={<SchemeRenewalList />} />
@@ -172,9 +178,9 @@ function App() {
           <Route path="/Print-Loan-Application" element={<PrintLoanApplication />} />
           <Route path="/Add-Loan-Repayment" element={<AddLoanRepayment />} />
   <Route path="/Auction_Application_form" element={<Auction_Application_form />} />
+         <Route path="/Auction_Bidder_List" element={<Auction_Bidder_List />} />
 
-
-
+ <Route path="/Generate_Bill" element={<GenrateBill />} />
           {/* Auction */}
           <Route path="/Auction-Creation" element={<AuctionCreation />} />
           <Route path="/Add-Auction-Creation" element={<AddAuctionCreation />} />
@@ -187,7 +193,8 @@ function App() {
           <Route path="/Credit-Note" element={<CreditNote />} />
           <Route path="/Debit-Note" element={<DebitNote />} />
           <Route path="/Auction-Application-List" element={<AuctionApplication />} />
-
+            
+            <Route path="/InvoicePrint" element={<InvoicePrint />} />
           {/* Default Route */}
           <Route path="*" element={<Navigate to="/" />} />
         </Routes>

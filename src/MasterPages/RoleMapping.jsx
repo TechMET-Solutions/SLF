@@ -65,6 +65,7 @@ const RoleMapping = () => {
       });
       console.log(response.data);
       alert("✅ Roles updated successfully!");
+      navigate("/Scheme-Details-List")
     } catch (error) {
       console.error("❌ Error updating roles:", error);
       alert("Failed to update roles");
@@ -105,7 +106,7 @@ const RoleMapping = () => {
 
             <button
               className="text-white bg-[#C1121F] px-[6.25px] py-[6.25px] rounded-[3.75px] w-[74px] h-[24px] text-[10px]"
-              onClick={() => navigate("/")}
+              onClick={() => navigate("/Scheme-Details-List")}
             >
               Exit
             </button>

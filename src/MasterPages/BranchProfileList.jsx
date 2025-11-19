@@ -16,7 +16,6 @@ const BranchProfileList = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [isViewMode, setIsViewMode] = useState(false);
-
   const [searchCode, setSearchCode] = useState("");
   const [searchName, setSearchName] = useState("");
 

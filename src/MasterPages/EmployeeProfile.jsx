@@ -10,11 +10,11 @@ import {
   fetchEmployeeProfileApi
 } from "../API/Master/Employee_Profile/EmployeeProfile";
 import blockimg from "../assets/blockimg.png";
-import profileempty from "../assets/profileempty.png";
 import righttick from "../assets/righttick.png";
 import Pagination from "../Component/Pagination";
 import { encryptData } from "../utils/cryptoHelper";
 
+import profileempty from "../assets/profileempty.png";
 const EmployeeProfile = () => {
 
   useEffect(() => {
@@ -161,7 +161,8 @@ const EmployeeProfile = () => {
   const [showPagination, setShowPagination] = useState(false);
   const itemsPerPage = 10;
   const [mode, setMode] = useState("add");
-
+const [selectedEmployees, setSelectedEmployees] = useState([]);
+const [isValuationModalOpen, setIsValuationModalOpen] = useState(false);
   // 🔹 Pagination Controls
   const totalPages = Math.ceil(totalItems / itemsPerPage);
 
@@ -569,6 +570,36 @@ const verifyPan = async () => {
       console.error(error);
     }
   };
+
+  const handleCheckboxChange = (emp) => {
+  setSelectedEmployees((prev) => {
+    // If selected already → remove
+    if (prev.some((e) => e.id === emp.id)) {
+      return prev.filter((e) => e.id !== emp.id);
+    }
+    // Else add to selection
+    return [...prev, emp];
+  });
+};
+
+  const handleValuationClick = () => {
+  if (selectedEmployees.length === 0) {
+    alert("Please select at least one employee");
+    return;
+  }
+  setIsValuationModalOpen(true);
+};
+
+  const handleSaveValuation = () => {
+  console.log("Saving valuation for:", selectedEmployees);
+  
+  // TODO: Call your API here
+  // Example: addValuationApi(selectedEmployees, valuationAmount)
+
+  setIsValuationModalOpen(false);
+  setSelectedEmployees([]);
+};
+
   return (
     <div className="min-h-screen w-full">
       {/* Top bar */}
@@ -614,6 +645,13 @@ const verifyPan = async () => {
               >
                 Clear
               </button>
+              <button
+  onClick={handleValuationClick}
+  className="bg-[#129121] text-white text-[11.25px] w-[74px] h-[24px] rounded flex items-center justify-center"
+>
+  Valuation
+</button>
+
             </div>
 
             <div className="flex gap-3">
@@ -636,7 +674,7 @@ const verifyPan = async () => {
       {/* Add/Edit Modal */}
       {
         isModalOpen && (
-          <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-sm" onClick={()=>setIsModalOpen(false)}>
+          <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-sm" >
             <div className="bg-white w-[1183px] max-h-[90vh] rounded-lg shadow-lg p-6 overflow-y-auto">
               {/* Title */}
               <h2 className="text-[#0A2478] text-[20px] font-semibold mb-6">
@@ -646,152 +684,144 @@ const verifyPan = async () => {
                     ? "View Employee Profile"
                     : "Add Employee Profile"}
               </h2>
-              <div className="flex gap-2">
+              <div className="flex justify-between">
                 {/* Left Form */}
                 <div className=" space-y-4 text-sm">
                   {/* PAN + Aadhaar + Name */}
-                  <div className="flex gap-2">
+                 <div className="flex gap-4 w-full">
 
-                    <div className="flex flex-col">
-                      <label className="text-[14px] font-medium">PAN No. <span className="text-red-500">*</span></label>
-                      <div className="flex items-center mt-1 w-[220px]">
-                        <div className="relative flex-1">
-                          <input
-                            type="text"
-                            placeholder="Enter PAN"
-                            name="pan_card"
-                            disabled={mode === "view"}
-                            value={formData.pan_card}
-                            onChange={handleInputChange}
-                            className="border border-[#C4C4C4] border-r-0 rounded-l px-3 py-2 w-full pr-10 focus:outline-none focus:ring-1 focus:ring-blue-500 bg-white"
-                          />
+  {/* PAN */}
+  <div className="flex flex-col flex-1">
+    <label className="text-[14px] font-medium">
+      PAN No. <span className="text-red-500">*</span>
+    </label>
 
+    <div className="flex items-center mt-1">
+      <div className="relative flex-1">
+        <input
+          type="text"
+          placeholder="Enter PAN"
+          name="pan_card"
+          disabled={mode === "view"}
+          value={formData.pan_card}
+          onChange={handleInputChange}
+          className="border border-[#C4C4C4] border-r-0 rounded-l-[8px] px-3 py-2 pr-10 w-full bg-white"
+        />
 
-                          <input
-                            type="file"
-                            accept="image/*,.pdf"
-                            ref={panFileInputRef}
-                            disabled={mode === "view"}
-                            onChange={handlePanFileChange}
-                            className="hidden"
-                          />
+        <input
+          type="file"
+          accept="image/*,.pdf"
+          ref={panFileInputRef}
+          disabled={mode === "view"}
+          onChange={handlePanFileChange}
+          className="hidden"
+        />
 
+        <FaPaperclip
+          className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 cursor-pointer"
+          size={16}
+          onClick={() => panFileInputRef.current.click()}
+        />
+      </div>
 
-                          <FaPaperclip
-                            className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 cursor-pointer"
-                            size={16}
-                            onClick={() => panFileInputRef.current.click()}
-                          />
-                        </div>
+      <button
+        className="bg-[#0A2478] text-white px-4 py-2 rounded-r-[8px] hover:bg-[#081c5b] whitespace-nowrap"
+        type="button"
+        onClick={verifyPan}
+      >
+        Verify
+      </button>
+    </div>
+  </div>
 
-                        <button
-  className="bg-[#0A2478] text-white px-5 py-2 rounded-r border border-gray-300 border-l-0 hover:bg-[#081c5b]"
-  type="button"
-  onClick={verifyPan}
->
-  Verify
-</button>
-                      </div>
+  {/* Aadhaar */}
+  <div className="flex flex-col flex-1">
+    <label className="text-[14px] font-medium">
+      Aadhar Card Number <span className="text-red-500">*</span>
+    </label>
 
-                      {/* Show selected file name */}
-                      {formData.panFile && (
-                        <p className="text-xs text-gray-500 mt-1">
-                          Selected file: {formData.panFile.name}
-                        </p>
-                      )}
-                    </div>
-                    {/* Aadhaar */}
-                    <div className="flex flex-col">
-                      <label className="text-[14px] font-medium">Aadhar Card Number. <span className="text-red-500">*</span></label>
-                      <div className="flex items-center mt-1 w-[300px]">
-                        <div className="relative flex-1">
-                          <input
-                            type="number"
-                            placeholder="Enter Aadhar Number"
-                            name="aadhar_card"
-                            disabled={mode === "view"}
-                            value={formData.aadhar_card}
-                            onChange={handleInputChange}
-                            style={{
-                        MozAppearance: "textfield",
-                      }}
-                      onWheel={(e) => e.target.blur()}
-                            className="border border-[#C4C4C4] border-r-0 rounded-l px-3 py-2 w-full pr-10 focus:outline-none focus:ring-1 focus:ring-blue-500 bg-white"
-                          />
+    <div className="flex items-center mt-1">
+      <div className="relative flex-1">
+        <input
+          type="number"
+          placeholder="Enter Aadhar Number"
+          name="aadhar_card"
+          disabled={mode === "view"}
+          value={formData.aadhar_card}
+          onChange={handleInputChange}
+          className="border border-[#C4C4C4] border-r-0 rounded-l-[8px] px-3 py-2 pr-10 w-[153px] bg-white h-[38px]"
+          style={{ MozAppearance: "textfield" }}
+          onWheel={(e) => e.target.blur()}
+        />
 
-                          {/* Hidden file input */}
-                          <input
-                            type="file"
-                            accept="image/*,.pdf"
-                            ref={aadharFileInputRef}
-                            disabled={mode === "view"}
-                            onChange={handleAadharFileChange}
-                            className="hidden"
-                          />
+        <input
+          type="file"
+          accept="image/*,.pdf"
+          ref={aadharFileInputRef}
+          disabled={mode === "view"}
+          onChange={handleAadharFileChange}
+          className="hidden"
+        />
 
-                          {/* Paperclip icon triggers file selection */}
-                          <FaPaperclip
-                            className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 cursor-pointer"
-                            size={16}
-                            onClick={() => aadharFileInputRef.current.click()}
-                          />
-                        </div>
+        <FaPaperclip
+          className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 cursor-pointer"
+          size={16}
+          onClick={() => aadharFileInputRef.current.click()}
+        />
+      </div>
 
-                       <button
-  className="bg-[#0A2478] text-white px-5 py-2 rounded-r border border-gray-300 border-l-0 hover:bg-[#081c5b]"
-  type="button"
-  onClick={sendAadhaarOTP}
->
-  Send OTP
-</button>
-                      </div>
+      <button
+        className="bg-[#0A2478] text-white px-4 py-2 rounded-r-[8px] hover:bg-[#081c5b] whitespace-nowrap h-[38px]"
+        type="button"
+        onClick={sendAadhaarOTP}
+      >
+        Send OTP
+      </button>
+    </div>
+  </div>
 
-                      {/* Show selected file name */}
-                      {formData.aadharFile && (
-                        <p className="text-xs text-gray-500 mt-1">
-                          Selected file: {formData.aadharFile.name}
-                        </p>
-                      )}
-                    </div>
- <div className="flex flex-col">
-                <label className="text-[14px] font-medium">Verify OTP</label>
-                <div className="relative mt-1 w-[100px]">
-                  <input
-                    type="number"
-                    placeholder="Enter OTP"
-                    name="otp"
-                    value={formData.otp}
-                    onChange={handleInputChange}
-                    className="border border-gray-300 rounded-[8px] px-3 py-2 w-full bg-white focus:outline-none focus:ring-1 focus:ring-blue-500"
-                    style={{
-                      MozAppearance: "textfield",
-                    }}
-                    onWheel={(e) => e.target.blur()}
-                  />
-                  <img
-  src={righttick}
-  alt="tick"
-  onClick={verifyAadhaarOtp}
-  className="absolute right-3 top-1/2 -translate-y-1/2 w-[13px] h-[13px] 
-  cursor-pointer hover:scale-110 transition-all"
-/>
+  {/* OTP */}
+  <div className="flex flex-col w-[140px]">
+    <label className="text-[14px] font-medium">Verify OTP</label>
 
-                </div>
-              </div>
-                    {/* Name */}
-                    <div className="flex flex-col gap-1">
-                      <label className="text-gray-700 font-medium">Name*</label>
-                      <input
-                        type="text"
-                        name="emp_name"
-                        value={formData.emp_name}
-                        disabled={mode === "view"}
-                        onChange={handleInputChange}
-                        placeholder="Name"
-                        className="border border-[#C4C4C4] rounded-md px-3 py-2 focus:outline-none focus:ring-1 focus:ring-blue-500 w-[100px]"
-                      />
-                    </div>
-                  </div>
+    <div className="relative mt-1">
+      <input
+        type="number"
+        placeholder="Enter OTP"
+        name="otp"
+        value={formData.otp}
+        onChange={handleInputChange}
+        className="border border-gray-300 rounded-[8px] px-3 py-2 w-[140px] bg-white"
+        style={{ MozAppearance: "textfield" }}
+        onWheel={(e) => e.target.blur()}
+      />
+
+      <img
+        src={righttick}
+        alt="tick"
+        onClick={verifyAadhaarOtp}
+        className="absolute right-3 top-1/2 -translate-y-1/2 w-[13px] h-[13px] cursor-pointer"
+      />
+    </div>
+  </div>
+
+  {/* Name */}
+  <div className="flex flex-col flex-1">
+    <label className="text-gray-700 font-medium">Name*</label>
+
+    <input
+      type="text"
+      name="emp_name"
+      value={formData.emp_name}
+      disabled={mode === "view"}
+      onChange={handleInputChange}
+      placeholder="Name"
+      className="border border-[#C4C4C4] rounded-[8px] px-3 py-2 w-[166px] bg-white mt-1"
+    />
+  </div>
+
+</div>
+
 
                   {/* Employee ID, Mobile, Email */}
                   <div className="flex gap-2">
@@ -805,11 +835,13 @@ const verifyPan = async () => {
                         disabled={mode === "view"}
                         onChange={handleInputChange}
                         placeholder="Mobile No"
+                     
                         style={{
-                        MozAppearance: "textfield",
+                          MozAppearance: "textfield",
+                          
                       }}
                       onWheel={(e) => e.target.blur()}
-                        className="border border-[#C4C4C4] rounded-md px-3 py-2 focus:outline-none focus:ring-1 focus:ring-blue-500"
+                        className="border border-[#C4C4C4] rounded-[8px] px-3 py-2 focus:outline-none focus:ring-1 focus:ring-blue-500 w-[153px]"
                       />
                     </div>
                     <div className="flex flex-col gap-1">
@@ -825,7 +857,7 @@ const verifyPan = async () => {
                         MozAppearance: "textfield",
                       }}
                       onWheel={(e) => e.target.blur()}
-                        className="border border-[#C4C4C4] rounded-md px-3 py-2 focus:outline-none focus:ring-1 focus:ring-blue-500"
+                        className="border border-[#C4C4C4] rounded-[8px] px-3 py-2 focus:outline-none focus:ring-1 focus:ring-blue-500 w-[153px]"
                       />
                     </div>
                     <div className="flex flex-col gap-1">
@@ -837,7 +869,7 @@ const verifyPan = async () => {
                         onChange={handleInputChange}
                         disabled={mode === "view"}
                         placeholder="Email ID"
-                        className="border border-[#C4C4C4] rounded-md px-3 py-2 focus:outline-none focus:ring-1 focus:ring-blue-500"
+                        className="border border-[#C4C4C4] rounded-[8px] px-3 py-2 focus:outline-none focus:ring-1 focus:ring-blue-500 w-[220px]"
                       />
                     </div>
                     <div className="flex flex-col gap-1">
@@ -852,7 +884,7 @@ const verifyPan = async () => {
                         }
                         disabled={mode === "view"}
                         onChange={handleInputChange}
-                        className={`border border-[#C4C4C4] rounded-md px-3 py-2 focus:outline-none focus:ring-1 focus:ring-blue-500 
+                        className={`border border-[#C4C4C4] rounded-md px-3 py-2 focus:outline-none focus:ring-1 focus:ring-blue-500 w-[168px] 
     }`}
                       />
                     </div>
@@ -872,7 +904,7 @@ const verifyPan = async () => {
                         value={formData.permanent_address}
                         onChange={handleInputChange}
                         placeholder=" Permanent Address*"
-                        className="border border-[#C4C4C4] rounded-md px-3 py-2 focus:outline-none focus:ring-1 focus:ring-blue-500 w-[259px]"
+                        className="border border-[#C4C4C4] rounded-[8px] px-3 py-2 focus:outline-none focus:ring-1 focus:ring-blue-500 w-[266px]"
                       />
                     </div>
 
@@ -913,7 +945,7 @@ const verifyPan = async () => {
                         disabled={mode === "view"}
                         onChange={handleInputChange}
                         placeholder=" Corresponding Address*"
-                        className="border border-[#C4C4C4] rounded-md px-3 py-2 focus:outline-none focus:ring-1 focus:ring-blue-500 w-[266px]"
+                        className="border border-[#C4C4C4] rounded-[8px] px-3 py-2 focus:outline-none focus:ring-1 focus:ring-blue-500 w-[259px]"
                       />
                     </div>
                   </div>
@@ -927,9 +959,9 @@ const verifyPan = async () => {
                         value={formData.branch_id}
                         onChange={handleInputChange}
                         disabled={mode === "view"}
-                        className="border border-[#C4C4C4] rounded-md px-3 py-2 focus:outline-none focus:ring-1 focus:ring-blue-500 w-[220px]"
+                        className="border border-[#C4C4C4] rounded-[8px] px-3 py-2 focus:outline-none focus:ring-1 focus:ring-blue-500 w-[220px]"
                       >
-                        <option value="" disabled>Select Branch</option>
+                        <option value="" disabled> Branch</option>
                         {branches.map((branch) => (
                           <option key={branch.id} value={branch.id}>
                             {branch.branch_name} ({branch.branch_code})
@@ -949,7 +981,7 @@ const verifyPan = async () => {
                         }
                         disabled={mode === "view"}
                         onChange={handleInputChange}
-                        className="border border-[#C4C4C4] rounded-md px-3 py-2 focus:outline-none focus:ring-1 focus:ring-blue-500 w-[164px]"
+                        className="border border-[#C4C4C4] rounded-[8px] px-3 py-2 focus:outline-none focus:ring-1 focus:ring-blue-500 w-[164px]"
                       />
 
                     </div>
@@ -960,7 +992,7 @@ const verifyPan = async () => {
                         value={formData.designation}
                         disabled={mode === "view"}
                         onChange={handleInputChange}
-                        className="border border-[#C4C4C4] rounded-md px-3 py-2 focus:outline-none focus:ring-1 focus:ring-blue-500 w-[162px]"
+                        className="border border-[#C4C4C4] rounded-[8px] px-3 py-2 focus:outline-none focus:ring-1 focus:ring-blue-500 w-[162px]"
                       >
                         <option value="" disabled>Select Designation</option>
                         {designations.map((d) => (
@@ -971,10 +1003,6 @@ const verifyPan = async () => {
                       </select>
                     </div>
 
-                  </div>
-
-                  {/* Role, Password, Fax */}
-                  <div className="flex gap-2">
                     <div className="flex flex-col gap-1">
                       <label className="text-gray-700 font-medium">Assign Role <span className="text-red-500">*</span></label>
                       <select
@@ -982,7 +1010,7 @@ const verifyPan = async () => {
                         value={formData.assign_role_id}
                         onChange={handleInputChange}
                         disabled={mode === "view"}
-                        className="border border-[#C4C4C4] rounded-md px-3 py-2 focus:outline-none focus:ring-1 focus:ring-blue-500 w-[174px]"
+                        className="border border-[#C4C4C4] rounded-[8px] px-3 py-2 focus:outline-none focus:ring-1 focus:ring-blue-500 w-[174px]"
                       >
                         <option value="" disabled>
                           Select Role
@@ -994,6 +1022,12 @@ const verifyPan = async () => {
                         ))}
                       </select>
                     </div>
+
+                  </div>
+
+                  {/* Role, Password, Fax */}
+                  <div className="flex gap-2">
+                    
                     <div className="flex flex-col gap-1">
                       <label className="text-gray-700 font-medium">Password <span className="text-red-500">*</span></label>
                       <input
@@ -1002,7 +1036,7 @@ const verifyPan = async () => {
                         value={formData.password}
                         disabled={mode === "view"}
                         onChange={handleInputChange}
-                        placeholder="Password"
+                        placeholder="*******"
                         className="border border-[#C4C4C4] rounded-md px-3 py-2 focus:outline-none focus:ring-1 focus:ring-blue-500 w-[220px]"
                       />
                     </div>
@@ -1022,7 +1056,7 @@ const verifyPan = async () => {
                 </div>
 
                 {/* Right Upload Section */}
-                <div className=" p-4">
+                <div className="p-4">
                   <div>
                     <div className="flex justify-center">
                       {mode === "view" ? (
@@ -1076,38 +1110,43 @@ const verifyPan = async () => {
                       )}
                     </div>
 
-                    <div className="flex flex-col p-5">
-                      <div className="flex  mt-2 mb-2">
-                        <label className="font-roboto font-bold text-[16px] leading-[100%] tracking-[0.03em] text-center">
-                          Upload Customer Profile
-                        </label>
-                      </div>
+                   <div className="flex flex-col ">
 
-                      <div className="flex w-[200px] border border-gray-400 rounded-[10px] overflow-hidden mt-3 ">
-                        <label
-                          htmlFor="profileImage"
-                          className="bg-[#D9D9D9] px-6 py-2 text-sm text-black font-semibold cursor-pointer hover:bg-gray-300 transition-all duration-200"
-                        >
-                          Choose File
-                        </label>
+  {/* Centered Title */}
+  <div className="flex justify-center mt-2 mb-2 w-full">
+    <label className="font-roboto font-bold text-[16px] leading-[100%] tracking-[0.03em]">
+      Upload Customer Profile
+    </label>
+  </div>
 
-                        <input
-                          id="profileImage"
-                          type="file"
-                          disabled={mode === "view"}
-                          className="hidden"
-                          onChange={(e) => handleFileChange(e, setProfileImage)}
-                        />
+  {/* Upload Box */}
+  <div className="flex border border-gray-400 rounded-[10px] overflow-hidden w-[300px] mt-2">
+    <label
+      htmlFor="profileImage"
+      className="bg-[#D9D9D9] px-6 py-2 text-sm text-black font-semibold cursor-pointer hover:bg-gray-300 transition-all duration-200"
+    >
+      Choose File
+    </label>
 
-                        <span className="flex-1 px-4 py-2 text-gray-500 text-sm truncate">
-                          {formData.emp_image || "Upload Customer Profile"}
-                        </span>
-                      </div>
+    <input
+      id="profileImage"
+      type="file"
+      disabled={mode === "view"}
+      className="hidden"
+      onChange={(e) => handleFileChange(e, setProfileImage)}
+    />
 
-                    </div>
+    <span className="flex-1 px-4 py-2 text-gray-500 text-sm truncate">
+      {formData.emp_image || "Upload Customer Profile"}
+    </span>
+  </div>
 
+</div>
 
-                    <h1 className="text-[14px] font-medium">Address Proof</h1>
+                    {
+  mode !== "view" &&(
+    <>
+    <h1 className="text-[14px] font-medium mt-2">Address Proof</h1>
 
                     <select
                       disabled={mode === "view"}
@@ -1179,17 +1218,25 @@ const verifyPan = async () => {
                         {formData.emp_id_prof || "No file chosen"}
                       </span>
                     </div>
+    
+    </>
+  )
+}
 
-                    {mode === "edit" && (
-                      <div className="mt-4 text-sm w-fit flex justify-end">
-                        <button
-                          onClick={() => setIsDocumentHistory(true)}
-                          className="bg-green-500 px-2 py-1 text-white rounded-lg hover:bg-green-600"
-                        >
-                          View Document History
-                        </button>
-                      </div>
-                    )}
+
+                    
+
+                   {(mode === "edit" || mode === "view") && (
+  <div className="mt-4 text-sm w-fit flex justify-end">
+    <button
+      onClick={() => setIsDocumentHistory(true)}
+      className="bg-green-500 px-2 py-1 text-white rounded-lg hover:bg-green-600"
+    >
+      View Document History
+    </button>
+  </div>
+)}
+
 
                   </div>
                 </div>
@@ -1320,6 +1367,49 @@ const verifyPan = async () => {
           </div>
         </div>
       )}
+
+      {isValuationModalOpen && (
+  <div className="fixed inset-0 bg-black bg-opacity-40 flex items-center justify-center z-50">
+    <div className="bg-white w-[400px] p-5 rounded shadow-lg">
+
+      <h2 className="text-lg font-semibold mb-3">Add Valuation</h2>
+
+      {/* Show selected employees */}
+      <div className="mb-3">
+        {selectedEmployees.map((emp) => (
+          <p key={emp.id} className="text-sm">
+            {emp.emp_name} ({emp.email})
+          </p>
+        ))}
+      </div>
+
+      {/* Add valuation input */}
+      <label className="text-sm">Valuation Amount</label>
+      <input
+        type="number"
+        className="border w-full mt-1 mb-4 px-2 py-1 rounded"
+        placeholder="Enter valuation"
+      />
+
+      <div className="flex justify-end gap-3">
+        <button
+          onClick={() => setIsValuationModalOpen(false)}
+          className="bg-gray-400 text-white px-3 py-1 rounded"
+        >
+          Cancel
+        </button>
+
+        <button
+          onClick={handleSaveValuation}
+          className="bg-[#129121] text-white px-3 py-1 rounded"
+        >
+          Save
+        </button>
+      </div>
+    </div>
+  </div>
+)}
+
       {/* Table */}
       <div className="flex justify-center">
         <div className="overflow-x-auto mt-5 w-[1290px] min-h-[500px]">
@@ -1330,14 +1420,16 @@ const verifyPan = async () => {
           ) : (
             <table className="w-full border-collapse">
               <thead className="bg-[#0A2478] text-white text-sm">
-                <tr>
-                  <th className="px-4 py-2 text-left border-r">Employee ID</th>
+                  <tr>
+                  <th className="px-4 py-2 text-left border-r">Select</th>
+                  <th className="px-4 py-2 text-left border-r">Profile</th>
                   <th className="px-4 py-2 text-left border-r">Name</th>
-                  <th className="px-4 py-2 text-left border-r">Email</th>
-                  <th className="px-4 py-2 text-left border-r">Mobile</th>
-                  <th className="px-4 py-2 text-left border-r">DOJ</th>
-                  <th className="px-4 py-2 text-left border-r">DOB</th>
-                  <th className="px-4 py-2 text-left border-r">Address</th>
+                  <th className="px-4 py-2 text-left border-r w-[211px]">Email</th>
+                  <th className="px-4 py-2 text-left border-r w-[111px]">Mobile</th>
+                  {/* <th className="px-4 py-2 text-left border-r">DOJ</th>
+                  <th className="px-4 py-2 text-left border-r">DOB</th> */}
+                    <th className="px-4 py-2 text-left border-r w-[313px]">Address</th>
+                      <th className="px-4 py-2 text-left border-r w-[111px]">Valuer Valuation</th>
                   <th className="px-4 py-2 text-left border-r">Action</th>
                   <th className="px-4 py-2 text-left border-r">Active</th>
                 </tr>
@@ -1347,8 +1439,20 @@ const verifyPan = async () => {
                   employeeList.map((emp, index) => (
                     <tr
                       key={emp.id}
-                      className={`${index % 2 === 0 ? "bg-gray-50" : "bg-white"} hover:bg-gray-100`}
+                      className={`${index % 2 === 0 ? "bg-white" : "bg-white"} hover:bg-gray-100 border-b border-gray-300`}
                     >
+                     {/* Select Column */}
+<td className="px-4 py-2 text-center">
+  <input
+    type="checkbox"
+    checked={selectedEmployees.some((e) => e.id === emp.id)}
+    onChange={() => handleCheckboxChange(emp)}
+    className="w-4 h-4 cursor-pointer"
+  />
+</td>
+
+
+
                       <td className="px-4 py-2 flex items-center justify-center gap-2">
                         <img
                           src={emp.emp_image}
@@ -1361,11 +1465,12 @@ const verifyPan = async () => {
                       <td className="px-4 py-2">{emp.emp_name}</td>
                       <td className="px-4 py-2">{emp.email}</td>
                       <td className="px-4 py-2">{emp.mobile_no}</td>
-                      <td className="px-4 py-2">{new Date(emp.joining_date).toLocaleDateString()}</td>
-                      <td className="px-4 py-2">{new Date(emp.date_of_birth).toLocaleDateString()}</td>
+                      {/* <td className="px-4 py-2">{new Date(emp.joining_date).toLocaleDateString()}</td>
+                      <td className="px-4 py-2">{new Date(emp.date_of_birth).toLocaleDateString()}</td> */}
                       <td className="px-4 py-2 max-w-[200px] truncate" title={emp.permanent_address}>
                         {emp.permanent_address}
                       </td>
+                       <td className="px-4 py-2">----</td>
                       <td className="px-4 py-2">
                         <div className="flex gap-2 justify-center">
                           <button

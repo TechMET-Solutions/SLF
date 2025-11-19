@@ -50,7 +50,7 @@ function AddLoanRepayment() {
   const { loanId, loanData } = location.state || {};  // <-- here you get it from navigate
 const navigate = useNavigate();
   const [data, setData] = useState(null);
-  console.log(data,"data")
+  console.log(loanData,"loanData")
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
 const [isClose, setIsClose] = useState(false);
@@ -109,6 +109,24 @@ const [loanInfo, setLoanInfo] = useState({
   refNo: "",
   madeBy: ""
 });
+const [creditNotes, setCreditNotes] = useState([]);
+
+useEffect(() => {
+  if (loanData.BorrowerId) {
+    fetchCreditNotes(loanData.BorrowerId);
+  }
+}, [loanData.BorrowerId]);
+
+const fetchCreditNotes = async (customerId) => {
+  try {
+    const res = await axios.get(`${API}/credit-note/credit-notes/customer/${customerId}`);
+    if (res.data.success) {
+      setCreditNotes(res.data.data);
+    }
+  } catch (error) {
+    console.error("Error fetching credit notes:", error);
+  }
+};
 
 const handleAdvIntCheck = (e) => {
   const checked = e.target.checked;
@@ -277,7 +295,7 @@ const handlePayAmountChange = (value) => {
     remainingPay -= interestAdjusted;
 
     // Calculate exact days of interest paid (fractional)
-    daysPaidFor = Math.round(interestAdjusted / dailyIntAmt);
+    daysPaidFor = Math.floor(interestAdjusted / dailyIntAmt);
   }
 
   // Step 3: Loan principal adjusted
@@ -323,7 +341,7 @@ const handlePayAmountChange = (value) => {
   }
   // ******************
 
-  let days = Math.cell(remainingPay / dailyIntAmt);
+  let days = Math.floor(remainingPay / dailyIntAmt);
   let exactInterestForDays = days * dailyIntAmt;
   let totalRequired = charges + exactInterestForDays;
 
@@ -666,6 +684,38 @@ const parseJSONData = (value) => {
     });
 };
 
+  const handleCreditNoteSelect = (creditNoteId) => {
+  debugger
+  const selected = creditNotes.find(
+    (item) => item.credit_note_id === creditNoteId
+  );
+
+  if (!selected) {
+    setPaymentInfo({ ...paymentInfo, creditNote: "" });
+    return;
+  }
+
+  
+
+  const loanPendingAmount = Number(data?.loanApplication?.LoanPendingAmount || 0);
+const creditAmount = Number(selected.net_amount || 0);
+
+if (loanPendingAmount < creditAmount) {
+  alert(
+    `❗ Pending Amount: ₹${loanPendingAmount}  
+     ❗ Credit Note Amount: ₹${creditAmount}  
+     ⚠️ Credit Note amount is greater than Pending Amount`
+  );
+
+  // Reset dropdown
+  setPaymentInfo({ ...paymentInfo, creditNote: "" });
+  return;
+}
+
+
+  // Valid selection
+  setPaymentInfo({ ...paymentInfo, creditNote: creditNoteId });
+};
 
   return (
     <div className="flex flex-col items-center mt-5">
@@ -1142,14 +1192,14 @@ if (checked) setIsAdvInt(false);
 />
 
     <label className="text-gray-900 font-medium">
-      Take Advance Interest
+      Loan Adjustment
     </label>
   </div>
 )}
 
           
-          {
-            isAdvInt && isAdvIntCheck &&  (
+          {isAdvInt && !isAdvIntCheck &&
+              (
               <>
               
 
@@ -1252,7 +1302,7 @@ if (checked) setIsAdvInt(false);
              
             )
           }
-      { isAdvInt && !isAdvIntCheck && (
+      { isAdvInt && isAdvIntCheck && (
   <div className="flex flex-wrap gap-x-6 gap-y-4">
     {/* Pay Amount */}
     <div className="flex flex-col gap-1 w-[150px]">
@@ -1331,16 +1381,14 @@ if (checked) setIsAdvInt(false);
         disabled
         className="border border-gray-300 disabled:bg-gray-100 rounded-md px-3 py-2 w-full focus:ring-1 focus:ring-blue-500 focus:outline-none"
       />
-    </div>
-  </div>
-)}
-
-
-      {/* <p className="text-sm text-gray-500 mt-1 ml-1">Amount in words</p> */}
-<div className="text-sm text-gray-500 mt-1 ml-1">
+              </div>
+              <div className="text-sm text-gray-500 mt-1 ml-1">
             {numberToWords(loanInfoForAdj.payAmount)}
           </div>
-      {/* Row 2: Payment Details (Individual Fields) */}
+            </div>
+            
+)}
+
       <div className="flex flex-wrap gap-x-6 gap-y-4 mt-4">
         {/* Mode of Payment */}
         {/* Mode of Payment */}
@@ -1398,19 +1446,24 @@ if (checked) setIsAdvInt(false);
 {paymentInfo.mode === "Credit Note" && (
   <div className="flex flex-col gap-1 w-[200px]">
     <label className="text-gray-900 font-medium">Select Credit Note</label>
+
     <select
-      className="border border-gray-300 rounded-md px-3 py-2 focus:ring-1 focus:ring-blue-500 focus:outline-none"
-     
-      value={paymentInfo.creditNote}
-      onChange={(e)=>setPaymentInfo({...paymentInfo,creditNote:e.target.value})}
-    >
+  className="border border-gray-300 rounded-md px-3 py-2 focus:ring-1 focus:ring-blue-500 focus:outline-none"
+  value={paymentInfo.creditNote}
+  onChange={(e) => handleCreditNoteSelect(e.target.value)}
+>
       <option value="">--Select--</option>
-      <option value="CRN001">CRN001</option>
-      <option value="CRN002">CRN002</option>
-      {/* map your API credit notes here */}
+
+      {creditNotes.map((item) => (
+  <option key={item.id} value={item.credit_note_id}>
+    {item.credit_note_id} - ₹{item.net_amount}
+  </option>
+))}
+
     </select>
   </div>
 )}
+
 
 
         {/* Payment Ref. No */}

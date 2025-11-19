@@ -206,10 +206,10 @@
 import axios from "axios";
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import GroupData from "../assets/Group 124.svg";
-import { formatIndianDate } from "../utils/Helpers";
 import { API } from "../api";
+import GroupData from "../assets/Group 124.svg";
 import Pagination from "../Component/Pagination";
+import { formatIndianDate } from "../utils/Helpers";
 
 const SchemeDetailsList = () => {
   useEffect(() => {
@@ -226,20 +226,22 @@ const SchemeDetailsList = () => {
   // 🔥 Fetch Expired Schemes with Pagination
   // ============================================
   const fetchSchemes = async (page = 1) => {
-    try {
-      const response = await axios.get(
-        `${API}/Scheme/getExpiredSchemes?page=${page}&limit=10`
-      );
+  try {
+    const response = await axios.get(
+      `${API}/Scheme/getExpiredSchemes?page=${page}&limit=10`
+    );
 
-      const result = response.data; // {page, limit, totalItems, totalPages, data}
+    const result = response.data; // {page, limit, totalItems, totalPages, data}
 
-      setData(result.data);
-      setCurrentPage(result.page);
-      setTotalPages(result.totalPages);
-    } catch (err) {
-      console.error("❌ Error fetching expired schemes:", err);
-    }
-  };
+    setData(result);
+    // setData4(result.data);        // <-- SET DATA4 HERE
+    setCurrentPage(result.page);
+    setTotalPages(result.totalPages);
+
+  } catch (err) {
+    console.error("❌ Error fetching expired schemes:", err);
+  }
+};
 
   useEffect(() => {
     fetchSchemes(currentPage);
@@ -303,25 +305,25 @@ const SchemeDetailsList = () => {
           <table className="w-full border-collapse">
             <thead className="bg-[#0A2478] text-white text-sm">
               <tr>
-                <th className="px-4 py-2">Product Name</th>
-                <th className="px-4 py-2">Scheme Name</th>
-                <th className="px-4 py-2">App From</th>
-                <th className="px-4 py-2">App To</th>
-                <th className="px-4 py-2">Approval %</th>
-                <th className="px-4 py-2">Min Loan</th>
-                <th className="px-4 py-2">Max Loan</th>
-                <th className="px-4 py-2">Renewed By</th>
-                <th className="px-4 py-2">Renewed On</th>
-                <th className="px-4 py-2">Action</th>
+                <th className="px-4 py-2 border">Product Name</th>
+                <th className="px-4 py-2 border">Scheme Name</th>
+                <th className="px-4 py-2 border">App From</th>
+                <th className="px-4 py-2 border">App To</th>
+                <th className="px-4 py-2 border">Approval %</th>
+                <th className="px-4 py-2 border">Min Loan</th>
+                <th className="px-4 py-2 border">Max Loan</th>
+                <th className="px-4 py-2 border">Renewed By</th>
+                <th className="px-4 py-2 border">Renewed On</th>
+                <th className="px-4 py-2 border">Action</th>
               </tr>
             </thead>
 
-            <tbody className="text-[12px]">
-              {data.map((row, index) => (
+            <tbody className="text-[12px] text-center">
+              {data?.map((row, index) => (
                 <tr
                   key={row.id}
                   className={`border-b ${
-                    index % 2 === 0 ? "bg-gray-50" : "bg-white"
+                    index % 2 === 0 ? "bg-white" : "bg-white"
                   }`}
                 >
                   <td className="px-4 py-2">{row.product}</td>

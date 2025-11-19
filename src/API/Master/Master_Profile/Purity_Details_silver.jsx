@@ -1,16 +1,16 @@
 import axios from "axios";
+import { encryptData, decryptData } from "../../../utils/cryptoHelper";
 import { API } from "../../../api";
-import { decryptData, encryptData } from "../../../utils/cryptoHelper";
 
 const API_BASE = `${API}/Master/Master_Profile`;
 
 // 🔹 Fetch All Purity Profiles with Pagination
-export const fetchPuritiesApi = async (page = 1, limit = 10) => {
+export const fetchPuritiesApiForSilver = async (page = 1, limit = 10) => {
   try {
     const encryptedPayload = encryptData({});
     const response = await axios({
       method: "get",
-      url: `${API_BASE}/get-purity?page=${page}&limit=${limit}`,
+      url: `${API_BASE}/get-purity-silver?page=${page}&limit=${limit}`,
       headers: { "Content-Type": "application/json" },
       data: { data: encryptedPayload },
     });
@@ -26,10 +26,10 @@ export const fetchPuritiesApi = async (page = 1, limit = 10) => {
 };
 
 // 🔹 Add New Purity
-export const addPurityApi = async (payload) => {
+export const addPurityApiForSilver = async (payload) => {
   try {
     const encryptedPayload = encryptData(payload);
-    return await axios.post(`${API_BASE}/add-purity`, { data: encryptedPayload }, {
+    return await axios.post(`${API_BASE}/add-purity-silver`, { data: encryptedPayload }, {
       headers: { "Content-Type": "application/json" },
     });
   } catch (error) {
@@ -39,10 +39,10 @@ export const addPurityApi = async (payload) => {
 };
 
 // 🔹 Update Existing Purity
-export const updatePurityApi = async (payload) => {
+export const updatePurityApiForSilver = async (payload) => {
   try {
     const encryptedPayload = encryptData(payload);
-    return await axios.put(`${API_BASE}/update-purity`, { data: encryptedPayload }, {
+    return await axios.put(`${API_BASE}/update-purity-silver`, { data: encryptedPayload }, {
       headers: { "Content-Type": "application/json" },
     });
   } catch (error) {
@@ -52,10 +52,10 @@ export const updatePurityApi = async (payload) => {
 };
 
 // 🔹 Change Purity Status (Active / Inactive)
-export const updatePurityStatusApi = async (id, status) => {
+export const updatePurityStatusApiForSilver = async (id, status) => {
   try {
     const encryptedPayload = encryptData({ id, status });
-    return await axios.put(`${API_BASE}/update-purity`, { data: encryptedPayload }, {
+    return await axios.put(`${API_BASE}/update-purity-silver`, { data: encryptedPayload }, {
       headers: { "Content-Type": "application/json" },
     });
   } catch (error) {
@@ -68,7 +68,7 @@ export const updatePurityStatusApi = async (id, status) => {
 export const deletePurityApi = async (id) => {
   try {
     const encryptedPayload = encryptData({ id });
-    return await axios.post(`${API_BASE}/delete-purity`, { data: encryptedPayload }, {
+    return await axios.post(`${API_BASE}/delete-purity-silver`, { data: encryptedPayload }, {
       headers: { "Content-Type": "application/json" },
     });
   } catch (error) {

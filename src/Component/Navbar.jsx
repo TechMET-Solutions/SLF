@@ -123,9 +123,13 @@ const Navbar = () => {
                         { name: "Branch Details", path: "/Branch-Profile-List" },
                         { name: "Item Profile", path: "/Item-Profile-List" },
                         {
-                          name: "Product Purity Profile",
-                          path: "/Product-Purity-profile",
+                          name: "Product Purity",
+                          path: "/Product-Purity",
                         },
+                        // {
+                        //   name: "Product Purity Silver",
+                        //   path: "/Product-Purity-Silver",
+                        // },
                         {
                           name: "Document Proof",
                           path: "/Document-Proof-List",
@@ -134,7 +138,7 @@ const Navbar = () => {
                           name: "Customer Profile",
                           path: "/Customer-Profile-List",
                         },
-                        { name: "Push Gold Rate", path: "/Push-Gold-Rate-List" },
+                        { name: "Push Gold Rate", path: "/Push-Rate-List" },
                         { name: "Charges Profile", path: "/Charges-Profile-List" },
                         { name: "Area", path: "/Area" },
                       ].map((item) => (

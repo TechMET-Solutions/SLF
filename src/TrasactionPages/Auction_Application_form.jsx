@@ -75,6 +75,8 @@ const handleAuctionSelect = (auctionId) => {
     auctionDate: formattedDate,
     auctionTime: selected.time,
     auctionVenue: selected.venue,
+    fees: selected.fees
+    
   }));
 };
 
@@ -110,7 +112,8 @@ const handleAuctionSelect = (auctionId) => {
       gst: formData.gst,
       creditNoteID: result.creditNote.creditNoteID,
       creditAmount: result.creditNote.creditAmount,
-      status: result.creditNote.status,
+        status: result.creditNote.status,
+      auctionId:formData.auction,
       remarks: "Registration / EMD Deposit Received"
     });
 
@@ -128,7 +131,7 @@ const onChangeForbidders = async (e) => {
         try {
             const res = await fetch(`http://localhost:5000/Auction/bidders/search?q=${value}`);
             const data = await res.json();
-            setSuggestions(data.results);
+            setSuggestions(data.bidders);
         } catch (err) {
             console.error(err);
         }
@@ -187,7 +190,7 @@ const onChangeForbidders = async (e) => {
 
               className="bg-[#0A2478] text-white text-sm rounded px-4 py-2 cursor-pointer"
             >
-              Add
+              Submit
             </button>
             <button
               onClick={() => navigate("/Auction-Creation")}
@@ -444,7 +447,8 @@ const onChangeForbidders = async (e) => {
               <input
                 type="number"
                 name="fees"
-                value={formData.fees}
+                              value={formData.fees}
+                              disabled
                 onChange={onChange}
                 className="border rounded px-3 py-2 w-full mt-1"
               />
@@ -546,12 +550,21 @@ const onChangeForbidders = async (e) => {
     <div className="bg-white w-[570px] h-[407px] shadow-lg rounded border  relative">
 
       {/* Close Button */}
-      <button
-        className="absolute right-4 top-4 text-xl text-white"
-        onClick={() => setShowPopup(false)}
-      >
-        ✖
-      </button>
+    <button
+  className="absolute right-4 top-4 text-xl text-white"
+  onClick={() => {
+    setShowPopup(false);
+    navigate("/Auction_Bidder_List", {
+      state: {
+        auctionId: popupData.auctionId
+      }
+    });
+  }}
+>
+  ✖
+</button>
+
+
 
       <h2 className="text-lg font-semibold text-white bg-[#0A2478] p-3 rounded">
         Credit Note - Bidder Registration Deposit

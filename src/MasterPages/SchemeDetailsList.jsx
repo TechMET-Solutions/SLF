@@ -272,12 +272,10 @@
 import axios from "axios";
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import GroupData from "../assets/Group 124.svg";
-import eyeIcon from "../assets/Vectorimg.png";
-import { formatIndianDate } from "../utils/Helpers";
 import { API } from "../api";
+import eyeIcon from "../assets/Vectorimg.png";
 import Pagination from "../Component/Pagination";
-
+import { formatIndianDate } from "../utils/Helpers";
 const SchemeDetailsList = () => {
   useEffect(() => {
     document.title = "SLF | Scheme Details List";
@@ -286,6 +284,8 @@ const SchemeDetailsList = () => {
   const navigate = useNavigate();
 
   const [data, setData] = useState([]);
+
+  console.log(data,"data")
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
 
@@ -299,7 +299,7 @@ const SchemeDetailsList = () => {
       // Backend returns: { page, limit, totalItems, totalPages, data }
       const result = response.data;
 
-      setData(result.data); // only the list
+      setData(result); // only the list
       setCurrentPage(result.page);
       setTotalPages(result.totalPages);
     } catch (err) {
@@ -382,25 +382,26 @@ const SchemeDetailsList = () => {
           <table className="w-full border-collapse">
             <thead className="bg-[#0A2478] text-white text-sm">
               <tr>
-                <th className="px-4 py-2">Scheme Name</th>
-                <th className="px-4 py-2">App From</th>
-                <th className="px-4 py-2">App To</th>
-                <th className="px-4 py-2">Int. Compound</th>
-                <th className="px-4 py-2">Min Amount</th>
-                <th className="px-4 py-2">Max Amount</th>
-                <th className="px-4 py-2">Description</th>
-                <th className="px-4 py-2">Action</th>
-                <th className="px-4 py-2">Role Mapping</th>
-                <th className="px-4 py-2">Active</th>
+                <th className="px-4 py-2 border">Scheme Name</th>
+                <th className="px-4 py-2 border">App From</th>
+                <th className="px-4 py-2 border">App To</th>
+                <th className="px-4 py-2 border ">Int. Compound</th>
+                
+                <th className="px-4 py-2 border">Min Amount</th>
+                <th className="px-4 py-2 border">Max Amount</th>
+                <th className="px-4 py-2 border">Description</th>
+                <th className="px-4 py-2 border">Action</th>
+                <th className="px-4 py-2 border">Role Mapping</th>
+                <th className="px-4 py-2 border ">Active</th>
               </tr>
             </thead>
 
-            <tbody className="text-[12px]">
+            <tbody className="text-[12px] text-center">
               {data?.map((row, index) => (
                 <tr
                   key={row.id}
-                  className={`border-b ${
-                    index % 2 === 0 ? "bg-gray-50" : "bg-white"
+                  className={`border-b border-gray-300 ${
+                    index % 2 === 0 ? "bg-white" : "bg-white"
                   }`}
                 >
                   <td className="px-4 py-2">{row.schemeName}</td>
@@ -420,7 +421,7 @@ const SchemeDetailsList = () => {
                   <td className="px-4 py-2 text-center">
                     <div className="flex items-center gap-2">
                       {/* Edit */}
-                      <div
+                      {/* <div
                         className="w-5 h-5 bg-[#56A869] flex items-center justify-center rounded cursor-pointer"
                         onClick={() =>
                           navigate("/Add-Scheme-Details-Listform", {
@@ -429,7 +430,7 @@ const SchemeDetailsList = () => {
                         }
                       >
                         <img src={GroupData} className="w-3.5 h-3.5" />
-                      </div>
+                      </div> */}
 
                       {/* View */}
                       <div

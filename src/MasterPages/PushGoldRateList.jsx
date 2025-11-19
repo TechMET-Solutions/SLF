@@ -1,13 +1,15 @@
-import { useState, useEffect } from "react";
-import { fetchGoldRatesApi, addGoldRateApi } from "../API/Master/Master_Profile/Gold_Rate_Details";
-import { formatIndianDate } from "../utils/Helpers";
+import { useEffect, useState } from "react";
+import { addGoldRateApi, fetchGoldRatesApi } from "../API/Master/Master_Profile/Gold_Rate_Details";
+import { addSilverRateApi, fetchSilverRatesApi } from "../API/Master/Master_Profile/Silver_Rate_Details";
 import Pagination from "../Component/Pagination";
+import { formatIndianDate } from "../utils/Helpers";
 
 const PushGoldRateList = () => {
   useEffect(() => {
     document.title = "SLF | Push Gold Rate List ";
   }, []);
   const [data, setData] = useState([]);
+  const [Silverdata, setSilverData] = useState([]);
   const [pushDate, setPushDate] = useState("");
   const [goldRate, setGoldRate] = useState("");
 
@@ -15,8 +17,13 @@ const PushGoldRateList = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const [totalItems, setTotalItems] = useState(0);
   const [showPagination, setShowPagination] = useState(false);
+   const [currentPageForSilver, setCurrentPageForSilver] = useState(1);
+  const [totalItemsForSilver, setTotalItemsForSilver] = useState(0);
+  const [showPaginationForSilver, setShowPaginationForSilver] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const itemsPerPage = 10;
+   const itemsPerPageForSilver = 10;
+const [metalType, setMetalType] = useState("Gold");
 
   // 🔹 Fetch gold rates with pagination
   const fetchGoldRates = async (page = 1) => {
@@ -40,38 +47,100 @@ const PushGoldRateList = () => {
       setIsLoading(false);
     }
   };
-
-  // 🔹 Save new gold rate
-  const handleSave = async () => {
-    if (!pushDate || !goldRate) return;
-
-    const payload = {
-      push_date: pushDate,
-      gold_rate: goldRate,
-      added_on: new Date().toISOString(),
-      added_by: "ssl@slunawat.com",
-    };
-
+   const fetchSilverRates = async (page = 1) => {
+    setIsLoading(true);
     try {
-      await addGoldRateApi(payload);
-      fetchGoldRates(currentPage); // refresh table with current page
-      setGoldRate("");
-      setPushDate("");
+      const result = await fetchSilverRatesApi(page, itemsPerPage);
+      if (result?.items) {
+        setSilverData(result.items);
+        setTotalItemsForSilver(result.total);
+        setCurrentPageForSilver(result.page);
+        setShowPaginationForSilver(result.showPagination || false);
+      } else {
+        setSilverData([]);
+        setShowPaginationForSilver(false);
+      }
     } catch (err) {
-      console.error("❌ Save Error:", err.response?.data || err.message);
+      console.error("❌ Fetch Error:", err);
+      setSilverData([]);
+      setShowPaginationForSilver(false);
+    } finally {
+      setIsLoading(false);
     }
   };
 
+  // 🔹 Save new gold rate
+  // const handleSave = async () => {
+  //   if (!pushDate || !goldRate) return;
+
+  //   const payload = {
+  //     push_date: pushDate,
+  //     gold_rate: goldRate,
+  //     metalType:metalType,
+  //     added_on: new Date().toISOString(),
+  //     added_by: "ssl@slunawat.com",
+  //   };
+
+  //   try {
+  //     await addGoldRateApi(payload);
+  //     fetchGoldRates(currentPage); // refresh table with current page
+  //     setGoldRate("");
+  //     setPushDate("");
+  //     setMetalType("Gold")
+  //   } catch (err) {
+  //     console.error("❌ Save Error:", err.response?.data || err.message);
+  //   }
+  // };
+
+  const handleSave = async () => {
+  if (!pushDate || !goldRate) return;
+
+  const payload = {
+    push_date: pushDate,
+    gold_rate: goldRate,
+    metalType: metalType,
+    added_on: new Date().toISOString(),
+    added_by: "ssl@slunawat.com",
+  };
+
+  try {
+    if (metalType === "Gold") {
+      // Save gold
+      await addGoldRateApi(payload);
+      fetchGoldRates(currentPage); // refresh gold table
+    } else {
+      // Save silver
+      await addSilverRateApi(payload);
+      fetchSilverRates(currentPage); // refresh silver table
+    }
+
+    // Reset fields
+    setGoldRate("");
+    setPushDate("");
+    setMetalType("Gold");
+
+  } catch (err) {
+    console.error("❌ Save Error:", err.response?.data || err.message);
+  }
+};
+
+
   // 🔹 Pagination Controls
   const totalPages = Math.ceil(totalItems / itemsPerPage);
-
+  const totalPagesForSilver = Math.ceil(totalItemsForSilver / itemsPerPageForSilver);
   const handlePageChange = (page) => {
     if (page < 1 || page > totalPages) return;
     fetchGoldRates(page);
   };
 
+  const handlePageChangeForSilver = (page) => {
+    if (page < 1 || page > totalPagesForSilver) return;
+    fetchSilverRates(page);
+  };
+
   useEffect(() => {
     fetchGoldRates();
+    fetchSilverRates()
   }, []);
 
   return (
@@ -80,7 +149,7 @@ const PushGoldRateList = () => {
       <div className="flex justify-center">
         <div className="flex items-center px-6 py-4 border-b mt-5 w-[1290px] h-[62px] border rounded-[11px] border-gray-200 justify-between shadow">
           <h2 className="text-red-600 font-bold text-[20px] leading-[148%] font-source">
-            Push Gold Rate List
+             Rate List
           </h2>
 
           {/* Input & Actions */}
@@ -95,8 +164,23 @@ const PushGoldRateList = () => {
                   className="border border-gray-400 rounded px-3 py-1 text-[11.25px] w-[168px] h-[28px]"
                 />
               </div>
+
+               <div className="flex gap-3 items-center">
+      <p className="text-[11.25px] font-source">
+        Type <span className="text-red-500">*</span>
+      </p>
+      <select
+        value={metalType}
+        onChange={(e) => setMetalType(e.target.value)}
+        className="border border-gray-400 rounded px-2 py-1 text-[11.25px] w-[120px] h-[28px]"
+      >
+        <option value="Gold">Gold</option>
+        <option value="Silver">Silver</option>
+      </select>
+    </div>
+              
               <div className="flex gap-3 items-center">
-                <p className="text-[11.25px] font-source">Gold Rate <span className="text-red-500">*</span></p>
+                <p className="text-[11.25px] font-source"> Rate <span className="text-red-500">*</span></p>
                 <input
                   type="number"
                   value={goldRate}
@@ -130,18 +214,30 @@ const PushGoldRateList = () => {
 
       {/* Table */}
       <div className="flex justify-center">
-        <div className="overflow-x-auto mt-5 w-[1290px] h-[500px]">
-          {data.length === 0 && !isLoading ? (
+        <div className="overflow-x-auto mt-5 w-[1290px] h-[500px] flex gap-10">
+          <div className="mt-5">
+            <p
+  className="font-semibold text-[#0A2478]"
+  style={{
+    fontFamily: "Playfair Display",
+    fontSize: "23.23px",
+    lineHeight: "148%",
+  }}
+>
+Gold rate
+</p>
+            {data.length === 0 && !isLoading ? (
             <div className="flex justify-center items-center h-full">
               <p className="text-lg text-gray-500">No Data Found</p>
             </div>
           ) : (
-            <table className="w-full border-collapse">
+            <table className="w-[620px] border-collapse mt-2">
               <thead className="bg-[#0A2478] text-white text-sm">
                 <tr>
                   <th className="px-4 py-2 text-left border-r">ID</th>
-                  <th className="px-4 py-2 text-left border-r">Push Date</th>
-                  <th className="px-4 py-2 text-left border-r">Gold Rate</th>
+                    <th className="px-4 py-2 text-left border-r">Date</th>
+                      <th className="px-4 py-2 text-left border-r">Type</th>
+                  <th className="px-4 py-2 text-left border-r"> Rate</th>
                   <th className="px-4 py-2 text-left border-r">Added On</th>
                   <th className="px-4 py-2 text-left border-r">Added By</th>
                 </tr>
@@ -154,6 +250,7 @@ const PushGoldRateList = () => {
                   >
                     <td className="px-4 py-2">{row.id}</td>
                     <td className="px-4 py-2">{formatIndianDate(row.push_date)}</td>
+                    <td className="px-4 py-2">{row.metalType}</td>
                     <td className="px-4 py-2">{row.gold_rate}</td>
                     <td className="px-4 py-2">{formatIndianDate(row.added_on)}</td>
                     <td className="px-4 py-2">{row.added_by}</td>
@@ -161,14 +258,69 @@ const PushGoldRateList = () => {
                 ))}
               </tbody>
             </table>
-          )}
-        </div>
-      </div>
-      <Pagination
+            )}
+            
+            <Pagination
         currentPage={currentPage}
         totalPages={totalPages}
         onPageChange={handlePageChange}
       />
+          </div>
+          <div className="mt-5">
+           <p
+  className="font-semibold text-[#0A2478]"
+  style={{
+    fontFamily: "Playfair Display",
+    fontSize: "23.23px",
+    lineHeight: "148%",
+  }}
+>
+Silver rate
+</p>
+            {Silverdata.length === 0 && !isLoading ? (
+            <div className="flex justify-center items-center h-full">
+              <p className="text-lg text-gray-500">No Data Found</p>
+            </div>
+          ) : (
+            <table className="w-[620px] border-collapse mt-2">
+              <thead className="bg-[#0A2478] text-white text-sm">
+                <tr>
+                  <th className="px-4 py-2 text-left border-r">ID</th>
+                    <th className="px-4 py-2 text-left border-r"> Date</th>
+                      <th className="px-4 py-2 text-left border-r">Type</th>
+                  <th className="px-4 py-2 text-left border-r"> Rate</th>
+                  <th className="px-4 py-2 text-left border-r">Added On</th>
+                  <th className="px-4 py-2 text-left border-r">Added By</th>
+                </tr>
+              </thead>
+              <tbody className="text-[12px]">
+                {Silverdata.map((row, index) => (
+                  <tr
+                    key={row.id}
+                    className={`border-b ${index % 2 === 0 ? "bg-gray-50" : "bg-white"}`}
+                  >
+                    <td className="px-4 py-2">{row.id}</td>
+                    <td className="px-4 py-2">{formatIndianDate(row.push_date)}</td>
+                    <td className="px-4 py-2">{row.metalType}</td>
+                    <td className="px-4 py-2">{row.Silver_rate}</td>
+                    <td className="px-4 py-2">{formatIndianDate(row.added_on)}</td>
+                    <td className="px-4 py-2">{row.added_by}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+            )}
+            
+          <Pagination
+        currentPage={currentPageForSilver}
+        totalPages={totalPagesForSilver}
+        onPageChange={handlePageChangeForSilver}
+         />
+          </div>
+          
+        </div>
+      </div>
+      
     </div>
   );
 };

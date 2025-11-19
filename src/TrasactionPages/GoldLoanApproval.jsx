@@ -2,8 +2,8 @@ import axios from "axios";
 import { useEffect, useState } from "react";
 import { IoIosAddCircleOutline, IoIosCloseCircleOutline } from "react-icons/io";
 import { useLocation, useNavigate } from "react-router-dom";
-import profileempty from "../assets/profileempty.png";
 import { API } from "../api";
+import profileempty from "../assets/profileempty.png";
 const GoldLoanApproval = () => {
 
   const dummyBanks = [
@@ -610,7 +610,7 @@ const GoldLoanApproval = () => {
                 <tr className="bg-[#0A2478] text-white text-center">
                   <th className="py-2 border">Sr No</th>
                   <th className="py-2 border">Paid By</th>
-                  <th className="py-2 border">UTR Number</th>
+                  {/* <th className="py-2 border">UTR Number</th> */}
                   <th className="py-2 border">Bank</th>
                   <th className="py-2 border">Customer Bank</th>
                   <th className="py-2 border">Customer Amount</th>
@@ -635,14 +635,14 @@ const GoldLoanApproval = () => {
                         ))}
                       </select>
                     </td>
-                    <td className="py-2">
+                    {/* <td className="py-2">
                       <input
                         type="text"
                         value={row.utrNumber}
                         onChange={(e) => handleRowChange(index, "utrNumber", e.target.value)}
                         className="border border-gray-300 rounded-md px-2 py-1 w-[150px]"
                       />
-                    </td>
+                    </td> */}
                     {/* <td className="py-2">
                   <select
                     value={row.bank}

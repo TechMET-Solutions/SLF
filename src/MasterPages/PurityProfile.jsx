@@ -8,6 +8,8 @@ import {
   updatePurityApi,
   updatePurityStatusApi,
 } from "../API/Master/Master_Profile/Purity_Details";
+
+import { addPurityApiForSilver, fetchPuritiesApiForSilver, updatePurityApiForSilver, updatePurityStatusApiForSilver } from "../API/Master/Master_Profile/Purity_Details_silver";
 import blockimg from "../assets/blockimg.png";
 import Pagination from "../Component/Pagination";
 
@@ -23,6 +25,7 @@ const PurityProfile = () => {
   const [isEditMode, setIsEditMode] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [data, setData] = useState([]);
+    const [Silverdata, setSilverData] = useState([]);
   const [formData, setFormData] = useState({
     id: null,
     loan_type: "Gold",
@@ -37,6 +40,11 @@ const PurityProfile = () => {
   const [totalItems, setTotalItems] = useState(0);
   const [showPagination, setShowPagination] = useState(false);
   const itemsPerPage = 10;
+
+    const [currentPageForSilver, setCurrentPageForSilver] = useState(1);
+  const [totalItemsForSilver, setTotalItemsForSilver] = useState(0);
+  const [showPaginationForSilver, setShowPaginationForSilver] = useState(false);
+  const itemsPerPageForSilver = 10;
 
   // 📌 Fetch all records with pagination
   const fetchPurities = async (page = 1) => {
@@ -61,8 +69,30 @@ const PurityProfile = () => {
     }
   };
 
+  const fetchPuritiesForSilver = async (page = 1) => {
+    setIsLoading(true);
+    try {
+      const result = await fetchPuritiesApiForSilver(page, itemsPerPageForSilver);
+      if (result?.items) {
+        setSilverData(result.items);
+        setTotalItemsForSilver(result.total);
+        setCurrentPageForSilver(result.page);
+        setShowPaginationForSilver(result.showPagination || false);
+      } else {
+        setSilverData([]);
+        setShowPaginationForSilver(false);
+      }
+    } catch (err) {
+      console.error("❌ Error fetching:", err);
+      setSilverData([]);
+      setShowPaginationForSilver(false);
+    } finally {
+      setIsLoading(false);
+    }
+  };
   useEffect(() => {
     fetchPurities();
+    fetchPuritiesForSilver()
   }, []);
 
   // 🟦 Toggle Status
@@ -71,6 +101,15 @@ const PurityProfile = () => {
       const newStatus = item.status === 1 ? 0 : 1;
       await updatePurityStatusApi(item.id, newStatus);
       fetchPurities(currentPage);
+    } catch (error) {
+      console.error("❌ Error toggling status:", error);
+    }
+  };
+   const handleToggleStatusForSilver = async (item) => {
+    try {
+      const newStatus = item.status === 1 ? 0 : 1;
+      await updatePurityStatusApiForSilver(item.id, newStatus);
+      fetchPuritiesForSilver(currentPageForSilver);
     } catch (error) {
       console.error("❌ Error toggling status:", error);
     }
@@ -132,13 +171,26 @@ if (!formData.loan_type?.trim()) {
 
       if (isEditMode && formData.id) {
         payload.id = formData.id;
-        await updatePurityApi(payload);
+         if (formData.loan_type === "Gold") {
+         await updatePurityApi(payload);
+         }
+         else {
+           await updatePurityApiForSilver(payload);
+        }
+        
       } else {
-        await addPurityApi(payload);
+        if (formData.loan_type === "Gold") {
+          await addPurityApi(payload);
+        }
+         else {
+            await addPurityApiForSilver(payload);
+        }
+        
       }
 
       setIsModalOpen(false);
-      fetchPurities(currentPage);
+      fetchPurities(currentPageForSilver);
+      fetchPuritiesForSilver()
     } catch (error) {
       console.error("❌ Error saving item:", error);
     } finally {
@@ -167,7 +219,7 @@ if (!formData.loan_type?.trim()) {
 
   // 🔹 Pagination Controls
   const totalPages = Math.ceil(totalItems / itemsPerPage);
-
+ const totalPagesForSilver = Math.ceil(totalItemsForSilver / itemsPerPageForSilver);
   const handlePageChange = (page) => {
     if (page < 1 || page > totalPages) return;
     fetchPurities(page);
@@ -178,9 +230,9 @@ if (!formData.loan_type?.trim()) {
       {/* middletopbar */}
       <div className="flex justify-center">
         <div className="flex justify-center mt-5">
-          <div className="flex items-center justify-between px-6 py-4 border-b w-[1290px] h-[62px] border rounded-[11px] border-gray-200">
+          <div className="flex items-center justify-between px-6 py-4 border-b w-[1290px] h-[61px] border rounded-[11px] border-gray-200">
             <h2 className="text-red-600 font-bold text-[20px] leading-[148%]">
-              Product Purity Profile
+              Product Purity 
             </h2>
             <div className="flex gap-5">
               <button
@@ -209,18 +261,23 @@ if (!formData.loan_type?.trim()) {
             </h2>
             <div className="grid grid-cols-2 gap-4">
               <div>
-                <label className="text-[14px] font-medium">
-                  Loan Type <span className="text-red-500">*</span>
-                </label>
-                <input
-                  type="text"
-                  name="loan_type"
-                  placeholder="Gold"
-                  value={formData.loan_type}
-                  onChange={(e) => setFormData({ ...formData, loan_type: e.target.value })}
-                  className="border border-gray-300 rounded px-3 py-2 mt-1 w-full focus:outline-none focus:ring-2 focus:ring-[#0A2478]"
-                />
-              </div>
+  <label className="text-[14px] font-medium">
+    Product Type <span className="text-red-500">*</span>
+  </label>
+
+  <select
+    name="loan_type"
+    value={formData.loan_type}
+    onChange={(e) =>
+      setFormData({ ...formData, loan_type: e.target.value })
+    }
+    className="border border-gray-300 rounded px-3 py-2 mt-1 w-full bg-white focus:outline-none focus:ring-2 focus:ring-[#0A2478]"
+  >
+    <option value="Gold">Gold</option>
+    <option value="Silver">Silver</option>
+  </select>
+</div>
+
               <div>
                 <label className="text-[14px] font-medium">
                   Purity Name <span className="text-red-500">*</span>
@@ -314,8 +371,20 @@ if (!formData.loan_type?.trim()) {
       )}
 
       {/* Table */}
-      <div className="flex justify-center">
-        <div className="overflow-x-auto mt-5 w-[1290px] h-[500px]">
+      <div className="flex justify-center gap-10 p-2">
+        <div>
+          <p
+  className="font-semibold text-[#0A2478]"
+  style={{
+    fontFamily: "Playfair Display",
+    fontSize: "23.23px",
+    lineHeight: "148%",
+  }}
+>
+  Gold Purity
+</p>
+
+<div className="overflow-x-auto mt-5 w-[620px] h-[500px]">
           {data.length === 0 && !isLoading ? (
             <div className="flex justify-center items-center h-full">
               <p className="text-lg text-gray-500">No Data Found</p>
@@ -376,14 +445,98 @@ if (!formData.loan_type?.trim()) {
               </tbody>
             </table>
           )}
-        </div>
-      </div>
-
-      <Pagination
+          </div>
+           <Pagination
         currentPage={currentPage}
         totalPages={totalPages}
         onPageChange={handlePageChange}
       />
+        </div>
+        <div>
+          {/* <p className=" font-bold text-[20px] leading-[148%]">Silver Purity</p> */}
+
+           <p
+  className="font-semibold text-[#0A2478]"
+  style={{
+    fontFamily: "Playfair Display",
+    fontSize: "23.23px",
+    lineHeight: "148%",
+  }}
+>
+ Silver Purity
+</p>
+          <div className="overflow-x-auto mt-5 w-[620px] h-[500px]">
+          {Silverdata.length === 0 && !isLoading ? (
+            <div className="flex justify-center items-center h-full">
+              <p className="text-lg text-gray-500">No Data Found</p>
+            </div>
+          ) : (
+            <table className="w-full border-collapse">
+              <thead className="bg-[#0A2478] text-white text-sm">
+                <tr>
+                  <th className="px-4 py-2 text-left border-r border-gray-300 text-[13px]">Purity Name</th>
+                  <th className="px-4 py-2 text-left border-r border-gray-300 text-[13px]">Purity Percent</th>
+                  <th className="px-4 py-2 text-left border-r border-gray-300 text-[13px]">Product Name</th>
+                  <th className="px-4 py-2 text-left border-r border-gray-300 text-[13px]">Added By</th>
+                  <th className="px-4 py-2 text-left border-r border-gray-300 text-[13px]">Action</th>
+                  <th className="px-4 py-2 text-left border-r border-gray-300 text-[13px]">Active</th>
+                </tr>
+              </thead>
+              <tbody className="text-[12px]">
+                {Silverdata.map((row, index) => (
+                  <tr
+                    key={index}
+                    className={`border-b ${index % 2 === 0 ? "bg-gray-50" : "bg-white"
+                      }`}
+                  >
+                    <td className="px-4 py-2">{row.purity_name}</td>
+                    <td className="px-4 py-2">{row.purity_percent}</td>
+                    <td className="px-4 py-2">{row.loan_type}</td>
+                    <td className="px-4 py-2">{row.added_by}</td>
+                    <td className="px-4 py-2 text-center">
+                      <div className="flex gap-2 justify-center">
+                        <button
+                          className="bg-[#3dbd5a] cursor-pointer p-1.5 text-white rounded-sm"
+                          onClick={() => handleOpenModal(row)} title="Edit"
+                        >
+                          <FiEdit />
+                        </button>
+                        <button
+                          className="bg-[#f51111ec] cursor-pointer p-1.5 text-white rounded-sm"
+                          onClick={() => handleDeleteClick(row.id)} title="Delete"
+                        >
+                          <FiTrash2 />
+                        </button>
+                      </div>
+                    </td>
+                    <td className="px-4 py-2 text-[#1883EF] cursor-pointer">
+                      <button
+                        onClick={() => handleToggleStatusForSilver(row)}
+                        className={`w-12 h-6 flex items-center rounded-full p-1 transition-colors duration-300 ease-in-out ${row.status === 1 ? "bg-[#0A2478]" : "bg-gray-400"
+                          }`}
+                      >
+                        <div
+                          className={`bg-white w-4 h-4 rounded-full shadow-md transform transition-transform duration-300 ease-in-out ${row.status === 1 ? "translate-x-6" : "translate-x-0"
+                            }`}
+                        />
+                      </button>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          )}
+          </div>
+           <Pagination
+        currentPage={currentPageForSilver}
+        totalPages={totalPagesForSilver}
+        onPageChange={handlePageChange}
+      />
+        </div>
+
+      </div>
+
+     
     </div>
   );
 };

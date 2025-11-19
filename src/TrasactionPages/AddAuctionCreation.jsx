@@ -161,7 +161,7 @@ const prepareLoanDetails = () => {
   
   
  const handleSubmitAuction = async () => {
-  if (!formData.venue || !formData.date || !formData.time || !formData.fees || !formData.charges) {
+  if (!formData.venue || !formData.date || !formData.time || !formData.fees ) {
     alert("Please fill all fields");
     return;
   }
@@ -296,7 +296,7 @@ const prepareLoanDetails = () => {
 
         <div className="flex flex-col">
           <label className="text-xs font-medium mb-1 ">
-            Charges <span className="text-red-600">*</span>
+            Charges 
           </label>
           <input
             type="number"
@@ -383,7 +383,7 @@ const prepareLoanDetails = () => {
                   <td className="px-4 py-2">{row.Mobile_Number}</td>
                   <td className="px-4 py-2">{row.Loan_amount}</td>
                   <td className="px-4 py-2">{row.LoanAmountPaid}</td>
-                  <td className="px-4 py-2">-</td>
+                  <td className="px-4 py-2">{row.LoanPendingAmount}</td>
                   <td className="px-4 py-2">{row.branch_id}</td>
                 </tr>
               ))}

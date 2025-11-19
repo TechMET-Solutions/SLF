@@ -95,7 +95,8 @@ const fetchAuctions = async () => {
   onClick={() => {
     navigate("/Auction-Items-List", {
       state: {
-        loanIds: row.loanIds   // ⬅ PASS ARRAY HERE
+            loanIds: row.loanIds,
+         AuctionData:row    // ⬅ PASS ARRAY HERE
       }
     });
   }}
