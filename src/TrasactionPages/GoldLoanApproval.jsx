@@ -460,6 +460,9 @@ const GoldLoanApproval = () => {
                 <div className="w-28 p-2 border-r-2 border-white text-center">
                   Purity
                 </div>
+                <div className="w-28 p-2 border-r-2 border-white text-center">
+                 Calculated Purity
+                </div>
                 <div className="w-24 p-2 border-r-2 border-white text-center">
                   Rate
                 </div>
@@ -487,7 +490,10 @@ const GoldLoanApproval = () => {
                         {formatCurrency(item.netWeight)}
                       </div>
                       <div className="w-28 p-2 border-r border-gray-300 text-center">
-                        {item.purity || 'Gold 20K'}
+                        {item.purity || ''}
+                      </div>
+                      <div className="w-28 p-2 border-r border-gray-300 text-center">
+                        {item.Calculated_Purity || ""}
                       </div>
                       <div className="w-24 p-2 border-r border-gray-300 text-center">
                         {formatCurrency(item.rate)}

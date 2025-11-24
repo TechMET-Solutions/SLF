@@ -73,6 +73,7 @@ import ViewBidderDetails from "./TrasactionPages/ViewBidderDetails";
 import ViewCreditNote from "./TrasactionPages/ViewCreditNote";
 import ViewLoanCharges from "./TrasactionPages/ViewLoanCharges";
 import ViewLoanDetails from "./TrasactionPages/ViewLoanDeatils";
+import Cust_Form from "./MasterPages/Cust_Form";
 function LayoutWithNavbar({ children }) {
   const location = useLocation();
   const hideNavbar = location.pathname === "/login";
@@ -139,7 +140,7 @@ function App() {
           <Route path="/Member-Login-Period" element={<MemberLoginPeriod />} />
           <Route path="/Member-Login-Details" element={<MemberLoginDetails />} />
           <Route path="/Employee-Designation" element={<EmployeeDesignation />} />
-
+             <Route path="/Customer_Form" element={<Cust_Form />} />
           {/* User Management */}
           <Route
             path="/User-Role-Permission"

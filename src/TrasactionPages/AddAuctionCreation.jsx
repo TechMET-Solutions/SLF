@@ -139,20 +139,50 @@ const [selectedLoans, setSelectedLoans] = useState([]);
   useEffect(() => {
     fetchLoans();
   }, [page]); // Fetch loans when page changes
+const parsePledgeItems = (value) => {
+  try {
+    if (!value) return [];
 
-const prepareLoanDetails = () => {
+    // Already array
+    if (Array.isArray(value)) return value;
+
+    // Already object — not valid list
+    if (typeof value === "object") return [];
+
+    // "[object Object]" case
+    if (value === "[object Object]") return [];
+
+    // First parse
+    const first = JSON.parse(value);
+
+    // If first result is array → DONE
+    if (Array.isArray(first)) return first;
+
+    // If first is string → try second parse
+    if (typeof first === "string") {
+      try {
+        const second = JSON.parse(first);
+        return Array.isArray(second) ? second : [];
+      } catch {
+        return [];
+      }
+    }
+
+    return [];
+
+  } catch {
+    return [];
+  }
+};
+
+  const prepareLoanDetails = () => {
   return selectedLoans.map((loanId) => {
     const loan = loanData.find(l => l.id === loanId);
 
-    let pledgeItems = [];
-    try {
-      pledgeItems = JSON.parse(JSON.parse(loan.Pledge_Item_List));
-    } catch (e) {
-      pledgeItems = [];
-    }
+    const pledgeItems = parsePledgeItems(loan?.Pledge_Item_List);
 
     return {
-      loanId: loanId,
+      loanId,
       pledge_items: pledgeItems
     };
   });
@@ -160,7 +190,8 @@ const prepareLoanDetails = () => {
 
   
   
- const handleSubmitAuction = async () => {
+  const handleSubmitAuction = async () => {
+   debugger
   if (!formData.venue || !formData.date || !formData.time || !formData.fees ) {
     alert("Please fill all fields");
     return;

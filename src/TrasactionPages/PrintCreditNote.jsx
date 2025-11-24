@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
 import { useLocation, useNavigate } from "react-router-dom";
+import { API } from "../api";
 
 const PrintCreditNote = () => {
   const navigate = useNavigate();
@@ -21,7 +22,7 @@ const PrintCreditNote = () => {
 
     const fetchCreditNote = async () => {
       try {
-        const res = await axios.get(`http://localhost:5000/credit-note/credit-note/${id}`);
+        const res = await axios.get(`${API}/credit-note/credit-note/${id}`);
         setData(res.data.data);
       } catch (err) {
         console.error(err);

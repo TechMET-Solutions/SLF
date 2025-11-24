@@ -1,12 +1,13 @@
 import axios from "axios";
 import { useEffect, useState } from "react";
+import { MdOutlineFileUpload } from "react-icons/md";
 import { useLocation, useNavigate } from "react-router-dom";
 import { API } from "../api";
 import profileempty from "../assets/profileempty.png";
 import timesvg from "../assets/timesvg.svg";
 import { decryptData } from "../utils/cryptoHelper";
 import PledgeItemList from "./PledgeItemList";
-import { MdOutlineFileUpload } from "react-icons/md";
+import PledgeItemListSilver from "./PledgeItemListSilver";
 
 const EditLoanApplication = () => {
   const [schemes, setSchemes] = useState([]); // store all schemes
@@ -149,31 +150,7 @@ const EditLoanApplication = () => {
   ]);
 
   console.log(formData, "formData")
-  // useEffect(() => {
-  // debugger
-  //   let totalGross = 0;
-  //   let totalNet = 0;
-  //   let totalValuation = 0;
-
-  //   PledgeItem.forEach((item) => {
-  //     totalGross += Number(item.gross) || 0;
-  //     totalNet += Number(item.netWeight) || 0;
-  //     totalValuation += Number(item.valuation) || 0;
-  //   });
-
-  //   // Calculate document charges (2% of loan)
-  //   const docCharges = (totalValuation * 2) / 100;
-  //   const netPayable = totalValuation + docCharges;
-
-
-  //   // Update all values in formData
-  //   setFormData((prev) => ({
-  //     ...prev,
-  //     Loan_amount: totalValuation.toFixed(2),
-  //     Doc_Charges: docCharges.toFixed(2),
-  //     Net_Payable: netPayable.toFixed(2),
-  //   }));
-  // }, [PledgeItem]);
+  
   useEffect(() => {
     if (loanId) {
       fetchLoanDetails(loanId);
@@ -461,7 +438,7 @@ const EditLoanApplication = () => {
       </div>
 
       {/* ===== FORM SECTIONS ===== */}
-      <div className="flex  gap-2 mt-10">
+      <div className="flex  gap-2 mt-10 pl-[50px]">
         <div >
           <div className="flex  gap-2">
 
@@ -537,7 +514,7 @@ const EditLoanApplication = () => {
             <div className="mb-6">
               <label className="text-[14px] font-medium block mb-1">Scheme*</label>
               <select
-                className="border border-gray-300 px-3 py-2 w-[200px] bg-white rounded-[8px]"
+                className="border border-gray-300 px-3 py-2 w-[150px] bg-white rounded-[8px]"
                 onChange={handleSchemeChange}
                 value={selectedScheme?.id || ""}     // << this line makes it selected
               >
@@ -563,7 +540,7 @@ const EditLoanApplication = () => {
                 placeholder="Enter Print Name"
                 value={formData.printName}
                 onChange={handleInputChange}
-                className="border border-gray-300 px-3 py-2 mt-1 w-[225px] rounded-[8px] bg-white h-[38px]"
+                className="border border-gray-300 px-3 py-2 mt-1 w-[200px] rounded-[8px] bg-white h-[38px]"
               />
             </div>
 
@@ -717,7 +694,7 @@ const EditLoanApplication = () => {
               name="borrowerAddress"
               value={formData.borrowerAddress}
               onChange={handleInputChange}
-              className="border w-[290px] h-[62px] rounded-[8px] p-2 focus:outline-none focus:ring-1 focus:ring-blue-400"
+              className="border w-[200px] h-[62px] rounded-[8px] p-2 focus:outline-none focus:ring-1 focus:ring-blue-400"
             />
           </div>
         </div>
@@ -725,7 +702,7 @@ const EditLoanApplication = () => {
 
         <div className="flex ">
 
-          <div className=" w-[139px] h-[130px] ">
+          <div className=" h-[130px] ">
             {/* Profile Image */}
             <p>Customer</p>
 
@@ -826,16 +803,36 @@ const EditLoanApplication = () => {
         </div>
 
       </div>
+      <div className="pl-[50px]">
+        
+ {
+          selectedScheme?.product === "Gold" && (
+            <>
+             <div className="flex gap-2 mt-10 ">
+          <PledgeItemList rows={PledgeItem} setRows={setPledgeItem} selectedScheme={selectedScheme} />
+</div>
+            </>
+          )
+        }
+         {
+          selectedScheme?.product === "Silver" && (
+            <>
+           <div className="flex gap-2 mt-5  ">
+          <PledgeItemListSilver rows={PledgeItem} setRows={setPledgeItem} selectedScheme={selectedScheme} />
+</div>
+            </>
+          )
+        }
 
-      <PledgeItemList rows={PledgeItem} setRows={setPledgeItem} selectedScheme={selectedScheme} />
+
+</div>
+      
 
 
 
 
 
-
-
-      <div className="flex  gap-2  ">
+      <div className="flex  gap-2 pl-[50px] ">
 
         <div className="">
           <div>
@@ -963,11 +960,11 @@ const EditLoanApplication = () => {
 
 
 
-      <div>
+      <div className="pl-[50px]">
         <p className="mt-5 mb-5">Thirty One Thousand Five Hundred only</p>
       </div>
 
-      <div className="flex gap-20 mb-10">
+      <div className="flex gap-20 mb-10 pl-[50px]">
 
         <div className="flex  mt-5">
           <div className="">

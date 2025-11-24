@@ -42,9 +42,27 @@ function NOC() {
 
     if (loading) return <div>Loading...</div>;
     if (error) return <div>{error}</div>;
-    const payments = loanData?.payments_Details
-  ? JSON.parse(loanData.payments_Details)
-        : [];
+    const safeParse = (value) => {
+    try {
+        if (!value) return [];
+
+        // Already array
+        if (Array.isArray(value)) return value;
+
+        // Already object → not a valid JSON string → return []
+        if (typeof value === "object") return [];
+
+        // "[object Object]" case
+        if (value === "[object Object]") return [];
+
+        return JSON.parse(value);
+    } catch {
+        return [];
+    }
+};
+
+const payments = safeParse(loanData?.payments_Details);
+
     console.log(payments, "payments")
     
     const totalCash = payments

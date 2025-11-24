@@ -1,6 +1,8 @@
-import React, { useEffect, useState } from "react";
 import axios from "axios";
-import { useNavigate, useLocation } from "react-router-dom";
+import { useEffect, useState } from "react";
+import { useLocation, useNavigate } from "react-router-dom";
+import { formatIndianDate } from "../utils/Helpers";
+import { API } from "../api";
 
 const ViewCreditNote = () => {
   const navigate = useNavigate();
@@ -20,7 +22,7 @@ const ViewCreditNote = () => {
 
     const fetchNote = async () => {
       try {
-        const res = await axios.get(`http://localhost:5000/credit-note/credit-note/${id}`);
+        const res = await axios.get(`${API}/credit-note/credit-note/${id}`);
         setData(res.data.data);
       } catch (err) {
         console.error(err);
@@ -51,14 +53,11 @@ const ViewCreditNote = () => {
       <div className="flex justify-center">
         <div className="flex items-center justify-between border border-gray-300 rounded-[10px] px-4 py-2 mt-4 w-[1290px] h-[62px] shadow-lg">
           <h2 className="text-[#C1121F] font-bold text-[20px] whitespace-nowrap mr-4">
-            View Credit Note
+            View Customer Credit Note
           </h2>
 
           <div className="flex gap-2">
-            <button className="bg-[#0A2478] text-white px-4 py-1 text-sm rounded">
-              Submit
-            </button>
-
+           
             <button
               onClick={() => navigate("/Credit-Note")}
               className="bg-[#C1121F] text-white px-4 py-1 text-sm rounded"
@@ -70,35 +69,52 @@ const ViewCreditNote = () => {
       </div>
 
       {/* MAIN CONTENT */}
-      <div className="w-full bg-white shadow-md py-5 mt-2">
+      <div className="flex justify-center">
+ <div className="w-[1290px] bg-white mt-2">
 
         {/* CREDIT NOTE DETAILS */}
-        <section className="bg-[#ECECF6] p-4 px-18 border-gray-300">
+        <section className="bg-[#ECECF6] p-4 px-18 border-gray-300 mt-10">
           <h3 className="font-semibold text-[20px] text-[#0A2478] mb-3">
             Credit Note Details
           </h3>
 
-          <div className="flex flex-wrap gap-4 text-sm">
+          <div className="flex gap-5 text-sm">
             <div>
               <div className="font-semibold text-xs mb-1">Credit Note No.</div>
-              <p className="w-[250px] py-1">{data.credit_note_id}</p>
+              <p className=" py-1 mt-2">{data.credit_note_id}</p>
             </div>
 
             <div>
               <div className="text-xs font-semibold mb-1">Date Of Issue</div>
-              <p className="w-[250px] py-1">{data.date_of_issue}</p>
+              <p className=" py-1 mt-2">{formatIndianDate(data.date_of_issue)}</p>
             </div>
 
             <div>
               <div className="text-xs font-semibold mb-1">
                 Reference Invoice/Receipt No.
               </div>
-              <p className="w-[250px] py-1">{data.reference_invoice_no}</p>
+              <p className=" py-1 mt-2">{data.reference_invoice_no && data.reference_invoice_no.trim() !== "" 
+    ? data.reference_invoice_no 
+    : "--"}</p>
+              </div>
+              
+               <div>
+              <div className="text-xs font-semibold mb-1">Reason for credit Note</div>
+              <p className=" py-1 mt-2">Surplus Amount After Auction</p>
+              </div>
+              
+              <div>
+              <div className="text-xs font-semibold mb-1">Description / Remarks</div>
+              <p className=" py-1 mt-2">Surplus from auction recovery after loan settlement</p>
             </div>
-
+ <div>
+              <div className="text-xs font-semibold mb-1">Credit Amount (₹)</div>
+              <p className=" py-1 mt-2">{data.CreditAmount}</p>
+            </div>
             <div>
-              <div className="text-xs font-semibold mb-1">Reference Date</div>
-              <p className="w-[250px] py-1">{data.reference_date}</p>
+                <div className="text-xs font-semibold mb-1">Reference Date</div>
+                <p className=" py-1 mt-2">{formatIndianDate(data.reference_date)}</p>
+              {/* <p className="w-[250px] py-1">{data.reference_date}</p> */}
             </div>
           </div>
         </section>
@@ -109,119 +125,56 @@ const ViewCreditNote = () => {
             Customer Details
           </h3>
 
-          <div className="flex flex-wrap gap-5 text-sm">
+            <div className="flex flex-wrap gap-10 text-sm">
+               <div>
+              <div className="text-xs font-semibold mb-1">Customer Id</div>
+              <p className=" py-1 mt-2">{data.customer_id}</p>
+            </div>
+
             <div>
               <div className="text-xs font-semibold mb-1">Customer Name</div>
-              <p className="w-[200px] py-1">{data.customer_name}</p>
-            </div>
-
-            <div>
-              <div className="text-xs font-semibold mb-1">
-                Customer ID / Loan Account No.
+              <p className=" py-1 mt-2">{data.customer_name}</p>
               </div>
-              <p className="w-[220px] py-1">{data.customer_id}</p>
-            </div>
-
-            <div>
+              <div>
               <div className="text-xs font-semibold mb-1">Address</div>
-              <p className="w-[300px] py-1">{data.address}</p>
-            </div>
-
-            <div>
+              <p className=" py-1 mt-2">{data.address}</p>
+              </div>
+              
+              <div>
               <div className="text-xs font-semibold mb-1">City</div>
-              <p className="w-[140px] py-1">{data.city}</p>
-            </div>
+              <p className=" py-1 mt-2">{data.city}</p>
+              </div>
 
-            <div>
+               <div>
               <div className="text-xs font-semibold mb-1">State</div>
-              <p className="w-[140px] py-1">{data.state}</p>
+              <p className=" py-1 mt-2">{data.state}</p>
             </div>
 
-            <div>
+               <div>
               <div className="text-xs font-semibold mb-1">Pin code</div>
-              <p className="w-[140px] py-1">{data.pin_code}</p>
-            </div>
-
-            <div>
+              <p className=" py-1 mt-2">{data.pin_code}</p>
+              </div>
+               <div>
               <div className="text-xs font-semibold mb-1">Mobile Number</div>
-              <p className="w-[150px] py-1">{data.mobile_number}</p>
+              <p className=" py-1 mt-2">{data.mobile_number}</p>
+              </div>
+              <div>
+              <div className="text-xs font-semibold mb-1">Email ID</div>
+              <p className=" py-1 mt-2">{data.email_id}</p>
             </div>
 
-            <div>
-              <div className="text-xs font-semibold mb-1">Email ID</div>
-              <p className="w-[200px] py-1">{data.email_id}</p>
-            </div>
+            
+
+            
+
+           
+
+           
           </div>
         </section>
 
         {/* PAYMENT DETAILS */}
-        <section className="bg-[#ECECF6] p-4 px-18 border-gray-300">
-          <h3 className="font-semibold text-[20px] text-[#0A2478] mb-3">
-            Payment / Adjustment Details
-          </h3>
-
-          <div className="flex flex-wrap gap-4 text-sm">
-            <div>
-              <div className="text-xs font-semibold mb-1">Reason</div>
-              <p className="w-[220px] py-1">{data.reason}</p>
-            </div>
-
-            <div>
-              <div className="text-xs font-semibold mb-1">Description</div>
-              <p className="w-[300px] py-1">{data.description}</p>
-            </div>
-
-            <div>
-              <div className="text-xs font-semibold mb-1">Original Amount</div>
-              <p className="w-[200px] py-1">₹{data.original_amount}</p>
-            </div>
-
-            <div>
-              <div className="text-xs font-semibold mb-1">
-                Adjusted Amount
-              </div>
-              <p className="w-[200px] py-1">₹{data.adjustment_amount}</p>
-            </div>
-
-            <div>
-              <div className="text-xs font-semibold mb-1">
-                Net Amount
-              </div>
-              <p className="w-[200px] py-1">₹{data.net_amount}</p>
-            </div>
-
-            <div>
-              <div className="text-xs font-semibold mb-1">Mode of Payment</div>
-              <p className="w-[200px] py-1">{data.mode_of_payment}</p>
-            </div>
-
-            <div>
-              <div className="text-xs font-semibold mb-1">Bank Name</div>
-              <p className="w-[200px] py-1">{data.bank_name}</p>
-            </div>
-
-            <div>
-              <div className="text-xs font-semibold mb-1">
-                Account No.
-              </div>
-              <p className="w-[200px] py-1">{data.account_no}</p>
-            </div>
-
-            <div>
-              <div className="text-xs font-semibold mb-1">
-                Transaction No.
-              </div>
-              <p className="w-[200px] py-1">{data.transaction_no}</p>
-            </div>
-
-            <div>
-              <div className="text-xs font-semibold mb-1">
-                Transaction Date
-              </div>
-              <p className="w-[200px] py-1">{data.transaction_date}</p>
-            </div>
-          </div>
-        </section>
+       
 
         {/* AUTHORIZATION */}
         <section className="bg-[#EEF2FF] p-4 px-18">
@@ -229,7 +182,7 @@ const ViewCreditNote = () => {
             Authorization & Verification
           </h3>
 
-          <div className="flex flex-wrap gap-5 text-sm">
+          <div className="flex flex-wrap gap-5 text-sm mt-5 ">
             <div>
               <div className="text-xs font-semibold mb-1">Prepared By</div>
               <p className="w-[200px] py-1">{data.prepared_by}</p>
@@ -247,6 +200,8 @@ const ViewCreditNote = () => {
           </div>
         </section>
       </div>
+      </div>
+     
     </div>
   );
 };

@@ -143,6 +143,8 @@ const AddSchemeDetailsListform = () => {
     docChargeMin: "",
     docChargeMax: "",
   });
+const [openSlabModal, setOpenSlabModal] = useState(false);
+const [selectedSlabs, setSelectedSlabs] = useState([]);
 
   useEffect(() => {
     if (data) {
@@ -287,7 +289,9 @@ const AddSchemeDetailsListform = () => {
 
           <div className="flex items-center gap-6">
             <div className="flex gap-3">
-              <button
+              {
+                !isViewMode && (
+ <button
                 style={{
                   width: "74px",
                   height: "24px",
@@ -298,6 +302,9 @@ const AddSchemeDetailsListform = () => {
               >
                 Save
               </button>
+                )
+              }
+             
 
               <button
                 className="text-white px-[6.25px] py-[6.25px] rounded-[3.75px] bg-[#C1121F] w-[74px] h-[24px] opacity-100 text-[10px]"
@@ -1139,63 +1146,52 @@ const AddSchemeDetailsListform = () => {
   </thead>
 
   <tbody>
-    {/* Row 1 */}
-    <tr className="bg-white border border-gray-300">
-      <td className="p-2 text-center">
-        <input className="border px-2 py-1 w-[80px] h-[25px] text-center" type="number" />
-      </td>
-      <td className="p-2 text-center">
-        <input className="border px-2 py-1 w-[80px] h-[25px] text-center" type="number" />
-      </td>
-      <td className="p-2 text-center">
-        <input className="border px-2 py-1 w-[80px] h-[25px] text-center" type="number" />
-      </td>
-       <td className="p-2 text-center">
-        <input className="border px-2 py-1 w-[80px] h-[25px] text-center" type="number" />
-                      </td>
-                       <td className="p-2 text-center">
-        <input className="border px-2 py-1 w-[80px] h-[25px] text-center" type="number" />
-      </td>
-    </tr>
+  {data?.renewalHistory?.length > 0 ? (
+    data.renewalHistory.map((item) => (
+      <tr key={item.id} className="bg-white border border-gray-300">
 
-    {/* Row 2 */}
-    <tr className="bg-white border border-gray-300">
-      <td className="p-2 text-center">
-        <input className="border px-2 py-1 w-[80px] h-[25px] text-center" type="number" />
-      </td>
-      <td className="p-2 text-center">
-        <input className="border px-2 py-1 w-[80px] h-[25px] text-center" type="number" />
-      </td>
-      <td className="p-2 text-center">
-        <input className="border px-2 py-1 w-[80px] h-[25px] text-center" type="number" />
-                      </td>
-                       <td className="p-2 text-center">
-        <input className="border px-2 py-1 w-[80px] h-[25px] text-center" type="number" />
-      </td>
-       <td className="p-2 text-center">
-        <input className="border px-2 py-1 w-[80px] h-[25px] text-center" type="number" />
-      </td>
-    </tr>
+        {/* App From */}
+        <td className="p-2 text-center">
+          {new Date(item.app_from).toISOString().split("T")[0]}
+        </td>
 
-    {/* Row 3 */}
-    <tr className="bg-white border border-gray-300">
-      <td className="p-2 text-center">
-        <input className="border px-2 py-1 w-[80px] h-[25px] text-center" type="number" />
-      </td>
-      <td className="p-2 text-center">
-        <input className="border px-2 py-1 w-[80px] h-[25px] text-center" type="number" />
-      </td>
-      <td className="p-2 text-center">
-        <input className="border px-2 py-1 w-[80px] h-[25px] text-center" type="number" />
-                      </td>
-                       <td className="p-2 text-center">
-        <input className="border px-2 py-1 w-[80px] h-[25px] text-center" type="number" />
-      </td>
-       <td className="p-2 text-center">
-        <input className="border px-2 py-1 w-[80px] h-[25px] text-center" type="number" />
+        {/* App To */}
+        <td className="p-2 text-center">
+          {new Date(item.app_to).toISOString().split("T")[0]}
+        </td>
+
+        {/* Interest JSON */}
+        <td 
+  className="p-2 text-center text-blue-600 underline cursor-pointer"
+  onClick={() => {
+    setSelectedSlabs(JSON.parse(item.interest_json));
+    setOpenSlabModal(true);
+  }}
+>
+  {JSON.parse(item.interest_json).length} Slabs
+</td>
+
+
+        {/* Approval % */}
+        <td className="p-2 text-center">
+          {item.gold_approve_percent}%
+        </td>
+
+        {/* Renewal Date */}
+        <td className="p-2 text-center">
+          {new Date(item.renewal_date).toLocaleDateString("en-IN")}
+        </td>
+      </tr>
+    ))
+  ) : (
+    <tr>
+      <td className="text-center p-3" colSpan={5}>
+        No Renewal History Found
       </td>
     </tr>
-  </tbody>
+  )}
+</tbody>
+
 </table>
 
     </div>
@@ -1217,6 +1213,57 @@ const AddSchemeDetailsListform = () => {
 
        
       </div>
+      {openSlabModal && (
+  <div className="fixed inset-0 bg-black/40 backdrop-blur-md flex items-center justify-center z-50">
+
+    <div className="bg-white w-[520px] rounded-xl shadow-xl overflow-hidden">
+
+      {/* Header */}
+      <div className="bg-[#0A2478] text-white px-5 py-3 flex justify-between items-center">
+        <h2 className="text-lg font-semibold">Interest Slab Details</h2>
+        <button
+          onClick={() => setOpenSlabModal(false)}
+          className="text-white text-2xl leading-none hover:text-gray-200"
+        >
+          &times;
+        </button>
+      </div>
+
+      {/* Slab Table */}
+      <div className="p-5 max-h-[350px] overflow-y-auto">
+
+        <table className="w-full border-collapse text-sm">
+          <thead>
+            <tr className="bg-gray-100">
+              <th className="border px-3 py-2">From</th>
+              <th className="border px-3 py-2">To</th>
+              <th className="border px-3 py-2">Type</th>
+              <th className="border px-3 py-2">Add. Int (%)</th>
+            </tr>
+          </thead>
+
+          <tbody>
+            {selectedSlabs.map((slab, index) => (
+              <tr key={index} className="hover:bg-gray-50">
+                <td className="border px-3 py-2 text-center">{slab.from}</td>
+                <td className="border px-3 py-2 text-center">{slab.to}</td>
+                <td className="border px-3 py-2 text-center capitalize">
+                  {slab.type}
+                </td>
+                <td className="border px-3 py-2 text-center">
+                  {slab.addInt}%
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+
+      </div>
+    </div>
+  </div>
+)}
+
+
     </div>
   );
 };

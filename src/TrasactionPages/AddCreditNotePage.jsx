@@ -1,36 +1,39 @@
-import React, { useState } from "react";
 import axios from "axios";
-import { useNavigate } from "react-router-dom";
+import { useState } from "react";
+import { useLocation, useNavigate } from "react-router-dom";
+import { API } from "../api";
 
 const AddCreditNotePage = () => {
   const navigate = useNavigate();
-
-  const [formData, setFormData] = useState({
-    credit_note_id: "",
-    date_of_issue: "",
-    reference_invoice_no: "",
-    reference_date: "",
-    customer_name: "",
-    customer_id: "",
-    address: "",
-    city: "",
-    state: "",
-    pin_code: "",
-    mobile_number: "",
-    email_id: "",
+const location = useLocation();
+  const incoming = location.state || {};
+  console.log(incoming,"")
+   const [formData, setFormData] = useState({
+    // credit_note_id: "",
+    date_of_issue: incoming.formData.invoiceDate,
+     reference_invoice_no: incoming.reference_invoice_no || "",
+      loan_no : incoming.formData.loanNo,
+    reference_date: incoming.formData.invoiceDate,
+    customer_name: incoming.CustomerData.printName || "",
+    customer_id: incoming.CustomerData.id || "",
+    credit_amount: incoming.creditNoteAmount || "",
     reason: "",
-    description: "",
-    original_amount: "",
-    adjustment_amount: "",
-    net_amount: "",
-    mode_of_payment: "",
-    bank_name: "",
-    account_no: "",
-    transaction_no: "",
-    transaction_date: "",
+    address: incoming.CustomerData.Permanent_Address,
+    city: incoming.CustomerData.Permanent_City,
+    state: incoming.CustomerData.Permanent_State,
+    pin_code: incoming.CustomerData.Permanent_Pincode,
+    mobile_number: incoming.CustomerData.mobile,
+    email_id:incoming.CustomerData.email,
+    description: "After auction settlement – Credit Note issued to customer.",
     prepared_by: "",
     designation: "",
-    verified_by: "",
+     verified_by: "",
+     bidderId:incoming.formData.bidderId,
+     bidderName: incoming.formData.bidderName,
+     bidderContact: incoming.formData.bidderContact,
+     bidderEmail: incoming.formData.bidderEmail,
+    bidderAddress:  incoming.formData.bidderAddress,
+    auction_id:incoming.AuctionData.id
   });
 
   const handleChange = (e) => {
@@ -41,20 +44,35 @@ const AddCreditNotePage = () => {
   };
 
   // SUBMIT FUNCTION
-  const handleSubmit = async () => {
+   const handleSubmit = async () => {
     try {
-      const res = await axios.post(
-        "http://localhost:5000/credit-note/add-creditnote",
-        formData
-      );
+        const payload = {
+            formData: formData,
+            pledgeItems: incoming.pledgeItems,
+            summary: incoming.summary,
+            docChargeAmount: incoming.docChargeAmount || 0,
+            docChargeDesc: incoming.docChargeDesc || "",
+            
+        };
 
-      alert("Credit Note Added Successfully ✔");
-      navigate("/Credit-Note");
-    } catch (err) {
-      alert("Error saving credit note ❌");
-      console.log(err);
+        const response = await axios.post(
+              `${API}/generate-bill/create-bill`,
+            payload
+        );
+
+        if (response.data.status) {
+            alert("Bill Generated Successfully!");
+           navigate('/Auction-Creation')
+        } else {
+            alert("Failed to generate bill");
+        }
+
+    } catch (error) {
+        console.log("Error submitting bill:", error);
+        alert("Something went wrong");
     }
-  };
+};
+
 
   return (
     <div>
@@ -81,29 +99,16 @@ const AddCreditNotePage = () => {
           </div>
         </div>
       </div>
-
-      <div className="w-full bg-white shadow-md py-5 ">
+      <div className="flex justify-center">
+         <div className="w-[1290px] py-5 ">
         {/* Credit Note Details */}
         <section className="bg-[#ECECF6] p-4  px-18 border-gray-300">
           <h3 className="font-semibold font-weight-600 text-[20px] text-[#0A2478] mb-3">
             Credit Note Details
           </h3>
 
-          <div className="flex flex-wrap gap-4 text-sm">
-            {/* CREDIT NOTE ID */}
-            <div>
-              <div className="font-semibold text-xs mb-1">
-                Credit Note No.<span className="text-red-600">*</span>
-              </div>
-              <input
-                name="credit_note_id"
-                value={formData.credit_note_id}
-                onChange={handleChange}
-                className="w-[250px] border border-gray-300 bg-white px-2 py-1 rounded-[8px]"
-              />
-            </div>
-
-            {/* DATE OF ISSUE */}
+          <div className="flex gap-2 text-sm">
+            
             <div>
               <div className="text-xs font-semibold mb-1">Date Of Issue</div>
               <input
@@ -111,20 +116,31 @@ const AddCreditNotePage = () => {
                 name="date_of_issue"
                 value={formData.date_of_issue}
                 onChange={handleChange}
-                className="w-[250px] font-weight-600 bg-white px-2 py-1 rounded-[8px] border border-gray-300"
+                className="w-[150px] font-weight-600 bg-white px-2 py-1 rounded-[8px] border border-gray-300 h-[38px]"
               />
             </div>
 
-            {/* REFERENCE INVOICE */}
-            <div>
+              {/* REFERENCE INVOICE */}
+              <div>
               <div className="text-xs font-semibold mb-1">
-                Reference Invoice/Receipt No.
+                Reference Invoice
               </div>
               <input
                 name="reference_invoice_no"
                 value={formData.reference_invoice_no}
                 onChange={handleChange}
-                className="w-[250px] border border-gray-300 bg-white px-2 py-1 rounded-[8px]"
+                className="w-[185px] border border-gray-300 bg-white px-2 py-1 rounded-[8px] h-[38px]"
+              />
+            </div>
+            <div>
+              <div className="text-xs font-semibold mb-1">
+                 Loan No.
+              </div>
+              <input
+                name="loan_no"
+                value={formData.loan_no}
+                onChange={handleChange}
+                className="w-[185px] border border-gray-300 bg-white px-2 py-1 rounded-[8px] h-[38px]"
               />
             </div>
 
@@ -138,10 +154,51 @@ const AddCreditNotePage = () => {
                 name="reference_date"
                 value={formData.reference_date}
                 onChange={handleChange}
-                className="w-[250px] border border-gray-300 px-2 bg-white py-1 rounded-[8px]"
+                className="w-[199px] border border-gray-300 px-2 bg-white py-1 rounded-[8px] h-[38px]"
+              />
+              </div>
+              <div className="flex flex-col">
+              <label className="text-xs font-semibold mb-1">
+                Reason for Credit Note <span className="text-red-500">*</span>
+              </label>
+              <select
+                name="reason"
+                value={formData.reason}
+                onChange={handleChange}
+                className="w-[200px] border bg-white border-gray-300 px-2 py-1 rounded-[8px] h-[38px]"
+              >
+                <option value="">--Select--</option>
+                <option>Excess Payment Received</option>
+                <option>Auction Settlement Difference</option>
+                <option>Interest Reversal</option>
+                <option>Service Charge Reversal</option>
+                <option>Other</option>
+              </select>
+              </div>
+               <div>
+              <div className="text-xs font-semibold mb-1">
+                Credit Amount (₹)
+              </div>
+              <input
+                name="reference_invoice_no"
+                value={formData.credit_amount}
+                onChange={handleChange}
+                className="w-[150px] border border-gray-300 bg-white px-2 py-1 rounded-[8px] h-[38px]"
+                />
+                
+                
+            </div>
+ 
+            </div>
+            <div className="mt-5">
+              <div className="text-xs font-semibold mb-1">Description / Remarks*</div>
+              <input
+                name="city"
+                value={formData.description}
+                onChange={handleChange}
+                className="w-[263px] border bg-white border-gray-300 px-2 py-1 rounded-[8px] h-[38px]"
               />
             </div>
-          </div>
         </section>
 
         {/* CUSTOMER DETAILS */}
@@ -150,28 +207,28 @@ const AddCreditNotePage = () => {
             Customer Details
           </h3>
 
-          <div className="flex flex-wrap gap-5 text-sm">
+            <div className="flex flex-wrap gap-5 text-sm">
+               <div>
+              <div className="text-xs font-semibold mb-1">Customer Id</div>
+              <input
+                name="customer_id"
+                value={formData.customer_id}
+                onChange={handleChange}
+                className="w-[199px] border bg-white border-gray-300 px-2 py-1 rounded-[8px] h-[38px]"
+              />
+            </div>
+
             <div>
               <div className="text-xs font-semibold mb-1">Customer Name</div>
               <input
                 name="customer_name"
                 value={formData.customer_name}
                 onChange={handleChange}
-                className="w-[280px] border bg-white border-gray-300 px-2 py-1 rounded-[8px]"
+                className="w-[263px] border bg-white border-gray-300 px-2 py-1 rounded-[8px] h-[38px]"
               />
             </div>
 
-            <div>
-              <div className="text-xs font-semibold mb-1">
-                Customer ID/Loan Account No.
-              </div>
-              <input
-                name="customer_id"
-                value={formData.customer_id}
-                onChange={handleChange}
-                className="w-[220px] border bg-white border-gray-300 px-2 py-1 rounded-[8px]"
-              />
-            </div>
+            
 
             <div>
               <div className="text-xs font-semibold mb-1">Address</div>
@@ -179,7 +236,7 @@ const AddCreditNotePage = () => {
                 name="address"
                 value={formData.address}
                 onChange={handleChange}
-                className="w-[300px] border bg-white border-gray-300 px-2 py-1 rounded-[8px]"
+                className="w-[328px] border bg-white border-gray-300 px-2 py-1 rounded-[8px] h-[38px]"
               />
             </div>
 
@@ -189,7 +246,7 @@ const AddCreditNotePage = () => {
                 name="city"
                 value={formData.city}
                 onChange={handleChange}
-                className="w-[140px] border bg-white border-gray-300 px-2 py-1 rounded-[8px]"
+                className="w-[140px] border bg-white border-gray-300 px-2 py-1 rounded-[8px] h-[38px]"
               />
             </div>
 
@@ -199,7 +256,7 @@ const AddCreditNotePage = () => {
                 name="state"
                 value={formData.state}
                 onChange={handleChange}
-                className="w-[140px] border bg-white border-gray-300 px-2 py-1 rounded-[8px]"
+                className="w-[150px] border bg-white border-gray-300 px-2 py-1 rounded-[8px] h-[38px]"
               />
             </div>
 
@@ -209,7 +266,7 @@ const AddCreditNotePage = () => {
                 name="pin_code"
                 value={formData.pin_code}
                 onChange={handleChange}
-                className="w-[140px] border bg-white border-gray-300 px-2 py-1 rounded-[8px]"
+                className="w-[161px] border bg-white border-gray-300 px-2 py-1 rounded-[8px] h-[38px]"
               />
             </div>
 
@@ -219,7 +276,7 @@ const AddCreditNotePage = () => {
                 name="mobile_number"
                 value={formData.mobile_number}
                 onChange={handleChange}
-                className="w-[150px] border bg-white border-gray-300 px-2 py-1 rounded-[8px]"
+                className="w-[150px] border bg-white border-gray-300 px-2 py-1 rounded-[8px] h-[38px]"
               />
             </div>
 
@@ -235,160 +292,7 @@ const AddCreditNotePage = () => {
           </div>
         </section>
 
-        {/* PAYMENT SECTION */}
-        <section className="bg-[#ECECF6] p-4 px-18 border-gray-300">
-          <h2 className="text-[#0A2478] text-xl font-bold mb-6">
-            Payment / Adjustment Details
-          </h2>
-
-          <div className="flex flex-wrap gap-6">
-            {/* REASON */}
-            <div className="flex flex-col">
-              <label className="text-xs font-semibold mb-1">
-                Reason for Credit Note <span className="text-red-500">*</span>
-              </label>
-              <select
-                name="reason"
-                value={formData.reason}
-                onChange={handleChange}
-                className="w-[200px] border bg-white border-gray-300 px-2 py-1 rounded-[8px]"
-              >
-                <option value="">--Select--</option>
-                <option>Excess Payment Received</option>
-                <option>Auction Settlement Difference</option>
-                <option>Interest Reversal</option>
-                <option>Service Charge Reversal</option>
-                <option>Other</option>
-              </select>
-            </div>
-
-            {/* DESCRIPTION */}
-            <div className="flex flex-col col-span-1">
-              <label className="text-xs font-semibold mb-1">
-                Description / Remarks
-              </label>
-              <input
-                type="text"
-                name="description"
-                value={formData.description}
-                onChange={handleChange}
-                className="w-[280px] border bg-white border-gray-300 px-2 py-1 rounded-[8px]"
-              />
-            </div>
-
-            {/* ORIGINAL AMOUNT */}
-            <div className="flex flex-col">
-              <label className="text-xs font-semibold mb-1">
-                Original Amount (₹)
-              </label>
-              <input
-                type="number"
-                name="original_amount"
-                value={formData.original_amount}
-                onChange={handleChange}
-                className="w-[230px] border bg-white border-gray-300 px-2 py-1 rounded-[8px]"
-              />
-            </div>
-
-            {/* ADJUSTMENT AMOUNT */}
-            <div className="flex flex-col">
-              <label className="text-xs font-semibold mb-1">
-                Adjustment / Credit Amount (₹)
-              </label>
-              <input
-                type="number"
-                name="adjustment_amount"
-                value={formData.adjustment_amount}
-                onChange={handleChange}
-                className="w-[230px] border bg-white border-gray-300 px-2 py-1 rounded-[8px]"
-              />
-            </div>
-
-            {/* NET AMOUNT */}
-            <div className="flex flex-col">
-              <label className="text-xs font-semibold mb-1">
-                Net Amount After Adjustment (₹)
-              </label>
-              <input
-                type="number"
-                name="net_amount"
-                value={formData.net_amount}
-                onChange={handleChange}
-                className="w-[230px] border bg-white border-gray-300 px-2 py-1 rounded-[8px]"
-              />
-            </div>
-
-            {/* MODE OF PAYMENT */}
-            <div className="flex flex-col">
-              <label className="text-xs font-semibold mb-1">
-                Mode of Payment
-              </label>
-              <select
-                name="mode_of_payment"
-                value={formData.mode_of_payment}
-                onChange={handleChange}
-                className="w-[200px] border bg-white border-gray-300 px-2 py-1 rounded-[8px]"
-              >
-                <option value="">--Select--</option>
-                <option>Bank Transfer</option>
-                <option>Account Adjustment</option>
-                <option>Other</option>
-              </select>
-            </div>
-
-            {/* BANK NAME */}
-            <div className="flex flex-col">
-              <label className="text-xs font-semibold mb-1">Bank Name</label>
-              <input
-                type="text"
-                name="bank_name"
-                value={formData.bank_name}
-                onChange={handleChange}
-                className="w-[250px] border bg-white border-gray-300 px-2 py-1 rounded-[8px]"
-              />
-            </div>
-
-            {/* ACCOUNT NO */}
-            <div className="flex flex-col">
-              <label className="text-xs font-semibold mb-1">
-                Account No. (Last 4 digits)
-              </label>
-              <input
-                type="number"
-                name="account_no"
-                value={formData.account_no}
-                onChange={handleChange}
-                className="w-[230px] border bg-white border-gray-300 px-2 py-1 rounded-[8px]"
-              />
-            </div>
-
-            {/* TRANSACTION NO */}
-            <div className="flex flex-col">
-              <label className="text-xs font-semibold mb-1">
-                Transaction / UTR No.
-              </label>
-              <input
-                type="text"
-                name="transaction_no"
-                value={formData.transaction_no}
-                onChange={handleChange}
-                className="w-[200px] border bg-white border-gray-300 px-2 py-1 rounded-[8px]"
-              />
-            </div>
-
-            {/* TRANSACTION DATE */}
-            <div className="flex flex-col">
-              <label className="text-xs font-semibold mb-1">Transaction Date</label>
-              <input
-                type="date"
-                name="transaction_date"
-                value={formData.transaction_date}
-                onChange={handleChange}
-                className="w-[200px] border bg-white border-gray-300 px-2 py-1 rounded-[8px]"
-              />
-            </div>
-          </div>
-        </section>
+       
 
         {/* AUTHORIZATION */}
         <section className="bg-[#FFE6E6] p-4 px-18">
@@ -405,7 +309,7 @@ const AddCreditNotePage = () => {
                 name="prepared_by"
                 value={formData.prepared_by}
                 onChange={handleChange}
-                className="w-[200px] border border-gray-300 bg-white px-2 py-1 rounded-[8px]"
+                className="w-[263px] border border-gray-300 bg-white px-2 py-1 rounded-[8px] h-[38px]"
               />
             </div>
 
@@ -415,7 +319,7 @@ const AddCreditNotePage = () => {
                 name="designation"
                 value={formData.designation}
                 onChange={handleChange}
-                className="w-[200px] border border-gray-300 bg-white px-2 py-1 rounded-[8px]"
+                className="w-[263px] border border-gray-300 bg-white px-2 py-1 rounded-[8px] h-[38px]"
               />
             </div>
 
@@ -427,12 +331,14 @@ const AddCreditNotePage = () => {
                 name="verified_by"
                 value={formData.verified_by}
                 onChange={handleChange}
-                className="w-[200px] border border-gray-300 bg-white px-2 py-1 rounded-[8px]"
+                className="w-[263px] border border-gray-300 bg-white px-2 py-1 rounded-[8px] h-[38px]"
               />
             </div>
           </div>
         </section>
       </div>
+</div>
+     
     </div>
   );
 };

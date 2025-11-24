@@ -86,7 +86,10 @@ console.log(purities,"purities")
     }
   };
   fetchPurities();
-}, []);
+ }, []);
+
+
+
 
 
   // 🧩 Delete row
@@ -119,21 +122,6 @@ console.log(purities,"purities")
 };
 
 
-
-  // 🧩 Handle change
-// const handleChange = (index, field, value) => {
-//   const updatedRows = [...rows];
-//   updatedRows[index][field] = value;
-
-//   if (field === "purity") {
-//     updatedRows[index].rate = calculateRate(value);
-//     updatedRows[index].valuation = updatedRows[index].netWeight
-//       ? updatedRows[index].netWeight * updatedRows[index].rate
-//       : 0;
-//   }
-
-//   setRows(updatedRows);
-// };
 
   const handleChange = (index, field, value) => {
     debugger
@@ -192,9 +180,9 @@ console.log(purities,"purities")
 
   return (
     <div className="flex mb-6">
-      <div className="w-[1320px]">
+      <div className="w-[1290px]">
         <h3 className="font-semibold mb-4 text-blue-900 text-lg">
-          Pledge Item List
+          Pledge Item List For Gold
         </h3>
 
         <table className="w-full border border-gray-300 text-sm">
@@ -205,6 +193,7 @@ console.log(purities,"purities")
               <th className="px-4 py-2 border-r border-gray-200">Gross</th>
               <th className="px-4 py-2 border-r border-gray-200">Net Weight</th>
               <th className="px-4 py-2 border-r border-gray-200">Purity</th>
+               <th className="px-4 py-2 border-r border-gray-200">Calculated Purity</th>
               <th className="px-4 py-2 border-r border-gray-200">Rate</th>
               <th className="px-4 py-2 border-r border-gray-200">Valuation</th>
               <th className="px-4 py-2">Remark</th>
@@ -278,6 +267,21 @@ console.log(purities,"purities")
   </select>
 </td>
 
+                
+               <td className="px-4 py-2">
+  <select
+    value={row.Calculated_Purity}
+    onChange={(e) => handleChange(index, "Calculated_Purity", e.target.value)}
+    className="border border-gray-300 rounded-md px-2 py-1 w-[120px] focus:outline-none focus:ring-1 focus:ring-blue-500"
+  >
+    <option value="">Select Calculated Purity</option>
+    {purities.map((p) => (
+      <option key={p.id} value={p.purity_name}>
+        {p.loan_type} {p.purity_name}
+      </option>
+    ))}
+  </select>
+</td>
               <td className="px-4 py-2 text-center">
   {row.purity ? calculateRate(row.purity).toFixed(2) : "—"}
 </td>
@@ -322,6 +326,7 @@ console.log(purities,"purities")
               </td>
               <td className="px-4 py-2"></td>
               <td className="px-4 py-2"></td>
+               <td className="px-4 py-2"></td>
               <td className="px-4 py-2 text-center">
                 {totalValuation.toLocaleString(undefined, {
                   minimumFractionDigits: 2,

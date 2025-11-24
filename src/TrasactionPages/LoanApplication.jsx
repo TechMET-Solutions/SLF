@@ -67,7 +67,8 @@ const LoanApplication = () => {
     scheme_id: "",
     borrower_id: "",
     field: "",
-    search: ""
+    search: "",
+    loan_type: "",
   });
 
   const [remarkData, setRemarkData] = useState(null);
@@ -143,66 +144,147 @@ const LoanApplication = () => {
   });
 
   // Fetch loan applications from API using Axios
-  const fetchLoanApplications = async (page = 1, immediateFilters = null, immediateDate = undefined, immediateScheme = undefined) => {
-    setLoading(true);
-    setError("");
-    try {
-      // Use immediate values if provided, otherwise use current state
-      const activeFilters = immediateFilters !== null ? immediateFilters : filters;
-      const activeDate = immediateDate !== undefined ? immediateDate : selectedDate;
-      const activeScheme = immediateScheme !== undefined ? immediateScheme : selectedScheme;
+  // const fetchLoanApplications = async (page = 1, immediateFilters = null, immediateDate = undefined, immediateScheme = undefined) => {
+  //   setLoading(true);
+  //   setError("");
+  //   try {
+  //     // Use immediate values if provided, otherwise use current state
+  //     const activeFilters = immediateFilters !== null ? immediateFilters : filters;
+  //     const activeDate = immediateDate !== undefined ? immediateDate : selectedDate;
+  //     const activeScheme = immediateScheme !== undefined ? immediateScheme : selectedScheme;
       
-      // Build query parameters
-      const params = new URLSearchParams({
-        page: page.toString(),
-        limit: pagination.limit.toString()
-      });
+  //     // Build query parameters
+  //     const params = new URLSearchParams({
+  //       page: page.toString(),
+  //       limit: pagination.limit.toString()
+  //     });
 
-      // Add filters to query params if they have values
-      Object.entries(activeFilters).forEach(([key, value]) => {
-        if (value && key !== 'field' && key !== 'search') {
-          params.append(key, value);
-        }
-      });
+  //     // Add filters to query params if they have values
+  //     Object.entries(activeFilters).forEach(([key, value]) => {
+  //       if (value && key !== 'field' && key !== 'search') {
+  //         params.append(key, value);
+  //       }
+  //     });
 
-      // Add scheme filter if selected
-      if (activeScheme) {
-        const selectedSchemeObj = schemes.find(s => {
-          const label = typeof s === 'string' ? s : (s.schemeName || s.SchemeName || s.name || s.schemeCode || s.scheme_code || s.code || JSON.stringify(s));
-          return label === activeScheme;
-        });
+  //     // Add scheme filter if selected
+  //     if (activeScheme) {
+  //       const selectedSchemeObj = schemes.find(s => {
+  //         const label = typeof s === 'string' ? s : (s.schemeName || s.SchemeName || s.name || s.schemeCode || s.scheme_code || s.code || JSON.stringify(s));
+  //         return label === activeScheme;
+  //       });
         
-        if (selectedSchemeObj && selectedSchemeObj.id) {
-          params.append('scheme_id', selectedSchemeObj.id);
-        }
-      }
+  //       if (selectedSchemeObj && selectedSchemeObj.id) {
+  //         params.append('scheme_id', selectedSchemeObj.id);
+  //       }
+  //     }
 
-      // Add date filter if selected
-      if (activeDate) {
-        params.append('loan_date', activeDate.toISOString().split('T')[0]);
-      }
+  //     // Add date filter if selected
+  //     if (activeDate) {
+  //       params.append('loan_date', activeDate.toISOString().split('T')[0]);
+  //     }
 
-      const response = await apiClient.get(`/Transactions/goldloan/all?${params}`);
+  //     const response = await apiClient.get(`/Transactions/goldloan/all?${params}`);
 
-      if (response.data.success) {
-        setLoanApplication(response.data.data);
-        setPagination({
-          page: response.data.page,
-          totalPages: response.data.totalPages,
-          total: response.data.total,
-          limit: pagination.limit,
-        });
-      } else {
-        throw new Error(response.data.message || "No loan applications");
+  //     if (response.data.success) {
+  //       setLoanApplication(response.data.data);
+  //       setPagination({
+  //         page: response.data.page,
+  //         totalPages: response.data.totalPages,
+  //         total: response.data.total,
+  //         limit: pagination.limit,
+  //       });
+  //     } else {
+  //       throw new Error(response.data.message || "No loan applications");
+  //     }
+  //   } catch (err) {
+  //     console.error("Error fetching loan applications:", err);
+  //     setError("No loan applications");
+  //     setLoanApplication([]);
+  //   } finally {
+  //     setLoading(false);
+  //   }
+  // };
+const fetchLoanApplications = async (
+  page = 1,
+  immediateFilters = null,
+  immediateDate = undefined,
+  immediateScheme = undefined
+) => {
+  setLoading(true);
+  setError("");
+
+  try {
+    // use immediate values only if provided
+    const activeFilters = immediateFilters !== null ? immediateFilters : filters;
+    const activeDate = immediateDate !== undefined ? immediateDate : selectedDate;
+    const activeScheme =
+      immediateScheme !== undefined ? immediateScheme : selectedScheme;
+
+    const params = new URLSearchParams({
+      page: page.toString(),
+      limit: pagination.limit.toString(),
+    });
+
+    // Add ALL existing filters
+    Object.entries(activeFilters).forEach(([key, value]) => {
+      if (value && key !== "field" && key !== "search") {
+        params.append(key, value);
       }
-    } catch (err) {
-      console.error("Error fetching loan applications:", err);
-      setError("No loan applications");
-      setLoanApplication([]);
-    } finally {
-      setLoading(false);
+    });
+
+    // Add Loan Type Filter (gold/silver/all)
+    if (activeFilters.loan_type) {
+      params.append("loan_type", activeFilters.loan_type);
     }
-  };
+
+    // Add scheme filter
+    if (activeScheme) {
+      const selectedSchemeObj = schemes.find((s) => {
+        const label =
+          typeof s === "string"
+            ? s
+            : s.schemeName ||
+              s.SchemeName ||
+              s.name ||
+              s.schemeCode ||
+              s.scheme_code ||
+              s.code ||
+              JSON.stringify(s);
+
+        return label === activeScheme;
+      });
+
+      if (selectedSchemeObj && selectedSchemeObj.id) {
+        params.append("scheme_id", selectedSchemeObj.id);
+      }
+    }
+
+    // Add Date filter
+    if (activeDate) {
+      params.append("loan_date", activeDate.toISOString().split("T")[0]);
+    }
+
+    const response = await apiClient.get(`/Transactions/goldloan/all?${params}`);
+
+    if (response.data.success) {
+      setLoanApplication(response.data.data);
+      setPagination({
+        page: response.data.page,
+        totalPages: response.data.totalPages,
+        total: response.data.total,
+        limit: pagination.limit,
+      });
+    } else {
+      throw new Error(response.data.message || "No loan applications");
+    }
+  } catch (err) {
+    console.error("Error fetching loan applications:", err);
+    setError("No loan applications");
+    setLoanApplication([]);
+  } finally {
+    setLoading(false);
+  }
+};
 
   // Initial fetch
   useEffect(() => {
@@ -698,6 +780,14 @@ const LoanApplication = () => {
 
     return buttons;
   };
+const handleLoanTypeChange = (value) => {
+  const updatedFilters = { ...filters, loan_type: value };
+  setFilters(updatedFilters);
+
+  // 🔥 Fetch immediately when loan type changes
+  fetchLoanApplications(1, updatedFilters);
+};
+
 
   return (
     <div>
@@ -809,6 +899,23 @@ const LoanApplication = () => {
                   </button>
                 )}
               </div>
+
+              <div>
+  <select
+  name="loan_type"
+  value={filters.loan_type}
+  onChange={(e) => handleLoanTypeChange(e.target.value)}
+  className="border border-gray-300 rounded pl-2 w-[140px] h-[31px] text-[12px]"
+>
+  <option value="">Select Loan Type</option>
+  <option value="all">ALL Loans</option>
+  <option value="gold">Gold Loans</option>
+  <option value="silver">Silver Loans</option>
+</select>
+
+</div>
+
+
             </div>
 
             <div className="flex gap-5 items-center">

@@ -1,12 +1,14 @@
 import axios from "axios";
 import { useEffect, useState } from "react";
-import { useLocation } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
+import { API } from "../api";
+import { formatIndianDate } from "../utils/Helpers";
 
 export default function GenerateBill() {
   const location = useLocation();
-  const { loanData, AuctionData } = location.state || {};
-console.log(loanData, "loanData")
- console.log(AuctionData,"AuctionData")
+  const { loanData,loanIds, AuctionData } = location.state || {};
+  console.log(loanData, "loanData")
+  console.log(AuctionData,"AuctionData")
   // 🔹 Store all fields in one object (NOT removing any field)
 const [formData, setFormData] = useState({
   invoiceDate: "",
@@ -25,10 +27,12 @@ const [formData, setFormData] = useState({
   biddingCloseAmount: loanData?.biddingCloseAmount || "", // ⭐ Add this
 });
 
-
+const [isModalOpen, setIsModalOpen] = useState(false);
+const [docChargeAmount, setDocChargeAmount] = useState("");
+const [docChargeDesc, setDocChargeDesc] = useState("");
   // 🔹 Ornaments from loan data
   const [pledgeItems, setPledgeItems] = useState([]);
-
+ const [CustomerData, setCustomerData] = useState([]);
   // 🔹 Calculation summary
   const [summary, setSummary] = useState({
     subtotal: 0,
@@ -37,10 +41,41 @@ const [formData, setFormData] = useState({
     sgst: 0,
     total: 0,
   });
+
+    console.log(summary,"summary")
 const [suggestions, setSuggestions] = useState([]);
 const [activeCredit, setActiveCredit] = useState(null);
+ const navigate = useNavigate();
+const [isCreditModalOpen, setIsCreditModalOpen] = useState(false);
 
     
+useEffect(() => {
+  if (loanData.BorrowerId) {
+    fetchCustomer(loanData.BorrowerId);
+  }
+}, [loanData.BorrowerId]);
+
+const fetchCustomer = async (id) => {
+  try {
+    const res = await axios.get(`${API}/Master/doc/get-customer/${id}`);
+    const customer = res.data.data;
+
+    // setFormData((prev) => ({
+    //   ...prev,
+    //   customer_name: customer.name,
+    //   address: customer.address,
+    //   city: customer.city,
+    //   state: customer.state,
+    //   pin_code: customer.pincode,
+    //   mobile_number: customer.mobile,
+    //   email_id: customer.email,
+    // }));
+
+      setCustomerData(customer)
+  } catch (error) {
+    console.log("Error fetching customer:", error);
+  }
+};
     
   const fetchActiveCredit = async (bidderId) => {
   if (!bidderId) return;
@@ -50,7 +85,7 @@ const [activeCredit, setActiveCredit] = useState(null);
 
   try {
     const res = await fetch(
-      `http://localhost:5000/Auction/Application/GetActive/${numericBidderId}`
+      `${API}/Auction/Application/GetActive/${numericBidderId}`
     );
 
     const data = await res.json();
@@ -82,7 +117,7 @@ const onChangeForbidders = async (e) => {
 
   if (name === "bidderName" && value.length >= 1) {
     try {
-      const res = await fetch(`http://localhost:5000/Auction/bidders/search?q=${value}`);
+      const res = await fetch(`${API}/Auction/bidders/search?q=${value}`);
       const data = await res.json();
         setSuggestions(data.bidders || []); 
     } catch (err) {
@@ -92,15 +127,47 @@ const onChangeForbidders = async (e) => {
     setSuggestions([]);
   }
 };
+const safeParsePledgeList = (value) => {
+  try {
+    if (!value) return [];
+
+    // Already an array
+    if (Array.isArray(value)) return value;
+
+    // If object → not valid JSON list
+    if (typeof value === "object") return [];
+
+    // MySQL sometimes returns "[object Object]"
+    if (value === "[object Object]") return [];
+
+    // First parse
+    const first = JSON.parse(value);
+
+    // If first parse gives array → done
+    if (Array.isArray(first)) return first;
+
+    // If first parse gives string, try second parse
+    if (typeof first === "string") {
+      try {
+        const second = JSON.parse(first);
+        return Array.isArray(second) ? second : [];
+      } catch {
+        return [];
+      }
+    }
+
+    return [];
+  } catch {
+    return [];
+  }
+};
 
 useEffect(() => {
   if (loanData) {
     // Parse ornaments
     let parsedItems = [];
     try {
-      parsedItems = loanData.Pledge_Item_List
-        ? JSON.parse(JSON.parse(loanData.Pledge_Item_List))
-        : [];
+      parsedItems = safeParsePledgeList(loanData.Pledge_Item_List);
     } catch (error) {
       parsedItems = [];
     }
@@ -168,38 +235,73 @@ useEffect(() => {
     }
   };
 
-  // Submit
- const handleSubmit = async () => {
-    try {
-        const payload = {
-            formData,
-            pledgeItems,
-            summary
-        };
 
-        const response = await axios.post(
-            "http://localhost:5000/generate-bill/create-bill",
-            payload
-        );
+//  const handleSubmit = async () => {
+//     try {
+//         const payload = {
+//             formData,
+//             pledgeItems,
+//             summary,
+//             docChargeAmount,
+//             docChargeDesc
+//         };
 
-        if (response.data.status) {
-            alert("Bill Generated Successfully!");
-        } else {
-            alert("Failed to generate bill");
-        }
+//         const response = await axios.post(
+//             "http://localhost:5000/generate-bill/create-bill",
+//             payload
+//         );
 
-    } catch (error) {
-        console.log("Error submitting bill:", error);
-        alert("Something went wrong");
-    }
+//         if (response.data.status) {
+//             alert("Bill Generated Successfully!");
+//            navigate('/Auction-Creation')
+//         } else {
+//             alert("Failed to generate bill");
+//         }
+
+//     } catch (error) {
+//         console.log("Error submitting bill:", error);
+//         alert("Something went wrong");
+//     }
+// };
+
+    const handleSubmitfordocument = () => {
+  const docCharges = {
+    amount: docChargeAmount,
+    description: docChargeDesc,
+  };
+
+  console.log("Document Charges:", docCharges);
+
+  // Close current modal
+  setIsModalOpen(false);
+
+  // Open Credit Note Modal
+  setIsCreditModalOpen(true);
 };
 
-const handleBidderCostChange = (value) => {
-  setLoanData((prev) => ({
-    ...prev,
-    biddingCloseAmount: value,
-  }));
-};
+
+
+
+    const combined = pledgeItems.reduce(
+  (acc, item) => {
+    acc.particular.push(item.particular || "");
+    acc.gross += Number(item.gross) || 0;
+    acc.netWeight += Number(item.netWeight) || 0;
+    acc.rate += Number(item.rate) || 0; // OR average—tell me if needed
+    return acc;
+  },
+  {
+    particular: [],
+    gross: 0,
+    netWeight: 0,
+    rate: 0,
+  }
+);
+
+  const creditNoteAmount =
+  Number(summary.total || 0) -
+  Number(loanData.LoanPendingAmount || 0) -
+  Number(docChargeAmount || 0);
 
   return (
     <div className="w-full min-h-screen bg-white">
@@ -209,21 +311,30 @@ const handleBidderCostChange = (value) => {
           <h2 className="text-red-600 font-bold text-[20px]">Generate Bill</h2>
 
           <div className="flex gap-3">
-            <button
+            {/* <button
               className="bg-[#0A2478] text-white text-sm rounded px-4 py-2 cursor-pointer"
-              onClick={handleSubmit}
+            //   onClick={handleSubmit}
             >
               Submit
-            </button>
+            </button> */}
+                      <button
+  className="bg-[#0A2478] text-white text-sm rounded px-4 py-2 cursor-pointer"
+  onClick={() => setIsModalOpen(true)}
+>
+  Submit
+</button>
+
 
             <button className="bg-[#C1121F] text-white text-sm rounded px-4 py-1 cursor-pointer">
               Cancel
             </button>
           </div>
         </div>
-      </div>
+          </div>
+          <div className="flex  w-[1290px] ml-[110px] mr-[100px]">
 
-      {/* Invoice Details */}
+                <div className=" ">
+             {/* Invoice Details */}
       <div className="bg-[#ECECF6] mt-2 p-10">
         <h2 className="text-lg font-semibold text-[#0A2478] mb-4">
           Invoice Details
@@ -289,7 +400,7 @@ const handleBidderCostChange = (value) => {
 
   {/* Suggestion Dropdown */}
   {suggestions.length > 0 && (
-    <ul className="absolute bg-white border w-full rounded shadow-md max-h-40 overflow-y-auto z-50">
+    <ul className="absolute bg-white border w-[220px] rounded shadow-md max-h-40 overflow-y-auto z-50">
       {suggestions.map((item) => (
         <li
           key={item.id}
@@ -368,7 +479,7 @@ const handleBidderCostChange = (value) => {
       </div>
 
       {/* Payment Details */}
-      <div className="bg-[#ECECF6] p-10">
+      {/* <div className="bg-[#ECECF6] p-10">
         <h2 className="text-lg font-semibold text-[#0A2478] mb-4">
           Payment Details
         </h2>
@@ -413,12 +524,12 @@ const handleBidderCostChange = (value) => {
             />
           </div>
         </div>
-      </div>
+      </div> */}
 
       {/* EMD Credit Note */}
-      <div className="bg-red-50 p-10">
+      <div className="bg-[#ECECF6] p-10">
         <h2 className="text-lg font-semibold text-[#0A2478] mb-4">
-          EMD Credit Note Amount
+         Credit Note Amount
         </h2>
 
        <div className="flex items-end gap-10 w-full">
@@ -467,7 +578,7 @@ const handleBidderCostChange = (value) => {
 
   {/* Adjustment Amount */}
   <div className="flex flex-col">
-    <label className="font-medium mb-1">Adjustment Amount</label>
+    <label className="font-medium mb-1">Credit Note Amount</label>
     <input
       type="number"
       name="adjustmentAmount"
@@ -484,7 +595,7 @@ const handleBidderCostChange = (value) => {
       </div>
 
       {/* Gold Table */}
-      <div className="bg-white p-5">
+      <div className="bg-white mt-5">
         <h2 className="text-lg font-semibold text-[#0A2478] mb-4">
           Gold Purchase Details
         </h2>
@@ -496,64 +607,78 @@ const handleBidderCostChange = (value) => {
               <th className="p-2 border">Product Desc</th>
               <th className="p-2 border">Gross Weight</th>
               <th className="p-2 border">Net Weight</th>
-              <th className="p-2 border">Purity</th>
-              <th className="p-2 border">Rate/gram</th>
+             
+              <th className="p-2 border">Rate</th>
               <th className="p-2 border">Amount</th>
             </tr>
           </thead>
 
-          <tbody>
-            {pledgeItems.length > 0 ? (
-              pledgeItems.map((item, index) => (
-                <tr key={index}>
-                  <td className="p-2 border text-center">{index + 1}</td>
-                  <td className="p-2 border">{item.particular}</td>
-                  <td className="p-2 border text-right">{item.gross}</td>
-                  <td className="p-2 border text-right">{item.netWeight}</td>
-                  <td className="p-2 border text-center">{item.purity}</td>
-                  <td className="p-2 border text-right">
-  {Number(item.rate).toFixed(2)}
+<tbody>
+  {pledgeItems.length > 0 ? (
+    <tr>
+      <td className="p-2 border text-center">1</td>
+
+      {/* Combined particulars */}
+      <td className="p-2 border">
+        {combined.particular.join(", ")}
+      </td>
+
+      {/* Combined gross */}
+      <td className="p-2 border text-right">
+        {combined.gross}
+      </td>
+
+      {/* Combined netWeight */}
+      <td className="p-2 border text-right">
+        {combined.netWeight}
+      </td>
+
+      {/* Combined rate */}
+      <td className="p-2 border text-right">
+        {combined.rate.toFixed(2)}
+      </td>
+
+      {/* Input box ONLY ONCE */}
+     <td className="p-2 border text-center">
+  <div className="flex justify-center">
+    <input
+      type="number"
+      value={formData.biddingCloseAmount}
+      onChange={(e) => {
+        const value = Number(e.target.value);
+
+        setFormData((prev) => ({
+          ...prev,
+          biddingCloseAmount: value,
+        }));
+
+        setSummary((prev) => ({
+          ...prev,
+          subtotal: value,
+          total: value + prev.auctionFee + prev.cgst + prev.sgst,
+        }));
+      }}
+      className="border px-2 py-1 rounded w-[120px] text-center"
+      placeholder="Enter Amount"
+    />
+  </div>
 </td>
-<input
-  type="number"
-  value={formData.biddingCloseAmount}
-  onChange={(e) => {
-    const value = Number(e.target.value);
 
-    // Update form data
-    setFormData((prev) => ({
-      ...prev,
-      biddingCloseAmount: value,
-    }));
+    </tr>
+  ) : (
+    <tr>
+      <td colSpan="7" className="text-center p-4 text-gray-500">
+        No Gold Items Found
+      </td>
+    </tr>
+  )}
+</tbody>
 
-    // Update subtotal immediately when bidding close amount changes
-    setSummary((prev) => ({
-      ...prev,
-      subtotal: value,      // 👈 Add the entered amount into subtotal
-      total: value + prev.auctionFee + prev.cgst + prev.sgst, // auto-calculate total
-    }));
-  }}
-  className="border px-2 py-1 rounded w-[120px] text-right"
-  placeholder="Enter Amount"
-/>
-
-
-
-                </tr>
-              ))
-            ) : (
-              <tr>
-                <td colSpan="7" className="text-center p-4 text-gray-500">
-                  No Gold Items Found
-                </td>
-              </tr>
-            )}
-          </tbody>
         </table>
           </div>
           
-            <div className="flex justify-end mt-6 p-10">
-          <div className="w-80 bg-white shadow-md p-4 rounded-xl border text-sm">
+            <div className="flex justify-end mt-6 mb-5">
+          <div className="w-80 bg-white shadow-md p-4  border text-sm">
             <p className="flex justify-between">
               <span>Subtotal</span> <span>₹ {summary.subtotal}</span>
             </p>
@@ -581,7 +706,171 @@ const handleBidderCostChange = (value) => {
               <span>₹ {summary.total.toFixed(2)}</span>
             </p>
           </div>
+        </div>  
+
+</div>
+          </div>
+        {isModalOpen && (
+  <div className="fixed inset-0 flex items-center justify-center z-50 bg-black/50 backdrop-blur-md">
+    <div className="bg-white p-10 rounded-md w-[662px] h-[400px]">
+
+      <h2 className="text-center font-semibold text-[20px]">
+       Before generating the Credit Note, please confirm whether any Document Charges are applicable for this customer.
+                      </h2>
+                    <h1 className="mt-5 text-[20px] font-normal leading-[100%] text-center font-sourceSans text-[#7C7C7C]">
+  Would you like to add Document Charges?
+</h1>
+
+
+     <div className="flex mt-6 justify-center items-center gap-6">
+  {/* Amount */}
+  <div className="flex flex-col">
+    <label className="text-sm font-medium">Document Charge Amount</label>
+    <input
+      type="number"
+      className="border p-2 rounded-[8px] w-[200px] h-[38px] mt-1"
+      placeholder="₹ 000"
+      value={docChargeAmount}
+      onChange={(e) => setDocChargeAmount(e.target.value)}
+    />
+  </div>
+
+  {/* Description */}
+  <div className="flex flex-col">
+    <label className="text-sm font-medium">Description</label>
+    <input
+      type="text"
+      className="border p-2 rounded-[8px] w-[298px] h-[38px] mt-1"
+      placeholder="e.g., Processing Charges, Gold Packet Charges"
+      value={docChargeDesc}
+      onChange={(e) => setDocChargeDesc(e.target.value)}
+    />
+  </div>
+</div>
+
+
+      {/* Buttons */}
+      <div className="flex justify-center gap-2 mt-10">
+        <button
+          className="bg-[#0A2478] text-white text-sm rounded px-6 py-2"
+          onClick={handleSubmitfordocument}
+        >
+          Submit
+        </button>
+
+        <button
+          className="bg-red-600 text-white text-sm rounded px-6 py-2"
+          onClick={() => setIsModalOpen(false)}
+        >
+          Cancel
+        </button>
+      </div>
+
+    </div>
+  </div>
+)}
+{isCreditModalOpen && (
+  <div className="fixed inset-0 flex items-center justify-center z-50 bg-black/50 backdrop-blur-md">
+    <div className="bg-white w-[570px] rounded-md shadow-lg h-[607px] text-[16px]">
+
+      {/* Modal Header */}
+      <div className="bg-[#0A2478] text-white px-6 py-3 rounded-t-md">
+        <h2 className="text-lg font-semibold">
+          Credit Note - Post Auction Settlement
+        </h2>
+      </div>
+
+      {/* Modal Body */}
+      <div className="p-6">
+
+        {/* Auction Reference */}
+        <h3 className="font-sourceSans font-bold text-[18px] leading-[100%] mb-2 text-gray-600">
+  Auction Reference
+</h3>
+
+       <div className="flex gap-5 mt-2">
+                              <div><p>Auction ID:</p> <p>{AuctionData?.id}</p></div>
+       
+       <div> <p>Auction Date:</p><p> {formatIndianDate(AuctionData?.date)}</p></div>
+
+       
+                          </div>
+                          {/* Borrower Details */}
+                           <h3 className="font-sourceSans font-bold text-[18px] mt-5 leading-[100%] mb-2 text-gray-600">
+Loan / Borrower Details
+</h3>
+        
+<div className="flex gap-10 mt-2">
+                              <div><p>Loan No:</p> <p> {loanData.id}</p></div>
+        <div> <p> Customer Id:</p><p> {loanData.BorrowerId}</p></div>
+       <div> <p> Customer Name:</p><p> {loanData.Print_Name}</p></div>
+
+       {/* <div><p>Email:</p><p></p></div> */}
+       <div> <p>Mobile:</p>  <p>{loanData.Mobile_Number}</p></div>
+                          </div>
+                          <div className="flex gap-5 mt-2">
+       <div><p>Address:</p> <p> 1</p></div>
+       
+      
+                          </div>
+                          {/* Credit Note Amount */}
+                           <h3 className="font-sourceSans font-bold text-[18px] leading-[100%] mb-2 mt-5 text-gray-600">
+Credit Note Amount
+</h3>
+       
+<div className="flex gap-5 mt-2">
+       <div><p>Outstanding Loan Amount:</p> <p> {loanData.LoanPendingAmount}</p></div>
+       
+                              <div> <p>Auction Recovery:</p><p>{summary.total}</p></div>
+
+       <div><p>Document Charges:</p><p> {docChargeAmount}</p></div>
+      
+                          </div>
+       
+      
+<div className="flex gap-5 mt-2">
+                              <div><p>Credit Note Amount:</p> <p> {creditNoteAmount }</p></div>
+       
+                              <div> <p>Remarks:</p><p className="text-gray-600">Surplus after auction settlement – Credit Note <br></br>issued to customer.</p></div>
+                          </div>
+        {/* Buttons */}
+        <div className="flex justify-center gap-4 mt-6">
+                           <button
+  className="bg-[#0A2478] text-white px-6 py-2 rounded"
+  onClick={() => {
+    navigate("/add-credit-note-page", {
+      state: {
+    
+            formData,
+            pledgeItems,
+            summary,
+            docChargeAmount,
+            docChargeDesc,
+            CustomerData,
+            creditNoteAmount,
+            AuctionData
+        
+      }
+    });
+  }}
+>
+  Generate Credit Note
+</button>
+
+          <button
+            className="bg-red-600 text-white px-6 py-2 rounded"
+            onClick={() => setIsCreditModalOpen(false)}
+          >
+            Cancel
+          </button>
         </div>
+
+      </div>
+    </div>
+  </div>
+)}
+
+     
     </div>
   );
 }

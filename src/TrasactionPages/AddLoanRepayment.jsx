@@ -174,7 +174,26 @@ console.log(loanInfo, "loanInfo")
     ? Math.floor(diffMs / (1000 * 60 * 60 * 24))
     : 0; // if future, 0 days
 
-  const slabs = JSON.parse(data.schemeData.interestRates || "[]");
+  const parseArray = (value) => {
+    try {
+        if (!value) return [];
+
+        // If it's already an array
+        if (Array.isArray(value)) return value;
+
+        // If it's already an object -> NOT valid array
+        if (typeof value === "object") return [];
+
+        // If it's "[object Object]"
+        if (value === "[object Object]") return [];
+
+        return JSON.parse(value);
+    } catch {
+        return [];
+    }
+};
+
+const slabs = parseArray(data.schemeData.interestRates);
   const currentSlab = slabs.find(
     (s) => pendingDays >= Number(s.from) && pendingDays <= Number(s.to)
   );
@@ -496,7 +515,26 @@ useEffect(() => {
   const pendingLoanAmount = Number(data.loanApplication.LoanPendingAmount);
   const totalUnpaidCharges = Number(data.loanApplication.total_unpaid_charges || 0);
   const preCloseMinDays = Number(data.schemeData?.preCloserMinDays || 0);
-  const slabs = JSON.parse(data.schemeData.interestRates || "[]");
+  const parseArray = (value) => {
+    try {
+        if (!value) return [];
+
+        // If it's already an array
+        if (Array.isArray(value)) return value;
+
+        // If it's already an object -> NOT valid array
+        if (typeof value === "object") return [];
+
+        // If it's "[object Object]"
+        if (value === "[object Object]") return [];
+
+        return JSON.parse(value);
+    } catch {
+        return [];
+    }
+};
+
+const slabs = parseArray(data.schemeData.interestRates);
 
   // ✅ CASE 1: Already paid future interest
   if (interestPaidUpto > today) {
@@ -608,12 +646,25 @@ useEffect(() => {
 // Safe JSON parser
 const parseJSONData = (value) => {
   try {
-    return value ? JSON.parse(value) : null;
+    if (!value) return null;
+
+    // If already an array → return as-is
+    if (Array.isArray(value)) return value;
+
+    // If already an object → return object (NOT JSON string)
+    if (typeof value === "object") return value;
+
+    // If string is "[object Object]" → invalid JSON
+    if (value === "[object Object]") return null;
+
+    // Try parsing JSON string
+    return JSON.parse(value);
   } catch (error) {
     console.warn("Failed to parse JSON:", error);
     return null;
   }
 };
+
 
  const pledgeItems = parseJSONData(data?.loanApplication.Pledge_Item_List);
   const interestRates = parseJSONData(data?.loanApplication.Effective_Interest_Rates);
@@ -1523,6 +1574,9 @@ if (checked) setIsAdvInt(false);
                 <div className="w-28 p-2 border-r-2 border-white text-center">
                   Purity
                 </div>
+                 <div className="w-28 p-2 border-r-2 border-white text-center">
+                 Calculated Purity
+                </div>
                 <div className="w-24 p-2 border-r-2 border-white text-center">
                   Rate
                 </div>
@@ -1550,7 +1604,10 @@ if (checked) setIsAdvInt(false);
                         {formatCurrency(item.netWeight)}
                       </div>
                       <div className="w-28 p-2 border-r border-gray-300 text-center">
-                        {item.purity || 'Gold 20K'}
+                        {item.purity }
+                      </div>
+                       <div className="w-28 p-2 border-r border-gray-300 text-center">
+                        {item.Calculated_Purity }
                       </div>
                       <div className="w-24 p-2 border-r border-gray-300 text-center">
                         {formatCurrency(item.rate)}

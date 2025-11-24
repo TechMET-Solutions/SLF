@@ -297,7 +297,7 @@ const SchemeDetailsList = () => {
       );
 
       // Backend returns: { page, limit, totalItems, totalPages, data }
-      const result = response.data;
+      const result = response.data.data;
 
       setData(result); // only the list
       setCurrentPage(result.page);

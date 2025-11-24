@@ -1,12 +1,13 @@
 import axios from "axios";
 import { useEffect, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
+import { API } from "../api";
 
 const InvoicePrint = () => {
   const navigate = useNavigate();
   const location = useLocation();
 
-  const { loanData } = location.state || {};
+  const { loanData,loanIds } = location.state || {};
   const [invoice, setInvoice] = useState(null);
 
   useEffect(() => {
@@ -15,7 +16,7 @@ const InvoicePrint = () => {
     const fetchInvoice = async () => {
       try {
         const response = await axios.get(
-          "http://localhost:5000/generate-bill/invoice/details",
+          `${API}/generate-bill/invoice/details`,
           {
             params: {
               bidder_id: Number(loanData.BidderId),
@@ -48,7 +49,26 @@ const InvoicePrint = () => {
     console.error("Pledge_Item_List parse error:", err);
     return [];
   }
-};
+    };
+const parsedItems = parseItems(invoice?.Pledge_Item_List);
+
+
+   
+ const combined = parsedItems.reduce(
+  (acc, item) => {
+    acc.particular.push(item.particular || "");
+    acc.gross += Number(item.gross) || 0;
+    acc.netWeight += Number(item.netWeight) || 0;
+    acc.rate += Number(item.rate) || 0;
+    return acc;
+  },
+  {
+    particular: [],
+    gross: 0,
+    netWeight: 0,
+    rate: 0,
+  }
+);
 
 
   return (
@@ -59,7 +79,14 @@ const InvoicePrint = () => {
           <h2 className="text-red-600 font-bold text-[20px]">Gold Purchase Bill</h2>
 
           <button
-            onClick={() => navigate("/Auction-Items-List")}
+                      // onClick={() => navigate("/Auction-Items-List")}
+                      onClick={() =>
+    navigate("/Auction-Items-List", {
+      state: {
+        loanIds: loanIds,   
+      },
+    })
+  }
             className="bg-[#C1121F] text-white text-sm rounded px-4 py-2"
           >
             Exit
@@ -99,11 +126,14 @@ const InvoicePrint = () => {
                 Buyer Information
               </h3>
 
-              <p><strong>Bidder ID:</strong> {invoice?.bill_bidder_id}</p>
-              <p><strong>Buyer Name:</strong> {invoice?.bill_bidder_name}</p>
+                          <p><strong>Client ID:</strong> {invoice?.bill_bidder_id}</p>
+                          <p><strong>Firm Name:</strong> {invoice?.bidder_firm_name}</p>
+              <p><strong>Client Name:</strong> {invoice?.bill_bidder_name}</p>
               <p><strong>Address:</strong> {invoice?.bill_bidder_address}</p>
               <p><strong>Mobile:</strong> {invoice?.bill_bidder_contact}</p>
-              <p><strong>Email:</strong> {invoice?.bill_bidder_email}</p>
+                          <p><strong>Email:</strong> {invoice?.bill_bidder_email}</p>
+                          <p><strong>GST No:</strong> {invoice?.bidder_gst_no}</p>
+                           
             </div>
 
           </div>
@@ -129,10 +159,10 @@ const InvoicePrint = () => {
 
            
 
-<p>
+{/* <p>
   <strong>UTR Number:</strong>{" "}
   {invoice?.paymentMethod === "Cash" ? "Cash" : invoice?.utrNumber || "N/A"}
-</p>
+</p> */}
 
             </div>
           </div>
@@ -150,29 +180,45 @@ const InvoicePrint = () => {
                   <th className="border p-2">Product Desc</th>
                   <th className="border p-2">Gross Weight</th>
                   <th className="border p-2">Net Weight</th>
-                  <th className="border p-2">Purity</th>
+                
                   <th className="border p-2">Rate/gram</th>
                   <th className="border p-2">Amount</th>
                 </tr>
               </thead>
 
               <tbody>
-  {parseItems(invoice?.Pledge_Item_List).map((item, index) => (
-    <tr key={index}>
-      <td className="border p-2 text-center">{index + 1}</td>
-      <td className="border p-2">{item.particular}</td>
-      <td className="border p-2 text-center">{item.gross}</td>
-      <td className="border p-2 text-center">{item.netWeight}</td>
-      <td className="border p-2 text-center">{item.purity}</td>
-      <td className="border p-2 text-center">{item.rate}</td>
+  <tr>
+    <td className="border p-2 text-center">1</td>
 
-      {/* Show BidderCloseAmt only on first row */}
-      <td className="border p-2 text-right">
-        {index === 0 ? `₹${invoice?.subtotal}` : ""}
-      </td>
-    </tr>
-  ))}
+    {/* Combined Particulars */}
+    <td className="border p-2">
+      {combined.particular.join(", ")}
+    </td>
+
+    {/* Combined Gross */}
+    <td className="border p-2 text-center">
+      {combined.gross}
+    </td>
+
+    {/* Combined Net Weight */}
+    <td className="border p-2 text-center">
+      {combined.netWeight}
+    </td>
+
+    
+
+    {/* Combined Rate */}
+    <td className="border p-2 text-center">
+      {combined.rate.toFixed(2)}
+    </td>
+
+    {/* Amount (Bidder Close Amount) */}
+    <td className="border p-2 text-right">
+      ₹{invoice?.subtotal}
+    </td>
+  </tr>
 </tbody>
+
 
             </table>
           </div>
@@ -213,10 +259,11 @@ const InvoicePrint = () => {
             </h3>
 
             <p className="text-sm leading-relaxed">
-              • The purchased gold items were sold with the NBFI by the original borrower. <br />
-              • The Buyer must ensure the purity. <br />
-              • The Buyer shall be responsible for any issues related to purchased items. <br />
-              • The NBFI shall not be answerable for defects of the items.
+           • The gold purchased in this auction was pledged with the NBFC by the original borrower.<br></br>
+• The purchaser has paid the full amount as per auction terms and conditions.<br></br>
+• The NBFC hereby transfers ownership of the mentioned gold items to the purchaser upon full
+payment.<br></br>
+• No claim shall be entertained after the delivery of the items.
             </p>
           </div>
 

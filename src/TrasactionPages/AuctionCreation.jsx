@@ -68,68 +68,78 @@ const fetchAuctions = async () => {
             </div>
 
             {/* 🔹 Table Section */}
-            <div className="flex justify-center">
-                <div className="overflow-x-auto mt-6 w-[1300px]">
-                    <table className="w-full border-collapse">
-                        <thead className="bg-[#0A2478] text-white text-sm">
-                            <tr>
-                                <th className="px-4 py-2 text-left border-r">Auction Id</th>
-                                <th className="px-4 py-2 text-left border-r">Venue</th>
-                                <th className="px-4 py-2 text-left border-r">Date</th>
-                                <th className="px-4 py-2 text-left border-r">Time</th>
-                                <th className="px-4 py-2 text-left border-r">Fees</th>
-                                <th className="px-4 py-2 text-left border-r">Auction Items</th>
-                                <th className="px-4 py-2 text-left flex gap-3">Status <IoIosArrowDown size={20} /></th>
-                            </tr>
-                        </thead>
+         <div className="flex justify-center">
+  <div className="overflow-x-auto mt-6 w-[1300px]">
+    <table className="w-full border-collapse">
+      <thead className="bg-[#0A2478] text-white text-sm">
+        <tr>
+          <th className="px-4 py-2 text-left border-r">Auction Id</th>
+          <th className="px-4 py-2 text-left border-r">Venue</th>
+          <th className="px-4 py-2 text-left border-r">Date</th>
+          <th className="px-4 py-2 text-left border-r">Time</th>
+          <th className="px-4 py-2 text-left border-r">Fees</th>
+          <th className="px-4 py-2 text-left border-r">Loans</th>
+          <th className="px-4 py-2 flex gap-3">
+            Status <IoIosArrowDown size={20} />
+          </th>
+        </tr>
+      </thead>
 
-                        <tbody className="text-[13px]">
-                            {data.map((row, index) => (
-                                <tr
-                                    key={row.id}
-                                    className={`${index % 2 === 0 ? "bg-gray-50" : "bg-white"
-                                        } hover:bg-gray-100 transition`}
-                                >
-                                    <td
-  className="px-4 py-2 cursor-pointer text-blue-400"
-  onClick={() => {
-    navigate("/Auction-Items-List", {
-      state: {
-            loanIds: row.loanIds,
-         AuctionData:row    // ⬅ PASS ARRAY HERE
-      }
-    });
-  }}
->
-  {row.id}
-</td>
+      <tbody className="text-[13px]">
+        {data.map((row, index) => (
+          <tr
+            key={row.id}
+            className={`${index % 2 === 0 ? "bg-gray-50" : "bg-white"} hover:bg-gray-100 transition`}
+          >
+            {/* Auction ID + Navigation */}
+            <td
+              className="px-4 py-2 cursor-pointer text-blue-400"
+              onClick={() =>
+                navigate("/Auction-Items-List", {
+                  state: {
+                    loanIds: row.loanDetails.map((d) => d.loanId),
+                    AuctionData: row
+                  }
+                })
+              }
+            >
+              {row.id}
+            </td>
 
-                                    <td className="px-4 py-2">{row.venue}</td>
-                                    <td className="px-4 py-2">{row.date}</td>
-                                    <td className="px-4 py-2">{row.time}</td>
-                                    <td className="px-4 py-2">{row.fees}</td>
-                                 <td className="px-4 py-2">
-    {(() => {
-        try {
-            const loanItems = JSON.parse(row.loanDetails);
-            const itemNames = loanItems
-                .flatMap(l => l.pledge_items.map(p => p.particular))
-                .join(", ");
+            {/* Venue */}
+            <td className="px-4 py-2">{row.venue}</td>
 
-            return itemNames || "No Items";
-        } catch (error) {
-            return "Invalid Data";
-        }
-    })()}
-</td>
-                                    <td className={row.status === "open" ? "text-green-600 px-4 py-2" : "text-red-600 px-4 py-2"}>
-                                        {row.status}
-                                    </td>                </tr>
-                            ))}
-                        </tbody>
-                    </table>
-                </div>
-            </div>
+            {/* Date */}
+            <td className="px-4 py-2">{row.date?.slice(0, 10)}</td>
+
+            {/* Time */}
+            <td className="px-4 py-2">{row.time}</td>
+
+            {/* Fees */}
+            <td className="px-4 py-2">{row.fees}</td>
+
+            {/* Loan IDs */}
+            <td className="px-4 py-2">
+              {row.loanDetails && row.loanDetails.length > 0
+                ? row.loanDetails.map((d) => d.loanId).join(", ")
+                : "No Loan IDs"}
+            </td>
+
+            {/* Status */}
+            <td
+              className={`px-4 py-2 ${
+                row.status === "OPEN" ? "text-green-600" : "text-red-600"
+              }`}
+            >
+              {row.status}
+            </td>
+          </tr>
+        ))}
+      </tbody>
+    </table>
+  </div>
+</div>
+
         </div>
     );
 }

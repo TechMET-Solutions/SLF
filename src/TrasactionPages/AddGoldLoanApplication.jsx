@@ -1,5 +1,6 @@
 import axios from "axios";
 import { useEffect, useState } from "react";
+import { MdOutlineFileUpload } from "react-icons/md";
 import { useNavigate } from "react-router-dom";
 import { API } from "../api";
 import envImg from "../assets/envImg.jpg";
@@ -7,31 +8,19 @@ import profileempty from "../assets/profileempty.png";
 import timesvg from "../assets/timesvg.svg";
 import { decryptData } from "../utils/cryptoHelper";
 import PledgeItemList from "./PledgeItemList";
-import { MdOutlineFileUpload } from "react-icons/md";
+import PledgeItemListSilver from "./PledgeItemListSilver";
 const AddGoldLoanApplication = () => {
   const [schemes, setSchemes] = useState([]); // store all schemes
   const [selectedScheme, setSelectedScheme] = useState(null); // store selected scheme
   const navigate = useNavigate();
   const [activeEmployees, setActiveEmployees] = useState([]);
 console.log(activeEmployees,"activeEmployees")
- const getActiveEmp = async () => {
-  try {
-    const res = await axios.get(`${API}/Master/getActiveEmployees`);
-    const decrypted = decryptData(res.data.data); // no JSON.parse
-    console.log(decrypted);
-    setActiveEmployees(decrypted);
-  } catch (error) {
-    console.log(error);
-  }
-};
-  useEffect(() => {
-  getActiveEmp()
-},[])
+ 
   useEffect(() => {
     const fetchSchemes = async () => {
       try {
         const response = await axios.get(`${API}/Scheme/getAllSchemes`);
-        const fetchedSchemes = response.data.map((item) => ({
+        const fetchedSchemes = response.data.data.map((item) => ({
           ...item,
           intCompound: item.calcMethod === "Compound",
         }));
@@ -85,7 +74,7 @@ console.log(activeEmployees,"activeEmployees")
 
       // 📦 Pledge Items
       formDataToSend.append("Pledge_Item_List", JSON.stringify(PledgeItem || []));
-
+ formDataToSend.append("Product_Name", selectedScheme.product || 0);
       // 💰 Loan Details
       formDataToSend.append("Loan_amount", formData.Loan_amount || 0);
       formDataToSend.append("Doc_Charges", formData.Doc_Charges || 0);
@@ -200,13 +189,40 @@ console.log(activeEmployees,"activeEmployees")
       gross: "",
       netWeight: "",
       purity: "",
+      Calculated_Purity: "",
       rate: "",
       valuation: "",
       remark: "",
     },
   ]);
+  
+  
 
   console.log(formData, "formData")
+
+  const getActiveEmp = async () => {
+  try {
+    const res = await axios.get(`${API}/Master/getActiveEmployees`, {
+      params: {
+        loanAmount: formData.Loan_amount   // <--- send loan amount
+      }
+    });
+    const decrypted = decryptData(res.data.data); // no JSON.parse
+    console.log(decrypted,"-------------active emp-----------");
+    setActiveEmployees(decrypted);
+  } catch (error) {
+    console.log(error);
+  }
+};
+  useEffect(() => {
+  const loan = Number(formData.Loan_amount);
+
+  // run API only if loan is a number (including 0)
+  if (!isNaN(loan)) {
+    getActiveEmp();
+  }
+}, [formData.Loan_amount]);
+
   useEffect(() => {
   let totalGross = 0;
   let totalNet = 0;
@@ -432,9 +448,9 @@ console.log(activeEmployees,"activeEmployees")
     return words.trim() + ' only';
   };
   return (
-    <div className="min-h-screen w-full pl-[5%]">
+    <div className="min-h-screen  ">
       {/* ===== Top Bar ===== */}
-      <div className="flex pl-[50px]">
+       <div className="flex justify-center ">
         <div className="flex items-center px-6 py-4 border-b mt-5 w-[1290px] h-[62px] border rounded-[11px] border-gray-200 justify-between shadow">
           <h2
             style={{
@@ -462,9 +478,11 @@ console.log(activeEmployees,"activeEmployees")
           </div>
         </div>
       </div>
+      <div className="">
+
 
       {/* ===== FORM SECTIONS ===== */}
-      <div className="flex  gap-2 mt-10">
+      <div className="flex gap-2 mt-10 pl-[110px] ">
         <div >
           <div className="flex  gap-2">
 
@@ -531,7 +549,7 @@ console.log(activeEmployees,"activeEmployees")
             <div className="mb-6">
               <label className="text-[14px] font-medium block mb-1">Scheme*</label>
               <select
-                className="border border-gray-300 px-3 py-2 w-[200px] bg-white rounded-[8px]"
+                className="border border-gray-300 px-3 py-2 w-[150px] bg-white rounded-[8px]"
                 onChange={handleSchemeChange}
                 defaultValue=""
               >
@@ -558,7 +576,7 @@ console.log(activeEmployees,"activeEmployees")
                 placeholder="Enter Print Name"
                 value={formData.printName}
                 onChange={handleInputChange}
-                className="border border-gray-300 px-3 py-2 mt-1 w-[225px] rounded-[8px] bg-white h-[38px]"
+                className="border border-gray-300 px-3 py-2 mt-1 w-[150px] rounded-[8px] bg-white h-[38px]"
               />
             </div>
 
@@ -687,7 +705,7 @@ console.log(activeEmployees,"activeEmployees")
 
                   value={formData.Nominee_Name}
                   onChange={handleInputChange}
-                  className="border border-gray-300 px-3 py-2 mt-1 w-[209px] rounded-[8px] bg-white h-[38px]"
+                  className="border border-gray-300 px-3 py-2 mt-1 w-[150px] rounded-[8px] bg-white h-[38px]"
                 />
               </div>
             </div>
@@ -713,7 +731,7 @@ console.log(activeEmployees,"activeEmployees")
               name="borrowerAddress"
               value={formData.borrowerAddress}
               onChange={handleInputChange}
-              className="border w-[290px] h-[62px] rounded-[8px] p-2 focus:outline-none focus:ring-1 focus:ring-blue-400"
+              className="border w-[200px] h-[62px] rounded-[8px] p-2 focus:outline-none focus:ring-1 focus:ring-blue-400"
             />
           </div>
         </div>
@@ -721,7 +739,7 @@ console.log(activeEmployees,"activeEmployees")
 
         <div className="flex ">
 
-          <div className=" w-[139px] h-[130px] ">
+          <div className="  h-[130px] ">
             {/* Profile Image */}
             <p>Customer</p>
 
@@ -821,17 +839,36 @@ console.log(activeEmployees,"activeEmployees")
 
         </div>
 
-      </div>
+        </div>
+        {
+          selectedScheme?.product === "Gold" && (
+            <>
+             <div className="flex gap-2 mt-10 pl-[110px] ">
+          <PledgeItemList rows={PledgeItem} setRows={setPledgeItem} selectedScheme={selectedScheme} />
+</div>
+            </>
+          )
+        }
+         {
+          selectedScheme?.product === "Silver" && (
+            <>
+           <div className="flex gap-2 mt-5 pl-[110px] ">
+          <PledgeItemListSilver rows={PledgeItem} setRows={setPledgeItem} selectedScheme={selectedScheme} />
+</div>
+            </>
+          )
+        }
+       
+      
+        
 
-      <PledgeItemList rows={PledgeItem} setRows={setPledgeItem} selectedScheme={selectedScheme} />
 
 
 
 
 
 
-
-      <div className="flex  gap-2  ">
+      <div className="flex  gap-2 pl-[110px] ">
 
       <div className="">
   <div>
@@ -945,9 +982,7 @@ console.log(activeEmployees,"activeEmployees")
 <div className="flex flex-col">
   <label className="text-[14px] font-medium">
     Valuer 2
-    {parseFloat(formData.Loan_amount) >= 20000 && (
-      <span className="text-red-500">*</span>
-    )}
+    <span className="text-red-500">*</span>
   </label>
   <select
   name="value2"
@@ -973,14 +1008,16 @@ console.log(activeEmployees,"activeEmployees")
 
 
 
-
-      <p className="mt-5 mb-5">
+        <div className="flex gap-10  mb-10 pl-[110px]">
+          <p className="mt-5 mb-5">
   {numberToWords( Number(formData.Loan_amount) || 0 )}
 </p>
+</div>
+      
 
-      <div className="flex gap-20 mb-10">
+      <div className="flex gap-10  mb-10 pl-[110px] ">
 
-        <div className="flex  mt-5">
+        <div className="flex mt-5">
           <div className="">
 
             <h3 className="font-semibold  text-blue-900 text-lg">Scheme Details</h3>
@@ -1259,6 +1296,9 @@ console.log(activeEmployees,"activeEmployees")
               </div>
             )}
 
+
+      </div>
+     
     </div>
   )
 }

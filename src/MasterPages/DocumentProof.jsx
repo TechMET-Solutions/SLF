@@ -3,6 +3,7 @@ import { useEffect, useState } from "react";
 import { API } from "../api";
 import GroupData from "../assets/Group 124.svg";
 import { decryptData, encryptData } from "../utils/cryptoHelper";
+import { formatIndianDate } from "../utils/Helpers";
 
 const DocumentProof = () => {
   useEffect(() => {
@@ -129,6 +130,14 @@ if (!formData.is_id_proof && !formData.is_address_proof) {
       alert("Document proof added successfully!");
       setIsModalOpen(false);
       fetchDocuments()
+      setFormData({
+    proof_type: "",
+    is_id_proof: false,
+    is_address_proof: false,
+    added_by: "",
+    modified_by: "",
+    status: "Active",
+  });
     } catch (error) {
       console.error("❌ Error:", error);
       alert("Failed to add document proof.");
@@ -405,9 +414,9 @@ if (!formData.is_id_proof && !formData.is_address_proof) {
 
                   <td className="px-4 py-2">{row.proof_type}</td>
                   <td className="px-4 py-2">{row.added_by}</td>
-                  <td className="px-4 py-2">{new Date(row.added_on).toLocaleString()}</td>
+                  <td className="px-4 py-2">{formatIndianDate(row.added_on)}</td>
                   <td className="px-4 py-2">{row.modified_by || "-"}</td>
-                  <td className="px-4 py-2">{new Date(row.modified_on).toLocaleString()}</td>
+                  <td className="px-4 py-2">{formatIndianDate(row.modified_on)}</td>
 
                   {/* Action icons */}
                   <td className="px-4 py-2 text-[#1883EF] cursor-pointer">

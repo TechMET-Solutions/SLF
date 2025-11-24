@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import profileempty from "../assets/profileempty.png";
+import { API } from "../api";
 function Auction_Application_form() {
   useEffect(() => {
     document.title = "SLF | Auction Application Form";
@@ -43,7 +44,7 @@ const [auctions, setAuctions] = useState([]);
     const [popupData, setPopupData] = useState(null);
     console.log(popupData,"popupData")
 useEffect(() => {
-  fetch("http://localhost:5000/Transactions/GetAuction")
+  fetch(`${API}/Transactions/GetAuction`)
     .then(res => res.json())
     .then(data => {
       if (data.success) {
@@ -87,7 +88,7 @@ const handleAuctionSelect = (auctionId) => {
     return;
   }
 
-  const response = await fetch("http://localhost:5000/Auction/Application/create", {
+  const response = await fetch(`${API}/Auction/Application/create`, {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
@@ -129,7 +130,7 @@ const onChangeForbidders = async (e) => {
 
     if (name === "bidderName" && value.length >= 1) {
         try {
-            const res = await fetch(`http://localhost:5000/Auction/bidders/search?q=${value}`);
+            const res = await fetch(`${API}/Auction/bidders/search?q=${value}`);
             const data = await res.json();
             setSuggestions(data.bidders);
         } catch (err) {

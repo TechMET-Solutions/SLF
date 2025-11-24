@@ -164,6 +164,7 @@ const EmployeeProfile = () => {
 const [selectedEmployees, setSelectedEmployees] = useState([]);
 const [isValuationModalOpen, setIsValuationModalOpen] = useState(false);
   // 🔹 Pagination Controls
+  const [valuationAmount, setValuationAmount] = useState("");
   const totalPages = Math.ceil(totalItems / itemsPerPage);
 
   const handlePageChange = (page) => {
@@ -590,15 +591,37 @@ const verifyPan = async () => {
   setIsValuationModalOpen(true);
 };
 
-  const handleSaveValuation = () => {
-  console.log("Saving valuation for:", selectedEmployees);
-  
-  // TODO: Call your API here
-  // Example: addValuationApi(selectedEmployees, valuationAmount)
+  const handleSaveValuation = async () => {
+  debugger
+  const employeeIds = selectedEmployees.map(emp => emp.id);
 
+  if (!valuationAmount) {
+    alert("Please enter valuation amount");
+    return;
+  }
+
+  const payload = {
+    employeeIds,
+    valuationAmount
+  };
+
+  console.log("Saving valuation:", payload);
+
+  // Call your API:
+   await axios.post(`${API}/Master/updateEmployeeValuation`, payload);
+  fetchEmployee(currentPage, searchTerm);
   setIsValuationModalOpen(false);
   setSelectedEmployees([]);
+  setValuationAmount(""); // reset
 };
+
+const openValuationModal = (emp) => {
+  setSelectedEmployees([emp]);
+  setValuationAmount(emp.Valuer_Valuation || ""); // prefill if exists
+  setIsValuationModalOpen(true);
+};
+
+
 
   return (
     <div className="min-h-screen w-full">
@@ -1369,42 +1392,41 @@ const verifyPan = async () => {
       )}
 
       {isValuationModalOpen && (
-  <div className="fixed inset-0 bg-black bg-opacity-40 flex items-center justify-center z-50">
-    <div className="bg-white w-[400px] p-5 rounded shadow-lg">
+  <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-sm">
+    <div className="bg-white w-[400px] p-5 rounded shadow-lg ">
 
-      <h2 className="text-lg font-semibold mb-3">Add Valuation</h2>
+      <h2 className="text-[18px] leading-[24px] font-semibold text-[#0A2478] text-center font-[Source_Sans_3] mb-3">
+  The employee is permitted to perform gold valuation
+</h2>
 
-      {/* Show selected employees */}
-      <div className="mb-3">
-        {selectedEmployees.map((emp) => (
-          <p key={emp.id} className="text-sm">
-            {emp.emp_name} ({emp.email})
-          </p>
-        ))}
-      </div>
+      <label className="text-[14px] leading-[24px] font-medium text-[#000000] font-[Source_Sans_3]">
+  Valuation Limit Assigned
+</label>
 
-      {/* Add valuation input */}
-      <label className="text-sm">Valuation Amount</label>
-      <input
-        type="number"
-        className="border w-full mt-1 mb-4 px-2 py-1 rounded"
-        placeholder="Enter valuation"
-      />
+    <input
+  type="number"
+  value={valuationAmount}
+  onChange={(e) => setValuationAmount(e.target.value)}
+  className="border w-full mt-1 mb-4 px-2 py-1 rounded"
+  placeholder="e.g. ₹ 1,00,000.00"
+/>
 
-      <div className="flex justify-end gap-3">
+
+            <div className="flex justify-center gap-3 mt-5">
+               <button
+          onClick={handleSaveValuation}
+          className="bg-[#0A2478] text-white px-3 py-1 rounded w-[93px] h-[30px]"
+        >
+         Submit
+        </button>
         <button
           onClick={() => setIsValuationModalOpen(false)}
-          className="bg-gray-400 text-white px-3 py-1 rounded"
+          className="bg-[#C1121F] text-white px-3 py-1 rounded h-[30px]"
         >
-          Cancel
+         Close
         </button>
 
-        <button
-          onClick={handleSaveValuation}
-          className="bg-[#129121] text-white px-3 py-1 rounded"
-        >
-          Save
-        </button>
+       
       </div>
     </div>
   </div>
@@ -1470,7 +1492,13 @@ const verifyPan = async () => {
                       <td className="px-4 py-2 max-w-[200px] truncate" title={emp.permanent_address}>
                         {emp.permanent_address}
                       </td>
-                       <td className="px-4 py-2">----</td>
+                      <td
+  className="px-4 py-2 text-blue-700 cursor-pointer underline"
+  onClick={() => openValuationModal(emp)}
+>
+  {emp.Valuer_Valuation?.trim() || "---"}
+</td>
+
                       <td className="px-4 py-2">
                         <div className="flex gap-2 justify-center">
                           <button

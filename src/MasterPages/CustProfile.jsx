@@ -563,9 +563,18 @@ const CustProfile = () => {
                       >
                         <img src={GroupData} alt="action" className="w-[12px] h-[12px]" title="Edit" />
                       </div>
-                      <div className="w-[17px] h-[17px] bg-[#83090B] rounded-[2.31px] flex items-center justify-center">
-                        <img src={print} alt="action" className="w-[12px] h-[12px]" title="Print" />
-                      </div>
+                      <div
+  className="w-[17px] h-[17px] bg-[#83090B] rounded-[2.31px] flex items-center justify-center cursor-pointer"
+  onClick={() => navigate("/Customer_Form", { state: row })}
+>
+  <img
+    src={print}
+    alt="action"
+    className="w-[12px] h-[12px]"
+    title="Print"
+  />
+</div>
+
                     </div>
                   </td>
                 </tr>

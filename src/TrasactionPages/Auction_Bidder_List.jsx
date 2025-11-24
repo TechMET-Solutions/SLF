@@ -176,11 +176,11 @@ const handleStatusClick = (row) => {
                    <td className="px-4 py-2">
   {row.credit_status === "active" && (
   <>
-    <img
+    {/* <img
       src={Enable}
       alt="status"
       className="w-6 h-6"
-    />
+    /> */}
 
     <div className="bg-red-500 text-white w-[22px] h-[22px] flex items-center justify-center cursor-pointer">
       <IoMdCloseCircleOutline size={20} />
@@ -207,7 +207,7 @@ const handleStatusClick = (row) => {
                   background: "#0101017A",
                   backdropFilter: "blur(6.8px)",
                 }}>
-    <div className="bg-white w-[570px] h-[407px] shadow-lg rounded border  relative">
+    <div className="bg-white w-[570px] h-auto shadow-lg rounded border  relative">
 
       {/* Close Button */}
     <button

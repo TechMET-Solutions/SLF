@@ -1,6 +1,6 @@
-import React, { useEffect, useState } from "react";
 import axios from "axios";
-import { useNavigate, useLocation } from "react-router-dom";
+import { useEffect, useState } from "react";
+import { useLocation, useNavigate } from "react-router-dom";
 import { API } from "../api";
 
 function PrintLoanApplication() {
@@ -36,12 +36,31 @@ function PrintLoanApplication() {
   if (error) return <p className="text-center text-red-500 mt-10">{error}</p>;
   if (!loanData) return null;
 
-  const ornaments = loanData.Pledge_Item_List
-    ? JSON.parse(loanData.Pledge_Item_List)
-    : [];
-  const interestRates = loanData.Effective_Interest_Rates
-    ? JSON.parse(loanData.Effective_Interest_Rates)
-    : [];
+ const safeParse = (value) => {
+    try {
+        if (!value) return [];
+
+        // If already array → return as is
+        if (Array.isArray(value)) return value;
+
+        // If object → return [] (because not valid JSON string)
+        if (typeof value === "object") return [];
+
+        // If string equals "[object Object]" → return []
+        if (value === "[object Object]") return [];
+
+        // Try parsing JSON
+        return JSON.parse(value);
+    } catch {
+        return [];
+    }
+};
+
+const ornaments = safeParse(loanData.Pledge_Item_List);
+
+
+const interestRates = safeParse(loanData.Effective_Interest_Rates);
+
 
   return (
     <div>

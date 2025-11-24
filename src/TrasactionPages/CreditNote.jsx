@@ -1,9 +1,10 @@
-import React, { useEffect, useState } from "react";
 import axios from "axios";
-import { useNavigate } from "react-router-dom";
-import { IoMdEye } from "react-icons/io";
-import { LuPrinter } from "react-icons/lu";
+import { useEffect, useState } from "react";
 import { FaMagnifyingGlass } from "react-icons/fa6";
+import { LuPrinter } from "react-icons/lu";
+import { useNavigate } from "react-router-dom";
+import { formatIndianDate } from "../utils/Helpers";
+import { API } from "../api";
 
 function CreditNote() {
   const navigate = useNavigate();
@@ -18,7 +19,7 @@ function CreditNote() {
   // FETCH ALL CREDIT NOTES
   const fetchCreditNotes = async () => {
     try {
-      const res = await axios.get("http://localhost:5000/credit-note/credit-notes");
+      const res = await axios.get(`${API}/credit-note/credit-notes`);
       setData(res.data.data || []);
     } catch (err) {
       console.error(err);
@@ -88,11 +89,9 @@ function CreditNote() {
                   Credit Note No.
                 </th>
                 <th className="bg-[#0A2478] border-r-2 border-white px-4 py-2 font-semibold">
-                  Customer No.
+                  Customer Id.
                 </th>
-                <th className="bg-[#0A2478] border-r-2 border-white px-4 py-2 font-semibold">
-                  Date
-                </th>
+                
                 <th className="bg-[#0A2478] border-r-2 border-white px-4 py-2 font-semibold">
                   Customer Name
                 </th>
@@ -100,13 +99,19 @@ function CreditNote() {
                   Customer Address
                 </th>
                 <th className="bg-[#0A2478] border-r-2 border-white px-4 py-2 font-semibold">
-                  Phone no.
+                  Phone No.
                 </th>
                 <th className="bg-[#0A2478] border-r-2 border-white px-4 py-2 font-semibold">
-                  Credit note amount
+                  Credit Note Amount
                 </th>
                 <th className="bg-[#0A2478] border-r-2 border-white px-4 py-2 font-semibold">
-                  Un-utilized amount
+                  Utilized Amount
+                </th>
+                <th className="bg-[#0A2478] border-r-2 border-white px-4 py-2 font-semibold">
+                  Un-Utilized Amount
+                </th>
+                <th className="bg-[#0A2478] border-r-2 border-white px-4 py-2 font-semibold">
+                  Date
                 </th>
                 <th className="bg-[#0A2478] border-r-2 border-white px-4 py-2 text-center font-semibold">
                   Action
@@ -119,11 +124,13 @@ function CreditNote() {
                 filteredData.map((row) => (
                   <tr
                     key={row.id}
-                    className="border-t border-gray-200 hover:bg-blue-50"
+                    className="border-t border-gray-200 "
                   >
-                    <td className="px-4 py-2">{row.credit_note_no}</td>
-                    <td className="px-4 py-2">{row.customer_no}</td>
-                    <td className="px-4 py-2">{row.date}</td>
+                    <td className="px-4 py-2 text-blue-500 hover:cursor-pointer"  onClick={() =>
+                          navigate("/View-Credit-Note", { state: { id: row.id } })
+                        }>{row.credit_note_no}</td>
+                    <td className="px-4 py-2" >{row.customer_no}</td>
+                  
                     <td className="px-4 py-2">{row.customer_name}</td>
                     <td
                       className="px-4 py-2 max-w-[200px] truncate"
@@ -132,19 +139,13 @@ function CreditNote() {
                       {row.customer_address}
                     </td>
                     <td className="px-4 py-2">{row.phone_no}</td>
-                    <td className="px-4 py-2">{row.credit_note_amount}</td>
-                    <td className="px-4 py-2">{row.un_utilized_amount}</td>
-
+                    <td className="px-4 py-2">{row.CreditAmount}</td>
+                      <td className="px-4 py-2">{row.Utilized_Amount}</td>
+                    <td className="px-4 py-2">{row.Unutilized_Amount}</td>
+                   <td className="px-4 py-2">{formatIndianDate(row.date)}</td>
                     <td className="px-4 py-2 flex justify-center gap-2">
                       {/* VIEW BUTTON (passing id via state instead of URL param) */}
-                      <button
-                        onClick={() =>
-                          navigate("/View-Credit-Note", { state: { id: row.id } })
-                        }
-                        className="bg-[#646AD9] text-white p-2 rounded-md hover:bg-[#4e53b8]"
-                      >
-                        <IoMdEye size={12} />
-                      </button>
+                      
 
                       {/* PRINT BUTTON (passing id via state instead of URL param) */}
                       <button

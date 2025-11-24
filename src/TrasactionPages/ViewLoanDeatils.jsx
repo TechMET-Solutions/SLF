@@ -2,8 +2,8 @@ import axios from "axios";
 import { useEffect, useState } from "react";
 import { IoIosAddCircleOutline, IoIosCloseCircleOutline } from "react-icons/io";
 import { useLocation, useNavigate } from "react-router-dom";
-import profileempty from "../assets/profileempty.png";
 import { API } from "../api";
+import profileempty from "../assets/profileempty.png";
 const ViewLoanDetails = () => {
   const [loanData, setLoanData] = useState(null);
   console.log(loanData,"loanData")
@@ -419,6 +419,9 @@ console.log(interestRates,"interestRates")
                 <div className="w-28 p-2 border-r-2 border-white text-center">
                   Purity
                 </div>
+                <div className="w-28 p-2 border-r-2 border-white text-center">
+                 Calculated Purity
+                </div>
                 <div className="w-24 p-2 border-r-2 border-white text-center">
                   Rate
                 </div>
@@ -446,7 +449,10 @@ console.log(interestRates,"interestRates")
                         {formatCurrency(item.netWeight)}
                       </div>
                       <div className="w-28 p-2 border-r border-gray-300 text-center">
-                        {item.purity || 'Gold 20K'}
+                        {item.purity || ''}
+                      </div>
+                       <div className="w-28 p-2 border-r border-gray-300 text-center">
+                        {item.Calculated_Purity || ''}
                       </div>
                       <div className="w-24 p-2 border-r border-gray-300 text-center">
                         {formatCurrency(item.rate)}

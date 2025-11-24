@@ -468,23 +468,24 @@ const BranchProfileList = () => {
                     className="border border-gray-300 rounded px-3 py-2 mt-1 w-full"
                   />
                 </div>
-                <div>
-                  <label className="text-[14px]">Lead Person</label>
-                  <select
-                    name="lead_person"
-                    value={branchData.lead_person}
-                    onChange={handleChange}
-                    className="border border-gray-300 rounded px-3 py-2 mt-1 w-full"
-                  >
-                    <option value="">Select Lead Person</option>
+               <div>
+  <label className="text-[14px]">Lead Person</label>
+  <select
+    name="lead_person"
+    value={branchData.lead_person}
+    onChange={handleChange}
+    className="border border-gray-300 rounded px-3 py-2 mt-1 w-full"
+  >
+    <option value="">Select Lead Person</option>
 
-                    {activeEmployees.map((emp) => (
-                      <option key={emp.id} value={emp.id}>
-                        {emp.emp_name}
-                      </option>
-                    ))}
-                  </select>
-                </div>
+    {activeEmployees.map((emp) => (
+      <option key={emp.id} value={emp.emp_name}>
+        {emp.emp_name}
+      </option>
+    ))}
+  </select>
+</div>
+
 
 
 
