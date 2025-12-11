@@ -1,10 +1,10 @@
 import axios from "axios";
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { useAuth } from "../API/Context/AuthContext";
 import { API } from "../api";
 import GroupData from "../assets/Group 124.svg";
 import DeleteData from "../assets/deletimg.png";
-import EyeData from "../assets/eye.svg";
 import { decryptData, encryptData } from "../utils/cryptoHelper";
 
 const ChargesProfileList = () => {
@@ -23,7 +23,9 @@ const ChargesProfileList = () => {
     isActive: true,
     addedBy: "",
   });
+  const { loginUser } = useAuth();
 
+  console.log("Logged in user:", loginUser);
   useEffect(() => {
     fetchChargeProfiles();
   }, []);
@@ -64,51 +66,111 @@ const ChargesProfileList = () => {
   };
 
   // ✅ Save or Update form
+  // const handleSave = async () => {
+  //   try {
+  //     const encryptedPayload = encryptData(
+  //       JSON.stringify(editingId ? { ...formData, id: editingId } : formData)
+  //     );
+
+  //     let response;
+  //     if (editingId) {
+  //       // Update API
+  //       response = await axios.put(
+  //         `${API}/Master/updateChargesProfile`,
+  //         { data: encryptedPayload }
+  //       );
+  //     } else {
+  //       // Add API
+  //       response = await axios.post(
+  //         `${API}/Master/ChargesProfile/add`,
+  //         { data: encryptedPayload }
+  //       );
+  //       console.log(data)
+  //     }
+
+  //     if (response.status === 200 || response.status === 201) {
+  //       const decryptedText = decryptData(response.data.data);
+  //       const parsedData =
+  //         typeof decryptedText === "string" ? JSON.parse(decryptedText) : decryptedText;
+
+  //       alert(`✅ ${parsedData.message}`);
+  //       setIsModalOpen(false);
+  //       setEditingId(null);
+  //       setFormData({
+  //         code: "",
+  //         description: "",
+  //         amount: "",
+  //         account: "",
+  //         isActive: true,
+  //         addedBy: "",
+  //       });
+  //       fetchChargeProfiles();
+  //     }
+  //   } catch (error) {
+  //     console.error("❌ Error saving/updating charge profile:", error);
+  //     alert("❌ Failed to save/update. Please try again.");
+  //   }
+  // };
+
   const handleSave = async () => {
-    try {
-      const encryptedPayload = encryptData(
-        JSON.stringify(editingId ? { ...formData, id: editingId } : formData)
-      );
+  try {
+    let payloadObj;
 
-      let response;
-      if (editingId) {
-        // Update API
-        response = await axios.put(
-          `${API}/Master/updateChargesProfile`,
-          { data: encryptedPayload }
-        );
-      } else {
-        // Add API
-        response = await axios.post(
-          `${API}/Master/ChargesProfile/add`,
-          { data: encryptedPayload }
-        );
-        console.log(data)
-      }
-
-      if (response.status === 200 || response.status === 201) {
-        const decryptedText = decryptData(response.data.data);
-        const parsedData =
-          typeof decryptedText === "string" ? JSON.parse(decryptedText) : decryptedText;
-
-        alert(`✅ ${parsedData.message}`);
-        setIsModalOpen(false);
-        setEditingId(null);
-        setFormData({
-          code: "",
-          description: "",
-          amount: "",
-          account: "",
-          isActive: true,
-          addedBy: "",
-        });
-        fetchChargeProfiles();
-      }
-    } catch (error) {
-      console.error("❌ Error saving/updating charge profile:", error);
-      alert("❌ Failed to save/update. Please try again.");
+    if (editingId) {
+      // 🟡 UPDATE
+      payloadObj = {
+        ...formData,
+        id: editingId,
+      };
+    } else {
+      // 🟢 ADD
+      payloadObj = {
+        ...formData,
+        addedBy: loginUser,   // ⭐ Add logged-in user on save
+      };
     }
-  };
+
+    const encryptedPayload = encryptData(JSON.stringify(payloadObj));
+
+    let response;
+    if (editingId) {
+      response = await axios.put(
+        `${API}/Master/updateChargesProfile`,
+        { data: encryptedPayload }
+      );
+    } else {
+      response = await axios.post(
+        `${API}/Master/ChargesProfile/add`,
+        { data: encryptedPayload }
+      );
+    }
+
+    if (response.status === 200 || response.status === 201) {
+      const decryptedText = decryptData(response.data.data);
+      const parsedData =
+        typeof decryptedText === "string" ? JSON.parse(decryptedText) : decryptedText;
+
+      alert(`✅ ${parsedData.message}`);
+      setIsModalOpen(false);
+      setEditingId(null);
+
+      setFormData({
+        code: "",
+        description: "",
+        amount: "",
+        account: "",
+        isActive: true,
+        addedBy: "",
+      });
+
+      fetchChargeProfiles();
+    }
+  } catch (error) {
+    console.error("❌ Error saving/updating charge profile:", error);
+    alert("❌ Failed to save/update. Please try again.");
+  }
+};
+
 
   // ✅ Edit a profile
   const handleEdit = (profile) => {
@@ -315,7 +377,7 @@ const ChargesProfileList = () => {
               <label className="text-[14px] font-medium">is Active</label>
             </div> */}
 
-            <div className="flex justify-center gap-3 my-6">
+            <div className="flex justify-center gap-3 my-6 mt-10">
               {
                 !isview && (
                   <button
@@ -372,10 +434,10 @@ const ChargesProfileList = () => {
                   key={row.id}
                   className={`border-b ${index % 2 === 0 ? "bg-gray-50" : "bg-white"}`}
                 >
-                  <td className="px-4 py-2">{row.code}</td>
+                  <td className="px-4 py-2 text-blue-500 cursor-pointer" onClick={() => handleView(row)}>{row.code}</td>
                   <td className="px-4 py-2">{row.description}</td>
                   <td className="px-4 py-2">{row.amount}</td>
-                  <td className="px-4 py-2">{row.account}</td>
+                  <td className="px-4 py-2">{row.addedBy}</td>
                   <td className="px-4 py-2">{new Date(row.createdAt).toLocaleDateString()}</td>
                   <td className="px-4 py-2 text-[#1883EF] cursor-pointer">
                     <div className="flex gap-2">
@@ -385,9 +447,9 @@ const ChargesProfileList = () => {
                       >
                         <img src={GroupData} alt="edit" className="w-[18px] h-[18px]" title="Edit" />
                       </div>
-                      <div className="w-[20px] h-[20px] bg-[#646AD9] rounded flex items-center justify-center p-1" onClick={() => handleView(row)}>
+                      {/* <div className="w-[20px] h-[20px] bg-[#646AD9] rounded flex items-center justify-center p-1" onClick={() => handleView(row)}>
                         <img src={EyeData} alt="view" className="w-[18px] h-[18px]" title="view" />
-                      </div>
+                      </div> */}
                       <div className="w-[20px] h-[20px] bg-red-400 rounded flex items-center justify-center p-1"
                         onClick={() => handleDelete(row)}>
                         <img src={DeleteData} alt="delete" className="w-[12px] h-[14px]" title="Delete" />

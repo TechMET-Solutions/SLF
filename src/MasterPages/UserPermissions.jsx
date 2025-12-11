@@ -24,34 +24,47 @@ const UserPermissions = () => {
    Master: [
       { name: "Account Group", view: false, add: false, edit: false, delete: false, approve: false },
       { name: "Account Code", view: false, add: false, edit: false, delete: false, approve: false },
+      { name: "Branch Details", view: false, add: false, edit: false, delete: false, approve: false },
       { name: "Item Profile", view: false, add: false, edit: false, delete: false, approve: false },
-      { name: "Product Purity Profile", view: false, add: false, edit: false, delete: false, approve: false },
-      { name: "Address Proof", view: false, add: false, edit: false, delete: false, approve: false },
-      { name: "ID Proof", view: false, add: false, edit: false, delete: false, approve: false },
-      { name: "Customer Profile", view: false, add: false, edit: false, delete: false, approve: false },
+      { name: "Product Purity", view: false, add: false, edit: false, delete: false, approve: false },
+      { name: "Document Proof", view: false, add: false, edit: false, delete: false, approve: false },
       { name: "Employee Profile", view: false, add: false, edit: false, delete: false, approve: false },
-      { name: "Push Gold Rate", view: false, add: false, edit: false, delete: false, approve: false },
-      { name: "Scheme Type", view: false, add: false, edit: false, delete: false, approve: false },
-      { name: "Scheme Details", view: false, add: false, edit: false, delete: false, approve: false },
-      { name: "Scheme Process", view: false, add: false, edit: false, delete: false, approve: false },
-      { name: "Scheme Process", view: false, add: false, edit: false, delete: false, approve: false },
-      { name: "User Role", view: false, add: false, edit: false, delete: false, approve: false },
-      { name: "User Role Permission", view: false, add: false, edit: false, delete: false, approve: false },
-      { name: "Branch Profile", view: false, add: false, edit: false, delete: false, approve: false },
-      { name: "Scheme Renewal", view: false, add: false, edit: false, delete: false, approve: false },
-      { name: "Preference Shares Scheme Details", view: false, add: false, edit: false, delete: false, approve: false },
-      { name: "Preference Shares Scheme Process", view: false, add: false, edit: false, delete: false, approve: false },
-      { name: "Auction Notice Template", view: false, add: false, edit: false, delete: false, approve: false },
+      { name: "Push Rate", view: false, add: false, edit: false, delete: false, approve: false },
       { name: "Charges Profile", view: false, add: false, edit: false, delete: false, approve: false },
+      { name: "Area", view: false, add: false, edit: false, delete: false, approve: false },
+     
+      { name: "Scheme Details", view: false, add: false, edit: false, delete: false, approve: false },
+      { name: "Scheme Branch Mapping", view: false, add: false, edit: false, delete: false, approve: false },
+    
+
+
+       { name: "Employee Profile", view: false, add: false, edit: false, delete: false, approve: false },
+       { name: "Member Login Period", view: false, add: false, edit: false, delete: false, approve: false },
+       { name: "Member Login Details", view: false, add: false, edit: false, delete: false, approve: false },
+       { name: "Employee Designation", view: false, add: false, edit: false, delete: false, approve: false },
+
+
+
+
+      
+      { name: "User Role Permission", view: false, add: false, edit: false, delete: false, approve: false },
       { name: "Member Branch Mapping", view: false, add: false, edit: false, delete: false, approve: false },
-      { name: "Member Login Time Period", view: false, add: false, edit: false, delete: false, approve: false },
-      { name: "Branch Scheme Mapping", view: false, add: false, edit: false, delete: false, approve: false },
+       
+      
+
+     
       { name: "Tax Master", view: false, add: false, edit: false, delete: false, approve: false },
       { name: "Tax Mapping", view: false, add: false, edit: false, delete: false, approve: false },
     ],
     Transaction: [
       { name: "Loan Application", view: false, add: false, edit: false, delete: false, approve: false },
+      { name: "Loan Charges List", view: false, add: false, edit: false, delete: false, approve: false },
+      { name: "Customer Profile", view: false, add: false, edit: false, delete: false, approve: false },
       { name: "Loan RePayment", view: false, add: false, edit: false, delete: false, approve: false },
+      { name: "Auction Creation", view: false, add: false, edit: false, delete: false, approve: false },
+      { name: "Bidder Registration", view: false, add: false, edit: false, delete: false, approve: false },
+      { name: "Auction Application", view: false, add: false, edit: false, delete: false, approve: false },
+      { name: "Credit Note", view: false, add: false, edit: false, delete: false, approve: false },
     ],
     Reports: [
       { name: "Daily Report", view: false, add: false, edit: false, delete: false, approve: false },
@@ -145,9 +158,7 @@ useEffect(() => {
     const finalJSON = generatePermissionJSON();
     console.log("Final Permission JSON:", finalJSON);
 
-    // TODO: send to backend via POST API
-    // await axios.post(`${url}/user/savePermissions`, finalJSON);
-
+  
     alert("Permissions saved successfully!");
   };
 

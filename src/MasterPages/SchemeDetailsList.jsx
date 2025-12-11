@@ -273,7 +273,6 @@ import axios from "axios";
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { API } from "../api";
-import eyeIcon from "../assets/Vectorimg.png";
 import Pagination from "../Component/Pagination";
 import { formatIndianDate } from "../utils/Helpers";
 const SchemeDetailsList = () => {
@@ -390,7 +389,7 @@ const SchemeDetailsList = () => {
                 <th className="px-4 py-2 border">Min Amount</th>
                 <th className="px-4 py-2 border">Max Amount</th>
                 <th className="px-4 py-2 border">Description</th>
-                <th className="px-4 py-2 border">Action</th>
+                {/* <th className="px-4 py-2 border">Action</th> */}
                 <th className="px-4 py-2 border">Role Mapping</th>
                 <th className="px-4 py-2 border ">Active</th>
               </tr>
@@ -404,7 +403,17 @@ const SchemeDetailsList = () => {
                     index % 2 === 0 ? "bg-white" : "bg-white"
                   }`}
                 >
-                  <td className="px-4 py-2">{row.schemeName}</td>
+                  <td
+  className="px-4 py-2 cursor-pointer hover:underline text-blue-500"
+  onClick={() =>
+    navigate("/Add-Scheme-Details-Listform", {
+      state: { type: "view", data: row },
+    })
+  }
+>
+  {row.schemeName}
+</td>
+
                   <td className="px-4 py-2">
                     {formatIndianDate(row.applicableFrom)}
                   </td>
@@ -418,21 +427,9 @@ const SchemeDetailsList = () => {
                   <td className="px-4 py-2">{row.maxLoanAmount}</td>
                   <td className="px-4 py-2">{row.description}</td>
 
-                  <td className="px-4 py-2 text-center">
+                  {/* <td className="px-4 py-2 text-center">
                     <div className="flex items-center gap-2">
-                      {/* Edit */}
-                      {/* <div
-                        className="w-5 h-5 bg-[#56A869] flex items-center justify-center rounded cursor-pointer"
-                        onClick={() =>
-                          navigate("/Add-Scheme-Details-Listform", {
-                            state: { type: "edit", data: row },
-                          })
-                        }
-                      >
-                        <img src={GroupData} className="w-3.5 h-3.5" />
-                      </div> */}
-
-                      {/* View */}
+                      
                       <div
                         className="w-5 h-5 bg-[#646AD9] flex items-center justify-center rounded cursor-pointer"
                         onClick={() =>
@@ -444,7 +441,7 @@ const SchemeDetailsList = () => {
                         <img src={eyeIcon} className="w-3.5 h-2.5" />
                       </div>
                     </div>
-                  </td>
+                  </td> */}
 
                   {/* Role Mapping */}
                   <td

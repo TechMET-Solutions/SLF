@@ -11,6 +11,7 @@ const SchemeRoleMapping = () => {
   console.log(rowData, "rowData");
 
   const [schemes, setSchemes] = useState([]);
+  console.log(schemes,"scheme")
   const [selectedSchemes, setSelectedSchemes] = useState([]);
 
   useEffect(() => {
@@ -20,37 +21,41 @@ const SchemeRoleMapping = () => {
 
   // ✅ Fetch all schemes
   const fetchSchemes = async () => {
-    try {
-      const response = await axios.get(`${API}/Scheme/getAllSchemes`);
-      if (response.data && Array.isArray(response.data)) {
-        const formattedSchemes = response.data.map((item) => ({
-          id: item.id,
-          schemeName: item.schemeName,
-        }));
-        setSchemes(formattedSchemes);
+  try {
+    const response = await axios.get(`${API}/Scheme/getAllSchemes`);
 
-        // ✅ Initialize already selected schemes from rowData
-        if (rowData.schemes) {
-          try {
-            // Sometimes it's a JSON string, so parse it safely
-            const parsedSchemes =
-              typeof rowData.schemes === "string"
-                ? JSON.parse(rowData.schemes)
-                : rowData.schemes;
+    if (response.data.data && Array.isArray(response.data.data)) {
+      
+      // ✅ Corrected: map over response.data.data
+      const formattedSchemes = response.data.data.map((item) => ({
+        id: item.id,
+        schemeName: item.schemeName,
+      }));
 
-            if (Array.isArray(parsedSchemes)) {
-              const preselectedIds = parsedSchemes.map((s) => s.id);
-              setSelectedSchemes(preselectedIds);
-            }
-          } catch (e) {
-            console.error("Error parsing schemes from rowData:", e);
+      setSchemes(formattedSchemes);
+
+      // ----- Preselected Schemes from rowData -----
+      if (rowData.schemes) {
+        try {
+          const parsedSchemes =
+            typeof rowData.schemes === "string"
+              ? JSON.parse(rowData.schemes)
+              : rowData.schemes;
+
+          if (Array.isArray(parsedSchemes)) {
+            const preselectedIds = parsedSchemes.map((s) => s.id);
+            setSelectedSchemes(preselectedIds);
           }
+        } catch (e) {
+          console.error("Error parsing schemes from rowData:", e);
         }
       }
-    } catch (error) {
-      console.error("Error fetching schemes:", error);
     }
-  };
+  } catch (error) {
+    console.error("Error fetching schemes:", error);
+  }
+};
+
 
   // ✅ Handle checkbox toggle
   const toggleScheme = (schemeId) => {

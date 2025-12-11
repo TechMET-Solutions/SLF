@@ -467,26 +467,46 @@ console.log(interestRates,"interestRates")
                   ))}
 
                   {/* Total Row */}
-                  <div className="flex border-t border-gray-300 bg-gray-50">
-                    <div className="flex-1 p-2 border-r border-gray-300 font-semibold">
-                      Total
-                    </div>
-                    <div className="w-16 p-2 border-r border-gray-300 text-center font-semibold">
-                      {totalNos}
-                    </div>
-                    <div className="w-24 p-2 border-r border-gray-300 text-center font-semibold">
-                      {formatCurrency(totalGross)}
-                    </div>
-                    <div className="w-24 p-2 border-r border-gray-300 text-center font-semibold">
-                      {formatCurrency(totalNetWeight)}
-                    </div>
-                    <div className="w-28 p-2 border-r border-gray-300 text-center"></div>
-                    <div className="w-24 p-2 border-r border-gray-300 text-center"></div>
-                    <div className="w-28 p-2 border-r border-gray-300 text-center font-semibold">
-                      {formatCurrency(totalValuation)}
-                    </div>
-                    <div className="w-28 p-2 text-center"></div>
-                  </div>
+                  {/* Total Row */}
+<div className="flex border-t border-gray-300 bg-gray-50">
+  <div className="flex-1 p-2 border-r border-gray-300 font-semibold">
+    Total
+  </div>
+
+  <div className="w-16 p-2 border-r border-gray-300 text-center font-semibold">
+    {totalNos}
+  </div>
+
+  <div className="w-24 p-2 border-r border-gray-300 text-center font-semibold">
+    {formatCurrency(totalGross)}
+  </div>
+
+  <div className="w-24 p-2 border-r border-gray-300 text-center font-semibold">
+    {formatCurrency(totalNetWeight)}
+  </div>
+
+  <div className="w-28 p-2 border-r border-gray-300 text-center">
+    {/* purity empty */}
+  </div>
+
+  <div className="w-28 p-2 border-r border-gray-300 text-center">
+    {/* calculated purity empty */}
+  </div>
+
+  <div className="w-24 p-2 border-r border-gray-300 text-center font-semibold">
+    {/* Rate total (if needed) */}
+    {/* Leave empty if not required */}
+  </div>
+
+  <div className="w-28 p-2 border-r border-gray-300 text-center font-semibold">
+    {formatCurrency(totalValuation)}
+  </div>
+
+  <div className="w-28 p-2 text-center">
+    {/* remark */}
+  </div>
+</div>
+
                 </>
               ) : (
                 <div className="flex border-t border-gray-300">
@@ -731,21 +751,24 @@ console.log(interestRates,"interestRates")
               </div>
 
            
-            {interestRates.length > 0 ? (
-  interestRates.map((rate, index) => (
-    <div
-      key={index}
-      className={`flex ${index % 2 === 0 ? 'bg-[#FFCDCD]' : 'bg-[#E5E5FF]'}`}
-    >
-      <div className="flex-1 p-2 border-r border-white text-center">
-        {rate.from} - {rate.to} DAYS
-      </div>
+           {interestRates.length > 0 ? (
+  interestRates.map((item, index) => {
+    const [from, to] = item.term.split("-"); // split "0-30"
+    return (
+      <div
+        key={index}
+        className={`flex ${index % 2 === 0 ? 'bg-[#FFCDCD]' : 'bg-[#E5E5FF]'}`}
+      >
+        <div className="flex-1 p-2 border-r border-white text-center">
+          {from} - {to} DAYS
+        </div>
 
-      <div className="w-40 p-2 text-center">
-        {rate.addInt}%
+        <div className="w-40 p-2 text-center">
+          {item.rate}%
+        </div>
       </div>
-    </div>
-  ))
+    );
+  })
 ) : (
   <div className="flex bg-[#FFCDCD]">
     <div className="flex-1 p-2 border-r border-white text-center">
@@ -754,6 +777,7 @@ console.log(interestRates,"interestRates")
     <div className="w-40 p-2 text-center">-</div>
   </div>
 )}
+
 
             </div>
           </div>

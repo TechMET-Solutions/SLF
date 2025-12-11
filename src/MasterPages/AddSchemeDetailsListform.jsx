@@ -163,6 +163,14 @@ const [selectedSlabs, setSelectedSlabs] = useState([]);
             : data.interestRates
         );
       }
+       if (data.precloser) {
+  setPrecloser(
+    typeof data.precloser === "string"
+      ? JSON.parse(data.precloser)
+      : data.precloser
+  );
+}
+
     }
   }, [data]);
   console.log(formData, "formData")
@@ -171,7 +179,16 @@ const [selectedSlabs, setSelectedSlabs] = useState([]);
   ]);
   console.log(interestRates, "interestRates")
   const [errors, setErrors] = useState({});
-
+ const [precloser, setPrecloser] = useState([
+    { fromMonth: "", toMonth: "", charges: "" },
+    { fromMonth: "", toMonth: "", charges: "" },
+  ]); // only 2 rows
+console.log(precloser,"precloser")
+  const handleChange = (index, field, value) => {
+    const updated = [...precloser];
+    updated[index][field] = value;
+    setPrecloser(updated);
+  };
   
   const handleInputChange = (e) => {
     const { name, value } = e.target;
@@ -213,12 +230,14 @@ const [selectedSlabs, setSelectedSlabs] = useState([]);
           id: data.id,
           formData,
           interestRates,
+          precloser
         });
         alert("✅ Scheme updated successfully!");
       } else {
         const response = await axios.post(`${API}/Scheme/addScheme`, {
           formData,
           interestRates,
+          precloser
         });
         alert("✅ Scheme added successfully!");
       }
@@ -350,6 +369,7 @@ const [selectedSlabs, setSelectedSlabs] = useState([]);
     name="product"          // 🔥 IMPORTANT
     value={formData.product}
     onChange={handleInputChange}
+      disabled={isViewMode}
     className="border p-2 rounded-[8px] w-[90px] h-[38px]  bg-white border-gray-300 mt-1"
   >
     <option value="Gold">Gold</option>
@@ -361,7 +381,8 @@ const [selectedSlabs, setSelectedSlabs] = useState([]);
             <p className="text-[14px] font-medium">For party Type <span className="text-red-500">*</span></p>
             <select
               name="partyType"
-              value={formData.partyType}
+                  value={formData.partyType}
+                    disabled={isViewMode}
               onChange={handleInputChange}
               className="border border-gray-300 rounded-[8px] h-[38px] px-3 py-2 mt-1 w-[111px] bg-white"
             >
@@ -400,7 +421,8 @@ const [selectedSlabs, setSelectedSlabs] = useState([]);
             <input
               type="date"
               name="applicableFrom"
-              value={formData.applicableFrom}
+                  value={formData.applicableFrom}
+                    disabled={isViewMode}
               onChange={handleInputChange}
               min={new Date().toISOString().split("T")[0]} // restrict to today or later
               className={`border border-gray-300 rounded-[8px] px-3 py-2 mt-1 w-[145px] h-[38px] bg-white ${errors.applicableFrom ? "border-red-500" : ""
@@ -413,50 +435,56 @@ const [selectedSlabs, setSelectedSlabs] = useState([]);
             <input
               type="date"
               name="applicableTo"
-              value={formData.applicableTo}
+                  value={formData.applicableTo}
+                    disabled={isViewMode}
               onChange={handleInputChange}
               min={formData.applicableFrom || new Date().toISOString().split("T")[0]} // always after 'Applicable From'
               className="border border-gray-300 rounded-[8px] h-[38px] px-3 py-2 mt-1 w-[145px] bg-white"
             />
           </div>
             
-             <div className="flex flex-col">
-            <label className="text-[14px]  font-medium">
-              Cal. basis on <span className="text-red-500">*</span>
-            </label>
+            <div className="flex flex-col">
+  <label className="text-[14px] font-medium">
+    Cal. basis on <span className="text-red-500">*</span>
+  </label>
 
-            <div className="flex items-center gap-2 mt-1">
-              <div
-                className="w-[146px] h-[38px] rounded-[8px] cursor-pointer flex bg-white p-1"
-                onClick={() =>
-                  handleCalcBasisChange(
-                    formData.calcBasisOn === "Daily" ? "Monthly" : "Daily"
-                  )
-                }
-              >
-                <div className="w-1/2 flex items-center justify-center">
-                  <span
-                    className={`text-sm font-medium transition-all duration-200 rounded-full w-[70px] h-[30px] text-center py-1 ${formData.calcBasisOn === "Daily"
-                      ? " bg-[#0A2478] text-white"
-                      : "text-Black"
-                      }`}
-                  >
-                    Daily
-                  </span>
-                </div>
-                <div className="w-1/2 flex items-center justify-center">
-                  <span
-                    className={`text-sm font-medium transition-all duration-200 rounded-full w-full text-center py-1 ${formData.calcBasisOn === "Monthly"
-                      ? " bg-[#0A2478] text-white"
-                      : "text-Black"
-                      }`}
-                  >
-                    Monthly
-                  </span>
-                </div>
-              </div>
-            </div>
-          </div>
+  <div className="flex items-center gap-2 mt-1">
+    <div
+      className={`w-[146px] h-[38px] rounded-[8px] flex bg-white p-1 
+        ${isViewMode ? "opacity-50 cursor-not-allowed" : "cursor-pointer"}`}
+      onClick={() => {
+        if (!isViewMode) {
+          handleCalcBasisChange(
+            formData.calcBasisOn === "Daily" ? "Monthly" : "Daily"
+          );
+        }
+      }}
+    >
+      <div className="w-1/2 flex items-center justify-center">
+        <span
+          className={`text-sm font-medium transition-all duration-200 rounded-full w-[70px] h-[30px] text-center py-1 
+          ${formData.calcBasisOn === "Daily"
+            ? "bg-[#0A2478] text-white"
+            : "text-black"}`}
+        >
+          Daily
+        </span>
+      </div>
+
+      <div className="w-1/2 flex items-center justify-center">
+        <span
+          className={`text-sm font-medium transition-all duration-200 rounded-full w-full text-center py-1 
+          ${formData.calcBasisOn === "Monthly"
+            ? "bg-[#0A2478] text-white"
+            : "text-black"}`}
+        >
+          Monthly
+        </span>
+      </div>
+    </div>
+  </div>
+</div>
+
             
             {
             isDailyBasis && (
@@ -465,7 +493,8 @@ const [selectedSlabs, setSelectedSlabs] = useState([]);
                 <select
                   name="addOneDay"
                   value={formData.addOneDay}
-                  onChange={handleInputChange}
+                      onChange={handleInputChange}
+                       disabled={isViewMode}
                   className="border border-gray-300 rounded-[8px] px-3 py-2 mt-1 w-[94px] bg-white h-[38px]"
                 >
                   <option value="">Select</option>
@@ -483,7 +512,8 @@ const [selectedSlabs, setSelectedSlabs] = useState([]);
     <select
       name="calcMethod"
       value={formData.calcMethod}
-      onChange={handleInputChange}
+                  onChange={handleInputChange}
+                   disabled={isViewMode}
       className="border border-gray-300 px-3 py-2 mt-1 bg-white rounded-[8px] w-[104px] h-[38px]"
     >
       <option value="">Select</option>
@@ -506,6 +536,7 @@ const [selectedSlabs, setSelectedSlabs] = useState([]);
                   name="paymentFrequency"
                   placeholder="e.g.18"
         value={formData.paymentFrequency}
+         disabled={isViewMode}
         onChange={handleInputChange}
         className="border border-gray-300 px-3 py-2 w-[80px] h-[38px] bg-white rounded-l-[8px] mt-1"
       />
@@ -538,7 +569,8 @@ const [selectedSlabs, setSelectedSlabs] = useState([]);
         type="text"
                   name="paymentFrequency"
                   placeholder="e.g.18"
-        value={formData.paymentFrequency}
+                        value={formData.paymentFrequency}
+                         disabled={isViewMode}
         onChange={handleInputChange}
         className="border border-gray-300 px-3 py-2 w-[80px] h-[38px] bg-white rounded-l-[8px]"
       />
@@ -562,7 +594,8 @@ const [selectedSlabs, setSelectedSlabs] = useState([]);
       <select
         name="interestInAdvance"
         value={formData.interestInAdvance || ""}
-        onChange={handleInputChange}
+                    onChange={handleInputChange}
+                     disabled={isViewMode}
         className="border rounded-md px-3 py-2  bg-white w-[126px] h-[38px]"
       >
         <option value="Yes">Yes</option>
@@ -582,7 +615,8 @@ const [selectedSlabs, setSelectedSlabs] = useState([]);
         name="loanPeriod"
                   value={formData.loanPeriod}
                   placeholder="e.g.185"
-        onChange={handleInputChange}
+                    onChange={handleInputChange}
+                     disabled={isViewMode}
         className="border border-gray-300 px-3 py-2 w-[100px] rounded-l-[8px] h-[38px] bg-white"
       />
       <div className="bg-[#0A2478] text-white px-4 py-2 rounded-r-[8px] w-[40px] h-[38px]">
@@ -604,7 +638,8 @@ const [selectedSlabs, setSelectedSlabs] = useState([]);
         type="number"
         name="preCloserMinDays"
         value={formData.preCloserMinDays || ""}
-                  onChange={handleInputChange}
+                    onChange={handleInputChange}
+                     disabled={isViewMode}
                   placeholder="e.g 15 days"
         onWheel={(e) => e.target.blur()}
         className="border border-gray-300 rounded px-3 py-2  bg-white w-[130px] h-[38px]"
@@ -618,7 +653,8 @@ const [selectedSlabs, setSelectedSlabs] = useState([]);
     </label>
     <select
       name="penaltyType"
-      value={formData.penaltyType || ""}
+                  value={formData.penaltyType || ""}
+                   disabled={isViewMode}
       onChange={handleInputChange}
       className="border rounded-[8px] px-3 py-2  bg-white border-gray-300 w-[111px] h-[38px]"
     >
@@ -639,7 +675,8 @@ const [selectedSlabs, setSelectedSlabs] = useState([]);
       type="number"
       name="penalty"
       value={formData.penalty || ""}
-                onChange={handleInputChange}
+                      onChange={handleInputChange}
+                       disabled={isViewMode}
                  placeholder="e.g ₹10"
       onWheel={(e) => e.target.blur()}
       className="border border-gray-300 rounded-[8px] px-3 py-2 h-[38px] bg-white w-[125px]"
@@ -652,7 +689,8 @@ const [selectedSlabs, setSelectedSlabs] = useState([]);
               type="number"
               name="goldApprovePercent"
               value={formData.goldApprovePercent}
-              onChange={handleInputChange}
+                      onChange={handleInputChange}
+                       disabled={isViewMode}
               style={{
                 MozAppearance: "textfield",
                 }}
@@ -670,7 +708,8 @@ const [selectedSlabs, setSelectedSlabs] = useState([]);
               type="number"
               name="minLoanAmount"
               value={formData.minLoanAmount || ""}
-                onChange={handleInputChange}
+                      onChange={handleInputChange}
+                       disabled={isViewMode}
                  placeholder="e.g. ₹20,000.00"
               style={{
                 MozAppearance: "textfield",
@@ -698,7 +737,8 @@ const [selectedSlabs, setSelectedSlabs] = useState([]);
       type="number"
       name="penalty"
       value={formData.penalty || ""}
-                onChange={handleInputChange}
+                        onChange={handleInputChange}
+                         disabled={isViewMode}
                  placeholder="e.g ₹10"
       onWheel={(e) => e.target.blur()}
       className="border border-gray-300 rounded-[8px] px-3 py-2 h-[38px] bg-white w-[125px]"
@@ -711,7 +751,8 @@ const [selectedSlabs, setSelectedSlabs] = useState([]);
               type="number"
               name="goldApprovePercent"
               value={formData.goldApprovePercent}
-              onChange={handleInputChange}
+                        onChange={handleInputChange}
+                         disabled={isViewMode}
               style={{
                 MozAppearance: "textfield",
                 }}
@@ -729,7 +770,8 @@ const [selectedSlabs, setSelectedSlabs] = useState([]);
               type="number"
               name="minLoanAmount"
               value={formData.minLoanAmount || ""}
-                onChange={handleInputChange}
+                        onChange={handleInputChange}
+                         disabled={isViewMode}
                  placeholder="e.g. ₹20,000.00"
               style={{
                 MozAppearance: "textfield",
@@ -749,7 +791,8 @@ const [selectedSlabs, setSelectedSlabs] = useState([]);
               type="number"
               name="maxLoanAmount"
               value={formData.maxLoanAmount}
-                onChange={handleInputChange}
+                  onChange={handleInputChange}
+                   disabled={isViewMode}
                  placeholder="e.g.₹5,00,000.00"
               style={{
                 MozAppearance: "textfield",
@@ -767,7 +810,8 @@ const [selectedSlabs, setSelectedSlabs] = useState([]);
               type="number"
               name="administrativeCharges"
               value={formData.administrativeCharges}
-                onChange={handleInputChange}
+                  onChange={handleInputChange}
+                   disabled={isViewMode}
                  placeholder="e.g. ₹ 100.00"
               style={{
                 MozAppearance: "textfield",
@@ -784,14 +828,22 @@ const [selectedSlabs, setSelectedSlabs] = useState([]);
       Interest Type <span className="text-red-500">*</span>
     </label>
 
-    <div className="flex items-center gap-2 ">
+    <div className="flex items-center gap-2">
       <div
-        className="w-[200px] h-[38px] rounded-[8px] cursor-pointer flex bg-white p-1"
+        className={`w-[200px] h-[38px] rounded-[8px] flex bg-white p-1 
+          ${isViewMode ? "opacity-50 cursor-not-allowed" : "cursor-pointer"}`}
       >
-        
+
+        {/* Floating */}
         <div
           className="w-1/2 flex items-center justify-center"
-          onClick={() => handleInputChange({ target: { name: "interestType", value: "Floating" } })}
+          onClick={() => {
+            if (!isViewMode) {
+              handleInputChange({
+                target: { name: "interestType", value: "Floating" },
+              });
+            }
+          }}
         >
           <span
             className={`text-sm font-medium transition-all duration-200 rounded-full w-[90px] h-[30px] text-center py-1 ${
@@ -807,7 +859,13 @@ const [selectedSlabs, setSelectedSlabs] = useState([]);
         {/* Reducing */}
         <div
           className="w-1/2 flex items-center justify-center"
-          onClick={() => handleInputChange({ target: { name: "interestType", value: "Reducing" } })}
+          onClick={() => {
+            if (!isViewMode) {
+              handleInputChange({
+                target: { name: "interestType", value: "Reducing" },
+              });
+            }
+          }}
         >
           <span
             className={`text-sm font-medium transition-all duration-200 rounded-full w-[90px] h-[30px] text-center py-1 ${
@@ -823,6 +881,7 @@ const [selectedSlabs, setSelectedSlabs] = useState([]);
     </div>
   </div>
 )}
+
 
 </div>
 
@@ -900,7 +959,8 @@ const [selectedSlabs, setSelectedSlabs] = useState([]);
       <input
         type="number"
         name="docChargePercent"
-        value={formData.docChargePercent}
+                        value={formData.docChargePercent}
+                         disabled={isViewMode}
         onChange={handleInputChange}
         onWheel={(e) => e.target.blur()}
         className="p-2 border border-gray-300 rounded text-sm w-[150px] bg-white"
@@ -914,7 +974,8 @@ const [selectedSlabs, setSelectedSlabs] = useState([]);
         type="number"
         name="docChargeMin"
         value={formData.docChargeMin}
-        onChange={handleInputChange}
+                        onChange={handleInputChange}
+                         disabled={isViewMode}
         onWheel={(e) => e.target.blur()}
         className="p-2 border border-gray-300 rounded text-sm w-[150px] bg-white"
       />
@@ -926,7 +987,8 @@ const [selectedSlabs, setSelectedSlabs] = useState([]);
       <input
         type="number"
         name="docChargeMax"
-        value={formData.docChargeMax}
+                        value={formData.docChargeMax}
+                         disabled={isViewMode}
         onChange={handleInputChange}
         onWheel={(e) => e.target.blur()}
         className="p-2 border border-gray-300 rounded text-sm w-[150px] bg-white"
@@ -940,66 +1002,68 @@ const [selectedSlabs, setSelectedSlabs] = useState([]);
             {
               !isDailyBasis && (
                 <>
-                <div>
+               <div>
+      <h3 className="text-[15px] font-semibold text-[#0A2478] mb-4">
+        Precloser Charges
+      </h3>
 
-    <h3 className="text-[15px] font-semibold text-[#0A2478] mb-4">
-   Precloser Charges
-              </h3>
-              
-              <div className="  overflow-hidden">
-    <table className="w-full border-collapse bg-white">
-  <thead>
-    <tr className="bg-[#0A2478] text-white text-sm">
-      <th className="p-3 border-r w-[80px]">From Month</th>
-      <th className="p-3 border-r w-[80px]">To Month</th>
-      <th className="p-3 border-r w-[70px]">Charges %</th>
-    </tr>
-  </thead>
+      <div className="overflow-hidden">
+        <table className="w-full border-collapse bg-white">
+          <thead>
+            <tr className="bg-[#0A2478] text-white text-sm">
+              <th className="p-3 border-r w-[80px]">From Month</th>
+              <th className="p-3 border-r w-[80px]">To Month</th>
+              <th className="p-3 border-r w-[70px]">Charges %</th>
+            </tr>
+          </thead>
 
-  <tbody>
-    {/* Row 1 */}
-    <tr className="bg-white border-b border-gray-300">
-      <td className="p-2 text-center">
-        <input className="border px-2 py-1 w-[80px] h-[25px] text-center" type="number" />
-      </td>
-      <td className="p-2 text-center">
-        <input className="border px-2 py-1 w-[80px] h-[25px] text-center" type="number" />
-      </td>
-      <td className="p-2 text-center">
-        <input className="border px-2 py-1 w-[80px] h-[25px] text-center" type="number" />
-      </td>
-    </tr>
+          <tbody>
+            {precloser?.map((item, index) => (
+              <tr key={index} className="bg-white border-b border-gray-300">
+                <td className="p-2 text-center">
+                  <input
+                    type="number"
+                    value={item.fromMonth}
+                     disabled={isViewMode}
+                    onChange={(e) =>
+                      handleChange(index, "fromMonth", e.target.value)
+                    }
+                    className="border px-2 py-1 w-[80px] h-[25px] text-center"
+                  />
+                </td>
 
-    {/* Row 2 */}
-    <tr className="bg-white border-b border-gray-300">
-      <td className="p-2 text-center">
-        <input className="border px-2 py-1 w-[80px] h-[25px] text-center" type="number" />
-      </td>
-      <td className="p-2 text-center">
-        <input className="border px-2 py-1 w-[80px] h-[25px] text-center" type="number" />
-      </td>
-      <td className="p-2 text-center">
-        <input className="border px-2 py-1 w-[80px] h-[25px] text-center" type="number" />
-      </td>
-    </tr>
+                <td className="p-2 text-center">
+                  <input
+                    type="number"
+                    value={item.toMonth}
+                     disabled={isViewMode}
+                    onChange={(e) =>
+                      handleChange(index, "toMonth", e.target.value)
+                    }
+                    className="border px-2 py-1 w-[80px] h-[25px] text-center"
+                  />
+                </td>
 
-    {/* Row 3 */}
-    <tr className="bg-white">
-      <td className="p-2 text-center">
-        <input className="border px-2 py-1 w-[80px] h-[25px] text-center" type="number" />
-      </td>
-      <td className="p-2 text-center">
-        <input className="border px-2 py-1 w-[80px] h-[25px] text-center" type="number" />
-      </td>
-      <td className="p-2 text-center">
-        <input className="border px-2 py-1 w-[80px] h-[25px] text-center" type="number" />
-      </td>
-    </tr>
-  </tbody>
-</table>
+                <td className="p-2 text-center">
+                  <input
+                    type="number"
+                    value={item.charges}
+                     disabled={isViewMode}
+                    onChange={(e) =>
+                      handleChange(index, "charges", e.target.value)
+                    }
+                    className="border px-2 py-1 w-[80px] h-[25px] text-center"
+                  />
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
 
+     
+      
     </div>
-  </div>
                 
                 </>
               )
@@ -1036,6 +1100,7 @@ const [selectedSlabs, setSelectedSlabs] = useState([]);
                 <input
                   type="number"
                   value={rate.from || ""}
+                   disabled={isViewMode}
                   onChange={(e) => onchange(rate.id, "from", e.target.value)}
                   onWheel={(e) => e.target.blur()}
                   className="border border-gray-300 rounded px-2 py-1 w-[80px] text-center"
@@ -1048,6 +1113,7 @@ const [selectedSlabs, setSelectedSlabs] = useState([]);
                 <input
                   type="number"
                   value={rate.to || ""}
+                   disabled={isViewMode}
                   onChange={(e) => onchange(rate.id, "to", e.target.value)}
                   onWheel={(e) => e.target.blur()}
                   className="border border-gray-300 rounded px-2 py-1 w-[80px] text-center"
@@ -1066,6 +1132,7 @@ const [selectedSlabs, setSelectedSlabs] = useState([]);
                       ? "days"
                       : "")
                   }
+                   disabled={isViewMode}
                   onChange={(e) => onchange(rate.id, "type", e.target.value)}
                   className="border border-gray-300 rounded px-2 py-1 w-[70px]"
                 >
@@ -1084,6 +1151,7 @@ const [selectedSlabs, setSelectedSlabs] = useState([]);
                   type="number"
                   value={rate.addInt || ""}
                   onChange={(e) => onchange(rate.id, "addInt", e.target.value)}
+                   disabled={isViewMode}
                   onWheel={(e) => e.target.blur()}
                   className="border border-gray-300 rounded px-2 py-1 w-[90px] text-center"
                   placeholder="%"
@@ -1096,6 +1164,7 @@ const [selectedSlabs, setSelectedSlabs] = useState([]);
                   <button
                     type="button"
                     onClick={addRow}
+                     disabled={isViewMode}
                     className="text-white p-1 rounded bg-[#0A2478]"
                     title="Add"
                   >
@@ -1105,6 +1174,7 @@ const [selectedSlabs, setSelectedSlabs] = useState([]);
                   <button
                     type="button"
                     onClick={() => removeRow(rate.id)}
+                     disabled={isViewMode}
                     className="text-white p-1 rounded bg-[#C1121F]"
                     title="Delete"
                   >

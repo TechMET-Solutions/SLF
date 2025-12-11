@@ -1,13 +1,13 @@
+import axios from "axios";
 import JoditEditor from "jodit-react";
 import { useEffect, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { API } from "../api";
+import blockimg from "../assets/blockimg.png";
 import GroupData from "../assets/Group 124.svg";
 import msg from "../assets/msg.png";
 import print from "../assets/print.png";
-import axios from "axios";
-import blockimg from "../assets/blockimg.png";
 import { formatIndianDate } from "../utils/Helpers";
-import { API } from "../api";
 
 const CustProfile = () => {
   const navigate = useNavigate();
@@ -493,96 +493,103 @@ const CustProfile = () => {
       )}
 
       {/* Table */}
-      <div className="flex justify-center">
-        <div className="overflow-x-auto mt-5 w-[1290px] h-[500px]">
-          <table className="w-full border-collapse">
-            <thead className="bg-[#0A2478] text-white text-sm">
-              <tr>
-                <th className="px-4 py-2 text-left border-r border-gray-300 text-[13px]">Customer</th>
-                <th className="px-4 py-2 text-left border-r border-gray-300 text-[13px]">Party UID</th>
-                <th className="px-4 py-2 text-left border-r border-gray-300 text-[13px]">F Name</th>
-                <th className="px-4 py-2 text-left border-r border-gray-300 text-[13px]">M Name</th>
-                <th className="px-4 py-2 text-left border-r border-gray-300 text-[13px]">L Name</th>
-                <th className="px-4 py-2 text-left border-r border-gray-300 text-[13px]">City</th>
-                <th className="px-4 py-2 text-left border-r border-gray-300 text-[13px]">Mobile Number</th>
-                <th className="px-4 py-2 text-left border-r border-gray-300 text-[13px]">Bad Debtor</th>
-                <th className="px-4 py-2 text-left text-[13px]">Added On</th>
-                <th className="px-4 py-2 text-left text-[13px]">Added By</th>
-                <th className="px-4 py-2 text-left text-[13px]">Block</th>
-                <th className="px-4 py-2 text-center text-[13px]">Action</th>
-              </tr>
-            </thead>
-            <tbody className="text-[12px]">
-              {data.map((row, index) => (
-                <tr
-                  key={index}
-                  className={`border-b ${index % 2 === 0 ? "bg-gray-50" : "bg-white"}`}
+    <div className="flex justify-center">
+  <div className="overflow-x-auto mt-5 w-[1290px] h-[500px]">
+    <table className="w-full border-collapse">
+      <thead className="bg-[#0A2478] text-white text-sm">
+        <tr>
+          <th className="px-4 py-2 text-left border-r border-gray-300 text-[13px]">Customer</th>
+          <th className="px-4 py-2 text-left border-r border-gray-300 text-[13px]">Party UID</th>
+          <th className="px-4 py-2 text-left border-r border-gray-300 text-[13px]">F Name</th>
+          <th className="px-4 py-2 text-left border-r border-gray-300 text-[13px]">M Name</th>
+          <th className="px-4 py-2 text-left border-r border-gray-300 text-[13px]">L Name</th>
+          <th className="px-4 py-2 text-left border-r border-gray-300 text-[13px]">City</th>
+          <th className="px-4 py-2 text-left border-r border-gray-300 text-[13px]">Mobile Number</th>
+          {/* <th className="px-4 py-2 text-left border-r border-gray-300 text-[13px]">Bad Debtor</th> */}
+          <th className="px-4 py-2 text-left text-[13px]">Added On</th>
+          <th className="px-4 py-2 text-left text-[13px]">Added By</th>
+          <th className="px-4 py-2 text-left text-[13px]">Block</th>
+          <th className="px-4 py-2 text-center text-[13px]">Action</th>
+        </tr>
+      </thead>
+
+      <tbody className="text-[12px]">
+        {data.map((row, index) => (
+          <tr
+            key={index}
+            className={`border-b 
+              ${row.badDebtor 
+                ? "bg-red-100 text-red-700 font-semibold" 
+                : index % 2 === 0 
+                  ? "bg-gray-50" 
+                  : "bg-white"
+              }
+            `}
+          >
+            <td className="px-4 py-2 flex items-center gap-3">
+              <img
+                src={row.profileImage}
+                alt={row.customer}
+                className="w-10 h-10 rounded-full object-cover border border-gray-300"
+              />
+              <span className="font-medium">{row.customer}</span>
+            </td>
+
+            <td className="px-4 py-2">{row.id}</td>
+            <td className="px-4 py-2">{row.firstName}</td>
+            <td className="px-4 py-2">{row.middleName}</td>
+            <td className="px-4 py-2">{row.lastName}</td>
+            <td className="px-4 py-2">{row.Permanent_City}</td>
+            <td className="px-4 py-2">{row.mobile}</td>
+
+            {/* <td className="px-4 py-2 font-bold text-center">
+              {row.badDebtor ? "Yes" : "No"}
+            </td> */}
+
+            <td className="px-4 py-2">{formatIndianDate(row.Added_On)}</td>
+            <td className="px-4 py-2">{row.Added_By}</td>
+
+            <td className="px-4 py-2">
+              <input
+                type="checkbox"
+                className="w-[25px] h-[25px]"
+                checked={checkedRows[row.id] ?? row.block === 1}
+                onChange={(e) => handleCheckboxChange(row, e.target.checked)}
+              />
+            </td>
+
+            <td className="px-4 py-2 text-[#1883EF] cursor-pointer">
+              <div className="flex gap-5">
+                <div
+                  className="w-[17px] h-[17px] bg-[#6D5300] rounded-[2.31px] flex items-center justify-center cursor-pointer"
+                  onClick={() => handleOpenRemark(row)}
                 >
-                  <td className="px-4 py-2 flex items-center gap-3">
-                    <img
-                      src={row.profileImage}
-                      alt={row.customer}
-                      className="w-10 h-10 rounded-full object-cover border border-gray-300"
-                    />
-                    <span className="font-medium text-gray-800">{row.customer}</span>
-                  </td>
-                  <td className="px-4 py-2">{row.id}</td>
-                  <td className="px-4 py-2">{row.firstName}</td>
-                  <td className="px-4 py-2">{row.middleName}</td>
-                  <td className="px-4 py-2">{row.lastName}</td>
-                  <td className="px-4 py-2">{row.Permanent_City}</td>
-                  <td className="px-4 py-2">{row.mobile}</td>
-                  <td
-                    className={`px-4 py-2 text-center font-bold ${
-                      row.badDebtor ? "text-green-600" : "text-red-600"
-                    }`}
-                  >
-                    {row.badDebtor ? "Yes" : "No"}
-                  </td>
-                  <td className="px-4 py-2">{formatIndianDate(row.Added_On)}</td>
-                  <td className="px-4 py-2">{row.Added_By}</td>
-                  <td className="px-4 py-2">
-                    <input
-                      type="checkbox"
-                      className="w-[25px] h-[25px]"
-                      checked={checkedRows[row.id] ?? row.block === 1}
-                      onChange={(e) => handleCheckboxChange(row, e.target.checked)}
-                    />
-                  </td>
-                  <td className="px-4 py-2 text-[#1883EF] cursor-pointer">
-                    <div className="flex gap-5">
-                      <div
-                        className="w-[17px] h-[17px] bg-[#6D5300] rounded-[2.31px] flex items-center justify-center cursor-pointer"
-                        onClick={() => handleOpenRemark(row)}
-                      >
-                        <img src={msg} alt="action" className="w-[12px] h-[12px]" title="Remark" />
-                      </div>
-                      <div
-                        className="w-[17px] h-[17px] bg-[#56A869] rounded-[2.31px] flex items-center justify-center cursor-pointer"
-                        onClick={() => handleNavigateToProfile(row)}
-                      >
-                        <img src={GroupData} alt="action" className="w-[12px] h-[12px]" title="Edit" />
-                      </div>
-                      <div
-  className="w-[17px] h-[17px] bg-[#83090B] rounded-[2.31px] flex items-center justify-center cursor-pointer"
-  onClick={() => navigate("/Customer_Form", { state: row })}
->
-  <img
-    src={print}
-    alt="action"
-    className="w-[12px] h-[12px]"
-    title="Print"
-  />
+                  <img src={msg} alt="remark" className="w-[12px] h-[12px]" title="Remark" />
+                </div>
+
+                <div
+                  className="w-[17px] h-[17px] bg-[#56A869] rounded-[2.31px] flex items-center justify-center cursor-pointer"
+                  onClick={() => handleNavigateToProfile(row)}
+                >
+                  <img src={GroupData} alt="edit" className="w-[12px] h-[12px]" title="Edit" />
+                </div>
+
+                <div
+                  className="w-[17px] h-[17px] bg-[#83090B] rounded-[2.31px] flex items-center justify-center cursor-pointer"
+                  onClick={() => navigate("/Customer_Form", { state: row })}
+                >
+                  <img src={print} alt="print" className="w-[12px] h-[12px]" title="Print" />
+                </div>
+              </div>
+            </td>
+
+          </tr>
+        ))}
+      </tbody>
+    </table>
+  </div>
 </div>
 
-                    </div>
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
-      </div>
 
       {/* Pagination */}
       <div className="flex justify-center items-center px-6 py-3 border-t gap-2">

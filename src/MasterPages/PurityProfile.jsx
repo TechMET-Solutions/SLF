@@ -12,6 +12,7 @@ import {
 import { addPurityApiForSilver, fetchPuritiesApiForSilver, updatePurityApiForSilver, updatePurityStatusApiForSilver } from "../API/Master/Master_Profile/Purity_Details_silver";
 import blockimg from "../assets/blockimg.png";
 import Pagination from "../Component/Pagination";
+import { useAuth } from "../API/Context/AuthContext";
 
 const PurityProfile = () => {
   useEffect(() => {
@@ -140,7 +141,9 @@ const PurityProfile = () => {
     }
     setIsModalOpen(true);
   };
+ const { loginUser } = useAuth();
 
+  console.log("Logged in user:", loginUser);
   // 💾 Save or Update
   const handleSave = async () => {
     if (!formData.purity_name?.trim()) {
@@ -165,7 +168,7 @@ if (!formData.loan_type?.trim()) {
         purity_name: formData.purity_name,
         purity_percent: formData.purity_percent,
         loan_type: formData.loan_type,
-        added_by: formData.added_by,
+        added_by: loginUser,
         status: formData.status,
       };
 

@@ -3,8 +3,8 @@ import { useEffect, useState } from "react";
 import { FiEdit, FiEye, FiTrash2 } from "react-icons/fi";
 import { HiMagnifyingGlass } from "react-icons/hi2";
 import { useNavigate } from "react-router-dom";
-import blockimg from "../assets/blockimg.png";
 import { API } from "../api";
+import blockimg from "../assets/blockimg.png";
 
 const BASE_URL = `${API}/loan-charges`;
 
@@ -162,6 +162,11 @@ function LoanChargesList() {
             >
               Add
             </button>
+            <button
+                onClick={() => navigate("/")}
+                className="bg-[#C1121F] text-white text-[10px] px-4 py-1 rounded cursor-pointer">
+                Exit
+              </button>
           </div>
         </div>
       </div>

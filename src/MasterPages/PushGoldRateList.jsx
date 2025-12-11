@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { useAuth } from "../API/Context/AuthContext";
 import { addGoldRateApi, fetchGoldRatesApi } from "../API/Master/Master_Profile/Gold_Rate_Details";
 import { addSilverRateApi, fetchSilverRatesApi } from "../API/Master/Master_Profile/Silver_Rate_Details";
 import Pagination from "../Component/Pagination";
@@ -23,8 +24,11 @@ const PushGoldRateList = () => {
   const [isLoading, setIsLoading] = useState(false);
   const itemsPerPage = 10;
    const itemsPerPageForSilver = 10;
-const [metalType, setMetalType] = useState("Gold");
+  const [metalType, setMetalType] = useState("Gold");
+  
+  const { loginUser } = useAuth();
 
+  console.log("Logged in user:", loginUser);
   // 🔹 Fetch gold rates with pagination
   const fetchGoldRates = async (page = 1) => {
     setIsLoading(true);
@@ -100,7 +104,7 @@ const [metalType, setMetalType] = useState("Gold");
     gold_rate: goldRate,
     metalType: metalType,
     added_on: new Date().toISOString(),
-    added_by: "ssl@slunawat.com",
+    added_by: loginUser,
   };
 
   try {

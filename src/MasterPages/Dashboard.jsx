@@ -1,5 +1,9 @@
 // import React from 'react'
 
+import axios from "axios";
+import { useEffect, useState } from "react";
+import { API } from "../api";
+
 // const Dashboard = () => {
 //   return (
 //     <div>
@@ -21,6 +25,23 @@ export default function Dashboard() {
     { id: 4, title: "Net Growth", value: "+3.8%", icon: "📈" },
   ];
 
+  const userData = JSON.parse(sessionStorage.getItem("userData") || "{}");
+
+// If Admin → FULL ACCESS
+if (userData.isAdmin || userData.permissions === "all") {
+  window.userIsAdmin = true;
+  console.log("ADMIN → FULL ACCESS ENABLED");
+} else {
+  window.userIsAdmin = false;
+}
+
+  const loggedUser = JSON.parse(sessionStorage.getItem("userData") || "{}");
+const isAdmin = loggedUser.isAdmin || loggedUser.permissions === "all";
+const empIdToUse = isAdmin ? loggedUser?.id : loggedUser?.id;
+console.log(empIdToUse,"empIdToUse")
+const [isPunchedIn, setIsPunchedIn] = useState(false);
+const [isPunchedOut, setIsPunchedOut] = useState(false);
+
   const quickActions = [
     "Create Account",
     "Approve Loan",
@@ -34,6 +55,92 @@ export default function Dashboard() {
     { id: 3, name: "MF Holdings", type: "Credit", amount: "₹ 1,20,000", date: "2025-09-15", status: "Completed" },
     { id: 4, name: "Rajesh & Co.", type: "Debit", amount: "₹ 75,900", date: "2025-09-14", status: "Failed" },
   ];
+
+  const handlePunchIn = async () => {
+  try {
+    if (!empIdToUse) {
+      alert("Employee ID missing!");
+      return;
+    }
+
+    const payload = {
+      emp_id: empIdToUse,
+      punch_in: new Date().toLocaleTimeString(),
+      date: new Date().toISOString().split("T")[0]  // YYYY-MM-DD
+    };
+
+    await axios.post(`${API}/Transactions/punch-in`, payload, {
+      headers: { "Content-Type": "application/json" }
+    });
+
+    setIsPunchedIn(true);
+    alert("Punch In Successful");
+  } catch (err) {
+    console.error(err);
+    alert("Punch In failed");
+  }
+};
+
+
+
+const handlePunchOut = async () => {
+  try {
+    if (!empIdToUse) {
+      alert("Employee ID missing!");
+      return;
+    }
+
+    const payload = {
+      emp_id: empIdToUse,
+      punch_out: new Date().toLocaleTimeString(),
+      date: new Date().toISOString().split("T")[0]
+    };
+
+    await axios.post(`${API}/Transactions/punch-out`, payload, {
+      headers: { "Content-Type": "application/json" }
+    });
+
+    setIsPunchedOut(true);
+    alert("Punch Out Successful");
+  } catch (err) {
+    console.error(err);
+    alert("Punch Out failed");
+  }
+};
+
+const checkTodayPunch = async () => {
+  try {
+    const today = new Date().toISOString().split("T")[0];
+
+    const res = await axios.get(`${API}/Transactions/get-today`, {
+      params: {
+        emp_id: empIdToUse,
+        date: today
+      }
+    });
+
+    const data = res.data;
+
+    // If punch-in already done
+    if (data.punch_in) {
+      setIsPunchedIn(true);
+    }
+
+    // If punch-out already done
+    if (data.punch_out) {
+      setIsPunchedOut(true);
+    }
+
+  } catch (err) {
+    console.error("Error checking today punch:", err);
+  }
+  };
+  useEffect(() => {
+  if (empIdToUse) {
+    checkTodayPunch();
+  }
+}, [empIdToUse]);
+
 
   return (
     <div className="min-h-screen bg-[#F6F3EE] text-slate-800 flex">
@@ -49,6 +156,29 @@ export default function Dashboard() {
           </div>
 
           <div className="flex items-center gap-3">
+            {!window.userIsAdmin && (
+              <>
+                <button
+  onClick={handlePunchIn}
+  disabled={isPunchedIn}
+  className={`px-4 py-2 rounded text-white 
+    ${isPunchedIn ? "bg-gray-400 cursor-not-allowed" : "bg-green-600"}`}
+>
+  {isPunchedIn ? "Punched In" : "Punch In"}
+            </button>
+            
+            <button
+  onClick={handlePunchOut}
+  disabled={isPunchedOut}
+  className={`px-4 py-2 rounded text-white 
+    ${isPunchedOut ? "bg-gray-400 cursor-not-allowed" : "bg-green-600"}`}
+>
+  {isPunchedOut ? "Punched Out" : "Punch Out"}
+</button>
+              </>
+         
+
+            )}
             <div className="relative">
               <input className="border rounded-lg px-3 py-2 w-64 bg-white" placeholder="Search transactions, accounts..." />
               <span className="absolute right-3 top-2.5 text-slate-400">🔍</span>

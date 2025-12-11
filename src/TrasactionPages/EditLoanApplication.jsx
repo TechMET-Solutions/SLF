@@ -18,7 +18,7 @@ const EditLoanApplication = () => {
     const fetchSchemes = async () => {
       try {
         const response = await axios.get(`${API}/Scheme/getAllSchemes`);
-        const fetchedSchemes = response.data.map((item) => ({
+        const fetchedSchemes = response.data.data.map((item) => ({
           ...item,
           intCompound: item.calcMethod === "Compound",
         }));
@@ -166,9 +166,10 @@ const EditLoanApplication = () => {
 
       const parsedScheme = {
         ...SchemaData,
-        interestRates: SchemaData?.interestRates
-          ? JSON.parse(SchemaData.interestRates)
-          : []
+       interestRates: typeof SchemaData?.interestRates === "string"
+  ? JSON.parse(SchemaData.interestRates)
+  : SchemaData?.interestRates || []
+
       };
 
       setSelectedScheme(parsedScheme);
@@ -206,11 +207,14 @@ const EditLoanApplication = () => {
       if (data.Pledge_Item_List) {
         let parsed = [];
 
-        try {
-          parsed = JSON.parse(data.Pledge_Item_List);
-        } catch (err) {
-          console.log("error parsing pledge list", err);
-        }
+try {
+  parsed =
+    typeof data.Pledge_Item_List === "string"
+      ? JSON.parse(data.Pledge_Item_List)
+      : data.Pledge_Item_List || [];
+} catch (err) {
+  console.log("error parsing pledge list", err);
+}
 
         setPledgeItem(parsed);
       }

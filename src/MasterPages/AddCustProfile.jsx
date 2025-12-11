@@ -39,6 +39,8 @@ const AddCustProfile = () => {
     email: "",
     mobile: "",
     otp: "",
+    MobileNumberOtp: "",
+    GSTNumberOtp: "",
     altMobile: "",
     dob: "",
     gender: "",
@@ -53,8 +55,6 @@ const AddCustProfile = () => {
     middleName: "",
     lastName: "",
     fatherFirstName: "",
-    fatherMiddleName: "",
-    fatherLastName: "",
     landline: "",
     pep: "",
     profileImage: null,
@@ -64,9 +64,9 @@ const AddCustProfile = () => {
 
     Permanent_Address: "",
     Permanent_Pincode: "",
-    Permanent_State: "",
+    Permanent_State: "Maharashtra",
     Permanent_City: "",
-    Permanent_Country: "",
+    Permanent_Country: "India",
     Permanent_ResiStatus: "",
     Permanent_Resisince: "",
     Permanent_Category: "",
@@ -78,9 +78,10 @@ const AddCustProfile = () => {
 
     Corresponding_Address: "",
     Corresponding_Pincode: "",
-    Corresponding_State: "",
+   
+     Corresponding_State: "Maharashtra",
     Corresponding_City: "",
-    Corresponding_Country: "",
+    Corresponding_Country: "India",
     Corresponding_Area: "",
 
     //Additional Documents
@@ -99,14 +100,18 @@ const AddCustProfile = () => {
     Nominee_NomineeName: "",
     Nominee_Relation: "",
     Nominee_Address: "",
-    Nominee_State: "",
+    Nominee_State: "Maharashtra",
     Nominee_City: "",
 
     //access
     access: "",
+    password: "",
     badDebtor: false,
+    badDebtorReason:""
 
   });
+const [isBadDebtorModalOpen, setIsBadDebtorModalOpen] = useState(false);
+const [badDebtorReason, setBadDebtorReason] = useState("");
 
   console.log(formData,"formData")
   const [BankformData, setBankFormData] = useState({
@@ -118,6 +123,16 @@ const AddCustProfile = () => {
     cancelCheque: null,
 
   });
+  const editorConfig = {
+  readonly: false,
+  autofocus: false, 
+  toolbar: true,
+  buttons: ["bold", "italic", "underline", "|", "eraser"],
+  showCharsCounter: false,
+  showWordsCounter: false,
+  showXPathInStatusbar: false,
+};
+
   const [documents, setDocuments] = useState([]);      // main list from API
   const [idProofList, setIdProofList] = useState([]);  // filtered only id proof
   const [addrProofList, setAddrProofList] = useState([]); // filtered only address proof
@@ -275,6 +290,16 @@ const AddCustProfile = () => {
     });
   };
 
+function formatDateToMySQL(dateString) {
+  if (!dateString) return null;
+
+  const d = new Date(dateString);
+  const year = d.getFullYear();
+  const month = String(d.getMonth() + 1).padStart(2, "0");
+  const day = String(d.getDate()).padStart(2, "0");
+
+  return `${year}-${month}-${day}`;
+}
 
 
   // const handleSubmit = async () => {
@@ -328,14 +353,24 @@ const AddCustProfile = () => {
   const handleSubmit = async () => {
     debugger
     try {
+      if (formData.pep === "yes") {
+      alert("❌ Politically Exposed Persons (PEP) cannot be added as customers.");
+      return; // ⛔ STOP execution
+    }
       const { bankData, ...rest } = formData;
 
       // 🧩 Step 2: Prepare the payload without bankData
       const payloadToEncrypt = {
-        ...rest,
-        Remark: content,
-        Added_By: "",
-      };
+  ...rest,
+  Added_On: rest.Added_On
+    ? formatDateToMySQL(rest.Added_On)
+    : null,
+  createdAt: rest.createdAt ? formatDateToMySQL(rest.createdAt) : null,
+  // 🗓️ Date field conversion (IMPORTANT)
+  dob: formatDateToMySQL(rest.dob),
+  Remark: content,
+  Added_By: "",
+};
 
       // 🔒 Step 3: Encrypt only the filtered data
       const encrypted = encryptData(payloadToEncrypt);
@@ -561,19 +596,32 @@ const verifyAadhaarOtp = async () => {
           <div className="flex items-center gap-6">
             {/* Search section */}
 
-            <div className="flex items-center gap-2 ">
-              <label htmlFor="badDebtor" className="text-gray-700 font-medium text-[11.25px]">
-                Bad Debtor
-              </label>
-              <input
-                type="checkbox"
-                id="badDebtor"
-                checked={formData.badDebtor}
-                onChange={(e) => setFormData({ ...formData, badDebtor: e.target.checked })}
-                className="w-5 h-5 accent-red-600 cursor-pointer w-[15.25px]"
-              />
+            <div className="flex items-center gap-2">
+  <label htmlFor="badDebtor" className="text-gray-700 font-medium text-[11.25px]">
+    Bad Debtor
+  </label>
 
-            </div>
+  <input
+    type="checkbox"
+    id="badDebtor"
+    checked={formData.badDebtor}
+    onChange={(e) => {
+      const checked = e.target.checked;
+
+      if (checked) {
+        setIsBadDebtorModalOpen(true);   // 👉 Open modal
+      } else {
+        setFormData({
+          ...formData,
+          badDebtor: false,
+          badDebtorReason: ""
+        });
+      }
+    }}
+    className="w-5 h-5 accent-red-600 cursor-pointer"
+  />
+</div>
+
             {/* Buttons stuck to right */}
             <div className="flex gap-3">
               <button
@@ -606,23 +654,29 @@ const verifyAadhaarOtp = async () => {
           Personal Information
         </p>
 
-        <div className="flex justify-between gap-5">
+        <div className="flex justify-between gap-2">
           <div className="">
             <div className="flex items-center gap-4 w-full">
 
 
               <div className="flex flex-col">
-                <label className="text-[14px] font-medium">PAN Number <span className="text-red-500">*</span></label>
-                <div className="flex items-center mt-1 w-[220px]">
+                <label className="text-[14px] font-medium">PAN Number </label>
+                <div className="flex items-center mt-1 w-[209px]">
                   <div className="relative flex-1">
                     <input
-                      type="text"
-                      placeholder="Enter PAN"
-                      name="panNo"
-                      value={formData.panNo}
-                      onChange={handleChange}
-                      className="border border-[#C4C4C4] border-r-0 rounded-l px-3 py-2 w-full pr-10 focus:outline-none focus:ring-1 focus:ring-blue-500 bg-white"
-                    />
+  type="text"
+  placeholder="Enter PAN"
+  name="panNo"
+  value={formData.panNo}
+  onChange={(e) =>
+    setFormData({
+      ...formData,
+      panNo: e.target.value.toUpperCase(),
+    })
+  }
+  className="border border-[#C4C4C4] border-r-0 rounded-l px-3 py-2 w-full pr-10 focus:outline-none focus:ring-1 focus:ring-blue-500 bg-white"
+/>
+
 
                     {/* Hidden file input */}
                     <input
@@ -664,7 +718,7 @@ const verifyAadhaarOtp = async () => {
                 <label className="text-[14px] font-medium">
                   Aadhar Number <span className="text-red-500">*</span>
                 </label>
-                <div className="flex items-center mt-1 w-[320px]">
+                <div className="flex items-center mt-1 w-[233px]">
                   <div className="relative flex-1">
                     <input
                       type="number"
@@ -716,14 +770,14 @@ const verifyAadhaarOtp = async () => {
 
               <div className="flex flex-col">
                 <label className="text-[14px] font-medium">Verify OTP</label>
-                <div className="relative mt-1 w-[180px]">
+                <div className="relative mt-1 w-[130px]">
                   <input
                     type="number"
                     placeholder="Enter OTP"
                     name="otp"
                     value={formData.otp}
                     onChange={handleChange}
-                    className="border border-gray-300 rounded-[8px] px-3 py-2 w-full bg-white focus:outline-none focus:ring-1 focus:ring-blue-500"
+                    className="border border-gray-300 rounded-[8px] px-3 py-2 w-[130px]  bg-white focus:outline-none focus:ring-1 focus:ring-blue-500"
                     style={{
                       MozAppearance: "textfield",
                     }}
@@ -751,7 +805,21 @@ const verifyAadhaarOtp = async () => {
                   value={formData.printName}
                   onChange={handleChange}
                   placeholder="Customer Full Name"
-                  className="border border-gray-300 px-3 py-2 mt-1 w-[220px] rounded-[8px] bg-white"
+                  className="border border-gray-300 px-3 py-2 mt-1 w-[203px] rounded-[8px] bg-white"
+                />
+              </div>
+
+               <div className="flex flex-col flex-1">
+                <label className="text-[14px] font-medium">
+                  Email Id <span className="text-red-500">*</span>
+                </label>
+                <input
+                  type="email"
+                  name="email"
+                  value={formData.email}
+                  onChange={handleChange}
+                  placeholder="Enter Email"
+                  className="border border-gray-300 rounded px-3 py-2 mt-1 w-[203px] bg-white"
                 />
               </div>
 
@@ -765,7 +833,7 @@ const verifyAadhaarOtp = async () => {
                 <label className="text-[14px] font-medium">
                   Mobile No <span className="text-red-500">*</span>
                 </label>
-                <div className="flex items-center mt-1 w-[220px]">
+                <div className="flex items-center mt-1 w-[237px]">
                   <input
                     type="text"
                     name="mobile"
@@ -774,28 +842,41 @@ const verifyAadhaarOtp = async () => {
                     placeholder="Mobile Number"
                     className="border border-gray-300 border-r-0 rounded-l px-3 py-2 w-full focus:outline-none focus:ring-1 focus:ring-blue-500 bg-white"
                   />
-                  <button className="bg-[#0A2478] text-white px-4 py-2 rounded-r border border-gray-300 border-l-0 hover:bg-[#081c5b] flex items-center gap-2">
-                    <img src={send} alt="otp" className="w-4 h-4" />
-                    <span>OTP</span>
-                  </button>
+                <button className="bg-[#0A2478] text-white px-4 py-2 rounded-r border border-gray-300 border-l-0 hover:bg-[#081c5b]  flex justify-center items-center gap-2">
+  <img src={send} alt="otp" className="w-4 h-4" />
+  <span>OTP</span>
+</button>
+
                 </div>
               </div>
+<div className="flex flex-col">
+                <label className="text-[14px] font-medium">Verify OTP</label>
+                <div className="relative mt-1 w-[181px]">
+                  <input
+                    type="number"
+                    placeholder="Enter OTP"
+                    name="MobileNumberOtp"
+                    value={formData.MobileNumberOtp}
+                    onChange={handleChange}
+                    className="border border-gray-300 rounded-[8px] px-3 py-2 w-[181px]  bg-white focus:outline-none focus:ring-1 focus:ring-blue-500"
+                    style={{
+                      MozAppearance: "textfield",
+                    }}
+                    onWheel={(e) => e.target.blur()}
+                  />
+                  <img
+  src={righttick}
+  alt="tick"
+  onClick={verifyAadhaarOtp}
+  className="absolute right-3 top-1/2 -translate-y-1/2 w-[13px] h-[13px] 
+  cursor-pointer hover:scale-110 transition-all"
+/>
 
+                </div>
+              </div>
               {/* OTP Verification */}
               
-              <div className="flex flex-col flex-1">
-                <label className="text-[14px] font-medium">
-                  Email Id <span className="text-red-500">*</span>
-                </label>
-                <input
-                  type="email"
-                  name="email"
-                  value={formData.email}
-                  onChange={handleChange}
-                  placeholder="Enter Email"
-                  className="border border-gray-300 rounded px-3 py-2 mt-1 w-full bg-white"
-                />
-              </div>
+             
 
               {/* Alternate Mobile */}
               <div className="flex flex-col">
@@ -809,6 +890,23 @@ const verifyAadhaarOtp = async () => {
                   onChange={handleChange}
                   placeholder="Enter Alternate Mobile"
                   className="border border-gray-300 rounded px-3 py-2 mt-1 w-[200px] bg-white"
+                />
+              </div>
+<div className="flex flex-col">
+                <label className="text-[14px] font-medium">
+                  Landline Number
+                </label>
+                <input
+                  type="number"
+                  name="landline"
+                  value={formData.landline}
+                  onChange={handleChange}
+                  placeholder="Eg.+91 9658426853"
+                  className="border border-gray-300 rounded px-3 py-2 mt-1 w-[180px] bg-white"
+                  style={{
+                    MozAppearance: "textfield",
+                  }}
+                  onWheel={(e) => e.target.blur()}
                 />
               </div>
 
@@ -828,6 +926,10 @@ const verifyAadhaarOtp = async () => {
               </div>
 
               {/* Gender */}
+              
+            </div>
+
+            <div className="flex items-end gap-4 w-full mt-5">
               <div className="flex flex-col">
                 <label className="text-[14px] font-medium">
                   Gender <span className="text-red-500">*</span>
@@ -844,9 +946,6 @@ const verifyAadhaarOtp = async () => {
                   <option value="Other">Other</option>
                 </select>
               </div>
-            </div>
-
-            <div className="flex items-end gap-4 w-full mt-5">
               <div className="flex flex-col">
                 <label className="text-[14px] font-medium">Marital Status</label>
                 <select
@@ -860,7 +959,7 @@ const verifyAadhaarOtp = async () => {
                   <option value="Married">Married</option>
                 </select>
               </div>
-              <div className="flex flex-col flex-1">
+              {/* <div className="flex flex-col flex-1">
                 <label className="text-[14px] font-medium">GST No.</label>
                 <input
                   type="text"
@@ -870,6 +969,65 @@ const verifyAadhaarOtp = async () => {
                   placeholder="Enter GST No."
                   className="border border-gray-300 rounded px-3 py-2 mt-1 w-full bg-white"
                 />
+              </div> */}
+              <div className="flex flex-col">
+                <label className="text-[14px] font-medium">
+                 GST No.<span className="text-red-500">*</span>
+                </label>
+                <div className="flex items-center mt-1 w-[233px]">
+                  <div className="relative flex-1">
+                    <input
+                      type="number"
+                        placeholder="Enter GST No."
+                      name="gstNo"
+                     value={formData.gstNo}
+                  onChange={handleChange}
+                      className="border border-gray-300 border-r-0 rounded-l px-3 py-2 w-full pr-10 focus:outline-none focus:ring-1 focus:ring-blue-500 bg-white"
+                      style={{
+                        MozAppearance: "textfield",
+                      }}
+                      onWheel={(e) => e.target.blur()}
+                    />
+
+                   
+                  </div>
+
+                  <button
+  className="bg-[#0A2478] text-white px-5 py-2 rounded-r border border-gray-300 border-l-0 hover:bg-[#081c5b]"
+  type="button"
+  // onClick={sendAadhaarOTP}
+>
+  OTP
+</button>
+
+                </div>
+
+                
+              </div>
+              <div className="flex flex-col">
+                <label className="text-[14px] font-medium">Verify OTP</label>
+                <div className="relative mt-1 w-[130px]">
+                  <input
+                    type="number"
+                    placeholder="Enter OTP"
+                    name="GSTNumberOtp"
+                    value={formData.GSTNumberOtp}
+                    onChange={handleChange}
+                    className="border border-gray-300 rounded-[8px] px-3 py-2 w-[130px]  bg-white focus:outline-none focus:ring-1 focus:ring-blue-500"
+                    style={{
+                      MozAppearance: "textfield",
+                    }}
+                    onWheel={(e) => e.target.blur()}
+                  />
+                  <img
+  src={righttick}
+  alt="tick"
+  onClick={verifyAadhaarOtp}
+  className="absolute right-3 top-1/2 -translate-y-1/2 w-[13px] h-[13px] 
+  cursor-pointer hover:scale-110 transition-all"
+/>
+
+                </div>
               </div>
 
               <div className="flex flex-col">
@@ -880,7 +1038,7 @@ const verifyAadhaarOtp = async () => {
                   name="religion"
                   value={formData.religion}
                   onChange={handleChange}
-                  className="border border-gray-300 rounded-[8px] px-3 py-2 mt-1 w-[150px] bg-white"
+                  className="border border-gray-300 rounded-[8px] px-3 py-2 mt-1 w-[96px] bg-white"
                 >
                   <option value="">Select Religion</option>
                   <option value="Hindu">Hindu</option>
@@ -900,7 +1058,7 @@ const verifyAadhaarOtp = async () => {
                   name="education"
                   value={formData.education}
                   onChange={handleChange}
-                  className="border border-gray-300 rounded-[8px] px-3 py-2 mt-1 w-[211px] bg-white"
+                  className="border border-gray-300 rounded-[8px] px-3 py-2 mt-1 w-[180px] bg-white"
                 >
                   <option value="">Select Education</option>
                   <option value="No Formal Education">
@@ -922,7 +1080,11 @@ const verifyAadhaarOtp = async () => {
                 </select>
               </div>
 
-              <div className="flex flex-col flex-1">
+              
+            </div>
+            <div className="flex items-end gap-4 w-full mt-5">
+              {/* Marital */}
+              <div className="flex flex-col ">
                 <label className="text-[14px] font-medium">
                   Occupation <span className="text-red-500">*</span>
                 </label>
@@ -949,9 +1111,6 @@ const verifyAadhaarOtp = async () => {
                   <option value="Corporate">Corporate</option>
                 </select>
               </div>
-            </div>
-            <div className="flex items-end gap-4 w-full mt-5">
-              {/* Marital */}
               <div className="flex flex-col">
                 <label className="text-[14px] font-medium">Risk Category</label>
                 <select
@@ -964,7 +1123,7 @@ const verifyAadhaarOtp = async () => {
                   <option value="High">High</option>
                 </select>
               </div>
-              <div className="flex flex-col flex-1">
+              <div className="flex flex-col ">
                 <label className="text-[14px] font-medium">First Name.</label>
                 <input
                   type="text"
@@ -1000,9 +1159,14 @@ const verifyAadhaarOtp = async () => {
                 />
               </div>
 
+              
+            </div>
+
+            <div className="flex gap-6 mt-5">
+              {/* Father/Husband's Last Name */}
               <div className="flex flex-col">
                 <label className="text-[14px] font-medium">
-                  Father/Husbands First Name
+                 Father/Husbands Full Name
                 </label>
                 <input
                   type="text"
@@ -1014,7 +1178,7 @@ const verifyAadhaarOtp = async () => {
                 />
               </div>
 
-              <div className="flex flex-col">
+              {/* <div className="flex flex-col">
                 <label className="text-[14px] font-medium">
                   Father/Husbands Middle Name
                 </label>
@@ -1027,10 +1191,6 @@ const verifyAadhaarOtp = async () => {
                   className="border border-gray-300 rounded px-3 py-2 mt-1 w-[184px] bg-white"
                 />
               </div>
-            </div>
-
-            <div className="flex gap-6 mt-5">
-              {/* Father/Husband's Last Name */}
               <div className="flex flex-col">
                 <label className="text-[14px] font-medium">
                   Father/Husband's Last Name
@@ -1043,53 +1203,41 @@ const verifyAadhaarOtp = async () => {
                   placeholder="Father/Husband's Last Name"
                   className="border border-gray-300 rounded px-3 py-2 mt-1 w-[200px] bg-white"
                 />
-              </div>
+              </div> */}
 
               {/* Landline Number */}
-              <div className="flex flex-col">
-                <label className="text-[14px] font-medium">
-                  Landline Number
-                </label>
-                <input
-                  type="number"
-                  name="landline"
-                  value={formData.landline}
-                  onChange={handleChange}
-                  placeholder="Eg.+91 9658426853"
-                  className="border border-gray-300 rounded px-3 py-2 mt-1 w-[180px] bg-white"
-                  style={{
-                    MozAppearance: "textfield",
-                  }}
-                  onWheel={(e) => e.target.blur()}
-                />
-              </div>
-
+              
               {/* Politically Exposed Person */}
-              <div className="flex flex-col mt-2">
-                <label className="text-[14px] font-medium">
-                  Politically Exposed Person? <span className="text-red-500">*</span>
-                </label>
-                <div className="flex items-center gap-4 mt-2">
-                  <label className="flex items-center gap-2">
-                    <input
-                      type="radio"
-                      name="pep"
-                      value="yes"
-                      onChange={handleChange}
-                    />
-                    Yes
-                  </label>
-                  <label className="flex items-center gap-2">
-                    <input
-                      type="radio"
-                      name="pep"
-                      value="no"
-                      onChange={handleChange}
-                    />
-                    No
-                  </label>
-                </div>
-              </div>
+             <div className="flex flex-col mt-2">
+  <label className="text-[14px] font-medium">
+    Politically Exposed Person? <span className="text-red-500">*</span>
+  </label>
+
+  <div className="flex items-center gap-4 mt-2">
+    <label className="flex items-center gap-2">
+      <input
+        type="radio"
+        name="pep"
+        value="yes"
+        checked={formData.pep === "yes"}
+        onChange={handleChange}
+      />
+      Yes
+    </label>
+
+    <label className="flex items-center gap-2">
+      <input
+        type="radio"
+        name="pep"
+        value="no"
+        checked={formData.pep === "no"}
+        onChange={handleChange}
+      />
+      No
+    </label>
+  </div>
+</div>
+
             </div>
           </div>
 
@@ -1460,12 +1608,12 @@ const verifyAadhaarOtp = async () => {
               className="accent-[#0A2478]"
             />
             <span className="text-[16px] text-[#000000]">
-              Permanent Address same as Correspondence Address?
+              Permanent Address same as Current Address?
             </span>
           </label>
         </p>
         <p className="font-[Source_Sans_3] font-bold text-[24px] leading-[100%] tracking-[0.03em] text-[#0A2478] mb-4 mt-4">
-          Corresponding Address
+          Current Address
         </p>
 
         <div className="flex gap-3">
@@ -1779,7 +1927,7 @@ const verifyAadhaarOtp = async () => {
               value={formData.Additional_Reference1}
               onChange={handleChange}
               placeholder="Reference"
-              className="border border-gray-300 px-3 py-2 mt-1 w-[200px] rounded-[8px] bg-white"
+              className="border border-gray-300 px-3 py-2 mt-1 w-[300px] rounded-[8px] bg-white"
             />
           </div>
 
@@ -1791,7 +1939,7 @@ const verifyAadhaarOtp = async () => {
               value={formData.Additional_Reference2}
               onChange={handleChange}
               placeholder="Reference"
-              className="border border-gray-300 px-3 py-2 mt-1 w-[200px] rounded-[8px] bg-white"
+              className="border border-gray-300 px-3 py-2 mt-1 w-[300px] rounded-[8px] bg-white"
             />
           </div>
         </div>
@@ -1924,27 +2072,47 @@ const verifyAadhaarOtp = async () => {
           </div>
         </div>
       </div>
-      <div className=" pl-[115px] pr-[120px] flex  mb-10 gap-[100px] mt-10">
-        {/* Header */}
-        <p className="font-['Source_Sans_3'] font-bold text-[24px] leading-[100%] tracking-[0.03em] text-[#0A2478] mb-2">
-          Additional User Access
-        </p>
+     <div className="pl-[115px] pr-[120px] flex mb-10 gap-[100px] mt-10">
+  {/* Header */}
+  <p className="font-['Source_Sans_3'] font-bold text-[24px] text-[#0A2478] mb-2">
+    Additional User Access
+  </p>
 
-        {/* Question */}
-        <p className="mt-1">
-          <label className="flex items-center gap-2 font-['Roboto'] text-[16px]">
-            <input type="radio" name="access" className="accent-[#0A2478]"
-              value="Yes"
-              checked={formData.access === "Yes"}
-              onChange={handleChange} />
-            <span className="font-['Roboto'] font-normal text-[16px] leading-[100%] tracking-[0.03em] text-[#000000] ">
-              Allow Customers to access Mobile App?
-            </span>
-          </label>
-        </p>
+  {/* Question */}
+  <div className="mt-1">
+    <label className="flex items-center gap-2 font-['Roboto'] text-[16px]">
+      <input
+        type="radio"
+        name="access"
+        className="accent-[#0A2478]"
+        value="Yes"
+        checked={formData.access === "Yes"}
+        onChange={handleChange}
+      />
+      <span className="font-['Roboto'] text-[16px] text-[#000000]">
+        Allow Customers to access Mobile App?
+      </span>
+    </label>
+  </div>
+</div>
 
-        {/* Single radio button */}
-      </div>
+{/* Password Field (only show when access = Yes) */}
+{formData.access === "Yes" && (
+  <div className="pl-[115px] pr-[120px] mb-5">
+    <label className="font-['Roboto'] text-[16px] block mb-1">
+      Set Password
+    </label>
+    <input
+      type="password"
+      name="password"
+      value={formData.password}
+      onChange={handleChange}
+      placeholder="Enter password"
+      className="border border-gray-300 px-3 py-2 rounded w-[300px]"
+    />
+  </div>
+)}
+
 
       <div className="p-6 rounded-md w-full mx-auto pl-[120px] pr-[120px] bg-[#F7F7FF]">
         <p className="font-[Source_Sans_3] font-bold text-[24px] leading-[100%] tracking-[0.03em] text-[#0A2478] mb-4 mt-5">
@@ -1959,6 +2127,77 @@ const verifyAadhaarOtp = async () => {
       </div>
 
       <CustBankDetails bankData={bankData} setBankData={setBankData} mode={modeForBank} setMode={setModeForbank} updatemode={mode} />
+       <div className="flex gap-3 mt-5 mb-5 justify-center">
+              <button
+                style={{
+                  width: "100px",
+                  height: "34px",
+                  borderRadius: "3.75px",
+                }}
+                // onClick={() => setIsModalOpen(true)}
+                className="bg-[#0A2478] text-white text-[14.25px] font-source font-normal flex items-center justify-center"
+                onClick={handleSubmit}
+              >
+                save
+              </button>
+
+              <button
+                onClick={() => navigate("/Customer-Profile-List")}
+                className="text-white px-[6.25px] py-[6.25px] rounded-[3.75px] bg-[#C1121F] w-[100px] h-[34px] opacity-100 text-[14px]"
+              >
+                Exit
+              </button>
+            </div>
+      {isBadDebtorModalOpen && (
+  <div className="fixed inset-0 z-50 flex items-center justify-center bg-[#0101017A] backdrop-blur-md">
+    <div className="bg-white p-6 rounded-lg w-[400px]">
+      <h2 className="text-lg font-semibold text-[#0A2478] mb-3">Bad Debtor Reason</h2>
+
+      <textarea
+        placeholder="Enter reason for marking as bad debtor..."
+        value={badDebtorReason}
+        onChange={(e) => setBadDebtorReason(e.target.value)}
+        className="w-full border border-gray-300 rounded p-2 h-24"
+      />
+
+      <div className="flex justify-end gap-3 mt-4">
+        <button
+          className="px-4 py-2 bg-gray-300 rounded"
+          onClick={() => {
+            setIsBadDebtorModalOpen(false);
+            setBadDebtorReason("");
+
+            // uncheck the checkbox
+            setFormData({
+              ...formData,
+              badDebtor: false,
+              badDebtorReason: ""
+            });
+          }}
+        >
+          Cancel
+        </button>
+
+        <button
+          className="px-4 py-2 bg-[#0A2478] text-white rounded"
+          onClick={() => {
+            setIsBadDebtorModalOpen(false);
+
+            // Save to formData
+            setFormData({
+              ...formData,
+              badDebtor: true,
+              badDebtorReason: badDebtorReason
+            });
+          }}
+        >
+          Save
+        </button>
+      </div>
+    </div>
+  </div>
+)}
+
     </div>
   );
 };

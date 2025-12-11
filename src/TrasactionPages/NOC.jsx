@@ -1,6 +1,6 @@
 import axios from "axios";
 import { useEffect, useState } from "react";
-import { useLocation } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import { API } from "../api";
 
 function NOC() {
@@ -10,7 +10,7 @@ function NOC() {
     const [loanData, setLoanData] = useState({});
     console.log(loanData,"loanData")
     const [error, setError] = useState(null);
-
+const navigate = useNavigate();
     useEffect(() => {
         document.title = "SLF | NOC";
         if (loanId) {
@@ -79,9 +79,9 @@ const totalBank = payments
                 <h2 className="text-black font-bold text-[20px] font-['Source_Sans_3']">
                     S. Lunawat Finance Pvt. Ltd.
                 </h2>
-                <button className="bg-[#C1121F] text-white text-[10px] w-[74px] h-[24px] rounded-[3.75px] hover:bg-red-700 transition">
-                    Exit
-                </button>
+<button className="w-[74px] h-[24px] rounded-[3.75px] bg-[#C1121F] text-white text-[10px]" onClick={() => navigate("/")}>
+                Exit
+              </button>
             </div>
 
             {/* Table Section */}

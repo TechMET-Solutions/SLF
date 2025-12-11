@@ -53,7 +53,7 @@ useEffect(() => {
   if (loanData.BorrowerId) {
     fetchCustomer(loanData.BorrowerId);
   }
-}, [loanData.BorrowerId]);
+}, [loanData?.BorrowerId]);
 
 const fetchCustomer = async (id) => {
   try {
@@ -325,7 +325,15 @@ useEffect(() => {
 </button>
 
 
-            <button className="bg-[#C1121F] text-white text-sm rounded px-4 py-1 cursor-pointer">
+            <button className="bg-[#C1121F] text-white text-sm rounded px-4 py-1 cursor-pointer"onClick={() => {
+          
+        navigate("/Auction-Items-List", {
+          state: {
+            loanIds:loanIds,
+            AuctionData: AuctionData,
+          }
+        });
+      }}>
               Cancel
             </button>
           </div>

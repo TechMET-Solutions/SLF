@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { FiEdit, FiEye } from "react-icons/fi";
+import { FiEdit } from "react-icons/fi";
 import { useNavigate } from "react-router-dom";
 import { fetchBidderApi } from "../API/Transaction/Auction/BidderApi";
 
@@ -69,7 +69,11 @@ const BidderRegistrationList = () => {
                     className={`${index % 2 === 0 ? "bg-gray-50" : "bg-white"
                       } hover:bg-blue-50 transition-colors duration-150`}
                   >
-                    <td className="px-4 py-2">{item.id}</td>
+                    <td className="px-4 py-2 text-blue-500 cursor-pointer"  onClick={() =>
+                          navigate('/View-Bidder-Details', {
+                            state: { item: item.id }
+                          })
+                        }>{item.id}</td>
                     <td className="px-4 py-2">{item.bidder_name}</td>
                     <td className="px-4 py-2">{item.mobile_no}</td>
                     <td
@@ -83,7 +87,7 @@ const BidderRegistrationList = () => {
                     <td className="px-6 py-2">{item.firm_name}</td>
                     <td className="px-6 py-2">{item.email}</td>
                     <td className="px-4 py-2 flex justify-center gap-2">
-                      <button
+                      {/* <button
                         onClick={() =>
                           navigate('/View-Bidder-Details', {
                             state: { item: item.id }
@@ -93,7 +97,7 @@ const BidderRegistrationList = () => {
                         title="View"
                       >
                         <FiEye className="text-sm" />
-                      </button>
+                      </button> */}
                       <button
                         onClick={() =>
                           navigate('/EditBidderDetails', {

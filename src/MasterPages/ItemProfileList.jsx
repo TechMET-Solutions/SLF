@@ -9,6 +9,7 @@ import {
   updateItemStatusApi
 } from "../API/Master/Master_Profile/Item_Details";
 import Pagination from "../Component/Pagination";
+import { useAuth } from "../API/Context/AuthContext";
 
 const ItemProfileList = () => {
   useEffect(() => {
@@ -22,15 +23,32 @@ const ItemProfileList = () => {
   const [isEditMode, setIsEditMode] = useState(false);
   const [searchCode, setSearchCode] = useState("");
   const [searchName, setSearchName] = useState("");
-  const [formData, setFormData] = useState({
-    id: null,
-    code: "",
-    name: "",
-    printName: "",
-    remark: "",
-    addedBy: "",
-    status: 1,
-  });
+const [formData, setFormData] = useState({
+  id: null,
+  code: "",
+  name: "",
+  printName: "",
+  remark: "",
+  addedBy: "",
+  status: 1,
+});
+//   const [loginUser, setLoginUser] = useState(""); 
+//   console.log(loginUser,"loginUser")
+
+
+//   useEffect(() => {
+//   const user = JSON.parse(sessionStorage.getItem("userData") || "{}");
+
+//   const addedByValue = user.name || user.email || "";
+
+//   setLoginUser(addedByValue);  // <-- store separately
+
+//   console.log("LOGIN USER:", addedByValue);
+// }, []);
+ const { loginUser } = useAuth();
+
+  console.log("Logged in user:", loginUser);
+
 
   // Pagination states
   const [currentPage, setCurrentPage] = useState(1);
@@ -116,6 +134,7 @@ const ItemProfileList = () => {
 
   // 🔹 Save Item (Add / Edit)
   const handleSave = async () => {
+    debugger
      if (!formData.code?.trim()) {
     alert("Please enter the Code.");
     return;
@@ -134,7 +153,7 @@ const ItemProfileList = () => {
       code: formData.code,
       name: formData.name,
       print_name: formData.printName,
-      added_by: formData.addedBy,
+      added_by: loginUser,
       add_on: new Date().toISOString(),
       remark: formData.remark,
       status: formData.status,
@@ -200,7 +219,7 @@ const ItemProfileList = () => {
             Item Profile List
           </h2>
 
-          <div className="flex gap-3">
+          <div className="flex gap-10">
             {/* Search */}
             <div className="flex gap-5 items-center">
               <p className="text-[11.25px]">Item Code</p>
@@ -217,7 +236,7 @@ const ItemProfileList = () => {
               />
             </div>
 
-            <div className="flex gap-5 items-center">
+            <div className="flex gap-2 items-center">
               <p className="text-[11.25px]">Item Name</p>
               <input
                 type="text"
@@ -253,7 +272,7 @@ const ItemProfileList = () => {
             </div>
 
             {/* Buttons */}
-            <div className="flex justify-center items-center gap-5">
+            <div className="flex justify-center items-center gap-2">
               <button
                 onClick={() => handleOpenModal()}
                 className="bg-[#0A2478] text-white text-[11.25px] px-4 py-1 rounded cursor-pointer"
@@ -344,18 +363,6 @@ const ItemProfileList = () => {
                   className="border border-gray-300 rounded w-full px-3 py-2 mt-1"
                 />
               </div>
-            </div>
-
-            <div className="flex items-center gap-2 mb-4">
-              <input
-                type="checkbox"
-                checked={formData.status === 1}
-                onChange={(e) =>
-                  setFormData({ ...formData, status: e.target.checked ? 1 : 0 })
-                }
-                className="w-5 h-5 accent-blue-900"
-              />
-              <label className="text-[14px] font-medium">is Active</label>
             </div>
 
             <div className="flex justify-center gap-4">

@@ -508,26 +508,46 @@ const GoldLoanApproval = () => {
                   ))}
 
                   {/* Total Row */}
-                  <div className="flex border-t border-gray-300 bg-gray-50">
-                    <div className="flex-1 p-2 border-r border-gray-300 font-semibold">
-                      Total
-                    </div>
-                    <div className="w-16 p-2 border-r border-gray-300 text-center font-semibold">
-                      {totalNos}
-                    </div>
-                    <div className="w-24 p-2 border-r border-gray-300 text-center font-semibold">
-                      {formatCurrency(totalGross)}
-                    </div>
-                    <div className="w-24 p-2 border-r border-gray-300 text-center font-semibold">
-                      {formatCurrency(totalNetWeight)}
-                    </div>
-                    <div className="w-28 p-2 border-r border-gray-300 text-center"></div>
-                    <div className="w-24 p-2 border-r border-gray-300 text-center"></div>
-                    <div className="w-28 p-2 border-r border-gray-300 text-center font-semibold">
-                      {formatCurrency(totalValuation)}
-                    </div>
-                    <div className="w-28 p-2 text-center"></div>
-                  </div>
+                 {/* Total Row */}
+<div className="flex border-t border-gray-300 bg-gray-50">
+  <div className="flex-1 p-2 border-r border-gray-300 font-semibold">
+    Total
+  </div>
+
+  <div className="w-16 p-2 border-r border-gray-300 text-center font-semibold">
+    {totalNos}
+  </div>
+
+  <div className="w-24 p-2 border-r border-gray-300 text-center font-semibold">
+    {formatCurrency(totalGross)}
+  </div>
+
+  <div className="w-24 p-2 border-r border-gray-300 text-center font-semibold">
+    {formatCurrency(totalNetWeight)}
+  </div>
+
+  <div className="w-28 p-2 border-r border-gray-300 text-center">
+    {/* purity empty */}
+  </div>
+
+  <div className="w-28 p-2 border-r border-gray-300 text-center">
+    {/* calculated purity empty */}
+  </div>
+
+  <div className="w-24 p-2 border-r border-gray-300 text-center font-semibold">
+    {/* Rate total (if needed) */}
+    {/* Leave empty if not required */}
+  </div>
+
+  <div className="w-28 p-2 border-r border-gray-300 text-center font-semibold">
+    {formatCurrency(totalValuation)}
+  </div>
+
+  <div className="w-28 p-2 text-center">
+    {/* remark */}
+  </div>
+</div>
+
                 </>
               ) : (
                 <div className="flex border-t border-gray-300">

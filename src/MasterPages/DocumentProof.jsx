@@ -1,6 +1,7 @@
 import axios from "axios";
 import { useEffect, useState } from "react";
 import { API } from "../api";
+import { useAuth } from "../API/Context/AuthContext";
 import GroupData from "../assets/Group 124.svg";
 import { decryptData, encryptData } from "../utils/cryptoHelper";
 import { formatIndianDate } from "../utils/Helpers";
@@ -10,13 +11,16 @@ const DocumentProof = () => {
     document.title = "SLF | Document Proof";
   }, []);
   const [isModalOpen, setIsModalOpen] = useState(false);
-   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
+  const [isEditModalOpen, setIsEditModalOpen] = useState(false);
+  const { loginUser } = useAuth();
+
+  console.log("Logged in user:", loginUser);
   const [formData, setFormData] = useState({
     proof_type: "",
     is_id_proof: false,
     is_address_proof: false,
-    added_by: "",
-    modified_by: "",
+    // added_by: loginUser,
+    // modified_by: loginUser,
     status: "Active",
   });
   const [selectedDataid, setselectedDataid] = useState(null);
@@ -102,81 +106,145 @@ const handleEditClick = (doc) => {
     fetchDocuments();
   }, []);
 
-  const handleSubmit = async () => {
+   
+//   const handleSubmit = async () => {
 
-    try {
-      if (!formData.proof_type?.trim()) {
-  alert("Please select or enter the Proof Type!");
-  return;
-}
+//     try {
+//       if (!formData.proof_type?.trim()) {
+//   alert("Please select or enter the Proof Type!");
+//   return;
+// }
 
-// ✅ Check that at least one proof type is true
-if (!formData.is_id_proof && !formData.is_address_proof) {
-  alert("Please select at least one: ID Proof or Address Proof!");
-  return;
-}
+// // ✅ Check that at least one proof type is true
+// if (!formData.is_id_proof && !formData.is_address_proof) {
+//   alert("Please select at least one: ID Proof or Address Proof!");
+//   return;
+// }
 
-      const encryptedData = encryptData(JSON.stringify(formData));
-      const payload = new FormData();
-      payload.append("data", encryptedData);
+//       const encryptedData = encryptData(JSON.stringify(formData));
+//       const payload = new FormData();
+//       payload.append("data", encryptedData);
      
 
-      const response = await axios.post(`${API}/Master/Master_Profile/add_Document`, payload, {
-        headers: { "Content-Type": "multipart/form-data" },
-      });
+//       const response = await axios.post(`${API}/Master/Master_Profile/add_Document`, payload, {
+//         headers: { "Content-Type": "multipart/form-data" },
+//       });
 
-      const result = response.data;
-      console.log("✅ API Response:", result);
-      alert("Document proof added successfully!");
-      setIsModalOpen(false);
-      fetchDocuments()
-      setFormData({
-    proof_type: "",
-    is_id_proof: false,
-    is_address_proof: false,
-    added_by: "",
-    modified_by: "",
-    status: "Active",
-  });
-    } catch (error) {
-      console.error("❌ Error:", error);
-      alert("Failed to add document proof.");
+//       const result = response.data;
+//       console.log("✅ API Response:", result);
+//       alert("Document proof added successfully!");
+//       setIsModalOpen(false);
+//       fetchDocuments()
+//       setFormData({
+//     proof_type: "",
+//     is_id_proof: false,
+//     is_address_proof: false,
+//     added_by: "",
+//     modified_by: "",
+//     status: "Active",
+//   });
+//     } catch (error) {
+//       console.error("❌ Error:", error);
+//       alert("Failed to add document proof.");
+//     }
+//   };
+
+  const handleSubmit = async () => {
+  try {
+    if (!formData.proof_type?.trim()) {
+      alert("Please select or enter the Proof Type!");
+      return;
     }
-  };
+
+    if (!formData.is_id_proof && !formData.is_address_proof) {
+      alert("Please select at least one: ID Proof or Address Proof!");
+      return;
+    }
+
+    const payloadObj = {
+      ...formData,
+      added_by: loginUser,      // ⭐ add here
+       modified_by: "",   // ⭐ first time modify also
+    };
+
+    const encryptedData = encryptData(JSON.stringify(payloadObj));
+    const payload = new FormData();
+    payload.append("data", encryptedData);
+
+    await axios.post(`${API}/Master/Master_Profile/add_Document`, payload);
+
+    alert("Document proof added successfully!");
+    setIsModalOpen(false);
+    fetchDocuments();
+    // resetForm();
+  } catch (error) {
+    console.error("❌ Error:", error);
+    alert("Failed to add document proof.");
+  }
+};
+
+//   const handleUpdateSubmit = async () => {
+//     debugger
+//   try {
+//     if (!formData.proof_type) {
+//       alert("Please fill all required fields!");
+//       return;
+//     }
+
+//     // add id in object
+//     const updatePayloadObject = {
+//       ...formData,
+//       id: selectedDataid,  // <-- this will come from selected row
+//     };
+
+//     const encryptedData = encryptData(JSON.stringify(updatePayloadObject));
+
+//     const payload = new FormData();
+//     payload.append("data", encryptedData);
+
+   
+   
+//     const response = await axios.post(
+//       `${API}/Master/Master_Profile/update_document`,
+//       payload,
+//       { headers: { "Content-Type": "multipart/form-data" } }
+//     );
+
+//     const result = response.data;
+//     console.log("✅ UPDATE RESPONSE:", result);
+
+//     alert("Document proof updated successfully!");
+//     setIsModalOpen(false);
+//     fetchDocuments();
+//   } catch (error) {
+//     console.error("❌ UPDATE Error:", error);
+//     alert("Failed to update document proof.");
+//   }
+// };
 
   const handleUpdateSubmit = async () => {
-    debugger
   try {
-    if (!formData.proof_type) {
+    if (!formData.proof_type?.trim()) {
       alert("Please fill all required fields!");
       return;
     }
 
-    // add id in object
-    const updatePayloadObject = {
+    const updateObj = {
       ...formData,
-      id: selectedDataid,  // <-- this will come from selected row
+      id: selectedDataid,
+      modified_by: loginUser,  // ⭐ update user
     };
 
-    const encryptedData = encryptData(JSON.stringify(updatePayloadObject));
-
+    const encryptedData = encryptData(JSON.stringify(updateObj));
     const payload = new FormData();
     payload.append("data", encryptedData);
 
-   
-   
-    const response = await axios.post(
-      `${API}/Master/Master_Profile/update_document`,
-      payload,
-      { headers: { "Content-Type": "multipart/form-data" } }
-    );
-
-    const result = response.data;
-    console.log("✅ UPDATE RESPONSE:", result);
+    await axios.post(`${API}/Master/Master_Profile/update_document`, payload);
 
     alert("Document proof updated successfully!");
     setIsModalOpen(false);
     fetchDocuments();
+    // resetForm();
   } catch (error) {
     console.error("❌ UPDATE Error:", error);
     alert("Failed to update document proof.");

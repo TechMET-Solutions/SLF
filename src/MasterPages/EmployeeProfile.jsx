@@ -1,7 +1,7 @@
 import axios from "axios";
 import { useEffect, useRef, useState } from "react";
 import { FaPaperclip } from "react-icons/fa";
-import { FiEdit, FiEye, FiTrash2 } from "react-icons/fi";
+import { FiEdit, FiTrash2 } from "react-icons/fi";
 import { useNavigate } from "react-router-dom";
 import { API } from "../api";
 
@@ -60,6 +60,7 @@ const EmployeeProfile = () => {
     addressProfiletype: "",
     IdProoftype: "",
     status: true,
+    salary:null
   });
   const [documents, setDocuments] = useState([]);      // main list from API
   const [idProofList, setIdProofList] = useState([]);  // filtered only id proof
@@ -310,12 +311,24 @@ const [isValuationModalOpen, setIsValuationModalOpen] = useState(false);
       emp_add_prof: "",
       emp_id_prof: "",
       status: true,
+      salary:null
     });
     setProfileImage(null);
     setAddressProof(null);
     setIdProof(null);
     setIsModalOpen(true);
   };
+
+  function formatDateToMySQL(dateString) {
+  if (!dateString) return null;
+
+  const d = new Date(dateString);
+  const year = d.getFullYear();
+  const month = String(d.getMonth() + 1).padStart(2, "0");
+  const day = String(d.getDate()).padStart(2, "0");
+
+  return `${year}-${month}-${day}`;
+}
 
   const handleSave = async () => {
     debugger;
@@ -346,9 +359,9 @@ const [isValuationModalOpen, setIsValuationModalOpen] = useState(false);
         permanent_address: formData.permanent_address,
         branch: formData.branch,
         branch_id: formData.branch_id,
-        joining_date: formData.joining_date,
+        joining_date: formatDateToMySQL(formData.joining_date),
         designation: formData.designation,
-        date_of_birth: formData.date_of_birth,
+        date_of_birth: formatDateToMySQL(formData.date_of_birth),
         assign_role: formData.assign_role,
         assign_role_id: formData.assign_role_id,
         password: formData.password,
@@ -356,6 +369,7 @@ const [isValuationModalOpen, setIsValuationModalOpen] = useState(false);
         addressProfiletype: formData.addressProfiletype,
         IdProoftype: formData.IdProoftype,
         status: formData.status,
+        salary:formData.salary
       };
 
       const encryptedData = encryptData(JSON.stringify(payload));
@@ -395,14 +409,15 @@ const [isValuationModalOpen, setIsValuationModalOpen] = useState(false);
         corresponding_address: formData.corresponding_address,
         permanent_address: formData.permanent_address,
         branch: formData.branch,
-        joining_date: formData.joining_date,
+        joining_date: formatDateToMySQL(formData.joining_date),
         designation: formData.designation,
-        date_of_birth: formData.date_of_birth,
+        date_of_birth: formatDateToMySQL(formData.date_of_birth),
         assign_role: formData.assign_role,
         assign_role_id: formData.assign_role_id,
         password: formData.password,
         fax: formData.fax,
         status: formData.status,
+         salary:formData.salary
       };
 
       const encryptedData = encryptData(JSON.stringify(payload));
@@ -954,7 +969,7 @@ const openValuationModal = (emp) => {
                         className="border accent-blue-900 w-5 h-5"
                       />
                       <label htmlFor="sameAddress" className="text-gray-700 font-medium">
-                        Permanent Address same as<br></br> Correspondence Address?
+                        Permanent Address same as<br></br> Current Address?
                       </label>
                     </div>
 
@@ -1072,6 +1087,19 @@ const openValuationModal = (emp) => {
                         value={formData.fax}
                         onChange={handleInputChange}
                         placeholder="Fax"
+                        className="border border-[#C4C4C4] rounded-md px-3 py-2 focus:outline-none focus:ring-1 focus:ring-blue-500 w-[220px]"
+                      />
+                    </div>
+                    <div className="flex flex-col gap-1">
+                      <label className="text-gray-700 font-medium">Salary Per Month</label>
+
+                      <input
+                        type="text"
+                        name="salary"
+                        disabled={mode === "view"}
+                        value={formData.salary}
+                        onChange={handleInputChange}
+                        placeholder="salary"
                         className="border border-[#C4C4C4] rounded-md px-3 py-2 focus:outline-none focus:ring-1 focus:ring-blue-500 w-[220px]"
                       />
                     </div>
@@ -1484,7 +1512,7 @@ const openValuationModal = (emp) => {
 
                       </td>
 
-                      <td className="px-4 py-2">{emp.emp_name}</td>
+                      <td className="px-4 py-2 text-blue-500 cursor-pointer"   onClick={() => handleView(emp)}>{emp.emp_name}</td>
                       <td className="px-4 py-2">{emp.email}</td>
                       <td className="px-4 py-2">{emp.mobile_no}</td>
                       {/* <td className="px-4 py-2">{new Date(emp.joining_date).toLocaleDateString()}</td>
@@ -1501,13 +1529,13 @@ const openValuationModal = (emp) => {
 
                       <td className="px-4 py-2">
                         <div className="flex gap-2 justify-center">
-                          <button
+                          {/* <button
                             title="View"
                             onClick={() => handleView(emp)}
                             className="bg-[#646AD9] p-1.5 rounded text-white hover:bg-[#5057c9] cursor-pointer"
                           >
                             <FiEye />
-                          </button>
+                          </button> */}
                           <button
                             title="Edit"
                             className="bg-green-500 p-1.5 rounded text-white hover:bg-green-600 cursor-pointer"

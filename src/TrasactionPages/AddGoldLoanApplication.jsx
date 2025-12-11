@@ -9,9 +9,11 @@ import timesvg from "../assets/timesvg.svg";
 import { decryptData } from "../utils/cryptoHelper";
 import PledgeItemList from "./PledgeItemList";
 import PledgeItemListSilver from "./PledgeItemListSilver";
+import { useAuth } from "../API/Context/AuthContext";
 const AddGoldLoanApplication = () => {
   const [schemes, setSchemes] = useState([]); // store all schemes
   const [selectedScheme, setSelectedScheme] = useState(null); // store selected scheme
+  console.log(selectedScheme,"selectedScheme")
   const navigate = useNavigate();
   const [activeEmployees, setActiveEmployees] = useState([]);
 console.log(activeEmployees,"activeEmployees")
@@ -48,6 +50,11 @@ console.log(activeEmployees,"activeEmployees")
     }));
   };
 
+   const { loginUser } = useAuth();
+
+  console.log("Logged in user:", loginUser);
+
+
   const handleSaveLoan = async () => {
     debugger
     try {
@@ -74,7 +81,8 @@ console.log(activeEmployees,"activeEmployees")
 
       // 📦 Pledge Items
       formDataToSend.append("Pledge_Item_List", JSON.stringify(PledgeItem || []));
- formDataToSend.append("Product_Name", selectedScheme.product || 0);
+      formDataToSend.append("Product_Name", selectedScheme.product || 0);
+      formDataToSend.append("Scheme_type", selectedScheme.calcBasisOn || 0);
       // 💰 Loan Details
       formDataToSend.append("Loan_amount", formData.Loan_amount || 0);
       formDataToSend.append("Doc_Charges", formData.Doc_Charges || 0);
@@ -99,7 +107,7 @@ console.log(activeEmployees,"activeEmployees")
       );
 
       // 🏢 Misc Info
-      formDataToSend.append("approved_by", "Admin");
+      formDataToSend.append("approved_by",loginUser);
       formDataToSend.append("approval_date", new Date().toISOString().split("T")[0]);
       formDataToSend.append("branch_id", 1);
 
@@ -327,33 +335,72 @@ console.log(activeEmployees,"activeEmployees")
     setRows(updatedRows);
   };
 
-  const handleSelectCustomer = (customer ,type) => {
-    setSelectedremarkModel(true)
-   if (type === "Borrower") {
-    setSelectedBorrowerRemark(customer.Remark);
-  }
+  // const handleSelectCustomer = (customer ,type) => {
+  //   setSelectedremarkModel(true)
+  //  if (type === "Borrower") {
+  //   setSelectedBorrowerRemark(customer.Remark);
+  // }
 
  
-    setSelectedCustomer(customer);
-    setSearchTerm(customer.firstName); // show name in input
-    setResults([]); // hide dropdown
+  //   setSelectedCustomer(customer);
+  //   setSearchTerm(customer.firstName); // show name in input
+  //   setResults([]); // hide dropdown
 
-    setFormData((prev) => ({
-      ...prev,
-      borrowerName: customer.firstName || "",
-      printName: customer.printName || "",
-      mobile: customer.mobile || "",
-      altMobile: customer.altMobile || "",
-      email: customer.email || "",
-      panNo: customer.panNo || "",
-      aadhar: customer.aadhar || "",
-      Borrower_ProfileImg: customer.profileImage || "",
-      Borrower_signature: customer.signature || "",
-      borrowerAddress: `${customer.Permanent_Address || ""}, ${customer.Permanent_City || ""}, ${customer.Permanent_State || ""}, ${customer.Permanent_Country || ""} - ${customer.Permanent_Pincode || ""}`,
-      Nominee_Name: customer.Nominee_NomineeName || "",
-      NomineeRelation: customer.Nominee_Relation || "",
-    }));
-  };
+  //   setFormData((prev) => ({
+  //     ...prev,
+  //     borrowerName: customer.firstName || "",
+  //     printName: customer.printName || "",
+  //     mobile: customer.mobile || "",
+  //     altMobile: customer.altMobile || "",
+  //     email: customer.email || "",
+  //     panNo: customer.panNo || "",
+  //     aadhar: customer.aadhar || "",
+  //     Borrower_ProfileImg: customer.profileImage || "",
+  //     Borrower_signature: customer.signature || "",
+  //     borrowerAddress: `${customer.Permanent_Address || ""}, ${customer.Permanent_City || ""}, ${customer.Permanent_State || ""}, ${customer.Permanent_Country || ""} - ${customer.Permanent_Pincode || ""}`,
+  //     Nominee_Name: customer.Nominee_NomineeName || "",
+  //     NomineeRelation: customer.Nominee_Relation || "",
+  //   }));
+  // };
+const handleSelectCustomer = (customer, type) => {
+  debugger
+  // 1️⃣ Close dropdown immediately
+  setResults([]);
+  setLoading(false);
+
+  // 2️⃣ Update input text
+  setSearchTerm(customer.firstName || "");
+
+  // 3️⃣ Update borrower remark if Borrower selected
+  if (type === "Borrower") {
+    setSelectedBorrowerRemark(customer.Remark || "");
+  }
+
+  // 4️⃣ Update selected customer state
+  setSelectedCustomer(customer);
+
+  // 5️⃣ Update form data
+  setFormData((prev) => ({
+    ...prev,
+    borrowerName: customer.firstName || "",
+    printName: customer.printName || "",
+    mobile: customer.mobile || "",
+    altMobile: customer.altMobile || "",
+    email: customer.email || "",
+    panNo: customer.panNo || "",
+    aadhar: customer.aadhar || "",
+    Borrower_ProfileImg: customer.profileImage || "",
+    Borrower_signature: customer.signature || "",
+    borrowerAddress: `${customer.Permanent_Address || ""}, ${customer.Permanent_City || ""}, ${customer.Permanent_State || ""}, ${customer.Permanent_Country || ""} - ${customer.Permanent_Pincode || ""}`,
+    Nominee_Name: customer.Nominee_NomineeName || "",
+    NomineeRelation: customer.Nominee_Relation || "",
+  }));
+
+  // 6️⃣ OPEN REMARK MODAL AFTER UI UPDATE (the real fix)
+  setTimeout(() => {
+    setSelectedremarkModel(true);
+  }, 120);
+};
 
   const handleSelectCoborrower = (customer,type) => {
  setSelectedremarkModel(true)
@@ -514,22 +561,21 @@ console.log(activeEmployees,"activeEmployees")
                   )}
 
                   {/* Dropdown */}
-                  {results.length > 0 && (
-                    <ul className="absolute left-0 top-full bg-white border border-gray-200 rounded-md w-full max-h-48 overflow-y-auto mt-1 shadow-lg z-50">
-                      {results.map((customer) => (
-                        <li
-                          key={customer.id}
-                          onClick={() => handleSelectCustomer(customer,"Borrower")}
-                          className="px-3 py-2 hover:bg-blue-100 cursor-pointer"
-                        >
-                          {customer.firstName}{" "}
-                          <span className="text-gray-500 text-sm">
-                            ({customer.mobile})
-                          </span>
-                        </li>
-                      ))}
-                    </ul>
-                  )}
+                 {results.length > 0 && !selectedCustomer && (
+  <ul className="absolute left-0 top-full bg-white border border-gray-200 rounded-md w-full max-h-48 overflow-y-auto mt-1 shadow-lg z-50">
+    {results.map((customer) => (
+      <li
+        key={customer.id}
+        onClick={() => handleSelectCustomer(customer, "Borrower")}
+        className="px-3 py-2 hover:bg-blue-100 cursor-pointer"
+      >
+        {customer.firstName}{" "}
+        <span className="text-gray-500 text-sm">({customer.mobile})</span>
+      </li>
+    ))}
+  </ul>
+)}
+
                 </div>
 
 
@@ -644,7 +690,7 @@ console.log(activeEmployees,"activeEmployees")
                   )}
 
                   {/* Dropdown */}
-                  {results2.length > 0 && (
+                  {results2.length > 0 && !selectedCoBorrower && (
                     <ul className="absolute left-0 top-full bg-white border border-gray-200 rounded-md w-full max-h-48 overflow-y-auto mt-1 shadow-lg z-50">
                       {results2.map((customer) => (
                         <li

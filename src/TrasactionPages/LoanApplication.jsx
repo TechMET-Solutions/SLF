@@ -11,7 +11,6 @@ import envImg from "../assets/envImg.jpg";
 import goldlogo from "../assets/gold_print.svg";
 
 import { CgSoftwareUpload } from "react-icons/cg";
-import { IoChevronDownOutline } from "react-icons/io5";
 import { PiPrinterLight } from "react-icons/pi";
 import { RiMessage2Line } from "react-icons/ri";
 import { API } from "../api";
@@ -69,6 +68,7 @@ const LoanApplication = () => {
     field: "",
     search: "",
     loan_type: "",
+    loans:""
   });
 
   const [remarkData, setRemarkData] = useState(null);
@@ -143,67 +143,7 @@ const LoanApplication = () => {
     },
   });
 
-  // Fetch loan applications from API using Axios
-  // const fetchLoanApplications = async (page = 1, immediateFilters = null, immediateDate = undefined, immediateScheme = undefined) => {
-  //   setLoading(true);
-  //   setError("");
-  //   try {
-  //     // Use immediate values if provided, otherwise use current state
-  //     const activeFilters = immediateFilters !== null ? immediateFilters : filters;
-  //     const activeDate = immediateDate !== undefined ? immediateDate : selectedDate;
-  //     const activeScheme = immediateScheme !== undefined ? immediateScheme : selectedScheme;
-      
-  //     // Build query parameters
-  //     const params = new URLSearchParams({
-  //       page: page.toString(),
-  //       limit: pagination.limit.toString()
-  //     });
-
-  //     // Add filters to query params if they have values
-  //     Object.entries(activeFilters).forEach(([key, value]) => {
-  //       if (value && key !== 'field' && key !== 'search') {
-  //         params.append(key, value);
-  //       }
-  //     });
-
-  //     // Add scheme filter if selected
-  //     if (activeScheme) {
-  //       const selectedSchemeObj = schemes.find(s => {
-  //         const label = typeof s === 'string' ? s : (s.schemeName || s.SchemeName || s.name || s.schemeCode || s.scheme_code || s.code || JSON.stringify(s));
-  //         return label === activeScheme;
-  //       });
-        
-  //       if (selectedSchemeObj && selectedSchemeObj.id) {
-  //         params.append('scheme_id', selectedSchemeObj.id);
-  //       }
-  //     }
-
-  //     // Add date filter if selected
-  //     if (activeDate) {
-  //       params.append('loan_date', activeDate.toISOString().split('T')[0]);
-  //     }
-
-  //     const response = await apiClient.get(`/Transactions/goldloan/all?${params}`);
-
-  //     if (response.data.success) {
-  //       setLoanApplication(response.data.data);
-  //       setPagination({
-  //         page: response.data.page,
-  //         totalPages: response.data.totalPages,
-  //         total: response.data.total,
-  //         limit: pagination.limit,
-  //       });
-  //     } else {
-  //       throw new Error(response.data.message || "No loan applications");
-  //     }
-  //   } catch (err) {
-  //     console.error("Error fetching loan applications:", err);
-  //     setError("No loan applications");
-  //     setLoanApplication([]);
-  //   } finally {
-  //     setLoading(false);
-  //   }
-  // };
+ 
 const fetchLoanApplications = async (
   page = 1,
   immediateFilters = null,
@@ -214,11 +154,9 @@ const fetchLoanApplications = async (
   setError("");
 
   try {
-    // use immediate values only if provided
     const activeFilters = immediateFilters !== null ? immediateFilters : filters;
     const activeDate = immediateDate !== undefined ? immediateDate : selectedDate;
-    const activeScheme =
-      immediateScheme !== undefined ? immediateScheme : selectedScheme;
+    const activeScheme = immediateScheme !== undefined ? immediateScheme : selectedScheme;
 
     const params = new URLSearchParams({
       page: page.toString(),
@@ -232,9 +170,14 @@ const fetchLoanApplications = async (
       }
     });
 
-    // Add Loan Type Filter (gold/silver/all)
+    // Add Product Filter (gold/silver)
     if (activeFilters.loan_type) {
       params.append("loan_type", activeFilters.loan_type);
+    }
+
+    // ⭐ ADD THIS ⭐ → Bullet/EMI filter
+    if (activeFilters.loans) {
+      params.append("loans", activeFilters.loans);
     }
 
     // Add scheme filter
@@ -250,7 +193,6 @@ const fetchLoanApplications = async (
               s.scheme_code ||
               s.code ||
               JSON.stringify(s);
-
         return label === activeScheme;
       });
 
@@ -286,6 +228,7 @@ const fetchLoanApplications = async (
   }
 };
 
+
   // Initial fetch
   useEffect(() => {
     fetchLoanApplications();
@@ -303,12 +246,13 @@ const fetchLoanApplications = async (
   const handleSearch = () => {
     if (filters.field && filters.search) {
       const searchValue = filters.search;
-      const fieldMappings = {
-        loan_no: 'loan_no',
-        party_name: 'party_name', 
-        added_by: 'added_by',
-        approved_by: 'approved_by'
-      };
+     const fieldMappings = {
+  loan_no: 'loan_no',
+  party_name: 'party_name',
+  added_by: 'added_by',
+  approved_by: 'approved_by',
+  Scheme: 'scheme'   // ⭐ New
+};
       
       if (fieldMappings[filters.field]) {
         const updatedFilters = {
@@ -384,7 +328,9 @@ const fetchLoanApplications = async (
       scheme_id: "",
       borrower_id: "",
       field: "",
-      search: ""
+      search: "",
+      loans: "",
+      loan_type:""
     };
     
     setFilters(clearedFilters);
@@ -786,6 +732,13 @@ const handleLoanTypeChange = (value) => {
 
   // 🔥 Fetch immediately when loan type changes
   fetchLoanApplications(1, updatedFilters);
+  };
+  const handleLoanTypeChangeloans = (value) => {
+  const updatedFilters = { ...filters, loans: value };
+  setFilters(updatedFilters);
+
+  // 🔥 Fetch immediately when loan type changes
+  fetchLoanApplications(1, updatedFilters);
 };
 
 
@@ -818,6 +771,7 @@ const handleLoanTypeChange = (value) => {
                   <option value="">Field</option>
                   <option value="loan_no">Loan No</option>
                   <option value="party_name">Party Name</option>
+                    <option value="Scheme">Scheme</option>
                   <option value="added_by">Added By</option>
                   <option value="approved_by">Approved By</option>
                 </select>
@@ -852,7 +806,7 @@ const handleLoanTypeChange = (value) => {
               </div>
 
               {/* Scheme Filter */}
-              <div className="relative w-[111px]">
+              {/* <div className="relative w-[111px]">
                 <button
                   className="border border-black rounded h-[31px] w-full text-left text-[12px] flex items-center justify-between px-2 transition-colors duration-200 hover:border-gray-400"
                   onClick={() => setIsOpen(!isOpen)}
@@ -898,19 +852,34 @@ const handleLoanTypeChange = (value) => {
                     ×
                   </button>
                 )}
-              </div>
+              </div> */}
 
               <div>
   <select
   name="loan_type"
   value={filters.loan_type}
   onChange={(e) => handleLoanTypeChange(e.target.value)}
-  className="border border-gray-300 rounded pl-2 w-[140px] h-[31px] text-[12px]"
+  className="border border-gray-300 rounded pl-2 w-[130px] h-[31px] text-[12px]"
 >
   <option value="">Select Loan Type</option>
   <option value="all">ALL Loans</option>
   <option value="gold">Gold Loans</option>
   <option value="silver">Silver Loans</option>
+</select>
+
+              </div>
+                <div>
+  <select
+  name="loans"
+  value={filters.loans}
+  onChange={(e) => handleLoanTypeChangeloans(e.target.value)}
+  className="border border-gray-300 rounded pl-2 w-[100px] h-[31px] text-[12px]"
+>
+                  <option value="">Select Loan</option>
+                  <option value="all">ALL Loans</option>
+  <option value="bullet">Bullet Loan</option>
+  
+  <option value="emi">EMI Loan</option>
 </select>
 
 </div>
@@ -982,6 +951,9 @@ const handleLoanTypeChange = (value) => {
             >
               Add
             </button>
+            <button className="w-[74px] h-[24px] rounded-[3.75px] bg-[#C1121F] text-white text-[10px]" onClick={() => navigate("/")}>
+                Exit
+              </button>
           </div>
         </div>
       </div>
@@ -1029,7 +1001,7 @@ const handleLoanTypeChange = (value) => {
               </div>
             </div>
           ) : (
-            <table className="w-full border-collapse border border-gray-300">
+            <table className="w-full border-collapse  border-gray-300">
               <thead className="bg-[#0A2478] text-white text-sm">
                 <tr>
                   <th className="px-4 py-2 border-r border-gray-300 text-[14px] w-[103px]">
@@ -1040,6 +1012,9 @@ const handleLoanTypeChange = (value) => {
                   </th>
                   <th className="px-4 py-2 border-r border-gray-300 text-[14px] w-[101px]">
                     Loan Date
+                    </th>
+                     <th className="px-4 py-2 border-r border-gray-300 text-[14px] w-[204px]">
+                    Scheme 
                   </th>
                   <th className="px-4 py-2 border-r border-gray-300 text-[14px] w-[104px]">
                     Loan Amount
@@ -1089,8 +1064,8 @@ const handleLoanTypeChange = (value) => {
                   <tr
                     key={index}
                     className={`border-b ${
-                      index % 2 === 0 ? "bg-gray-50" : "bg-white"
-                    } hover:bg-gray-100`}
+                      index % 2 === 0 ? "bg-white" : "bg-white"
+                    } `}
                   >
                     <td
                       className="px-4 py-2 text-blue-600 cursor-pointer hover:underline font-medium"
@@ -1101,6 +1076,9 @@ const handleLoanTypeChange = (value) => {
                     <td className="px-4 py-2">{row.Party_Name}</td>
                     <td className="px-4 py-2">
                       {formatIndianDate(row.Loan_Date)}
+                    </td>
+                     <td className="px-4 py-2">
+                      {(row.Scheme)}
                     </td>
                     <td className="px-4 py-2 font-medium">
                       ₹{row.Loan_Amount?.toLocaleString("en-IN")}

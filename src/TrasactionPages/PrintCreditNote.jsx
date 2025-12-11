@@ -1,5 +1,5 @@
-import React, { useEffect, useState } from "react";
 import axios from "axios";
+import { useEffect, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import { API } from "../api";
 
@@ -79,9 +79,9 @@ const PrintCreditNote = () => {
 
         </div>
       </div>
-
-      {/* MAIN CONTENT */}
-      <div className="w-full bg-white shadow-md py-5">
+      <div className="p-2 w-[1290px] flex justify-center ml-[100px]">
+        <div>
+ <div className=" bg-white  py-5">
 
         {/* Credit Note Details */}
         <section className="bg-[#ECECF6] p-4 px-18 border-gray-300">
@@ -294,6 +294,12 @@ const PrintCreditNote = () => {
           <li>For queries, contact Accounts Department.</li>
         </ul>
       </div>
+        </div>
+        {/* MAIN CONTENT */}
+     
+
+</div>
+      
     </div>
   );
 };

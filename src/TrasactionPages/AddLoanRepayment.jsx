@@ -103,14 +103,20 @@ const [loanInfo, setLoanInfo] = useState({
     intPaidUpto: new Date(),
    });
   console.log(loanInfoForAdj,"loanInfoForAdj")
-  const [paymentInfo, setPaymentInfo] = useState({
+const [paymentInfo, setPaymentInfo] = useState({
   mode: "",
   type: "",
   refNo: "",
-  madeBy: ""
+  madeBy: "",
+  creditNote: "",
+  creditNoteAmount: 0,
+  utilizedAmount: 0,
+  unutilizedAmount: 0
 });
-const [creditNotes, setCreditNotes] = useState([]);
 
+  console.log(paymentInfo,"paymentInfo")
+const [creditNotes, setCreditNotes] = useState([]);
+console.log(creditNotes,)
 useEffect(() => {
   if (loanData.BorrowerId) {
     fetchCreditNotes(loanData.BorrowerId);
@@ -433,75 +439,8 @@ const handlePayAmountChange = (value) => {
     return words.trim() + ' only';
   };
 
-// useEffect(() => {
-//   if (!data?.loanApplication?.LoanPendingAmount || !data?.loanApplication?.approval_date)
-//     return;
 
-//   const approvalDate = new Date(data.loanApplication.approval_date);
-//   const today = new Date();
-//   today.setHours(0, 0, 0, 0);
-
-//   const interestPaidUpto = new Date(data.loanApplication.InterestPaidUpto || today);
-//   interestPaidUpto.setHours(0, 0, 0, 0);
-
-//   const pendingLoanAmount = Number(data.loanApplication.LoanPendingAmount);
-//   const totalUnpaidCharges = Number(data.loanApplication.total_unpaid_charges || 0);
-
-//   const slabs = JSON.parse(data.schemeData.interestRates || "[]");
-
-//   // ✅ CASE 1: Already paid future interest
-//   if (interestPaidUpto > today) {
-//     // Find next interest slab (optional)
-//     const currentSlab = slabs.find(
-//       (s) =>
-//         Number(s.from) <= 0 && // from 0 days onward
-//         Number(s.to) >= 0
-//     );
-//     const interestPercent = currentSlab ? Number(currentSlab.addInt) : 0;
-//     setintrestPercentage(interestPercent);
-
-//     setLoanInfo({
-//       pendingDays: 0,
-//       pendingInt: "0.00",
-//       interestPercent,
-//       loanAmountPaid: pendingLoanAmount.toFixed(2),
-//       payAmount: (pendingLoanAmount + totalUnpaidCharges).toFixed(2),
-//       balanceLoanAmt: 0,
-//       chargesAdjusted: totalUnpaidCharges.toFixed(2),
-//       intPaidUpto: interestPaidUpto.toISOString().slice(0, 10),
-//     });
-
-//     return;
-//   }
-
-//   // ✅ CASE 2: Normal pending case (interest due till today)
-//   const diffMs = today - interestPaidUpto;
-//   const pendingDays = Math.max(Math.round(diffMs / (1000 * 60 * 60 * 24)), 0);
-
-//   const currentSlab = slabs.find(
-//     (s) => pendingDays >= Number(s.from) && pendingDays <= Number(s.to)
-//   );
-//   const interestPercent = currentSlab ? Number(currentSlab.addInt) : 0;
-//   setintrestPercentage(interestPercent);
-
-//   // Calculate daily and total interest
-//   const dailyIntAmt = (pendingLoanAmount * interestPercent) / 100 / 365;
-//   const pendingInt = dailyIntAmt * pendingDays;
-
-//   const payAmount = pendingLoanAmount + pendingInt + totalUnpaidCharges;
-
-//   setLoanInfo({
-//     pendingDays,
-//     pendingInt: pendingInt.toFixed(2),
-//     interestPercent,
-//     loanAmountPaid: pendingLoanAmount.toFixed(2),
-//     payAmount: payAmount.toFixed(2),
-//     balanceLoanAmt: 0,
-//     chargesAdjusted: totalUnpaidCharges.toFixed(2),
-//     intPaidUpto: today.toISOString().slice(0, 10),
-//   });
-// }, [data]);
-useEffect(() => {
+  useEffect(() => {
   if (!data?.loanApplication?.LoanPendingAmount || !data?.loanApplication?.approval_date)
     return;
 
@@ -706,15 +645,30 @@ const parseJSONData = (value) => {
 //     });
 // };
   const handleRepaymentSubmit = () => {
-  debugger
+  debugger;
+
+  let finalLoanInfo;
+
+  if (isClose === true) {
+    // 👉 Highest Priority
+    finalLoanInfo = loanInfo;
+  } 
+  else if (isAdvInt === true) {
+    // 👉 Advance Interest Mode
+    finalLoanInfo = loanInfoForAdj;
+  } 
+  else {
+    // 👉 Normal Repayment
+    finalLoanInfo = loanInfoForAdj;
+  }
 
   const finalObject = {
     loanId: data?.loanApplication?.id,
-    AdvanceInt: isAdvIntCheck,
+    isClose: isClose,
+    AdvanceInt: isAdvInt,
     paymentInfo: paymentInfo,
-    loanInfo: loanInfoForAdj,
-    uptoInterest:loanInfo.pendingInt
-    // status: "Closed"
+    loanInfo: finalLoanInfo,
+    uptoInterest: loanInfo.pendingInt,
   };
 
   console.log("SEND TO BACKEND:", finalObject);
@@ -735,38 +689,97 @@ const parseJSONData = (value) => {
     });
 };
 
-  const handleCreditNoteSelect = (creditNoteId) => {
-  debugger
+
+//   const handleCreditNoteSelect = (creditNoteId) => {
+//   debugger
+//   const selected = creditNotes.find(
+//     (item) => item.credit_note_id === creditNoteId
+//   );
+
+//   if (!selected) {
+//     setPaymentInfo({ ...paymentInfo, creditNote: "" });
+//     return;
+//   }
+
+  
+
+//   const loanPendingAmount = Number(data?.loanApplication?.LoanPendingAmount || 0);
+// const creditAmount = Number(selected.net_amount || 0);
+
+// if (loanPendingAmount < creditAmount) {
+//   alert(
+//     `❗ Pending Amount: ₹${loanPendingAmount}  
+//      ❗ Credit Note Amount: ₹${creditAmount}  
+//      ⚠️ Credit Note amount is greater than Pending Amount`
+//   );
+
+//   // Reset dropdown
+//   setPaymentInfo({ ...paymentInfo, creditNote: "" });
+//   return;
+// }
+
+
+//   // Valid selection
+//   setPaymentInfo({ ...paymentInfo, creditNote: creditNoteId });
+// };
+const handleCreditNoteSelect = (creditNoteId) => {
+  debugger;
+
   const selected = creditNotes.find(
     (item) => item.credit_note_id === creditNoteId
   );
 
   if (!selected) {
-    setPaymentInfo({ ...paymentInfo, creditNote: "" });
+    setPaymentInfo((prev) => ({
+      ...prev,
+      creditNote: "",
+      creditNoteAmount: 0,
+      utilizedAmount: "0.00",
+      unutilizedAmount: "0.00",
+    }));
     return;
   }
 
-  
+  // 1️⃣ Determine Pay Amount Based on Conditions
+  let payAmount = 0;
 
-  const loanPendingAmount = Number(data?.loanApplication?.LoanPendingAmount || 0);
-const creditAmount = Number(selected.net_amount || 0);
+  if (isClose) {
+    payAmount = Number(loanInfo?.payAmount || 0);
+  } else if (isAdvInt) {
+    payAmount = Number(loanInfoForAdj?.payAmount || 0);
+  } else {
+    payAmount = Number(loanInfo?.payAmount || 0);
+  }
 
-if (loanPendingAmount < creditAmount) {
-  alert(
-    `❗ Pending Amount: ₹${loanPendingAmount}  
-     ❗ Credit Note Amount: ₹${creditAmount}  
-     ⚠️ Credit Note amount is greater than Pending Amount`
-  );
+  // 2️⃣ Credit Note Amount
+  const creditAmount = Number(selected.Unutilized_Amount || 0);
 
-  // Reset dropdown
-  setPaymentInfo({ ...paymentInfo, creditNote: "" });
-  return;
-}
+  let utilized = 0;
+  let unutilized = 0;
 
+  // 3️⃣ Apply Logic
+  if (payAmount >= creditAmount) {
+    utilized = creditAmount;
+    unutilized = 0;
+  } else {
+    utilized = payAmount;
+    unutilized = creditAmount - payAmount;
+  }
 
-  // Valid selection
-  setPaymentInfo({ ...paymentInfo, creditNote: creditNoteId });
+  // Convert to 2 decimals
+  utilized = utilized.toFixed(2);
+  unutilized = unutilized.toFixed(2);
+
+  // 4️⃣ Update paymentInfo
+  setPaymentInfo((prev) => ({
+    ...prev,
+    creditNote: selected.credit_note_id,
+    creditNoteAmount: creditAmount.toFixed(2),
+    utilizedAmount: utilized,
+    unutilizedAmount: unutilized,
+  }));
 };
+
 
   return (
     <div className="flex flex-col items-center mt-5">
@@ -795,7 +808,7 @@ if (loanPendingAmount < creditAmount) {
         {/* Header Section */}
 
         {/* Loan Information Section */}
-      <div className="w-full max-w-[1290px] bg-white p-4 rounded-md">
+      <div className=" max-w-[1290px] bg-white mt-5 rounded-md">
   <h1 className="text-blue-900 font-semibold text-xl pb-3">
     Loan Information
   </h1>
@@ -1084,7 +1097,7 @@ if (loanPendingAmount < creditAmount) {
 
 
         {/* Payment Section */}
-         <div className="mt-4 w-[1290px] bg-white rounded-md p-4">
+         <div className=" w-[1290px] bg-white rounded-md mt-5">
       <h1 className="text-blue-900 font-semibold text-xl pb-2">Payment</h1>
 
       {/* Top Checkboxes */}
@@ -1499,19 +1512,46 @@ if (checked) setIsAdvInt(false);
     <label className="text-gray-900 font-medium">Select Credit Note</label>
 
     <select
-  className="border border-gray-300 rounded-md px-3 py-2 focus:ring-1 focus:ring-blue-500 focus:outline-none"
-  value={paymentInfo.creditNote}
-  onChange={(e) => handleCreditNoteSelect(e.target.value)}
->
+      className="border border-gray-300 rounded-md px-3 py-2 focus:ring-1 focus:ring-blue-500 focus:outline-none"
+      value={paymentInfo.creditNote}
+      onChange={(e) => handleCreditNoteSelect(e.target.value)}
+    >
       <option value="">--Select--</option>
 
       {creditNotes.map((item) => (
-  <option key={item.id} value={item.credit_note_id}>
-    {item.credit_note_id} - ₹{item.net_amount}
-  </option>
-))}
-
+        <option key={item.id} value={item.credit_note_id}>
+          {item.credit_note_id} - ₹{item.Unutilized_Amount}
+        </option>
+      ))}
     </select>
+  </div>
+)}
+
+{paymentInfo.mode === "Credit Note" && paymentInfo.creditNote && (
+  <div className="flex gap-3 ">
+
+    {/* Utilized Amount */}
+    <div className="flex flex-col gap-1 w-[200px]">
+      <label className="text-gray-900 font-medium">Utilized Amount</label>
+      <input
+        type="text"
+        value={paymentInfo.utilizedAmount}
+        disabled
+        className="border border-gray-300 rounded-md px-3 py-2 bg-gray-100"
+      />
+    </div>
+
+    {/* Unutilized Amount */}
+    <div className="flex flex-col gap-1 w-[200px]">
+      <label className="text-gray-900 font-medium">Unutilized Amount</label>
+      <input
+        type="text"
+        value={paymentInfo.unutilizedAmount}
+        disabled
+        className="border border-gray-300 rounded-md px-3 py-2 bg-gray-100"
+      />
+    </div>
+
   </div>
 )}
 
@@ -1552,110 +1592,94 @@ if (checked) setIsAdvInt(false);
     </div>
 
         {/* Pledge Item List */}
-        <div className="flex justify-center mb-6">
-          <div className="w-[1290px]">
-            <h3 className="font-semibold mb-4 text-[#0A2478] text-lg">
-              Pledge Item List
-            </h3>
-            <div className="w-full text-xs border border-gray-300">
-              <div className="flex bg-[#0A2478] text-white font-semibold">
-                <div className="flex-1 p-2 py-3 border-r-2 border-white">
-                  Particulars
-                </div>
-                <div className="w-16 p-2 border-r-2 border-white text-center">
-                  Nos.
-                </div>
-                <div className="w-24 p-2 border-r-2 border-white text-center">
-                  Gross
-                </div>
-                <div className="w-24 p-2 border-r-2 border-white text-center">
-                  Net Weight
-                </div>
-                <div className="w-28 p-2 border-r-2 border-white text-center">
-                  Purity
-                </div>
-                 <div className="w-28 p-2 border-r-2 border-white text-center">
-                 Calculated Purity
-                </div>
-                <div className="w-24 p-2 border-r-2 border-white text-center">
-                  Rate
-                </div>
-                <div className="w-28 p-2 border-r-2 border-white text-center">
-                  Valuation
-                </div>
-                <div className="w-28 p-2 text-center">Remark</div>
-              </div>
+       <div className="flex justify-center mb-6 mt-5">
+  <div className="w-[1290px]">
+    <h3 className="font-semibold mb-4 text-[#0A2478] text-lg">
+      Pledge Item List
+    </h3>
 
-              {/* Dynamic Rows */}
-              {pledgeItems?.length > 0 ? (
-                <>
-                  {pledgeItems.map((item, index) => (
-                    <div key={item.id || index} className="flex border-t border-gray-300">
-                      <div className="flex-1 p-2 border-r border-gray-300">
-                        {item.particular || 'Gold'}
-                      </div>
-                      <div className="w-16 p-2 border-r border-gray-300 text-center">
-                        {item.nos || 1}
-                      </div>
-                      <div className="w-24 p-2 border-r border-gray-300 text-center">
-                        {formatCurrency(item.gross)}
-                      </div>
-                      <div className="w-24 p-2 border-r border-gray-300 text-center">
-                        {formatCurrency(item.netWeight)}
-                      </div>
-                      <div className="w-28 p-2 border-r border-gray-300 text-center">
-                        {item.purity }
-                      </div>
-                       <div className="w-28 p-2 border-r border-gray-300 text-center">
-                        {item.Calculated_Purity }
-                      </div>
-                      <div className="w-24 p-2 border-r border-gray-300 text-center">
-                        {formatCurrency(item.rate)}
-                      </div>
-                      <div className="w-28 p-2 border-r border-gray-300 text-center">
-                        {formatCurrency(item.valuation)}
-                      </div>
-                      <div className="w-28 p-2 text-center">
-                        {item.remark || '-'}
-                      </div>
-                    </div>
-                  ))}
+    <div className="w-full text-xs border border-gray-300">
+      {/* Header */}
+      <div className="flex bg-[#0A2478] text-white font-semibold">
+        <div className="flex-1 p-3 border-r border-white text-center">Particulars</div>
+        <div className="w-16 p-3 border-r border-white text-center">Nos.</div>
+        <div className="w-24 p-3 border-r border-white text-center">Gross</div>
+        <div className="w-24 p-3 border-r border-white text-center">Net Weight</div>
+        <div className="w-24 p-3 border-r border-white text-center">Purity</div>
+        <div className="w-28 p-3 border-r border-white text-center">Calculated Purity</div>
+        <div className="w-24 p-3 border-r border-white text-center">Rate</div>
+        <div className="w-28 p-3 border-r border-white text-center">Valuation</div>
+        <div className="w-28 p-3 text-center">Remark</div>
+      </div>
 
-                  {/* Total Row */}
-                  <div className="flex border-t border-gray-300 bg-gray-50">
-                    <div className="flex-1 p-2 border-r border-gray-300 font-semibold">
-                      Total
-                    </div>
-                    <div className="w-16 p-2 border-r border-gray-300 text-center font-semibold">
-                      {totalNos}
-                    </div>
-                    <div className="w-24 p-2 border-r border-gray-300 text-center font-semibold">
-                      {formatCurrency(totalGross)}
-                    </div>
-                    <div className="w-24 p-2 border-r border-gray-300 text-center font-semibold">
-                      {formatCurrency(totalNetWeight)}
-                    </div>
-                    <div className="w-28 p-2 border-r border-gray-300 text-center"></div>
-                    <div className="w-24 p-2 border-r border-gray-300 text-center"></div>
-                    <div className="w-28 p-2 border-r border-gray-300 text-center font-semibold">
-                      {formatCurrency(totalValuation)}
-                    </div>
-                    <div className="w-28 p-2 text-center"></div>
-                  </div>
-                </>
-              ) : (
-                <div className="flex border-t border-gray-300">
-                  <div className="flex-1 p-4 text-center text-gray-500">
-                    No pledge items found
-                  </div>
-                </div>
-              )}
+      {/* Dynamic Rows */}
+      {pledgeItems?.length > 0 ? (
+        <>
+          {pledgeItems.map((item, index) => (
+            <div key={index} className="flex border-t border-gray-300">
+              <div className="flex-1 p-2 border-r border-gray-300">{item.particular || "Gold"}</div>
+              <div className="w-16 p-2 border-r border-gray-300 text-center">{item.nos || 1}</div>
+              
+              <div className="w-24 p-2 border-r border-gray-300 text-center">{formatCurrency(item.gross)}</div>
+              <div className="w-24 p-2 border-r border-gray-300 text-center">{formatCurrency(item.netWeight)}</div>
+              <div className="w-24 p-2 border-r border-gray-300 text-center">{item.purity}</div>
+              <div className="w-28 p-2 border-r border-gray-300 text-center">{item.Calculated_Purity}</div>
+              <div className="w-24 p-2 border-r border-gray-300 text-center">{formatCurrency(item.rate)}</div>
+              <div className="w-28 p-2 border-r border-gray-300 text-center">{formatCurrency(item.valuation)}</div>
+              <div className="w-28 p-2 text-center">{item.remark || "-"}</div>
             </div>
-          </div>
+          ))}
+
+          {/* TOTAL ROW */}
+         <div className="flex border-t border-gray-300 bg-gray-100 font-semibold">
+  <div className="flex-1 p-2 border-r border-gray-300 text-left">Total</div>
+
+  {/* Nos Total */}
+  <div className="w-16 p-2 border-r border-gray-300 text-center">
+    {totalNos}
+  </div>
+
+  {/* Gross Total */}
+  <div className="w-24 p-2 border-r border-gray-300 text-center">
+    {formatCurrency(totalGross)}
+  </div>
+
+  {/* Net Weight Total */}
+  <div className="w-24 p-2 border-r border-gray-300 text-center">
+    {formatCurrency(totalNetWeight)}
+  </div>
+
+  {/* Purity (empty) */}
+  <div className="w-24 p-2 border-r border-gray-300"></div>
+
+  {/* Calculated Purity (empty) */}
+  <div className="w-28 p-2 border-r border-gray-300"></div>
+
+  {/* Rate (empty) */}
+  <div className="w-24 p-2 border-r border-gray-300"></div>
+
+  {/* Valuation Total */}
+  <div className="w-28 p-2 border-r border-gray-300 text-center">
+    {formatCurrency(totalValuation)}
+  </div>
+
+  {/* Remark (empty) */}
+  <div className="w-28 p-2"></div>
+</div>
+
+        </>
+      ) : (
+        <div className="flex border-t border-gray-300">
+          <div className="flex-1 p-4 text-center text-gray-500">No pledge items found</div>
         </div>
+      )}
+    </div>
+  </div>
+</div>
+
 
         {/* Installments Table */}
-        <div className="my-6 w-[1270px] bg-white">
+        <div className=" w-[1290px] bg-white">
           <h1 className="text-blue-900 font-semibold text-xl py-2">
             Installments
           </h1>

@@ -1,7 +1,7 @@
 
 import axios from "axios";
 import { useEffect, useState } from "react";
-import { FiEdit, FiEye } from "react-icons/fi";
+import { FiEdit } from "react-icons/fi";
 import { useNavigate } from "react-router-dom";
 import { API } from "../api";
 import { fetchBranchesApi, updateBranchApi, updateBranchStatusApi } from "../API/Master/Master_Profile/Branch_Details";
@@ -107,7 +107,7 @@ const BranchProfileList = () => {
       return;
     }
 
-    // Check if mobile number is exactly 10 digits
+  
     const mobileRegex = /^[0-9]{10}$/;
     if (!mobileRegex.test(mobile_no)) {
       alert("Mobile Number must be a valid 10-digit number.");
@@ -119,7 +119,7 @@ const BranchProfileList = () => {
     try {
       const encrypted = encryptData({
         ...branchData,
-        id: editBranchId, // include id when editing
+        id: editBranchId, 
       });
 
       const url = isEditMode
@@ -516,7 +516,7 @@ const BranchProfileList = () => {
                   ) : (
                     <button
                       onClick={handleSave}
-                      className="bg-green-600 text-white cursor-pointer px-4 py-2 rounded-md"
+                      className="bg-[#0A2478] text-white cursor-pointer px-4 py-2 rounded-md"
                     >
                       Add Branch
                     </button>
@@ -569,7 +569,7 @@ const BranchProfileList = () => {
               <tbody className="text-[12px]">
                 {branches.map((row, index) => (
                   <tr key={index} className={`border-b ${index % 2 === 0 ? "bg-gray-50" : "bg-white"}`}>
-                    <td className="px-4 py-2">{row.branch_code}</td>
+                    <td className="px-4 py-2 text-blue-500 cursor-pointer" onClick={() => handleView(row)}>{row.branch_code}</td>
                     <td className="px-4 py-2">{row.branch_name}</td>
                     <td className="px-4 py-2">{row.address_line1}</td>
                     <td className="px-4 py-2">{row.mobile_no}</td>
@@ -585,11 +585,11 @@ const BranchProfileList = () => {
                           title="Edit">
                           <FiEdit className="text-white text-sm" />
                         </button>
-                        <button
+                        {/* <button
                           className="bg-[#646AD9] p-1.5 text-white rounded cursor-pointer"
                           onClick={() => handleView(row)} title="view"                   >
                           <FiEye className="text-white text-sm" />
-                        </button>
+                        </button> */}
                       </div>
                     </td>
 
