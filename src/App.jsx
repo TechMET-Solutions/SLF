@@ -201,11 +201,11 @@
 //           <Route path="/Credit-Note" element={<CreditNote />} />
 //           <Route path="/Debit-Note" element={<DebitNote />} />
 //           <Route path="/Auction-Application-List" element={<AuctionApplication />} />
-            
+
 //             <Route path="/InvoicePrint" element={<InvoicePrint />} />
 //           {/* Default Route */}
 //                   {/* <Route path="*" element={<Navigate to="/" />} /> */}
-                  
+
 //                   </Routes>
 //               </ProtectedRoute>
 //             }
@@ -300,6 +300,7 @@ import ViewBidderDetails from "./TrasactionPages/ViewBidderDetails";
 import ViewCreditNote from "./TrasactionPages/ViewCreditNote";
 import ViewLoanCharges from "./TrasactionPages/ViewLoanCharges";
 import ViewLoanDetails from "./TrasactionPages/ViewLoanDeatils";
+import GracePeriod from "./Tools/GracePeriod";
 
 
 // ---------------- LAYOUT WRAPPER ----------------
@@ -407,6 +408,9 @@ function App() {
                   <Route path="/Auction-Application-List" element={<AuctionApplication />} />
                   <Route path="/InvoicePrint" element={<InvoicePrint />} />
 
+
+                  {/* Tools */}
+                  <Route path="/Grace-Period" element={<GracePeriod />} />
                 </Routes>
               </ProtectedRoute>
             }

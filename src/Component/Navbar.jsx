@@ -5,6 +5,7 @@ import {
   FiChevronRight,
   FiChevronUp,
   FiLogOut,
+  FiSettings,
 } from "react-icons/fi";
 import { TfiReload } from "react-icons/tfi";
 import { Link } from "react-router-dom";
@@ -26,65 +27,66 @@ const Navbar = () => {
   };
   // Masters
   const [isMasterOpen, setIsMasterOpen] = useState(false);
-  // const [isBranchModelOpen, setIsBranchModelOpen] = useState(false);
   const [isMasterProfileOpen, setIsMasterProfileOpen] = useState(false);
   const [isMasterSchemeMaster, setIsMasterSchemeMaster] = useState(false);
-  const [isMasterSchemeEmployeeProfile, setIsMasterSchemeEmployeeProfile] =
-    useState(false);
-  const [isMasterSchemeUserManagement, setIsMasterSchemeUserManagement] =
-    useState(false);
+  const [isMasterSchemeEmployeeProfile, setIsMasterSchemeEmployeeProfile] = useState(false);
+  const [isMasterSchemeUserManagement, setIsMasterSchemeUserManagement] = useState(false);
 
   // Transactions
   const [isTransactionsOpen, setIsTransactionsOpen] = useState(false);
   const [isGoldLoanOpen, setIsGoldLoanOpen] = useState(false);
   const [isAuctionOpen, setIsAuctionOpen] = useState(false);
 
+  // Tools/Utilities
+  const [isToolsOpen, setIsToolsOpen] = useState(false);
+  const [isSettingsOpen, setIsSettingsOpen] = useState(false);
+
 
   const dropdownRef = useRef(null);
 
- function convertPermissions(permissions) {
-  const result = {};
+  function convertPermissions(permissions) {
+    const result = {};
 
-  if (!permissions || typeof permissions !== "object") return result;
+    if (!permissions || typeof permissions !== "object") return result;
 
-  Object.keys(permissions)?.forEach(section => {
-    // ensure section is an array
-    if (!Array.isArray(permissions[section])) return;
+    Object.keys(permissions)?.forEach(section => {
+      // ensure section is an array
+      if (!Array.isArray(permissions[section])) return;
 
-    result[section] = {};
+      result[section] = {};
 
-    permissions[section].forEach(item => {
-      result[section][item.name] = {
-        view: item.view,
-        add: item.add,
-        edit: item.edit,
-        delete: item.delete,
-        approve: item.approve
-      };
+      permissions[section].forEach(item => {
+        result[section][item.name] = {
+          view: item.view,
+          add: item.add,
+          edit: item.edit,
+          delete: item.delete,
+          approve: item.approve
+        };
+      });
     });
-  });
 
-  return result;
-}
+    return result;
+  }
 
 
- const userData = JSON.parse(sessionStorage.getItem("userData") || "{}");
+  const userData = JSON.parse(sessionStorage.getItem("userData") || "{}");
 
-// If Admin → FULL ACCESS
-if (userData.isAdmin || userData.permissions === "all") {
-  window.userIsAdmin = true;
-  // Skip conversion
-  console.log("ADMIN → FULL ACCESS ENABLED");
-} else {
-  window.userIsAdmin = false;
+  // If Admin → FULL ACCESS
+  if (userData.isAdmin || userData.permissions === "all") {
+    window.userIsAdmin = true;
+    // Skip conversion
+    console.log("ADMIN → FULL ACCESS ENABLED");
+  } else {
+    window.userIsAdmin = false;
 
-  // Convert array-based permissions → object format
-  userData.permissions = convertPermissions(userData.permissions);
-}
+    // Convert array-based permissions → object format
+    userData.permissions = convertPermissions(userData.permissions);
+  }
 
-const userPermissions = userData.permissions || {};
+  const userPermissions = userData.permissions || {};
 
-console.log("Converted Permissions", userPermissions);
+  console.log("Converted Permissions", userPermissions);
 
   // ✅ Close all dropdowns when clicking outside
   useEffect(() => {
@@ -100,6 +102,8 @@ console.log("Converted Permissions", userPermissions);
         setIsMasterSchemeUserManagement(false);
         setIsTransactionsOpen(false);
         setIsGoldLoanOpen(false);
+        setIsToolsOpen(false);
+        setIsSettingsOpen(false);
       }
     };
 
@@ -109,106 +113,106 @@ console.log("Converted Permissions", userPermissions);
 
 
 
-const handleLogout = () => {
-  sessionStorage.clear();      // remove all saved data
-  window.location.href = "/login";   // redirect to login
+  const handleLogout = () => {
+    sessionStorage.clear();      // remove all saved data
+    window.location.href = "/login";   // redirect to login
   };
-  
- const isAdmin = window.userIsAdmin;
 
-const masterPermissions = isAdmin ? "all" : userPermissions.Master || {};
+  const isAdmin = window.userIsAdmin;
+
+  const masterPermissions = isAdmin ? "all" : userPermissions.Master || {};
   const TrasactionPermissions = isAdmin ? "all" : userPermissions.Transaction || {};
-  
-const canSeeMaster = isAdmin
-  ? true
-  : Object.values(masterPermissions).some(p => p.view === true);
+
+  const canSeeMaster = isAdmin
+    ? true
+    : Object.values(masterPermissions).some(p => p.view === true);
 
   const canSeeScheme = isAdmin
-  ? true
-  : Object.values(TrasactionPermissions).some(p => p.view === true);
+    ? true
+    : Object.values(TrasactionPermissions).some(p => p.view === true);
 
 
   const masterProfileItems = [
-  "Account Group",
-  "Account Code",
-  "Branch Details",
-  "Item Profile",
-  "Product Purity Profile",
-  "Document Proof",
-  "Push Gold Rate",
-  "Charges Profile",
-  "Area"
-];
+    "Account Group",
+    "Account Code",
+    "Branch Details",
+    "Item Profile",
+    "Product Purity Profile",
+    "Document Proof",
+    "Push Gold Rate",
+    "Charges Profile",
+    "Area"
+  ];
 
-const canSeeMasterProfile = isAdmin
-  ? true
-  : masterProfileItems.some(
+  const canSeeMasterProfile = isAdmin
+    ? true
+    : masterProfileItems.some(
       (name) => masterPermissions[name]?.view === true
     );
 
   console.log(canSeeMasterProfile, "canSeeMasterProfile")
-  
+
 
   const masterProfileList = [
-  { name: "Account Group", path: "/account-groups" },
-  { name: "Account Code", path: "/account-code-list" },
-  { name: "Branch Details", path: "/Branch-Profile-List" },
-  { name: "Item Profile", path: "/Item-Profile-List" },
-  { name: "Product Purity", path: "/Product-Purity" },
-  { name: "Document Proof", path: "/Document-Proof-List" },
-  { name: "Push Rate", path: "/Push-Rate-List" },
-  { name: "Charges Profile", path: "/Charges-Profile-List" },
-  { name: "Area", path: "/Area" },
-];
+    { name: "Account Group", path: "/account-groups" },
+    { name: "Account Code", path: "/account-code-list" },
+    { name: "Branch Details", path: "/Branch-Profile-List" },
+    { name: "Item Profile", path: "/Item-Profile-List" },
+    { name: "Product Purity", path: "/Product-Purity" },
+    { name: "Document Proof", path: "/Document-Proof-List" },
+    { name: "Push Rate", path: "/Push-Rate-List" },
+    { name: "Charges Profile", path: "/Charges-Profile-List" },
+    { name: "Area", path: "/Area" },
+  ];
 
 
   const filteredMasterProfile = isAdmin
-  ? masterProfileList
-  : masterProfileList.filter(
+    ? masterProfileList
+    : masterProfileList.filter(
       (item) => masterPermissions[item.name]?.view === true
     );
-  
+
   const schemeMasterItems = [
-  { name: "Scheme Details", path: "/Scheme-Details-List" },
-  { name: "Scheme Branch Mapping", path: "/Branch-Scheme-Mapping-List" },
+    { name: "Scheme Details", path: "/Scheme-Details-List" },
+    { name: "Scheme Branch Mapping", path: "/Branch-Scheme-Mapping-List" },
   ];
- 
 
-const filteredSchemeMaster = isAdmin
-  ? schemeMasterItems
-  : schemeMasterItems.filter(
+
+  const filteredSchemeMaster = isAdmin
+    ? schemeMasterItems
+    : schemeMasterItems.filter(
       (item) => masterPermissions[item.name]?.view === true
     );
 
- const canSeeSchemeMaster = filteredSchemeMaster.length > 0;
+  const canSeeSchemeMaster = filteredSchemeMaster.length > 0;
 
   const employeeProfileItems = [
-  { name: "Employee Profile", path: "/Employee-Profile-list" },
-  { name: "Member Login Period", path: "/Member-Login-Period" },
-  { name: "Member Login Details", path: "/Member-Login-Details" },
-  { name: "Employee Attendance", path: "/Employee-Attendance" },
-  { name: "Employee Designation", path: "/Employee-Designation" },
-];
+    { name: "Employee Profile", path: "/Employee-Profile-list" },
+    { name: "Member Login Period", path: "/Member-Login-Period" },
+    { name: "Member Login Details", path: "/Member-Login-Details" },
+    { name: "Employee Attendance", path: "/Employee-Attendance" },
+    { name: "Employee Designation", path: "/Employee-Designation" },
+  ];
 
 
   const filteredEmployeeProfile = isAdmin
-  ? employeeProfileItems
-  : employeeProfileItems.filter(
+    ? employeeProfileItems
+    : employeeProfileItems.filter(
       (item) => masterPermissions[item.name]?.view === true
     );
 
-  
+
   const canSeeEmployeeProfile = filteredEmployeeProfile.length > 0;
 
 
   const userManagementItems = [
-  { name: "User Role Permission", path: "/User-Role-Permission" },
-  { name: "Member Branch Mapping", path: "/Member-Branch-Mapping" },
-];
+    { name: "User Role Permission", path: "/User-Role-Permission" },
+    { name: "Member Branch Mapping", path: "/Member-Branch-Mapping" },
+  ];
 
   const filteredUserManagement = isAdmin
-  ? userManagementItems
-  : userManagementItems.filter(
+    ? userManagementItems
+    : userManagementItems.filter(
       (item) => masterPermissions[item.name]?.view === true
     );
 
@@ -216,46 +220,46 @@ const filteredSchemeMaster = isAdmin
 
 
   const loanItems = [
-  { name: "Loan Application", path: "/Loan-Application" },
-  { name: "Loan Charges List", path: "/Loan-Charges-List" }
-];
+    { name: "Loan Application", path: "/Loan-Application" },
+    { name: "Loan Charges List", path: "/Loan-Charges-List" }
+  ];
 
-const customerProfileItem = {
-  name: "Customer Profile",
-  path: "/Customer-Profile-List"
-};
+  const customerProfileItem = {
+    name: "Customer Profile",
+    path: "/Customer-Profile-List"
+  };
 
 
   const auctionItems = [
-  { name: "Auction Creation", path: "/Auction-Creation" },
-  { name: "Bidder Registration", path: "/Bidder-Registration-List" },
-  { name: "Auction Application", path: "/Auction_Application_form" },
-  { name: "Credit Note", path: "/Credit-Note" }
-];
+    { name: "Auction Creation", path: "/Auction-Creation" },
+    { name: "Bidder Registration", path: "/Bidder-Registration-List" },
+    { name: "Auction Application", path: "/Auction_Application_form" },
+    { name: "Credit Note", path: "/Credit-Note" }
+  ];
 
 
   const filteredLoan = isAdmin
-  ? loanItems
-  : loanItems.filter(item => TrasactionPermissions[item.name]?.view === true);
+    ? loanItems
+    : loanItems.filter(item => TrasactionPermissions[item.name]?.view === true);
 
   const canSeeLoan = filteredLoan.length > 0;
-  
-const canSeeCustomerProfile = isAdmin
-  ? true
-  : TrasactionPermissions["Customer Profile"]?.view === true;
+
+  const canSeeCustomerProfile = isAdmin
+    ? true
+    : TrasactionPermissions["Customer Profile"]?.view === true;
 
   const filteredAuction = isAdmin
-  ? auctionItems
-  : auctionItems.filter(item => TrasactionPermissions[item.name]?.view === true);
+    ? auctionItems
+    : auctionItems.filter(item => TrasactionPermissions[item.name]?.view === true);
 
-const canSeeAuction = filteredAuction.length > 0;
+  const canSeeAuction = filteredAuction.length > 0;
 
 
   const canSeeTransactions =
-  canSeeLoan || canSeeCustomerProfile || canSeeAuction;
+    canSeeLoan || canSeeCustomerProfile || canSeeAuction;
 
   return (
-    <div className="flex justify-center relative z-20 overflow-visible">
+    <div className="flex justify-center relative py-4 z-20 overflow-visible">
       <div className="bg-[#0A2478] text-white flex items-center justify-between relative mt-5 p-5 w-[1360px] h-[50px] rounded-[10px]">
         {/* Left side placeholder */}
         <div className="flex items-center gap-3">
@@ -265,215 +269,176 @@ const canSeeAuction = filteredAuction.length > 0;
 
         {/* ===== Center Menu ===== */}
         <div
-          className="absolute left-1/2 transform -translate-x-1/2 flex gap-10"
+          className="absolute left-1/2 transform -translate-x-1/2 flex gap-8"
           ref={dropdownRef}
         >
           {/* ================== MASTERS ================== */}
           <div className="relative">
-           
-           
-             {canSeeMaster && (
-  <button
-    className="hover:underline text-[20px] flex items-center gap-1"
-    onClick={() => {
-      setIsMasterOpen(!isMasterOpen);
-      setIsTransactionsOpen(false);
-    }}
-  >
-    Masters
-    {isMasterOpen ? <FiChevronUp /> : <FiChevronDown />}
-  </button>
-)}
+
+
+            {canSeeMaster && (
+              <button
+                className="hover:underline text-[20px] flex items-center gap-1"
+                onClick={() => {
+                  setIsMasterOpen(!isMasterOpen);
+                  setIsTransactionsOpen(false);
+                  setIsToolsOpen(false);
+                }}
+              >
+                Masters
+                {isMasterOpen ? <FiChevronUp /> : <FiChevronDown />}
+              </button>
+            )}
 
             {isMasterOpen && (
               <div className="absolute top-full left-0 mt-2 bg-white text-black rounded shadow-lg w-[200px] z-50">
                 {/* Master Profile */}
                 <div className="relative">
-                 {canSeeMasterProfile && (
-  <button
-    className="w-full text-left px-4 py-2 hover:bg-gray-100 flex justify-between items-center"
-    onClick={() => {
-      setIsMasterProfileOpen(!isMasterProfileOpen);
-      setIsMasterSchemeMaster(false);
-      setIsMasterSchemeEmployeeProfile(false);
-      setIsMasterSchemeUserManagement(false);
-    }}
-  >
-    Master Profile
-    {isMasterProfileOpen ? <FiChevronDown /> : <FiChevronRight />}
-  </button>
-)}
+                  {canSeeMasterProfile && (
+                    <button
+                      className="w-full text-left px-4 py-2 hover:bg-gray-100 flex justify-between items-center"
+                      onClick={() => {
+                        setIsMasterProfileOpen(!isMasterProfileOpen);
+                        setIsMasterSchemeMaster(false);
+                        setIsMasterSchemeEmployeeProfile(false);
+                        setIsMasterSchemeUserManagement(false);
+                      }}
+                    >
+                      Master Profile
+                      {isMasterProfileOpen ? <FiChevronDown /> : <FiChevronRight />}
+                    </button>
+                  )}
 
-
-
-                  {/* {isMasterProfileOpen && (
-                    <div className="absolute top-0 left-full ml-1 w-[200px] bg-white text-black rounded shadow-lg flex flex-col gap-1">
-                      {[
-                        { name: "Account Group", path: "/account-groups" },
-                        { name: "Account Code", path: "/account-code-list" },
-                        { name: "Branch Details", path: "/Branch-Profile-List" },
-                        { name: "Item Profile", path: "/Item-Profile-List" },
-                        {
-                          name: "Product Purity",
-                          path: "/Product-Purity",
-                        },
-                       
-                        {
-                          name: "Document Proof",
-                          path: "/Document-Proof-List",
-                        },
-                        
-                        { name: "Push Gold Rate", path: "/Push-Rate-List" },
-                        { name: "Charges Profile", path: "/Charges-Profile-List" },
-                        { name: "Area", path: "/Area" },
-                      ].map((item) => (
+                  {isMasterProfileOpen && (
+                    <div className="absolute top-0 left-full ml-1 w-[200px] bg-white text-black rounded shadow-lg flex flex-col text-sm">
+                      {filteredMasterProfile.map((item) => (
                         <Link
                           key={item.path}
                           to={item.path}
-                          className="px-4 py-2 hover:bg-gray-100 text-left"
+                          className="px-4 py-2 hover:bg-gray-100"
                           onClick={() => setIsMasterOpen(false)}
                         >
                           {item.name}
                         </Link>
                       ))}
-                      <button className="px-4 py-2 hover:bg-gray-100 text-left">
-                        Tax Master
-                      </button>
-                      <button className="px-4 py-2 hover:bg-gray-100 text-left">
-                        Tax Mapping
-                      </button>
                     </div>
-                  )} */}
-                  {isMasterProfileOpen && (
-  <div className="absolute top-0 left-full ml-1 w-[200px] bg-white text-black rounded shadow-lg flex flex-col text-sm">
-    {filteredMasterProfile.map((item) => (
-      <Link
-        key={item.path}
-        to={item.path}
-        className="px-4 py-2 hover:bg-gray-100"
-        onClick={() => setIsMasterOpen(false)}
-      >
-        {item.name}
-      </Link>
-    ))}
-  </div>
-)}
+                  )}
 
                 </div>
 
                 {/* Scheme Master */}
                 <div className="relative">
-                 
+
                   {canSeeSchemeMaster && (
-  <button
-    className="w-full text-left px-4 py-2 hover:bg-gray-100 flex justify-between items-center"
-    onClick={() => {
-      setIsMasterSchemeMaster(!isMasterSchemeMaster);
-      setIsMasterProfileOpen(false);
-      setIsMasterSchemeEmployeeProfile(false);
-      setIsMasterSchemeUserManagement(false);
-    }}
-  >
-    Scheme Master
-    {isMasterSchemeMaster ? <FiChevronDown /> : <FiChevronRight />}
-  </button>
-)}
+                    <button
+                      className="w-full text-left px-4 py-2 hover:bg-gray-100 flex justify-between items-center"
+                      onClick={() => {
+                        setIsMasterSchemeMaster(!isMasterSchemeMaster);
+                        setIsMasterProfileOpen(false);
+                        setIsMasterSchemeEmployeeProfile(false);
+                        setIsMasterSchemeUserManagement(false);
+                      }}
+                    >
+                      Scheme Master
+                      {isMasterSchemeMaster ? <FiChevronDown /> : <FiChevronRight />}
+                    </button>
+                  )}
 
 
-                {isMasterSchemeMaster && canSeeSchemeMaster && (
-  <div className="absolute top-0 left-full ml-1 w-[200px] bg-white text-black rounded shadow-lg flex flex-col gap-1">
-    {filteredSchemeMaster.map((item) => (
-      <Link
-        key={item.path}
-        to={item.path}
-        className="px-4 py-2 hover:bg-gray-100 text-sm"
-        onClick={() => setIsMasterOpen(false)}
-      >
-        {item.name}
-      </Link>
-    ))}
-  </div>
-)}
+                  {isMasterSchemeMaster && canSeeSchemeMaster && (
+                    <div className="absolute top-0 left-full ml-1 w-[200px] bg-white text-black rounded shadow-lg flex flex-col gap-1">
+                      {filteredSchemeMaster.map((item) => (
+                        <Link
+                          key={item.path}
+                          to={item.path}
+                          className="px-4 py-2 hover:bg-gray-100 text-sm"
+                          onClick={() => setIsMasterOpen(false)}
+                        >
+                          {item.name}
+                        </Link>
+                      ))}
+                    </div>
+                  )}
 
                 </div>
 
                 {/* Employee Profile */}
                 <div className="relative">
-                 {canSeeEmployeeProfile && (
-  <button
-    className="w-full text-left px-4 py-2 hover:bg-gray-100 flex justify-between items-center"
-    onClick={() => {
-      setIsMasterSchemeEmployeeProfile(!isMasterSchemeEmployeeProfile);
-      setIsMasterProfileOpen(false);
-      setIsMasterSchemeMaster(false);
-      setIsMasterSchemeUserManagement(false);
-    }}
-  >
-    Employee Profile
-    {isMasterSchemeEmployeeProfile ? (
-      <FiChevronDown className="inline-block" />
-    ) : (
-      <FiChevronRight className="inline-block" />
-    )}
-  </button>
-)}
+                  {canSeeEmployeeProfile && (
+                    <button
+                      className="w-full text-left px-4 py-2 hover:bg-gray-100 flex justify-between items-center"
+                      onClick={() => {
+                        setIsMasterSchemeEmployeeProfile(!isMasterSchemeEmployeeProfile);
+                        setIsMasterProfileOpen(false);
+                        setIsMasterSchemeMaster(false);
+                        setIsMasterSchemeUserManagement(false);
+                      }}
+                    >
+                      Employee Profile
+                      {isMasterSchemeEmployeeProfile ? (
+                        <FiChevronDown className="inline-block" />
+                      ) : (
+                        <FiChevronRight className="inline-block" />
+                      )}
+                    </button>
+                  )}
 
 
-               {isMasterSchemeEmployeeProfile && canSeeEmployeeProfile && (
-  <div className="absolute top-0 left-full ml-1 w-[200px] bg-white text-black rounded shadow-lg flex flex-col gap-1">
-    {filteredEmployeeProfile.map((item) => (
-      <Link
-        key={item.path}
-        to={item.path}
-        className="px-4 py-2 hover:bg-gray-100 text-sm"
-        onClick={() => setIsMasterOpen(false)}
-      >
-        {item.name}
-      </Link>
-    ))}
-  </div>
-)}
+                  {isMasterSchemeEmployeeProfile && canSeeEmployeeProfile && (
+                    <div className="absolute top-0 left-full ml-1 w-[200px] bg-white text-black rounded shadow-lg flex flex-col gap-1">
+                      {filteredEmployeeProfile.map((item) => (
+                        <Link
+                          key={item.path}
+                          to={item.path}
+                          className="px-4 py-2 hover:bg-gray-100 text-sm"
+                          onClick={() => setIsMasterOpen(false)}
+                        >
+                          {item.name}
+                        </Link>
+                      ))}
+                    </div>
+                  )}
 
                 </div>
 
                 {/* User Management */}
                 <div className="relative">
                   {canSeeUserManagement && (
-  <button
-    className="w-full text-left px-4 py-2 hover:bg-gray-100 flex justify-between items-center"
-    onClick={() => {
-      setIsMasterSchemeUserManagement(!isMasterSchemeUserManagement);
-      setIsMasterProfileOpen(false);
-      setIsMasterSchemeMaster(false);
-      setIsMasterSchemeEmployeeProfile(false);
-    }}
-  >
-    User Management
-    {isMasterSchemeUserManagement ? (
-      <FiChevronDown className="inline-block" />
-    ) : (
-      <FiChevronRight className="inline-block" />
-    )}
-  </button>
-)}
+                    <button
+                      className="w-full text-left px-4 py-2 hover:bg-gray-100 flex justify-between items-center"
+                      onClick={() => {
+                        setIsMasterSchemeUserManagement(!isMasterSchemeUserManagement);
+                        setIsMasterProfileOpen(false);
+                        setIsMasterSchemeMaster(false);
+                        setIsMasterSchemeEmployeeProfile(false);
+                      }}
+                    >
+                      User Management
+                      {isMasterSchemeUserManagement ? (
+                        <FiChevronDown className="inline-block" />
+                      ) : (
+                        <FiChevronRight className="inline-block" />
+                      )}
+                    </button>
+                  )}
 
 
-                 {isMasterSchemeUserManagement && canSeeUserManagement && (
-  <div className="absolute top-0 left-full ml-1 w-[200px] bg-white text-black rounded shadow-lg flex flex-col gap-1">
-    
-    {filteredUserManagement.map((item) => (
-      <Link
-        key={item.path}
-        to={item.path}
-        className="px-4 py-2 hover:bg-gray-100 text-sm"
-        onClick={() => setIsMasterOpen(false)}
-      >
-        {item.name}
-      </Link>
-    ))}
+                  {isMasterSchemeUserManagement && canSeeUserManagement && (
+                    <div className="absolute top-0 left-full ml-1 w-[200px] bg-white text-black rounded shadow-lg flex flex-col gap-1">
 
-  </div>
-)}
+                      {filteredUserManagement.map((item) => (
+                        <Link
+                          key={item.path}
+                          to={item.path}
+                          className="px-4 py-2 hover:bg-gray-100 text-sm"
+                          onClick={() => setIsMasterOpen(false)}
+                        >
+                          {item.name}
+                        </Link>
+                      ))}
+
+                    </div>
+                  )}
 
                 </div>
               </div>
@@ -482,129 +447,194 @@ const canSeeAuction = filteredAuction.length > 0;
 
           {/* ================== TRANSACTIONS ================== */}
           <div className="relative">
-           
 
-             {canSeeScheme && (
-  <button
-              className="hover:underline text-[20px] flex items-center gap-1"
-              onClick={() => {
-                setIsTransactionsOpen(!isTransactionsOpen);
-                setIsMasterOpen(false);
-              }}
-            >
-              Transactions
-              {isTransactionsOpen ? (
-                <FiChevronUp className="inline-block" />
-              ) : (
-                <FiChevronDown className="inline-block" />
-              )}
-            </button>
-)}
 
-      {isTransactionsOpen && canSeeTransactions && (
-  <div className="absolute top-full left-0 mt-2 bg-white text-black rounded shadow-lg w-[200px] z-50">
-
-    {/* 🔹 Loan Section */}
-    {canSeeLoan && (
-      <div className="relative">
-        <button
-          className="w-full text-left px-4 py-2 hover:bg-gray-100 flex justify-between items-center"
-          onClick={() => {
-            setIsGoldLoanOpen(!isGoldLoanOpen);
-            setIsAuctionOpen(false);
-          }}
-        >
-          Loan
-          {isGoldLoanOpen ? <FiChevronDown /> : <FiChevronRight />}
-        </button>
-
-        {isGoldLoanOpen && (
-          <div className="absolute top-0 left-full ml-1 w-[200px] bg-white text-black rounded shadow-lg flex flex-col gap-1 z-50 text-sm">
-            {filteredLoan.map(item => (
-              <Link
-                key={item.path}
-                to={item.path}
-                className="px-4 py-2 hover:bg-gray-100 text-left"
+            {canSeeScheme && (
+              <button
+                className="hover:underline text-[20px] flex items-center gap-1"
                 onClick={() => {
-                  setIsTransactionsOpen(false);
-                  setIsGoldLoanOpen(false);
+                  setIsTransactionsOpen(!isTransactionsOpen);
+                  setIsMasterOpen(false);
+                  setIsToolsOpen(false);
                 }}
               >
-                {item.name}
-              </Link>
-            ))}
-          </div>
-        )}
-      </div>
-    )}
+                Transactions
+                {isTransactionsOpen ? (
+                  <FiChevronUp className="inline-block" />
+                ) : (
+                  <FiChevronDown className="inline-block" />
+                )}
+              </button>
+            )}
 
-    {/* 🔹 Customer Profile */}
-    {canSeeCustomerProfile && (
-      <Link
-        to={customerProfileItem.path}
-        className="w-full text-left px-4 py-2 hover:bg-gray-100 flex justify-between items-center "
-        onClick={() => {
-          setIsTransactionsOpen(false);
-          setIsGoldLoanOpen(false);
-          setIsAuctionOpen(false);
-        }}
-      >
-        <span>Customer Profile</span>
-      </Link>
-    )}
+            {isTransactionsOpen && canSeeTransactions && (
+              <div className="absolute top-full left-0 mt-2 bg-white text-black rounded shadow-lg w-[200px] z-50">
 
-    {/* 🔹 Auction */}
-    {canSeeAuction && (
-      <div className="relative mt-1 text-sm">
-        <button
-          className="w-full text-left px-4 py-2 hover:bg-gray-100 flex justify-between items-center"
-          onClick={() => {
-            setIsAuctionOpen(!isAuctionOpen);
-            setIsGoldLoanOpen(false);
-          }}
-        >
-          Auction
-          {isAuctionOpen ? <FiChevronDown /> : <FiChevronRight />}
-        </button>
+                {/* 🔹 Loan Section */}
+                {canSeeLoan && (
+                  <div className="relative">
+                    <button
+                      className="w-full text-left px-4 py-2 hover:bg-gray-100 flex justify-between items-center"
+                      onClick={() => {
+                        setIsGoldLoanOpen(!isGoldLoanOpen);
+                        setIsAuctionOpen(false);
+                      }}
+                    >
+                      Loan
+                      {isGoldLoanOpen ? <FiChevronDown /> : <FiChevronRight />}
+                    </button>
 
-        {isAuctionOpen && (
-          <div className="absolute top-0 left-full ml-1 w-[200px] bg-white text-black rounded shadow-lg flex flex-col gap-1 z-50">
-            {filteredAuction.map(item => (
-              <Link
-                key={item.path}
-                to={item.path}
-                className="px-4 py-2 hover:bg-gray-100 text-left"
-                onClick={() => {
-                  setIsTransactionsOpen(false);
-                  setIsAuctionOpen(false);
-                }}
-              >
-                {item.name}
-              </Link>
-            ))}
-          </div>
-        )}
-      </div>
-    )}
+                    {isGoldLoanOpen && (
+                      <div className="absolute top-0 left-full ml-1 w-[200px] bg-white text-black rounded shadow-lg flex flex-col gap-1 z-50 text-sm">
+                        {filteredLoan.map(item => (
+                          <Link
+                            key={item.path}
+                            to={item.path}
+                            className="px-4 py-2 hover:bg-gray-100 text-left"
+                            onClick={() => {
+                              setIsTransactionsOpen(false);
+                              setIsGoldLoanOpen(false);
+                            }}
+                          >
+                            {item.name}
+                          </Link>
+                        ))}
+                      </div>
+                    )}
+                  </div>
+                )}
 
-  </div>
-)}
+                {/* 🔹 Customer Profile */}
+                {canSeeCustomerProfile && (
+                  <Link
+                    to={customerProfileItem.path}
+                    className="w-full text-left px-4 py-2 hover:bg-gray-100 flex justify-between items-center "
+                    onClick={() => {
+                      setIsTransactionsOpen(false);
+                      setIsGoldLoanOpen(false);
+                      setIsAuctionOpen(false);
+                    }}
+                  >
+                    <span>Customer Profile</span>
+                  </Link>
+                )}
 
+                {/* 🔹 Auction */}
+                {canSeeAuction && (
+                  <div className="relative mt-1 text-sm">
+                    <button
+                      className="w-full text-left px-4 py-2 hover:bg-gray-100 flex justify-between items-center"
+                      onClick={() => {
+                        setIsAuctionOpen(!isAuctionOpen);
+                        setIsGoldLoanOpen(false);
+                      }}
+                    >
+                      Auction
+                      {isAuctionOpen ? <FiChevronDown /> : <FiChevronRight />}
+                    </button>
 
+                    {isAuctionOpen && (
+                      <div className="absolute top-0 left-full ml-1 w-[200px] bg-white text-black rounded shadow-lg flex flex-col gap-1 z-50">
+                        {filteredAuction.map(item => (
+                          <Link
+                            key={item.path}
+                            to={item.path}
+                            className="px-4 py-2 hover:bg-gray-100 text-left"
+                            onClick={() => {
+                              setIsTransactionsOpen(false);
+                              setIsAuctionOpen(false);
+                            }}
+                          >
+                            {item.name}
+                          </Link>
+                        ))}
+                      </div>
+                    )}
+                  </div>
+                )}
+
+              </div>
+            )}
 
           </div>
 
           {/* ================== OTHER BUTTONS ================== */}
           <button className="hover:underline text-[20px]">Miscellaneous</button>
           <button className="hover:underline text-[20px]">Reports</button>
-          <button className="hover:underline text-[20px]">
-            Tools/Utilities
-          </button>
+          
+          {/* ================== TOOLS/UTILITIES ================== */}
+          <div className="relative">
+            <button 
+              className="hover:underline text-[20px] flex items-center gap-1"
+              onClick={() => {
+                setIsToolsOpen(!isToolsOpen);
+                setIsMasterOpen(false);
+                setIsTransactionsOpen(false);
+              }}
+            >
+              Tools / Utilities
+              {isToolsOpen ? <FiChevronUp /> : <FiChevronDown />}
+            </button>
+
+            {isToolsOpen && (
+              <div className="absolute top-full left-0 mt-2 bg-white text-black rounded shadow-lg w-[220px] z-50">
+                {/* Settings Submenu */}
+                <div className="relative">
+                  <button
+                    className="w-full text-left px-4 py-2 hover:bg-gray-100 flex justify-between items-center"
+                    onClick={() => setIsSettingsOpen(!isSettingsOpen)}
+                  >
+                    <div className="flex items-center gap-2">
+                      Settings
+                    </div>
+                    {isSettingsOpen ? <FiChevronDown /> : <FiChevronRight />}
+                  </button>
+
+                  {isSettingsOpen && (
+                    <div className="absolute top-0 left-full ml-1 w-[200px] bg-white text-black rounded shadow-lg flex flex-col z-50">
+                      <Link
+                        to="/Grace-Period"
+                        className="px-4 py-2 hover:bg-gray-100 text-sm flex items-center"
+                        onClick={() => {
+                          setIsToolsOpen(false);
+                          setIsSettingsOpen(false);
+                        }}
+                      >
+                        Grace Period
+                      </Link>
+                      {/* You can add more settings items here */}
+                      {/* <Link
+                        to="/another-setting"
+                        className="px-4 py-2 hover:bg-gray-100 text-sm flex items-center"
+                        onClick={() => {
+                          setIsToolsOpen(false);
+                          setIsSettingsOpen(false);
+                        }}
+                      >
+                        Another Setting
+                      </Link> */}
+                    </div>
+                  )}
+                </div>
+
+                {/* You can add more Tools/Utilities items here */}
+                {/* <Link
+                  to="/another-tool"
+                  className="w-full text-left px-4 py-2 hover:bg-gray-100 flex items-center gap-2"
+                  onClick={() => setIsToolsOpen(false)}
+                >
+                  <FiTool className="text-gray-600" size={16} />
+                  Another Tool
+                </Link> */}
+              </div>
+            )}
+          </div>
+
         </div>
 
         {/* ===== Logout Button ===== */}
         <div className="flex gap-3">
-        
+
           <button
             onClick={() => setIsBranchModelOpen(true)}
             className="w-[150px] h-[40px] flex items-center gap-2 justify-center bg-white rounded-[4.8px] text-[#0b2c69] font-medium border border-gray-300"
@@ -612,14 +642,14 @@ const canSeeAuction = filteredAuction.length > 0;
             {selectedBranch}
             <TfiReload className="text-lg size-5" />
           </button>
-         <button
-  onClick={handleLogout}
-  className="w-[50px] h-[36px] flex items-center justify-center bg-white rounded-[4.8px] text-[#0b2c69] font-medium p-2"
->
-  <span className="flex items-center gap-1 text-xl font-semibold">
-    <FiLogOut className="text-xl" />
-  </span>
-</button>
+          <button
+            onClick={handleLogout}
+            className="w-[50px] h-[36px] flex items-center justify-center bg-white rounded-[4.8px] text-[#0b2c69] font-medium p-2"
+          >
+            <span className="flex items-center gap-1 text-xl font-semibold">
+              <FiLogOut className="text-xl" />
+            </span>
+          </button>
 
         </div>
         {/* modelforAdd */}
@@ -696,10 +726,7 @@ const canSeeAuction = filteredAuction.length > 0;
           </div>
         )}
       </div>
-
     </div>
-
-
   );
 };
 
