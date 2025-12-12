@@ -2,8 +2,9 @@ import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import { FiEdit, FiTrash } from "react-icons/fi";
+import { API } from "../api";
 
-const API_URL = "http://localhost:5000/grace-period";
+const API_URL = `${API}/grace-period`;
 
 function GracePeriod() {
     const navigate = useNavigate();
