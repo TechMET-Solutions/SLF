@@ -410,7 +410,7 @@ function App() {
 
 
                   {/* Tools */}
-                  <Route path="/Grace-Period" element={<GracePeriod />} />
+                  <Route path="/Gress-Period" element={<GracePeriod />} />
                 </Routes>
               </ProtectedRoute>
             }

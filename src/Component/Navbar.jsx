@@ -593,14 +593,14 @@ const Navbar = () => {
                   {isSettingsOpen && (
                     <div className="absolute top-0 left-full ml-1 w-[200px] bg-white text-black rounded shadow-lg flex flex-col z-50">
                       <Link
-                        to="/Grace-Period"
+                        to="/Gress-Period"
                         className="px-4 py-2 hover:bg-gray-100 text-sm flex items-center"
                         onClick={() => {
                           setIsToolsOpen(false);
                           setIsSettingsOpen(false);
                         }}
                       >
-                        Grace Period
+                        GressPeriod
                       </Link>
                       {/* You can add more settings items here */}
                       {/* <Link
