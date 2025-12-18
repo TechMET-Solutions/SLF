@@ -28,7 +28,7 @@ const BidderRegistrationList = () => {
   return (
     <div className="min-h-screen w-full flex flex-col items-center py-8">
       {/* Header Section */}
-      <div className="w-[90%] max-w-[1300px] bg-white shadow-md rounded-lg p-4 flex justify-between items-center border border-gray-200">
+      <div className="w-[90%] max-w-[1300px] bg-white shadow-md rounded-lg p-4 flex justify-between items-center border border-gray-200 sticky top-[80px] z-40">
         <h2 className="text-red-600 font-semibold text-xl">
           Bidder Registration List
         </h2>

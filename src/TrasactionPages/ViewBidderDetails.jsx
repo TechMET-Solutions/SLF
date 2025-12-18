@@ -1,9 +1,8 @@
 import { useEffect, useState } from "react";
 import { IoMdImage } from "react-icons/io";
-import profileempty from "../assets/profileempty.png";
+import { useLocation } from "react-router-dom";
 import { viewBidderApi } from "../API/Transaction/Auction/BidderApi"; // adjust import path
-import { useParams } from "react-router-dom";
-import { useLocation, useNavigate } from 'react-router-dom';
+import profileempty from "../assets/profileempty.png";
 
 const ViewBidderDetails = () => {
   const location = useLocation();
@@ -63,7 +62,7 @@ const ViewBidderDetails = () => {
   return (
     <div className="flex flex-col items-center mt-5">
       {/* Header Section */}
-      <div className="flex items-center justify-between px-6 py-4 w-[1290px] h-[62px] border border-gray-200 rounded-[11px] shadow-sm">
+      <div className="flex items-center justify-between px-6 py-4 w-[1290px] h-[62px] border border-gray-200 rounded-[11px] shadow-sm sticky top-[80px] z-40">
         <h2 className="text-red-600 font-bold text-[20px] leading-[1.48] font-['Source_Sans_3']">
           View Bidder Details
         </h2>

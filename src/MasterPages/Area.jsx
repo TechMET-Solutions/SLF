@@ -1,15 +1,15 @@
 import { useEffect, useState } from "react";
 import { FiEdit, FiTrash2 } from "react-icons/fi";
-import blockimg from "../assets/blockimg.png";
 import { useNavigate } from "react-router-dom";
 import {
-  fetchAreasApi,
   addAreaApi,
-  updateAreaApi,
   deleteAreaApi,
+  fetchAreasApi,
+  updateAreaApi,
 } from "../API/Master/Master_Profile/Area_Details";
-import Pagination from "../Component/Pagination";
+import blockimg from "../assets/blockimg.png";
 import Loader from "../Component/Loader";
+import Pagination from "../Component/Pagination";
 
 const indianStatesAndUTs = [
   "Andhra Pradesh", "Arunachal Pradesh", "Assam", "Bihar", "Chhattisgarh", "Goa", "Gujarat", "Haryana", "Himachal Pradesh", "Jharkhand", "Karnataka", "Kerala", "Madhya Pradesh", "Maharashtra", "Manipur", "Meghalaya", "Mizoram", "Nagaland", "Odisha", "Punjab", "Rajasthan", "Sikkim", "Tamil Nadu", "Telangana", "Tripura", "Uttar Pradesh", "Uttarakhand", "West Bengal",
@@ -162,7 +162,7 @@ const Area = () => {
   return (
     <div className="min-h-screen w-full">
       {/* Header */}
-      <div className="flex justify-center">
+      <div className="flex justify-center sticky top-[80px] z-40">
         <div className="flex items-center px-6 py-4 border-b mt-5 w-[1290px] h-[62px] border rounded-[11px] border-gray-200 justify-between">
           <h2 className="text-red-600 font-bold text-[20px]">Area</h2>
           <div className="flex gap-3">

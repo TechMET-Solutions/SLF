@@ -107,7 +107,7 @@ const BidderRegistration = () => {
   return (
     <div className="flex flex-col items-center mt-5 px-4">
       {/* Header Section */}
-      <div className="w-full max-w-[1290px] bg-white border border-gray-200 rounded-[11px] shadow-sm mb-6">
+      <div className="w-full max-w-[1290px] bg-white border border-gray-200 rounded-[11px] shadow-sm mb-6 sticky top-[80px] z-40">
         <div className="flex flex-col sm:flex-row items-center justify-between px-6 py-4">
           <h2 className="text-red-600 font-bold text-[20px]">Bidder Registration</h2>
           <div className="flex items-center gap-3">

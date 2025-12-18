@@ -497,7 +497,7 @@ const handleSelectCustomer = (customer, type) => {
   return (
     <div className="min-h-screen  ">
       {/* ===== Top Bar ===== */}
-       <div className="flex justify-center ">
+       <div className="flex justify-center sticky top-[80px] z-40">
         <div className="flex items-center px-6 py-4 border-b mt-5 w-[1290px] h-[62px] border rounded-[11px] border-gray-200 justify-between shadow">
           <h2
             style={{
@@ -593,7 +593,7 @@ const handleSelectCustomer = (customer, type) => {
 
 
             <div className="mb-6">
-              <label className="text-[14px] font-medium block mb-1">Scheme*</label>
+              <label className="text-[14px] font-medium block mb-1">Scheme<span className="text-red-500">*</span></label>
               <select
                 className="border border-gray-300 px-3 py-2 w-[150px] bg-white rounded-[8px]"
                 onChange={handleSchemeChange}
@@ -613,7 +613,7 @@ const handleSelectCustomer = (customer, type) => {
 
             <div className="">
               <div>
-                <label className="text-[14px] font-medium">Print Name  *</label>
+                <label className="text-[14px] font-medium">Print Name <span className="text-red-500">*</span></label>
               </div>
 
               <input
@@ -628,7 +628,7 @@ const handleSelectCustomer = (customer, type) => {
 
             <div className="">
               <div>
-                <label className="text-[14px] font-medium">Mobile Number*</label>
+                <label className="text-[14px] font-medium">Mobile Number<span className="text-red-500">*</span></label>
               </div>
 
               <input
@@ -741,7 +741,7 @@ const handleSelectCustomer = (customer, type) => {
             <div>
               <div className="">
                 <div>
-                  <label className="text-[14px] font-medium">Nominee*</label>
+                  <label className="text-[14px] font-medium">Nominee<span className="text-red-500">*</span></label>
                 </div>
 
                 <input
@@ -759,7 +759,7 @@ const handleSelectCustomer = (customer, type) => {
             <div>
               <div className="">
                 <div>
-                  <label className="text-[14px] font-medium">Relation*</label>
+                  <label className="text-[14px] font-medium">Relation<span className="text-red-500">*</span></label>
                 </div>
 
                 <input
@@ -918,7 +918,7 @@ const handleSelectCustomer = (customer, type) => {
 
       <div className="">
   <div>
-    <label className="text-[14px] font-medium">Loan amount *</label>
+    <label className="text-[14px] font-medium">Loan amount <span className="text-red-500">*</span></label>
   </div>
 
   <input

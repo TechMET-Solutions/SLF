@@ -641,7 +641,7 @@ const openValuationModal = (emp) => {
   return (
     <div className="min-h-screen w-full">
       {/* Top bar */}
-      <div className="flex justify-center">
+      <div className="flex justify-center sticky top-[80px] z-40">
         <div className="flex items-center px-6 py-4 border-b mt-5 w-[1290px] h-[62px] border rounded-[11px] border-gray-200 justify-between shadow">
           <h2 className="text-red-600 font-bold text-[20px] leading-[148%] font-source">
             Employee Profile List
@@ -975,14 +975,14 @@ const openValuationModal = (emp) => {
 
                     {/* Corresponding Address */}
                     <div className="flex flex-col gap-1">
-                      <label className="text-gray-700 font-medium">Corresponding Address <span className="text-red-500">*</span></label>
+                      <label className="text-gray-700 font-medium">Current Address <span className="text-red-500">*</span></label>
                       <input
                         type="text"
                         name="corresponding_address"
                         value={formData.corresponding_address}
                         disabled={mode === "view"}
                         onChange={handleInputChange}
-                        placeholder=" Corresponding Address*"
+                        placeholder="Current Address"
                         className="border border-[#C4C4C4] rounded-[8px] px-3 py-2 focus:outline-none focus:ring-1 focus:ring-blue-500 w-[259px]"
                       />
                     </div>

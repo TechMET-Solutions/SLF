@@ -267,6 +267,13 @@ import ViewSchemeDetailsform from "./MasterPages/ViewSchemeDetailsform";
 import EditLoanApplication from "./TrasactionPages/EditLoanApplication";
 
 // Transaction Pages
+import PrivacyPolicy from "./Component/PrivacyPolicy";
+import Refund from "./Component/Refund";
+import TermsOfService from "./Component/TermsOfService";
+import About from "./Component/about";
+import Contactus from "./Component/contactus";
+import Footer from "./Component/footer";
+import GracePeriod from "./Tools/GracePeriod";
 import AddAuctionCreation from "./TrasactionPages/AddAuctionCreation";
 import AddCreditNotePage from "./TrasactionPages/AddCreditNotePage";
 import AddGoldLoanApplication from "./TrasactionPages/AddGoldLoanApplication";
@@ -300,7 +307,6 @@ import ViewBidderDetails from "./TrasactionPages/ViewBidderDetails";
 import ViewCreditNote from "./TrasactionPages/ViewCreditNote";
 import ViewLoanCharges from "./TrasactionPages/ViewLoanCharges";
 import ViewLoanDetails from "./TrasactionPages/ViewLoanDeatils";
-import GracePeriod from "./Tools/GracePeriod";
 
 
 // ---------------- LAYOUT WRAPPER ----------------
@@ -326,7 +332,11 @@ function App() {
 
           {/* PUBLIC ROUTE (LOGIN) */}
           <Route path="/login" element={<LoginPage />} />
-
+             <Route path="/about-us" element={<About />} />
+                  <Route path="/privacy-policy" element={<PrivacyPolicy />} />
+                  <Route path="/terms-of-use" element={<TermsOfService />} />
+                  <Route path="/contact-us" element={<Contactus />} />
+                  <Route path="/Refund-and-Cancellation" element={<Refund />} />
           {/* PROTECTED ROUTES */}
           <Route
             path="/*"
@@ -338,6 +348,7 @@ function App() {
                   <Route path="/" element={<Dashboard />} />
 
                   {/* MASTER ROUTES */}
+                  
                   <Route path="/account-groups" element={<AccountGroupList />} />
                   <Route path="/account-code-list" element={<AccountCodeList />} />
                   <Route path="/Branch-Profile-List" element={<BranchProfileList />} />
@@ -421,6 +432,7 @@ function App() {
 
         </Routes>
       </LayoutWithNavbar>
+       <Footer />
     </Router>
   );
 }

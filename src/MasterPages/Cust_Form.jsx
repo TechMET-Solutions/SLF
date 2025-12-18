@@ -52,7 +52,7 @@ export default function Cust_Form() {
       {/* <div className="bg-[#0C3C87] text-white p-4 rounded-md mb-6">
         <h1 className="text-xl font-semibold">Customer Profile Form</h1>
       </div> */}
-      <div className="flex justify-center">
+      <div className="flex justify-center sticky top-[80px] z-40">
         <div className="flex  items-center px-6 py-4 border-b mt-5 w-[1290px] h-[62px] border rounded-[11px] border-gray-200 justify-between">
           <h2
             style={{
@@ -74,11 +74,13 @@ export default function Cust_Form() {
             <div className="flex justify-between gap-5">
 
 
-              <button
-                className="text-white px-[6.25px] py-[6.25px] rounded-[3.75px] bg-[#C1121F] w-[74px] h-[24px] opacity-100 text-[10px]"
-              >
-                Exit
-              </button>
+            <button
+  onClick={() => navigate("/Customer-Profile-List")}
+  className="text-white px-[6.25px] py-[6.25px] rounded-[3.75px] bg-[#C1121F] w-[74px] h-[24px] opacity-100 text-[10px]"
+>
+  Exit
+</button>
+
 
 
             </div>
@@ -200,14 +202,27 @@ export default function Cust_Form() {
             <img
               src={
                 data.profileImage
-                  ? `${API}/uploads/${data.profileImage}` // if image exists
+                  ? `${data.profileImage}` // if image exists
                   : "/profile.png" // fallback
               }
               alt="Customer"
               className="w-24 h-24 rounded object-cover"
             />
-            <p className="text-sm mt-2">Customer Profile</p>
+                <p className="text-sm mt-2">Customer Profile</p>
+                 <div className="w-1/5 flex flex-col items-center">
+            <img
+              src={
+                data.signature
+                  ? `${data.signature}` // if image exists
+                  : "/profile.png" // fallback
+              }
+              alt="Customer"
+              className="w-50 h-10 rounded object-cover"
+            />
+            <p className="text-sm mt-2">Customer signature</p>
           </div>
+              </div>
+             
         </div>
       </section>
 

@@ -4,8 +4,7 @@ import {
   FiChevronDown,
   FiChevronRight,
   FiChevronUp,
-  FiLogOut,
-  FiSettings,
+  FiLogOut
 } from "react-icons/fi";
 import { TfiReload } from "react-icons/tfi";
 import { Link } from "react-router-dom";
@@ -259,7 +258,7 @@ const Navbar = () => {
     canSeeLoan || canSeeCustomerProfile || canSeeAuction;
 
   return (
-    <div className="flex justify-center relative py-4 z-20 overflow-visible">
+   <div className="flex justify-center sticky top-0 z-50 bg-transparent">
       <div className="bg-[#0A2478] text-white flex items-center justify-between relative mt-5 p-5 w-[1360px] h-[50px] rounded-[10px]">
         {/* Left side placeholder */}
         <div className="flex items-center gap-3">

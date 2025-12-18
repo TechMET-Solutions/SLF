@@ -54,7 +54,7 @@ const PrintCreditNote = () => {
 
   return (
     <div>
-      <div className="flex justify-center no-print">
+      <div className="flex justify-center no-print sticky top-[80px] z-40">
         <div className="flex items-center justify-between border border-gray-300 rounded-[10px] px-4 py-2 mt-4 w-[1290px] h-[62px] shadow-lg">
 
           <h2 className="text-[#C1121F] font-bold text-[20px] whitespace-nowrap mr-4">
@@ -81,7 +81,7 @@ const PrintCreditNote = () => {
       </div>
       <div className="p-2 w-[1290px] flex justify-center ml-[100px]">
         <div>
- <div className=" bg-white  py-5">
+ <div className=" bg-white py-5">
 
         {/* Credit Note Details */}
         <section className="bg-[#ECECF6] p-4 px-18 border-gray-300">
@@ -167,7 +167,7 @@ const PrintCreditNote = () => {
 
        
         {/* PAYMENT DETAILS */}
-        <section className="bg-[#ECECF6] p-4 px-18 border-gray-300">
+        {/* <section className="bg-[#ECECF6] p-4 px-18 border-gray-300">
           <h3 className="font-semibold text-[20px] text-[#0A2478] mb-3">
             Payment / Adjustment Details
           </h3>
@@ -233,7 +233,7 @@ const PrintCreditNote = () => {
               <p className="w-[200px] py-1">{data.transaction_date}</p>
             </div>
           </div>
-        </section>
+        </section> */}
 
         {/* Authorization */}
         <section className="bg-[#eef2ff] p-4 px-18">

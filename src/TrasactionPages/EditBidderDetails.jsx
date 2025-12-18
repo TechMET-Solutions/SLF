@@ -1,9 +1,9 @@
 import { useEffect, useRef, useState } from 'react';
 import { IoMdImage } from "react-icons/io";
 import { MdDelete, MdOutlineFileUpload } from "react-icons/md";
-import profileempty from '../assets/profileempty.png';
-import { updateBidderApi, viewBidderApi } from '../API/Transaction/Auction/BidderApi';
 import { useLocation, useNavigate } from 'react-router-dom';
+import { updateBidderApi, viewBidderApi } from '../API/Transaction/Auction/BidderApi';
+import profileempty from '../assets/profileempty.png';
 
 const EditBidderDetails = () => {
     const navigate = useNavigate();
@@ -125,7 +125,7 @@ const EditBidderDetails = () => {
     return (
         <div className="flex flex-col items-center mt-5 px-4">
             {/* Header Section */}
-            <div className="w-full max-w-[1290px] bg-white border border-gray-200 rounded-[11px] shadow-sm mb-6">
+            <div className="w-full max-w-[1290px] bg-white border border-gray-200 rounded-[11px] shadow-sm mb-6 sticky top-[80px] z-40">
                 <div className="flex flex-col sm:flex-row items-center justify-between px-6 py-4">
                     <h2 className="text-red-600 font-bold text-[20px] leading-[1.48] font-['Source_Sans_3'] mb-4 sm:mb-0">
                         Edit Bidder Registration

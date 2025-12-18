@@ -10,30 +10,30 @@ const location = useLocation();
   console.log(incoming,"")
    const [formData, setFormData] = useState({
     // credit_note_id: "",
-    date_of_issue: incoming.formData.invoiceDate,
-     reference_invoice_no: incoming.reference_invoice_no || "",
-      loan_no : incoming.formData.loanNo,
-    reference_date: incoming.formData.invoiceDate,
-    customer_name: incoming.CustomerData.printName || "",
-    customer_id: incoming.CustomerData.id || "",
-    credit_amount: incoming.creditNoteAmount || "",
+    date_of_issue: incoming?.formData?.invoiceDate,
+     reference_invoice_no: incoming?.reference_invoice_no || "",
+      loan_no : incoming.formData?.loanNo,
+    reference_date: incoming.formData?.invoiceDate,
+    customer_name: incoming.CustomerData?.printName || "",
+    customer_id: incoming.CustomerData?.id || "",
+    credit_amount: incoming?.creditNoteAmount || "",
     reason: "",
-    address: incoming.CustomerData.Permanent_Address,
-    city: incoming.CustomerData.Permanent_City,
-    state: incoming.CustomerData.Permanent_State,
-    pin_code: incoming.CustomerData.Permanent_Pincode,
-    mobile_number: incoming.CustomerData.mobile,
-    email_id:incoming.CustomerData.email,
+    address: incoming.CustomerData?.Permanent_Address,
+    city: incoming.CustomerData?.Permanent_City,
+    state: incoming.CustomerData?.Permanent_State,
+    pin_code: incoming.CustomerData?.Permanent_Pincode,
+    mobile_number: incoming.CustomerData?.mobile,
+    email_id:incoming.CustomerData?.email,
     description: "After auction settlement – Credit Note issued to customer.",
     prepared_by: "",
     designation: "",
      verified_by: "",
-     bidderId:incoming.formData.bidderId,
-     bidderName: incoming.formData.bidderName,
-     bidderContact: incoming.formData.bidderContact,
-     bidderEmail: incoming.formData.bidderEmail,
-    bidderAddress:  incoming.formData.bidderAddress,
-    auction_id:incoming.AuctionData.id
+     bidderId:incoming.formData?.bidderId,
+     bidderName: incoming.formData?.bidderName,
+     bidderContact: incoming.formData?.bidderContact,
+     bidderEmail: incoming.formData?.bidderEmail,
+    bidderAddress:  incoming.formData?.bidderAddress,
+    auction_id:incoming.AuctionData?.id
   });
 
   const handleChange = (e) => {
@@ -77,8 +77,8 @@ const location = useLocation();
   return (
     <div>
       {/* HEADER */}
-      <div className="flex justify-center">
-        <div className="flex items-center justify-between border border-gray-300 rounded-[10px] px-4 py-2 mt-4 w-[1290px] h-[62px] shadow-lg">
+      <div className="flex justify-center sticky top-[80px] z-40">
+        <div className="flex items-center justify-between border border-gray-300 rounded-[10px] px-4 py-2 mt-4 w-[1290px] h-[62px] shadow-lg ">
           <h2 className="text-[#C1121F] font-bold text-[20px] whitespace-nowrap mr-4">
             Credit Note
           </h2>

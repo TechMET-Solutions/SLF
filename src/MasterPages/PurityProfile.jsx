@@ -9,10 +9,10 @@ import {
   updatePurityStatusApi,
 } from "../API/Master/Master_Profile/Purity_Details";
 
+import { useAuth } from "../API/Context/AuthContext";
 import { addPurityApiForSilver, fetchPuritiesApiForSilver, updatePurityApiForSilver, updatePurityStatusApiForSilver } from "../API/Master/Master_Profile/Purity_Details_silver";
 import blockimg from "../assets/blockimg.png";
 import Pagination from "../Component/Pagination";
-import { useAuth } from "../API/Context/AuthContext";
 
 const PurityProfile = () => {
   useEffect(() => {
@@ -231,7 +231,7 @@ if (!formData.loan_type?.trim()) {
   return (
     <div className="min-h-screen w-full">
       {/* middletopbar */}
-      <div className="flex justify-center">
+      <div className="flex justify-center sticky top-[80px] z-40">
         <div className="flex justify-center mt-5">
           <div className="flex items-center justify-between px-6 py-4 border-b w-[1290px] h-[61px] border rounded-[11px] border-gray-200">
             <h2 className="text-red-600 font-bold text-[20px] leading-[148%]">

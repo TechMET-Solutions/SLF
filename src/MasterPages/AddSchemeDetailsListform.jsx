@@ -291,7 +291,7 @@ console.log(precloser,"precloser")
 
   return (
     <div className="min-h-screen bg-white p-5">
-      <div className="flex justify-center ">
+      <div className="flex justify-center sticky top-[80px] z-40">
         <div className="flex items-center px-6 py-4 border-b mt-5 w-[1290px] h-[62px] border rounded-[11px] border-gray-200 justify-between shadow">
           <h2
             style={{

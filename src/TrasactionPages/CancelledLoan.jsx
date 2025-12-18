@@ -1,9 +1,9 @@
 import axios from "axios";
 import { useEffect, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
+import { API } from "../api";
 import envImg from "../assets/envImg.jpg";
 import { default as profileempty } from "../assets/profileempty.png";
-import { API } from "../api";
 
 const ViewLoanDetails = () => {
     const [loanData, setLoanData] = useState(null);
@@ -177,7 +177,7 @@ const ViewLoanDetails = () => {
     return (
         <div className="min-h-screen w-full">
             {/* ===== Top Bar ===== */}
-            <div className="flex justify-center">
+            <div className="flex justify-center sticky top-[80px] z-40">
                 <div className="flex items-center px-6 py-4 border-b mt-5 w-[1290px] h-[62px] border rounded-[11px] border-gray-200 justify-between shadow">
                     <h2
                         style={{
