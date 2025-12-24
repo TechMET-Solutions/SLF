@@ -9,7 +9,6 @@
 // }
 
 // export default PrivacyPolicy
-import React from "react";
 
 export default function PrivacyPolicy() {
   return (
@@ -64,9 +63,9 @@ export default function PrivacyPolicy() {
             Payment
           </h2>
           <p className="text-gray-700 leading-7 text-justify">
-            Online payments can be done by Card Payment and Net Banking Payment
-            via <strong>BillDesk Payment Gateway</strong>, which can be accessed
-            through the Online Payment link on the Make Payment page.
+          All online payments on this website are processed securely through Cashfree Payments.
+We do not store or process any debit card, credit card, UPI, or net banking details on our servers.
+Cashfree Payments is PCI-DSS compliant and ensures secure payment processing.
           </p>
         </section>
 

@@ -9,7 +9,6 @@
 // }
 
 // export default Refund
-import React from "react";
 
 export default function Refund() {
   return (
@@ -28,8 +27,8 @@ export default function Refund() {
           </h2>
 
           <p className="text-gray-700 leading-7">
-            Refunds initiated will be credited to the account or card from where
-            the transaction had been initiated.
+          If a refund is applicable, the amount will be credited to the original payment method
+within 5–7 working days from the date of approval.
           </p>
         </section>
 

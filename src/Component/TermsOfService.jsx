@@ -9,7 +9,6 @@
 // }
 
 // export default TermsOfService
-import React from "react";
 
 export default function TermsOfService() {
   return (
@@ -29,9 +28,9 @@ export default function TermsOfService() {
 
           <h3 className="font-semibold mt-4">Payments:</h3>
           <p className="text-gray-700 leading-7 mt-2">
-            Online payments can be done via Card Payment and Net Banking Payment
-            through <strong>BillDesk Payment Gateway</strong> using the Online
-            Payment link on the Make Payment page.
+           All online payments on this website are processed securely through Cashfree Payments.
+We do not store or process any debit card, credit card, UPI, or net banking details on our servers.
+Cashfree Payments is PCI-DSS compliant and ensures secure payment processing.
           </p>
 
           <p className="text-gray-700 leading-7 mt-2">
@@ -42,8 +41,8 @@ export default function TermsOfService() {
 
           <h3 className="font-semibold mt-4">Refunds & Cancellation:</h3>
           <p className="text-gray-700 leading-7 mt-2">
-            Refunds initiated will be credited to the account or card from where
-            the transaction was initiated.
+            If a refund is applicable, the amount will be credited to the original payment method
+within 5–7 working days from the date of approval.
           </p>
         </section>
 
@@ -106,8 +105,9 @@ export default function TermsOfService() {
             Payment
           </h2>
           <p className="text-gray-700 leading-7">
-            Payments can be made via Card or Net Banking using the BillDesk
-            Payment Gateway available on the Make Payment page.
+            All online payments on this website are processed securely through Cashfree Payments.
+We do not store or process any debit card, credit card, UPI, or net banking details on our servers.
+Cashfree Payments is PCI-DSS compliant and ensures secure payment processing.
           </p>
         </section>
 

@@ -367,7 +367,6 @@ function App() {
                   <Route path="/Add-Scheme-Details-Listform" element={<AddSchemeDetailsListform />} />
                   <Route path="/Scheme-Role-Mapping" element={<SchemeRoleMapping />} />
                   <Route path="/Branch-Scheme-Mapping-List" element={<BranchSchemeMappingList />} />
-
                   {/* Employee */}
                   <Route path="/Employee-Profile-list" element={<EmployeeProfile />} />
                   <Route path="/Member-Login-Period" element={<MemberLoginPeriod />} />
@@ -381,7 +380,6 @@ function App() {
                   <Route path="/Member-Branch-Mapping" element={<MemberBranchMapping />} />
                   <Route path="/Add-Member-Branch-Mapping" element={<AddMemberBranchMapping />} />
                   <Route path="/Edit-Loan-Application" element={<EditLoanApplication />} />
-
                   {/* Loan Routes */}
                   <Route path="/Loan-Application" element={<LoanApplication />} />
                   <Route path="/Cancelled-Loan" element={<CancelledLoan />} />
@@ -404,7 +402,6 @@ function App() {
                   <Route path="/Auction_Application_form" element={<Auction_Application_form />} />
                   <Route path="/Auction_Bidder_List" element={<Auction_Bidder_List />} />
                   <Route path="/Generate_Bill" element={<GenrateBill />} />
-
                   {/* Auction */}
                   <Route path="/Auction-Creation" element={<AuctionCreation />} />
                   <Route path="/Add-Auction-Creation" element={<AddAuctionCreation />} />
