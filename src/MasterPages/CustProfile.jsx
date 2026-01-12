@@ -48,6 +48,8 @@ const CustProfile = () => {
     }
   };
 
+  const [pendingRow, setPendingRow] = useState(null);
+
   // Handle search
   const handleSearch = () => {
     setPage(1); // Reset to first page when searching
@@ -91,20 +93,23 @@ const CustProfile = () => {
   }, []);
 
   const handleCheckboxChange = async (row, checked) => {
-    setCheckedRows((prev) => ({
-      ...prev,
-      [row.id]: checked,
-    }));
-
     if (checked) {
-      setSelectedCustomer(row);
+      // Block flow → pehle modal
+      setPendingRow(row);
       setIsModalOpenForblock(true);
     } else {
+      // Unblock directly
       try {
         await axios.post(`${API}/Master/doc/blockUnblockCustomer`, {
           id: row.id,
           block: false,
         });
+
+        setCheckedRows((prev) => ({
+          ...prev,
+          [row.id]: false,
+        }));
+
         alert("Customer unblocked successfully");
         fetchCustomers(page, searchValue, searchField);
       } catch (err) {
@@ -117,17 +122,25 @@ const CustProfile = () => {
   const handleBlockConfirm = async () => {
     try {
       await axios.post(`${API}/Master/doc/blockUnblockCustomer`, {
-        id: selectedCustomer.id,
+        id: pendingRow.id,
         block: true,
       });
+
+      setCheckedRows((prev) => ({
+        ...prev,
+        [pendingRow.id]: true,
+      }));
+
       alert("Customer blocked successfully");
       setIsModalOpenForblock(false);
+      setPendingRow(null);
       fetchCustomers(page, searchValue, searchField);
     } catch (err) {
       console.error("Error blocking customer:", err);
       alert("Failed to block customer");
     }
   };
+
 
   const handleOpenRemark = (customer) => {
     setSelectedCustomer(customer);
@@ -482,7 +495,10 @@ const CustProfile = () => {
                     height: "30.57px",
                     borderRadius: "2.67px",
                   }}
-                  onClick={() => setIsModalOpenForblock(false)}
+                  onClick={() => {
+                    setIsModalOpenForblock(false);
+                    setPendingRow(null); 
+                  }}
                 >
                   Cancel
                 </button>

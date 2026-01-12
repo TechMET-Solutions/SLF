@@ -623,9 +623,11 @@ const BranchProfileList = () => {
 
 
 
-      <div className=" w-full relative">
+      {/* <div className=" w-full relative">
         {isLoading && <Loader />}
-      </div></>
+      </div> */}
+    
+    </>
 
   );
 };

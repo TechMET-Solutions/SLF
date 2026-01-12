@@ -38,7 +38,7 @@ const EmployeeProfile = () => {
     pan_card: "",
     aadhar_card: "",
     aadharFile: null,
-    otp:"",
+    otp: "",
     emp_name: "",
     emp_id: "",
     mobile_no: "",
@@ -59,7 +59,7 @@ const EmployeeProfile = () => {
     addressProfiletype: "",
     IdProoftype: "",
     status: true,
-    salary:null
+    salary: null
   });
   const [documents, setDocuments] = useState([]);      // main list from API
   const [idProofList, setIdProofList] = useState([]);  // filtered only id proof
@@ -84,7 +84,7 @@ const EmployeeProfile = () => {
   useEffect(() => {
     fetchDocuments()
   }, [])
-  
+
   useEffect(() => {
     const loadRoles = async () => {
       const fetchedRoles = await fetchAllRoles();
@@ -112,6 +112,7 @@ const EmployeeProfile = () => {
       if (response.data.success) {
         setBranches(response.data.data || []);
       }
+      console.log("branches",response.data.data)
     } catch (error) {
       console.error("❌ Error fetching branches:", error);
       setBranches([]);
@@ -156,15 +157,15 @@ const EmployeeProfile = () => {
   const [idProof, setIdProof] = useState(null);
   console.log(addressProof, idProof, profileImage)
   // Pagination states
-   const [adharMaskingData, setAdharMaskingData] = useState("");
-    console.log(adharMaskingData,"adharMaskingData")
+  const [adharMaskingData, setAdharMaskingData] = useState("");
+  console.log(adharMaskingData, "adharMaskingData")
   const [currentPage, setCurrentPage] = useState(1);
   const [totalItems, setTotalItems] = useState(0);
   const [showPagination, setShowPagination] = useState(false);
   const itemsPerPage = 10;
   const [mode, setMode] = useState("add");
-const [selectedEmployees, setSelectedEmployees] = useState([]);
-const [isValuationModalOpen, setIsValuationModalOpen] = useState(false);
+  const [selectedEmployees, setSelectedEmployees] = useState([]);
+  const [isValuationModalOpen, setIsValuationModalOpen] = useState(false);
   // 🔹 Pagination Controls
   const [valuationAmount, setValuationAmount] = useState("");
   const totalPages = Math.ceil(totalItems / itemsPerPage);
@@ -312,7 +313,7 @@ const [isValuationModalOpen, setIsValuationModalOpen] = useState(false);
       emp_add_prof: "",
       emp_id_prof: "",
       status: true,
-      salary:null
+      salary: null
     });
     setProfileImage(null);
     setAddressProof(null);
@@ -321,15 +322,15 @@ const [isValuationModalOpen, setIsValuationModalOpen] = useState(false);
   };
 
   function formatDateToMySQL(dateString) {
-  if (!dateString) return null;
+    if (!dateString) return null;
 
-  const d = new Date(dateString);
-  const year = d.getFullYear();
-  const month = String(d.getMonth() + 1).padStart(2, "0");
-  const day = String(d.getDate()).padStart(2, "0");
+    const d = new Date(dateString);
+    const year = d.getFullYear();
+    const month = String(d.getMonth() + 1).padStart(2, "0");
+    const day = String(d.getDate()).padStart(2, "0");
 
-  return `${year}-${month}-${day}`;
-}
+    return `${year}-${month}-${day}`;
+  }
 
   const handleSave = async () => {
     debugger;
@@ -370,7 +371,7 @@ const [isValuationModalOpen, setIsValuationModalOpen] = useState(false);
         addressProfiletype: formData.addressProfiletype,
         IdProoftype: formData.IdProoftype,
         status: formData.status,
-        salary:formData.salary
+        salary: formData.salary
       };
 
       const encryptedData = encryptData(JSON.stringify(payload));
@@ -418,7 +419,7 @@ const [isValuationModalOpen, setIsValuationModalOpen] = useState(false);
         password: formData.password,
         fax: formData.fax,
         status: formData.status,
-         salary:formData.salary
+        salary: formData.salary
       };
 
       const encryptedData = encryptData(JSON.stringify(payload));
@@ -449,10 +450,10 @@ const [isValuationModalOpen, setIsValuationModalOpen] = useState(false);
   const handleSearch = () => {
     setCurrentPage(1); // Reset to first page when searching
     const filters = {};
-    
+
     if (searchTerm.empId) filters.id = searchTerm.empId;
     if (searchTerm.empName) filters.name = searchTerm.empName;
-    
+
     fetchEmployee(1, filters);
   };
 
@@ -505,41 +506,41 @@ const [isValuationModalOpen, setIsValuationModalOpen] = useState(false);
       alert("Failed to download file.");
     }
   };
-// const verifyPan = async () => {
-//   debugger
-//   if (!formData.panNo) {
-//     alert("Enter PAN Number");
-//     return;
-//   }
+  // const verifyPan = async () => {
+  //   debugger
+  //   if (!formData.panNo) {
+  //     alert("Enter PAN Number");
+  //     return;
+  //   }
 
-//   try {
-//     const res = await axios.post(`${API}/kyc/pan/verify`, {
-//       pan: formData.panNo,
-//       name: "---"
-//     });
+  //   try {
+  //     const res = await axios.post(`${API}/kyc/pan/verify`, {
+  //       pan: formData.panNo,
+  //       name: "---"
+  //     });
 
-//     const data = res.data.data;
+  //     const data = res.data.data;
 
-//     // Split registered name
-//     // const nameParts = splitFullName(data.registered_name);
+  //     // Split registered name
+  //     // const nameParts = splitFullName(data.registered_name);
 
-//     // // Update form data
-//     // setFormData({
-//     //   ...formData,
-//     //   printName: data.registered_name,
-//     //   firstName: nameParts.firstName,
-//     //   middleName: nameParts.middleName,
-//     //   lastName: nameParts.lastName
-//     // });
+  //     // // Update form data
+  //     // setFormData({
+  //     //   ...formData,
+  //     //   printName: data.registered_name,
+  //     //   firstName: nameParts.firstName,
+  //     //   middleName: nameParts.middleName,
+  //     //   lastName: nameParts.lastName
+  //     // });
 
-//     alert("PAN Verified Successfully!");
+  //     alert("PAN Verified Successfully!");
 
-//   } catch (error) {
-//     console.log(error);
-//     alert("PAN Verification Failed");
-//   }
-//   };
-  
+  //   } catch (error) {
+  //     console.log(error);
+  //     alert("PAN Verification Failed");
+  //   }
+  //   };
+
   const sendAadhaarOTP = async () => {
     debugger
     // 1. Basic Length Check
@@ -547,52 +548,52 @@ const [isValuationModalOpen, setIsValuationModalOpen] = useState(false);
       alert("Enter valid 12-digit Aadhaar");
       return;
     }
-  
+
     // 2. Cross-check with PAN Masked Data
     const inputLastFour = formData.aadhar_card.slice(-4);
-    
+
     if (adharMaskingData && inputLastFour !== adharMaskingData) {
       alert(`Aadhaar mismatch!.`);
       return;
     }
-  
+
     // 3. Proceed to API if validation passes
     try {
       const res = await axios.post(`${API}/kyc/aadhaar/send-otp`, {
         aadhaar_number: formData.aadhar_card
       });
-  
+
       setFormData(prev => ({
         ...prev,
         refId: res.data.data.ref_id
       }));
-  
+
       alert("Aadhar Verify successfully");
-  
+
     } catch (error) {
       console.error(error);
       alert("Failed to send OTP");
     }
   };
-  
+
   const verifyAadhaarOtp = async () => {
     if (!formData.otp || formData.otp.length < 6) {
       alert("Please enter a valid OTP");
       return;
     }
-  
+
     try {
       const res = await axios.post(`${API}/kyc/aadhaar/verify-otp`, {
         otp: formData.otp,
         ref_id: formData.refId
       });
-  
+
       if (res.data.status) {
         alert("Aadhaar Verified Successfully!");
         // Optional: Set success flag
         // setFormData({ ...formData, aadhaarVerified: true });
       }
-  
+
     } catch (error) {
       alert("OTP Verification Failed!");
       console.error(error);
@@ -600,152 +601,152 @@ const [isValuationModalOpen, setIsValuationModalOpen] = useState(false);
   };
 
   const handleCheckboxChange = (emp) => {
-  setSelectedEmployees((prev) => {
-    // If selected already → remove
-    if (prev.some((e) => e.id === emp.id)) {
-      return prev.filter((e) => e.id !== emp.id);
-    }
-    // Else add to selection
-    return [...prev, emp];
-  });
-};
-
-  const handleValuationClick = () => {
-  if (selectedEmployees.length === 0) {
-    alert("Please select at least one employee");
-    return;
-  }
-  setIsValuationModalOpen(true);
-};
-
-  const handleSaveValuation = async () => {
-  debugger
-  const employeeIds = selectedEmployees.map(emp => emp.id);
-
-  if (!valuationAmount) {
-    alert("Please enter valuation amount");
-    return;
-  }
-
-  const payload = {
-    employeeIds,
-    valuationAmount
+    setSelectedEmployees((prev) => {
+      // If selected already → remove
+      if (prev.some((e) => e.id === emp.id)) {
+        return prev.filter((e) => e.id !== emp.id);
+      }
+      // Else add to selection
+      return [...prev, emp];
+    });
   };
 
-  console.log("Saving valuation:", payload);
-
-  // Call your API:
-   await axios.post(`${API}/Master/updateEmployeeValuation`, payload);
-  fetchEmployee(currentPage, searchTerm);
-  setIsValuationModalOpen(false);
-  setSelectedEmployees([]);
-  setValuationAmount(""); // reset
-};
-
-const openValuationModal = (emp) => {
-  setSelectedEmployees([emp]);
-  setValuationAmount(emp.Valuer_Valuation || ""); // prefill if exists
-  setIsValuationModalOpen(true);
-};
-
-// const verifyPan = async () => {
-//   if (!formData.pan_card) {
-//     alert("Please enter PAN Number");
-//     return;
-//   }
-
-//   try {
-//     // Calling your API
-//     const res = await axios.post(`${API}/kyc/pan/verify`, {
-//       pan: formData.pan_card,
-//       name: "---" 
-//     });
-
-//     // Extracting nested data from Surepass response
-//     const panDetails = res.data.data.data;
-
-//     if (panDetails) {
-//       const genderMap = {
-//         "M": "Male",
-//         "F": "Female",
-//         "O": "Other"
-//       };
-
-//       // Extract last 4 digits of Aadhaar for your masking state
-//       const aadhaarMasked = panDetails.masked_aadhaar; 
-//       const lastFourDigits = aadhaarMasked ? aadhaarMasked.slice(-4) : "";
-
-//       // Updating your formData
-//       setFormData((prev) => ({
-//         ...prev,
-//         emp_name: panDetails.full_name, // Auto-fills the Name field
-//         date_of_birth: panDetails.dob,  // Auto-fills Date of Birth
-//         // If you have gender in your form, you can add it here
-//       }));
-
-//       // Update your masking state
-//       setAdharMaskingData(lastFourDigits);
-      
-//       alert(`PAN Verified for: ${panDetails.full_name}`);
-//     }
-//   } catch (error) {
-//     console.error("Verification Error:", error);
-//     alert("PAN Verification Failed. Please check the PAN number.");
-//   }
-// };
-const verifyPan = async () => {
-  if (!formData.pan_card) {
-    alert("Please enter PAN Number");
-    return;
-  }
-
-  try {
-    const res = await axios.post(`${API}/kyc/pan/verify`, {
-      pan: formData.pan_card,
-      name: "---" 
-    });
-
-    // Navigating the nested response structure: res.data.data.data
-    const panDetails = res.data.data.data;
-
-    if (panDetails) {
-      // 1. Capture the masked Aadhaar info for your separate state
-      const lastFourDigits = panDetails.masked_aadhaar 
-        ? panDetails.masked_aadhaar.slice(-4) 
-        : "";
-      setAdharMaskingData(lastFourDigits);
-
-      // 2. Update formData with available API details
-      // setFormData((prev) => ({
-      //   ...prev,
-      //   emp_name: panDetails.full_name,        // Maps "SUMIT BHIKAJI PATHAK"
-      //   date_of_birth: panDetails.dob,
-      //   email: panDetails.email,
-      //   mobile_no: panDetails.phone_number,
-      // }));
-setFormData((prev) => ({
-        ...prev,
-        emp_name: panDetails.full_name || prev.emp_name,
-        date_of_birth: panDetails.dob || prev.date_of_birth,
-        
-        // Email ani Mobile (Jar API madhe null asel tar prev value maintain rahil)
-        email: panDetails.email || prev.email,
-        mobile_no: panDetails.phone_number || prev.mobile_no,
-        
-        // Address Mapping
-        // panDetails.address.full madhe sagala address ekatra yeto
-        permanent_address: panDetails.address?.full || prev.permanent_address,
-        
-        // Jar tula corresponding address madhe pan toch pahije asel tar:
-        corresponding_address: panDetails.address?.full || prev.corresponding_address,
-      }));
-      alert("PAN Verified Successfully!");
+  const handleValuationClick = () => {
+    if (selectedEmployees.length === 0) {
+      alert("Please select at least one employee");
+      return;
     }
-  } catch (error) {
-    console.error("Verification Error:", error);
-    alert(error.response?.data?.message || "PAN Verification Failed");
-  }
-};
+    setIsValuationModalOpen(true);
+  };
+
+  const handleSaveValuation = async () => {
+    debugger
+    const employeeIds = selectedEmployees.map(emp => emp.id);
+
+    if (!valuationAmount) {
+      alert("Please enter valuation amount");
+      return;
+    }
+
+    const payload = {
+      employeeIds,
+      valuationAmount
+    };
+
+    console.log("Saving valuation:", payload);
+
+    // Call your API:
+    await axios.post(`${API}/Master/updateEmployeeValuation`, payload);
+    fetchEmployee(currentPage, searchTerm);
+    setIsValuationModalOpen(false);
+    setSelectedEmployees([]);
+    setValuationAmount(""); // reset
+  };
+
+  const openValuationModal = (emp) => {
+    setSelectedEmployees([emp]);
+    setValuationAmount(emp.Valuer_Valuation || ""); // prefill if exists
+    setIsValuationModalOpen(true);
+  };
+
+  // const verifyPan = async () => {
+  //   if (!formData.pan_card) {
+  //     alert("Please enter PAN Number");
+  //     return;
+  //   }
+
+  //   try {
+  //     // Calling your API
+  //     const res = await axios.post(`${API}/kyc/pan/verify`, {
+  //       pan: formData.pan_card,
+  //       name: "---" 
+  //     });
+
+  //     // Extracting nested data from Surepass response
+  //     const panDetails = res.data.data.data;
+
+  //     if (panDetails) {
+  //       const genderMap = {
+  //         "M": "Male",
+  //         "F": "Female",
+  //         "O": "Other"
+  //       };
+
+  //       // Extract last 4 digits of Aadhaar for your masking state
+  //       const aadhaarMasked = panDetails.masked_aadhaar; 
+  //       const lastFourDigits = aadhaarMasked ? aadhaarMasked.slice(-4) : "";
+
+  //       // Updating your formData
+  //       setFormData((prev) => ({
+  //         ...prev,
+  //         emp_name: panDetails.full_name, // Auto-fills the Name field
+  //         date_of_birth: panDetails.dob,  // Auto-fills Date of Birth
+  //         // If you have gender in your form, you can add it here
+  //       }));
+
+  //       // Update your masking state
+  //       setAdharMaskingData(lastFourDigits);
+
+  //       alert(`PAN Verified for: ${panDetails.full_name}`);
+  //     }
+  //   } catch (error) {
+  //     console.error("Verification Error:", error);
+  //     alert("PAN Verification Failed. Please check the PAN number.");
+  //   }
+  // };
+  const verifyPan = async () => {
+    if (!formData.pan_card) {
+      alert("Please enter PAN Number");
+      return;
+    }
+
+    try {
+      const res = await axios.post(`${API}/kyc/pan/verify`, {
+        pan: formData.pan_card,
+        name: "---"
+      });
+
+      // Navigating the nested response structure: res.data.data.data
+      const panDetails = res.data.data.data;
+
+      if (panDetails) {
+        // 1. Capture the masked Aadhaar info for your separate state
+        const lastFourDigits = panDetails.masked_aadhaar
+          ? panDetails.masked_aadhaar.slice(-4)
+          : "";
+        setAdharMaskingData(lastFourDigits);
+
+        // 2. Update formData with available API details
+        // setFormData((prev) => ({
+        //   ...prev,
+        //   emp_name: panDetails.full_name,        // Maps "SUMIT BHIKAJI PATHAK"
+        //   date_of_birth: panDetails.dob,
+        //   email: panDetails.email,
+        //   mobile_no: panDetails.phone_number,
+        // }));
+        setFormData((prev) => ({
+          ...prev,
+          emp_name: panDetails.full_name || prev.emp_name,
+          date_of_birth: panDetails.dob || prev.date_of_birth,
+
+          // Email ani Mobile (Jar API madhe null asel tar prev value maintain rahil)
+          email: panDetails.email || prev.email,
+          mobile_no: panDetails.phone_number || prev.mobile_no,
+
+          // Address Mapping
+          // panDetails.address.full madhe sagala address ekatra yeto
+          permanent_address: panDetails.address?.full || prev.permanent_address,
+
+          // Jar tula corresponding address madhe pan toch pahije asel tar:
+          corresponding_address: panDetails.address?.full || prev.corresponding_address,
+        }));
+        alert("PAN Verified Successfully!");
+      }
+    } catch (error) {
+      console.error("Verification Error:", error);
+      alert(error.response?.data?.message || "PAN Verification Failed");
+    }
+  };
   return (
     <div className="min-h-screen w-full">
       {/* Top bar */}
@@ -792,11 +793,11 @@ setFormData((prev) => ({
                 Clear
               </button>
               <button
-  onClick={handleValuationClick}
-  className="bg-[#129121] text-white text-[11.25px] w-[74px] h-[24px] rounded flex items-center justify-center"
->
-  Valuation
-</button>
+                onClick={handleValuationClick}
+                className="bg-[#129121] text-white text-[11.25px] w-[74px] h-[24px] rounded flex items-center justify-center"
+              >
+                Valuation
+              </button>
 
             </div>
 
@@ -834,100 +835,100 @@ setFormData((prev) => ({
                 {/* Left Form */}
                 <div className=" space-y-4 text-sm">
                   {/* PAN + Aadhaar + Name */}
-                 <div className="flex gap-4 w-full">
+                  <div className="flex gap-4 w-full">
 
-  {/* PAN */}
-  <div className="flex flex-col flex-1">
-    <label className="text-[14px] font-medium">
-      PAN No. <span className="text-red-500">*</span>
-    </label>
+                    {/* PAN */}
+                    <div className="flex flex-col flex-1">
+                      <label className="text-[14px] font-medium">
+                        PAN No. <span className="text-red-500">*</span>
+                      </label>
 
-    <div className="flex items-center mt-1">
-      <div className="relative flex-1">
-        <input
-          type="text"
-          placeholder="Enter PAN"
-          name="pan_card"
-          disabled={mode === "view"}
-          value={formData.pan_card}
-          onChange={handleInputChange}
-          className="border border-[#C4C4C4] border-r-0 rounded-l-[8px] px-3 py-2 pr-10 w-full bg-white"
-        />
+                      <div className="flex items-center mt-1">
+                        <div className="relative flex-1">
+                          <input
+                            type="text"
+                            placeholder="Enter PAN"
+                            name="pan_card"
+                            disabled={mode === "view"}
+                            value={formData.pan_card}
+                            onChange={handleInputChange}
+                            className="border border-[#C4C4C4] border-r-0 rounded-l-[8px] px-3 py-2 pr-10 w-full bg-white"
+                          />
 
-        <input
-          type="file"
-          accept="image/*,.pdf"
-          ref={panFileInputRef}
-          disabled={mode === "view"}
-          onChange={handlePanFileChange}
-          className="hidden"
-        />
+                          <input
+                            type="file"
+                            accept="image/*,.pdf"
+                            ref={panFileInputRef}
+                            disabled={mode === "view"}
+                            onChange={handlePanFileChange}
+                            className="hidden"
+                          />
 
-        <FaPaperclip
-          className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 cursor-pointer"
-          size={16}
-          onClick={() => panFileInputRef.current.click()}
-        />
-      </div>
+                          <FaPaperclip
+                            className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 cursor-pointer"
+                            size={16}
+                            onClick={() => panFileInputRef.current.click()}
+                          />
+                        </div>
 
-      <button
-        className="bg-[#0A2478] text-white px-4 py-2 rounded-r-[8px] hover:bg-[#081c5b] whitespace-nowrap"
-        type="button"
-        onClick={verifyPan}
-      >
-        Verify
-      </button>
-    </div>
-  </div>
+                        <button
+                          className="bg-[#0A2478] text-white px-4 py-2 rounded-r-[8px] hover:bg-[#081c5b] whitespace-nowrap"
+                          type="button"
+                          onClick={verifyPan}
+                        >
+                          Verify
+                        </button>
+                      </div>
+                    </div>
 
-  {/* Aadhaar */}
-  <div className="flex flex-col flex-1">
-    <label className="text-[14px] font-medium">
-      Aadhar Card Number <span className="text-red-500">*</span>
-    </label>
+                    {/* Aadhaar */}
+                    <div className="flex flex-col flex-1">
+                      <label className="text-[14px] font-medium">
+                        Aadhar Card Number <span className="text-red-500">*</span>
+                      </label>
 
-    <div className="flex items-center mt-1">
-      <div className="relative flex-1">
-        <input
-          type="number"
-          placeholder="Enter Aadhar Number"
-          name="aadhar_card"
-          disabled={mode === "view"}
-          value={formData.aadhar_card}
-          onChange={handleInputChange}
-          className="border border-[#C4C4C4] border-r-0 rounded-l-[8px] px-3 py-2 pr-10 w-[153px] bg-white h-[38px]"
-          style={{ MozAppearance: "textfield" }}
-          onWheel={(e) => e.target.blur()}
-        />
+                      <div className="flex items-center mt-1">
+                        <div className="relative flex-1">
+                          <input
+                            type="number"
+                            placeholder="Enter Aadhar Number"
+                            name="aadhar_card"
+                            disabled={mode === "view"}
+                            value={formData.aadhar_card}
+                            onChange={handleInputChange}
+                            className="border border-[#C4C4C4] border-r-0 rounded-l-[8px] px-3 py-2 pr-10 w-[153px] bg-white h-[38px]"
+                            style={{ MozAppearance: "textfield" }}
+                            onWheel={(e) => e.target.blur()}
+                          />
 
-        <input
-          type="file"
-          accept="image/*,.pdf"
-          ref={aadharFileInputRef}
-          disabled={mode === "view"}
-          onChange={handleAadharFileChange}
-          className="hidden"
-        />
+                          <input
+                            type="file"
+                            accept="image/*,.pdf"
+                            ref={aadharFileInputRef}
+                            disabled={mode === "view"}
+                            onChange={handleAadharFileChange}
+                            className="hidden"
+                          />
 
-        <FaPaperclip
-          className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 cursor-pointer"
-          size={16}
-          onClick={() => aadharFileInputRef.current.click()}
-        />
-      </div>
+                          <FaPaperclip
+                            className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 cursor-pointer"
+                            size={16}
+                            onClick={() => aadharFileInputRef.current.click()}
+                          />
+                        </div>
 
-      <button
-        className="bg-[#0A2478] text-white px-4 py-2 rounded-r-[8px] hover:bg-[#081c5b] whitespace-nowrap h-[38px]"
-        type="button"
-        onClick={sendAadhaarOTP}
-      >
-        verify
-      </button>
-    </div>
-  </div>
+                        <button
+                          className="bg-[#0A2478] text-white px-4 py-2 rounded-r-[8px] hover:bg-[#081c5b] whitespace-nowrap h-[38px]"
+                          type="button"
+                          onClick={sendAadhaarOTP}
+                        >
+                          verify
+                        </button>
+                      </div>
+                    </div>
 
-  {/* OTP */}
-  {/* <div className="flex flex-col w-[140px]">
+                    {/* OTP */}
+                    {/* <div className="flex flex-col w-[140px]">
     <label className="text-[14px] font-medium">Verify OTP</label>
 
     <div className="relative mt-1">
@@ -951,22 +952,22 @@ setFormData((prev) => ({
     </div>
   </div> */}
 
-  {/* Name */}
-  <div className="flex flex-col flex-1">
-    <label className="text-gray-700 font-medium">Name*</label>
+                    {/* Name */}
+                    <div className="flex flex-col flex-1">
+                      <label className="text-gray-700 font-medium">Name*</label>
 
-    <input
-      type="text"
-      name="emp_name"
-      value={formData.emp_name}
-      disabled={mode === "view"}
-      onChange={handleInputChange}
-      placeholder="Name"
-      className="border border-[#C4C4C4] rounded-[8px] px-3 py-2 w-[166px] bg-white mt-1"
-    />
-  </div>
+                      <input
+                        type="text"
+                        name="emp_name"
+                        value={formData.emp_name}
+                        disabled={mode === "view"}
+                        onChange={handleInputChange}
+                        placeholder="Name"
+                        className="border border-[#C4C4C4] rounded-[8px] px-3 py-2 w-[166px] bg-white mt-1"
+                      />
+                    </div>
 
-</div>
+                  </div>
 
 
                   {/* Employee ID, Mobile, Email */}
@@ -981,12 +982,12 @@ setFormData((prev) => ({
                         disabled={mode === "view"}
                         onChange={handleInputChange}
                         placeholder="Mobile No"
-                     
+
                         style={{
                           MozAppearance: "textfield",
-                          
-                      }}
-                      onWheel={(e) => e.target.blur()}
+
+                        }}
+                        onWheel={(e) => e.target.blur()}
                         className="border border-[#C4C4C4] rounded-[8px] px-3 py-2 focus:outline-none focus:ring-1 focus:ring-blue-500 w-[153px]"
                       />
                     </div>
@@ -1000,9 +1001,9 @@ setFormData((prev) => ({
                         disabled={mode === "view"}
                         placeholder="Mobile No"
                         style={{
-                        MozAppearance: "textfield",
-                      }}
-                      onWheel={(e) => e.target.blur()}
+                          MozAppearance: "textfield",
+                        }}
+                        onWheel={(e) => e.target.blur()}
                         className="border border-[#C4C4C4] rounded-[8px] px-3 py-2 focus:outline-none focus:ring-1 focus:ring-blue-500 w-[153px]"
                       />
                     </div>
@@ -1173,7 +1174,7 @@ setFormData((prev) => ({
 
                   {/* Role, Password, Fax */}
                   <div className="flex gap-2">
-                    
+
                     <div className="flex flex-col gap-1">
                       <label className="text-gray-700 font-medium">Password <span className="text-red-500">*</span></label>
                       <input
@@ -1269,132 +1270,132 @@ setFormData((prev) => ({
                       )}
                     </div>
 
-                   <div className="flex flex-col ">
+                    <div className="flex flex-col ">
 
-  {/* Centered Title */}
-  <div className="flex justify-center mt-2 mb-2 w-full">
-    <label className="font-roboto font-bold text-[16px] leading-[100%] tracking-[0.03em]">
-      Upload Customer Profile
-    </label>
-  </div>
+                      {/* Centered Title */}
+                      <div className="flex justify-center mt-2 mb-2 w-full">
+                        <label className="font-roboto font-bold text-[16px] leading-[100%] tracking-[0.03em]">
+                          Upload Customer Profile
+                        </label>
+                      </div>
 
-  {/* Upload Box */}
-  <div className="flex border border-gray-400 rounded-[10px] overflow-hidden w-[300px] mt-2">
-    <label
-      htmlFor="profileImage"
-      className="bg-[#D9D9D9] px-6 py-2 text-sm text-black font-semibold cursor-pointer hover:bg-gray-300 transition-all duration-200"
-    >
-      Choose File
-    </label>
+                      {/* Upload Box */}
+                      <div className="flex border border-gray-400 rounded-[10px] overflow-hidden w-[300px] mt-2">
+                        <label
+                          htmlFor="profileImage"
+                          className="bg-[#D9D9D9] px-6 py-2 text-sm text-black font-semibold cursor-pointer hover:bg-gray-300 transition-all duration-200"
+                        >
+                          Choose File
+                        </label>
 
-    <input
-      id="profileImage"
-      type="file"
-      disabled={mode === "view"}
-      className="hidden"
-      onChange={(e) => handleFileChange(e, setProfileImage)}
-    />
+                        <input
+                          id="profileImage"
+                          type="file"
+                          disabled={mode === "view"}
+                          className="hidden"
+                          onChange={(e) => handleFileChange(e, setProfileImage)}
+                        />
 
-    <span className="flex-1 px-4 py-2 text-gray-500 text-sm truncate">
-      {formData.emp_image || "Upload Customer Profile"}
-    </span>
-  </div>
+                        <span className="flex-1 px-4 py-2 text-gray-500 text-sm truncate">
+                          {formData.emp_image || "Upload Customer Profile"}
+                        </span>
+                      </div>
 
-</div>
+                    </div>
 
                     {
-  mode !== "view" &&(
-    <>
-    <h1 className="text-[14px] font-medium mt-2">Address Proof</h1>
+                      mode !== "view" && (
+                        <>
+                          <h1 className="text-[14px] font-medium mt-2">Address Proof</h1>
 
-                    <select
-                      disabled={mode === "view"}
-                      value={formData.addressProfiletype}
-                      onChange={(e) => setFormData({ ...formData, addressProfiletype: e.target.value })}
-                      className="border border-gray-400 rounded-[10px] px-3 py-2 w-[300px] mt-1 bg-white"
-                    >
-                      <option value="">Select Address Proof</option>
-                      {addrProofList.map((item) => (
-                        <option key={item.id} value={item.proof_type}>
-                          {item.proof_type}
-                        </option>
-                      ))}
-                    </select>
+                          <select
+                            disabled={mode === "view"}
+                            value={formData.addressProfiletype}
+                            onChange={(e) => setFormData({ ...formData, addressProfiletype: e.target.value })}
+                            className="border border-gray-400 rounded-[10px] px-3 py-2 w-[300px] mt-1 bg-white"
+                          >
+                            <option value="">Select Address Proof</option>
+                            {addrProofList.map((item) => (
+                              <option key={item.id} value={item.proof_type}>
+                                {item.proof_type}
+                              </option>
+                            ))}
+                          </select>
 
-                    <div className="flex  border border-gray-400 rounded-[10px] overflow-hidden w-[300px] mt-2">
-                      <label
-                        htmlFor="addressProof"
-                        className="bg-[#D9D9D9] px-6 py-2 text-sm text-black font-semibold cursor-pointer hover:bg-gray-300 transition-all duration-200 "
-                      >
-                        Choose File
-                      </label>
+                          <div className="flex  border border-gray-400 rounded-[10px] overflow-hidden w-[300px] mt-2">
+                            <label
+                              htmlFor="addressProof"
+                              className="bg-[#D9D9D9] px-6 py-2 text-sm text-black font-semibold cursor-pointer hover:bg-gray-300 transition-all duration-200 "
+                            >
+                              Choose File
+                            </label>
 
-                      <input
-                        id="addressProof"
-                        type="file"
-                        disabled={mode === "view"}
-                        className="hidden"
-                        onChange={(e) => handleFileChangeForAddProof(e, setAddressProof)}
-                      />
+                            <input
+                              id="addressProof"
+                              type="file"
+                              disabled={mode === "view"}
+                              className="hidden"
+                              onChange={(e) => handleFileChangeForAddProof(e, setAddressProof)}
+                            />
 
-                      <span className="flex-1 px-4 py-2 text-gray-500 text-sm truncate">
-                        {formData.emp_add_prof || "No file chosen"}
-                      </span>
-                    </div>
+                            <span className="flex-1 px-4 py-2 text-gray-500 text-sm truncate">
+                              {formData.emp_add_prof || "No file chosen"}
+                            </span>
+                          </div>
 
-                    <h1 className="text-[14px] font-medium mt-3">ID Proof</h1>
-                    <select
-                      disabled={mode === "view"}
-                      value={formData.IdProoftype}
-                      onChange={(e) => setFormData({ ...formData, IdProoftype: e.target.value })}
-                      className="border border-gray-400 rounded-[10px] px-3 py-2 w-[300px] mt-1 bg-white"
-                    >
-                      <option value="">Select ID Proof</option>
-                      {idProofList.map((item) => (
-                        <option key={item.id} value={item.proof_type}>
-                          {item.proof_type}
-                        </option>
-                      ))}
-                    </select>
+                          <h1 className="text-[14px] font-medium mt-3">ID Proof</h1>
+                          <select
+                            disabled={mode === "view"}
+                            value={formData.IdProoftype}
+                            onChange={(e) => setFormData({ ...formData, IdProoftype: e.target.value })}
+                            className="border border-gray-400 rounded-[10px] px-3 py-2 w-[300px] mt-1 bg-white"
+                          >
+                            <option value="">Select ID Proof</option>
+                            {idProofList.map((item) => (
+                              <option key={item.id} value={item.proof_type}>
+                                {item.proof_type}
+                              </option>
+                            ))}
+                          </select>
 
-                    <div className="flex  border border-gray-400 rounded-[10px] overflow-hidden w-[300px] mt-2">
-                      <label
-                        htmlFor="idProof"
-                        className="bg-[#D9D9D9] px-6 py-2 text-sm text-black font-semibold cursor-pointer hover:bg-gray-300 transition-all duration-200 "
-                      >
-                        Choose File
-                      </label>
+                          <div className="flex  border border-gray-400 rounded-[10px] overflow-hidden w-[300px] mt-2">
+                            <label
+                              htmlFor="idProof"
+                              className="bg-[#D9D9D9] px-6 py-2 text-sm text-black font-semibold cursor-pointer hover:bg-gray-300 transition-all duration-200 "
+                            >
+                              Choose File
+                            </label>
 
-                      <input
-                        id="idProof"
-                        disabled={mode === "view"}
-                        type="file"
-                        className="hidden"
-                        onChange={(e) => handleFileChangeForIdProof(e, setIdProof)}
-                      />
+                            <input
+                              id="idProof"
+                              disabled={mode === "view"}
+                              type="file"
+                              className="hidden"
+                              onChange={(e) => handleFileChangeForIdProof(e, setIdProof)}
+                            />
 
-                      <span className="flex-1 px-4 py-2 text-gray-500 text-sm truncate">
-                        {formData.emp_id_prof || "No file chosen"}
-                      </span>
-                    </div>
-    
-    </>
-  )
-}
+                            <span className="flex-1 px-4 py-2 text-gray-500 text-sm truncate">
+                              {formData.emp_id_prof || "No file chosen"}
+                            </span>
+                          </div>
+
+                        </>
+                      )
+                    }
 
 
-                    
 
-                   {(mode === "edit" || mode === "view") && (
-  <div className="mt-4 text-sm w-fit flex justify-end">
-    <button
-      onClick={() => setIsDocumentHistory(true)}
-      className="bg-green-500 px-2 py-1 text-white rounded-lg hover:bg-green-600"
-    >
-      View Document History
-    </button>
-  </div>
-)}
+
+                    {(mode === "edit" || mode === "view") && (
+                      <div className="mt-4 text-sm w-fit flex justify-end">
+                        <button
+                          onClick={() => setIsDocumentHistory(true)}
+                          className="bg-green-500 px-2 py-1 text-white rounded-lg hover:bg-green-600"
+                        >
+                          View Document History
+                        </button>
+                      </div>
+                    )}
 
 
                   </div>
@@ -1528,45 +1529,45 @@ setFormData((prev) => ({
       )}
 
       {isValuationModalOpen && (
-  <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-sm">
-    <div className="bg-white w-[400px] p-5 rounded shadow-lg ">
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-sm">
+          <div className="bg-white w-[400px] p-5 rounded shadow-lg ">
 
-      <h2 className="text-[18px] leading-[24px] font-semibold text-[#0A2478] text-center font-[Source_Sans_3] mb-3">
-  The employee is permitted to perform gold valuation
-</h2>
+            <h2 className="text-[18px] leading-[24px] font-semibold text-[#0A2478] text-center font-[Source_Sans_3] mb-3">
+              The employee is permitted to perform gold valuation
+            </h2>
 
-      <label className="text-[14px] leading-[24px] font-medium text-[#000000] font-[Source_Sans_3]">
-  Valuation Limit Assigned
-</label>
+            <label className="text-[14px] leading-[24px] font-medium text-[#000000] font-[Source_Sans_3]">
+              Valuation Limit Assigned
+            </label>
 
-    <input
-  type="number"
-  value={valuationAmount}
-  onChange={(e) => setValuationAmount(e.target.value)}
-  className="border w-full mt-1 mb-4 px-2 py-1 rounded"
-  placeholder="e.g. ₹ 1,00,000.00"
-/>
+            <input
+              type="number"
+              value={valuationAmount}
+              onChange={(e) => setValuationAmount(e.target.value)}
+              className="border w-full mt-1 mb-4 px-2 py-1 rounded"
+              placeholder="e.g. ₹ 1,00,000.00"
+            />
 
 
             <div className="flex justify-center gap-3 mt-5">
-               <button
-          onClick={handleSaveValuation}
-          className="bg-[#0A2478] text-white px-3 py-1 rounded w-[93px] h-[30px]"
-        >
-         Submit
-        </button>
-        <button
-          onClick={() => setIsValuationModalOpen(false)}
-          className="bg-[#C1121F] text-white px-3 py-1 rounded h-[30px]"
-        >
-         Close
-        </button>
+              <button
+                onClick={handleSaveValuation}
+                className="bg-[#0A2478] text-white px-3 py-1 rounded w-[93px] h-[30px]"
+              >
+                Submit
+              </button>
+              <button
+                onClick={() => setIsValuationModalOpen(false)}
+                className="bg-[#C1121F] text-white px-3 py-1 rounded h-[30px]"
+              >
+                Close
+              </button>
 
-       
-      </div>
-    </div>
-  </div>
-)}
+
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* Table */}
       <div className="flex justify-center">
@@ -1578,7 +1579,7 @@ setFormData((prev) => ({
           ) : (
             <table className="w-full border-collapse">
               <thead className="bg-[#0A2478] text-white text-sm">
-                  <tr>
+                <tr>
                   <th className="px-4 py-2 text-left border-r">Select</th>
                   <th className="px-4 py-2 text-left border-r">Profile</th>
                   <th className="px-4 py-2 text-left border-r">Name</th>
@@ -1586,8 +1587,8 @@ setFormData((prev) => ({
                   <th className="px-4 py-2 text-left border-r w-[111px]">Mobile</th>
                   {/* <th className="px-4 py-2 text-left border-r">DOJ</th>
                   <th className="px-4 py-2 text-left border-r">DOB</th> */}
-                    <th className="px-4 py-2 text-left border-r w-[313px]">Address</th>
-                      <th className="px-4 py-2 text-left border-r w-[111px]">Valuer Valuation</th>
+                  <th className="px-4 py-2 text-left border-r w-[313px]">Address</th>
+                  <th className="px-4 py-2 text-left border-r w-[111px]">Valuer Valuation</th>
                   <th className="px-4 py-2 text-left border-r">Action</th>
                   <th className="px-4 py-2 text-left border-r">Active</th>
                 </tr>
@@ -1599,15 +1600,15 @@ setFormData((prev) => ({
                       key={emp.id}
                       className={`${index % 2 === 0 ? "bg-white" : "bg-white"} hover:bg-gray-100 border-b border-gray-300`}
                     >
-                     {/* Select Column */}
-<td className="px-4 py-2 text-center">
-  <input
-    type="checkbox"
-    checked={selectedEmployees.some((e) => e.id === emp.id)}
-    onChange={() => handleCheckboxChange(emp)}
-    className="w-4 h-4 cursor-pointer"
-  />
-</td>
+                      {/* Select Column */}
+                      <td className="px-4 py-2 text-center">
+                        <input
+                          type="checkbox"
+                          checked={selectedEmployees.some((e) => e.id === emp.id)}
+                          onChange={() => handleCheckboxChange(emp)}
+                          className="w-4 h-4 cursor-pointer"
+                        />
+                      </td>
 
 
 
@@ -1620,7 +1621,7 @@ setFormData((prev) => ({
 
                       </td>
 
-                      <td className="px-4 py-2 text-blue-500 cursor-pointer"   onClick={() => handleView(emp)}>{emp.emp_name}</td>
+                      <td className="px-4 py-2 text-blue-500 cursor-pointer" onClick={() => handleView(emp)}>{emp.emp_name}</td>
                       <td className="px-4 py-2">{emp.email}</td>
                       <td className="px-4 py-2">{emp.mobile_no}</td>
                       {/* <td className="px-4 py-2">{new Date(emp.joining_date).toLocaleDateString()}</td>
@@ -1629,11 +1630,11 @@ setFormData((prev) => ({
                         {emp.permanent_address}
                       </td>
                       <td
-  className="px-4 py-2 text-blue-700 cursor-pointer underline"
-  onClick={() => openValuationModal(emp)}
->
-  {emp.Valuer_Valuation?.trim() || "---"}
-</td>
+                        className="px-4 py-2 text-blue-700 cursor-pointer underline"
+                        onClick={() => openValuationModal(emp)}
+                      >
+                        {emp.Valuer_Valuation?.trim() || "---"}
+                      </td>
 
                       <td className="px-4 py-2">
                         <div className="flex gap-2 justify-center">

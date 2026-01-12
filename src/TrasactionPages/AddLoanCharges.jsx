@@ -34,6 +34,7 @@ function AddLoanCharges() {
 
   const [searchResults, setSearchResults] = useState([]);
   const [loading, setLoading] = useState(false);
+  const [remarkError, setRemarkError] = useState("");
 
   // ✅ Fetch active charges
   useEffect(() => {
@@ -155,6 +156,13 @@ function AddLoanCharges() {
 
   // ✅ Submit handler
   const handleSubmit = async () => {
+    if (!formData.remark.trim()) {
+      setRemarkError("Remark is required");
+      return;
+    } else {
+      setRemarkError("");
+    }
+
     try {
       const payload = {
         loan_no: formData.loanNo,
@@ -165,7 +173,7 @@ function AddLoanCharges() {
         pending_amt: formData.pendingAmt,
         remark: formData.remark,
         charges_details: rows,
-        total_charges: totalNetPayable.toFixed(2), // Added total charges
+        total_charges: totalNetPayable.toFixed(2),
         added_by: "Admin",
       };
 
@@ -182,6 +190,7 @@ function AddLoanCharges() {
       alert("Server error while submitting loan charges!");
     }
   };
+
 
   return (
     <div className="min-h-screen w-full">
@@ -370,10 +379,18 @@ function AddLoanCharges() {
           <textarea
             name="remark"
             value={formData.remark}
-            onChange={handleChange}
+            onChange={(e) => {
+              handleChange(e);
+              setRemarkError("");
+            }}
             placeholder="Enter any remark"
             className="border border-gray-300 px-3 py-2 w-[600px] h-[90px] bg-white rounded-[8px]"
           ></textarea>
+
+          {remarkError && (
+            <span className="text-red-600 text-sm mt-1">{remarkError}</span>
+          )}
+
         </div>
       </div>
 

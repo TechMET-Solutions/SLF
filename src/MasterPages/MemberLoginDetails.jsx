@@ -147,13 +147,13 @@ const MemberLoginDetails = () => {
     }
   };
 
-  if (isLoading) {
-    return (
-      <div className="text-center py-10">
-        <Loader />
-      </div>
-    );
-  }
+  // if (isLoading) {
+  //   return (
+  //     <div className="text-center py-10">
+  //       <Loader />
+  //     </div>
+  //   );
+  // }
 
   return (
     <div className="min-h-screen w-full">

@@ -108,7 +108,10 @@ function ViewLoanCharges() {
           <Detail label="Party Name" value={loanData.party_name} />
           <Detail label="Loan Amount" value={loanData.loan_amt} />
           <Detail label="Pending Amount" value={loanData.pending_amt} />
-          <Detail label="Remark" value={loanData.remark} />
+          <div className="flex flex-col">
+            <label className="text-[14px] font-medium">Remark</label>
+            <p className="mt-1 text-gray-800" dangerouslySetInnerHTML={{ __html: loanData.remark }}></p>
+          </div>
         </div>
       </div>
 

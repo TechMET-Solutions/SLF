@@ -2,73 +2,74 @@ import axios from "axios";
 import { useEffect, useState } from "react";
 import { API } from "../api";
 import GroupData from "../assets/Group 124.svg";
+import { formatIndianDate } from "../utils/Helpers";
 
 const AccountCodeList = () => {
   useEffect(() => {
     document.title = "SLF | Account Code List";
   }, []);
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [data , setData] = useState([
-   
+  const [data, setData] = useState([
+
   ]);
   const [editMode, setEditMode] = useState(false);
-const [selectedId, setSelectedId] = useState(null);
- const [formData, setFormData] = useState({
+  const [selectedId, setSelectedId] = useState(null);
+  const [formData, setFormData] = useState({
     name: "",
     accountGroup: "",
     financialDate: "",
     type: "",
     addedBy: localStorage.getItem("email") // or whatever you store
   });
-useEffect(() => {
-  fetchData();
-}, []);
-
-const fetchData = async () => {
-  try {
-    const res = await axios.get(`${API}/account-code/get`);
-    setData(res.data);
-  } catch (err) {
-    console.log(err);
-  }
-};
- const handleSave = async () => {
-  try {
-    if (editMode) {
-      await axios.put(`${API}/account-code/update/${selectedId}`, formData);
-      alert("Account Updated ✅");
-    } else {
-      await axios.post(`${API}/account-code/create`, formData);
-      alert("Account Created ✅");
-    }
-    setIsModalOpen(false);
-    setEditMode(false);
+  useEffect(() => {
     fetchData();
-    setFormData({
-      name: "",
-      accountGroup: "",
-      financialDate: "",
-      type: "",
-      addedBy: localStorage.getItem("email")
-    });// refresh table
-  } catch (err) {
-    console.log(err);
-  }
-};
+  }, []);
+
+  const fetchData = async () => {
+    try {
+      const res = await axios.get(`${API}/account-code/get`);
+      setData(res.data);
+    } catch (err) {
+      console.log(err);
+    }
+  };
+  const handleSave = async () => {
+    try {
+      if (editMode) {
+        await axios.put(`${API}/account-code/update/${selectedId}`, formData);
+        alert("Account Updated ✅");
+      } else {
+        await axios.post(`${API}/account-code/create`, formData);
+        alert("Account Created ✅");
+      }
+      setIsModalOpen(false);
+      setEditMode(false);
+      fetchData();
+      setFormData({
+        name: "",
+        accountGroup: "",
+        financialDate: "",
+        type: "",
+        addedBy: localStorage.getItem("email")
+      });// refresh table
+    } catch (err) {
+      console.log(err);
+    }
+  };
 
   const handleEdit = (row) => {
-  setFormData({
-    name: row.name,
-    accountGroup: row.accountGroup,
-    financialDate: row.financialDate,
-    type: row.type,
-    addedBy: row.addedBy
-  });
+    setFormData({
+      name: row.name,
+      accountGroup: row.accountGroup,
+      financialDate: row.financialDate,
+      type: row.type,
+      addedBy: row.addedBy
+    });
 
-  setSelectedId(row.id);
-  setEditMode(true);
-  setIsModalOpen(true);
-};
+    setSelectedId(row.id);
+    setEditMode(true);
+    setIsModalOpen(true);
+  };
   return (
     <div className="min-h-screen w-full font-[Source_Sans_3]">
       {/* Topbar */}
@@ -120,7 +121,7 @@ const fetchData = async () => {
         </div>
       </div>
 
-       {/* Modal for Add */}
+      {/* Modal for Add */}
       {isModalOpen && (
         <div className="fixed inset-0 flex items-center justify-center z-50 bg-black/50 backdrop-blur-sm">
           <div className="bg-white w-full rounded-lg max-w-2xl p-8 mx-4">
@@ -134,26 +135,26 @@ const fetchData = async () => {
                   Account Group Name <span className="text-red-500">*</span>
                 </label>
                 <input
-  type="text"
-  placeholder="Enter Group Name"
-  value={formData.name}
-  onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-  className="w-full h-10 px-3 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm"
-/>
+                  type="text"
+                  placeholder="Enter Group Name"
+                  value={formData.name}
+                  onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+                  className="w-full h-10 px-3 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm"
+                />
               </div>
 
               <div>
                 <label className="text-sm font-medium text-gray-700 mb-2 block">
                   Financial <span className="text-red-500">*</span>
                 </label>
-               <select
-  value={formData.financialDate}
-  onChange={(e) => setFormData({ ...formData, financialDate: e.target.value })}
-  className="w-full h-10 px-3 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm bg-white"
->
-  <option>Balance Sheet</option>
-  <option>Income Statement</option>
-</select>
+                <select
+                  value={formData.financialDate}
+                  onChange={(e) => setFormData({ ...formData, financialDate: e.target.value })}
+                  className="w-full h-10 px-3 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm bg-white"
+                >
+                  <option>Balance Sheet</option>
+                  <option>Income Statement</option>
+                </select>
 
               </div>
 
@@ -161,17 +162,17 @@ const fetchData = async () => {
                 <label className="text-sm font-medium text-gray-700 mb-2 block">
                   Head
                 </label>
-               <select
-  value={formData.accountGroup}
-  onChange={(e) => setFormData({ ...formData, accountGroup: e.target.value })}
-  className="w-full h-10 px-3 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm bg-white"
->
-  <option>Bank Account</option>
-  <option>Bank O\D Account</option>
-  <option>Captical Account</option>
-  <option>Cash in Hand</option>
-  <option>Income (DE)</option>
-</select>
+                <select
+                  value={formData.accountGroup}
+                  onChange={(e) => setFormData({ ...formData, accountGroup: e.target.value })}
+                  className="w-full h-10 px-3 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm bg-white"
+                >
+                  <option>Bank Account</option>
+                  <option>Bank O\D Account</option>
+                  <option>Captical Account</option>
+                  <option>Cash in Hand</option>
+                  <option>Income (DE)</option>
+                </select>
               </div>
 
               <div>
@@ -179,13 +180,13 @@ const fetchData = async () => {
                   Type
                 </label>
                 <select
-  value={formData.type}
-  onChange={(e) => setFormData({ ...formData, type: e.target.value })}
-  className="w-full h-10 px-3 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm bg-white"
->
-  <option>Balance Sheet</option>
-  <option>Income Statement</option>
-</select>
+                  value={formData.type}
+                  onChange={(e) => setFormData({ ...formData, type: e.target.value })}
+                  className="w-full h-10 px-3 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm bg-white"
+                >
+                  <option>Balance Sheet</option>
+                  <option>Income Statement</option>
+                </select>
 
               </div>
             </div>
@@ -193,26 +194,26 @@ const fetchData = async () => {
             <div className="flex justify-center gap-3">
               <button
                 className="h-10 px-6 rounded-lg bg-[#0A2478] text-white text-sm font-medium hover:bg-[#1a3c89] transition-colors duration-200"
-                  onClick={handleSave}
+                onClick={handleSave}
               >
                 Save
               </button>
-             <button
-  className="h-10 px-6 rounded-lg bg-[#C1121F] text-white text-sm font-medium hover:bg-[#d12330] transition-colors duration-200"
-  onClick={() => {
-    setIsModalOpen(false);
-    setEditMode(false);
-    setFormData({
-      name: "",
-      accountGroup: "",
-      financialDate: "",
-      type: "",
-      addedBy: localStorage.getItem("email")
-    });
-  }}
->
-  Exit
-</button>
+              <button
+                className="h-10 px-6 rounded-lg bg-[#C1121F] text-white text-sm font-medium hover:bg-[#d12330] transition-colors duration-200"
+                onClick={() => {
+                  setIsModalOpen(false);
+                  setEditMode(false);
+                  setFormData({
+                    name: "",
+                    accountGroup: "",
+                    financialDate: "",
+                    type: "",
+                    addedBy: localStorage.getItem("email")
+                  });
+                }}
+              >
+                Exit
+              </button>
 
             </div>
           </div>
@@ -253,25 +254,24 @@ const fetchData = async () => {
               {data.map((row, index) => (
                 <tr
                   key={index}
-                  className={`border-b ${
-                    index % 2 === 0 ? "bg-gray-50" : "bg-white"
-                  }`}
+                  className={`border-b ${index % 2 === 0 ? "bg-gray-50" : "bg-white"
+                    }`}
                 >
                   <td className="px-4 py-2">{row.name}</td>
                   <td className="px-4 py-2">{row.financialDate}</td>
                   <td className="px-4 py-2">{row.accountGroup}</td>
                   <td className="px-4 py-2">{row.type}</td>
                   <td className="px-4 py-2">{row.addedBy}</td>
-                  <td className="px-4 py-2">{row.created_at}</td>
+                  <td className="px-4 py-2">{formatIndianDate(row.created_at)}</td>
                   <td className="px-4 py-2">{row.modifiedBy || "-"}</td>
-                <td className="px-4 py-2 text-[#1883EF] cursor-pointer">
-  <div
-    className="w-[17px] h-[17px] bg-[#56A869] rounded-[2.31px] flex items-center justify-center p-0.5"
-    onClick={() => handleEdit(row)}
-  >
-    <img src={GroupData} alt="action-icon" className="w-[18px] h-[18px]" />
-  </div>
-</td>
+                  <td className="px-4 py-2 text-[#1883EF] cursor-pointer">
+                    <div
+                      className="w-[17px] h-[17px] bg-[#56A869] rounded-[2.31px] flex items-center justify-center p-0.5"
+                      onClick={() => handleEdit(row)}
+                    >
+                      <img src={GroupData} alt="action-icon" className="w-[18px] h-[18px]" />
+                    </div>
+                  </td>
                 </tr>
               ))}
             </tbody>

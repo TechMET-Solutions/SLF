@@ -156,7 +156,7 @@ const Area = () => {
     fetchArea(page);
   };
 
-    if (isLoading) return <div className="text-center py-10"><Loader /></div>;
+    // if (isLoading) return <div className="text-center py-10"><Loader /></div>;
 
 
   return (
@@ -174,7 +174,7 @@ const Area = () => {
             </button>
             <button
               className="bg-[#C1121F] text-white text-sm rounded px-4 py-1 cursor-pointer"
-              onClick={() => navigate("/dashboard")}
+              onClick={() => navigate("/")}
             >
               Exit
             </button>

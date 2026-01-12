@@ -2,27 +2,30 @@ import { useEffect, useState } from "react";
 import { API } from "../api";
 import { decryptData } from "../utils/cryptoHelper";
 import { formatIndianDate } from "../utils/Helpers";
- // <-- your decode function import
+import { useNavigate } from "react-router-dom";
+// <-- your decode function import
 
 const EmpAttendance = () => {
   const [employees, setEmployees] = useState([]);
   const [page, setPage] = useState(1);
   const [limit] = useState(10);
   const [totalPages, setTotalPages] = useState(1);
-    console.log(employees, "employees")
-    const [showModal, setShowModal] = useState(false);
-const [selectedEmp, setSelectedEmp] = useState(null);
+  console.log(employees, "employees")
+  const [showModal, setShowModal] = useState(false);
+  const [selectedEmp, setSelectedEmp] = useState(null);
 
-const [month, setMonth] = useState(new Date().getMonth() + 1);
-const [year, setYear] = useState(new Date().getFullYear());
-const [attendanceData, setAttendanceData] = useState([]);
-console.log(attendanceData,"attendanceData")
+  const [month, setMonth] = useState(new Date().getMonth() + 1);
+  const [year, setYear] = useState(new Date().getFullYear());
+  const [attendanceData, setAttendanceData] = useState([]);
+  console.log(attendanceData, "attendanceData")
+
+  const navigate = useNavigate();
   useEffect(() => {
     fetchEmployees();
   }, [page]);
 
-    const fetchEmployees = async () => {
-      debugger
+  const fetchEmployees = async () => {
+    debugger
     try {
       const res = await fetch(
         `${API}/Master/Employee_Profile/getAll-employees?page=${page}&limit=${limit}`
@@ -36,30 +39,30 @@ console.log(attendanceData,"attendanceData")
       console.error("Error fetching employees:", error);
     }
   };
-    const getMonthlyAttendance = async () => {
+  const getMonthlyAttendance = async () => {
     debugger
-  try {
-    const res = await fetch(
-      `${API}/Transactions/monthly?emp_id=${selectedEmp.id}&month=${month}&year=${year}`
-    );
+    try {
+      const res = await fetch(
+        `${API}/Transactions/monthly?emp_id=${selectedEmp.id}&month=${month}&year=${year}`
+      );
 
-    const data = await res.json();
+      const data = await res.json();
 
-    if (data.status) {
-      setAttendanceData(data.data);
-    } else {
-      setAttendanceData([]);
+      if (data.status) {
+        setAttendanceData(data.data);
+      } else {
+        setAttendanceData([]);
+      }
+
+    } catch (err) {
+      console.error("Error fetching monthly attendance:", err);
     }
-
-  } catch (err) {
-    console.error("Error fetching monthly attendance:", err);
-  }
-    };
-    useEffect(() => {
-  if (selectedEmp) {
-    getMonthlyAttendance();
-  }
-}, [selectedEmp, month, year]);
+  };
+  useEffect(() => {
+    if (selectedEmp) {
+      getMonthlyAttendance();
+    }
+  }, [selectedEmp, month, year]);
 
 
   return (
@@ -78,7 +81,9 @@ console.log(attendanceData,"attendanceData")
             Employee Attendance
           </h2>
 
-          <button className="text-white px-[6px] py-[6px] rounded bg-[#C1121F] w-[74px] h-[24px] text-[10px]">
+          <button
+            onClick={() => navigate("/")}
+            className="text-white px-[6px] py-[6px] rounded bg-[#C1121F] w-[74px] h-[24px] text-[10px]">
             Close
           </button>
         </div>
@@ -93,8 +98,8 @@ console.log(attendanceData,"attendanceData")
               <th className="p-2 border">Name</th>
               <th className="p-2 border">Email</th>
               <th className="p-2 border">Mobile</th>
-                          <th className="p-2 border">Branch</th>
-                          <th className="p-2 border">Action</th>
+              <th className="p-2 border">Branch</th>
+              <th className="p-2 border">Action</th>
             </tr>
           </thead>
 
@@ -106,16 +111,16 @@ console.log(attendanceData,"attendanceData")
                   <td className="p-2 ">{emp.emp_name}</td>
                   <td className="p-2 ">{emp.email}</td>
                   <td className="p-2 ">{emp.mobile_no}</td>
-                      <td className="p-2 ">{emp.branch}</td>
-                    <td
-  className="p-2 text-blue-500 hover:underline cursor-pointer"
-  onClick={() => {
-    setSelectedEmp(emp);
-    setShowModal(true);
-  }}
->
-  View Attendance
-</td>
+                  <td className="p-2 ">{emp.branch}</td>
+                  <td
+                    className="p-2 text-blue-500 hover:underline cursor-pointer"
+                    onClick={() => {
+                      setSelectedEmp(emp);
+                      setShowModal(true);
+                    }}
+                  >
+                    View Attendance
+                  </td>
 
 
                 </tr>
@@ -150,118 +155,118 @@ console.log(attendanceData,"attendanceData")
         >
           Next
         </button>
+      </div>
+
+      {showModal && (
+        <div
+          className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 w-full h-auto"
+          style={{
+            background: "#0101017A",
+            backdropFilter: "blur(6.8px)",
+          }}
+        >
+          <div className="bg-white p-6 w-[800px] rounded-lg shadow-lg h-[500px] relative">
+
+            {/* ❌ Close Icon (TOP RIGHT) */}
+            <button
+              onClick={() => setShowModal(false)}
+              className="absolute top-3 right-3 text-gray-600 hover:text-red-600 text-2xl font-bold"
+            >
+              ✕
+            </button>
+
+            <h2 className="text-xl font-bold mb-3 text-center text-[#0A2478]">
+              Attendance – {selectedEmp?.emp_name}
+            </h2>
+
+            {/* Employee Info */}
+            <div className="mb-4 text-sm text-gray-700">
+              <p><b>ID:</b> {selectedEmp?.id}</p>
+              <p><b>Mobile:</b> {selectedEmp?.mobile_no}</p>
+              <p><b>Branch:</b> {selectedEmp?.branch}</p>
+            </div>
+
+            {/* Month & Year Selector */}
+            <div className="flex gap-4 mb-4">
+              {/* Month */}
+              <select
+                className="border p-2 rounded w-1/2"
+                value={month}
+                onChange={(e) => setMonth(Number(e.target.value))}
+              >
+                {[...Array(12)].map((_, i) => (
+                  <option key={i + 1} value={i + 1}>
+                    {new Date(0, i).toLocaleString("en", { month: "long" })}
+                  </option>
+                ))}
+              </select>
+
+              {/* Year */}
+              <select
+                className="border p-2 rounded w-1/2"
+                value={year}
+                onChange={(e) => setYear(Number(e.target.value))}
+              >
+                {Array.from({ length: 5 }, (_, i) => new Date().getFullYear() - i).map(
+                  (yr) => (
+                    <option key={yr} value={yr}>{yr}</option>
+                  )
+                )}
+              </select>
+            </div>
+
+            {/* Placeholder */}
+            <div className="max-h-[260px] overflow-y-auto border rounded mt-3">
+
+              <table className="w-full text-sm text-center">
+                <thead className="bg-[#0A2478] text-white">
+                  <tr>
+                    <th className="p-2 border">Date</th>
+                    <th className="p-2 border">Punch In</th>
+                    <th className="p-2 border">Punch Out</th>
+                  </tr>
+                </thead>
+
+                <tbody>
+                  {attendanceData.length > 0 ? (
+                    attendanceData.map((row, i) => (
+                      <tr key={i} className="border-b hover:bg-gray-50">
+                        <td className="p-2 border">{formatIndianDate(row.date)}</td>
+
+                        <td className="p-2 border">
+                          {row.punch_in ? row.punch_in : <span className="text-gray-400">-</span>}
+                        </td>
+                        <td className="p-2 border">
+                          {row.punch_out ? row.punch_out : <span className="text-gray-400">-</span>}
+                        </td>
+                      </tr>
+                    ))
+                  ) : (
+                    <tr>
+                      <td colSpan="3" className="p-3 text-gray-500">
+                        No Attendance Records Found
+                      </td>
+                    </tr>
+                  )}
+                </tbody>
+              </table>
+
+            </div>
+
+
+            {/* Bottom Close Button (Optional, you can remove) */}
+            <div className="text-center mt-4">
+              <button
+                onClick={() => setShowModal(false)}
+                className="bg-red-500 text-white px-4 py-2 rounded"
+              >
+                Close
+              </button>
+            </div>
+
           </div>
-          
-         {showModal && (
-  <div
-    className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 w-full h-auto"
-    style={{
-      background: "#0101017A",
-      backdropFilter: "blur(6.8px)",
-    }}
-  >
-    <div className="bg-white p-6 w-[800px] rounded-lg shadow-lg h-[500px] relative">
-
-      {/* ❌ Close Icon (TOP RIGHT) */}
-      <button
-        onClick={() => setShowModal(false)}
-        className="absolute top-3 right-3 text-gray-600 hover:text-red-600 text-2xl font-bold"
-      >
-        ✕
-      </button>
-
-      <h2 className="text-xl font-bold mb-3 text-center text-[#0A2478]">
-        Attendance – {selectedEmp?.emp_name}
-      </h2>
-
-      {/* Employee Info */}
-      <div className="mb-4 text-sm text-gray-700">
-        <p><b>ID:</b> {selectedEmp?.id}</p>
-        <p><b>Mobile:</b> {selectedEmp?.mobile_no}</p>
-        <p><b>Branch:</b> {selectedEmp?.branch}</p>
-      </div>
-
-      {/* Month & Year Selector */}
-      <div className="flex gap-4 mb-4">
-        {/* Month */}
-        <select
-          className="border p-2 rounded w-1/2"
-          value={month}
-          onChange={(e) => setMonth(Number(e.target.value))}
-        >
-          {[...Array(12)].map((_, i) => (
-            <option key={i + 1} value={i + 1}>
-              {new Date(0, i).toLocaleString("en", { month: "long" })}
-            </option>
-          ))}
-        </select>
-
-        {/* Year */}
-        <select
-          className="border p-2 rounded w-1/2"
-          value={year}
-          onChange={(e) => setYear(Number(e.target.value))}
-        >
-          {Array.from({ length: 5 }, (_, i) => new Date().getFullYear() - i).map(
-            (yr) => (
-              <option key={yr} value={yr}>{yr}</option>
-            )
-          )}
-        </select>
-      </div>
-
-      {/* Placeholder */}
-     <div className="max-h-[260px] overflow-y-auto border rounded mt-3">
-
-  <table className="w-full text-sm text-center">
-    <thead className="bg-[#0A2478] text-white">
-      <tr>
-        <th className="p-2 border">Date</th>
-        <th className="p-2 border">Punch In</th>
-        <th className="p-2 border">Punch Out</th>
-      </tr>
-    </thead>
-
-    <tbody>
-      {attendanceData.length > 0 ? (
-        attendanceData.map((row, i) => (
-          <tr key={i} className="border-b hover:bg-gray-50">
-               <td className="p-2 border">{formatIndianDate(row.date)}</td>
-
-            <td className="p-2 border">
-              {row.punch_in ? row.punch_in : <span className="text-gray-400">-</span>}
-            </td>
-            <td className="p-2 border">
-              {row.punch_out ? row.punch_out : <span className="text-gray-400">-</span>}
-            </td>
-          </tr>
-        ))
-      ) : (
-        <tr>
-          <td colSpan="3" className="p-3 text-gray-500">
-            No Attendance Records Found
-          </td>
-        </tr>
+        </div>
       )}
-    </tbody>
-  </table>
-
-</div>
-
-
-      {/* Bottom Close Button (Optional, you can remove) */}
-      <div className="text-center mt-4">
-        <button
-          onClick={() => setShowModal(false)}
-          className="bg-red-500 text-white px-4 py-2 rounded"
-        >
-          Close
-        </button>
-      </div>
-
-    </div>
-  </div>
-)}
 
 
     </div>

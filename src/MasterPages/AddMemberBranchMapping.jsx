@@ -103,18 +103,21 @@ const AddMemberBranchMapping = () => {
         <div className="flex flex-col gap-2 mt-6">
           <label className="text-gray-700 font-medium">Select Branches</label>
           <div className="flex flex-wrap gap-12">
-            {branches.map((branch) => (
-              <label key={branch.id} className="flex items-center gap-2">
-                <input
-                  type="checkbox"
-                  checked={selectedBranches.includes(branch.id)}
-                  onChange={() => handleCheckboxChange(branch.id)}
-                  className="w-5 h-5 accent-blue-900"
-                />
-                <span>{branch.branch_code} - {branch.branch_name}</span>
-              </label>
-            ))}
+            {branches
+              .filter(branch => branch.status !== "0") // or branch.status === "1"
+              .map((branch) => (
+                <label key={branch.id} className="flex items-center gap-2">
+                  <input
+                    type="checkbox"
+                    checked={selectedBranches.includes(branch.id)}
+                    onChange={() => handleCheckboxChange(branch.id)}
+                    className="w-5 h-5 accent-blue-900"
+                  />
+                  <span>{branch.branch_code} - {branch.branch_name}</span>
+                </label>
+              ))}
           </div>
+
         </div>
       </div>
     </div>
