@@ -255,7 +255,7 @@ function GracePeriod() {
                                 {records.map((item, index) => (
                                     <tr
                                         key={item.id}
-                                        className={`${index % 2 === 0 ? "bg-blue-50" : "bg-white"}`}
+                                        className={` border`}
                                     >
                                         <td className="px-4 py-3">{index + 1}</td>
                                         <td className="px-4 py-3 capitalize">{item.loan_type}</td>

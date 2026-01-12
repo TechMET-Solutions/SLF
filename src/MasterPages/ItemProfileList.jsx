@@ -3,13 +3,13 @@ import { useEffect, useState } from "react";
 import { FiEdit } from "react-icons/fi";
 import { useNavigate } from "react-router-dom";
 import { API } from "../api";
+import { useAuth } from "../API/Context/AuthContext";
 import {
   addItemApi,
   updateItemApi,
   updateItemStatusApi
 } from "../API/Master/Master_Profile/Item_Details";
 import Pagination from "../Component/Pagination";
-import { useAuth } from "../API/Context/AuthContext";
 
 const ItemProfileList = () => {
   useEffect(() => {
@@ -206,7 +206,7 @@ const [formData, setFormData] = useState({
     <div className="min-h-screen w-full">
       {/* Top Bar */}
       <div className="flex justify-center sticky top-[80px] z-40">
-        <div className="flex items-center px-6 py-4 border-b mt-5 w-[1290px] h-[62px] border rounded-[11px] border-gray-200 justify-around">
+        <div className="flex items-center px-6 py-4 border-b mt-5 w-[1290px] h-[62px] border rounded-[11px] border-gray-200 justify-around bg-white">
           <h2
             style={{
               fontFamily: "Source Sans 3, sans-serif",

@@ -26,7 +26,39 @@ const navigate = useNavigate();
     const { name, value } = e.target;
     setFormData((prev) => ({ ...prev, [name]: value }));
   };
+const verifyBankDetails = async () => {
+  // 1. Basic Validation
+  if (!formData.accountNo || !formData.ifsc) {
+    alert("Please enter both Account Number and IFSC code.");
+    return;
+  }
 
+  try {
+    // 2. API Call to your backend
+    const response = await axios.post(`${API}/kyc/bank/verify`, {
+      account_number: formData.accountNo,
+      ifsc: formData.ifsc
+    });
+
+    if (response.data.status) {
+      const bankInfo = response.data.data.data; // Path from Surepass response
+
+      // 3. Auto-fill the form fields
+      setFormData((prev) => ({
+        ...prev,
+        customerName: bankInfo.full_name || prev.customerName,
+        bankName: bankInfo.ifsc_details?.bank_name || prev.bankName,
+        bankAddress: `${bankInfo.ifsc_details?.branch}, ${bankInfo.ifsc_details?.city}` || prev.bankAddress,
+        isBankVerified: true // Helpful for disabling fields later
+      }));
+      
+      alert("Bank Details Verified Successfully!");
+    }
+  } catch (error) {
+    console.error("Verification Error:", error);
+    alert(error.response?.data?.message || "Verification failed. Please check details.");
+  }
+};
   // Handle file upload
   const handleFileChange = (e) => {
     const file = e.target.files[0];
@@ -178,7 +210,7 @@ const navigate = useNavigate();
 
   return (
     <div className="flex justify-center">
-      <div className="overflow-x-auto mt-5 w-[1290px] h-auto mb-5">
+      <div className="overflow-x-auto mt-5 w-[1250px] h-auto mb-5">
         {/* Header + Add Button */}
         <div className="flex justify-between">
           <p className="font-[Source_Sans_3] font-semibold text-[14px] underline">
@@ -310,17 +342,26 @@ const navigate = useNavigate();
                     />
                   </div>
 <div>
-                    <label className="text-[14px]">IFSC Code <span className="text-red-500">*</span></label>
-                    <input
-                      name="ifsc"
-                      value={formData.ifsc}
-                      onChange={handleChange}
-                      type="text"
-                      disabled={mode === "view"}
-                      placeholder="IFSC Code"
-                      className="border border-gray-300 rounded w-[238px] h-[38px] p-[10px_14px]"
-                    />
-                  </div>
+    <label className="text-[14px]">IFSC Code <span className="text-red-500">*</span></label>
+    <div className="flex w-[238px]">
+      <input
+        name="ifsc"
+        value={formData.ifsc}
+        onChange={handleChange}
+        type="text"
+        disabled={mode === "view"}
+        placeholder="IFSC Code"
+        className="border border-gray-300 rounded-l w-[160px] h-[38px] p-[10px_14px] border-r-0"
+      />
+      <button
+        type="button"
+        onClick={verifyBankDetails}
+        className="bg-[#0A2478] text-white w-[78px] h-[38px] rounded-r text-[12px] font-medium hover:bg-[#081c5b]"
+      >
+        Verify
+      </button>
+    </div>
+  </div>
                   <div>
                     <label className="text-[14px]">Bank Name <span className="text-red-500">*</span></label>
                     <input

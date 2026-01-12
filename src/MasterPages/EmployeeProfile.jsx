@@ -10,7 +10,6 @@ import {
   fetchEmployeeProfileApi
 } from "../API/Master/Employee_Profile/EmployeeProfile";
 import blockimg from "../assets/blockimg.png";
-import righttick from "../assets/righttick.png";
 import Pagination from "../Component/Pagination";
 import { encryptData } from "../utils/cryptoHelper";
 
@@ -157,6 +156,8 @@ const EmployeeProfile = () => {
   const [idProof, setIdProof] = useState(null);
   console.log(addressProof, idProof, profileImage)
   // Pagination states
+   const [adharMaskingData, setAdharMaskingData] = useState("");
+    console.log(adharMaskingData,"adharMaskingData")
   const [currentPage, setCurrentPage] = useState(1);
   const [totalItems, setTotalItems] = useState(0);
   const [showPagination, setShowPagination] = useState(false);
@@ -504,61 +505,72 @@ const [isValuationModalOpen, setIsValuationModalOpen] = useState(false);
       alert("Failed to download file.");
     }
   };
-const verifyPan = async () => {
-  debugger
-  if (!formData.panNo) {
-    alert("Enter PAN Number");
-    return;
-  }
+// const verifyPan = async () => {
+//   debugger
+//   if (!formData.panNo) {
+//     alert("Enter PAN Number");
+//     return;
+//   }
 
-  try {
-    const res = await axios.post(`${API}/kyc/pan/verify`, {
-      pan: formData.panNo,
-      name: "---"
-    });
+//   try {
+//     const res = await axios.post(`${API}/kyc/pan/verify`, {
+//       pan: formData.panNo,
+//       name: "---"
+//     });
 
-    const data = res.data.data;
+//     const data = res.data.data;
 
-    // Split registered name
-    // const nameParts = splitFullName(data.registered_name);
+//     // Split registered name
+//     // const nameParts = splitFullName(data.registered_name);
 
-    // // Update form data
-    // setFormData({
-    //   ...formData,
-    //   printName: data.registered_name,
-    //   firstName: nameParts.firstName,
-    //   middleName: nameParts.middleName,
-    //   lastName: nameParts.lastName
-    // });
+//     // // Update form data
+//     // setFormData({
+//     //   ...formData,
+//     //   printName: data.registered_name,
+//     //   firstName: nameParts.firstName,
+//     //   middleName: nameParts.middleName,
+//     //   lastName: nameParts.lastName
+//     // });
 
-    alert("PAN Verified Successfully!");
+//     alert("PAN Verified Successfully!");
 
-  } catch (error) {
-    console.log(error);
-    alert("PAN Verification Failed");
-  }
-  };
+//   } catch (error) {
+//     console.log(error);
+//     alert("PAN Verification Failed");
+//   }
+//   };
   
   const sendAadhaarOTP = async () => {
-    if (!formData.aadhar || formData.aadhar.length !== 12) {
+    debugger
+    // 1. Basic Length Check
+    if (!formData.aadhar_card || formData.aadhar_card.length !== 12) {
       alert("Enter valid 12-digit Aadhaar");
       return;
     }
   
+    // 2. Cross-check with PAN Masked Data
+    const inputLastFour = formData.aadhar_card.slice(-4);
+    
+    if (adharMaskingData && inputLastFour !== adharMaskingData) {
+      alert(`Aadhaar mismatch!.`);
+      return;
+    }
+  
+    // 3. Proceed to API if validation passes
     try {
       const res = await axios.post(`${API}/kyc/aadhaar/send-otp`, {
-        aadhaar_number: formData.aadhar
+        aadhaar_number: formData.aadhar_card
       });
   
-      setFormData({
-        ...formData,
+      setFormData(prev => ({
+        ...prev,
         refId: res.data.data.ref_id
-      });
+      }));
   
-      alert("OTP Sent to Aadhaar Mobile!");
+      alert("Aadhar Verify successfully");
   
     } catch (error) {
-      console.log(error);
+      console.error(error);
       alert("Failed to send OTP");
     }
   };
@@ -636,13 +648,109 @@ const openValuationModal = (emp) => {
   setIsValuationModalOpen(true);
 };
 
+// const verifyPan = async () => {
+//   if (!formData.pan_card) {
+//     alert("Please enter PAN Number");
+//     return;
+//   }
 
+//   try {
+//     // Calling your API
+//     const res = await axios.post(`${API}/kyc/pan/verify`, {
+//       pan: formData.pan_card,
+//       name: "---" 
+//     });
 
+//     // Extracting nested data from Surepass response
+//     const panDetails = res.data.data.data;
+
+//     if (panDetails) {
+//       const genderMap = {
+//         "M": "Male",
+//         "F": "Female",
+//         "O": "Other"
+//       };
+
+//       // Extract last 4 digits of Aadhaar for your masking state
+//       const aadhaarMasked = panDetails.masked_aadhaar; 
+//       const lastFourDigits = aadhaarMasked ? aadhaarMasked.slice(-4) : "";
+
+//       // Updating your formData
+//       setFormData((prev) => ({
+//         ...prev,
+//         emp_name: panDetails.full_name, // Auto-fills the Name field
+//         date_of_birth: panDetails.dob,  // Auto-fills Date of Birth
+//         // If you have gender in your form, you can add it here
+//       }));
+
+//       // Update your masking state
+//       setAdharMaskingData(lastFourDigits);
+      
+//       alert(`PAN Verified for: ${panDetails.full_name}`);
+//     }
+//   } catch (error) {
+//     console.error("Verification Error:", error);
+//     alert("PAN Verification Failed. Please check the PAN number.");
+//   }
+// };
+const verifyPan = async () => {
+  if (!formData.pan_card) {
+    alert("Please enter PAN Number");
+    return;
+  }
+
+  try {
+    const res = await axios.post(`${API}/kyc/pan/verify`, {
+      pan: formData.pan_card,
+      name: "---" 
+    });
+
+    // Navigating the nested response structure: res.data.data.data
+    const panDetails = res.data.data.data;
+
+    if (panDetails) {
+      // 1. Capture the masked Aadhaar info for your separate state
+      const lastFourDigits = panDetails.masked_aadhaar 
+        ? panDetails.masked_aadhaar.slice(-4) 
+        : "";
+      setAdharMaskingData(lastFourDigits);
+
+      // 2. Update formData with available API details
+      // setFormData((prev) => ({
+      //   ...prev,
+      //   emp_name: panDetails.full_name,        // Maps "SUMIT BHIKAJI PATHAK"
+      //   date_of_birth: panDetails.dob,
+      //   email: panDetails.email,
+      //   mobile_no: panDetails.phone_number,
+      // }));
+setFormData((prev) => ({
+        ...prev,
+        emp_name: panDetails.full_name || prev.emp_name,
+        date_of_birth: panDetails.dob || prev.date_of_birth,
+        
+        // Email ani Mobile (Jar API madhe null asel tar prev value maintain rahil)
+        email: panDetails.email || prev.email,
+        mobile_no: panDetails.phone_number || prev.mobile_no,
+        
+        // Address Mapping
+        // panDetails.address.full madhe sagala address ekatra yeto
+        permanent_address: panDetails.address?.full || prev.permanent_address,
+        
+        // Jar tula corresponding address madhe pan toch pahije asel tar:
+        corresponding_address: panDetails.address?.full || prev.corresponding_address,
+      }));
+      alert("PAN Verified Successfully!");
+    }
+  } catch (error) {
+    console.error("Verification Error:", error);
+    alert(error.response?.data?.message || "PAN Verification Failed");
+  }
+};
   return (
     <div className="min-h-screen w-full">
       {/* Top bar */}
       <div className="flex justify-center sticky top-[80px] z-40">
-        <div className="flex items-center px-6 py-4 border-b mt-5 w-[1290px] h-[62px] border rounded-[11px] border-gray-200 justify-between shadow">
+        <div className="flex items-center px-6 py-4 border-b mt-5 w-[1290px] h-[62px] border rounded-[11px] border-gray-200 justify-between shadow bg-white">
           <h2 className="text-red-600 font-bold text-[20px] leading-[148%] font-source">
             Employee Profile List
           </h2>
@@ -813,13 +921,13 @@ const openValuationModal = (emp) => {
         type="button"
         onClick={sendAadhaarOTP}
       >
-        Send OTP
+        verify
       </button>
     </div>
   </div>
 
   {/* OTP */}
-  <div className="flex flex-col w-[140px]">
+  {/* <div className="flex flex-col w-[140px]">
     <label className="text-[14px] font-medium">Verify OTP</label>
 
     <div className="relative mt-1">
@@ -841,7 +949,7 @@ const openValuationModal = (emp) => {
         className="absolute right-3 top-1/2 -translate-y-1/2 w-[13px] h-[13px] cursor-pointer"
       />
     </div>
-  </div>
+  </div> */}
 
   {/* Name */}
   <div className="flex flex-col flex-1">

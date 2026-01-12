@@ -42,7 +42,7 @@ function CreditNote() {
 
         {/* Header */}
         <div className="flex justify-center sticky top-[80px] z-40">
-          <div className="flex items-center justify-between border border-gray-200 rounded-[10px] px-4 py-2 mt-4 w-[1290px] h-[62px] shadow-sm">
+          <div className="flex items-center justify-between border border-gray-200 rounded-[10px] px-4 py-2 mt-4 w-[1290px] h-[62px] shadow-sm bg-white">
 
             <h2 className="text-[#C1121F] font-bold text-[20px] whitespace-nowrap">
               Customer Credit Notes

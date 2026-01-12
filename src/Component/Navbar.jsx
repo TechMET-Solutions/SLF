@@ -507,7 +507,7 @@ const Navbar = () => {
                 {canSeeCustomerProfile && (
                   <Link
                     to={customerProfileItem.path}
-                    className="w-full text-left px-4 py-2 hover:bg-gray-100 flex justify-between items-center "
+                    className="w-full text-left px-4 py-2 hover:bg-gray-100 flex justify-between items-center text-sm "
                     onClick={() => {
                       setIsTransactionsOpen(false);
                       setIsGoldLoanOpen(false);

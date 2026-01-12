@@ -79,7 +79,7 @@ const AddCustProfile = () => {
     Corresponding_Address: "",
     Corresponding_Pincode: "",
    
-     Corresponding_State: "Maharashtra",
+    Corresponding_State: "Maharashtra",
     Corresponding_City: "",
     Corresponding_Country: "India",
     Corresponding_Area: "",
@@ -107,12 +107,16 @@ const AddCustProfile = () => {
     access: "",
     password: "",
     badDebtor: false,
-    badDebtorReason:""
+    badDebtorReason: ""
 
   });
+
+const [adharMaskingData, setAdharMaskingData] = useState("");
+ 
 const [isBadDebtorModalOpen, setIsBadDebtorModalOpen] = useState(false);
 const [badDebtorReason, setBadDebtorReason] = useState("");
-
+// Adding verified status to your state
+const [isMobileVerified, setIsMobileVerified] = useState(false);
   console.log(formData,"formData")
   const [BankformData, setBankFormData] = useState({
     bankName: "",
@@ -491,7 +495,41 @@ const splitFullName = (fullName) => {
 };
 
 
-  const verifyPan = async () => {
+//   const verifyPan = async () => {
+//   debugger
+//   if (!formData.panNo) {
+//     alert("Enter PAN Number");
+//     return;
+//   }
+
+//   try {
+//     const res = await axios.post(`${API}/kyc/pan/verify`, {
+//       pan: formData.panNo,
+//       name: "---"
+//     });
+
+//     const data = res.data.data;
+
+//     // Split registered name
+//     const nameParts = splitFullName(data.registered_name);
+
+//     // Update form data
+//     setFormData({
+//       ...formData,
+//       printName: data.registered_name,
+//       firstName: nameParts.firstName,
+//       middleName: nameParts.middleName,
+//       lastName: nameParts.lastName
+//     });
+
+//     alert("PAN Verified Successfully!");
+
+//   } catch (error) {
+//     console.log(error);
+//     alert("PAN Verification Failed");
+//   }
+// };
+const verifyPan = async () => {
   debugger
   if (!formData.panNo) {
     alert("Enter PAN Number");
@@ -501,55 +539,106 @@ const splitFullName = (fullName) => {
   try {
     const res = await axios.post(`${API}/kyc/pan/verify`, {
       pan: formData.panNo,
-      name: "---"
+      name: "---" 
     });
 
-    const data = res.data.data;
+    // Accessing the nested data object from your response
+    const panDetails = res.data.data.data;
 
-    // Split registered name
-    const nameParts = splitFullName(data.registered_name);
+    // 1. Extract Name Parts
+    const [fName, mName, lName] = panDetails.full_name_split;
 
-    // Update form data
-    setFormData({
-      ...formData,
-      printName: data.registered_name,
-      firstName: nameParts.firstName,
-      middleName: nameParts.middleName,
-      lastName: nameParts.lastName
-    });
-
-    alert("PAN Verified Successfully!");
+    // 2. Extract last 4 digits of Aadhaar (e.g., "3034")
+    const aadhaarMasked = panDetails.masked_aadhaar; // "XXXXXXXX3034"
+    const lastFourDigits = aadhaarMasked ? aadhaarMasked.slice(-4) : "";
+const genderMap = {
+      "M": "Male",
+      "F": "Female",
+      "O": "Other"
+    };
+    // 3. Update State
+   setFormData((prev) => ({
+      ...prev,
+      printName: panDetails.full_name,
+      firstName: fName || "",
+      middleName: mName || "",
+      lastName: lName || "",
+      dob: panDetails.dob,
+      gender: genderMap[panDetails.gender] || prev.gender,
+      
+      // Phone Number Mapping (Jar API madhe aala tar)
+      mobile: panDetails.phone_number || prev.mobile, 
+      
+      // Address Mapping (Nested object madhun full address mapping)
+      Permanent_Address: panDetails.address?.full || prev.Permanent_Address,
+      Permanent_City: panDetails.address?.city || prev.Permanent_City,
+      Permanent_State: panDetails.address?.state || "Maharashtra", // Default fallback
+      Permanent_Pincode: panDetails.address?.zip || prev.Permanent_Pincode
+    }));
+    setAdharMaskingData(lastFourDigits);
+    alert(`PAN Verified!`);
 
   } catch (error) {
-    console.log(error);
+    console.error("Verification Error:", error);
     alert("PAN Verification Failed");
   }
 };
+// const sendAadhaarOTP = async () => {
+//   if (!formData.aadhar || formData.aadhar.length !== 12) {
+//     alert("Enter valid 12-digit Aadhaar");
+//     return;
+//   }
 
+//   try {
+//     const res = await axios.post(`${API}/kyc/aadhaar/send-otp`, {
+//       aadhaar_number: formData.aadhar
+//     });
+
+//     setFormData({
+//       ...formData,
+//       refId: res.data.data.ref_id
+//     });
+
+//     alert("OTP Sent to Aadhaar Mobile!");
+
+//   } catch (error) {
+//     console.log(error);
+//     alert("Failed to send OTP");
+//   }
+// };
 const sendAadhaarOTP = async () => {
+  // 1. Basic Length Check
   if (!formData.aadhar || formData.aadhar.length !== 12) {
     alert("Enter valid 12-digit Aadhaar");
     return;
   }
 
+  // 2. Cross-check with PAN Masked Data
+  const inputLastFour = formData.aadhar.slice(-4);
+  
+  if (adharMaskingData && inputLastFour !== adharMaskingData) {
+    alert(`Aadhaar mismatch!.`);
+    return;
+  }
+
+  // 3. Proceed to API if validation passes
   try {
     const res = await axios.post(`${API}/kyc/aadhaar/send-otp`, {
       aadhaar_number: formData.aadhar
     });
 
-    setFormData({
-      ...formData,
+    setFormData(prev => ({
+      ...prev,
       refId: res.data.data.ref_id
-    });
+    }));
 
-    alert("OTP Sent to Aadhaar Mobile!");
+    alert("Aadhar Verify successfully");
 
   } catch (error) {
-    console.log(error);
+    console.error(error);
     alert("Failed to send OTP");
   }
 };
-
 const verifyAadhaarOtp = async () => {
   if (!formData.otp || formData.otp.length < 6) {
     alert("Please enter a valid OTP");
@@ -573,11 +662,55 @@ const verifyAadhaarOtp = async () => {
     console.error(error);
   }
 };
+// 1. Function to Send OTP
+const sendMobileOTP = async () => {
+  if (!formData.mobile || formData.mobile.length !== 10) {
+    alert("Please enter a valid 10-digit mobile number");
+    return;
+  }
 
+  try {
+    const res = await axios.post('https://slunawat.co.in/otp/send-otp', {
+      mobile: formData.mobile
+    });
+    
+    // Check if your API returns a specific success flag
+    alert("OTP sent successfully to " + formData.mobile);
+  } catch (error) {
+    console.error("Send OTP Error:", error);
+    alert("Failed to send OTP. Please try again.");
+  }
+};
+
+// 2. Function to Verify OTP
+const verifyMobileOTP = async () => {
+  if (!formData.MobileNumberOtp) {
+    alert("Please enter the OTP");
+    return;
+  }
+
+  try {
+    const res = await axios.post('https://slunawat.co.in/otp/verify-otp', {
+      mobile: formData.mobile,
+      otp: formData.MobileNumberOtp
+    });
+
+    // Check for success (adjust based on your actual API response structure)
+    if (res.data.status === true || res.data.message === "OTP Verified Successfully") {
+      alert("Mobile Verified Successfully!");
+      setIsMobileVerified(true); // Disable the field now
+    } else {
+      alert("Invalid OTP");
+    }
+  } catch (error) {
+    console.error("Verify OTP Error:", error);
+    alert("OTP verification failed.");
+  }
+};
   return (
     <div>
       <div className="flex justify-center sticky top-[80px] z-40 ">
-        <div className="flex items-center px-6 py-4 border-b mt-5 w-[1290px] h-[62px] border rounded-[11px] border-gray-200 justify-between shadow">
+        <div className="flex items-center px-6 py-4 border-b mt-5 w-[1290px] h-[62px] border rounded-[11px] border-gray-200 justify-between shadow bg-white">
           {/* Left heading */}
           <h2
             style={{
@@ -755,7 +888,7 @@ const verifyAadhaarOtp = async () => {
   type="button"
   onClick={sendAadhaarOTP}
 >
-  Send OTP
+  verify
 </button>
 
                 </div>
@@ -768,7 +901,7 @@ const verifyAadhaarOtp = async () => {
                 )}
               </div>
 
-              <div className="flex flex-col">
+              {/* <div className="flex flex-col">
                 <label className="text-[14px] font-medium">Verify OTP</label>
                 <div className="relative mt-1 w-[130px]">
                   <input
@@ -792,7 +925,7 @@ const verifyAadhaarOtp = async () => {
 />
 
                 </div>
-              </div>
+              </div> */}
 
               {/* Print Name */}
               <div className="flex flex-col">
@@ -829,51 +962,60 @@ const verifyAadhaarOtp = async () => {
 
             <div className="flex items-end gap-4 w-full mt-5">
               {/* Mobile Number + OTP Button */}
-              <div className="flex flex-col">
-                <label className="text-[14px] font-medium">
-                  Mobile No <span className="text-red-500">*</span>
-                </label>
-                <div className="flex items-center mt-1 w-[237px]">
-                  <input
-                    type="text"
-                    name="mobile"
-                    value={formData.mobile}
+            <div className="flex flex-col">
+  <label className="text-[14px] font-medium">
+    Mobile No <span className="text-red-500">*</span>
+  </label>
+  <div className="flex items-center mt-1 w-[237px]">
+    <input
+      type="text"
+      name="mobile"
+      disabled={isMobileVerified} // Disable if verified
+      value={formData.mobile}
                     onChange={handleChange}
-                    placeholder="Mobile Number"
-                    className="border border-gray-300 border-r-0 rounded-l px-3 py-2 w-full focus:outline-none focus:ring-1 focus:ring-blue-500 bg-white"
-                  />
-                <button className="bg-[#0A2478] text-white px-4 py-2 rounded-r border border-gray-300 border-l-0 hover:bg-[#081c5b]  flex justify-center items-center gap-2">
-  <img src={send} alt="otp" className="w-4 h-4" />
-  <span>OTP</span>
-</button>
-
-                </div>
-              </div>
+                    placeholder="mobile Number"
+      className={`border border-gray-300 border-r-0 rounded-l px-3 py-2 w-full focus:outline-none bg-white ${isMobileVerified ? "bg-gray-100 cursor-not-allowed" : ""}`}
+    />
+    <button 
+      type="button"
+      onClick={sendMobileOTP}
+      disabled={isMobileVerified} // Disable if verified
+      className={`bg-[#0A2478] text-white px-4 py-2 rounded-r border border-gray-300 border-l-0 flex justify-center items-center gap-2 ${isMobileVerified ? "opacity-50 cursor-not-allowed" : "hover:bg-[#081c5b]"}`}
+    >
+      <img src={send} alt="otp" className="w-4 h-4" />
+      <span>OTP</span>
+    </button>
+  </div>
+</div>
 <div className="flex flex-col">
-                <label className="text-[14px] font-medium">Verify OTP</label>
-                <div className="relative mt-1 w-[181px]">
-                  <input
-                    type="number"
-                    placeholder="Enter OTP"
-                    name="MobileNumberOtp"
-                    value={formData.MobileNumberOtp}
-                    onChange={handleChange}
-                    className="border border-gray-300 rounded-[8px] px-3 py-2 w-[181px]  bg-white focus:outline-none focus:ring-1 focus:ring-blue-500"
-                    style={{
-                      MozAppearance: "textfield",
-                    }}
-                    onWheel={(e) => e.target.blur()}
-                  />
-                  <img
-  src={righttick}
-  alt="tick"
-  onClick={verifyAadhaarOtp}
-  className="absolute right-3 top-1/2 -translate-y-1/2 w-[13px] h-[13px] 
-  cursor-pointer hover:scale-110 transition-all"
-/>
-
-                </div>
-              </div>
+  <label className="text-[14px] font-medium">Verify OTP</label>
+  <div className="relative mt-1 w-[181px]">
+    <input
+      type="number"
+      placeholder="Enter OTP"
+      name="MobileNumberOtp"
+      disabled={isMobileVerified} // Disable if verified
+      value={formData.MobileNumberOtp}
+      onChange={handleChange}
+      className={`border border-gray-300 rounded-[8px] px-3 py-2 w-[181px] focus:outline-none ${isMobileVerified ? "bg-gray-100 cursor-not-allowed" : "bg-white"}`}
+      style={{ MozAppearance: "textfield" }}
+    />
+    
+    {/* Show tick icon only if NOT verified, or change icon to a green checkmark */}
+    {!isMobileVerified ? (
+      <img
+        src={righttick}
+        alt="tick"
+        onClick={verifyMobileOTP}
+        className="absolute right-3 top-1/2 -translate-y-1/2 w-[13px] h-[13px] cursor-pointer hover:scale-110"
+      />
+    ) : (
+      <span className="absolute right-3 top-1/2 -translate-y-1/2 text-green-600 font-bold text-xs">
+        ✓
+      </span>
+    )}
+  </div>
+</div>
               {/* OTP Verification */}
               
              

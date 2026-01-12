@@ -233,7 +233,7 @@ if (!formData.loan_type?.trim()) {
       {/* middletopbar */}
       <div className="flex justify-center sticky top-[80px] z-40">
         <div className="flex justify-center mt-5">
-          <div className="flex items-center justify-between px-6 py-4 border-b w-[1290px] h-[61px] border rounded-[11px] border-gray-200">
+          <div className="flex items-center justify-between px-6 py-4 border-b w-[1290px] h-[61px] border rounded-[11px] border-gray-200 bg-white">
             <h2 className="text-red-600 font-bold text-[20px] leading-[148%]">
               Product Purity 
             </h2>
@@ -374,7 +374,7 @@ if (!formData.loan_type?.trim()) {
       )}
 
       {/* Table */}
-      <div className="flex justify-center gap-10 p-2">
+      <div className="flex justify-center gap-10 p-2 mt-5">
         <div>
           <p
   className="font-semibold text-[#0A2478]"

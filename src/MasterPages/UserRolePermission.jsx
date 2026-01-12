@@ -8,10 +8,11 @@ import Pagination from "../Component/Pagination";
 
 
 const UserRolePermission = () => {
+
   useEffect(() => {
     document.title = "SLF | User Role Permission";
   }, []);
-
+  
   const [roles, setRoles] = useState([]);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isEditMode, setIsEditMode] = useState(false);
