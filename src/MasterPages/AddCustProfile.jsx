@@ -581,6 +581,7 @@ const AddCustProfile = () => {
         middleName: mName || "",
         lastName: lName || "",
         dob: panDetails.dob,
+        aadhar: panDetails.masked_aadhaar,
         gender: genderMap[panDetails.gender] || prev.gender,
 
         // Phone Number Mapping (Jar API madhe aala tar)
@@ -872,7 +873,7 @@ const AddCustProfile = () => {
                   <div className="relative flex-1">
                     <input
                       type="number"
-                      placeholder="Enter Aadhaar"
+                      placeholder={formData.aadhar ? `${formData.aadhar}` : "Enter Aadhar"}
                       name="aadhar"
                       value={formData.aadhar}
                       onChange={handleChange}
@@ -881,7 +882,7 @@ const AddCustProfile = () => {
                         MozAppearance: "textfield",
                       }}
                       onWheel={(e) => e.target.blur()}
-                    />
+                    />     
 
                     {/* Hidden file input */}
                     <input
