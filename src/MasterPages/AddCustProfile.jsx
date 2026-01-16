@@ -50,7 +50,7 @@ const AddCustProfile = () => {
     religion: "",
     education: "",
     occupation: "",
-    partyType: "",
+    partyType: "Individual",
     riskCategory: "",
     firstName: "",
     middleName: "",
@@ -65,7 +65,7 @@ const AddCustProfile = () => {
 
     Permanent_Address: "",
     Permanent_Pincode: "",
-    Permanent_State: "Maharashtra",
+    Permanent_State: "",
     Permanent_City: "",
     Permanent_Country: "India",
     Permanent_ResiStatus: "",
@@ -80,7 +80,7 @@ const AddCustProfile = () => {
     Corresponding_Address: "",
     Corresponding_Pincode: "",
 
-    Corresponding_State: "Maharashtra",
+    Corresponding_State: "",
     Corresponding_City: "",
     Corresponding_Country: "India",
     Corresponding_Area: "",
@@ -101,7 +101,7 @@ const AddCustProfile = () => {
     Nominee_NomineeName: "",
     Nominee_Relation: "",
     Nominee_Address: "",
-    Nominee_State: "Maharashtra",
+    Nominee_State: "",
     Nominee_City: "",
 
     //access
@@ -142,6 +142,9 @@ const AddCustProfile = () => {
   const [idProofList, setIdProofList] = useState([]);  // filtered only id proof
   const [addrProofList, setAddrProofList] = useState([]); // filtered only address proof
   const [areas, setAreas] = useState([]);  // areas list from API
+const [errors, setErrors] = useState({});
+const [isOtpSent, setIsOtpSent] = useState(false);
+const [isGstVerified, setIsGstVerified] = useState(false);
 
   const fetchAreas = async () => {
     try {
@@ -228,13 +231,31 @@ const AddCustProfile = () => {
   const panFileInputRef = useRef(null);
   const aadharFileInputRef = useRef(null);
   // Handle input changes
-  const handleChange = (e) => {
-    const { name, value } = e.target;
-    setFormData((prev) => ({
-      ...prev,
-      [name]: value,
-    }));
-  };
+ const handleChange = (e) => {
+  const { name, value } = e.target;
+
+  setFormData((prev) => ({
+    ...prev,
+    [name]: value,
+  }));
+
+  // Live email validation
+  if (name === "email") {
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+    if (!emailRegex.test(value)) {
+      setErrors((prev) => ({
+        ...prev,
+        email: "Please enter a valid email address",
+      }));
+    } else {
+      setErrors((prev) => ({
+        ...prev,
+        email: "",
+      }));
+    }
+  }
+};
 
   const handlePanFileChange = (e) => {
     const file = e.target.files[0];
@@ -573,6 +594,12 @@ const AddCustProfile = () => {
         "F": "Female",
         "O": "Other"
       };
+      const toTitleCase = (str = "") => {
+  return str
+    .toLowerCase()
+    .replace(/\b\w/g, (char) => char.toUpperCase());
+};
+
       // 3. Update State
       setFormData((prev) => ({
         ...prev,
@@ -590,7 +617,9 @@ const AddCustProfile = () => {
         // Address Mapping (Nested object madhun full address mapping)
         Permanent_Address: panDetails.address?.full || prev.Permanent_Address,
         Permanent_City: panDetails.address?.city || prev.Permanent_City,
-        Permanent_State: panDetails.address?.state || "Maharashtra", // Default fallback
+       Permanent_State: panDetails.address?.state
+    ? toTitleCase(panDetails.address.state)
+    : "Maharashtra", // Default fallback
         Permanent_Pincode: panDetails.address?.zip || prev.Permanent_Pincode
       }));
       setAdharMaskingData(lastFourDigits);
@@ -681,50 +710,105 @@ const AddCustProfile = () => {
     }
   };
   // 1. Function to Send OTP
-  const sendMobileOTP = async () => {
-    if (!formData.mobile || formData.mobile.length !== 10) {
-      alert("Please enter a valid 10-digit mobile number");
-      return;
-    }
+  // const sendMobileOTP = async () => {
+  //   if (!formData.mobile || formData.mobile.length !== 10) {
+  //     alert("Please enter a valid 10-digit mobile number");
+  //     return;
+  //   }
 
-    try {
-      const res = await axios.post('https://slunawat.co.in/otp/send-otp', {
-        mobile: formData.mobile
-      });
+  //   try {
+  //     const res = await axios.post('https://slunawat.co.in/otp/send-otp', {
+  //       mobile: formData.mobile
+  //     });
 
-      // Check if your API returns a specific success flag
-      alert("OTP sent successfully to " + formData.mobile);
-    } catch (error) {
-      console.error("Send OTP Error:", error);
-      alert("Failed to send OTP. Please try again.");
+  //     // Check if your API returns a specific success flag
+  //     alert("OTP sent successfully to " + formData.mobile);
+  //   } catch (error) {
+  //     console.error("Send OTP Error:", error);
+  //     alert("Failed to send OTP. Please try again.");
+  //   }
+  // };
+const sendMobileOTP = async () => {
+   const mobile = String(formData.mobile || "").trim();
+
+  if (!mobile) {
+    alert("Enter mobile number");
+    return;
+  }
+
+  // ✅ Check 10-digit Indian mobile number
+  if (!/^[6-9]\d{9}$/.test(mobile)) {
+    alert("Enter a valid 10-digit mobile number");
+    return;
+  }
+
+  try {
+    const res = await axios.post("https://slunawat.co.in/otp/send-otp", {
+      mobile: String(formData.mobile).trim(),
+    });
+
+    if (res.data.success) {
+      alert("OTP sent successfully");
+      setIsOtpSent(true);
+      setFormData((prev) => ({ ...prev, MobileNumberOtp: "" }));
+    } else {
+      alert(res.data.message || "Failed to send OTP");
     }
-  };
+  } catch (err) {
+    alert("OTP send failed");
+  }
+};
 
   // 2. Function to Verify OTP
   const verifyMobileOTP = async () => {
-    if (!formData.MobileNumberOtp) {
-      alert("Please enter the OTP");
-      return;
-    }
+  if (!formData.MobileNumberOtp) {
+    alert("Please enter the OTP");
+    return;
+  }
 
-    try {
-      const res = await axios.post('https://slunawat.co.in/otp/verify-otp', {
-        mobile: formData.mobile,
-        otp: formData.MobileNumberOtp
-      });
+  try {
+    const res = await axios.post("https://slunawat.co.in/otp/verify-otp", {
+      mobile: String(formData.mobile).trim(),
+      otp: String(formData.MobileNumberOtp).trim(),
+    });
 
-      // Check for success (adjust based on your actual API response structure)
-      if (res.data.status === true || res.data.message === "OTP Verified Successfully") {
-        alert("Mobile Verified Successfully!");
-        setIsMobileVerified(true); // Disable the field now
-      } else {
-        alert("Invalid OTP");
-      }
-    } catch (error) {
-      console.error("Verify OTP Error:", error);
-      alert("OTP verification failed.");
+    if (res.data.success === true) {
+      alert("Mobile Verified Successfully!");
+      setIsMobileVerified(true);
+    } else {
+      alert(res.data.message || "Invalid OTP");
     }
-  };
+  } catch (error) {
+    console.error("Verify OTP Error:", error);
+    alert(
+      error?.response?.data?.message || "OTP verification failed."
+    );
+  }
+};
+
+ const verifyGst = async () => {
+  if (!formData.gstNo) {
+    alert("Enter GST Number");
+    return;
+  }
+
+  try {
+    const res = await axios.post(`${API}/kyc/gst/verify`, {
+      gst: formData.gstNo,
+    });
+
+    if (res.data.status === true) {
+      alert("GST Verified Successfully");
+      setIsGstVerified(true);
+    } else {
+      alert("GST Verification Failed");
+    }
+  } catch (err) {
+    alert(err?.response?.data?.error || "GST verification failed");
+  }
+};
+
+
   return (
     <div>
       <div className="flex justify-center sticky top-[80px] z-40 ">
@@ -873,7 +957,8 @@ const AddCustProfile = () => {
                   <div className="relative flex-1">
                     <input
                       type="number"
-                      placeholder={formData.aadhar ? `${formData.aadhar}` : "Enter Aadhar"}
+                       placeholder={formData.aadhar ? `${formData.aadhar}` : "Enter Aadhar"}
+                      //  placeholder={formData.aadhar}
                       name="aadhar"
                       value={formData.aadhar}
                       onChange={handleChange}
@@ -960,19 +1045,28 @@ const AddCustProfile = () => {
                 />
               </div>
 
-              <div className="flex flex-col flex-1">
-                <label className="text-[14px] font-medium">
-                  Email Id <span className="text-red-500">*</span>
-                </label>
-                <input
-                  type="email"
-                  name="email"
-                  value={formData.email}
-                  onChange={handleChange}
-                  placeholder="Enter Email"
-                  className="border border-gray-300 rounded px-3 py-2 mt-1 w-[203px] bg-white"
-                />
-              </div>
+             <div className="flex flex-col flex-1">
+  <label className="text-[14px] font-medium">
+    Email Id <span className="text-red-500">*</span>
+  </label>
+
+  <input
+    type="email"
+    name="email"
+    value={formData.email}
+    onChange={handleChange}
+    placeholder="Enter Email"
+    className={`border rounded px-3 py-2 mt-1 w-[203px] bg-white ${
+      errors.email ? "border-red-500" : "border-gray-300"
+    }`}
+  />
+
+  {errors.email && (
+    <span className="text-red-500 text-[12px] mt-1">
+      {errors.email}
+    </span>
+  )}
+</div>
 
               {/* Email */}
 
@@ -995,14 +1089,16 @@ const AddCustProfile = () => {
                     className={`border border-gray-300 border-r-0 rounded-l px-3 py-2 w-full focus:outline-none bg-white ${isMobileVerified ? "bg-gray-100 cursor-not-allowed" : ""}`}
                   />
                   <button
-                    type="button"
-                    onClick={sendMobileOTP}
-                    disabled={isMobileVerified} // Disable if verified
-                    className={`bg-[#0A2478] text-white px-4 py-2 rounded-r border border-gray-300 border-l-0 flex justify-center items-center gap-2 ${isMobileVerified ? "opacity-50 cursor-not-allowed" : "hover:bg-[#081c5b]"}`}
-                  >
-                    <img src={send} alt="otp" className="w-4 h-4" />
-                    <span>OTP</span>
-                  </button>
+      type="button"
+      onClick={sendMobileOTP}
+      disabled={isMobileVerified}
+      className={`bg-[#0A2478] text-white px-4 py-2 rounded-r border border-gray-300 border-l-0 flex justify-center items-center gap-2 ${
+        isMobileVerified ? "opacity-50 cursor-not-allowed" : "hover:bg-[#081c5b]"
+      }`}
+    >
+      <img src={send} alt="otp" className="w-4 h-4" />
+      <span>{isOtpSent ? "Resend" : "OTP"}</span>
+    </button>
                 </div>
               </div>
               <div className="flex flex-col">
@@ -1040,18 +1136,20 @@ const AddCustProfile = () => {
 
               {/* Alternate Mobile */}
               <div className="flex flex-col">
-                <label className="text-[14px] font-medium">
-                  Alternate Mobile No
-                </label>
-                <input
-                  type="text"
-                  name="altMobile"
-                  value={formData.altMobile}
-                  onChange={handleChange}
-                  placeholder="Enter Alternate Mobile"
-                  className="border border-gray-300 rounded px-3 py-2 mt-1 w-[200px] bg-white"
-                />
-              </div>
+  <label className="text-[14px] font-medium">
+    Alternate Mobile No
+  </label>
+  <input
+    type="text"
+    name="altMobile"
+    value={formData.altMobile}
+    maxLength={10}
+    onChange={handleChange}
+    placeholder="Enter Alternate Mobile"
+    className="border border-gray-300 rounded px-3 py-2 mt-1 w-[200px] bg-white"
+  />
+</div>
+
               <div className="flex flex-col">
                 <label className="text-[14px] font-medium">
                   Landline Number
@@ -1131,64 +1229,76 @@ const AddCustProfile = () => {
                 />
               </div> */}
               <div className="flex flex-col">
-                <label className="text-[14px] font-medium">
-                  GST No.<span className="text-red-500">*</span>
-                </label>
-                <div className="flex items-center mt-1 w-[233px]">
-                  <div className="relative flex-1">
-                    <input
-                      type="number"
-                      placeholder="Enter GST No."
-                      name="gstNo"
-                      value={formData.gstNo}
-                      onChange={handleChange}
-                      className="border border-gray-300 border-r-0 rounded-l px-3 py-2 w-full pr-10 focus:outline-none focus:ring-1 focus:ring-blue-500 bg-white"
-                      style={{
-                        MozAppearance: "textfield",
-                      }}
-                      onWheel={(e) => e.target.blur()}
-                    />
+  <label className="text-[14px] font-medium">Party Type</label>
+  <select
+    name="partyType"
+    value={formData.partyType}
+    onChange={handleChange}
+    className="border border-gray-300 rounded-[8px] px-3 py-2 mt-1 w-[140px] bg-white"
+  >
+    <option value="">Select Type</option>
+    <option value="Individual">Individual</option>
+    <option value="Corporate">Corporate</option>
+  </select>
+</div>
+
+{formData.partyType !== "" && (
+  <>
+    <div className="flex flex-col">
+  <label className="text-[14px] font-medium">GST No.</label>
+  <div className="flex items-center mt-1 w-[233px]">
+    <div className="relative flex-1">
+      <input
+        type="text"
+        placeholder="Enter GST No."
+        name="gstNo"
+        value={formData.gstNo}
+        onChange={handleChange}
+        disabled={isGstVerified}
+        className={`border border-gray-300 border-r-0 rounded-l px-3 py-2 w-full pr-10 focus:outline-none ${
+          isGstVerified ? "bg-gray-100 cursor-not-allowed" : "bg-white"
+        }`}
+      />
+    </div>
+
+    <button
+      type="button"
+      onClick={verifyGst}
+      disabled={isGstVerified}
+      className={`bg-[#0A2478] text-white px-5 py-2 rounded-r border border-gray-300 border-l-0 ${
+        isGstVerified
+          ? "opacity-50 cursor-not-allowed"
+          : "hover:bg-[#081c5b]"
+      }`}
+    >
+      {isGstVerified ? "Verified" : "Verify"}
+    </button>
+  </div>
+</div>
 
 
-                  </div>
+    {/* <div className="flex flex-col">
+      <label className="text-[14px] font-medium">Verify OTP</label>
+      <div className="relative mt-1 w-[130px]">
+        <input
+          type="text"
+          placeholder="Enter OTP"
+          name="GSTNumberOtp"
+          value={formData.GSTNumberOtp}
+          onChange={handleChange}
+          className="border border-gray-300 rounded-[8px] px-3 py-2 w-[130px] bg-white focus:outline-none"
+        />
+        <img
+          src={righttick}
+          alt="tick"
+          onClick={verifyAadhaarOtp}
+          className="absolute right-3 top-1/2 -translate-y-1/2 w-[13px] h-[13px] cursor-pointer hover:scale-110 transition-all"
+        />
+      </div>
+    </div> */}
+  </>
+)}
 
-                  <button
-                    className="bg-[#0A2478] text-white px-5 py-2 rounded-r border border-gray-300 border-l-0 hover:bg-[#081c5b]"
-                    type="button"
-                  // onClick={sendAadhaarOTP}
-                  >
-                    OTP
-                  </button>
-
-                </div>
-
-
-              </div>
-              <div className="flex flex-col">
-                <label className="text-[14px] font-medium">Verify OTP</label>
-                <div className="relative mt-1 w-[130px]">
-                  <input
-                    type="number"
-                    placeholder="Enter OTP"
-                    name="GSTNumberOtp"
-                    value={formData.GSTNumberOtp}
-                    onChange={handleChange}
-                    className="border border-gray-300 rounded-[8px] px-3 py-2 w-[130px]  bg-white focus:outline-none focus:ring-1 focus:ring-blue-500"
-                    style={{
-                      MozAppearance: "textfield",
-                    }}
-                    onWheel={(e) => e.target.blur()}
-                  />
-                  <img
-                    src={righttick}
-                    alt="tick"
-                    onClick={verifyAadhaarOtp}
-                    className="absolute right-3 top-1/2 -translate-y-1/2 w-[13px] h-[13px] 
-  cursor-pointer hover:scale-110 transition-all"
-                  />
-
-                </div>
-              </div>
 
               <div className="flex flex-col">
                 <label className="text-[14px] font-medium">
@@ -1212,6 +1322,13 @@ const AddCustProfile = () => {
                 </select>
               </div>
 
+              
+
+
+            </div>
+            
+            <div className="flex items-end gap-4 w-full mt-5">
+              {/* Marital */}
               <div className="flex flex-col">
                 <label className="text-[14px] font-medium">Education</label>
                 <select
@@ -1239,11 +1356,6 @@ const AddCustProfile = () => {
                   <option value="Other">Other</option>
                 </select>
               </div>
-
-
-            </div>
-            <div className="flex items-end gap-4 w-full mt-5">
-              {/* Marital */}
               <div className="flex flex-col ">
                 <label className="text-[14px] font-medium">
                   Occupation <span className="text-red-500">*</span>
@@ -1258,19 +1370,7 @@ const AddCustProfile = () => {
                 />
               </div>
 
-              <div className="flex flex-col">
-                <label className="text-[14px] font-medium">Party Type</label>
-                <select
-                  name="partyType"
-                  value={formData.partyType}
-                  onChange={handleChange}
-                  className="border border-gray-300 rounded-[8px] px-3 py-2 mt-1 w-[140px] bg-white"
-                >
-                  <option value="">Select Type</option>
-                  <option value="Individual">Individual</option>
-                  <option value="Corporate">Corporate</option>
-                </select>
-              </div>
+              
               <div className="flex flex-col">
                 <label className="text-[14px] font-medium">Risk Category</label>
                 <select
