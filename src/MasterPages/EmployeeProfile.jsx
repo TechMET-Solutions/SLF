@@ -14,6 +14,7 @@ import Pagination from "../Component/Pagination";
 import { encryptData } from "../utils/cryptoHelper";
 
 import profileempty from "../assets/profileempty.png";
+import { fetchBranchesApi } from "../API/Master/Master_Profile/Branch_Details";
 const EmployeeProfile = () => {
 
   useEffect(() => {
@@ -31,6 +32,9 @@ const EmployeeProfile = () => {
   const [deleteModalOpen, setDeleteModalOpen] = useState(false);
   const [deleteId, setDeleteId] = useState(null);
   const [searchTerm, setSearchTerm] = useState({ empId: "", empName: "" });
+
+  const [errors, setErrors] = useState({});
+  
 
   const [formData, setFormData] = useState({
     id: null,
@@ -106,18 +110,36 @@ const EmployeeProfile = () => {
     }
   };
 
-  const fetchBranches = async () => {
+  // const fetchBranches = async () => {
+  //   try {
+  //     const response = await axios.get(`${API}/Master/Master_Profile/Branchess`);
+  //     if (response.data.success) {
+  //       setBranches(response.data.data || []);
+  //     }
+  //     console.log("branches",response.data.data)
+  //   } catch (error) {
+  //     console.error("❌ Error fetching branches:", error);
+  //     setBranches([]);
+  //   }
+  // };
+
+  const fetchBranches = async (page = 1, limit = 10, search = "") => {
     try {
-      const response = await axios.get(`${API}/Master/Master_Profile/Branchess`);
-      if (response.data.success) {
-        setBranches(response.data.data || []);
-      }
-      console.log("branches",response.data.data)
+      const { branches = [], total } = await fetchBranchesApi(page, limit, search);
+
+      // Filter only active branches (status === "1")
+      const activeBranches = branches.filter(
+        (branch) => String(branch.status) === "1"
+      );
+
+      setBranches(activeBranches);
+      console.log("Active branches:", activeBranches);
     } catch (error) {
       console.error("❌ Error fetching branches:", error);
       setBranches([]);
     }
   };
+
 
   const fetchDesignations = async () => {
     try {
@@ -466,28 +488,78 @@ const EmployeeProfile = () => {
 
   const handleInputChange = (e) => {
     const { name, value, type, checked } = e.target;
+    let updatedValue = value;
 
+    // Email validation
+    if (name === "email") {
+      const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+      setErrors((prev) => ({
+        ...prev,
+        email: emailRegex.test(value) ? "" : "Please enter a valid email address",
+      }));
+    }
+
+    // Apply numeric + length restriction for both numbers
+    if (name === "Alternate_Mobile" || name === "mobile_no") {
+      const numericValue = value.replace(/\D/g, "");
+
+      if (numericValue.length > 10) {
+        alert("Mobile number must be 10 digits only.");
+        return;
+      }
+
+      updatedValue = numericValue;
+    }
+
+    // Aadhaar validation (12 digits)
+    if (name === "aadhar_card") {
+      const numericValue = value.replace(/\D/g, "");
+
+      if (numericValue.length > 12) {
+        alert("Aadhaar number must be 12 digits only.");
+        return;
+      }
+
+      updatedValue = numericValue;
+    }
+
+    // Role selection
     if (name === "assign_role") {
-      const selectedRole = roles.find((role) => role.id === parseInt(value));
+      const selectedRole = roles.find(
+        (role) => role.id === parseInt(value, 10)
+      );
+
       setFormData((prev) => ({
         ...prev,
         assign_role_id: selectedRole ? selectedRole.id : "",
         assign_role: selectedRole ? selectedRole.role_name : "",
       }));
-    } else if (name === "branch") {
-      const selectedBranch = branches.find((branch) => branch.id === parseInt(value));
+      return;
+    }
+
+    // Branch selection
+    if (name === "branch") {
+      const selectedBranch = branches.find(
+        (branch) => branch.id === parseInt(value, 10)
+      );
+
       setFormData((prev) => ({
         ...prev,
         branch_id: selectedBranch ? selectedBranch.id : "",
         branch: selectedBranch ? selectedBranch.branch_name : "",
       }));
-    } else {
-      setFormData((prev) => ({
-        ...prev,
-        [name]: type === "checkbox" ? checked : value,
-      }));
+      return;
     }
+
+    // Default update (including email & numbers)
+    setFormData((prev) => ({
+      ...prev,
+      [name]: type === "checkbox" ? checked : updatedValue,
+    }));
   };
+
+
 
   const handleForceDownload = async (fileUrl, filename) => {
     try {
@@ -732,6 +804,7 @@ const EmployeeProfile = () => {
           // Email ani Mobile (Jar API madhe null asel tar prev value maintain rahil)
           email: panDetails.email || prev.email,
           mobile_no: panDetails.phone_number || prev.mobile_no,
+          aadhar_card: panDetails.aadhaar_number || prev.adhar_no,
 
           // Address Mapping
           // panDetails.address.full madhe sagala address ekatra yeto
@@ -891,7 +964,7 @@ const EmployeeProfile = () => {
                         <div className="relative flex-1">
                           <input
                             type="number"
-                            placeholder="Enter Aadhar Number"
+                            placeholder={formData.aadhar_card ? `${formData.aadhar_card}` : "Enter Aadhar"}
                             name="aadhar_card"
                             disabled={mode === "view"}
                             value={formData.aadhar_card}
@@ -994,7 +1067,7 @@ const EmployeeProfile = () => {
                     <div className="flex flex-col gap-1">
                       <label className="text-gray-700 font-medium">Alternate Mobile No</label>
                       <input
-                        type="number"
+                        type="tel"
                         name="Alternate_Mobile"
                         value={formData.Alternate_Mobile}
                         onChange={handleInputChange}
@@ -1016,8 +1089,14 @@ const EmployeeProfile = () => {
                         onChange={handleInputChange}
                         disabled={mode === "view"}
                         placeholder="Email ID"
-                        className="border border-[#C4C4C4] rounded-[8px] px-3 py-2 focus:outline-none focus:ring-1 focus:ring-blue-500 w-[220px]"
+                        className={`border rounded px-3 py-2 mt-1 w-[203px] bg-white ${errors.email ? "border-red-500" : "border-gray-300"
+                          }`}
                       />
+                      {errors.email && (
+                        <span className="text-red-500 text-[12px] mt-1">
+                          {errors.email}
+                        </span>
+                      )}
                     </div>
                     <div className="flex flex-col gap-1">
                       <label className="text-gray-700 font-medium">Date of Birth <span className="text-red-500">*</span></label>
@@ -1275,7 +1354,7 @@ const EmployeeProfile = () => {
                       {/* Centered Title */}
                       <div className="flex justify-center mt-2 mb-2 w-full">
                         <label className="font-roboto font-bold text-[16px] leading-[100%] tracking-[0.03em]">
-                          Upload Customer Profile
+                          Upload Employee Profile
                         </label>
                       </div>
 

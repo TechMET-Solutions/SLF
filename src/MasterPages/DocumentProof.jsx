@@ -220,7 +220,15 @@ const handleEditClick = (doc) => {
 //     console.error("❌ UPDATE Error:", error);
 //     alert("Failed to update document proof.");
 //   }
-// };
+  // };
+  
+  const resetForm = () => {
+    setFormData({
+      proof_type: "",
+      status: "",
+      // jo jo fields hain formData me sab yahan empty kar do
+    });
+  };
 
   const handleUpdateSubmit = async () => {
   try {
@@ -243,8 +251,9 @@ const handleEditClick = (doc) => {
 
     alert("Document proof updated successfully!");
     setIsModalOpen(false);
+    // setIsEditModalOpen(false);
     fetchDocuments();
-    // resetForm();
+    resetForm();
   } catch (error) {
     console.error("❌ UPDATE Error:", error);
     alert("Failed to update document proof.");
