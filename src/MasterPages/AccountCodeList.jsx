@@ -34,6 +34,11 @@ const AccountCodeList = () => {
     }
   };
   const handleSave = async () => {
+    if (!formData.name || !formData.financialDate || !formData.accountGroup || !formData.type) {
+      alert("Please fill all required fields");
+      return;
+    }
+    
     try {
       if (editMode) {
         await axios.put(`${API}/account-code/update/${selectedId}`, formData);
@@ -140,6 +145,7 @@ const AccountCodeList = () => {
                   value={formData.name}
                   onChange={(e) => setFormData({ ...formData, name: e.target.value })}
                   className="w-full h-10 px-3 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm"
+                  required
                 />
               </div>
 
@@ -151,6 +157,7 @@ const AccountCodeList = () => {
                   value={formData.financialDate}
                   onChange={(e) => setFormData({ ...formData, financialDate: e.target.value })}
                   className="w-full h-10 px-3 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm bg-white"
+                  required
                 >
                   <option>Balance Sheet</option>
                   <option>Income Statement</option>
@@ -166,6 +173,7 @@ const AccountCodeList = () => {
                   value={formData.accountGroup}
                   onChange={(e) => setFormData({ ...formData, accountGroup: e.target.value })}
                   className="w-full h-10 px-3 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm bg-white"
+                  required
                 >
                   <option>Bank Account</option>
                   <option>Bank O\D Account</option>
@@ -183,6 +191,7 @@ const AccountCodeList = () => {
                   value={formData.type}
                   onChange={(e) => setFormData({ ...formData, type: e.target.value })}
                   className="w-full h-10 px-3 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm bg-white"
+                  required
                 >
                   <option>Balance Sheet</option>
                   <option>Income Statement</option>
