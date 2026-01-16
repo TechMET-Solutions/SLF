@@ -1507,7 +1507,7 @@ const sendMobileOTP = async () => {
               <div>
                 <div className="flex justify-center mt-5 mb-2">
                   <label className="font-roboto font-bold text-[16px] leading-[100%] tracking-[0.03em] text-center">
-                    Upload Customer Profile
+                    Upload Customer Photo
                   </label>
                 </div>
 
@@ -2358,7 +2358,7 @@ const sendMobileOTP = async () => {
         </div>
       </div>
 
-      {/* Password Field (only show when access = Yes) */}
+      {/* Password Field (only show when access = Yes)
       {formData.access === "Yes" && (
         <div className="pl-[115px] pr-[120px] mb-5">
           <label className="font-['Roboto'] text-[16px] block mb-1">
@@ -2373,7 +2373,7 @@ const sendMobileOTP = async () => {
             className="border border-gray-300 px-3 py-2 rounded w-[300px]"
           />
         </div>
-      )}
+      )} */}
 
 
       <div className="p-6 rounded-md w-full mx-auto pl-[120px] pr-[120px] bg-[#F7F7FF]">

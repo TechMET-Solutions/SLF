@@ -3,12 +3,16 @@ import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { API } from "../api";
 import GroupData from "../assets/Group 124.svg";
+import File from "../assets/text.png";
 import Vectorimg from "../assets/Vectorimg.png";
-
 const CustBankDetails = ({ bankData, setBankData, mode, setMode,updatemode }) => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editIndex, setEditIndex] = useState(null);
   const [previewUrls, setPreviewUrls] = useState({});
+
+  const [showChequeModal, setShowChequeModal] = useState(false);
+const [selectedCheque, setSelectedCheque] = useState(null);
+
 const navigate = useNavigate();
   const [formData, setFormData] = useState({
     bankName: "",
@@ -240,7 +244,7 @@ const verifyBankDetails = async () => {
               <th className="px-4 py-2 border-r">Customer Name</th>
               <th className="px-4 py-2 border-r">Account No</th>
               <th className="px-4 py-2 border-r">IFSC</th>
-              <th className="px-4 py-2 border-r">Cancelled Cheque</th>
+              {/* <th className="px-4 py-2 border-r">Cancelled Cheque</th> */}
               <th className="px-4 py-2 border-r">Bank Address</th>
               <th className="px-4 py-2 border-r">Update By</th>
               <th className="px-4 py-2 border-r">Update On</th>
@@ -262,7 +266,7 @@ const verifyBankDetails = async () => {
                 <td className="px-4 py-2">{row.IFSC}</td>
 
                 {/* Cancel Cheque Image */}
-                <td className="px-4 py-2">
+                {/* <td className="px-4 py-2">
                   {row.cancelCheque ? (
                     <div className="flex items-center gap-2">
                       <img
@@ -279,7 +283,7 @@ const verifyBankDetails = async () => {
                   ) : (
                     "-"
                   )}
-                </td>
+                </td> */}
 
                 <td className="px-4 py-2">{row.Bank_Address}</td>
                 <td className="px-4 py-2">{row.Update_By}</td>
@@ -304,12 +308,48 @@ const verifyBankDetails = async () => {
                     >
                       <img src={Vectorimg} alt="view" />
                     </div>
+
+                     <div
+                      className="w-[17px] h-[17px] bg-[#C5644E] rounded flex items-center justify-center p-0.5 cursor-pointer"
+                     onClick={() => {
+    setSelectedCheque(previewUrls[index]); // or row.cancelCheque URL
+    setShowChequeModal(true);
+  }}
+                      title="View"
+                    >
+                     <img src={File} alt="view" />
+                    </div>
+
                   </div>
                 </td>
               </tr>
             ))}
           </tbody>
         </table>
+{showChequeModal && (
+  <div className="fixed inset-0 bg-black/40 flex items-center justify-center z-50">
+    <div className="bg-white rounded-lg p-4 w-[400px] relative">
+      <button
+        onClick={() => setShowChequeModal(false)}
+        className="absolute top-2 right-2 text-gray-500 hover:text-black"
+      >
+        ✕
+      </button>
+
+      <h3 className="text-sm font-semibold mb-3">Cancelled Cheque</h3>
+
+      {selectedCheque ? (
+        <img
+          src={selectedCheque}
+          alt="Cheque"
+          className="w-full h-[200px] border rounded"
+        />
+      ) : (
+        <p className="text-sm text-gray-500">No image available</p>
+      )}
+    </div>
+  </div>
+)}
 
         {/* Modal */}
         {isModalOpen && (
@@ -411,7 +451,7 @@ const verifyBankDetails = async () => {
 
                   {/* File Upload */}
                   <div>
-                    <label className="text-[14px]">Attach Cancel Cheque <span className="text-red-500">*</span></label>
+                    <label className="text-[14px]">Attach Cancel Cheque </label>
                     <div className="flex flex-col mt-1">
                       <div className="flex items-center border border-gray-300 rounded w-[230px]">
                         <label
