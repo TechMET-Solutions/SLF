@@ -1,4 +1,3 @@
-
 import axios from "axios";
 import { useEffect, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
@@ -10,7 +9,7 @@ export default function Cust_Form() {
   const row = location.state; // received row id
   const navigate = useNavigate();
 
-  console.log("DATA : ", row)
+  console.log("DATA : ", row);
 
   const [data, setData] = useState(null); // 🔹 Store customer data
   const [loading, setLoading] = useState(true);
@@ -38,13 +37,11 @@ export default function Cust_Form() {
     fetchCustomer();
   }, [row, navigate]);
 
-
   if (loading) {
     return <p className="text-center mt-20 text-lg font-bold">Loading...</p>;
   }
 
   if (!data) return null;
-
 
   return (
     <div className="w-full bg-white min-h-screen ">
@@ -53,7 +50,7 @@ export default function Cust_Form() {
         <h1 className="text-xl font-semibold">Customer Profile Form</h1>
       </div> */}
       <div className="flex justify-center sticky top-[80px] z-40">
-        <div className="flex  items-center px-6 py-4 border-b mt-5 w-[1290px] h-[62px] border rounded-[11px] border-gray-200 justify-between">
+        <div className="flex  items-center px-6 py-4 border-b mt-5 w-[1290px] h-[62px] border rounded-[11px] border-gray-200 justify-between bg-white">
           <h2
             style={{
               fontFamily: "Source Sans 3, sans-serif",
@@ -68,29 +65,19 @@ export default function Cust_Form() {
           </h2>
 
           <div className="flex gap-3 ">
-
-
-
             <div className="flex justify-between gap-5">
-
-
               <button
                 onClick={() => navigate("/Customer-Profile-List")}
                 className="text-white px-[6.25px] py-[6.25px] rounded-[3.75px] bg-[#C1121F] w-[74px] h-[24px] opacity-100 text-[10px]"
               >
                 Exit
               </button>
-
-
-
             </div>
-
           </div>
         </div>
       </div>
       <div className="flex justify-center mt-10  ">
-
-        <div className="">
+        <div className="pl-[100px] pr-[100px]">
           {/* Personal Information */}
           <section className="bg-[#FFE6E6] p-4  px-18 border border-gray-300 text-[16px]">
             <h3 className="font-semibold text-[20px] text-[#0A2478] mb-3">
@@ -176,7 +163,9 @@ export default function Cust_Form() {
                   <p className="font-medium">{data.lastName}</p>
                 </div>
                 <div>
-                  <div className=" text-gray-600">Father/Husband's First Name</div>
+                  <div className=" text-gray-600">
+                    Father/Husband's First Name
+                  </div>
                   <p className="font-medium">{data.fatherFirstName}</p>
                 </div>
                 {/* <div>
@@ -192,7 +181,9 @@ export default function Cust_Form() {
                   <p className="font-medium">{data.landline}</p>
                 </div>
                 <div>
-                  <div className=" text-gray-600">Politically Exposed Person?</div>
+                  <div className=" text-gray-600">
+                    Politically Exposed Person?
+                  </div>
                   <p className="font-medium">{data.pep}</p>
                 </div>
               </div>
@@ -222,10 +213,8 @@ export default function Cust_Form() {
                   <p className="text-sm mt-2">Customer signature</p>
                 </div>
               </div>
-
             </div>
           </section>
-
 
           {/* Permanent Address */}
           <section className="bg-[#F7F7FF] p-4 px-18 border-gray-300 text-[16px]">
@@ -274,15 +263,18 @@ export default function Cust_Form() {
                 <p className="font-medium">{data.Permanent_IndustryType}</p>
               </div>
               <div>
-                <div className=" text-gray-600">Business working since( in year)</div>
-                <p className="font-medium">{data.Permanent_Businessworkingsince}</p>
+                <div className=" text-gray-600">
+                  Business working since( in year)
+                </div>
+                <p className="font-medium">
+                  {data.Permanent_Businessworkingsince}
+                </p>
               </div>
-
             </div>
-          </section >
+          </section>
 
           {/* Additional Documents */}
-          <section className="bg-[#FFE6E6] p-4 px-18 border-gray-300 text-[16px]" >
+          <section className="bg-[#FFE6E6] p-4 px-18 border-gray-300 text-[16px]">
             <h3 className="font-semibold text-[20px] text-[#0A2478] mb-3">
               Current Address
             </h3>
@@ -295,10 +287,10 @@ export default function Cust_Form() {
                 <div className=" text-gray-600">Area</div>
                 <p className="font-medium">{data.Corresponding_Area}</p>
               </div>
-              <div>
+              {/* <div>
                 <div className=" text-gray-600">Pincode</div>
                 <p className="font-medium">{data.Corresponding_Pincode}</p>
-              </div>
+              </div> */}
               <div>
                 <div className=" text-gray-600">State</div>
                 <p className="font-medium">{data.Corresponding_State}</p>
@@ -311,9 +303,8 @@ export default function Cust_Form() {
                 <div className=" text-gray-600">Country</div>
                 <p className="font-medium">{data.Corresponding_Country}</p>
               </div>
-
             </div>
-          </section >
+          </section>
           {/* Additional Documents */}
           <section className="bg-[#F7F7FF] p-4 px-18 border-gray-300 text-[16px]">
             <h3 className="font-semibold text-[20px] text-[#0A2478] mb-3">
@@ -330,7 +321,9 @@ export default function Cust_Form() {
               </div>
               <div>
                 <div className=" text-gray-600">Pincode</div>
-                <p className="font-medium">{data.Additional_UploadDocumentFile1}</p>
+                <p className="font-medium">
+                  {data.Additional_UploadDocumentFile1}
+                </p>
               </div>
               <div>
                 <div className=" text-gray-600">ID Proof</div>
@@ -340,10 +333,10 @@ export default function Cust_Form() {
                 <div className=" text-gray-600">Any Details</div>
                 <p className="font-medium">{data.Additional_AnyDetails2}</p>
               </div>
-              <div>
+              {/* <div>
                 <div className=" text-gray-600">Pincode</div>
                 <p className="font-medium">{data.Additional_UploadDocumentFile2}</p>
-              </div>
+              </div> */}
               <div>
                 <div className=" text-gray-600">Reference 1</div>
                 <p className="font-medium">{data.Additional_Reference1}</p>
@@ -352,9 +345,8 @@ export default function Cust_Form() {
                 <div className=" text-gray-600">Reference 2</div>
                 <p className="font-medium">{data.Additional_Reference2}</p>
               </div>
-
             </div>
-          </section >
+          </section>
 
           {/* Nominee Details */}
           <section className="bg-[#FFE6E6] p-4 px-18 border-gray-300 text-[16px]">
@@ -383,17 +375,23 @@ export default function Cust_Form() {
                 <p className="font-medium">{data.Nominee_City}</p>
               </div>
             </div>
-          </section >
+          </section>
           {/* Remark */}
           <section className="bg-[#F7F7FF] p-4 px-18 border-gray-300 text-[16px]">
             <h3 className="font-semibold text-[20px] text-[#0A2478] mb-3">
               Remark
             </h3>
             <div className="flex flex-wrap gap-5 text-sm">
-              <p className="font-medium" dangerouslySetInnerHTML={{ __html: data.Remark }}></p>
-              
+              {data.Remark ? (
+                <p
+                  className="font-medium"
+                  dangerouslySetInnerHTML={{ __html: data.Remark }}
+                ></p>
+              ) : (
+                <p className="font-medium text-gray-500">Not Available</p>
+              )}
             </div>
-          </section >
+          </section>
 
           {/* Bank Details */}
           <section className="p-4 px-18 border-gray-300 text-[16px]">
@@ -415,12 +413,21 @@ export default function Cust_Form() {
                   data.bankData.map((bank, index) => (
                     <tr key={index} className="border-0">
                       <td className="p-2">{bank.bankName || "-"}</td>
-                      <td className="p-2">{bank.customerName || "-"}</td>
-                      <td className="p-2">{bank.accountNo || "-"}</td>
-                      <td className="p-2">{bank.ifsc || "-"}</td>
+                      <td className="p-2">{bank.Customer_Name || "-"}</td>
+                      <td className="p-2">{bank.Account_No || "-"}</td>
+                      <td className="p-2">{bank.IFSC || "-"}</td>
                       <td className="p-2">
-                        {bank.updatedOn
-                          ? new Date(bank.updatedOn).toLocaleDateString("en-GB") // Converts to DD-MM-YYYY
+                        {bank.Update_On
+                          ? (() => {
+                              const [day, month, year] =
+                                bank.Update_On.split("/");
+                              const formattedDate = new Date(
+                                year,
+                                month - 1,
+                                day
+                              );
+                              return formattedDate.toLocaleDateString("en-GB"); // DD/MM/YYYY
+                            })()
                           : "-"}
                       </td>
                     </tr>
@@ -435,11 +442,8 @@ export default function Cust_Form() {
               </tbody>
             </table>
           </section>
-
         </div>
-
       </div>
-
-    </div >
+    </div>
   );
 }

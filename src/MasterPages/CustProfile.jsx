@@ -1,14 +1,13 @@
 import axios from "axios";
-import JoditEditor from "jodit-react";
 import { useEffect, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { API } from "../api";
 import blockimg from "../assets/blockimg.png";
+import envImg from "../assets/envImg.jpg";
 import GroupData from "../assets/Group 124.svg";
 import msg from "../assets/msg.png";
 import print from "../assets/print.png";
 import { formatIndianDate } from "../utils/Helpers";
-
 const CustProfile = () => {
   const navigate = useNavigate();
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -28,18 +27,24 @@ const CustProfile = () => {
   const [totalPages, setTotalPages] = useState(1);
 
   // Fetch function with search
-  const fetchCustomers = async (pageNumber = 1, search = searchValue, field = searchField) => {
+  const fetchCustomers = async (
+    pageNumber = 1,
+    search = searchValue,
+    field = searchField
+  ) => {
     try {
       const params = {
         page: pageNumber,
         limit: 10,
-        searchField: field
+        searchField: field,
       };
-      
+
       // Add search if provided
       if (search) params.searchValue = search;
-      
-      const response = await axios.get(`${API}/Master/doc/searchCustomers`, { params });
+
+      const response = await axios.get(`${API}/Master/doc/searchCustomers`, {
+        params,
+      });
       setData(response.data.data);
       setTotalPages(response.data.totalPages);
       setPage(response.data.currentPage);
@@ -70,7 +75,7 @@ const CustProfile = () => {
 
   // Handle enter key in search input
   const handleKeyPress = (e) => {
-    if (e.key === 'Enter') {
+    if (e.key === "Enter") {
       handleSearch();
     }
   };
@@ -86,7 +91,7 @@ const CustProfile = () => {
   useEffect(() => {
     fetchCustomers(page);
   }, [page]);
-  
+
   useEffect(() => {
     document.title = "SLF | Customer List";
     fetchCustomers();
@@ -141,7 +146,6 @@ const CustProfile = () => {
     }
   };
 
-
   const handleOpenRemark = (customer) => {
     setSelectedCustomer(customer);
     setContent(customer.Remark || "");
@@ -149,31 +153,31 @@ const CustProfile = () => {
   };
 
   const handleNavigateToProfile = (row) => {
-    navigate("/Add-Customer-Profile", { 
-      state: { 
-        customerData: row, 
-        type: "edit"
-      } 
+    navigate("/Add-Customer-Profile", {
+      state: {
+        customerData: row,
+        type: "edit",
+      },
     });
   };
 
   // Get placeholder text based on selected search field
   const getPlaceholderText = () => {
     switch (searchField) {
-      case 'partyUID':
-        return 'Search by Party UID...';
-      case 'fname':
-        return 'Search by First Name...';
-      case 'mname':
-        return 'Search by Middle Name...';
-      case 'lname':
-        return 'Search by Last Name...';
-      case 'city':
-        return 'Search by City...';
-      case 'mobile':
-        return 'Search by Mobile Number...';
+      case "partyUID":
+        return "Search by Party UID...";
+      case "fname":
+        return "Search by First Name...";
+      case "mname":
+        return "Search by Middle Name...";
+      case "lname":
+        return "Search by Last Name...";
+      case "city":
+        return "Search by City...";
+      case "mobile":
+        return "Search by Mobile Number...";
       default:
-        return 'Search...';
+        return "Search...";
     }
   };
 
@@ -272,7 +276,7 @@ const CustProfile = () => {
                   height: "24px",
                   borderRadius: "3.75px",
                 }}
-                onClick={() => navigate('/Add-Customer-Profile')}
+                onClick={() => navigate("/Add-Customer-Profile")}
                 className="bg-[#0A2478] text-white text-[11.25px] font-source font-normal flex items-center justify-center"
               >
                 Add
@@ -291,11 +295,13 @@ const CustProfile = () => {
 
       {/* modelforAdd */}
       {isModalOpen && (
-        <div className="fixed inset-0 flex items-center justify-center z-50"
+        <div
+          className="fixed inset-0 flex items-center justify-center z-50"
           style={{
             background: "#0101017A",
             backdropFilter: "blur(6.8px)",
-          }}>
+          }}
+        >
           <div className="bg-white w-[717px] rounded-lg shadow-lg h-[322px] p-10">
             <h2
               className="text-[#0A2478] mb-4"
@@ -312,7 +318,9 @@ const CustProfile = () => {
 
             <div className="grid grid-cols-2 gap-4">
               <div>
-                <label className="text-[14px]">Group Name <span className="text-red-500">*</span></label>
+                <label className="text-[14px]">
+                  Group Name <span className="text-red-500">*</span>
+                </label>
                 <input
                   type="text"
                   placeholder="Interest Accrued on FDR"
@@ -328,7 +336,9 @@ const CustProfile = () => {
                 />
               </div>
               <div>
-                <label className="text-[14px]">Account Type <span className="text-red-500">*</span></label>
+                <label className="text-[14px]">
+                  Account Type <span className="text-red-500">*</span>
+                </label>
                 <input
                   type="text"
                   placeholder="Current Assets"
@@ -345,14 +355,17 @@ const CustProfile = () => {
               </div>
               <div>
                 <label className="text-[12px] font-medium">Under</label>
-                <select className="border border-gray-300 rounded px-2 py-1 w-full mt-1 text-[12px]" style={{
-                  width: "280px",
-                  height: "38px",
-                  padding: "10px 14px",
-                  borderRadius: "5px",
-                  borderWidth: "1px",
-                  opacity: 1,
-                }}>
+                <select
+                  className="border border-gray-300 rounded px-2 py-1 w-full mt-1 text-[12px]"
+                  style={{
+                    width: "280px",
+                    height: "38px",
+                    padding: "10px 14px",
+                    borderRadius: "5px",
+                    borderWidth: "1px",
+                    opacity: 1,
+                  }}
+                >
                   <option>Balance Sheet</option>
                   <option>Income Statement</option>
                 </select>
@@ -408,7 +421,7 @@ const CustProfile = () => {
         </div>
       )}
 
-      {isModalOpenForRemark && (
+      {/* {isModalOpenForRemark && (
         <div className="fixed inset-0 flex items-center justify-center z-50"
           style={{
             background: "#0101017A",
@@ -453,6 +466,57 @@ const CustProfile = () => {
             </div>
           </div>
         </div>
+      )} */}
+      {isModalOpenForRemark && (
+        <div
+          className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50"
+          style={{
+            background: "#0101017A",
+            backdropFilter: "blur(6.8px)",
+          }}
+        >
+          <div className="bg-white w-[829px] h-[356px] p-6 shadow-lg relative rounded-[8px]">
+            <h2
+              className="font-semibold text-[24px] leading-[100%] tracking-[0.03em] mb-4 text-[#0A2478]"
+              style={{ fontFamily: "Source Sans 3" }}
+            >
+              Remark
+            </h2>
+
+            <div className="w-[728px] border border-gray-300 p-5 resize-none h-[183px] rounded-[16px] flex justify-between">
+              <div>
+                {/* <p className="text-black font-bold text-[14px]">
+                    Remark for Loan #{remarkData?.id}
+                  </p> */}
+                <p
+                  className="text-[14px] mt-2 text-[#000000C7]"
+                  dangerouslySetInnerHTML={{
+                    __html: content || "No remark available",
+                  }}
+                ></p>
+              </div>
+              <div>
+                <img
+                  src={envImg}
+                  alt="envelope"
+                  className="w-[156px] h-[156px] rounded-[10px]"
+                />
+              </div>
+            </div>
+
+            <div className="flex justify-center mt-4 gap-2">
+              <button
+                className="px-4 py-2 rounded w-[119px] h-[38px] bg-[#C1121F] text-white font-semibold cursor-pointer hover:bg-[#a50e1a]"
+                onClick={() => {
+                  setIsModalOpenForRemark(false);
+                  setContent("");
+                }}
+              >
+                Close
+              </button>
+            </div>
+          </div>
+        </div>
       )}
 
       {isModalOpenForBlock && (
@@ -465,7 +529,11 @@ const CustProfile = () => {
         >
           <div className="bg-white w-[396px] rounded-lg shadow-lg h-[386px] p-5">
             <div className="flex justify-center items-center mt-2">
-              <img src={blockimg} alt="action" className="w-[113px] h-[113px]" />
+              <img
+                src={blockimg}
+                alt="action"
+                className="w-[113px] h-[113px]"
+              />
             </div>
             <div className="mt-10">
               <p className="font-[Source_Sans_3] font-normal text-[21.79px] text-center">
@@ -497,7 +565,7 @@ const CustProfile = () => {
                   }}
                   onClick={() => {
                     setIsModalOpenForblock(false);
-                    setPendingRow(null); 
+                    setPendingRow(null);
                   }}
                 >
                   Cancel
@@ -509,103 +577,137 @@ const CustProfile = () => {
       )}
 
       {/* Table */}
-    <div className="flex justify-center">
-  <div className="overflow-x-auto mt-5 w-[1290px] h-[500px]">
-    <table className="w-full border-collapse">
-      <thead className="bg-[#0A2478] text-white text-sm">
-        <tr>
-          <th className="px-4 py-2 text-left border-r border-gray-300 text-[13px]">Customer</th>
-          <th className="px-4 py-2 text-left border-r border-gray-300 text-[13px]">Party UID</th>
-          <th className="px-4 py-2 text-left border-r border-gray-300 text-[13px]">F Name</th>
-          <th className="px-4 py-2 text-left border-r border-gray-300 text-[13px]">M Name</th>
-          <th className="px-4 py-2 text-left border-r border-gray-300 text-[13px]">L Name</th>
-          <th className="px-4 py-2 text-left border-r border-gray-300 text-[13px]">City</th>
-          <th className="px-4 py-2 text-left border-r border-gray-300 text-[13px]">Mobile Number</th>
-          {/* <th className="px-4 py-2 text-left border-r border-gray-300 text-[13px]">Bad Debtor</th> */}
-          <th className="px-4 py-2 text-left text-[13px]">Added On</th>
-          <th className="px-4 py-2 text-left text-[13px]">Added By</th>
-          <th className="px-4 py-2 text-left text-[13px]">Block</th>
-          <th className="px-4 py-2 text-center text-[13px]">Action</th>
-        </tr>
-      </thead>
+      <div className="flex justify-center">
+        <div className="overflow-x-auto mt-5 w-[1290px] h-[500px]">
+          <table className="w-full border-collapse">
+            <thead className="bg-[#0A2478] text-white text-sm">
+              <tr>
+                <th className="px-4 py-2 text-left border-r border-gray-300 text-[13px]">
+                  Customer
+                </th>
+                <th className="px-4 py-2 text-left border-r border-gray-300 text-[13px]">
+                  Party UID
+                </th>
+                <th className="px-4 py-2 text-left border-r border-gray-300 text-[13px]">
+                  F Name
+                </th>
+                <th className="px-4 py-2 text-left border-r border-gray-300 text-[13px]">
+                  M Name
+                </th>
+                <th className="px-4 py-2 text-left border-r border-gray-300 text-[13px]">
+                  L Name
+                </th>
+                <th className="px-4 py-2 text-left border-r border-gray-300 text-[13px]">
+                  City
+                </th>
+                <th className="px-4 py-2 text-left border-r border-gray-300 text-[13px]">
+                  Mobile Number
+                </th>
+                {/* <th className="px-4 py-2 text-left border-r border-gray-300 text-[13px]">Bad Debtor</th> */}
+                <th className="px-4 py-2 text-left text-[13px]">Added On</th>
+                <th className="px-4 py-2 text-left text-[13px]">Added By</th>
+                <th className="px-4 py-2 text-left text-[13px]">Block</th>
+                <th className="px-4 py-2 text-center text-[13px]">Action</th>
+              </tr>
+            </thead>
 
-      <tbody className="text-[12px]">
-        {data.map((row, index) => (
-          <tr
-            key={index}
-            className={`border-b 
-              ${row.badDebtor 
-                ? "bg-red-100 text-red-700 font-semibold" 
-                : index % 2 === 0 
-                  ? "bg-gray-50" 
-                  : "bg-white"
+            <tbody className="text-[12px]">
+              {data.map((row, index) => (
+                <tr
+                  key={index}
+                  className={`border-b 
+              ${
+                row.badDebtor
+                  ? "bg-red-100 text-red-700 font-semibold"
+                  : index % 2 === 0
+                    ? "bg-gray-50"
+                    : "bg-white"
               }
             `}
-          >
-            <td className="px-4 py-2 flex items-center gap-3">
-              <img
-                src={row.profileImage}
-                alt={row.customer}
-                className="w-10 h-10 rounded-full object-cover border border-gray-300"
-              />
-              <span className="font-medium">{row.customer}</span>
-            </td>
+                >
+                  <td className="px-4 py-2 flex items-center gap-3">
+                    <img
+                      src={row.profileImage}
+                      alt={row.customer}
+                      className="w-10 h-10 rounded-full object-cover border border-gray-300"
+                    />
+                    <span className="font-medium">{row.customer}</span>
+                  </td>
 
-            <td className="px-4 py-2">{row.id}</td>
-            <td className="px-4 py-2">{row.firstName}</td>
-            <td className="px-4 py-2">{row.middleName}</td>
-            <td className="px-4 py-2">{row.lastName}</td>
-            <td className="px-4 py-2">{row.Permanent_City}</td>
-            <td className="px-4 py-2">{row.mobile}</td>
+                  <td className="px-4 py-2">{row.id}</td>
+                  <td className="px-4 py-2">{row.firstName}</td>
+                  <td className="px-4 py-2">{row.middleName}</td>
+                  <td className="px-4 py-2">{row.lastName}</td>
+                  <td className="px-4 py-2">{row.Permanent_City}</td>
+                  <td className="px-4 py-2">{row.mobile}</td>
 
-            {/* <td className="px-4 py-2 font-bold text-center">
+                  {/* <td className="px-4 py-2 font-bold text-center">
               {row.badDebtor ? "Yes" : "No"}
             </td> */}
 
-            <td className="px-4 py-2">{formatIndianDate(row.Added_On)}</td>
-            <td className="px-4 py-2">{row.Added_By}</td>
+                  <td className="px-4 py-2">
+                    {formatIndianDate(row.Added_On)}
+                  </td>
+                  <td className="px-4 py-2">{row.Added_By}</td>
 
-            <td className="px-4 py-2">
-              <input
-                type="checkbox"
-                className="w-[25px] h-[25px]"
-                checked={checkedRows[row.id] ?? row.block === 1}
-                onChange={(e) => handleCheckboxChange(row, e.target.checked)}
-              />
-            </td>
+                  <td className="px-4 py-2">
+                    <input
+                      type="checkbox"
+                      className="w-[25px] h-[25px]"
+                      checked={checkedRows[row.id] ?? row.block === 1}
+                      onChange={(e) =>
+                        handleCheckboxChange(row, e.target.checked)
+                      }
+                    />
+                  </td>
 
-            <td className="px-4 py-2 text-[#1883EF] cursor-pointer">
-              <div className="flex gap-5">
-                <div
-                  className="w-[17px] h-[17px] bg-[#6D5300] rounded-[2.31px] flex items-center justify-center cursor-pointer"
-                  onClick={() => handleOpenRemark(row)}
-                >
-                  <img src={msg} alt="remark" className="w-[12px] h-[12px]" title="Remark" />
-                </div>
+                  <td className="px-4 py-2 text-[#1883EF] cursor-pointer">
+                    <div className="flex gap-5">
+                      <div
+                        className="w-[17px] h-[17px] bg-[#6D5300] rounded-[2.31px] flex items-center justify-center cursor-pointer"
+                        onClick={() => handleOpenRemark(row)}
+                      >
+                        <img
+                          src={msg}
+                          alt="remark"
+                          className="w-[12px] h-[12px]"
+                          title="Remark"
+                        />
+                      </div>
 
-                <div
-                  className="w-[17px] h-[17px] bg-[#56A869] rounded-[2.31px] flex items-center justify-center cursor-pointer"
-                  onClick={() => handleNavigateToProfile(row)}
-                >
-                  <img src={GroupData} alt="edit" className="w-[12px] h-[12px]" title="Edit" />
-                </div>
+                      <div
+                        className="w-[17px] h-[17px] bg-[#56A869] rounded-[2.31px] flex items-center justify-center cursor-pointer"
+                        onClick={() => handleNavigateToProfile(row)}
+                      >
+                        <img
+                          src={GroupData}
+                          alt="edit"
+                          className="w-[12px] h-[12px]"
+                          title="Edit"
+                        />
+                      </div>
 
-                <div
-                  className="w-[17px] h-[17px] bg-[#83090B] rounded-[2.31px] flex items-center justify-center cursor-pointer"
-                  onClick={() => navigate("/Customer_Form", { state: row })}
-                >
-                  <img src={print} alt="print" className="w-[12px] h-[12px]" title="Print" />
-                </div>
-              </div>
-            </td>
-
-          </tr>
-        ))}
-      </tbody>
-    </table>
-  </div>
-</div>
-
+                      <div
+                        className="w-[17px] h-[17px] bg-[#83090B] rounded-[2.31px] flex items-center justify-center cursor-pointer"
+                        onClick={() =>
+                          navigate("/Customer_Form", { state: row })
+                        }
+                      >
+                        <img
+                          src={print}
+                          alt="print"
+                          className="w-[12px] h-[12px]"
+                          title="Print"
+                        />
+                      </div>
+                    </div>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      </div>
 
       {/* Pagination */}
       <div className="flex justify-center items-center px-6 py-3 border-t gap-2">

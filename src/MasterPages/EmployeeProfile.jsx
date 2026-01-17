@@ -7,16 +7,15 @@ import { API } from "../api";
 
 import {
   deleteEmployeeApi,
-  fetchEmployeeProfileApi
+  fetchEmployeeProfileApi,
 } from "../API/Master/Employee_Profile/EmployeeProfile";
 import blockimg from "../assets/blockimg.png";
 import Pagination from "../Component/Pagination";
 import { encryptData } from "../utils/cryptoHelper";
 
-import profileempty from "../assets/profileempty.png";
 import { fetchBranchesApi } from "../API/Master/Master_Profile/Branch_Details";
+import profileempty from "../assets/profileempty.png";
 const EmployeeProfile = () => {
-
   useEffect(() => {
     document.title = "SLF | Employee Profile";
   }, []);
@@ -25,7 +24,7 @@ const EmployeeProfile = () => {
 
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [employeeList, setEmployeeList] = useState([]);
-  console.log(employeeList, "employeeList")
+  console.log(employeeList, "employeeList");
   const [isLoading, setIsLoading] = useState(false);
   const [isEditMode, setIsEditMode] = useState(false);
   const [isViewDocumentHistory, setIsDocumentHistory] = useState(false);
@@ -34,7 +33,6 @@ const EmployeeProfile = () => {
   const [searchTerm, setSearchTerm] = useState({ empId: "", empName: "" });
 
   const [errors, setErrors] = useState({});
-  
 
   const [formData, setFormData] = useState({
     id: null,
@@ -63,10 +61,10 @@ const EmployeeProfile = () => {
     addressProfiletype: "",
     IdProoftype: "",
     status: true,
-    salary: null
+    salary: null,
   });
-  const [documents, setDocuments] = useState([]);      // main list from API
-  const [idProofList, setIdProofList] = useState([]);  // filtered only id proof
+  const [documents, setDocuments] = useState([]); // main list from API
+  const [idProofList, setIdProofList] = useState([]); // filtered only id proof
   const [addrProofList, setAddrProofList] = useState([]); // filtered only address proof
 
   const fetchDocuments = async () => {
@@ -74,8 +72,8 @@ const EmployeeProfile = () => {
       const response = await axios.get(`${API}/Master/getAllDocumentProofs`);
       const docs = response.data.data;
       setDocuments(docs);
-      setIdProofList(docs.filter(x => x.is_id_proof === 1));
-      setAddrProofList(docs.filter(x => x.is_address_proof === 1));
+      setIdProofList(docs.filter((x) => x.is_id_proof === 1));
+      setAddrProofList(docs.filter((x) => x.is_address_proof === 1));
     } catch (err) {
       console.error("Error fetching documents:", err);
     }
@@ -86,8 +84,8 @@ const EmployeeProfile = () => {
   const [designations, setDesignations] = useState([]);
 
   useEffect(() => {
-    fetchDocuments()
-  }, [])
+    fetchDocuments();
+  }, []);
 
   useEffect(() => {
     const loadRoles = async () => {
@@ -101,7 +99,9 @@ const EmployeeProfile = () => {
 
   const fetchAllRoles = async () => {
     try {
-      const response = await fetch(`${API}/Master/User-Management/getAll-roles-options`);
+      const response = await fetch(
+        `${API}/Master/User-Management/getAll-roles-options`
+      );
       const result = await response.json();
       return result.roles || [];
     } catch (err) {
@@ -125,7 +125,11 @@ const EmployeeProfile = () => {
 
   const fetchBranches = async (page = 1, limit = 10, search = "") => {
     try {
-      const { branches = [], total } = await fetchBranchesApi(page, limit, search);
+      const { branches = [], total } = await fetchBranchesApi(
+        page,
+        limit,
+        search
+      );
 
       // Filter only active branches (status === "1")
       const activeBranches = branches.filter(
@@ -140,10 +144,11 @@ const EmployeeProfile = () => {
     }
   };
 
-
   const fetchDesignations = async () => {
     try {
-      const res = await axios.get(`${API}/Master/Employee_Profile/get-designation`);
+      const res = await axios.get(
+        `${API}/Master/Employee_Profile/get-designation`
+      );
       const items = res.data?.data || res.data?.data?.data || [];
       setDesignations(items);
     } catch (err) {
@@ -152,7 +157,7 @@ const EmployeeProfile = () => {
     }
   };
 
-  console.log(formData, "formData")
+  console.log(formData, "formData");
   const panFileInputRef = useRef(null);
   const handlePanFileChange = (e) => {
     const file = e.target.files[0];
@@ -177,10 +182,10 @@ const EmployeeProfile = () => {
   const [profileImage, setProfileImage] = useState(null);
   const [addressProof, setAddressProof] = useState(null);
   const [idProof, setIdProof] = useState(null);
-  console.log(addressProof, idProof, profileImage)
+  console.log(addressProof, idProof, profileImage);
   // Pagination states
   const [adharMaskingData, setAdharMaskingData] = useState("");
-  console.log(adharMaskingData, "adharMaskingData")
+  console.log(adharMaskingData, "adharMaskingData");
   const [currentPage, setCurrentPage] = useState(1);
   const [totalItems, setTotalItems] = useState(0);
   const [showPagination, setShowPagination] = useState(false);
@@ -247,7 +252,7 @@ const EmployeeProfile = () => {
   }, []);
 
   const updateEmployeeStatus = async (id, status) => {
-    debugger
+    debugger;
     try {
       const payload = { id, status };
       const encryptedData = encryptData(JSON.stringify(payload));
@@ -268,9 +273,7 @@ const EmployeeProfile = () => {
       const response = await updateEmployeeStatus(emp.id, newStatus);
       console.log("✅ Status updated response:", response);
       setEmployeeList((prev) =>
-        prev.map((e) =>
-          e.id === emp.id ? { ...e, status: newStatus } : e
-        )
+        prev.map((e) => (e.id === emp.id ? { ...e, status: newStatus } : e))
       );
     } catch (error) {
       console.error("❌ Error toggling employee status:", error);
@@ -335,7 +338,7 @@ const EmployeeProfile = () => {
       emp_add_prof: "",
       emp_id_prof: "",
       status: true,
-      salary: null
+      salary: null,
     });
     setProfileImage(null);
     setAddressProof(null);
@@ -393,7 +396,7 @@ const EmployeeProfile = () => {
         addressProfiletype: formData.addressProfiletype,
         IdProoftype: formData.IdProoftype,
         status: formData.status,
-        salary: formData.salary
+        salary: formData.salary,
       };
 
       const encryptedData = encryptData(JSON.stringify(payload));
@@ -403,14 +406,17 @@ const EmployeeProfile = () => {
       if (addressProof) formDataToSend.append("emp_add_prof", addressProof);
       if (idProof) formDataToSend.append("emp_id_prof", idProof);
 
-      await axios.post(`${API}/Master/Employee_Profile/add-employee`, formDataToSend, {
-        headers: { "Content-Type": "multipart/form-data" },
-      });
+      await axios.post(
+        `${API}/Master/Employee_Profile/add-employee`,
+        formDataToSend,
+        {
+          headers: { "Content-Type": "multipart/form-data" },
+        }
+      );
 
       alert("✅ Employee created successfully!");
       setIsModalOpen(false);
       fetchEmployee(currentPage, searchTerm);
-
     } catch (error) {
       console.error("❌ Error saving employee:", error);
       alert(error.response?.data?.message || "Error saving employee");
@@ -441,7 +447,7 @@ const EmployeeProfile = () => {
         password: formData.password,
         fax: formData.fax,
         status: formData.status,
-        salary: formData.salary
+        salary: formData.salary,
       };
 
       const encryptedData = encryptData(JSON.stringify(payload));
@@ -496,7 +502,9 @@ const EmployeeProfile = () => {
 
       setErrors((prev) => ({
         ...prev,
-        email: emailRegex.test(value) ? "" : "Please enter a valid email address",
+        email: emailRegex.test(value)
+          ? ""
+          : "Please enter a valid email address",
       }));
     }
 
@@ -559,8 +567,6 @@ const EmployeeProfile = () => {
     }));
   };
 
-
-
   const handleForceDownload = async (fileUrl, filename) => {
     try {
       const response = await fetch(fileUrl, { mode: "cors" });
@@ -614,7 +620,7 @@ const EmployeeProfile = () => {
   //   };
 
   const sendAadhaarOTP = async () => {
-    debugger
+    debugger;
     // 1. Basic Length Check
     if (!formData.aadhar_card || formData.aadhar_card.length !== 12) {
       alert("Enter valid 12-digit Aadhaar");
@@ -632,16 +638,15 @@ const EmployeeProfile = () => {
     // 3. Proceed to API if validation passes
     try {
       const res = await axios.post(`${API}/kyc/aadhaar/send-otp`, {
-        aadhaar_number: formData.aadhar_card
+        aadhaar_number: formData.aadhar_card,
       });
 
-      setFormData(prev => ({
+      setFormData((prev) => ({
         ...prev,
-        refId: res.data.data.ref_id
+        refId: res.data.data.ref_id,
       }));
 
       alert("Aadhar Verify successfully");
-
     } catch (error) {
       console.error(error);
       alert("Failed to send OTP");
@@ -657,7 +662,7 @@ const EmployeeProfile = () => {
     try {
       const res = await axios.post(`${API}/kyc/aadhaar/verify-otp`, {
         otp: formData.otp,
-        ref_id: formData.refId
+        ref_id: formData.refId,
       });
 
       if (res.data.status) {
@@ -665,7 +670,6 @@ const EmployeeProfile = () => {
         // Optional: Set success flag
         // setFormData({ ...formData, aadhaarVerified: true });
       }
-
     } catch (error) {
       alert("OTP Verification Failed!");
       console.error(error);
@@ -692,8 +696,8 @@ const EmployeeProfile = () => {
   };
 
   const handleSaveValuation = async () => {
-    debugger
-    const employeeIds = selectedEmployees.map(emp => emp.id);
+    debugger;
+    const employeeIds = selectedEmployees.map((emp) => emp.id);
 
     if (!valuationAmount) {
       alert("Please enter valuation amount");
@@ -702,7 +706,7 @@ const EmployeeProfile = () => {
 
     const payload = {
       employeeIds,
-      valuationAmount
+      valuationAmount,
     };
 
     console.log("Saving valuation:", payload);
@@ -731,7 +735,7 @@ const EmployeeProfile = () => {
   //     // Calling your API
   //     const res = await axios.post(`${API}/kyc/pan/verify`, {
   //       pan: formData.pan_card,
-  //       name: "---" 
+  //       name: "---"
   //     });
 
   //     // Extracting nested data from Surepass response
@@ -745,7 +749,7 @@ const EmployeeProfile = () => {
   //       };
 
   //       // Extract last 4 digits of Aadhaar for your masking state
-  //       const aadhaarMasked = panDetails.masked_aadhaar; 
+  //       const aadhaarMasked = panDetails.masked_aadhaar;
   //       const lastFourDigits = aadhaarMasked ? aadhaarMasked.slice(-4) : "";
 
   //       // Updating your formData
@@ -775,7 +779,7 @@ const EmployeeProfile = () => {
     try {
       const res = await axios.post(`${API}/kyc/pan/verify`, {
         pan: formData.pan_card,
-        name: "---"
+        name: "---",
       });
 
       // Navigating the nested response structure: res.data.data.data
@@ -804,14 +808,15 @@ const EmployeeProfile = () => {
           // Email ani Mobile (Jar API madhe null asel tar prev value maintain rahil)
           email: panDetails.email || prev.email,
           mobile_no: panDetails.phone_number || prev.mobile_no,
-          aadhar_card: panDetails.aadhaar_number || prev.adhar_no,
+          aadhar: panDetails.masked_aadhaar,
 
           // Address Mapping
           // panDetails.address.full madhe sagala address ekatra yeto
           permanent_address: panDetails.address?.full || prev.permanent_address,
 
           // Jar tula corresponding address madhe pan toch pahije asel tar:
-          corresponding_address: panDetails.address?.full || prev.corresponding_address,
+          corresponding_address:
+            panDetails.address?.full || prev.corresponding_address,
         }));
         alert("PAN Verified Successfully!");
       }
@@ -837,7 +842,12 @@ const EmployeeProfile = () => {
                 <input
                   type="text"
                   value={searchTerm.empId}
-                  onChange={(e) => setSearchTerm(prev => ({ ...prev, empId: e.target.value }))}
+                  onChange={(e) =>
+                    setSearchTerm((prev) => ({
+                      ...prev,
+                      empId: e.target.value,
+                    }))
+                  }
                   className="border border-gray-400 rounded px-3 py-1 text-[11.25px] w-[168px] h-[28px]"
                 />
               </div>
@@ -846,7 +856,12 @@ const EmployeeProfile = () => {
                 <input
                   type="text"
                   value={searchTerm.empName}
-                  onChange={(e) => setSearchTerm(prev => ({ ...prev, empName: e.target.value }))}
+                  onChange={(e) =>
+                    setSearchTerm((prev) => ({
+                      ...prev,
+                      empName: e.target.value,
+                    }))
+                  }
                   className="border border-gray-400 rounded px-3 py-1 text-[11.25px] w-[168px] h-[28px]"
                 />
               </div>
@@ -871,7 +886,6 @@ const EmployeeProfile = () => {
               >
                 Valuation
               </button>
-
             </div>
 
             <div className="flex gap-3">
@@ -883,7 +897,8 @@ const EmployeeProfile = () => {
               </button>
               <button
                 onClick={() => navigate("/")}
-                className="bg-[#C1121F] text-white text-[10px] w-[74px] h-[24px] rounded">
+                className="bg-[#C1121F] text-white text-[10px] w-[74px] h-[24px] rounded"
+              >
                 Exit
               </button>
             </div>
@@ -892,116 +907,118 @@ const EmployeeProfile = () => {
       </div>
 
       {/* Add/Edit Modal */}
-      {
-        isModalOpen && (
-          <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-sm" >
-            <div className="bg-white w-[1183px] max-h-[90vh] rounded-lg shadow-lg p-6 overflow-y-auto">
-              {/* Title */}
-              <h2 className="text-[#0A2478] text-[20px] font-semibold mb-6">
-                {mode === "edit"
-                  ? "Edit Employee Profile"
-                  : mode === "view"
-                    ? "View Employee Profile"
-                    : "Add Employee Profile"}
-              </h2>
-              <div className="flex justify-between">
-                {/* Left Form */}
-                <div className=" space-y-4 text-sm">
-                  {/* PAN + Aadhaar + Name */}
-                  <div className="flex gap-4 w-full">
+      {isModalOpen && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-sm">
+          <div className="bg-white w-[1183px] max-h-[90vh] rounded-lg shadow-lg p-6 overflow-y-auto">
+            {/* Title */}
+            <h2 className="text-[#0A2478] text-[20px] font-semibold mb-6">
+              {mode === "edit"
+                ? "Edit Employee Profile"
+                : mode === "view"
+                  ? "View Employee Profile"
+                  : "Add Employee Profile"}
+            </h2>
+            <div className="flex justify-between">
+              {/* Left Form */}
+              <div className=" space-y-4 text-sm">
+                {/* PAN + Aadhaar + Name */}
+                <div className="flex gap-4 w-full">
+                  {/* PAN */}
+                  <div className="flex flex-col flex-1">
+                    <label className="text-[14px] font-medium">
+                      PAN No. <span className="text-red-500">*</span>
+                    </label>
 
-                    {/* PAN */}
-                    <div className="flex flex-col flex-1">
-                      <label className="text-[14px] font-medium">
-                        PAN No. <span className="text-red-500">*</span>
-                      </label>
+                    <div className="flex items-center mt-1">
+                      <div className="relative flex-1">
+                        <input
+                          type="text"
+                          placeholder="Enter PAN"
+                          name="pan_card"
+                          disabled={mode === "view"}
+                          value={formData.pan_card}
+                          onChange={handleInputChange}
+                          className="border border-[#C4C4C4] border-r-0 rounded-l-[8px] px-3 py-2 pr-10 w-full bg-white"
+                        />
 
-                      <div className="flex items-center mt-1">
-                        <div className="relative flex-1">
-                          <input
-                            type="text"
-                            placeholder="Enter PAN"
-                            name="pan_card"
-                            disabled={mode === "view"}
-                            value={formData.pan_card}
-                            onChange={handleInputChange}
-                            className="border border-[#C4C4C4] border-r-0 rounded-l-[8px] px-3 py-2 pr-10 w-full bg-white"
-                          />
+                        <input
+                          type="file"
+                          accept="image/*,.pdf"
+                          ref={panFileInputRef}
+                          disabled={mode === "view"}
+                          onChange={handlePanFileChange}
+                          className="hidden"
+                        />
 
-                          <input
-                            type="file"
-                            accept="image/*,.pdf"
-                            ref={panFileInputRef}
-                            disabled={mode === "view"}
-                            onChange={handlePanFileChange}
-                            className="hidden"
-                          />
-
-                          <FaPaperclip
-                            className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 cursor-pointer"
-                            size={16}
-                            onClick={() => panFileInputRef.current.click()}
-                          />
-                        </div>
-
-                        <button
-                          className="bg-[#0A2478] text-white px-4 py-2 rounded-r-[8px] hover:bg-[#081c5b] whitespace-nowrap"
-                          type="button"
-                          onClick={verifyPan}
-                        >
-                          Verify
-                        </button>
+                        <FaPaperclip
+                          className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 cursor-pointer"
+                          size={16}
+                          onClick={() => panFileInputRef.current.click()}
+                        />
                       </div>
+
+                      <button
+                        className="bg-[#0A2478] text-white px-4 py-2 rounded-r-[8px] hover:bg-[#081c5b] whitespace-nowrap"
+                        type="button"
+                        onClick={verifyPan}
+                      >
+                        Verify
+                      </button>
                     </div>
+                  </div>
 
-                    {/* Aadhaar */}
-                    <div className="flex flex-col flex-1">
-                      <label className="text-[14px] font-medium">
-                        Aadhar Card Number <span className="text-red-500">*</span>
-                      </label>
+                  {/* Aadhaar */}
+                  <div className="flex flex-col flex-1">
+                    <label className="text-[14px] font-medium">
+                      Aadhar Card Number <span className="text-red-500">*</span>
+                    </label>
 
-                      <div className="flex items-center mt-1">
-                        <div className="relative flex-1">
-                          <input
-                            type="number"
-                            placeholder={formData.aadhar_card ? `${formData.aadhar_card}` : "Enter Aadhar"}
-                            name="aadhar_card"
-                            disabled={mode === "view"}
-                            value={formData.aadhar_card}
-                            onChange={handleInputChange}
-                            className="border border-[#C4C4C4] border-r-0 rounded-l-[8px] px-3 py-2 pr-10 w-[153px] bg-white h-[38px]"
-                            style={{ MozAppearance: "textfield" }}
-                            onWheel={(e) => e.target.blur()}
-                          />
+                    <div className="flex items-center mt-1">
+                      <div className="relative flex-1">
+                        <input
+                          type="number"
+                          placeholder={
+                            formData.aadhar
+                              ? `${formData.aadhar}`
+                              : "Enter Aadhar"
+                          }
+                          name="aadhar_card"
+                          disabled={mode === "view"}
+                          value={formData.aadhar_card}
+                          onChange={handleInputChange}
+                          className="border border-[#C4C4C4] border-r-0 rounded-l-[8px] px-3 py-2 pr-10 w-[180px] bg-white h-[38px]"
+                          style={{ MozAppearance: "textfield" }}
+                          onWheel={(e) => e.target.blur()}
+                        />
 
-                          <input
-                            type="file"
-                            accept="image/*,.pdf"
-                            ref={aadharFileInputRef}
-                            disabled={mode === "view"}
-                            onChange={handleAadharFileChange}
-                            className="hidden"
-                          />
+                        <input
+                          type="file"
+                          accept="image/*,.pdf"
+                          ref={aadharFileInputRef}
+                          disabled={mode === "view"}
+                          onChange={handleAadharFileChange}
+                          className="hidden"
+                        />
 
-                          <FaPaperclip
-                            className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 cursor-pointer"
-                            size={16}
-                            onClick={() => aadharFileInputRef.current.click()}
-                          />
-                        </div>
-
-                        <button
-                          className="bg-[#0A2478] text-white px-4 py-2 rounded-r-[8px] hover:bg-[#081c5b] whitespace-nowrap h-[38px]"
-                          type="button"
-                          onClick={sendAadhaarOTP}
-                        >
-                          verify
-                        </button>
+                        <FaPaperclip
+                          className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 cursor-pointer"
+                          size={16}
+                          onClick={() => aadharFileInputRef.current.click()}
+                        />
                       </div>
-                    </div>
 
-                    {/* OTP */}
-                    {/* <div className="flex flex-col w-[140px]">
+                      <button
+                        className="bg-[#0A2478] text-white px-4 py-2 rounded-r-[8px] hover:bg-[#081c5b] whitespace-nowrap h-[38px]"
+                        type="button"
+                        onClick={sendAadhaarOTP}
+                      >
+                        verify
+                      </button>
+                    </div>
+                  </div>
+
+                  {/* OTP */}
+                  {/* <div className="flex flex-col w-[140px]">
     <label className="text-[14px] font-medium">Verify OTP</label>
 
     <div className="relative mt-1">
@@ -1025,521 +1042,619 @@ const EmployeeProfile = () => {
     </div>
   </div> */}
 
-                    {/* Name */}
-                    <div className="flex flex-col flex-1">
-                      <label className="text-gray-700 font-medium">Name*</label>
+                  {/* Name */}
+                  <div className="flex flex-col flex-1">
+                    <label className="text-gray-700 font-medium">Name*</label>
 
-                      <input
-                        type="text"
-                        name="emp_name"
-                        value={formData.emp_name}
-                        disabled={mode === "view"}
-                        onChange={handleInputChange}
-                        placeholder="Name"
-                        className="border border-[#C4C4C4] rounded-[8px] px-3 py-2 w-[166px] bg-white mt-1"
-                      />
-                    </div>
-
-                  </div>
-
-
-                  {/* Employee ID, Mobile, Email */}
-                  <div className="flex gap-2">
-
-                    <div className="flex flex-col gap-1">
-                      <label className="text-gray-700 font-medium">Mobile No <span className="text-red-500">*</span></label>
-                      <input
-                        type="number"
-                        name="mobile_no"
-                        value={formData.mobile_no}
-                        disabled={mode === "view"}
-                        onChange={handleInputChange}
-                        placeholder="Mobile No"
-
-                        style={{
-                          MozAppearance: "textfield",
-
-                        }}
-                        onWheel={(e) => e.target.blur()}
-                        className="border border-[#C4C4C4] rounded-[8px] px-3 py-2 focus:outline-none focus:ring-1 focus:ring-blue-500 w-[153px]"
-                      />
-                    </div>
-                    <div className="flex flex-col gap-1">
-                      <label className="text-gray-700 font-medium">Alternate Mobile No</label>
-                      <input
-                        type="tel"
-                        name="Alternate_Mobile"
-                        value={formData.Alternate_Mobile}
-                        onChange={handleInputChange}
-                        disabled={mode === "view"}
-                        placeholder="Mobile No"
-                        style={{
-                          MozAppearance: "textfield",
-                        }}
-                        onWheel={(e) => e.target.blur()}
-                        className="border border-[#C4C4C4] rounded-[8px] px-3 py-2 focus:outline-none focus:ring-1 focus:ring-blue-500 w-[153px]"
-                      />
-                    </div>
-                    <div className="flex flex-col gap-1">
-                      <label className="text-gray-700 font-medium">Email ID <span className="text-red-500">*</span></label>
-                      <input
-                        type="email"
-                        name="email"
-                        value={formData.email}
-                        onChange={handleInputChange}
-                        disabled={mode === "view"}
-                        placeholder="Email ID"
-                        className={`border rounded px-3 py-2 mt-1 w-[203px] bg-white ${errors.email ? "border-red-500" : "border-gray-300"
-                          }`}
-                      />
-                      {errors.email && (
-                        <span className="text-red-500 text-[12px] mt-1">
-                          {errors.email}
-                        </span>
-                      )}
-                    </div>
-                    <div className="flex flex-col gap-1">
-                      <label className="text-gray-700 font-medium">Date of Birth <span className="text-red-500">*</span></label>
-                      <input
-                        type="date"
-                        name="date_of_birth"
-                        value={
-                          formData.date_of_birth
-                            ? new Date(formData.date_of_birth).toISOString().split("T")[0]
-                            : ""
-                        }
-                        disabled={mode === "view"}
-                        onChange={handleInputChange}
-                        className={`border border-[#C4C4C4] rounded-md px-3 py-2 focus:outline-none focus:ring-1 focus:ring-blue-500 w-[168px] 
-    }`}
-                      />
-                    </div>
-
-                  </div>
-
-                  {/* Address */}
-                  <div className="flex gap-4">
-
-                    {/* Permanent Address */}
-                    <div className="flex flex-col gap-1">
-                      <label className="text-gray-700 font-medium">Permanent Address <span className="text-red-500">*</span></label>
-                      <input
-                        type="text"
-                        name="permanent_address"
-                        disabled={mode === "view"}
-                        value={formData.permanent_address}
-                        onChange={handleInputChange}
-                        placeholder=" Permanent Address*"
-                        className="border border-[#C4C4C4] rounded-[8px] px-3 py-2 focus:outline-none focus:ring-1 focus:ring-blue-500 w-[266px]"
-                      />
-                    </div>
-
-
-                    {/* Radio Option */}
-                    <div className="flex gap-3 items-center">
-                      <input
-                        type="checkbox"
-                        id="sameAddress"
-                        disabled={mode === "view"}
-                        name="sameAddress"
-                        checked={
-                          formData.corresponding_address &&
-                          formData.corresponding_address === formData.permanent_address
-                        }
-
-                        onChange={(e) => {
-                          if (e.target.checked) {
-                            setFormData(prev => ({ ...prev, corresponding_address: prev.permanent_address }));
-                          } else {
-                            setFormData(prev => ({ ...prev, corresponding_address: "" }));
-                          }
-                        }}
-                        className="border accent-blue-900 w-5 h-5"
-                      />
-                      <label htmlFor="sameAddress" className="text-gray-700 font-medium">
-                        Permanent Address same as<br></br> Current Address?
-                      </label>
-                    </div>
-
-                    {/* Corresponding Address */}
-                    <div className="flex flex-col gap-1">
-                      <label className="text-gray-700 font-medium">Current Address <span className="text-red-500">*</span></label>
-                      <input
-                        type="text"
-                        name="corresponding_address"
-                        value={formData.corresponding_address}
-                        disabled={mode === "view"}
-                        onChange={handleInputChange}
-                        placeholder="Current Address"
-                        className="border border-[#C4C4C4] rounded-[8px] px-3 py-2 focus:outline-none focus:ring-1 focus:ring-blue-500 w-[259px]"
-                      />
-                    </div>
-                  </div>
-
-                  {/* Branch, Joining Date, Designation, DOB */}
-                  <div className="flex gap-2">
-                    <div className="flex flex-col gap-1">
-                      <label className="text-gray-700 font-medium">Branch <span className="text-red-500">*</span></label>
-                      <select
-                        name="branch"
-                        value={formData.branch_id}
-                        onChange={handleInputChange}
-                        disabled={mode === "view"}
-                        className="border border-[#C4C4C4] rounded-[8px] px-3 py-2 focus:outline-none focus:ring-1 focus:ring-blue-500 w-[220px]"
-                      >
-                        <option value="" disabled> Branch</option>
-                        {branches.map((branch) => (
-                          <option key={branch.id} value={branch.id}>
-                            {branch.branch_name} ({branch.branch_code})
-                          </option>
-                        ))}
-                      </select>
-                    </div>
-                    <div className="flex flex-col gap-1">
-                      <label className="text-gray-700 font-medium">Date of Joining <span className="text-red-500">*</span></label>
-                      <input
-                        type="date"
-                        name="joining_date"
-                        value={
-                          formData.joining_date
-                            ? new Date(formData.joining_date).toISOString().split("T")[0]
-                            : ""
-                        }
-                        disabled={mode === "view"}
-                        onChange={handleInputChange}
-                        className="border border-[#C4C4C4] rounded-[8px] px-3 py-2 focus:outline-none focus:ring-1 focus:ring-blue-500 w-[164px]"
-                      />
-
-                    </div>
-                    <div className="flex flex-col gap-1">
-                      <label className="text-gray-700 font-medium">Designation <span className="text-red-500">*</span></label>
-                      <select
-                        name="designation"
-                        value={formData.designation}
-                        disabled={mode === "view"}
-                        onChange={handleInputChange}
-                        className="border border-[#C4C4C4] rounded-[8px] px-3 py-2 focus:outline-none focus:ring-1 focus:ring-blue-500 w-[162px]"
-                      >
-                        <option value="" disabled>Select Designation</option>
-                        {designations.map((d) => (
-                          <option key={d.id} value={d.designation}>
-                            {d.designation}
-                          </option>
-                        ))}
-                      </select>
-                    </div>
-
-                    <div className="flex flex-col gap-1">
-                      <label className="text-gray-700 font-medium">Assign Role <span className="text-red-500">*</span></label>
-                      <select
-                        name="assign_role"
-                        value={formData.assign_role_id}
-                        onChange={handleInputChange}
-                        disabled={mode === "view"}
-                        className="border border-[#C4C4C4] rounded-[8px] px-3 py-2 focus:outline-none focus:ring-1 focus:ring-blue-500 w-[174px]"
-                      >
-                        <option value="" disabled>
-                          Select Role
-                        </option>
-                        {roles.map((role) => (
-                          <option key={role.id} value={role.id}>
-                            {role.role_name}
-                          </option>
-                        ))}
-                      </select>
-                    </div>
-
-                  </div>
-
-                  {/* Role, Password, Fax */}
-                  <div className="flex gap-2">
-
-                    <div className="flex flex-col gap-1">
-                      <label className="text-gray-700 font-medium">Password <span className="text-red-500">*</span></label>
-                      <input
-                        type="password"
-                        name="password"
-                        value={formData.password}
-                        disabled={mode === "view"}
-                        onChange={handleInputChange}
-                        placeholder="*******"
-                        className="border border-[#C4C4C4] rounded-md px-3 py-2 focus:outline-none focus:ring-1 focus:ring-blue-500 w-[220px]"
-                      />
-                    </div>
-                    <div className="flex flex-col gap-1">
-                      <label className="text-gray-700 font-medium">Fax</label>
-                      <input
-                        type="text"
-                        name="fax"
-                        disabled={mode === "view"}
-                        value={formData.fax}
-                        onChange={handleInputChange}
-                        placeholder="Fax"
-                        className="border border-[#C4C4C4] rounded-md px-3 py-2 focus:outline-none focus:ring-1 focus:ring-blue-500 w-[220px]"
-                      />
-                    </div>
-                    <div className="flex flex-col gap-1">
-                      <label className="text-gray-700 font-medium">Salary Per Month</label>
-
-                      <input
-                        type="text"
-                        name="salary"
-                        disabled={mode === "view"}
-                        value={formData.salary}
-                        onChange={handleInputChange}
-                        placeholder="salary"
-                        className="border border-[#C4C4C4] rounded-md px-3 py-2 focus:outline-none focus:ring-1 focus:ring-blue-500 w-[220px]"
-                      />
-                    </div>
+                    <input
+                      type="text"
+                      name="emp_name"
+                      value={formData.emp_name}
+                      disabled={mode === "view"}
+                      onChange={handleInputChange}
+                      placeholder="Name"
+                      className="border border-[#C4C4C4] rounded-[8px] px-3 py-2 w-[166px] bg-white mt-1"
+                    />
                   </div>
                 </div>
 
-                {/* Right Upload Section */}
-                <div className="p-4">
-                  <div>
-                    <div className="flex justify-center">
-                      {mode === "view" ? (
-                        formData.emp_image ? (
-                          <img
-                            src={formData.emp_image}
-                            alt="Employee Profile"
-                            className="w-[78px] h-[78px] rounded-lg object-cover border border-gray-300"
-                          />
-                        ) : (
-                          <img
-                            src={profileempty}
-                            alt="Default Profile"
-                            className="w-[78px] h-[78px]"
-                          />
-                        )
-                      ) : mode === "edit" ? (
-                        profileImage ? (
-                          <img
-                            src={URL.createObjectURL(profileImage)}
-                            alt="Profile Preview"
-                            className="w-[78px] h-[78px] rounded-lg object-cover border border-gray-300"
-                          />
-                        ) : formData.emp_image ? (
-                          <img
-                            src={formData.emp_image}
-                            alt="Existing Employee Profile"
-                            className="w-[78px] h-[78px] rounded-lg object-cover border border-gray-300"
-                          />
-                        ) : (
-                          <img
-                            src={profileempty}
-                            alt="Default Profile"
-                            className="w-[78px] h-[78px]"
-                          />
-                        )
+                {/* Employee ID, Mobile, Email */}
+                <div className="flex gap-2">
+                  <div className="flex flex-col gap-1">
+                    <label className="text-gray-700 font-medium">
+                      Mobile No <span className="text-red-500">*</span>
+                    </label>
+                    <input
+                      type="number"
+                      name="mobile_no"
+                      value={formData.mobile_no}
+                      disabled={mode === "view"}
+                      onChange={handleInputChange}
+                      placeholder="Mobile No"
+                      style={{
+                        MozAppearance: "textfield",
+                      }}
+                      onWheel={(e) => e.target.blur()}
+                      className="border border-[#C4C4C4] rounded-[8px] px-3 py-2 focus:outline-none focus:ring-1 focus:ring-blue-500 w-[153px]"
+                    />
+                  </div>
+                  <div className="flex flex-col gap-1">
+                    <label className="text-gray-700 font-medium">
+                      Alternate Mobile No
+                    </label>
+                    <input
+                      type="tel"
+                      name="Alternate_Mobile"
+                      value={formData.Alternate_Mobile}
+                      onChange={handleInputChange}
+                      disabled={mode === "view"}
+                      placeholder="Mobile No"
+                      style={{
+                        MozAppearance: "textfield",
+                      }}
+                      onWheel={(e) => e.target.blur()}
+                      className="border border-[#C4C4C4] rounded-[8px] px-3 py-2 focus:outline-none focus:ring-1 focus:ring-blue-500 w-[153px]"
+                    />
+                  </div>
+                  <div className="flex flex-col gap-1">
+                    <label className="text-gray-700 font-medium">
+                      Email ID <span className="text-red-500">*</span>
+                    </label>
+                    <input
+                      type="email"
+                      name="email"
+                      value={formData.email}
+                      onChange={handleInputChange}
+                      disabled={mode === "view"}
+                      placeholder="Email ID"
+                      className={`border rounded px-3 py-2 mt-1 w-[203px] bg-white ${
+                        errors.email ? "border-red-500" : "border-gray-300"
+                      }`}
+                    />
+                    {errors.email && (
+                      <span className="text-red-500 text-[12px] mt-1">
+                        {errors.email}
+                      </span>
+                    )}
+                  </div>
+                  <div className="flex flex-col gap-1">
+                    <label className="text-gray-700 font-medium">
+                      Date of Birth <span className="text-red-500">*</span>
+                    </label>
+                    <input
+                      type="date"
+                      name="date_of_birth"
+                      value={
+                        formData.date_of_birth
+                          ? new Date(formData.date_of_birth)
+                              .toISOString()
+                              .split("T")[0]
+                          : ""
+                      }
+                      disabled={mode === "view"}
+                      onChange={handleInputChange}
+                      className={`border border-[#C4C4C4] rounded-md px-3 py-2 focus:outline-none focus:ring-1 focus:ring-blue-500 w-[168px] 
+    }`}
+                    />
+                  </div>
+                </div>
+
+                {/* Address */}
+                <div className="flex gap-4">
+                  {/* Permanent Address */}
+                  <div className="flex flex-col gap-1">
+                    <label className="text-gray-700 font-medium">
+                      Permanent Address <span className="text-red-500">*</span>
+                    </label>
+                    <input
+                      type="text"
+                      name="permanent_address"
+                      disabled={mode === "view"}
+                      value={formData.permanent_address}
+                      onChange={handleInputChange}
+                      placeholder=" Permanent Address*"
+                      className="border border-[#C4C4C4] rounded-[8px] px-3 py-2 focus:outline-none focus:ring-1 focus:ring-blue-500 w-[266px]"
+                    />
+                  </div>
+
+                  {/* Radio Option */}
+                  <div className="flex gap-3 items-center">
+                    <input
+                      type="checkbox"
+                      id="sameAddress"
+                      disabled={mode === "view"}
+                      name="sameAddress"
+                      checked={
+                        formData.corresponding_address &&
+                        formData.corresponding_address ===
+                          formData.permanent_address
+                      }
+                      onChange={(e) => {
+                        if (e.target.checked) {
+                          setFormData((prev) => ({
+                            ...prev,
+                            corresponding_address: prev.permanent_address,
+                          }));
+                        } else {
+                          setFormData((prev) => ({
+                            ...prev,
+                            corresponding_address: "",
+                          }));
+                        }
+                      }}
+                      className="border accent-blue-900 w-5 h-5"
+                    />
+                    <label
+                      htmlFor="sameAddress"
+                      className="text-gray-700 font-medium"
+                    >
+                      Permanent Address same as<br></br> Current Address?
+                    </label>
+                  </div>
+
+                  {/* Corresponding Address */}
+                  <div className="flex flex-col gap-1">
+                    <label className="text-gray-700 font-medium">
+                      Current Address <span className="text-red-500">*</span>
+                    </label>
+                    <input
+                      type="text"
+                      name="corresponding_address"
+                      value={formData.corresponding_address}
+                      disabled={mode === "view"}
+                      onChange={handleInputChange}
+                      placeholder="Current Address"
+                      className="border border-[#C4C4C4] rounded-[8px] px-3 py-2 focus:outline-none focus:ring-1 focus:ring-blue-500 w-[259px]"
+                    />
+                  </div>
+                </div>
+
+                {/* Branch, Joining Date, Designation, DOB */}
+                <div className="flex gap-2">
+                  <div className="flex flex-col gap-1">
+                    <label className="text-gray-700 font-medium">
+                      Branch <span className="text-red-500">*</span>
+                    </label>
+                    <select
+                      name="branch"
+                      value={formData.branch_id}
+                      onChange={handleInputChange}
+                      disabled={mode === "view"}
+                      className="border border-[#C4C4C4] rounded-[8px] px-3 py-2 focus:outline-none focus:ring-1 focus:ring-blue-500 w-[220px]"
+                    >
+                      <option value="" disabled>
+                        {" "}
+                        Branch
+                      </option>
+                      {branches.map((branch) => (
+                        <option key={branch.id} value={branch.id}>
+                          {branch.branch_name} ({branch.branch_code})
+                        </option>
+                      ))}
+                    </select>
+                  </div>
+                  <div className="flex flex-col gap-1">
+                    <label className="text-gray-700 font-medium">
+                      Date of Joining <span className="text-red-500">*</span>
+                    </label>
+                    <input
+                      type="date"
+                      name="joining_date"
+                      value={
+                        formData.joining_date
+                          ? new Date(formData.joining_date)
+                              .toISOString()
+                              .split("T")[0]
+                          : ""
+                      }
+                      disabled={mode === "view"}
+                      onChange={handleInputChange}
+                      className="border border-[#C4C4C4] rounded-[8px] px-3 py-2 focus:outline-none focus:ring-1 focus:ring-blue-500 w-[164px]"
+                    />
+                  </div>
+                  <div className="flex flex-col gap-1">
+                    <label className="text-gray-700 font-medium">
+                      Designation <span className="text-red-500">*</span>
+                    </label>
+                    <select
+                      name="designation"
+                      value={formData.designation}
+                      disabled={mode === "view"}
+                      onChange={handleInputChange}
+                      className="border border-[#C4C4C4] rounded-[8px] px-3 py-2 focus:outline-none focus:ring-1 focus:ring-blue-500 w-[162px]"
+                    >
+                      <option value="" disabled>
+                        Select Designation
+                      </option>
+                      {designations.map((d) => (
+                        <option key={d.id} value={d.designation}>
+                          {d.designation}
+                        </option>
+                      ))}
+                    </select>
+                  </div>
+
+                  <div className="flex flex-col gap-1">
+                    <label className="text-gray-700 font-medium">
+                      Assign Role <span className="text-red-500">*</span>
+                    </label>
+                    <select
+                      name="assign_role"
+                      value={formData.assign_role_id}
+                      onChange={handleInputChange}
+                      disabled={mode === "view"}
+                      className="border border-[#C4C4C4] rounded-[8px] px-3 py-2 focus:outline-none focus:ring-1 focus:ring-blue-500 w-[174px]"
+                    >
+                      <option value="" disabled>
+                        Select Role
+                      </option>
+                      {roles.map((role) => (
+                        <option key={role.id} value={role.id}>
+                          {role.role_name}
+                        </option>
+                      ))}
+                    </select>
+                  </div>
+                </div>
+
+                {/* Role, Password, Fax */}
+                <div className="flex gap-2">
+                  <div className="flex flex-col gap-1">
+                    <label className="text-gray-700 font-medium">
+                      Password <span className="text-red-500">*</span>
+                    </label>
+                    <input
+                      type="password"
+                      name="password"
+                      value={formData.password}
+                      disabled={mode === "view"}
+                      onChange={handleInputChange}
+                      placeholder="*******"
+                      className="border border-[#C4C4C4] rounded-md px-3 py-2 focus:outline-none focus:ring-1 focus:ring-blue-500 w-[220px]"
+                    />
+                  </div>
+                  <div className="flex flex-col gap-1">
+                    <label className="text-gray-700 font-medium">Fax</label>
+                    <input
+                      type="text"
+                      name="fax"
+                      disabled={mode === "view"}
+                      value={formData.fax}
+                      onChange={handleInputChange}
+                      placeholder="Fax"
+                      className="border border-[#C4C4C4] rounded-md px-3 py-2 focus:outline-none focus:ring-1 focus:ring-blue-500 w-[220px]"
+                    />
+                  </div>
+                  <div className="flex flex-col gap-1">
+                    <label className="text-gray-700 font-medium">
+                      Salary Per Month
+                    </label>
+
+                    <input
+                      type="text"
+                      name="salary"
+                      disabled={mode === "view"}
+                      value={formData.salary}
+                      onChange={handleInputChange}
+                      placeholder="salary"
+                      className="border border-[#C4C4C4] rounded-md px-3 py-2 focus:outline-none focus:ring-1 focus:ring-blue-500 w-[220px]"
+                    />
+                  </div>
+                </div>
+              </div>
+
+              {/* Right Upload Section */}
+              <div className="p-4">
+                <div>
+                  <div className="flex justify-center">
+                    {mode === "view" ? (
+                      formData.emp_image ? (
+                        <img
+                          src={formData.emp_image}
+                          alt="Employee Profile"
+                          className="w-[78px] h-[78px] rounded-lg object-cover border border-gray-300"
+                        />
                       ) : (
-                        profileImage ? (
-                          <img
-                            src={URL.createObjectURL(profileImage)}
-                            alt="Profile Preview"
-                            className="w-[78px] h-[78px] rounded-lg object-cover border border-gray-300"
-                          />
-                        ) : (
-                          <img
-                            src={profileempty}
-                            alt="Default Profile"
-                            className="w-[78px] h-[78px]"
-                          />
-                        )
-                      )}
+                        <img
+                          src={profileempty}
+                          alt="Default Profile"
+                          className="w-[78px] h-[78px]"
+                        />
+                      )
+                    ) : mode === "edit" ? (
+                      profileImage ? (
+                        <img
+                          src={URL.createObjectURL(profileImage)}
+                          alt="Profile Preview"
+                          className="w-[78px] h-[78px] rounded-lg object-cover border border-gray-300"
+                        />
+                      ) : formData.emp_image ? (
+                        <img
+                          src={formData.emp_image}
+                          alt="Existing Employee Profile"
+                          className="w-[78px] h-[78px] rounded-lg object-cover border border-gray-300"
+                        />
+                      ) : (
+                        <img
+                          src={profileempty}
+                          alt="Default Profile"
+                          className="w-[78px] h-[78px]"
+                        />
+                      )
+                    ) : profileImage ? (
+                      <img
+                        src={URL.createObjectURL(profileImage)}
+                        alt="Profile Preview"
+                        className="w-[78px] h-[78px] rounded-lg object-cover border border-gray-300"
+                      />
+                    ) : (
+                      <img
+                        src={profileempty}
+                        alt="Default Profile"
+                        className="w-[78px] h-[78px]"
+                      />
+                    )}
+                  </div>
+
+                  <div className="flex flex-col ">
+                    {/* Centered Title */}
+                    <div className="flex justify-center mt-2 mb-2 w-full">
+                      <label className="font-roboto font-bold text-[16px] leading-[100%] tracking-[0.03em]">
+                        Upload Employee Profile
+                      </label>
                     </div>
 
-                    <div className="flex flex-col ">
+                    {/* Upload Box */}
+                    <div className="flex border border-gray-400 rounded-[10px] overflow-hidden w-[300px] mt-2">
+                      <label
+                        htmlFor="profileImage"
+                        className="bg-[#D9D9D9] px-6 py-2 text-sm text-black font-semibold cursor-pointer hover:bg-gray-300 transition-all duration-200"
+                      >
+                        Choose File
+                      </label>
 
-                      {/* Centered Title */}
-                      <div className="flex justify-center mt-2 mb-2 w-full">
-                        <label className="font-roboto font-bold text-[16px] leading-[100%] tracking-[0.03em]">
-                          Upload Employee Profile
-                        </label>
-                      </div>
+                      <input
+                        id="profileImage"
+                        type="file"
+                        disabled={mode === "view"}
+                        className="hidden"
+                        onChange={(e) => handleFileChange(e, setProfileImage)}
+                      />
 
-                      {/* Upload Box */}
-                      <div className="flex border border-gray-400 rounded-[10px] overflow-hidden w-[300px] mt-2">
+                      <span className="flex-1 px-4 py-2 text-gray-500 text-sm truncate">
+                        {formData.emp_image || "Upload Customer Profile"}
+                      </span>
+                    </div>
+                  </div>
+
+                  {mode !== "view" && (
+                    <>
+                      <h1 className="text-[14px] font-medium mt-2">
+                        Address Proof
+                      </h1>
+
+                      {/* <select
+                        disabled={mode === "view"}
+                        value={formData.addressProfiletype}
+                        onChange={(e) =>
+                          setFormData({
+                            ...formData,
+                            addressProfiletype: e.target.value,
+                          })
+                        }
+                        className="border border-gray-400 rounded-[10px] px-3 py-2 w-[300px] mt-1 bg-white"
+                      >
+                        <option value="">Select Address Proof</option>
+                        {addrProofList.map((item) => (
+                          <option key={item.id} value={item.proof_type}>
+                            {item.proof_type}
+                          </option>
+                        ))}
+                      </select> */}
+                      <select
+                        name="Additional_AddressProof"
+                        value={formData.Additional_AddressProof}
+                        onChange={(e) =>
+                          setFormData({
+                            ...formData,
+                            addressProfiletype: e.target.value,
+                          })
+                        }
+                        className="border border-gray-300 px-3 py-2 mt-1 w-[300px] bg-white rounded-[8px]"
+                      >
+                        <option value="">Select Address Proof</option>
+
+                        {addrProofList.map((item) => {
+                          const proof = item.proof_type.toLowerCase();
+
+                          return (
+                            <option
+                              key={item.id}
+                              value={item.proof_type}
+                              disabled={
+                                (formData.pan_card && proof.includes("pan")) ||
+                                (formData.aadhar_card &&
+                                  (proof.includes("adhaar") ||
+                                    proof.includes("adhar")))
+                              }
+                            >
+                              {item.proof_type}
+                            </option>
+                          );
+                        })}
+                      </select>
+
+                      <div className="flex  border border-gray-400 rounded-[10px] overflow-hidden w-[300px] mt-2">
                         <label
-                          htmlFor="profileImage"
-                          className="bg-[#D9D9D9] px-6 py-2 text-sm text-black font-semibold cursor-pointer hover:bg-gray-300 transition-all duration-200"
+                          htmlFor="addressProof"
+                          className="bg-[#D9D9D9] px-6 py-2 text-sm text-black font-semibold cursor-pointer hover:bg-gray-300 transition-all duration-200 "
                         >
                           Choose File
                         </label>
 
                         <input
-                          id="profileImage"
+                          id="addressProof"
                           type="file"
                           disabled={mode === "view"}
                           className="hidden"
-                          onChange={(e) => handleFileChange(e, setProfileImage)}
+                          onChange={(e) =>
+                            handleFileChangeForAddProof(e, setAddressProof)
+                          }
                         />
 
                         <span className="flex-1 px-4 py-2 text-gray-500 text-sm truncate">
-                          {formData.emp_image || "Upload Customer Profile"}
+                          {formData.emp_add_prof || "No file chosen"}
                         </span>
                       </div>
 
-                    </div>
+                      <h1 className="text-[14px] font-medium mt-3">ID Proof</h1>
+                      {/* <select
+                        disabled={mode === "view"}
+                        value={formData.IdProoftype}
+                        onChange={(e) =>
+                          setFormData({
+                            ...formData,
+                            IdProoftype: e.target.value,
+                          })
+                        }
+                        className="border border-gray-400 rounded-[10px] px-3 py-2 w-[300px] mt-1 bg-white"
+                      >
+                        <option value="">Select ID Proof</option>
+                        {idProofList.map((item) => (
+                          <option key={item.id} value={item.proof_type}>
+                            {item.proof_type}
+                          </option>
+                        ))}
+                      </select> */}
+                      <select
+                        name="Additional_IDProof"
+                        value={formData.Additional_IDProof}
+                        onChange={(e) =>
+                          setFormData({
+                            ...formData,
+                            IdProoftype: e.target.value,
+                          })
+                        }
+                        className="border border-gray-300 px-3 py-2 mt-1 w-[300px] bg-white rounded-[8px]"
+                      >
+                        <option value="">Select ID Proof</option>
 
-                    {
-                      mode !== "view" && (
-                        <>
-                          <h1 className="text-[14px] font-medium mt-2">Address Proof</h1>
+                        {idProofList.map((item) => {
+                          const p = item.proof_type.toLowerCase();
 
-                          <select
-                            disabled={mode === "view"}
-                            value={formData.addressProfiletype}
-                            onChange={(e) => setFormData({ ...formData, addressProfiletype: e.target.value })}
-                            className="border border-gray-400 rounded-[10px] px-3 py-2 w-[300px] mt-1 bg-white"
-                          >
-                            <option value="">Select Address Proof</option>
-                            {addrProofList.map((item) => (
-                              <option key={item.id} value={item.proof_type}>
-                                {item.proof_type}
-                              </option>
-                            ))}
-                          </select>
-
-                          <div className="flex  border border-gray-400 rounded-[10px] overflow-hidden w-[300px] mt-2">
-                            <label
-                              htmlFor="addressProof"
-                              className="bg-[#D9D9D9] px-6 py-2 text-sm text-black font-semibold cursor-pointer hover:bg-gray-300 transition-all duration-200 "
+                          return (
+                            <option
+                              key={item.id}
+                              value={item.proof_type}
+                              disabled={
+                                (formData.pan_card && p.includes("pan")) ||
+                                (formData.aadhar_card &&
+                                  (p.includes("adhaar") || p.includes("adhar")))
+                              }
                             >
-                              Choose File
-                            </label>
+                              {item.proof_type}
+                            </option>
+                          );
+                        })}
+                      </select>
 
-                            <input
-                              id="addressProof"
-                              type="file"
-                              disabled={mode === "view"}
-                              className="hidden"
-                              onChange={(e) => handleFileChangeForAddProof(e, setAddressProof)}
-                            />
-
-                            <span className="flex-1 px-4 py-2 text-gray-500 text-sm truncate">
-                              {formData.emp_add_prof || "No file chosen"}
-                            </span>
-                          </div>
-
-                          <h1 className="text-[14px] font-medium mt-3">ID Proof</h1>
-                          <select
-                            disabled={mode === "view"}
-                            value={formData.IdProoftype}
-                            onChange={(e) => setFormData({ ...formData, IdProoftype: e.target.value })}
-                            className="border border-gray-400 rounded-[10px] px-3 py-2 w-[300px] mt-1 bg-white"
-                          >
-                            <option value="">Select ID Proof</option>
-                            {idProofList.map((item) => (
-                              <option key={item.id} value={item.proof_type}>
-                                {item.proof_type}
-                              </option>
-                            ))}
-                          </select>
-
-                          <div className="flex  border border-gray-400 rounded-[10px] overflow-hidden w-[300px] mt-2">
-                            <label
-                              htmlFor="idProof"
-                              className="bg-[#D9D9D9] px-6 py-2 text-sm text-black font-semibold cursor-pointer hover:bg-gray-300 transition-all duration-200 "
-                            >
-                              Choose File
-                            </label>
-
-                            <input
-                              id="idProof"
-                              disabled={mode === "view"}
-                              type="file"
-                              className="hidden"
-                              onChange={(e) => handleFileChangeForIdProof(e, setIdProof)}
-                            />
-
-                            <span className="flex-1 px-4 py-2 text-gray-500 text-sm truncate">
-                              {formData.emp_id_prof || "No file chosen"}
-                            </span>
-                          </div>
-
-                        </>
-                      )
-                    }
-
-
-
-
-                    {(mode === "edit" || mode === "view") && (
-                      <div className="mt-4 text-sm w-fit flex justify-end">
-                        <button
-                          onClick={() => setIsDocumentHistory(true)}
-                          className="bg-green-500 px-2 py-1 text-white rounded-lg hover:bg-green-600"
+                      <div className="flex  border border-gray-400 rounded-[10px] overflow-hidden w-[300px] mt-2">
+                        <label
+                          htmlFor="idProof"
+                          className="bg-[#D9D9D9] px-6 py-2 text-sm text-black font-semibold cursor-pointer hover:bg-gray-300 transition-all duration-200 "
                         >
-                          View Document History
-                        </button>
+                          Choose File
+                        </label>
+
+                        <input
+                          id="idProof"
+                          disabled={mode === "view"}
+                          type="file"
+                          className="hidden"
+                          onChange={(e) =>
+                            handleFileChangeForIdProof(e, setIdProof)
+                          }
+                        />
+
+                        <span className="flex-1 px-4 py-2 text-gray-500 text-sm truncate">
+                          {formData.emp_id_prof || "No file chosen"}
+                        </span>
                       </div>
-                    )}
+                    </>
+                  )}
 
-
-                  </div>
+                  {(mode === "edit" || mode === "view") && (
+                    <div className="mt-4 text-sm w-fit flex justify-end">
+                      <button
+                        onClick={() => setIsDocumentHistory(true)}
+                        className="bg-green-500 px-2 py-1 text-white rounded-lg hover:bg-green-600"
+                      >
+                        View Document History
+                      </button>
+                    </div>
+                  )}
                 </div>
               </div>
+            </div>
 
-              {/* Bottom Actions */}
-              <div className="flex flex-col gap-3 items-center justify-between mt-6">
-                <div className="flex gap-3">
-                  {mode !== "view" && (
-                    <button
-                      className="bg-[#0A2478] text-white w-[92px] h-[32px] rounded hover:bg-[#081c5b]"
-                      onClick={mode === "edit" ? handleUpdate : handleSave}
-                    >
-                      {mode === "edit" ? "Update" : "Save"}
-                    </button>
-                  )}
+            {/* Bottom Actions */}
+            <div className="flex flex-col gap-3 items-center justify-between mt-6">
+              <div className="flex gap-3">
+                {mode !== "view" && (
                   <button
-                    className="bg-[#C1121F] text-white w-[92px] h-[32px] rounded hover:bg-[#a00e18]"
-                    onClick={() => {
-                      setIsModalOpen(false);
-                      setMode("add");
-                    }}
+                    className="bg-[#0A2478] text-white w-[92px] h-[32px] rounded hover:bg-[#081c5b]"
+                    onClick={mode === "edit" ? handleUpdate : handleSave}
                   >
-                    Exit
+                    {mode === "edit" ? "Update" : "Save"}
                   </button>
-
-                </div>
-
+                )}
+                <button
+                  className="bg-[#C1121F] text-white w-[92px] h-[32px] rounded hover:bg-[#a00e18]"
+                  onClick={() => {
+                    setIsModalOpen(false);
+                    setMode("add");
+                  }}
+                >
+                  Exit
+                </button>
               </div>
             </div>
           </div>
-        )
-      }
+        </div>
+      )}
 
       {/* Delete Confirmation Modal */}
-      {
-        deleteModalOpen && (
-          <div className="fixed inset-0 flex items-center justify-center z-50 bg-[#0101017A] backdrop-blur-md">
-            <div className="bg-white w-[396px] rounded-lg shadow-lg h-[386px] p-5">
-              <div className="flex justify-center mt-2">
-                <img src={blockimg} alt="block" className="w-[113px] h-[113px]" />
-              </div>
-              <div className="mt-10 text-center">
-                <p className="text-[22px] font-medium">Are you sure to delete this employee?</p>
-                <p className="text-[17px] text-gray-600 mt-2">You won't be able to revert this action.</p>
-              </div>
-              <div className="mt-6 flex flex-col items-center gap-4">
-                <button
-                  className="bg-[#F11717] text-white px-5 py-2 rounded text-[18px] cursor-pointer"
-                  onClick={handleDeleteConfirm}
-                >
-                  Confirm Delete
-                </button>
-                <button
-                  className="bg-[#0A2478] text-white px-5 py-2 rounded text-[18px] cursor-pointer"
-                  onClick={() => setDeleteModalOpen(false)}
-                >
-                  Cancel
-                </button>
-              </div>
+      {deleteModalOpen && (
+        <div className="fixed inset-0 flex items-center justify-center z-50 bg-[#0101017A] backdrop-blur-md">
+          <div className="bg-white w-[396px] rounded-lg shadow-lg h-[386px] p-5">
+            <div className="flex justify-center mt-2">
+              <img src={blockimg} alt="block" className="w-[113px] h-[113px]" />
+            </div>
+            <div className="mt-10 text-center">
+              <p className="text-[22px] font-medium">
+                Are you sure to delete this employee?
+              </p>
+              <p className="text-[17px] text-gray-600 mt-2">
+                You won't be able to revert this action.
+              </p>
+            </div>
+            <div className="mt-6 flex flex-col items-center gap-4">
+              <button
+                className="bg-[#F11717] text-white px-5 py-2 rounded text-[18px] cursor-pointer"
+                onClick={handleDeleteConfirm}
+              >
+                Confirm Delete
+              </button>
+              <button
+                className="bg-[#0A2478] text-white px-5 py-2 rounded text-[18px] cursor-pointer"
+                onClick={() => setDeleteModalOpen(false)}
+              >
+                Cancel
+              </button>
             </div>
           </div>
-        )
-      }
+        </div>
+      )}
 
       {isViewDocumentHistory && (
         <div className="fixed inset-0 flex items-center justify-center z-50 bg-[#0101017A] backdrop-blur-md">
@@ -1581,7 +1696,10 @@ const EmployeeProfile = () => {
                   {formData.emp_add_prof ? (
                     <button
                       onClick={() =>
-                        handleForceDownload(formData.emp_add_prof, "Address_Proof")
+                        handleForceDownload(
+                          formData.emp_add_prof,
+                          "Address_Proof"
+                        )
                       }
                       className="bg-[#E2E8F0] text-sm text-[#1B2C79] font-medium px-3 py-1 rounded hover:bg-[#CBD5E1]"
                     >
@@ -1610,7 +1728,6 @@ const EmployeeProfile = () => {
       {isValuationModalOpen && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-sm">
           <div className="bg-white w-[400px] p-5 rounded shadow-lg ">
-
             <h2 className="text-[18px] leading-[24px] font-semibold text-[#0A2478] text-center font-[Source_Sans_3] mb-3">
               The employee is permitted to perform gold valuation
             </h2>
@@ -1627,7 +1744,6 @@ const EmployeeProfile = () => {
               placeholder="e.g. ₹ 1,00,000.00"
             />
 
-
             <div className="flex justify-center gap-3 mt-5">
               <button
                 onClick={handleSaveValuation}
@@ -1641,8 +1757,6 @@ const EmployeeProfile = () => {
               >
                 Close
               </button>
-
-
             </div>
           </div>
         </div>
@@ -1662,12 +1776,20 @@ const EmployeeProfile = () => {
                   <th className="px-4 py-2 text-left border-r">Select</th>
                   <th className="px-4 py-2 text-left border-r">Profile</th>
                   <th className="px-4 py-2 text-left border-r">Name</th>
-                  <th className="px-4 py-2 text-left border-r w-[211px]">Email</th>
-                  <th className="px-4 py-2 text-left border-r w-[111px]">Mobile</th>
+                  <th className="px-4 py-2 text-left border-r w-[211px]">
+                    Email
+                  </th>
+                  <th className="px-4 py-2 text-left border-r w-[111px]">
+                    Mobile
+                  </th>
                   {/* <th className="px-4 py-2 text-left border-r">DOJ</th>
                   <th className="px-4 py-2 text-left border-r">DOB</th> */}
-                  <th className="px-4 py-2 text-left border-r w-[313px]">Address</th>
-                  <th className="px-4 py-2 text-left border-r w-[111px]">Valuer Valuation</th>
+                  <th className="px-4 py-2 text-left border-r w-[313px]">
+                    Address
+                  </th>
+                  <th className="px-4 py-2 text-left border-r w-[111px]">
+                    Valuer Valuation
+                  </th>
                   <th className="px-4 py-2 text-left border-r">Action</th>
                   <th className="px-4 py-2 text-left border-r">Active</th>
                 </tr>
@@ -1683,13 +1805,13 @@ const EmployeeProfile = () => {
                       <td className="px-4 py-2 text-center">
                         <input
                           type="checkbox"
-                          checked={selectedEmployees.some((e) => e.id === emp.id)}
+                          checked={selectedEmployees.some(
+                            (e) => e.id === emp.id
+                          )}
                           onChange={() => handleCheckboxChange(emp)}
                           className="w-4 h-4 cursor-pointer"
                         />
                       </td>
-
-
 
                       <td className="px-4 py-2 flex items-center justify-center gap-2">
                         <img
@@ -1697,15 +1819,22 @@ const EmployeeProfile = () => {
                           alt={emp.emp_name}
                           className="w-10 h-10 rounded-full object-cover border border-gray-300"
                         />
-
                       </td>
 
-                      <td className="px-4 py-2 text-blue-500 cursor-pointer" onClick={() => handleView(emp)}>{emp.emp_name}</td>
+                      <td
+                        className="px-4 py-2 text-blue-500 cursor-pointer"
+                        onClick={() => handleView(emp)}
+                      >
+                        {emp.emp_name}
+                      </td>
                       <td className="px-4 py-2">{emp.email}</td>
                       <td className="px-4 py-2">{emp.mobile_no}</td>
                       {/* <td className="px-4 py-2">{new Date(emp.joining_date).toLocaleDateString()}</td>
                       <td className="px-4 py-2">{new Date(emp.date_of_birth).toLocaleDateString()}</td> */}
-                      <td className="px-4 py-2 max-w-[200px] truncate" title={emp.permanent_address}>
+                      <td
+                        className="px-4 py-2 max-w-[200px] truncate"
+                        title={emp.permanent_address}
+                      >
                         {emp.permanent_address}
                       </td>
                       <td
@@ -1743,12 +1872,14 @@ const EmployeeProfile = () => {
                       <td className="px-4 py-2">
                         <button
                           onClick={() => handleToggleStatus(emp)}
-                          className={`w-12 h-6 flex items-center rounded-full p-1 transition-colors ${emp.status ? "bg-[#0A2478]" : "bg-gray-300"
-                            }`}
+                          className={`w-12 h-6 flex items-center rounded-full p-1 transition-colors ${
+                            emp.status ? "bg-[#0A2478]" : "bg-gray-300"
+                          }`}
                         >
                           <div
-                            className={`bg-white w-4 h-4 rounded-full shadow-md transform transition-transform ${emp.status ? "translate-x-6" : "translate-x-0"
-                              }`}
+                            className={`bg-white w-4 h-4 rounded-full shadow-md transform transition-transform ${
+                              emp.status ? "translate-x-6" : "translate-x-0"
+                            }`}
                           />
                         </button>
                       </td>
@@ -1756,7 +1887,10 @@ const EmployeeProfile = () => {
                   ))
                 ) : (
                   <tr>
-                    <td colSpan="9" className="px-4 py-8 text-center text-gray-500">
+                    <td
+                      colSpan="9"
+                      className="px-4 py-8 text-center text-gray-500"
+                    >
                       No employees found
                     </td>
                   </tr>
@@ -1768,16 +1902,14 @@ const EmployeeProfile = () => {
       </div>
 
       {/* Pagination */}
-      {
-        totalPages > 1 && (
-          <Pagination
-            currentPage={currentPage}
-            totalPages={totalPages}
-            onPageChange={handlePageChange}
-          />
-        )
-      }
-    </div >
+      {totalPages > 1 && (
+        <Pagination
+          currentPage={currentPage}
+          totalPages={totalPages}
+          onPageChange={handlePageChange}
+        />
+      )}
+    </div>
   );
 };
 
