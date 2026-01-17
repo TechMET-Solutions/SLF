@@ -12,7 +12,7 @@ import PledgeItemListSilver from "./PledgeItemListSilver";
 const EditLoanApplication = () => {
   const [schemes, setSchemes] = useState([]); // store all schemes
   const [selectedScheme, setSelectedScheme] = useState(null); // store selected scheme
-  console.log(selectedScheme, "selectedScheme")
+  console.log(selectedScheme, "selectedScheme");
   const navigate = useNavigate();
   useEffect(() => {
     const fetchSchemes = async () => {
@@ -44,12 +44,11 @@ const EditLoanApplication = () => {
         ? selected.interestRates
         : selected.interestRates
           ? JSON.parse(selected.interestRates)
-          : []
+          : [],
     };
 
     setSelectedScheme(parsedScheme);
   };
-
 
   useEffect(() => {
     document.title = "SLF | Edit Gold Loan Application ";
@@ -74,14 +73,14 @@ const EditLoanApplication = () => {
   const [searchTermForCoBorrower, setSearchTermForCoBorrower] = useState("");
   const [results, setResults] = useState([]);
   const [results2, setResults2] = useState([]);
-  console.log(results, "results")
+  console.log(results, "results");
   const [loading, setLoading] = useState(false);
   const [selectedCustomer, setSelectedCustomer] = useState(null);
   const [selectedCoBorrower, setSelectedCoBorrower] = useState(null);
   // Fetch API when typing
   const [selectedCustomerForEdit, setselectedCustomerForEdit] = useState(null);
   const [activeEmployees, setActiveEmployees] = useState([]);
-  console.log(activeEmployees, "activeEmployees")
+  console.log(activeEmployees, "activeEmployees");
 
   const getActiveEmp = async () => {
     try {
@@ -94,11 +93,9 @@ const EditLoanApplication = () => {
     }
   };
 
-
   useEffect(() => {
-    getActiveEmp()
-  }, [])
-
+    getActiveEmp();
+  }, []);
 
   const location = useLocation();
   const { loanId, loanData } = location.state || {};
@@ -127,12 +124,10 @@ const EditLoanApplication = () => {
     Net_Payable: "",
     value1: "",
     value2: "",
-    Effective_Interest_Rates: ""
+    Effective_Interest_Rates: "",
   });
 
-
-
-  console.log(formData, "formData")
+  console.log(formData, "formData");
   console.log("LoanId => ", loanId);
   console.log("LoanData => ", loanData);
   const [PledgeItem, setPledgeItem] = useState([
@@ -149,8 +144,8 @@ const EditLoanApplication = () => {
     },
   ]);
 
-  console.log(formData, "formData")
-  
+  console.log(formData, "formData");
+
   useEffect(() => {
     if (loanId) {
       fetchLoanDetails(loanId);
@@ -158,7 +153,6 @@ const EditLoanApplication = () => {
   }, [loanId]);
 
   const fetchLoanDetails = async (id) => {
-
     try {
       const res = await axios.get(`${API}/Transactions/goldloan/getLoan/${id}`);
       const data = res.data.loanApplication;
@@ -166,20 +160,19 @@ const EditLoanApplication = () => {
 
       const parsedScheme = {
         ...SchemaData,
-       interestRates: typeof SchemaData?.interestRates === "string"
-  ? JSON.parse(SchemaData.interestRates)
-  : SchemaData?.interestRates || []
-
+        interestRates:
+          typeof SchemaData?.interestRates === "string"
+            ? JSON.parse(SchemaData.interestRates)
+            : SchemaData?.interestRates || [],
       };
 
       setSelectedScheme(parsedScheme);
       // set formData
       setFormData({
-        borrowerId
-          : data.BorrowerId,
+        borrowerId: data.BorrowerId,
         CoBorrowerId: data.CoBorrowerId,
         borrowerName: data.Borrower || "",
-        borrowerAddress: data.Address,     // if you are not getting from api leave empty
+        borrowerAddress: data.Address, // if you are not getting from api leave empty
         schemeId: data.Scheme_ID || "",
         schemeName: data.Scheme || "",
         printName: data.Print_Name || "",
@@ -199,36 +192,34 @@ const EditLoanApplication = () => {
         Net_Payable: data.Net_Payable || "",
         value1: data.Valuer_1 || "",
         value2: data.Valuer_2 || "",
-        Effective_Interest_Rates: data.Effective_Interest_Rates || ""
-
+        Effective_Interest_Rates: data.Effective_Interest_Rates || "",
       });
 
       // set pledge items
       if (data.Pledge_Item_List) {
         let parsed = [];
 
-try {
-  parsed =
-    typeof data.Pledge_Item_List === "string"
-      ? JSON.parse(data.Pledge_Item_List)
-      : data.Pledge_Item_List || [];
-} catch (err) {
-  console.log("error parsing pledge list", err);
-}
+        try {
+          parsed =
+            typeof data.Pledge_Item_List === "string"
+              ? JSON.parse(data.Pledge_Item_List)
+              : data.Pledge_Item_List || [];
+        } catch (err) {
+          console.log("error parsing pledge list", err);
+        }
 
         setPledgeItem(parsed);
       }
       // set selected customer objects if you need for autocomplete
       setSelectedCustomer(data.BorrowerId);
       setSelectedCoBorrower(data.CoBorrowerId);
-
     } catch (err) {
       console.log("error => ", err);
     }
   };
 
   const handleUpdateLoan = async () => {
-    debugger
+    debugger;
     try {
       const formDataToSend = new FormData();
 
@@ -252,12 +243,18 @@ try {
         formDataToSend.append("Ornament_Photo", formData.OrnamentFile);
       }
 
-      formDataToSend.append("Pledge_Item_List", JSON.stringify(PledgeItem || []));
+      formDataToSend.append(
+        "Pledge_Item_List",
+        JSON.stringify(PledgeItem || [])
+      );
       formDataToSend.append("Loan_amount", formData.Loan_amount || 0);
       formDataToSend.append("Doc_Charges", formData.Doc_Charges || 0);
       formDataToSend.append("Net_Payable", formData.Net_Payable || 0);
 
-      formDataToSend.append("Effective_Interest_Rates", JSON.stringify(selectedScheme?.interestRates));
+      formDataToSend.append(
+        "Effective_Interest_Rates",
+        JSON.stringify(selectedScheme?.interestRates)
+      );
 
       const res = await axios.put(
         `${API}/Transactions/goldloan/updateLoan/${loanId}`,
@@ -267,16 +264,13 @@ try {
 
       alert("✅ Loan Updated Successfully!");
       navigate("/Loan-Application");
-
     } catch (err) {
       console.log(err);
       alert("Update failed");
     }
   };
 
-
-  console.log(formData, "formData")
-
+  console.log(formData, "formData");
 
   useEffect(() => {
     const fetchCustomers = async () => {
@@ -348,7 +342,7 @@ try {
   };
 
   const handleSelectCustomer = (customer) => {
-    debugger
+    debugger;
     setSelectedCustomer(customer);
     setSearchTerm(customer.firstName); // show name in input
     setResults([]); // hide dropdown
@@ -382,7 +376,6 @@ try {
       CoBorrower_ProfileImg: customer.profileImage || "",
       CoBorrower_signature: customer.signature || "",
       CoBorrowerId: customer.id || "",
-
     }));
   };
 
@@ -401,13 +394,11 @@ try {
       const imageUrl = URL.createObjectURL(file);
       setFormData((prev) => ({
         ...prev,
-        OrnamentPhoto: imageUrl,  // preview
-        OrnamentFile: file,       // actual file for upload
+        OrnamentPhoto: imageUrl, // preview
+        OrnamentFile: file, // actual file for upload
       }));
     }
   };
-
-
 
   return (
     <div className="min-h-screen w-full pl-[5%]">
@@ -429,12 +420,14 @@ try {
           <div className="flex gap-3">
             <button
               onClick={handleUpdateLoan}
-              className="text-white px-[6.25px] py-[6.25px] rounded-[3.75px] bg-[#0A2478] w-[74px] h-[24px] text-[10px]">
+              className="text-white px-[6.25px] py-[6.25px] rounded-[3.75px] bg-[#0A2478] w-[74px] h-[24px] text-[10px]"
+            >
               Update
             </button>
             <button
               onClick={() => navigate("/Loan-Application")}
-              className="text-white px-[6.25px] py-[6.25px] rounded-[3.75px] bg-[#C1121F] w-[74px] h-[24px] text-[10px]">
+              className="text-white px-[6.25px] py-[6.25px] rounded-[3.75px] bg-[#C1121F] w-[74px] h-[24px] text-[10px]"
+            >
               Close
             </button>
           </div>
@@ -443,11 +436,8 @@ try {
 
       {/* ===== FORM SECTIONS ===== */}
       <div className="flex  gap-2 mt-10 pl-[50px]">
-        <div >
+        <div>
           <div className="flex  gap-2">
-
-
-
             <div className="flex flex-col">
               <label className="text-[14px] font-medium">
                 Borrower<span className="text-red-500">*</span>
@@ -458,19 +448,17 @@ try {
                     type="text"
                     placeholder="Enter Borrower Name"
                     name="Borrower_Name"
-                    value={formData.borrowerName}     // <-- use the field from your data
+                    value={formData.borrowerName} // <-- use the field from your data
                     onChange={(e) => {
                       setFormData({
                         ...formData,
                         borrowerName: e.target.value,
-
                       });
                       setSearchTerm(e.target.value); // if you still need this for searching
                       setSelectedCustomer(null);
                     }}
                     className="border border-gray-300 rounded-l px-3 py-2 w-full focus:outline-none focus:ring-1 focus:ring-blue-500 bg-white"
                   />
-
 
                   {/* Loading */}
                   {loading && (
@@ -498,44 +486,38 @@ try {
                   )}
                 </div>
 
-
                 <button
                   className="bg-[#0A2478] text-white px-4 py-3 rounded-r border border-gray-300 border-l-0 hover:bg-[#081c5b]"
                   type="button"
                 >
-                  <img
-                    src={timesvg}
-                    alt="eye"
-
-                  />
+                  <img src={timesvg} alt="eye" />
                 </button>
               </div>
-
             </div>
 
-
-
             <div className="mb-6">
-              <label className="text-[14px] font-medium block mb-1">Scheme*</label>
+              <label className="text-[14px] font-medium block mb-1">
+                Scheme*
+              </label>
               <select
                 className="border border-gray-300 px-3 py-2 w-[150px] bg-white rounded-[8px]"
                 onChange={handleSchemeChange}
-                value={selectedScheme?.id || ""}     // << this line makes it selected
+                value={selectedScheme?.id || ""} // << this line makes it selected
               >
-                <option value="" disabled>Select Scheme</option>
+                <option value="" disabled>
+                  Select Scheme
+                </option>
                 {schemes.map((scheme) => (
                   <option key={scheme.id} value={scheme.id}>
                     {scheme.schemeName}
                   </option>
                 ))}
               </select>
-
             </div>
-
 
             <div className="">
               <div>
-                <label className="text-[14px] font-medium">Print Name  *</label>
+                <label className="text-[14px] font-medium">Print Name *</label>
               </div>
 
               <input
@@ -550,12 +532,13 @@ try {
 
             <div className="">
               <div>
-                <label className="text-[14px] font-medium">Mobile Number*</label>
+                <label className="text-[14px] font-medium">
+                  Mobile Number*
+                </label>
               </div>
 
               <input
                 type="text"
-
                 name="mobile"
                 placeholder="Enter mobile Name"
                 value={formData.mobile}
@@ -565,7 +548,9 @@ try {
             </div>
             <div className="">
               <div>
-                <label className="text-[14px] font-medium">Alternate Number</label>
+                <label className="text-[14px] font-medium">
+                  Alternate Number
+                </label>
               </div>
 
               <input
@@ -578,14 +563,9 @@ try {
               />
             </div>
 
-
-            <div>
-
-            </div>
+            <div></div>
           </div>
           <div className="flex   mt-5 gap-2">
-
-
             <div className="flex flex-col">
               <label className="text-[14px] font-medium">
                 Co-Borrower<span className="text-red-500">*</span>
@@ -596,11 +576,11 @@ try {
                     type="text"
                     placeholder="Enter Co-Borrower Name"
                     name="CoBorrowerName"
-                    value={formData.CoBorrowerName}        // <-- show the existing value
+                    value={formData.CoBorrowerName} // <-- show the existing value
                     onChange={(e) => {
                       setFormData({
                         ...formData,
-                        CoBorrowerName: e.target.value,    // <-- update formData also
+                        CoBorrowerName: e.target.value, // <-- update formData also
                       });
 
                       setSearchTermForCoBorrower(e.target.value); // if you use this for search
@@ -634,11 +614,7 @@ try {
                     </ul>
                   )}
                 </div>
-
-
-
               </div>
-
             </div>
 
             <div>
@@ -651,7 +627,6 @@ try {
                   type="text"
                   placeholder="Co-Borrower"
                   name="CoBorrowerRelation"
-
                   value={formData.CoBorrowerRelation}
                   onChange={handleInputChange}
                   className="border border-gray-300 px-3 py-2 mt-1 w-[72px] rounded-[8px] bg-white h-[38px]"
@@ -669,7 +644,6 @@ try {
                   type="text"
                   placeholder="Nominee"
                   name="Nominee_Name"
-
                   value={formData.Nominee_Name}
                   onChange={handleInputChange}
                   className="border border-gray-300 px-3 py-2 mt-1 w-[209px] rounded-[8px] bg-white h-[38px]"
@@ -687,7 +661,6 @@ try {
                   type="text"
                   placeholder="Relation"
                   name="NomineeRelation"
-
                   value={formData.NomineeRelation}
                   onChange={handleInputChange}
                   className="border border-gray-300 px-3 py-2 mt-1 w-[113px] rounded-[8px] bg-white h-[38px]"
@@ -703,9 +676,7 @@ try {
           </div>
         </div>
 
-
         <div className="flex ">
-
           <div className=" h-[130px] ">
             {/* Profile Image */}
             <p>Customer</p>
@@ -733,8 +704,6 @@ try {
                 <span className="text-gray-400 text-xs">No Signature</span>
               )}
             </div>
-
-
           </div>
           <div className="w-[139px] h-auto flex flex-col items-center">
             {/* Co-Borrower Label */}
@@ -770,7 +739,9 @@ try {
 
             {/* Preview image */}
             <img
-              src={formData.OrnamentPhoto ? formData.OrnamentPhoto : profileempty}
+              src={
+                formData.OrnamentPhoto ? formData.OrnamentPhoto : profileempty
+              }
               alt="Ornament"
               className="w-[139px] h-[130px] object-cover rounded-[8px] border border-gray-300"
             />
@@ -802,42 +773,34 @@ try {
               )}
             </div>
           </div>
-
-
         </div>
-
       </div>
       <div className="pl-[50px]">
-        
- {
-          selectedScheme?.product === "Gold" && (
-            <>
-             <div className="flex gap-2 mt-10 ">
-          <PledgeItemList rows={PledgeItem} setRows={setPledgeItem} selectedScheme={selectedScheme} />
-</div>
-            </>
-          )
-        }
-         {
-          selectedScheme?.product === "Silver" && (
-            <>
-           <div className="flex gap-2 mt-5  ">
-          <PledgeItemListSilver rows={PledgeItem} setRows={setPledgeItem} selectedScheme={selectedScheme} />
-</div>
-            </>
-          )
-        }
-
-
-</div>
-      
-
-
-
-
+        {selectedScheme?.product === "Gold" && (
+          <>
+            <div className="flex gap-2 mt-10 ">
+              <PledgeItemList
+                rows={PledgeItem}
+                setRows={setPledgeItem}
+                selectedScheme={selectedScheme}
+              />
+            </div>
+          </>
+        )}
+        {selectedScheme?.product === "Silver" && (
+          <>
+            <div className="flex gap-2 mt-5  ">
+              <PledgeItemListSilver
+                rows={PledgeItem}
+                setRows={setPledgeItem}
+                selectedScheme={selectedScheme}
+              />
+            </div>
+          </>
+        )}
+      </div>
 
       <div className="flex  gap-2 pl-[50px] ">
-
         <div className="">
           <div>
             <label className="text-[14px] font-medium">Loan amount *</label>
@@ -863,16 +826,13 @@ try {
               setFormData((prev) => ({
                 ...prev,
                 Loan_amount: e.target.value, // keep exactly what user typed
-                Doc_Charges: docCharges,     // rounded value
-                Net_Payable: netPayable,     // Loan - Doc charges
+                Doc_Charges: docCharges, // rounded value
+                Net_Payable: netPayable, // Loan - Doc charges
               }));
             }}
             className="border border-gray-300 px-3 py-2 w-[129px] rounded-[8px] bg-white h-[38px]"
           />
         </div>
-
-
-
 
         <div className="flex flex-col">
           <label className="text-[14px] font-medium text-gray-700 mb-1">
@@ -881,9 +841,7 @@ try {
 
           <div className="flex w-[129px]">
             {/* Percentage Button first */}
-            <button
-              className="bg-[#0A2478] text-white px-4 py-2 text-sm font-medium rounded-l-md border border-[#0A2478] hover:bg-[#081c5b] transition-all duration-200"
-            >
+            <button className="bg-[#0A2478] text-white px-4 py-2 text-sm font-medium rounded-l-md border border-[#0A2478] hover:bg-[#081c5b] transition-all duration-200">
               {selectedScheme?.docChargePercent}
             </button>
 
@@ -891,21 +849,13 @@ try {
             <input
               type="text"
               name="Doc_Charges"
-
               value={formData.Doc_Charges}
               onChange={handleInputChange}
               placeholder="Enter rate"
               className="flex-1 border border-gray-300 rounded-r-md px-3 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-[#0A2478] w-[50px]"
             />
           </div>
-
         </div>
-
-
-
-
-
-
 
         <div className="">
           <div>
@@ -916,7 +866,6 @@ try {
             type="text"
             placeholder="Net Payable"
             name="Net_Payable"
-
             value={formData.Net_Payable}
             onChange={handleInputChange}
             className="border border-gray-300 px-3 py-2  w-[129px] rounded-[8px] bg-white h-[38px]"
@@ -956,40 +905,44 @@ try {
             ))}
           </select>
         </div>
-
-
-
       </div>
-
-
-
 
       <div className="pl-[50px]">
         <p className="mt-5 mb-5">Thirty One Thousand Five Hundred only</p>
       </div>
 
       <div className="flex gap-20 mb-10 pl-[50px]">
-
         <div className="flex  mt-5">
           <div className="">
-
-            <h3 className="font-semibold  text-blue-900 text-lg">Scheme Details</h3>
+            <h3 className="font-semibold  text-blue-900 text-lg">
+              Scheme Details
+            </h3>
 
             <table className="border border-gray-300 text-sm">
               <thead className="bg-[#0A2478] text-white">
                 <tr>
-                  <th className="px-4 py-2 border-r border-gray-200 w-[224px]">Loan Tenure (Days)</th>
-                  <th className="px-4 py-2 border-r border-gray-200 w-[173px]">Min Loan</th>
-                  <th className="px-4 py-2 border-r border-gray-200 w-[195px]">Max Loan</th>
-
-
+                  <th className="px-4 py-2 border-r border-gray-200 w-[224px]">
+                    Loan Tenure (Days)
+                  </th>
+                  <th className="px-4 py-2 border-r border-gray-200 w-[173px]">
+                    Min Loan
+                  </th>
+                  <th className="px-4 py-2 border-r border-gray-200 w-[195px]">
+                    Max Loan
+                  </th>
                 </tr>
               </thead>
               <tbody className="text-gray-700">
                 <tr className="border border-[#4A4A4A38]">
-                  <td className="px-4 py-2 border border-[#4A4A4A38]">{selectedScheme?.loanPeriod}</td>
-                  <td className="px-4 py-2 border border-[#4A4A4A38]">{selectedScheme?.minLoanAmount}</td>
-                  <td className="px-4 py-2 border border-[#4A4A4A38]">{selectedScheme?.maxLoanAmount}</td>
+                  <td className="px-4 py-2 border border-[#4A4A4A38]">
+                    {selectedScheme?.loanPeriod}
+                  </td>
+                  <td className="px-4 py-2 border border-[#4A4A4A38]">
+                    {selectedScheme?.minLoanAmount}
+                  </td>
+                  <td className="px-4 py-2 border border-[#4A4A4A38]">
+                    {selectedScheme?.maxLoanAmount}
+                  </td>
                 </tr>
               </tbody>
             </table>
@@ -997,28 +950,36 @@ try {
         </div>
         <div className="flex justify-center  mt-5">
           <div className="">
-            <h3 className="font-semibold  text-blue-900 text-lg">Effective Interest Rates</h3>
+            <h3 className="font-semibold  text-blue-900 text-lg">
+              Effective Interest Rates
+            </h3>
 
             <table className="border border-gray-300 text-sm">
               <thead className="bg-[#0A2478] text-white">
                 <tr>
-                  <th className="px-4 py-2 border-r border-gray-200 w-[307px]">Terms</th>
-                  <th className="px-4 py-2 border-r border-gray-200 w-[307px]">Effective Interest Rates</th>
-
-
-
+                  <th className="px-4 py-2 border-r border-gray-200 w-[307px]">
+                    Terms
+                  </th>
+                  <th className="px-4 py-2 border-r border-gray-200 w-[307px]">
+                    Effective Interest Rates
+                  </th>
                 </tr>
               </thead>
               <tbody className="text-gray-700">
-                {selectedScheme?.interestRates && selectedScheme?.interestRates.length > 0 ? (
+                {selectedScheme?.interestRates &&
+                selectedScheme?.interestRates.length > 0 ? (
                   selectedScheme?.interestRates.map((rate, idx) => (
                     <tr
                       key={idx}
-                      className={`border border-[#4A4A4A38] ${idx % 2 === 0 ? "bg-[#FFCDCD]" : "bg-[#E5E5FF]"
-                        }`}
+                      className={`border border-[#4A4A4A38] ${
+                        idx % 2 === 0 ? "bg-[#FFCDCD]" : "bg-[#E5E5FF]"
+                      }`}
                     >
                       <td className="px-4 py-2 border border-[#4A4A4A38]">
-                        {rate.from} To {rate.to} DAYS
+                        {rate.from} To {rate.to}{" "}
+                        {selectedScheme?.calcBasisOn === "Monthly"
+                          ? "MONTHS"
+                          : "DAYS"}
                       </td>
                       <td className="px-4 py-2 border border-[#4A4A4A38]">
                         {rate.addInt}%
@@ -1041,7 +1002,7 @@ try {
         </div>
       </div>
     </div>
-  )
-}
+  );
+};
 
-export default EditLoanApplication
+export default EditLoanApplication;

@@ -5,7 +5,6 @@ import { useLocation, useNavigate } from "react-router-dom";
 import { API } from "../api";
 import profileempty from "../assets/profileempty.png";
 const GoldLoanApproval = () => {
-
   const dummyBanks = [
     { id: 1, name: "HDFC Bank" },
     { id: 2, name: "SBI Bank" },
@@ -24,7 +23,7 @@ const GoldLoanApproval = () => {
     { paidBy: "", utrNumber: "", bank: "", customerAmount: "" },
   ]);
 
-  console.log(rows, "rows")
+  console.log(rows, "rows");
 
   const handleRowChange = (index, field, value) => {
     const updatedRows = [...rows];
@@ -33,7 +32,10 @@ const GoldLoanApproval = () => {
   };
 
   const handleAddRow = () => {
-    setRows([...rows, { paidBy: "", utrNumber: "", bank: "", customerAmount: "" }]);
+    setRows([
+      ...rows,
+      { paidBy: "", utrNumber: "", bank: "", customerAmount: "" },
+    ]);
   };
 
   const handleRemoveRow = (index) => {
@@ -47,9 +49,10 @@ const GoldLoanApproval = () => {
   );
 
   const [loanData, setLoanData] = useState(null);
+  console.log(loanData, "loandata");
   const [loanSchemeData, setLoanSchemeData] = useState(null);
-  console.log(loanSchemeData, "loanschemedata")
-  console.log(loanData, "LoanData")
+  console.log(loanSchemeData, "loanschemedata");
+  console.log(loanData, "LoanData");
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const navigate = useNavigate();
@@ -71,9 +74,11 @@ const GoldLoanApproval = () => {
   const fetchLoanData = async () => {
     try {
       setLoading(true);
-      const response = await axios.get(`${API}/Transactions/goldloan/getLoan/${loanId}`);
+      const response = await axios.get(
+        `${API}/Transactions/goldloan/getLoan/${loanId}`
+      );
       setLoanData(response.data.loanApplication); // Access the data property
-      setLoanSchemeData(response.data.schemeData)
+      setLoanSchemeData(response.data.schemeData);
       setError(null);
     } catch (err) {
       console.error("❌ Error fetching loan data:", err);
@@ -86,59 +91,97 @@ const GoldLoanApproval = () => {
   // Parse JSON strings from API response
   const parseJSONData = (data) => {
     try {
-      if (typeof data === 'string') {
+      if (typeof data === "string") {
         return JSON.parse(data);
       }
       return data || [];
     } catch (error) {
-      console.error('Error parsing JSON data:', error);
+      console.error("Error parsing JSON data:", error);
       return [];
     }
   };
 
   // Format date
   const formatDate = (dateString) => {
-    if (!dateString) return '-';
+    if (!dateString) return "-";
     const date = new Date(dateString);
-    return date.toLocaleDateString('en-GB');
+    return date.toLocaleDateString("en-GB");
   };
 
   // Format time
   const formatTime = (dateString) => {
-    if (!dateString) return '12:00:00 AM';
+    if (!dateString) return "12:00:00 AM";
     const date = new Date(dateString);
-    return date.toLocaleTimeString('en-US', {
+    return date.toLocaleTimeString("en-US", {
       hour12: true,
-      hour: '2-digit',
-      minute: '2-digit',
-      second: '2-digit'
+      hour: "2-digit",
+      minute: "2-digit",
+      second: "2-digit",
     });
   };
 
   // Format currency
   const formatCurrency = (amount) => {
-    if (!amount || isNaN(amount)) return '0.00';
-    const numAmount = typeof amount === 'string' ? parseFloat(amount) : amount;
-    return new Intl.NumberFormat('en-IN', {
+    if (!amount || isNaN(amount)) return "0.00";
+    const numAmount = typeof amount === "string" ? parseFloat(amount) : amount;
+    return new Intl.NumberFormat("en-IN", {
       minimumFractionDigits: 2,
-      maximumFractionDigits: 2
+      maximumFractionDigits: 2,
     }).format(numAmount);
   };
 
   // Convert number to words
   const numberToWords = (num) => {
-    if (!num || isNaN(num)) return '';
+    if (!num || isNaN(num)) return "";
 
-    const numValue = typeof num === 'string' ? parseFloat(num.replace(/,/g, '')) : num;
-    if (numValue === 0) return 'Zero';
+    const numValue =
+      typeof num === "string" ? parseFloat(num.replace(/,/g, "")) : num;
+    if (numValue === 0) return "Zero";
 
-    const ones = ['', 'One', 'Two', 'Three', 'Four', 'Five', 'Six', 'Seven', 'Eight', 'Nine'];
-    const tens = ['', '', 'Twenty', 'Thirty', 'Forty', 'Fifty', 'Sixty', 'Seventy', 'Eighty', 'Ninety'];
-    const teens = ['Ten', 'Eleven', 'Twelve', 'Thirteen', 'Fourteen', 'Fifteen', 'Sixteen', 'Seventeen', 'Eighteen', 'Nineteen'];
+    const ones = [
+      "",
+      "One",
+      "Two",
+      "Three",
+      "Four",
+      "Five",
+      "Six",
+      "Seven",
+      "Eight",
+      "Nine",
+    ];
+    const tens = [
+      "",
+      "",
+      "Twenty",
+      "Thirty",
+      "Forty",
+      "Fifty",
+      "Sixty",
+      "Seventy",
+      "Eighty",
+      "Ninety",
+    ];
+    const teens = [
+      "Ten",
+      "Eleven",
+      "Twelve",
+      "Thirteen",
+      "Fourteen",
+      "Fifteen",
+      "Sixteen",
+      "Seventeen",
+      "Eighteen",
+      "Nineteen",
+    ];
 
     const convertMillions = (n) => {
       if (n >= 10000000) {
-        return convertMillions(Math.floor(n / 10000000)) + ' Crore ' + convertLakhs(n % 10000000);
+        return (
+          convertMillions(Math.floor(n / 10000000)) +
+          " Crore " +
+          convertLakhs(n % 10000000)
+        );
       } else {
         return convertLakhs(n);
       }
@@ -146,7 +189,11 @@ const GoldLoanApproval = () => {
 
     const convertLakhs = (n) => {
       if (n >= 100000) {
-        return convertLakhs(Math.floor(n / 100000)) + ' Lakh ' + convertThousands(n % 100000);
+        return (
+          convertLakhs(Math.floor(n / 100000)) +
+          " Lakh " +
+          convertThousands(n % 100000)
+        );
       } else {
         return convertThousands(n);
       }
@@ -154,7 +201,11 @@ const GoldLoanApproval = () => {
 
     const convertThousands = (n) => {
       if (n >= 1000) {
-        return convertHundreds(Math.floor(n / 1000)) + ' Thousand ' + convertHundreds(n % 1000);
+        return (
+          convertHundreds(Math.floor(n / 1000)) +
+          " Thousand " +
+          convertHundreds(n % 1000)
+        );
       } else {
         return convertHundreds(n);
       }
@@ -162,7 +213,7 @@ const GoldLoanApproval = () => {
 
     const convertHundreds = (n) => {
       if (n > 99) {
-        return ones[Math.floor(n / 100)] + ' Hundred ' + convertTens(n % 100);
+        return ones[Math.floor(n / 100)] + " Hundred " + convertTens(n % 100);
       } else {
         return convertTens(n);
       }
@@ -172,12 +223,12 @@ const GoldLoanApproval = () => {
       if (n < 10) return ones[n];
       else if (n >= 10 && n < 20) return teens[n - 10];
       else {
-        return tens[Math.floor(n / 10)] + ' ' + ones[n % 10];
+        return tens[Math.floor(n / 10)] + " " + ones[n % 10];
       }
     };
 
     let words = convertMillions(numValue);
-    return words.trim() + ' only';
+    return words.trim() + " only";
   };
 
   // Approve loan handler
@@ -186,8 +237,7 @@ const GoldLoanApproval = () => {
   const approveLoan = async () => {
     if (!loanData || !loanData.id) return setError("Loan ID missing");
 
-
-    const loanAmount = Number(loanData.Loan_amount || 0);
+    const loanAmount = Number(loanData.Net_Payable || 0);
 
     // ✅ check here
     if (totalAmount !== loanAmount) {
@@ -196,7 +246,6 @@ const GoldLoanApproval = () => {
       );
       return;
     }
-
 
     const confirmApprove = window.confirm("Approve this loan application?");
     if (!confirmApprove) return;
@@ -254,12 +303,24 @@ const GoldLoanApproval = () => {
   // Parse the JSON strings from API
   const pledgeItems = parseJSONData(loanData.Pledge_Item_List);
   const interestRates = parseJSONData(loanData.Effective_Interest_Rates);
-
+  console.log(interestRates, "interestRates");
   // Calculate totals from pledge items
-  const totalNos = pledgeItems.reduce((sum, item) => sum + (parseInt(item.nos) || 0), 0);
-  const totalGross = pledgeItems.reduce((sum, item) => sum + (parseFloat(item.gross) || 0), 0);
-  const totalNetWeight = pledgeItems.reduce((sum, item) => sum + (parseFloat(item.netWeight) || 0), 0);
-  const totalValuation = pledgeItems.reduce((sum, item) => sum + (parseFloat(item.valuation) || 0), 0);
+  const totalNos = pledgeItems.reduce(
+    (sum, item) => sum + (parseInt(item.nos) || 0),
+    0
+  );
+  const totalGross = pledgeItems.reduce(
+    (sum, item) => sum + (parseFloat(item.gross) || 0),
+    0
+  );
+  const totalNetWeight = pledgeItems.reduce(
+    (sum, item) => sum + (parseFloat(item.netWeight) || 0),
+    0
+  );
+  const totalValuation = pledgeItems.reduce(
+    (sum, item) => sum + (parseFloat(item.valuation) || 0),
+    0
+  );
 
   return (
     <div className="min-h-screen w-full">
@@ -276,14 +337,14 @@ const GoldLoanApproval = () => {
             }}
             className="text-red-600"
           >
-            Gold Loan Approval - {loanData.id || 'N/A'}
+            Gold Loan Approval - {loanData.id || "N/A"}
           </h2>
 
           <div className="flex gap-2 mr-6">
             <button
               onClick={approveLoan}
               disabled={approving}
-              className={`px-4 py-1 text-sm shadow-lg rounded ${approving ? 'bg-gray-400 cursor-not-allowed' : 'bg-[#0A2478] hover:bg-[#091d5f]'} text-white`}
+              className={`px-4 py-1 text-sm shadow-lg rounded ${approving ? "bg-gray-400 cursor-not-allowed" : "bg-[#0A2478] hover:bg-[#091d5f]"} text-white`}
             >
               {approving ? "Approving..." : "Approve"}
             </button>
@@ -306,7 +367,7 @@ const GoldLoanApproval = () => {
             <div className="flex gap-7 text-sm mb-8 flex-wrap">
               <div>
                 <p className="font-semibold">Loan No</p>
-                <p>{loanData.id || 'N/A'}</p>
+                <p>{loanData.id || "N/A"}</p>
               </div>
               <div>
                 <p className="font-semibold">Loan Date</p>
@@ -319,19 +380,19 @@ const GoldLoanApproval = () => {
               </div>
               <div>
                 <p className="font-semibold">Party Name</p>
-                <p>{loanData.Borrower || 'N/A'}</p>
+                <p>{loanData.Borrower || "N/A"}</p>
               </div>
               <div>
                 <p className="font-semibold">Scheme</p>
-                <p>{loanData.Scheme || 'N/A'}</p>
+                <p>{loanData.Scheme || "N/A"}</p>
               </div>
               <div>
                 <p className="font-semibold">Print Name</p>
-                <p>{loanData.Print_Name || 'N/A'}</p>
+                <p>{loanData.Print_Name || "N/A"}</p>
               </div>
               <div>
                 <p className="font-semibold">Mobile Number</p>
-                <p>+91 {loanData.Mobile_Number || 'N/A'}</p>
+                <p>+91 {loanData.Mobile_Number || "N/A"}</p>
               </div>
             </div>
 
@@ -339,23 +400,23 @@ const GoldLoanApproval = () => {
             <div className="flex gap-13 text-sm flex-wrap">
               <div>
                 <p className="font-semibold">Co-Borrower</p>
-                <p>{loanData.Co_Borrower || 'N/A'}</p>
+                <p>{loanData.Co_Borrower || "N/A"}</p>
               </div>
               <div>
                 <p className="font-semibold">Relation</p>
-                <p>{loanData.Relation || 'N/A'}</p>
+                <p>{loanData.Relation || "N/A"}</p>
               </div>
               <div>
                 <p className="font-semibold">Nominee</p>
-                <p>{loanData.Nominee || 'N/A'}</p>
+                <p>{loanData.Nominee || "N/A"}</p>
               </div>
               <div>
                 <p className="font-semibold">Relation</p>
-                <p>{loanData.Nominee_Relation || 'N/A'}</p>
+                <p>{loanData.Nominee_Relation || "N/A"}</p>
               </div>
               <div>
                 <p className="font-semibold">Address</p>
-                <p>{loanData.Address || 'N/A'}</p>
+                <p>{loanData.Address || "N/A"}</p>
               </div>
             </div>
           </div>
@@ -380,8 +441,8 @@ const GoldLoanApproval = () => {
                     alt="Borrower Signature"
                     className="w-full h-full object-contain"
                     onError={(e) => {
-                      e.target.style.display = 'none';
-                      e.target.nextSibling.style.display = 'block';
+                      e.target.style.display = "none";
+                      e.target.nextSibling.style.display = "block";
                     }}
                   />
                 ) : (
@@ -408,8 +469,8 @@ const GoldLoanApproval = () => {
                     alt="Co-Borrower Signature"
                     className="max-h-[24px] object-contain"
                     onError={(e) => {
-                      e.target.style.display = 'none';
-                      e.target.nextSibling.style.display = 'block';
+                      e.target.style.display = "none";
+                      e.target.nextSibling.style.display = "block";
                     }}
                   />
                 ) : (
@@ -461,7 +522,7 @@ const GoldLoanApproval = () => {
                   Purity
                 </div>
                 <div className="w-28 p-2 border-r-2 border-white text-center">
-                 Calculated Purity
+                  Calculated Purity
                 </div>
                 <div className="w-24 p-2 border-r-2 border-white text-center">
                   Rate
@@ -476,9 +537,12 @@ const GoldLoanApproval = () => {
               {pledgeItems.length > 0 ? (
                 <>
                   {pledgeItems.map((item, index) => (
-                    <div key={item.id || index} className="flex border-t border-gray-300">
+                    <div
+                      key={item.id || index}
+                      className="flex border-t border-gray-300"
+                    >
                       <div className="flex-1 p-2 border-r border-gray-300">
-                        {item.particular || 'Gold'}
+                        {item.particular || "Gold"}
                       </div>
                       <div className="w-16 p-2 border-r border-gray-300 text-center">
                         {item.nos || 1}
@@ -490,7 +554,7 @@ const GoldLoanApproval = () => {
                         {formatCurrency(item.netWeight)}
                       </div>
                       <div className="w-28 p-2 border-r border-gray-300 text-center">
-                        {item.purity || ''}
+                        {item.purity || ""}
                       </div>
                       <div className="w-28 p-2 border-r border-gray-300 text-center">
                         {item.Calculated_Purity || ""}
@@ -502,52 +566,49 @@ const GoldLoanApproval = () => {
                         {formatCurrency(item.valuation)}
                       </div>
                       <div className="w-28 p-2 text-center">
-                        {item.remark || '-'}
+                        {item.remark || "-"}
                       </div>
                     </div>
                   ))}
 
                   {/* Total Row */}
-                 {/* Total Row */}
-<div className="flex border-t border-gray-300 bg-gray-50">
-  <div className="flex-1 p-2 border-r border-gray-300 font-semibold">
-    Total
-  </div>
+                  {/* Total Row */}
+                  <div className="flex border-t border-gray-300 bg-gray-50">
+                    <div className="flex-1 p-2 border-r border-gray-300 font-semibold">
+                      Total
+                    </div>
 
-  <div className="w-16 p-2 border-r border-gray-300 text-center font-semibold">
-    {totalNos}
-  </div>
+                    <div className="w-16 p-2 border-r border-gray-300 text-center font-semibold">
+                      {totalNos}
+                    </div>
 
-  <div className="w-24 p-2 border-r border-gray-300 text-center font-semibold">
-    {formatCurrency(totalGross)}
-  </div>
+                    <div className="w-24 p-2 border-r border-gray-300 text-center font-semibold">
+                      {formatCurrency(totalGross)}
+                    </div>
 
-  <div className="w-24 p-2 border-r border-gray-300 text-center font-semibold">
-    {formatCurrency(totalNetWeight)}
-  </div>
+                    <div className="w-24 p-2 border-r border-gray-300 text-center font-semibold">
+                      {formatCurrency(totalNetWeight)}
+                    </div>
 
-  <div className="w-28 p-2 border-r border-gray-300 text-center">
-    {/* purity empty */}
-  </div>
+                    <div className="w-28 p-2 border-r border-gray-300 text-center">
+                      {/* purity empty */}
+                    </div>
 
-  <div className="w-28 p-2 border-r border-gray-300 text-center">
-    {/* calculated purity empty */}
-  </div>
+                    <div className="w-28 p-2 border-r border-gray-300 text-center">
+                      {/* calculated purity empty */}
+                    </div>
 
-  <div className="w-24 p-2 border-r border-gray-300 text-center font-semibold">
-    {/* Rate total (if needed) */}
-    {/* Leave empty if not required */}
-  </div>
+                    <div className="w-24 p-2 border-r border-gray-300 text-center font-semibold">
+                      {/* Rate total (if needed) */}
+                      {/* Leave empty if not required */}
+                    </div>
 
-  <div className="w-28 p-2 border-r border-gray-300 text-center font-semibold">
-    {formatCurrency(totalValuation)}
-  </div>
+                    <div className="w-28 p-2 border-r border-gray-300 text-center font-semibold">
+                      {formatCurrency(totalValuation)}
+                    </div>
 
-  <div className="w-28 p-2 text-center">
-    {/* remark */}
-  </div>
-</div>
-
+                    <div className="w-28 p-2 text-center">{/* remark */}</div>
+                  </div>
                 </>
               ) : (
                 <div className="flex border-t border-gray-300">
@@ -577,9 +638,7 @@ const GoldLoanApproval = () => {
 
             {/* Doc Charges */}
             <div className="flex flex-col">
-              <label className="text-[13px] font-semibold">
-                Doc Charges
-              </label>
+              <label className="text-[13px] font-semibold">Doc Charges</label>
               <div className="flex mt-1">
                 <div className="bg-[#0B2B68] text-white px-2 py-1 rounded-l-md text-sm flex items-center justify-center">
                   {loanSchemeData.docChargePercent}
@@ -610,7 +669,7 @@ const GoldLoanApproval = () => {
                 Valuer 1 <span className="text-red-500">*</span>
               </label>
               <div className="border border-gray-300 rounded-md px-2 py-1 mt-1 text-sm bg-gray-50">
-                {loanData.Valuer_1 || 'Not Assigned'}
+                {loanData.Valuer_1 || "Not Assigned"}
               </div>
             </div>
 
@@ -620,7 +679,7 @@ const GoldLoanApproval = () => {
                 Valuer 2 <span className="text-red-500">*</span>
               </label>
               <div className="border border-gray-300 rounded-md px-2 py-1 mt-1 text-sm bg-gray-50">
-                {loanData.Valuer_2 || 'Not Assigned'}
+                {loanData.Valuer_2 || "Not Assigned"}
               </div>
             </div>
           </div>
@@ -629,7 +688,9 @@ const GoldLoanApproval = () => {
           </div>
         </div>
         <div className="px-[100px] mt-6">
-          <h1 className="font-bold text-[24px] text-[#0A2478] mb-4">Payment Details</h1>
+          <h1 className="font-bold text-[24px] text-[#0A2478] mb-4">
+            Payment Details
+          </h1>
           <div className="border border-gray-300 rounded-md overflow-hidden shadow-sm">
             <table className="w-full border-collapse text-sm">
               <thead>
@@ -650,7 +711,9 @@ const GoldLoanApproval = () => {
                     <td className="py-2">
                       <select
                         value={row.paidBy}
-                        onChange={(e) => handleRowChange(index, "paidBy", e.target.value)}
+                        onChange={(e) =>
+                          handleRowChange(index, "paidBy", e.target.value)
+                        }
                         className="border border-gray-300 rounded-md px-2 py-1 w-[120px]"
                       >
                         <option value="">Select</option>
@@ -687,18 +750,28 @@ const GoldLoanApproval = () => {
                       {row.paidBy === "Cash" ? (
                         <select
                           value={row.customerBank}
-                          onChange={(e) => handleRowChange(index, "customerBank", e.target.value)}
+                          onChange={(e) =>
+                            handleRowChange(
+                              index,
+                              "customerBank",
+                              e.target.value
+                            )
+                          }
                           className="border border-gray-300 rounded-md px-2 py-1 w-[140px]"
                         >
                           <option value="">Select Branch</option>
                           {branches.map((b) => (
-                            <option key={b.id} value={b.name}>{b.name}</option>
+                            <option key={b.id} value={b.name}>
+                              {b.name}
+                            </option>
                           ))}
                         </select>
                       ) : (
                         <select
                           value={row.bank}
-                          onChange={(e) => handleRowChange(index, "bank", e.target.value)}
+                          onChange={(e) =>
+                            handleRowChange(index, "bank", e.target.value)
+                          }
                           className="border border-gray-300 rounded-md px-2 py-1 w-[140px]"
                         >
                           <option value="">Select Bank</option>
@@ -729,7 +802,13 @@ const GoldLoanApproval = () => {
                       ) : (
                         <select
                           value={row.customerBank}
-                          onChange={(e) => handleRowChange(index, "customerBank", e.target.value)}
+                          onChange={(e) =>
+                            handleRowChange(
+                              index,
+                              "customerBank",
+                              e.target.value
+                            )
+                          }
                           className="border border-gray-300 rounded-md px-2 py-1 w-[140px]"
                         >
                           <option value="">Select Customer Bank</option>
@@ -746,7 +825,11 @@ const GoldLoanApproval = () => {
                         type="number"
                         value={row.customerAmount}
                         onChange={(e) =>
-                          handleRowChange(index, "customerAmount", e.target.value)
+                          handleRowChange(
+                            index,
+                            "customerAmount",
+                            e.target.value
+                          )
                         }
                         style={{
                           MozAppearance: "textfield",
@@ -801,7 +884,7 @@ const GoldLoanApproval = () => {
               </div>
               <div className="flex border-t border-gray-300">
                 <div className="flex-1 p-2 py-4 border-r border-gray-300 text-center">
-                  {loanData.Loan_Tenure || loanData.loanPeriod || 'N/A'}
+                  {loanData.Loan_Tenure || loanData.loanPeriod || "N/A"}
                 </div>
                 <div className="w-40 p-2 py-4 border-r border-gray-300 text-center">
                   {formatCurrency(loanData.Min_Loan || loanData.minLoanAmount)}
@@ -833,14 +916,15 @@ const GoldLoanApproval = () => {
                 interestRates.map((rate, index) => (
                   <div
                     key={index}
-                    className={`flex ${index % 2 === 0 ? 'bg-[#FFCDCD]' : 'bg-[#E5E5FF]'}`}
+                    className={`flex ${
+                      index % 2 === 0 ? "bg-[#FFCDCD]" : "bg-[#E5E5FF]"
+                    }`}
                   >
                     <div className="flex-1 p-2 border-r border-white text-center">
-                      {rate.term} DAYS
+                      {rate.from} To {rate.to}{" "}
+                      {loanData?.Scheme_type === "Monthly" ? "MONTHS" : "DAYS"}
                     </div>
-                    <div className="w-40 p-2 text-center">
-                      {rate.rate}%
-                    </div>
+                    <div className="w-40 p-2 text-center">{rate.addInt}%</div>
                   </div>
                 ))
               ) : (
@@ -854,8 +938,6 @@ const GoldLoanApproval = () => {
             </div>
           </div>
         </div>
-
-
       </div>
     </div>
   );

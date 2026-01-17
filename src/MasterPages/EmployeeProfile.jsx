@@ -1071,6 +1071,7 @@ const EmployeeProfile = () => {
                       disabled={mode === "view"}
                       onChange={handleInputChange}
                       placeholder="Mobile No"
+                      maxLength={10}
                       style={{
                         MozAppearance: "textfield",
                       }}
@@ -1089,6 +1090,7 @@ const EmployeeProfile = () => {
                       onChange={handleInputChange}
                       disabled={mode === "view"}
                       placeholder="Mobile No"
+                      maxLength={10}
                       style={{
                         MozAppearance: "textfield",
                       }}
@@ -1774,6 +1776,7 @@ const EmployeeProfile = () => {
               <thead className="bg-[#0A2478] text-white text-sm">
                 <tr>
                   <th className="px-4 py-2 text-left border-r">Select</th>
+                  <th className="px-4 py-2 text-left border-r">Emp ID</th>
                   <th className="px-4 py-2 text-left border-r">Profile</th>
                   <th className="px-4 py-2 text-left border-r">Name</th>
                   <th className="px-4 py-2 text-left border-r w-[211px]">
@@ -1812,7 +1815,7 @@ const EmployeeProfile = () => {
                           className="w-4 h-4 cursor-pointer"
                         />
                       </td>
-
+                      <td className="px-4 py-2">{emp.id}</td>
                       <td className="px-4 py-2 flex items-center justify-center gap-2">
                         <img
                           src={emp.emp_image}
