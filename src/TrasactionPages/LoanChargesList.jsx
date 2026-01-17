@@ -78,7 +78,6 @@ function LoanChargesList() {
       const response = await axios.get(`${BASE_URL}/get`, {
         params: loanNo ? { loan_no: loanNo } : {},
       });
-
       const apiData = response.data?.data || [];
       setData(apiData);
     } catch (error) {
@@ -213,7 +212,7 @@ function LoanChargesList() {
                       <td className="px-4 py-2">{row.party_name}</td>
                       <td className="px-4 py-2">{row.total_charges}</td>
                       <td className="px-4 py-2">{row.loan_date}</td>
-                      <td className="px-4 py-2">{row.added_by_email || "-"}</td>
+                      <td className="px-4 py-2">{row.added_by || "-"}</td>
 
                       <td className="px-4 py-2 flex items-center gap-2">
                         <button
