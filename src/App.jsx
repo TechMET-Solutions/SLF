@@ -279,6 +279,7 @@ import AddCreditNotePage from "./TrasactionPages/AddCreditNotePage";
 import AddGoldLoanApplication from "./TrasactionPages/AddGoldLoanApplication";
 import AddLoanCharges from "./TrasactionPages/AddLoanCharges";
 import AddLoanRepayment from "./TrasactionPages/AddLoanRepayment";
+import AddLoanRepaymentEmi from "./TrasactionPages/AddLoanRepaymentEmi";
 import AppraisalNote from "./TrasactionPages/AppraisalNote";
 import AuctionApplication from "./TrasactionPages/AuctionApplication";
 import AuctionCreation from "./TrasactionPages/AuctionCreation";
@@ -308,7 +309,6 @@ import ViewCreditNote from "./TrasactionPages/ViewCreditNote";
 import ViewLoanCharges from "./TrasactionPages/ViewLoanCharges";
 import ViewLoanDetails from "./TrasactionPages/ViewLoanDeatils";
 
-
 // ---------------- LAYOUT WRAPPER ----------------
 function LayoutWithNavbar({ children }) {
   const location = useLocation();
@@ -322,100 +322,247 @@ function LayoutWithNavbar({ children }) {
   );
 }
 
-
 // ---------------- MAIN APP ----------------
 function App() {
   return (
     <Router>
       <LayoutWithNavbar>
         <Routes>
-
           {/* PUBLIC ROUTE (LOGIN) */}
           <Route path="/login" element={<LoginPage />} />
-             <Route path="/about-us" element={<About />} />
-                  <Route path="/privacy-policy" element={<PrivacyPolicy />} />
-                  <Route path="/terms-of-use" element={<TermsOfService />} />
-                  <Route path="/contact-us" element={<Contactus />} />
-                  <Route path="/Refund-and-Cancellation" element={<Refund />} />
+          <Route path="/about-us" element={<About />} />
+          <Route path="/privacy-policy" element={<PrivacyPolicy />} />
+          <Route path="/terms-of-use" element={<TermsOfService />} />
+          <Route path="/contact-us" element={<Contactus />} />
+          <Route path="/Refund-and-Cancellation" element={<Refund />} />
           {/* PROTECTED ROUTES */}
           <Route
             path="/*"
             element={
               <ProtectedRoute>
                 <Routes>
-
                   {/* Dashboard (Same path "/", but ONLY when logged in) */}
                   <Route path="/" element={<Dashboard />} />
 
                   {/* MASTER ROUTES */}
-                  
-                  <Route path="/account-groups" element={<AccountGroupList />} />
-                  <Route path="/account-code-list" element={<AccountCodeList />} />
-                  <Route path="/Branch-Profile-List" element={<BranchProfileList />} />
-                  <Route path="/Item-profile-List" element={<ItemProfileList />} />
-                  <Route path="/Document-Proof-List" element={<DocumentProof />} />
-                  <Route path="/Customer-Profile-List" element={<CustProfile />} />
-                  <Route path="/Add-Customer-Profile" element={<AddCustProfile />} />
+
+                  <Route
+                    path="/account-groups"
+                    element={<AccountGroupList />}
+                  />
+                  <Route
+                    path="/account-code-list"
+                    element={<AccountCodeList />}
+                  />
+                  <Route
+                    path="/Branch-Profile-List"
+                    element={<BranchProfileList />}
+                  />
+                  <Route
+                    path="/Item-profile-List"
+                    element={<ItemProfileList />}
+                  />
+                  <Route
+                    path="/Document-Proof-List"
+                    element={<DocumentProof />}
+                  />
+                  <Route
+                    path="/Customer-Profile-List"
+                    element={<CustProfile />}
+                  />
+                  <Route
+                    path="/Add-Customer-Profile"
+                    element={<AddCustProfile />}
+                  />
                   <Route path="/Product-Purity" element={<PurityProfile />} />
-                  <Route path="/Charges-Profile-List" element={<ChargesProfileList />} />
-                  <Route path="/Push-Rate-List" element={<PushGoldRateList />} />
-                  <Route path="/Scheme-Renewal-List" element={<SchemeRenewalList />} />
-                  <Route path="/Add-Scheme-Renewal-Form" element={<AddSchemeRenewalForm />} />
+                  <Route
+                    path="/Charges-Profile-List"
+                    element={<ChargesProfileList />}
+                  />
+                  <Route
+                    path="/Push-Rate-List"
+                    element={<PushGoldRateList />}
+                  />
+                  <Route
+                    path="/Scheme-Renewal-List"
+                    element={<SchemeRenewalList />}
+                  />
+                  <Route
+                    path="/Add-Scheme-Renewal-Form"
+                    element={<AddSchemeRenewalForm />}
+                  />
                   <Route path="/Role-Mapping" element={<RoleMapping />} />
-                  <Route path="/Scheme-Details-List" element={<SchemeDetailsList />} />
-                  <Route path="/View-Scheme-Details-form" element={<ViewSchemeDetailsform />} />
-                  <Route path="/Add-Scheme-Details-Listform" element={<AddSchemeDetailsListform />} />
-                  <Route path="/Scheme-Role-Mapping" element={<SchemeRoleMapping />} />
-                  <Route path="/Branch-Scheme-Mapping-List" element={<BranchSchemeMappingList />} />
+                  <Route
+                    path="/Scheme-Details-List"
+                    element={<SchemeDetailsList />}
+                  />
+                  <Route
+                    path="/View-Scheme-Details-form"
+                    element={<ViewSchemeDetailsform />}
+                  />
+                  <Route
+                    path="/Add-Scheme-Details-Listform"
+                    element={<AddSchemeDetailsListform />}
+                  />
+                  <Route
+                    path="/Scheme-Role-Mapping"
+                    element={<SchemeRoleMapping />}
+                  />
+                  <Route
+                    path="/Branch-Scheme-Mapping-List"
+                    element={<BranchSchemeMappingList />}
+                  />
                   {/* Employee */}
-                  <Route path="/Employee-Profile-list" element={<EmployeeProfile />} />
-                  <Route path="/Member-Login-Period" element={<MemberLoginPeriod />} />
-                  <Route path="/Member-Login-Details" element={<MemberLoginDetails />} />
-                  <Route path="/Employee-Designation" element={<EmployeeDesignation />} />
+                  <Route
+                    path="/Employee-Profile-list"
+                    element={<EmployeeProfile />}
+                  />
+                  <Route
+                    path="/Member-Login-Period"
+                    element={<MemberLoginPeriod />}
+                  />
+                  <Route
+                    path="/Member-Login-Details"
+                    element={<MemberLoginDetails />}
+                  />
+                  <Route
+                    path="/Employee-Designation"
+                    element={<EmployeeDesignation />}
+                  />
                   <Route path="/Customer_Form" element={<Cust_Form />} />
-                  <Route path="/Employee-Attendance" element={<EmpAttendance />} />
+                  <Route
+                    path="/Employee-Attendance"
+                    element={<EmpAttendance />}
+                  />
                   {/* User Management */}
-                  <Route path="/User-Role-Permission" element={<UserRolePermission />} />
+                  <Route
+                    path="/User-Role-Permission"
+                    element={<UserRolePermission />}
+                  />
                   <Route path="/User-Role" element={<UserPermissions />} />
-                  <Route path="/Member-Branch-Mapping" element={<MemberBranchMapping />} />
-                  <Route path="/Add-Member-Branch-Mapping" element={<AddMemberBranchMapping />} />
-                  <Route path="/Edit-Loan-Application" element={<EditLoanApplication />} />
+                  <Route
+                    path="/Member-Branch-Mapping"
+                    element={<MemberBranchMapping />}
+                  />
+                  <Route
+                    path="/Add-Member-Branch-Mapping"
+                    element={<AddMemberBranchMapping />}
+                  />
+                  <Route
+                    path="/Edit-Loan-Application"
+                    element={<EditLoanApplication />}
+                  />
                   {/* Loan Routes */}
-                  <Route path="/Loan-Application" element={<LoanApplication />} />
+                  <Route
+                    path="/Loan-Application"
+                    element={<LoanApplication />}
+                  />
                   <Route path="/Cancelled-Loan" element={<CancelledLoan />} />
-                  <Route path="/View-Loan-Details" element={<ViewLoanDetails />} />
-                  <Route path="/Edit-Loan-Details" element={<EditLoanDetails />} />
-                  <Route path="/Gold-Loan-Approval" element={<GoldLoanApproval />} />
-                  <Route path="/Add-Gold-Loan-Application" element={<AddGoldLoanApplication />} />
+                  <Route
+                    path="/View-Loan-Details"
+                    element={<ViewLoanDetails />}
+                  />
+                  <Route
+                    path="/Edit-Loan-Details"
+                    element={<EditLoanDetails />}
+                  />
+                  <Route
+                    path="/Gold-Loan-Approval"
+                    element={<GoldLoanApproval />}
+                  />
+                  <Route
+                    path="/Add-Gold-Loan-Application"
+                    element={<AddGoldLoanApplication />}
+                  />
                   <Route path="/NOC" element={<NOC />} />
-                  <Route path="/Loan-Charges-List" element={<LoanChargesList />} />
+                  <Route
+                    path="/Loan-Charges-List"
+                    element={<LoanChargesList />}
+                  />
                   <Route path="/Area" element={<Area />} />
                   <Route path="/add-loan-charge" element={<AddLoanCharges />} />
-                  <Route path="/view-loan-charge" element={<ViewLoanCharges />} />
-                  <Route path="/edit-loan-charge" element={<EditLoanCharges />} />
-                  <Route path="/Add-Credit-Note-Page" element={<AddCreditNotePage />} />
-                  <Route path="/View-Credit-Note" element={<ViewCreditNote />} />
-                  <Route path="/Print-Credit-Note" element={<PrintCreditNote />} />
+                  <Route
+                    path="/view-loan-charge"
+                    element={<ViewLoanCharges />}
+                  />
+                  <Route
+                    path="/edit-loan-charge"
+                    element={<EditLoanCharges />}
+                  />
+                  <Route
+                    path="/Add-Credit-Note-Page"
+                    element={<AddCreditNotePage />}
+                  />
+                  <Route
+                    path="/View-Credit-Note"
+                    element={<ViewCreditNote />}
+                  />
+                  <Route
+                    path="/Print-Credit-Note"
+                    element={<PrintCreditNote />}
+                  />
                   <Route path="/Appraisal-Note" element={<AppraisalNote />} />
-                  <Route path="/Print-Loan-Application" element={<PrintLoanApplication />} />
-                  <Route path="/Add-Loan-Repayment" element={<AddLoanRepayment />} />
-                  <Route path="/Auction_Application_form" element={<Auction_Application_form />} />
-                  <Route path="/Auction_Bidder_List" element={<Auction_Bidder_List />} />
+                  <Route
+                    path="/Print-Loan-Application"
+                    element={<PrintLoanApplication />}
+                  />
+                  <Route
+                    path="/Add-Loan-Repayment"
+                    element={<AddLoanRepayment />}
+                  />
+                  <Route
+                    path="/Auction_Application_form"
+                    element={<Auction_Application_form />}
+                  />
+                  <Route
+                    path="/Auction_Bidder_List"
+                    element={<Auction_Bidder_List />}
+                  />
                   <Route path="/Generate_Bill" element={<GenrateBill />} />
+                  <Route
+                    path="/Emi_Loan-Repayment"
+                    element={<AddLoanRepaymentEmi />}
+                  />
                   {/* Auction */}
-                  <Route path="/Auction-Creation" element={<AuctionCreation />} />
-                  <Route path="/Add-Auction-Creation" element={<AddAuctionCreation />} />
-                  <Route path="/Auction-Items-List" element={<AuctionItemsList />} />
-                  <Route path="/Gold-Ornament-Bill" element={<GoldOrnamentBill />} />
-                  <Route path="/Bidder-Registration-List" element={<BidderRegistrationList />} />
-                  <Route path="/Bidder-Registration" element={<BidderRegistration />} />
-                  <Route path="/View-Bidder-Details" element={<ViewBidderDetails />} />
-                  <Route path="/EditBidderDetails" element={<EditBidderDetails />} />
+                  <Route
+                    path="/Auction-Creation"
+                    element={<AuctionCreation />}
+                  />
+                  <Route
+                    path="/Add-Auction-Creation"
+                    element={<AddAuctionCreation />}
+                  />
+                  <Route
+                    path="/Auction-Items-List"
+                    element={<AuctionItemsList />}
+                  />
+                  <Route
+                    path="/Gold-Ornament-Bill"
+                    element={<GoldOrnamentBill />}
+                  />
+                  <Route
+                    path="/Bidder-Registration-List"
+                    element={<BidderRegistrationList />}
+                  />
+                  <Route
+                    path="/Bidder-Registration"
+                    element={<BidderRegistration />}
+                  />
+                  <Route
+                    path="/View-Bidder-Details"
+                    element={<ViewBidderDetails />}
+                  />
+                  <Route
+                    path="/EditBidderDetails"
+                    element={<EditBidderDetails />}
+                  />
                   <Route path="/Credit-Note" element={<CreditNote />} />
                   <Route path="/Debit-Note" element={<DebitNote />} />
-                  <Route path="/Auction-Application-List" element={<AuctionApplication />} />
+                  <Route
+                    path="/Auction-Application-List"
+                    element={<AuctionApplication />}
+                  />
                   <Route path="/InvoicePrint" element={<InvoicePrint />} />
-
 
                   {/* Tools */}
                   <Route path="/Gress-Period" element={<GracePeriod />} />
@@ -426,10 +573,9 @@ function App() {
 
           {/* FAILSAFE */}
           <Route path="*" element={<Navigate to="/" />} />
-
         </Routes>
       </LayoutWithNavbar>
-       <Footer />
+      <Footer />
     </Router>
   );
 }

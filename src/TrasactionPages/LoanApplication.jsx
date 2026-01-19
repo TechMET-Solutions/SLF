@@ -47,6 +47,7 @@ const LoanApplication = () => {
 
   // State for API data and pagination
   const [loanApplication, setLoanApplication] = useState([]);
+  console.log("loanApplication:", loanApplication);
   const [pagination, setPagination] = useState({
     page: 1,
     totalPages: 1,
@@ -1393,19 +1394,25 @@ const LoanApplication = () => {
                         const st = (row.Status || "").toLowerCase();
                         if (st === "approved") {
                           return (
-                            <button
-                              className="bg-[#0A2478] text-white px-3 py-1 rounded text-[11px] hover:bg-[#091f6c]"
-                              onClick={() =>
-                                navigate(`/Add-Loan-Repayment`, {
-                                  state: {
-                                    loanId: row.Loan_No,
-                                    loanData: row,
-                                  },
-                                })
-                              }
-                            >
-                              Repay
-                            </button>
+                           <button
+  className="bg-[#0A2478] text-white px-3 py-1 rounded text-[11px] hover:bg-[#091f6c]"
+  onClick={() => {
+    const path =
+      row.Scheme_type === "Monthly"
+        ? "/Emi_Loan-Repayment"
+        : "/Add-Loan-Repayment";
+
+    navigate(path, {
+      state: {
+        loanId: row.Loan_No,
+        loanData: row,
+      },
+    });
+  }}
+>
+  Repay
+</button>
+
                           );
                         }
                         return <span className="text-gray-500">NA</span>;

@@ -237,7 +237,7 @@ const GoldLoanApproval = () => {
   const approveLoan = async () => {
     if (!loanData || !loanData.id) return setError("Loan ID missing");
 
-    const loanAmount = Number(loanData.Net_Payable || 0);
+    const loanAmount = Number(loanData.Loan_amount || 0);
 
     // ✅ check here
     if (totalAmount !== loanAmount) {

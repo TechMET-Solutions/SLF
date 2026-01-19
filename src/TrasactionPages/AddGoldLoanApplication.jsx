@@ -49,6 +49,7 @@ const AddGoldLoanApplication = () => {
       schemeId: scheme?.id || "",
       schemeName: scheme?.schemeName || "",
       schemeType: scheme?.calcBasisOn || "",
+      interestType: scheme?.interestType || "",
     }));
   };
 
@@ -75,6 +76,7 @@ const AddGoldLoanApplication = () => {
       formDataToSend.append("Relation", formData.CoBorrowerRelation || "");
       formDataToSend.append("Nominee", formData.Nominee_Name || "");
       formDataToSend.append("Nominee_Relation", formData.NomineeRelation || "");
+      formDataToSend.append("interestType", formData.interestType || "");
 
       // 💎 Ornament Photo
       if (formData.OrnamentFile) {
@@ -185,6 +187,7 @@ const AddGoldLoanApplication = () => {
     NomineeRelation: "",
     OrnamentPhoto: "",
     Loan_amount: "",
+    interestType: "",
     Doc_Charges: "",
     Net_Payable: "",
     value1: "",
@@ -265,6 +268,8 @@ const AddGoldLoanApplication = () => {
   //     Net_Payable: netPayable.toFixed(2),
   //   }));
   // }, [PledgeItem, selectedScheme]);
+
+  // logic to calculate loan, doc charges, net payable
   useEffect(() => {
     debugger;
     let totalGross = 0;
@@ -300,16 +305,80 @@ const AddGoldLoanApplication = () => {
     }
 
     // Document charges on capped loan
-    let docCharges =
-      (loanAmount * (selectedScheme?.docChargePercent ?? 0)) / 100;
+    let docCharges = 0;
 
-    // Apply min/max doc charge
-    const minDoc = Number(selectedScheme?.docChargeMin || 0);
-    const maxDoc = Number(selectedScheme?.docChargeMax || Infinity);
+    const loan = Number(loanAmount || 0);
+    const docPercent = Number(selectedScheme?.docChargePercent || 0);
 
-    docCharges = Math.max(minDoc, Math.min(docCharges, maxDoc));
+    if (loan > 0 && docPercent > 0) {
+      // Calculate percentage charge
+      docCharges = (loan * docPercent) / 100;
 
-    const netPayable = loanAmount + interestAmount - docCharges;
+      // Apply min/max only when loan and percent both > 0
+      const minDoc = Number(selectedScheme?.docChargeMin || 0);
+      const maxDoc = Number(selectedScheme?.docChargeMax || Infinity);
+
+      docCharges = Math.max(minDoc, Math.min(docCharges, maxDoc));
+    }
+
+    // Net Payable
+    const netPayable = loan + interestAmount - docCharges;
+
+    setFormData((prev) => ({
+      ...prev,
+      Loan_amount: loanAmount.toFixed(2),
+      Interest_Amount: interestAmount.toFixed(2),
+      Doc_Charges: docCharges.toFixed(2),
+      Net_Payable: netPayable.toFixed(2),
+    }));
+  }, [PledgeItem, selectedScheme]);
+
+  useEffect(() => {
+    debugger;
+    let totalValuation = 0;
+
+    PledgeItem.forEach((item) => {
+      totalValuation += Number(item.valuation) || 0;
+    });
+
+    const maxLoan =
+      parseInt(selectedScheme?.maxLoanAmount, 10) || totalValuation;
+
+    const loanAmount = totalValuation > maxLoan ? maxLoan : totalValuation;
+
+    // ---- Interest calculation ----
+    let interestAmount = 0;
+
+    if (selectedScheme?.calcBasisOn === "Monthly") {
+      const tenure = Number(selectedScheme?.loanPeriod) || 0;
+      const slab = selectedScheme?.interestRates?.[0];
+      const rate = Number(slab?.addInt || 0);
+
+      if (selectedScheme?.interestType === "Flat") {
+        // Flat interest – calculated once on principal
+        interestAmount = (loanAmount * rate * tenure) / (12 * 100);
+      } else {
+        // Reducing / other types – dynamic calculation
+        interestAmount = (loanAmount * rate * tenure) / (12 * 100);
+      }
+    }
+
+    // ---- Document Charges ----
+    let docCharges = 0;
+    const loan = Number(loanAmount || 0);
+    const docPercent = Number(selectedScheme?.docChargePercent || 0);
+
+    if (loan > 0 && docPercent > 0) {
+      docCharges = (loan * docPercent) / 100;
+
+      const minDoc = Number(selectedScheme?.docChargeMin || 0);
+      const maxDoc = Number(selectedScheme?.docChargeMax || Infinity);
+
+      docCharges = Math.max(minDoc, Math.min(docCharges, maxDoc));
+    }
+
+    // ---- Net Payable ----
+    const netPayable = loan + interestAmount - docCharges;
 
     setFormData((prev) => ({
       ...prev,
@@ -1015,7 +1084,7 @@ const AddGoldLoanApplication = () => {
               placeholder="Loan amount"
               value={formData.Loan_amount}
               onChange={(e) => {
-                let inputLoan = parseFloat(e.target.value) || 0;
+                const inputLoan = parseFloat(e.target.value) || 0;
 
                 // ---- Interest calculation ----
                 let interestAmount = 0;
@@ -1029,19 +1098,28 @@ const AddGoldLoanApplication = () => {
                 }
 
                 // ---- Document Charges ----
-                let docCharges =
-                  (inputLoan * (selectedScheme?.docChargePercent ?? 0)) / 100;
+                let docCharges = 0;
+                const docPercent = Number(
+                  selectedScheme?.docChargePercent || 0
+                );
 
-                const minDoc = Number(selectedScheme?.docChargeMin || 0);
-                const maxDoc = Number(selectedScheme?.docChargeMax || Infinity);
-                docCharges = Math.max(minDoc, Math.min(docCharges, maxDoc));
+                if (inputLoan > 0 && docPercent > 0) {
+                  docCharges = (inputLoan * docPercent) / 100;
+
+                  const minDoc = Number(selectedScheme?.docChargeMin || 0);
+                  const maxDoc = Number(
+                    selectedScheme?.docChargeMax || Infinity
+                  );
+
+                  docCharges = Math.max(minDoc, Math.min(docCharges, maxDoc));
+                }
 
                 // ---- Net Payable ----
                 const netPayable = inputLoan + interestAmount - docCharges;
 
                 setFormData((prev) => ({
                   ...prev,
-                  Loan_amount: e.target.value, // keep what user typed
+                  Loan_amount: e.target.value, // keep exactly what user typed
                   Interest_Amount: interestAmount.toFixed(2),
                   Doc_Charges: docCharges.toFixed(2),
                   Net_Payable: netPayable.toFixed(2),
