@@ -1,12 +1,11 @@
 import axios from "axios";
 import { useEffect, useState } from "react";
-import { IoIosAddCircleOutline, IoIosCloseCircleOutline } from "react-icons/io";
 import { useLocation, useNavigate } from "react-router-dom";
 import { API } from "../api";
 import profileempty from "../assets/profileempty.png";
 const ViewLoanDetails = () => {
   const [loanData, setLoanData] = useState(null);
-  console.log(loanData,"loanData")
+  console.log(loanData, "loanData");
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const navigate = useNavigate();
@@ -17,34 +16,52 @@ const ViewLoanDetails = () => {
     { id: 2, name: "SBI Bank" },
     { id: 3, name: "ICICI Bank" },
   ];
-  
+
   const paidByOptions = ["Cash", "Bank Transfer", "UPI", "Online Payment"];
-  
-    const [rows, setRows] = useState([
+
+  const [rows, setRows] = useState([
+    { paidBy: "", utrNumber: "", bank: "", customerAmount: "" },
+  ]);
+  const [PaymentDataForShow, setPaymentDataForShow] = useState([]);
+  const [totalAmountoFTheCustomer, settotalAmountoFTheCustomer] = useState(0);
+
+  useEffect(() => {
+    if (loanData?.payments_Details) {
+      const data = loanData.payments_Details;
+
+      setPaymentDataForShow(data);
+
+      const total = data.reduce(
+        (sum, item) => sum + Number(item.customerAmount || 0),
+        0,
+      );
+      settotalAmountoFTheCustomer(total);
+    }
+  }, [loanData]);
+  console.log(rows, "rows");
+
+  const handleRowChange = (index, field, value) => {
+    const updatedRows = [...rows];
+    updatedRows[index][field] = value;
+    setRows(updatedRows);
+  };
+
+  const handleAddRow = () => {
+    setRows([
+      ...rows,
       { paidBy: "", utrNumber: "", bank: "", customerAmount: "" },
     ]);
-  
-    console.log(rows,"rows")
-  
-    const handleRowChange = (index, field, value) => {
-      const updatedRows = [...rows];
-      updatedRows[index][field] = value;
-      setRows(updatedRows);
-    };
-  
-    const handleAddRow = () => {
-      setRows([...rows, { paidBy: "", utrNumber: "", bank: "", customerAmount: "" }]);
-    };
-  
-    const handleRemoveRow = (index) => {
-      const updatedRows = rows.filter((_, i) => i !== index);
-      setRows(updatedRows);
-    };
-  
-    const totalAmount = rows.reduce(
-      (sum, row) => sum + parseFloat(row.customerAmount || 0),
-      0
-    );
+  };
+
+  const handleRemoveRow = (index) => {
+    const updatedRows = rows.filter((_, i) => i !== index);
+    setRows(updatedRows);
+  };
+
+  const totalAmount = rows.reduce(
+    (sum, row) => sum + parseFloat(row.customerAmount || 0),
+    0,
+  );
 
   const { loanId } = location.state || {};
 
@@ -59,94 +76,130 @@ const ViewLoanDetails = () => {
   }, [loanId]);
 
   const fetchLoanData = async () => {
-  try {
-    setLoading(true);
-    const response = await axios.get(
-      `${API}/Transactions/goldloan/getLoan/${loanId}`
-    );
+    try {
+      setLoading(true);
+      const response = await axios.get(
+        `${API}/Transactions/goldloan/getLoan/${loanId}`,
+      );
 
-    let data = response.data.loanApplication;
+      let data = response.data.loanApplication;
 
-    // parse payment
-    if (data.payments_Details) {
-      try {
-        const parsed = JSON.parse(data.payments_Details);
-        if (Array.isArray(parsed) && parsed.length > 0) {
-          setRows(parsed);  // <---- update rows state here
+      // parse payment
+      if (data.payments_Details) {
+        try {
+          const parsed = JSON.parse(data.payments_Details);
+          if (Array.isArray(parsed) && parsed.length > 0) {
+            setRows(parsed); // <---- update rows state here
+          }
+        } catch (e) {
+          console.warn("JSON parse failed on payments_Details", e);
         }
-      } catch (e) {
-        console.warn("JSON parse failed on payments_Details", e);
       }
+
+      setLoanData(data);
+      setError(null);
+    } catch (err) {
+      console.error("❌ Error fetching loan data:", err);
+      setError("Failed to load loan data");
+    } finally {
+      setLoading(false);
     }
-
-    setLoanData(data);
-    setError(null);
-  } catch (err) {
-    console.error("❌ Error fetching loan data:", err);
-    setError("Failed to load loan data");
-  } finally {
-    setLoading(false);
-  }
-};
-
-
+  };
 
   // Parse JSON strings from API response
   const parseJSONData = (data) => {
     try {
-      if (typeof data === 'string') {
+      if (typeof data === "string") {
         return JSON.parse(data);
       }
       return data || [];
     } catch (error) {
-      console.error('Error parsing JSON data:', error);
+      console.error("Error parsing JSON data:", error);
       return [];
     }
   };
 
   // Format date
   const formatDate = (dateString) => {
-    if (!dateString) return '-';
+    if (!dateString) return "-";
     const date = new Date(dateString);
-    return date.toLocaleDateString('en-GB');
+    return date.toLocaleDateString("en-GB");
   };
 
   // Format time
   const formatTime = (dateString) => {
-    if (!dateString) return '12:00:00 AM';
+    if (!dateString) return "12:00:00 AM";
     const date = new Date(dateString);
-    return date.toLocaleTimeString('en-US', {
+    return date.toLocaleTimeString("en-US", {
       hour12: true,
-      hour: '2-digit',
-      minute: '2-digit',
-      second: '2-digit'
+      hour: "2-digit",
+      minute: "2-digit",
+      second: "2-digit",
     });
   };
 
   // Format currency
   const formatCurrency = (amount) => {
-    if (!amount || isNaN(amount)) return '0.00';
-    const numAmount = typeof amount === 'string' ? parseFloat(amount) : amount;
-    return new Intl.NumberFormat('en-IN', {
+    if (!amount || isNaN(amount)) return "0.00";
+    const numAmount = typeof amount === "string" ? parseFloat(amount) : amount;
+    return new Intl.NumberFormat("en-IN", {
       minimumFractionDigits: 2,
-      maximumFractionDigits: 2
+      maximumFractionDigits: 2,
     }).format(numAmount);
   };
 
   // Convert number to words
   const numberToWords = (num) => {
-    if (!num || isNaN(num)) return '';
+    if (!num || isNaN(num)) return "";
 
-    const numValue = typeof num === 'string' ? parseFloat(num.replace(/,/g, '')) : num;
-    if (numValue === 0) return 'Zero';
+    const numValue =
+      typeof num === "string" ? parseFloat(num.replace(/,/g, "")) : num;
+    if (numValue === 0) return "Zero";
 
-    const ones = ['', 'One', 'Two', 'Three', 'Four', 'Five', 'Six', 'Seven', 'Eight', 'Nine'];
-    const tens = ['', '', 'Twenty', 'Thirty', 'Forty', 'Fifty', 'Sixty', 'Seventy', 'Eighty', 'Ninety'];
-    const teens = ['Ten', 'Eleven', 'Twelve', 'Thirteen', 'Fourteen', 'Fifteen', 'Sixteen', 'Seventeen', 'Eighteen', 'Nineteen'];
+    const ones = [
+      "",
+      "One",
+      "Two",
+      "Three",
+      "Four",
+      "Five",
+      "Six",
+      "Seven",
+      "Eight",
+      "Nine",
+    ];
+    const tens = [
+      "",
+      "",
+      "Twenty",
+      "Thirty",
+      "Forty",
+      "Fifty",
+      "Sixty",
+      "Seventy",
+      "Eighty",
+      "Ninety",
+    ];
+    const teens = [
+      "Ten",
+      "Eleven",
+      "Twelve",
+      "Thirteen",
+      "Fourteen",
+      "Fifteen",
+      "Sixteen",
+      "Seventeen",
+      "Eighteen",
+      "Nineteen",
+    ];
 
     const convertMillions = (n) => {
       if (n >= 10000000) {
-        return convertMillions(Math.floor(n / 10000000)) + ' Crore ' + convertLakhs(n % 10000000);
+        return (
+          convertMillions(Math.floor(n / 10000000)) +
+          " Crore " +
+          convertLakhs(n % 10000000)
+        );
       } else {
         return convertLakhs(n);
       }
@@ -154,7 +207,11 @@ const ViewLoanDetails = () => {
 
     const convertLakhs = (n) => {
       if (n >= 100000) {
-        return convertLakhs(Math.floor(n / 100000)) + ' Lakh ' + convertThousands(n % 100000);
+        return (
+          convertLakhs(Math.floor(n / 100000)) +
+          " Lakh " +
+          convertThousands(n % 100000)
+        );
       } else {
         return convertThousands(n);
       }
@@ -162,7 +219,11 @@ const ViewLoanDetails = () => {
 
     const convertThousands = (n) => {
       if (n >= 1000) {
-        return convertHundreds(Math.floor(n / 1000)) + ' Thousand ' + convertHundreds(n % 1000);
+        return (
+          convertHundreds(Math.floor(n / 1000)) +
+          " Thousand " +
+          convertHundreds(n % 1000)
+        );
       } else {
         return convertHundreds(n);
       }
@@ -170,7 +231,7 @@ const ViewLoanDetails = () => {
 
     const convertHundreds = (n) => {
       if (n > 99) {
-        return ones[Math.floor(n / 100)] + ' Hundred ' + convertTens(n % 100);
+        return ones[Math.floor(n / 100)] + " Hundred " + convertTens(n % 100);
       } else {
         return convertTens(n);
       }
@@ -180,17 +241,15 @@ const ViewLoanDetails = () => {
       if (n < 10) return ones[n];
       else if (n >= 10 && n < 20) return teens[n - 10];
       else {
-        return tens[Math.floor(n / 10)] + ' ' + ones[n % 10];
+        return tens[Math.floor(n / 10)] + " " + ones[n % 10];
       }
     };
 
     let words = convertMillions(numValue);
-    return words.trim() + ' only';
+    return words.trim() + " only";
   };
 
   // Approve loan handler
-
- 
 
   if (loading) {
     return (
@@ -219,18 +278,30 @@ const ViewLoanDetails = () => {
   // Parse the JSON strings from API
   const pledgeItems = parseJSONData(loanData.Pledge_Item_List);
   const interestRates = parseJSONData(loanData.Effective_Interest_Rates);
-console.log(interestRates,"interestRates")
+  console.log(interestRates, "interestRates");
   // Calculate totals from pledge items
-  const totalNos = pledgeItems.reduce((sum, item) => sum + (parseInt(item.nos) || 0), 0);
-  const totalGross = pledgeItems.reduce((sum, item) => sum + (parseFloat(item.gross) || 0), 0);
-  const totalNetWeight = pledgeItems.reduce((sum, item) => sum + (parseFloat(item.netWeight) || 0), 0);
-  const totalValuation = pledgeItems.reduce((sum, item) => sum + (parseFloat(item.valuation) || 0), 0);
+  const totalNos = pledgeItems.reduce(
+    (sum, item) => sum + (parseInt(item.nos) || 0),
+    0,
+  );
+  const totalGross = pledgeItems.reduce(
+    (sum, item) => sum + (parseFloat(item.gross) || 0),
+    0,
+  );
+  const totalNetWeight = pledgeItems.reduce(
+    (sum, item) => sum + (parseFloat(item.netWeight) || 0),
+    0,
+  );
+  const totalValuation = pledgeItems.reduce(
+    (sum, item) => sum + (parseFloat(item.valuation) || 0),
+    0,
+  );
 
   return (
     <div className="min-h-screen w-full">
       {/* ===== Top Bar ===== */}
       <div className="flex justify-center sticky top-[80px] z-40">
-        <div className="flex items-center px-6 py-4 border-b mt-5 w-[1290px] h-[62px] border rounded-[11px] border-gray-200 justify-between shadow">
+        <div className="flex items-center px-6 py-4 border-b mt-5 w-[1290px] h-[62px] border rounded-[11px] border-gray-200 justify-between shadow bg-white">
           <h2
             style={{
               fontFamily: "Source Sans 3, sans-serif",
@@ -241,11 +312,10 @@ console.log(interestRates,"interestRates")
             }}
             className="text-red-600"
           >
-            Gold Loan  - {loanData.id || 'N/A'}
+            Gold Loan - {loanData.id || "N/A"}
           </h2>
 
           <div className="flex gap-2 mr-6">
-           
             <button
               onClick={() => navigate("/Loan-Application")}
               className="bg-[#C1121F] text-white px-6 py-1 text-sm rounded hover:bg-[#a50d18] shadow-lg"
@@ -265,7 +335,7 @@ console.log(interestRates,"interestRates")
             <div className="flex gap-7 text-sm mb-8 flex-wrap">
               <div>
                 <p className="font-semibold">Loan No</p>
-                <p>{loanData.id || 'N/A'}</p>
+                <p>{loanData.id || "N/A"}</p>
               </div>
               <div>
                 <p className="font-semibold">Loan Date</p>
@@ -278,19 +348,19 @@ console.log(interestRates,"interestRates")
               </div>
               <div>
                 <p className="font-semibold">Party Name</p>
-                <p>{loanData.Borrower || 'N/A'}</p>
+                <p>{loanData.Borrower || "N/A"}</p>
               </div>
               <div>
                 <p className="font-semibold">Scheme</p>
-                <p>{loanData.Scheme || 'N/A'}</p>
+                <p>{loanData.Scheme || "N/A"}</p>
               </div>
               <div>
                 <p className="font-semibold">Print Name</p>
-                <p>{loanData.Print_Name || 'N/A'}</p>
+                <p>{loanData.Print_Name || "N/A"}</p>
               </div>
               <div>
                 <p className="font-semibold">Mobile Number</p>
-                <p>+91 {loanData.Mobile_Number || 'N/A'}</p>
+                <p>+91 {loanData.Mobile_Number || "N/A"}</p>
               </div>
             </div>
 
@@ -298,23 +368,23 @@ console.log(interestRates,"interestRates")
             <div className="flex gap-13 text-sm flex-wrap">
               <div>
                 <p className="font-semibold">Co-Borrower</p>
-                <p>{loanData.Co_Borrower || 'N/A'}</p>
+                <p>{loanData.Co_Borrower || "N/A"}</p>
               </div>
               <div>
                 <p className="font-semibold">Relation</p>
-                <p>{loanData.Relation || 'N/A'}</p>
+                <p>{loanData.Relation || "N/A"}</p>
               </div>
               <div>
                 <p className="font-semibold">Nominee</p>
-                <p>{loanData.Nominee || 'N/A'}</p>
+                <p>{loanData.Nominee || "N/A"}</p>
               </div>
               <div>
                 <p className="font-semibold">Relation</p>
-                <p>{loanData.Nominee_Relation || 'N/A'}</p>
+                <p>{loanData.Nominee_Relation || "N/A"}</p>
               </div>
               <div>
                 <p className="font-semibold">Address</p>
-                <p>{loanData.Address || 'N/A'}</p>
+                <p>{loanData.Address || "N/A"}</p>
               </div>
             </div>
           </div>
@@ -339,8 +409,8 @@ console.log(interestRates,"interestRates")
                     alt="Borrower Signature"
                     className="w-full h-full object-contain"
                     onError={(e) => {
-                      e.target.style.display = 'none';
-                      e.target.nextSibling.style.display = 'block';
+                      e.target.style.display = "none";
+                      e.target.nextSibling.style.display = "block";
                     }}
                   />
                 ) : (
@@ -367,8 +437,8 @@ console.log(interestRates,"interestRates")
                     alt="Co-Borrower Signature"
                     className="max-h-[24px] object-contain"
                     onError={(e) => {
-                      e.target.style.display = 'none';
-                      e.target.nextSibling.style.display = 'block';
+                      e.target.style.display = "none";
+                      e.target.nextSibling.style.display = "block";
                     }}
                   />
                 ) : (
@@ -420,7 +490,7 @@ console.log(interestRates,"interestRates")
                   Purity
                 </div>
                 <div className="w-28 p-2 border-r-2 border-white text-center">
-                 Calculated Purity
+                  Calculated Purity
                 </div>
                 <div className="w-24 p-2 border-r-2 border-white text-center">
                   Rate
@@ -435,9 +505,12 @@ console.log(interestRates,"interestRates")
               {pledgeItems.length > 0 ? (
                 <>
                   {pledgeItems.map((item, index) => (
-                    <div key={item.id || index} className="flex border-t border-gray-300">
+                    <div
+                      key={item.id || index}
+                      className="flex border-t border-gray-300"
+                    >
                       <div className="flex-1 p-2 border-r border-gray-300">
-                        {item.particular || 'Gold'}
+                        {item.particular || "Gold"}
                       </div>
                       <div className="w-16 p-2 border-r border-gray-300 text-center">
                         {item.nos || 1}
@@ -449,10 +522,10 @@ console.log(interestRates,"interestRates")
                         {formatCurrency(item.netWeight)}
                       </div>
                       <div className="w-28 p-2 border-r border-gray-300 text-center">
-                        {item.purity || ''}
+                        {item.purity || ""}
                       </div>
-                       <div className="w-28 p-2 border-r border-gray-300 text-center">
-                        {item.Calculated_Purity || ''}
+                      <div className="w-28 p-2 border-r border-gray-300 text-center">
+                        {item.Calculated_Purity || ""}
                       </div>
                       <div className="w-24 p-2 border-r border-gray-300 text-center">
                         {formatCurrency(item.rate)}
@@ -461,52 +534,49 @@ console.log(interestRates,"interestRates")
                         {formatCurrency(item.valuation)}
                       </div>
                       <div className="w-28 p-2 text-center">
-                        {item.remark || '-'}
+                        {item.remark || "-"}
                       </div>
                     </div>
                   ))}
 
                   {/* Total Row */}
                   {/* Total Row */}
-<div className="flex border-t border-gray-300 bg-gray-50">
-  <div className="flex-1 p-2 border-r border-gray-300 font-semibold">
-    Total
-  </div>
+                  <div className="flex border-t border-gray-300 bg-gray-50">
+                    <div className="flex-1 p-2 border-r border-gray-300 font-semibold">
+                      Total
+                    </div>
 
-  <div className="w-16 p-2 border-r border-gray-300 text-center font-semibold">
-    {totalNos}
-  </div>
+                    <div className="w-16 p-2 border-r border-gray-300 text-center font-semibold">
+                      {totalNos}
+                    </div>
 
-  <div className="w-24 p-2 border-r border-gray-300 text-center font-semibold">
-    {formatCurrency(totalGross)}
-  </div>
+                    <div className="w-24 p-2 border-r border-gray-300 text-center font-semibold">
+                      {formatCurrency(totalGross)}
+                    </div>
 
-  <div className="w-24 p-2 border-r border-gray-300 text-center font-semibold">
-    {formatCurrency(totalNetWeight)}
-  </div>
+                    <div className="w-24 p-2 border-r border-gray-300 text-center font-semibold">
+                      {formatCurrency(totalNetWeight)}
+                    </div>
 
-  <div className="w-28 p-2 border-r border-gray-300 text-center">
-    {/* purity empty */}
-  </div>
+                    <div className="w-28 p-2 border-r border-gray-300 text-center">
+                      {/* purity empty */}
+                    </div>
 
-  <div className="w-28 p-2 border-r border-gray-300 text-center">
-    {/* calculated purity empty */}
-  </div>
+                    <div className="w-28 p-2 border-r border-gray-300 text-center">
+                      {/* calculated purity empty */}
+                    </div>
 
-  <div className="w-24 p-2 border-r border-gray-300 text-center font-semibold">
-    {/* Rate total (if needed) */}
-    {/* Leave empty if not required */}
-  </div>
+                    <div className="w-24 p-2 border-r border-gray-300 text-center font-semibold">
+                      {/* Rate total (if needed) */}
+                      {/* Leave empty if not required */}
+                    </div>
 
-  <div className="w-28 p-2 border-r border-gray-300 text-center font-semibold">
-    {formatCurrency(totalValuation)}
-  </div>
+                    <div className="w-28 p-2 border-r border-gray-300 text-center font-semibold">
+                      {formatCurrency(totalValuation)}
+                    </div>
 
-  <div className="w-28 p-2 text-center">
-    {/* remark */}
-  </div>
-</div>
-
+                    <div className="w-28 p-2 text-center">{/* remark */}</div>
+                  </div>
                 </>
               ) : (
                 <div className="flex border-t border-gray-300">
@@ -536,9 +606,7 @@ console.log(interestRates,"interestRates")
 
             {/* Doc Charges */}
             <div className="flex flex-col">
-              <label className="text-[13px] font-semibold">
-                Doc Charges
-              </label>
+              <label className="text-[13px] font-semibold">Doc Charges</label>
               <div className="flex mt-1">
                 <div className="bg-[#0B2B68] text-white px-2 py-1 rounded-l-md text-sm flex items-center justify-center">
                   2%
@@ -569,7 +637,7 @@ console.log(interestRates,"interestRates")
                 Valuer 1 <span className="text-red-500">*</span>
               </label>
               <div className="border border-gray-300 rounded-md px-2 py-1 mt-1 text-sm bg-gray-50">
-                {loanData.Valuer_1 || 'Not Assigned'}
+                {loanData.Valuer_1 || "Not Assigned"}
               </div>
             </div>
 
@@ -579,7 +647,7 @@ console.log(interestRates,"interestRates")
                 Valuer 2 <span className="text-red-500">*</span>
               </label>
               <div className="border border-gray-300 rounded-md px-2 py-1 mt-1 text-sm bg-gray-50">
-                {loanData.Valuer_2 || 'Not Assigned'}
+                {loanData.Valuer_2 || "Not Assigned"}
               </div>
             </div>
           </div>
@@ -587,123 +655,91 @@ console.log(interestRates,"interestRates")
             {numberToWords(loanData.Loan_amount)}
           </div>
         </div>
-<div className="px-[100px] mt-6">
-      <h1 className="font-bold text-[24px] text-[#0A2478] mb-4">Payment Details</h1>
-      <div className="border border-gray-300 rounded-md overflow-hidden shadow-sm">
-        <table className="w-full border-collapse text-sm">
-          <thead>
-            <tr className="bg-[#0A2478] text-white text-center">
-              <th className="py-2 border">Sr No</th>
-              <th className="py-2 border">Paid By</th>
-              <th className="py-2 border">UTR Number</th>
-              <th className="py-2 border">Bank</th>
-              <th className="py-2 border">Customer Bank</th>
-              <th className="py-2 border">Customer Amount</th>
-              <th className="py-2 border">Action</th>
-            </tr>
-          </thead>
-          <tbody>
-            {rows.map((row, index) => (
-              <tr key={index} className="text-center bg-white">
-                <td className="py-2">{index + 1}</td>
-                <td className="py-2">
-                  <select
-                    value={row.paidBy}
-                    disabled
-                    onChange={(e) => handleRowChange(index, "paidBy", e.target.value)}
-                    className="border border-gray-300 rounded-md px-2 py-1 w-[120px]"
-                  >
-                    <option value="">Select</option>
-                    {paidByOptions.map((option, i) => (
-                      <option key={i} value={option}>
-                        {option}
-                      </option>
-                    ))}
-                  </select>
-                </td>
-                <td className="py-2">
-                  <input
-                    type="text"
-                    disabled
-                    value={row.utrNumber}
-                    onChange={(e) => handleRowChange(index, "utrNumber", e.target.value)}
-                    className="border border-gray-300 rounded-md px-2 py-1 w-[150px]"
-                  />
-                </td>
-                <td className="py-2">
-                  <select
-                    value={row.bank}
-                    disabled
-                    onChange={(e) => handleRowChange(index, "bank", e.target.value)}
-                    className="border border-gray-300 rounded-md px-2 py-1 w-[140px]"
-                  >
-                    <option value="">Select Bank</option>
-                    {dummyBanks.map((b) => (
-                      <option key={b.id} value={b.name}>
-                        {b.name}
-                      </option>
-                    ))}
-                  </select>
-                </td>
-                <td className="py-2">
-                  <select
-                    value={row.customerBank}
-                    disabled
-                    onChange={(e) => handleRowChange(index, "customerBank", e.target.value)}
-                    className="border border-gray-300 rounded-md px-2 py-1 w-[140px]"
-                  >
-                    <option value="">Select Customer Bank</option>
-                    {dummyBanks.map((b) => (
-                      <option key={b.id} value={b.name}>
-                        {b.name}
-                      </option>
-                    ))}
-                  </select>
-                </td>
-                <td className="py-2">
-                  <input
-                    type="number"
-                    value={row.customerAmount}
-                    disabled
-                    onChange={(e) =>
-                      handleRowChange(index, "customerAmount", e.target.value)
-                    }
-                    style={{
-                        MozAppearance: "textfield",
-                      }}
-                      onWheel={(e) => e.target.blur()}
-                    className="border border-gray-300 rounded-md px-2 py-1 w-[120px]"
-                  />
-                </td>
-                <td className="py-2 flex justify-center items-center gap-2">
-                  <button
-                    onClick={handleAddRow}
-                    disabled
-                    className="bg-[#0A2478] text-white px-2 py-2 rounded hover:bg-blue-700"
-                  >
-                    <IoIosAddCircleOutline size={17} />
-                  </button>
-                  <button
-                    onClick={() => handleRemoveRow(index)}
-                    disabled
-                    className="bg-red-600 text-white px-2 py-2 rounded hover:bg-red-700"
-                  >
-                    <IoIosCloseCircleOutline size={17} />
-                  </button>
-                </td>
-              </tr>
-            ))}
-            <tr className="border font-semibold bg-gray-100">
-              <td colSpan="5" className="text-right pr-4 py-2">
-                Total
-              </td>
-              <td className="text-center">{totalAmount.toFixed(2)}</td>
-              <td></td>
-            </tr>
-          </tbody>
-        </table>
-      </div>
-    </div>
+        <div className="px-[100px] mt-6">
+          <h1 className="font-bold text-[24px] text-[#0A2478] mb-4">
+            Payment Details
+          </h1>
+          <div className="border border-gray-300 rounded-md overflow-hidden shadow-sm">
+            <table className="w-full border-collapse text-sm">
+              <thead>
+                <tr className="bg-[#0A2478] text-white text-center">
+                  <th className="py-2 border">Sr No</th>
+                  <th className="py-2 border">Paid By</th>
+                  <th className="py-2 border">UTR Number</th>
+                  <th className="py-2 border">Bank</th>
+                  <th className="py-2 border">Customer Bank</th>
+                  <th className="py-2 border">Customer Amount</th>
+                  <th className="py-2 border">Action</th>
+                </tr>
+              </thead>
+              <tbody>
+                {PaymentDataForShow.map((row, index) => (
+                  <tr key={index} className="text-center bg-white">
+                    <td className="py-2">{index + 1}</td>
+
+                    <td className="py-2">
+                      <select
+                        value={row.paidBy}
+                        disabled
+                        className="border rounded px-2 py-1"
+                      >
+                        <option>{row.paidBy}</option>
+                      </select>
+                    </td>
+
+                    <td className="py-2">
+                      <input
+                        value={row.utrNumber}
+                        disabled
+                        className="border rounded px-2 py-1"
+                      />
+                    </td>
+
+                    <td className="py-2">
+                      <select
+                        value={row.bank}
+                        disabled
+                        className="border rounded px-2 py-1"
+                      >
+                        <option>{row.bank || "-"}</option>
+                      </select>
+                    </td>
+
+                    <td className="py-2">
+                      <select
+                        value={row.customerBank}
+                        disabled
+                        className="border rounded px-2 py-1"
+                      >
+                        <option>{row.customerBank}</option>
+                      </select>
+                    </td>
+
+                    <td className="py-2">
+                      <input
+                        value={row.customerAmount}
+                        disabled
+                        className="border rounded px-2 py-1"
+                      />
+                    </td>
+
+                    <td></td>
+                  </tr>
+                ))}
+
+                <tr className="border font-semibold bg-gray-100">
+                  <td colSpan="5" className="text-right pr-4 py-2">
+                    Total
+                  </td>
+                  <td className="text-center">
+                    {totalAmountoFTheCustomer.toFixed(2)}
+                  </td>
+                  <td></td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
         {/* ===== Scheme Details & Effective Interest Rates ===== */}
         <div className="flex gap-8 text-xs mx-14 justify-center">
           {/* Scheme Details Table */}
@@ -723,7 +759,7 @@ console.log(interestRates,"interestRates")
               </div>
               <div className="flex border-t border-gray-300">
                 <div className="flex-1 p-2 py-4 border-r border-gray-300 text-center">
-                  {loanData.Loan_Tenure || loanData.loanPeriod || 'N/A'}
+                  {loanData.Loan_Tenure || loanData.loanPeriod || "N/A"}
                 </div>
                 <div className="w-40 p-2 py-4 border-r border-gray-300 text-center">
                   {formatCurrency(loanData.Min_Loan || loanData.minLoanAmount)}
@@ -749,41 +785,37 @@ console.log(interestRates,"interestRates")
                   Effective Interest Rates
                 </div>
               </div>
+              {loanData?.Effective_Interest_Rates?.length > 0 ? (
+                loanData.Effective_Interest_Rates.map((item, index) => {
+                  const label =
+                    loanData?.Scheme_type === "Monthly" ? "MONTHS" : "DAYS";
 
-           
-           {interestRates.length > 0 ? (
-  interestRates.map((item, index) => {
-    const [from, to] = item.term.split("-"); // split "0-30"
-    return (
-      <div
-        key={index}
-        className={`flex ${index % 2 === 0 ? 'bg-[#FFCDCD]' : 'bg-[#E5E5FF]'}`}
-      >
-        <div className="flex-1 p-2 border-r border-white text-center">
-          {from} - {to} DAYS
-        </div>
+                  return (
+                    <div
+                      key={index}
+                      className={`flex ${
+                        index % 2 === 0 ? "bg-[#FFCDCD]" : "bg-[#E5E5FF]"
+                      }`}
+                    >
+                      <div className="flex-1 p-2 border-r border-white text-center">
+                        {item.from} - {item.to} {label}
+                      </div>
 
-        <div className="w-40 p-2 text-center">
-          {item.rate}%
-        </div>
-      </div>
-    );
-  })
-) : (
-  <div className="flex bg-[#FFCDCD]">
-    <div className="flex-1 p-2 border-r border-white text-center">
-      No rates available
-    </div>
-    <div className="w-40 p-2 text-center">-</div>
-  </div>
-)}
-
-
+                      <div className="w-40 p-2 text-center">{item.addInt}%</div>
+                    </div>
+                  );
+                })
+              ) : (
+                <div className="flex bg-[#FFCDCD]">
+                  <div className="flex-1 p-2 border-r border-white text-center">
+                    No rates available
+                  </div>
+                  <div className="w-40 p-2 text-center">-</div>
+                </div>
+              )}
             </div>
           </div>
         </div>
-
-
       </div>
     </div>
   );

@@ -45,7 +45,7 @@ const GoldLoanApproval = () => {
 
   const totalAmount = rows.reduce(
     (sum, row) => sum + parseFloat(row.customerAmount || 0),
-    0
+    0,
   );
 
   const [loanData, setLoanData] = useState(null);
@@ -75,7 +75,7 @@ const GoldLoanApproval = () => {
     try {
       setLoading(true);
       const response = await axios.get(
-        `${API}/Transactions/goldloan/getLoan/${loanId}`
+        `${API}/Transactions/goldloan/getLoan/${loanId}`,
       );
       setLoanData(response.data.loanApplication); // Access the data property
       setLoanSchemeData(response.data.schemeData);
@@ -242,7 +242,7 @@ const GoldLoanApproval = () => {
     // ✅ check here
     if (totalAmount !== loanAmount) {
       alert(
-        `Total Payment Details amount (${totalAmount}) must be equal to Loan Amount (${loanAmount})`
+        `Total Payment Details amount (${totalAmount}) must be equal to Loan Amount (${loanAmount})`,
       );
       return;
     }
@@ -257,7 +257,7 @@ const GoldLoanApproval = () => {
 
       const res = await axios.put(
         `${API}/Transactions/goldloan/approve-loan`,
-        payload
+        payload,
       );
 
       if (res.data && res.data.success) {
@@ -307,26 +307,26 @@ const GoldLoanApproval = () => {
   // Calculate totals from pledge items
   const totalNos = pledgeItems.reduce(
     (sum, item) => sum + (parseInt(item.nos) || 0),
-    0
+    0,
   );
   const totalGross = pledgeItems.reduce(
     (sum, item) => sum + (parseFloat(item.gross) || 0),
-    0
+    0,
   );
   const totalNetWeight = pledgeItems.reduce(
     (sum, item) => sum + (parseFloat(item.netWeight) || 0),
-    0
+    0,
   );
   const totalValuation = pledgeItems.reduce(
     (sum, item) => sum + (parseFloat(item.valuation) || 0),
-    0
+    0,
   );
 
   return (
     <div className="min-h-screen w-full">
       {/* ===== Top Bar ===== */}
-      <div className="flex justify-center">
-        <div className="flex items-center px-6 py-4 border-b mt-5 w-[1290px] h-[62px] border rounded-[11px] border-gray-200 justify-between shadow">
+      <div className="flex justify-center sticky top-[80px]">
+        <div className="flex items-center px-6 py-4 border-b mt-5 w-[1290px] h-[62px] border rounded-[11px] border-gray-200 justify-between shadow bg-white">
           <h2
             style={{
               fontFamily: "Source Sans 3, sans-serif",
@@ -754,7 +754,7 @@ const GoldLoanApproval = () => {
                             handleRowChange(
                               index,
                               "customerBank",
-                              e.target.value
+                              e.target.value,
                             )
                           }
                           className="border border-gray-300 rounded-md px-2 py-1 w-[140px]"
@@ -806,7 +806,7 @@ const GoldLoanApproval = () => {
                             handleRowChange(
                               index,
                               "customerBank",
-                              e.target.value
+                              e.target.value,
                             )
                           }
                           className="border border-gray-300 rounded-md px-2 py-1 w-[140px]"
@@ -828,7 +828,7 @@ const GoldLoanApproval = () => {
                           handleRowChange(
                             index,
                             "customerAmount",
-                            e.target.value
+                            e.target.value,
                           )
                         }
                         style={{

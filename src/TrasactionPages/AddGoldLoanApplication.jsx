@@ -86,7 +86,7 @@ const AddGoldLoanApplication = () => {
       // 📦 Pledge Items
       formDataToSend.append(
         "Pledge_Item_List",
-        JSON.stringify(PledgeItem || [])
+        JSON.stringify(PledgeItem || []),
       );
       formDataToSend.append("Product_Name", selectedScheme.product || 0);
       // formDataToSend.append("Scheme_type", selectedScheme.calcBasisOn || 0);
@@ -110,14 +110,14 @@ const AddGoldLoanApplication = () => {
             ]; // fallback default
       formDataToSend.append(
         "Effective_Interest_Rates",
-        JSON.stringify(effectiveInterestRates)
+        JSON.stringify(effectiveInterestRates),
       );
 
       // 🏢 Misc Info
       formDataToSend.append("approved_by", loginUser);
       formDataToSend.append(
         "approval_date",
-        new Date().toISOString().split("T")[0]
+        new Date().toISOString().split("T")[0],
       );
       formDataToSend.append("branch_id", 1);
 
@@ -127,7 +127,7 @@ const AddGoldLoanApplication = () => {
         formDataToSend,
         {
           headers: { "Content-Type": "multipart/form-data" },
-        }
+        },
       );
 
       alert("✅ Loan Application Saved Successfully!");
@@ -164,7 +164,8 @@ const AddGoldLoanApplication = () => {
   console.log(results, "results");
   const [loading, setLoading] = useState(false);
   const [selectedCustomer, setSelectedCustomer] = useState(null);
-
+  const [CustomerData, setCustomerData] = useState(null);
+  console.log(CustomerData, "CustomerData");
   console.log(selectedCustomer, "selectedCustomer");
   const [selectedCoBorrower, setSelectedCoBorrower] = useState(null);
   const [formData, setFormData] = useState({
@@ -212,9 +213,11 @@ const AddGoldLoanApplication = () => {
       remark: "",
     },
   ]);
-
-  console.log(formData, "formData");
-
+  const [loanData, setLoanData] = useState([]);
+  const [bankDetails, setBankDetails] = useState([]);
+  console.log(bankDetails, "bankDetails");
+  console.log(CustomerData, "CustomerData");
+  console.log(loanData, "loanData");
   const getActiveEmp = async () => {
     try {
       const res = await axios.get(`${API}/Master/getActiveEmployees`, {
@@ -238,38 +241,6 @@ const AddGoldLoanApplication = () => {
     }
   }, [formData.Loan_amount]);
 
-  // useEffect(() => {
-  //   let totalGross = 0;
-  //   let totalNet = 0;
-  //   let totalValuation = 0;
-
-  //   PledgeItem.forEach((item) => {
-  //     totalGross += Number(item.gross) || 0;
-  //     totalNet += Number(item.netWeight) || 0;
-  //     totalValuation += Number(item.valuation) || 0;
-  //   });
-
-  //   // Max loan check
-  //   const maxLoan =
-  //     parseInt(selectedScheme?.maxLoanAmount, 10) || totalValuation;
-  //   const loanAmount = totalValuation > maxLoan ? maxLoan : totalValuation;
-
-  //   // Calculate document charges on capped loan amount
-  //   const docCharges =
-  //     (loanAmount * (selectedScheme?.docChargePercent ?? 0)) / 100;
-
-  //   // Subtract docCharges from loanAmount
-  //   const netPayable = loanAmount - docCharges;
-
-  //   setFormData((prev) => ({
-  //     ...prev,
-  //     Loan_amount: loanAmount.toFixed(2),
-  //     Doc_Charges: docCharges.toFixed(2),
-  //     Net_Payable: netPayable.toFixed(2),
-  //   }));
-  // }, [PledgeItem, selectedScheme]);
-
-  // logic to calculate loan, doc charges, net payable
   useEffect(() => {
     debugger;
     let totalGross = 0;
@@ -322,7 +293,7 @@ const AddGoldLoanApplication = () => {
     }
 
     // Net Payable
-    const netPayable = loan + interestAmount - docCharges;
+    const netPayable = loan + interestAmount;
 
     setFormData((prev) => ({
       ...prev,
@@ -378,7 +349,7 @@ const AddGoldLoanApplication = () => {
     }
 
     // ---- Net Payable ----
-    const netPayable = loan + interestAmount - docCharges;
+    const netPayable = loan + interestAmount;
 
     setFormData((prev) => ({
       ...prev,
@@ -401,7 +372,7 @@ const AddGoldLoanApplication = () => {
       try {
         setLoading(true);
         const res = await axios.get(
-          `${API}/Master/doc/Customer_list?search=${searchTerm}`
+          `${API}/Master/doc/Customer_list?search=${searchTerm}`,
         );
         setResults(res.data);
       } catch (err) {
@@ -424,7 +395,7 @@ const AddGoldLoanApplication = () => {
       try {
         setLoading(true);
         const res = await axios.get(
-          `${API}/Master/doc/Customer_list?search=${searchTermForCoBorrower}`
+          `${API}/Master/doc/Customer_list?search=${searchTermForCoBorrower}`,
         );
         setResults2(res.data);
       } catch (err) {
@@ -453,39 +424,18 @@ const AddGoldLoanApplication = () => {
     };
     setRows([...rows, newRow]);
   };
-
+  const Handleclosed = () => {
+    setShowCustomerModal(false);
+    setCustomerData(null);
+    setLoanData(null);
+    setBankDetails(null);
+  };
   // ❌ Delete specific row
   const handleDeleteRow = (id) => {
     const updatedRows = rows.filter((row) => row.id !== id);
     setRows(updatedRows);
   };
 
-  // const handleSelectCustomer = (customer ,type) => {
-  //   setSelectedremarkModel(true)
-  //  if (type === "Borrower") {
-  //   setSelectedBorrowerRemark(customer.Remark);
-  // }
-
-  //   setSelectedCustomer(customer);
-  //   setSearchTerm(customer.firstName); // show name in input
-  //   setResults([]); // hide dropdown
-
-  //   setFormData((prev) => ({
-  //     ...prev,
-  //     borrowerName: customer.firstName || "",
-  //     printName: customer.printName || "",
-  //     mobile: customer.mobile || "",
-  //     altMobile: customer.altMobile || "",
-  //     email: customer.email || "",
-  //     panNo: customer.panNo || "",
-  //     aadhar: customer.aadhar || "",
-  //     Borrower_ProfileImg: customer.profileImage || "",
-  //     Borrower_signature: customer.signature || "",
-  //     borrowerAddress: `${customer.Permanent_Address || ""}, ${customer.Permanent_City || ""}, ${customer.Permanent_State || ""}, ${customer.Permanent_Country || ""} - ${customer.Permanent_Pincode || ""}`,
-  //     Nominee_Name: customer.Nominee_NomineeName || "",
-  //     NomineeRelation: customer.Nominee_Relation || "",
-  //   }));
-  // };
   const handleSelectCustomer = (customer, type) => {
     debugger;
     // 1️⃣ Close dropdown immediately
@@ -663,6 +613,23 @@ const AddGoldLoanApplication = () => {
     let words = convertMillions(numValue);
     return words.trim() + " only";
   };
+
+  const OpenCustomerModel = async (id) => {
+    try {
+      setShowCustomerModal(true);
+
+      const res = await axios.get(`${API}/Transactions/loan-by-customer/${id}`);
+
+      if (res.data.success) {
+        setLoanData(res.data.loanData);
+        setBankDetails(res.data.bankDetails);
+        setCustomerData(res.data.loanData[0]); // customer info is same in all
+      }
+    } catch (err) {
+      console.error(err);
+    }
+  };
+
   return (
     <div className="min-h-screen  ">
       {/* ===== Top Bar ===== */}
@@ -750,7 +717,8 @@ const AddGoldLoanApplication = () => {
                   <button
                     className="bg-[#0A2478] text-white px-4 py-3 rounded-r border border-gray-300 border-l-0 hover:bg-[#081c5b]"
                     type="button"
-                    onClick={() => setShowCustomerModal(true)} // <--- ADD
+                    // onClick={() => setShowCustomerModal(true)} // <--- ADD
+                    onClick={() => OpenCustomerModel(selectedCustomer.id)}
                   >
                     <img src={timesvg} alt="eye" />
                   </button>
@@ -879,7 +847,7 @@ const AddGoldLoanApplication = () => {
                   <button
                     className="bg-[#0A2478] text-white px-4 py-3 rounded-r border border-gray-300 border-l-0 hover:bg-[#081c5b]"
                     type="button"
-                    onClick={() => setShowCustomerModal(true)} // <--- ADD
+                    onClick={() => OpenCustomerModel(selectedCoBorrower.id)} // <--- ADD
                   >
                     <img src={timesvg} alt="eye" />
                   </button>
@@ -1100,7 +1068,7 @@ const AddGoldLoanApplication = () => {
                 // ---- Document Charges ----
                 let docCharges = 0;
                 const docPercent = Number(
-                  selectedScheme?.docChargePercent || 0
+                  selectedScheme?.docChargePercent || 0,
                 );
 
                 if (inputLoan > 0 && docPercent > 0) {
@@ -1108,7 +1076,7 @@ const AddGoldLoanApplication = () => {
 
                   const minDoc = Number(selectedScheme?.docChargeMin || 0);
                   const maxDoc = Number(
-                    selectedScheme?.docChargeMax || Infinity
+                    selectedScheme?.docChargeMax || Infinity,
                   );
 
                   docCharges = Math.max(minDoc, Math.min(docCharges, maxDoc));
@@ -1312,7 +1280,7 @@ const AddGoldLoanApplication = () => {
                 </h2>
 
                 <button
-                  onClick={() => setShowCustomerModal(false)}
+                  onClick={() => Handleclosed()}
                   className="text-red-600 font-bold text-[20px] hover:opacity-70"
                 >
                   ×
@@ -1390,20 +1358,37 @@ const AddGoldLoanApplication = () => {
                   </thead>
 
                   <tbody className="text-[12px]">
-                    <tr className="border-b bg-gray-50">
-                      <td className="px-4 py-2">HDFC Bank</td>
-                      <td className="px-4 py-2">Rahul Sharma</td>
-                      <td className="px-4 py-2">123456789012</td>
-                      <td className="px-4 py-2">HDFC0000123</td>
-                      <td className="px-4 py-2">Bandra West, Mumbai</td>
-                      <td className="px-4 py-2">
-                        <img
-                          src={"/assets/cancel_cheque.png"}
-                          alt="Cancel Cheque"
-                          className="w-[80px] h-[35px] object-cover border rounded"
-                        />
-                      </td>
-                    </tr>
+                    {bankDetails?.length > 0 ? (
+                      bankDetails.map((b, i) => (
+                        <tr key={i} className="border-b">
+                          <td className="px-4 py-2">{b.bankName}</td>
+                          <td className="px-4 py-2">{b.Customer_Name}</td>
+                          <td className="px-4 py-2">{b.Account_No}</td>
+                          <td className="px-4 py-2">{b.IFSC}</td>
+                          <td className="px-4 py-2">{b.Bank_Address}</td>
+                          <td className="px-4 py-2">
+                            {b.cancelCheque ? (
+                              <img
+                                src={`${API}/uploadDoc/bank_documents/${b.cancelCheque}`}
+                                alt="Cancel Cheque"
+                                className="w-[80px] h-[35px] object-cover border rounded"
+                              />
+                            ) : (
+                              <span className="text-red-500">N/A</span>
+                            )}
+                          </td>
+                        </tr>
+                      ))
+                    ) : (
+                      <tr>
+                        <td
+                          colSpan="6"
+                          className="text-center py-3 text-gray-500"
+                        >
+                          No bank details found
+                        </td>
+                      </tr>
+                    )}
                   </tbody>
                 </table>
               </div>
@@ -1444,25 +1429,45 @@ const AddGoldLoanApplication = () => {
                   </thead>
 
                   <tbody className="text-[12px]">
-                    <tr className="border-b bg-gray-50">
-                      <td className="px-4 py-2">LN-0001</td>
-                      <td className="px-4 py-2">05-11-2025</td>
-                      <td className="px-4 py-2">₹1,50,000</td>
-                      <td className="px-4 py-2">Gold Scheme A</td>
-                      <td className="px-4 py-2">15-11-2025</td>
-                      <td className="px-4 py-2">₹4,200</td>
-                      <td className="px-4 py-2">₹1,54,200</td>
-                      <td className="px-4 py-2 text-green-600 font-semibold">
-                        Active
-                      </td>
-                      <td className="px-4 py-2">
-                        <img
-                          src={"/assets/ornament1.png"}
-                          alt="Ornament"
-                          className="w-[80px] h-[45px] object-cover border rounded"
-                        />
-                      </td>
-                    </tr>
+                    {loanData?.map((l, i) => (
+                      <tr key={i} className="border-b">
+                        <td className="px-4 py-2">{l.id}</td>
+                        <td className="px-4 py-2">
+                          {new Date(l.created_at).toLocaleDateString()}
+                        </td>
+                        <td className="px-4 py-2">
+                          ₹{Number(l.Loan_amount).toLocaleString()}
+                        </td>
+                        <td className="px-4 py-2">{l.Scheme}</td>
+                        <td className="px-4 py-2">{l.InterestPaidUpto}</td>
+                        <td className="px-4 py-2">
+                          ₹{l.InterestDueAmount || 0}
+                        </td>
+                        <td className="px-4 py-2">
+                          ₹{Number(l.LoanPendingAmount || 0).toLocaleString()}
+                        </td>
+                        <td
+                          className={`px-4 py-2 font-semibold ${
+                            l.status === "Closed"
+                              ? "text-red-600"
+                              : "text-green-600"
+                          }`}
+                        >
+                          {l.status}
+                        </td>
+                        <td className="px-4 py-2">
+                          {l.Ornament_Photo ? (
+                            <img
+                              src={`https://slfuatbackend.1on1screen.com/uploads/ornaments/${l.Ornament_Photo}`}
+                              alt="Ornament"
+                              className="w-[80px] h-[45px] object-cover border rounded"
+                            />
+                          ) : (
+                            <span className="text-gray-400">N/A</span>
+                          )}
+                        </td>
+                      </tr>
+                    ))}
                   </tbody>
                 </table>
               </div>

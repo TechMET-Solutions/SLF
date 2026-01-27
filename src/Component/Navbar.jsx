@@ -4,13 +4,12 @@ import {
   FiChevronDown,
   FiChevronRight,
   FiChevronUp,
-  FiLogOut
+  FiLogOut,
 } from "react-icons/fi";
 import { TfiReload } from "react-icons/tfi";
 import { Link } from "react-router-dom";
 
 const Navbar = () => {
-
   const [isBranchModelOpen, setIsBranchModelOpen] = useState(false);
   const [selectedBranch, setSelectedBranch] = useState("Nashik Road"); // default branch
   const [selectedYear, setSelectedYear] = useState("2025");
@@ -26,10 +25,14 @@ const Navbar = () => {
   };
   // Masters
   const [isMasterOpen, setIsMasterOpen] = useState(false);
+  const [isReportsOpen, setIsReportsOpen] = useState(false);
   const [isMasterProfileOpen, setIsMasterProfileOpen] = useState(false);
+  const [isReportsTransaction, setIsReportsTransaction] = useState(false);
   const [isMasterSchemeMaster, setIsMasterSchemeMaster] = useState(false);
-  const [isMasterSchemeEmployeeProfile, setIsMasterSchemeEmployeeProfile] = useState(false);
-  const [isMasterSchemeUserManagement, setIsMasterSchemeUserManagement] = useState(false);
+  const [isMasterSchemeEmployeeProfile, setIsMasterSchemeEmployeeProfile] =
+    useState(false);
+  const [isMasterSchemeUserManagement, setIsMasterSchemeUserManagement] =
+    useState(false);
 
   // Transactions
   const [isTransactionsOpen, setIsTransactionsOpen] = useState(false);
@@ -40,7 +43,6 @@ const Navbar = () => {
   const [isToolsOpen, setIsToolsOpen] = useState(false);
   const [isSettingsOpen, setIsSettingsOpen] = useState(false);
 
-
   const dropdownRef = useRef(null);
 
   function convertPermissions(permissions) {
@@ -48,26 +50,25 @@ const Navbar = () => {
 
     if (!permissions || typeof permissions !== "object") return result;
 
-    Object.keys(permissions)?.forEach(section => {
+    Object.keys(permissions)?.forEach((section) => {
       // ensure section is an array
       if (!Array.isArray(permissions[section])) return;
 
       result[section] = {};
 
-      permissions[section].forEach(item => {
+      permissions[section].forEach((item) => {
         result[section][item.name] = {
           view: item.view,
           add: item.add,
           edit: item.edit,
           delete: item.delete,
-          approve: item.approve
+          approve: item.approve,
         };
       });
     });
 
     return result;
   }
-
 
   const userData = JSON.parse(sessionStorage.getItem("userData") || "{}");
 
@@ -90,10 +91,7 @@ const Navbar = () => {
   // ✅ Close all dropdowns when clicking outside
   useEffect(() => {
     const handleClickOutside = (event) => {
-      if (
-        dropdownRef.current &&
-        !dropdownRef.current.contains(event.target)
-      ) {
+      if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
         setIsMasterOpen(false);
         setIsMasterProfileOpen(false);
         setIsMasterSchemeMaster(false);
@@ -110,26 +108,25 @@ const Navbar = () => {
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
 
-
-
   const handleLogout = () => {
-    sessionStorage.clear();      // remove all saved data
-    window.location.href = "/login";   // redirect to login
+    sessionStorage.clear(); // remove all saved data
+    window.location.href = "/login"; // redirect to login
   };
 
   const isAdmin = window.userIsAdmin;
 
   const masterPermissions = isAdmin ? "all" : userPermissions.Master || {};
-  const TrasactionPermissions = isAdmin ? "all" : userPermissions.Transaction || {};
+  const TrasactionPermissions = isAdmin
+    ? "all"
+    : userPermissions.Transaction || {};
 
   const canSeeMaster = isAdmin
     ? true
-    : Object.values(masterPermissions).some(p => p.view === true);
+    : Object.values(masterPermissions).some((p) => p.view === true);
 
   const canSeeScheme = isAdmin
     ? true
-    : Object.values(TrasactionPermissions).some(p => p.view === true);
-
+    : Object.values(TrasactionPermissions).some((p) => p.view === true);
 
   const masterProfileItems = [
     "Account Group",
@@ -140,17 +137,14 @@ const Navbar = () => {
     "Document Proof",
     "Push Gold Rate",
     "Charges Profile",
-    "Area"
+    "Area",
   ];
 
   const canSeeMasterProfile = isAdmin
     ? true
-    : masterProfileItems.some(
-      (name) => masterPermissions[name]?.view === true
-    );
+    : masterProfileItems.some((name) => masterPermissions[name]?.view === true);
 
-  console.log(canSeeMasterProfile, "canSeeMasterProfile")
-
+  console.log(canSeeMasterProfile, "canSeeMasterProfile");
 
   const masterProfileList = [
     { name: "Account Group", path: "/account-groups" },
@@ -164,24 +158,40 @@ const Navbar = () => {
     { name: "Area", path: "/Area" },
   ];
 
-
+  const ReportTrasaction = [
+    { name: "Loan Application History", path: "/loan_application_history" },
+    { name: "Interest Due Report", path: "/interest_due_report" },
+    { name: "Outstanding Amount Report", path: "/outstanding_amount_report" },
+    { name: "Interest Collection Report", path: "/interest_collection_report" },
+    { name: "Loan Ledger", path: "/loan-ledger" },
+    { name: "Loan Cancellation Report", path: "/loan-cancellation-report" },
+    { name: "Gold Stock Report", path: "/gold_stock_report" },
+    { name: "Loan Risk Report", path: "/loan-risk-report" },
+     { name: "Loan Statement", path: "/loan-statement" },
+    { name: "NPA Report", path: "/npa-report" },
+      { name: "Loan Details", path: "/loan-details" },
+      { name: "Legal Notice Report", path: "/legal-notice-report" },
+  ];
   const filteredMasterProfile = isAdmin
     ? masterProfileList
     : masterProfileList.filter(
-      (item) => masterPermissions[item.name]?.view === true
-    );
-
+        (item) => masterPermissions[item.name]?.view === true,
+      );
+ const filteredReporttrasaction = isAdmin
+    ? ReportTrasaction
+    : ReportTrasaction.filter(
+        (item) => masterPermissions[item.name]?.view === true,
+      );
   const schemeMasterItems = [
     { name: "Scheme Details", path: "/Scheme-Details-List" },
     { name: "Scheme Branch Mapping", path: "/Branch-Scheme-Mapping-List" },
   ];
 
-
   const filteredSchemeMaster = isAdmin
     ? schemeMasterItems
     : schemeMasterItems.filter(
-      (item) => masterPermissions[item.name]?.view === true
-    );
+        (item) => masterPermissions[item.name]?.view === true,
+      );
 
   const canSeeSchemeMaster = filteredSchemeMaster.length > 0;
 
@@ -193,16 +203,13 @@ const Navbar = () => {
     { name: "Employee Designation", path: "/Employee-Designation" },
   ];
 
-
   const filteredEmployeeProfile = isAdmin
     ? employeeProfileItems
     : employeeProfileItems.filter(
-      (item) => masterPermissions[item.name]?.view === true
-    );
-
+        (item) => masterPermissions[item.name]?.view === true,
+      );
 
   const canSeeEmployeeProfile = filteredEmployeeProfile.length > 0;
-
 
   const userManagementItems = [
     { name: "User Role Permission", path: "/User-Role-Permission" },
@@ -212,34 +219,33 @@ const Navbar = () => {
   const filteredUserManagement = isAdmin
     ? userManagementItems
     : userManagementItems.filter(
-      (item) => masterPermissions[item.name]?.view === true
-    );
+        (item) => masterPermissions[item.name]?.view === true,
+      );
 
   const canSeeUserManagement = filteredUserManagement.length > 0;
 
-
   const loanItems = [
     { name: "Loan Application", path: "/Loan-Application" },
-    { name: "Loan Charges List", path: "/Loan-Charges-List" }
+    { name: "Loan Charges List", path: "/Loan-Charges-List" },
   ];
 
   const customerProfileItem = {
     name: "Customer Profile",
-    path: "/Customer-Profile-List"
+    path: "/Customer-Profile-List",
   };
-
 
   const auctionItems = [
     { name: "Auction Creation", path: "/Auction-Creation" },
     { name: "Bidder Registration", path: "/Bidder-Registration-List" },
     { name: "Auction Application", path: "/Auction_Application_form" },
-    { name: "Credit Note", path: "/Credit-Note" }
+    { name: "Credit Note", path: "/Credit-Note" },
   ];
-
 
   const filteredLoan = isAdmin
     ? loanItems
-    : loanItems.filter(item => TrasactionPermissions[item.name]?.view === true);
+    : loanItems.filter(
+        (item) => TrasactionPermissions[item.name]?.view === true,
+      );
 
   const canSeeLoan = filteredLoan.length > 0;
 
@@ -249,22 +255,26 @@ const Navbar = () => {
 
   const filteredAuction = isAdmin
     ? auctionItems
-    : auctionItems.filter(item => TrasactionPermissions[item.name]?.view === true);
+    : auctionItems.filter(
+        (item) => TrasactionPermissions[item.name]?.view === true,
+      );
 
   const canSeeAuction = filteredAuction.length > 0;
-
 
   const canSeeTransactions =
     canSeeLoan || canSeeCustomerProfile || canSeeAuction;
 
   return (
-   <div className="flex justify-center sticky top-0 z-50 bg-transparent">
+    <div className="flex justify-center sticky top-0 z-50 bg-transparent">
       <div className="bg-[#0A2478] text-white flex items-center justify-between relative mt-5 p-5 w-[1360px] h-[50px] rounded-[10px]">
         {/* Left side placeholder */}
         <div className="flex items-center gap-3">
-          <img src="/logo.svg" alt="Logo" className="w-12 h-12 object-contain" />
+          <img
+            src="/logo.svg"
+            alt="Logo"
+            className="w-12 h-12 object-contain"
+          />
         </div>
-
 
         {/* ===== Center Menu ===== */}
         <div
@@ -273,8 +283,6 @@ const Navbar = () => {
         >
           {/* ================== MASTERS ================== */}
           <div className="relative">
-
-
             {canSeeMaster && (
               <button
                 className="hover:underline text-[20px] flex items-center gap-1"
@@ -304,7 +312,11 @@ const Navbar = () => {
                       }}
                     >
                       Master Profile
-                      {isMasterProfileOpen ? <FiChevronDown /> : <FiChevronRight />}
+                      {isMasterProfileOpen ? (
+                        <FiChevronDown />
+                      ) : (
+                        <FiChevronRight />
+                      )}
                     </button>
                   )}
 
@@ -322,12 +334,10 @@ const Navbar = () => {
                       ))}
                     </div>
                   )}
-
                 </div>
 
                 {/* Scheme Master */}
                 <div className="relative">
-
                   {canSeeSchemeMaster && (
                     <button
                       className="w-full text-left px-4 py-2 hover:bg-gray-100 flex justify-between items-center"
@@ -339,10 +349,13 @@ const Navbar = () => {
                       }}
                     >
                       Scheme Master
-                      {isMasterSchemeMaster ? <FiChevronDown /> : <FiChevronRight />}
+                      {isMasterSchemeMaster ? (
+                        <FiChevronDown />
+                      ) : (
+                        <FiChevronRight />
+                      )}
                     </button>
                   )}
-
 
                   {isMasterSchemeMaster && canSeeSchemeMaster && (
                     <div className="absolute top-0 left-full ml-1 w-[200px] bg-white text-black rounded shadow-lg flex flex-col gap-1">
@@ -358,7 +371,6 @@ const Navbar = () => {
                       ))}
                     </div>
                   )}
-
                 </div>
 
                 {/* Employee Profile */}
@@ -367,7 +379,9 @@ const Navbar = () => {
                     <button
                       className="w-full text-left px-4 py-2 hover:bg-gray-100 flex justify-between items-center"
                       onClick={() => {
-                        setIsMasterSchemeEmployeeProfile(!isMasterSchemeEmployeeProfile);
+                        setIsMasterSchemeEmployeeProfile(
+                          !isMasterSchemeEmployeeProfile,
+                        );
                         setIsMasterProfileOpen(false);
                         setIsMasterSchemeMaster(false);
                         setIsMasterSchemeUserManagement(false);
@@ -381,7 +395,6 @@ const Navbar = () => {
                       )}
                     </button>
                   )}
-
 
                   {isMasterSchemeEmployeeProfile && canSeeEmployeeProfile && (
                     <div className="absolute top-0 left-full ml-1 w-[200px] bg-white text-black rounded shadow-lg flex flex-col gap-1">
@@ -397,7 +410,6 @@ const Navbar = () => {
                       ))}
                     </div>
                   )}
-
                 </div>
 
                 {/* User Management */}
@@ -406,7 +418,9 @@ const Navbar = () => {
                     <button
                       className="w-full text-left px-4 py-2 hover:bg-gray-100 flex justify-between items-center"
                       onClick={() => {
-                        setIsMasterSchemeUserManagement(!isMasterSchemeUserManagement);
+                        setIsMasterSchemeUserManagement(
+                          !isMasterSchemeUserManagement,
+                        );
                         setIsMasterProfileOpen(false);
                         setIsMasterSchemeMaster(false);
                         setIsMasterSchemeEmployeeProfile(false);
@@ -421,10 +435,8 @@ const Navbar = () => {
                     </button>
                   )}
 
-
                   {isMasterSchemeUserManagement && canSeeUserManagement && (
                     <div className="absolute top-0 left-full ml-1 w-[200px] bg-white text-black rounded shadow-lg flex flex-col gap-1">
-
                       {filteredUserManagement.map((item) => (
                         <Link
                           key={item.path}
@@ -435,10 +447,8 @@ const Navbar = () => {
                           {item.name}
                         </Link>
                       ))}
-
                     </div>
                   )}
-
                 </div>
               </div>
             )}
@@ -446,8 +456,6 @@ const Navbar = () => {
 
           {/* ================== TRANSACTIONS ================== */}
           <div className="relative">
-
-
             {canSeeScheme && (
               <button
                 className="hover:underline text-[20px] flex items-center gap-1"
@@ -468,7 +476,6 @@ const Navbar = () => {
 
             {isTransactionsOpen && canSeeTransactions && (
               <div className="absolute top-full left-0 mt-2 bg-white text-black rounded shadow-lg w-[200px] z-50">
-
                 {/* 🔹 Loan Section */}
                 {canSeeLoan && (
                   <div className="relative">
@@ -485,7 +492,7 @@ const Navbar = () => {
 
                     {isGoldLoanOpen && (
                       <div className="absolute top-0 left-full ml-1 w-[200px] bg-white text-black rounded shadow-lg flex flex-col gap-1 z-50 text-sm">
-                        {filteredLoan.map(item => (
+                        {filteredLoan.map((item) => (
                           <Link
                             key={item.path}
                             to={item.path}
@@ -534,7 +541,7 @@ const Navbar = () => {
 
                     {isAuctionOpen && (
                       <div className="absolute top-0 left-full ml-1 w-[200px] bg-white text-black rounded shadow-lg flex flex-col gap-1 z-50">
-                        {filteredAuction.map(item => (
+                        {filteredAuction.map((item) => (
                           <Link
                             key={item.path}
                             to={item.path}
@@ -551,19 +558,76 @@ const Navbar = () => {
                     )}
                   </div>
                 )}
+              </div>
+            )}
+          </div>
 
+          {/* ================== OTHER BUTTONS ================== */}
+          {/* <button className="hover:underline text-[20px]">Miscellaneous</button> */}
+          {/* <button className="hover:underline text-[20px]">Reports</button> */}
+          <div className="relative">
+<button
+            className="hover:underline text-[20px] flex items-center gap-1"
+            onClick={() => {
+              setIsReportsOpen(!isReportsOpen);
+              setIsMasterOpen(false);
+              setIsTransactionsOpen(false);
+              setIsToolsOpen(false);
+            }}
+          >
+            Reports
+            {isReportsOpen ? <FiChevronUp /> : <FiChevronDown />}
+          </button>
+           {isReportsOpen && (
+              <div className="absolute top-full  mt-2 bg-white text-black rounded shadow-lg w-[200px] z-50">
+                {/* Master Profile */}
+                <div className="relative">
+                  {canSeeMasterProfile && (
+                    <button
+                      className="w-full text-left px-4 py-2 hover:bg-gray-100 flex justify-between items-center"
+                      onClick={() => {
+                        setIsReportsTransaction(!isReportsTransaction);
+                        // setIsMasterSchemeMaster(false);
+                        // setIsMasterSchemeEmployeeProfile(false);
+                        // setIsMasterSchemeUserManagement(false);
+                      }}
+                    >
+                     Trasaction Reports
+                      {isReportsTransaction ? (
+                        <FiChevronDown />
+                      ) : (
+                        <FiChevronRight />
+                      )}
+                    </button>
+                  )}
+
+                  {isReportsTransaction && (
+                    <div className="absolute top-0 left-full ml-1 w-[200px] bg-white text-black rounded shadow-lg flex flex-col text-sm">
+                      {filteredReporttrasaction.map((item) => (
+                        <Link
+                          key={item.path}
+                          to={item.path}
+                          className="px-4 py-2 hover:bg-gray-100"
+                          onClick={() => setIsMasterOpen(false)}
+                        >
+                          {item.name}
+                        </Link>
+                      ))}
+                    </div>
+                  )}
+                </div>
+
+               
+
+               
               </div>
             )}
 
           </div>
-
-          {/* ================== OTHER BUTTONS ================== */}
-          <button className="hover:underline text-[20px]">Miscellaneous</button>
-          <button className="hover:underline text-[20px]">Reports</button>
           
           {/* ================== TOOLS/UTILITIES ================== */}
           <div className="relative">
-            <button 
+            <button
               className="hover:underline text-[20px] flex items-center gap-1"
               onClick={() => {
                 setIsToolsOpen(!isToolsOpen);
@@ -583,9 +647,7 @@ const Navbar = () => {
                     className="w-full text-left px-4 py-2 hover:bg-gray-100 flex justify-between items-center"
                     onClick={() => setIsSettingsOpen(!isSettingsOpen)}
                   >
-                    <div className="flex items-center gap-2">
-                      Settings
-                    </div>
+                    <div className="flex items-center gap-2">Settings</div>
                     {isSettingsOpen ? <FiChevronDown /> : <FiChevronRight />}
                   </button>
 
@@ -628,12 +690,10 @@ const Navbar = () => {
               </div>
             )}
           </div>
-
         </div>
 
         {/* ===== Logout Button ===== */}
         <div className="flex gap-3">
-
           <button
             onClick={() => setIsBranchModelOpen(true)}
             className="w-[150px] h-[40px] flex items-center gap-2 justify-center bg-white rounded-[4.8px] text-[#0b2c69] font-medium border border-gray-300"
@@ -649,7 +709,6 @@ const Navbar = () => {
               <FiLogOut className="text-xl" />
             </span>
           </button>
-
         </div>
         {/* modelforAdd */}
         {isBranchModelOpen && (

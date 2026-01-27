@@ -273,6 +273,17 @@ import TermsOfService from "./Component/TermsOfService";
 import About from "./Component/about";
 import Contactus from "./Component/contactus";
 import Footer from "./Component/footer";
+import GoldStockReport from "./Report/Gold_stock_report.jsx";
+import InterestCollectionReport from "./Report/Interest_collection_report.jsx";
+import Interest_due_report from "./Report/Interest_due_report.jsx";
+import Legal_notice_report from "./Report/Legal_notice_report.jsx";
+import LoanStatement from "./Report/Loan-statement.jsx";
+import LoanDetails from "./Report/Loan_details.jsx";
+import LoanRiskReport from "./Report/Loan_risk_report.jsx";
+import LoanCancellationReport from "./Report/Loancancellationreport.jsx";
+import NpaReport from "./Report/Npa_report.jsx";
+import Outstanding_amount_report from "./Report/Outstanding_amount_report.jsx";
+import Loan_application_history from "./Report/loan_application_history.jsx";
 import GracePeriod from "./Tools/GracePeriod";
 import AddAuctionCreation from "./TrasactionPages/AddAuctionCreation";
 import AddCreditNotePage from "./TrasactionPages/AddCreditNotePage";
@@ -308,7 +319,6 @@ import ViewBidderDetails from "./TrasactionPages/ViewBidderDetails";
 import ViewCreditNote from "./TrasactionPages/ViewCreditNote";
 import ViewLoanCharges from "./TrasactionPages/ViewLoanCharges";
 import ViewLoanDetails from "./TrasactionPages/ViewLoanDeatils";
-
 // ---------------- LAYOUT WRAPPER ----------------
 function LayoutWithNavbar({ children }) {
   const location = useLocation();
@@ -456,6 +466,41 @@ function App() {
                   <Route
                     path="/Loan-Application"
                     element={<LoanApplication />}
+                  />
+                  <Route
+                    path="/loan_application_history"
+                    element={<Loan_application_history />}
+                  />
+                  <Route path="/loan-statement" element={<LoanStatement />} />
+                  <Route path="/loan-details" element={<LoanDetails />} />
+                  <Route path="/npa-report" element={<NpaReport />} />
+                  <Route
+                    path="/interest_due_report"
+                    element={<Interest_due_report />}
+                  />
+                  <Route
+                    path="/legal-notice-report"
+                    element={<Legal_notice_report />}
+                  />
+                  <Route
+                    path="/loan-risk-report"
+                    element={<LoanRiskReport />}
+                  />
+                  <Route
+                    path="/gold_stock_report"
+                    element={<GoldStockReport />}
+                  />
+                  <Route
+                    path="/interest_collection_report"
+                    element={<InterestCollectionReport />}
+                  />
+                  <Route
+                    path="/loan-cancellation-report"
+                    element={<LoanCancellationReport />}
+                  />
+                  <Route
+                    path="/outstanding_amount_report"
+                    element={<Outstanding_amount_report />}
                   />
                   <Route path="/Cancelled-Loan" element={<CancelledLoan />} />
                   <Route

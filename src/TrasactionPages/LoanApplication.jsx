@@ -1265,20 +1265,20 @@ const LoanApplication = () => {
                         if (st === "closed") {
                           return (
                             <div className="flex gap-2 justify-center">
-                              <IconButton
+                              {/* <IconButton
                                 onClick={goEdit(row)}
                                 title="Edit"
                                 bg="bg-blue-500 text-white"
                               >
                                 <CiEdit className="w-[20px] h-[20px]" />
-                              </IconButton>
-                              <IconButton
+                              </IconButton> */}
+                              {/* <IconButton
                                 onClick={goUpload(row)}
                                 title="Upload"
                                 bg="bg-green-600 text-white"
                               >
                                 <CgSoftwareUpload className="w-[20px] h-[20px]" />
-                              </IconButton>
+                              </IconButton> */}
                               <IconButton
                                 onClick={() => handleOpenRemark(row)}
                                 title="Message"
