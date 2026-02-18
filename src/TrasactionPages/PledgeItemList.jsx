@@ -209,7 +209,7 @@ console.log(purities,"purities")
                     onChange={(e) =>
                       handleChange(index, "particular", e.target.value)
                     }
-                    className="border border-gray-300 rounded-md px-2 py-1 w-[200px] focus:outline-none focus:ring-1 focus:ring-blue-500"
+                    className="border border-gray-300 rounded-md px-2 py-1 w-[200px] focus:outline-none focus:ring-1 focus:ring-blue-500 bg-white"
                   >
                     <option value="">Select Particular</option>
                     {pledgeItems.map((item, idx) => (
@@ -233,7 +233,7 @@ console.log(purities,"purities")
                         MozAppearance: "textfield",
                       }}
                       onWheel={(e) => e.target.blur()}
-                    className="border border-gray-300 rounded-md px-2 py-1  w-[80px] focus:outline-none focus:ring-1 focus:ring-blue-500"
+                    className="border border-gray-300 rounded-md px-2 py-1  w-[80px] focus:outline-none focus:ring-1 focus:ring-blue-500 bg-white"
                   />
                 </td>
 
@@ -248,7 +248,7 @@ console.log(purities,"purities")
                         MozAppearance: "textfield",
                       }}
                       onWheel={(e) => e.target.blur()}
-                    className="border border-gray-300 rounded-md px-2 py-1   w-[80px] focus:outline-none focus:ring-1 focus:ring-blue-500"
+                    className="border border-gray-300 rounded-md px-2 py-1   w-[80px] focus:outline-none focus:ring-1 focus:ring-blue-500 bg-white"
                   />
                 </td>
 
@@ -256,7 +256,7 @@ console.log(purities,"purities")
   <select
     value={row.purity}
     onChange={(e) => handleChange(index, "purity", e.target.value)}
-    className="border border-gray-300 rounded-md px-2 py-1 w-[120px] focus:outline-none focus:ring-1 focus:ring-blue-500"
+    className="border border-gray-300 rounded-md px-2 py-1 w-[120px] focus:outline-none focus:ring-1 focus:ring-blue-500 bg-white"
   >
     <option value="">Select Purity</option>
     {purities.map((p) => (
@@ -272,7 +272,7 @@ console.log(purities,"purities")
   <select
     value={row.Calculated_Purity}
     onChange={(e) => handleChange(index, "Calculated_Purity", e.target.value)}
-    className="border border-gray-300 rounded-md px-2 py-1 w-[120px]  focus:outline-none focus:ring-1 focus:ring-blue-500"
+    className="border border-gray-300 rounded-md px-2 py-1 w-[120px]  focus:outline-none focus:ring-1 focus:ring-blue-500 bg-white"
   >
     <option value="">Select Calculated Purity</option>
     {purities.map((p) => (
@@ -297,7 +297,7 @@ console.log(purities,"purities")
                       handleChange(index, "remark", e.target.value)
                     }
                     placeholder="Enter remark"
-                    className="border border-gray-300 rounded-md px-2 py-1 w-[200px] focus:outline-none focus:ring-1 focus:ring-blue-500"
+                    className="border border-gray-300 rounded-md px-2 py-1 w-[180px] focus:outline-none focus:ring-1 focus:ring-blue-500 bg-white"
                   />
                   <div className="flex gap-2 ml-2">
                     <button

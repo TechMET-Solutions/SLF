@@ -1,8 +1,7 @@
 import { useEffect, useState } from "react";
-import { HiMagnifyingGlass, HiMiniArrowsUpDown } from "react-icons/hi2";
+import { HiMagnifyingGlass } from "react-icons/hi2";
 import { useNavigate } from "react-router-dom";
 import { API } from "../api";
-
 
 function AddAuctionCreation() {
   useEffect(() => {
@@ -19,30 +18,27 @@ function AddAuctionCreation() {
     charges: "",
   });
   const [loanData, setLoanData] = useState([]);
-  console.log(loanData,"loanData")
+  console.log(loanData, "loanData");
   const [page, setPage] = useState(1);
   const [limit] = useState(10);
   const [totalPages, setTotalPages] = useState(1);
   const [loading, setLoading] = useState(false);
   const [search, setSearch] = useState("");
 
-
   const handleInputChange = (e) => {
     const { name, value } = e.target;
     setFormData((prev) => ({ ...prev, [name]: value }));
   };
-const [selectedLoans, setSelectedLoans] = useState([]);
+  const [selectedLoans, setSelectedLoans] = useState([]);
 
-  
   const handleSelectLoan = (loanId) => {
-  setSelectedLoans((prev) =>
-    prev.includes(loanId)
-      ? prev.filter((id) => id !== loanId)
-      : [...prev, loanId]
-  );
-};
+    setSelectedLoans((prev) =>
+      prev.includes(loanId)
+        ? prev.filter((id) => id !== loanId)
+        : [...prev, loanId],
+    );
+  };
 
-  
   // ✅ Dummy loan data
   // const [data] = useState([
   //   {
@@ -116,7 +112,7 @@ const [selectedLoans, setSelectedLoans] = useState([]);
   //     branch: "Mumbai West",
   //   },
   // ]);
- const fetchLoans = async () => {
+  const fetchLoans = async () => {
     try {
       setLoading(true);
 
@@ -139,109 +135,103 @@ const [selectedLoans, setSelectedLoans] = useState([]);
   useEffect(() => {
     fetchLoans();
   }, [page]); // Fetch loans when page changes
-const parsePledgeItems = (value) => {
-  try {
-    if (!value) return [];
+  const parsePledgeItems = (value) => {
+    try {
+      if (!value) return [];
 
-    // Already array
-    if (Array.isArray(value)) return value;
+      // Already array
+      if (Array.isArray(value)) return value;
 
-    // Already object — not valid list
-    if (typeof value === "object") return [];
+      // Already object — not valid list
+      if (typeof value === "object") return [];
 
-    // "[object Object]" case
-    if (value === "[object Object]") return [];
+      // "[object Object]" case
+      if (value === "[object Object]") return [];
 
-    // First parse
-    const first = JSON.parse(value);
+      // First parse
+      const first = JSON.parse(value);
 
-    // If first result is array → DONE
-    if (Array.isArray(first)) return first;
+      // If first result is array → DONE
+      if (Array.isArray(first)) return first;
 
-    // If first is string → try second parse
-    if (typeof first === "string") {
-      try {
-        const second = JSON.parse(first);
-        return Array.isArray(second) ? second : [];
-      } catch {
-        return [];
+      // If first is string → try second parse
+      if (typeof first === "string") {
+        try {
+          const second = JSON.parse(first);
+          return Array.isArray(second) ? second : [];
+        } catch {
+          return [];
+        }
       }
+
+      return [];
+    } catch {
+      return [];
     }
-
-    return [];
-
-  } catch {
-    return [];
-  }
-};
-
-  const prepareLoanDetails = () => {
-  return selectedLoans.map((loanId) => {
-    const loan = loanData.find(l => l.id === loanId);
-
-    const pledgeItems = parsePledgeItems(loan?.Pledge_Item_List);
-
-    return {
-      loanId,
-      pledge_items: pledgeItems
-    };
-  });
-};
-
-  
-  
-  const handleSubmitAuction = async () => {
-   debugger
-  if (!formData.venue || !formData.date || !formData.time || !formData.fees ) {
-    alert("Please fill all fields");
-    return;
-  }
-
-  if (selectedLoans.length === 0) {
-    alert("Please select at least one loan");
-    return;
-  }
-
-  const loanDetails = prepareLoanDetails();
-
-  const auctionData = {
-    ...formData,
-    loanIds: selectedLoans,
-    loanDetails: loanDetails
   };
 
-  try {
-    const res = await fetch(`${API}/Transactions/createAuction`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(auctionData),
+  const prepareLoanDetails = () => {
+    return selectedLoans.map((loanId) => {
+      const loan = loanData.find((l) => l.id === loanId);
+
+      const pledgeItems = parsePledgeItems(loan?.Pledge_Item_List);
+
+      return {
+        loanId,
+        pledge_items: pledgeItems,
+      };
     });
+  };
 
-    const json = await res.json();
-    if (json.success) {
-      alert("Auction Created Successfully!");
-      navigate("/Auction-Creation");
-    } else {
-      alert("Error: " + json.message);
+  const handleSubmitAuction = async () => {
+    debugger;
+    if (!formData.venue || !formData.date || !formData.time || !formData.fees) {
+      alert("Please fill all fields");
+      return;
     }
-  } catch (err) {
-    console.log(err);
-  }
-};
 
+    if (selectedLoans.length === 0) {
+      alert("Please select at least one loan");
+      return;
+    }
 
-  
-  
+    const loanDetails = prepareLoanDetails();
+
+    const auctionData = {
+      ...formData,
+      loanIds: selectedLoans,
+      loanDetails: loanDetails,
+    };
+
+    try {
+      const res = await fetch(`${API}/Transactions/createAuction`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(auctionData),
+      });
+
+      const json = await res.json();
+      if (json.success) {
+        alert("Auction Created Successfully!");
+        navigate("/Auction-Creation");
+      } else {
+        alert("Error: " + json.message);
+      }
+    } catch (err) {
+      console.log(err);
+    }
+  };
+
   return (
     <div className="min-h-screen w-full">
       {/* 🔹 Header */}
       <div className="flex justify-center sticky top-[80px] z-40">
-        <div className="flex items-center px-6 py-4 border-b mt-5 w-[1290px] h-[62px] border rounded-[11px] border-gray-200 justify-between">
+        <div className="flex items-center px-6 py-4 border-b mt-5 w-[1290px] h-[62px] border rounded-[11px] border-gray-200 justify-between bg-white">
           <h2 className="text-red-600 font-bold text-[20px]">
             Auction Creation
           </h2>
           {/* 🔹 Search Box */}
-          <div className="flex items-right gap-3 ml-130">
+          {/* <div className="flex items-right gap-3 ml-130">
             <input
               type="text"
               placeholder="Loan No"
@@ -250,9 +240,12 @@ const parsePledgeItems = (value) => {
             <button className="bg-[#0A2478] px-3 py-2 rounded-r-md flex items-center justify-center">
               <HiMagnifyingGlass className="text-white w-5 h-5" />
             </button>
-          </div>
+          </div> */}
           <div className="flex gap-3">
-            <button className="bg-[#0A2478] text-white text-sm rounded px-4 py-2 cursor-pointer" onClick={handleSubmitAuction}>
+            <button
+              className="bg-[#0A2478] text-white text-sm rounded px-4 py-2 cursor-pointer"
+              onClick={handleSubmitAuction}
+            >
               Submit
             </button>
             <button
@@ -266,160 +259,174 @@ const parsePledgeItems = (value) => {
       </div>
 
       {/* 🔹 Form Section */}
-      <div className="flex gap-6 mt-4 flex-wrap w-[1300px] mx-auto p-4  ">
-        <div className="flex flex-col pr-10">
-          <label className="text-xs font-medium mb-1">
-            Venue <span className="text-red-600">*</span>
-          </label>
-          <input
-            type="text"
-            name="venue"
-            value={formData.venue}
-            onChange={handleInputChange}
-            className="border border-gray-300 rounded px-2 w-60 py-2 text-xs focus:outline-none focus:ring-2 focus:ring-blue-500"
-            placeholder="Location"
-          />
+      <div className="mr-[110px] ml-[110px] mt-5 p-4 bg-[#F7F7FF] rounded-md">
+        <div className="flex  mt-2   p-4  ">
+          <div className="flex flex-col pr-10">
+            <label className="text-xs font-medium mb-1">
+              Venue <span className="text-red-600">*</span>
+            </label>
+            <input
+              type="text"
+              name="venue"
+              value={formData.venue}
+              onChange={handleInputChange}
+              className="border border-gray-300 rounded px-2  py-2 text-xs focus:outline-none focus:ring-2 focus:ring-blue-500 w-[300px]"
+              placeholder="Location"
+            />
+          </div>
+
+          <div className="flex flex-col pr-10">
+            <label className="text-xs font-medium mb-1">
+              Date <span className="text-red-600">*</span>
+            </label>
+            <input
+              type="date"
+              name="date"
+              value={formData.date}
+              onChange={handleInputChange}
+              className="border border-gray-300 rounded px-3  py-2 text-xs focus:outline-none focus:ring-2 focus:ring-blue-500 w-[120px]"
+            />
+          </div>
+
+          <div className="flex flex-col pr-10">
+            <label className="text-xs font-medium mb-1">
+              Time <span className="text-red-600">*</span>
+            </label>
+            <input
+              type="time"
+              name="time"
+              value={formData.time}
+              onChange={handleInputChange}
+              className="border border-gray-300 rounded px-3  py-2 text-xs focus:outline-none focus:ring-2 focus:ring-blue-500 w-[80px]"
+            />
+          </div>
+
+          <div className="flex flex-col pr-10">
+            <label className="text-xs font-medium mb-1">
+              Fees <span className="text-red-600">*</span>
+            </label>
+            <input
+              type="number"
+              name="fees"
+              value={formData.fees}
+              onChange={handleInputChange}
+              style={{
+                MozAppearance: "textfield",
+              }}
+              onWheel={(e) => e.target.blur()}
+              className=" no-spinner border border-gray-300 rounded px-3 w-30 py-2 text-xs focus:outline-none focus:ring-2 focus:ring-blue-500"
+              placeholder="Enter fees"
+            />
+          </div>
+
+          <div className="flex flex-col">
+            <label className="text-xs font-medium mb-1 ">Charges</label>
+            <input
+              type="number"
+              name="charges"
+              value={formData.charges}
+              onChange={handleInputChange}
+              style={{
+                MozAppearance: "textfield",
+              }}
+              onWheel={(e) => e.target.blur()}
+              className="  no-spinner border border-gray-300 rounded px-3 w-30 py-2 text-xs focus:outline-none focus:ring-2 focus:ring-blue-500"
+            />
+          </div>
         </div>
 
-        <div className="flex flex-col pr-10">
-          <label className="text-xs font-medium mb-1">
-            Date <span className="text-red-600">*</span>
-          </label>
-          <input
-            type="date"
-            name="date"
-            value={formData.date}
-            onChange={handleInputChange}
-            className="border border-gray-300 rounded px-3 w-40 py-2 text-xs focus:outline-none focus:ring-2 focus:ring-blue-500"
-          />
-        </div>
+        {/* 🔹 Title */}
+        <h2 className="font-bold text-[20px] text-[#0A2478] pt-5 ">
+          Add Loans
+        </h2>
 
-        <div className="flex flex-col pr-10">
-          <label className="text-xs font-medium mb-1">
-            Time <span className="text-red-600">*</span>
-          </label>
-          <input
-            type="time"
-            name="time"
-            value={formData.time}
-            onChange={handleInputChange}
-            className="border border-gray-300 rounded px-3 w-40 py-2 text-xs focus:outline-none focus:ring-2 focus:ring-blue-500"
-          />
-        </div>
-
-        <div className="flex flex-col pr-10">
-          <label className="text-xs font-medium mb-1">
-            Fees <span className="text-red-600">*</span>
-          </label>
-          <input
-            type="number"
-            name="fees"
-            value={formData.fees}
-            onChange={handleInputChange}
-            style={{
-              MozAppearance: "textfield",
-            }}
-            onWheel={(e) => e.target.blur()}
-            className=" no-spinner border border-gray-300 rounded px-3 w-30 py-2 text-xs focus:outline-none focus:ring-2 focus:ring-blue-500"
-            placeholder="Enter fees"
-          />
-        </div>
-
-        <div className="flex flex-col">
-          <label className="text-xs font-medium mb-1 ">
-            Charges 
-          </label>
-          <input
-            type="number"
-            name="charges"
-            value={formData.charges}
-            onChange={handleInputChange}
-            style={{
-              MozAppearance: "textfield",
-            }}
-            onWheel={(e) => e.target.blur()}
-            className="  no-spinner border border-gray-300 rounded px-3 w-30 py-2 text-xs focus:outline-none focus:ring-2 focus:ring-blue-500"
-          />
-        </div>
-      </div>
-
-      {/* 🔹 Title */}
-      <h2 className="font-bold text-[20px] text-[#0A2478] pt-5 ml-27">
-        Add Loans
-      </h2>
-
-      {/* 🔹 Table Section */}
-      <div className="flex justify-center">
-        <div className="overflow-x-auto mt-6 w-[1300px] h-[500px] ">
-          <table className="w-full border-collapse">
-            <thead className="bg-[#0A2478] text-white text-sm">
-              <tr>
-                <th className="px-4 py-2 text-left border-r">Select</th>
-                <th className="px-4 py-2 text-left border-r">Loan Scheme</th>
-                <th className="px-4 py-2 text-left border-r">Loan No</th>
-                <th className="px-4 py-2 text-left border-r">Loan Date</th>
-                <th className="px-4 py-2 text-left border-r">Extended Date</th>
-                <th className="px-4 py-2 text-left border-r">Customer Name</th>
-                <th className="px-4 py-2 text-left border-r">Valuation</th>
-                <th className="px-4 py-2 text-left border-r">Mobile No.</th>
-
-                {[
-                  "Total Amt",
-                  "Loan Amt Paid",
-                  "Outstanding Amt",
-                  "Branch",
-                ].map((label, i) => (
-                  <th key={i} className="px-2 py-2 text-left border-r">
-                    <div className="flex items-center gap-1">
-                      {label}
-                      <HiMiniArrowsUpDown className="inline w-4 h-4" />
-                    </div>
+        {/* 🔹 Table Section */}
+        <div className="flex justify-center">
+          <div className="overflow-x-auto mt-6 w-[1300px] h-[500px] ">
+            <table className="w-full border-collapse">
+              <thead className="bg-[#0A2478] text-white text-sm">
+                <tr>
+                  <th className="px-4 py-2 text-left border-r">Select</th>
+                   <th className="px-4 py-2 text-left border-r">Loan No</th>
+                  <th className="px-4 py-2 text-left border-r">Loan Scheme</th>
+                 
+                  <th className="px-4 py-2 text-left border-r">Loan Date</th>
+                  <th className="px-4 py-2 text-left border-r">
+                    Extended Date
                   </th>
-                ))}
-              </tr>
-            </thead>
+                  <th className="px-4 py-2 text-left border-r">
+                    Customer Name
+                  </th>
+                  <th className="px-4 py-2 text-left border-r">Valuation</th>
+                  <th className="px-4 py-2 text-left border-r">Mobile No.</th>
 
-            <tbody className="text-[12px]">
-              {loanData?.map((row, index) => (
-                <tr
-                  key={row.id}
-                  className={`border-b ${index % 2 === 0 ? "bg-gray-50" : "bg-white"
-                    }`}
-                >
-                  <td className="px-4 py-2 flex items-center justify-center">
-                    <input
-  type="checkbox"
-  checked={selectedLoans.includes(row.id)}
-  onChange={() => handleSelectLoan(row.id)}
-/>
-
-                  </td>
-                  <td className="px-4 py-2">{row.Scheme}</td>
-                  <td className="px-4 py-2">{row.id}</td>
-                  <td className="px-4 py-2">{row.approval_date}</td>
-                  <td className="px-4 py-2">-</td>
-                  <td className="px-4 py-2">{row.Borrower}</td>
-                 <td className="px-4 py-2">
-  { (() => {
-      try {
-        const items = JSON.parse(JSON.parse(row.Pledge_Item_List));
-        return items[0]?.valuation || "--";
-      } catch (e) {
-        return "--";
-      }
-    })()
-  }
-</td>
-
-                  <td className="px-4 py-2">{row.Mobile_Number}</td>
-                  <td className="px-4 py-2">{row.Loan_amount}</td>
-                  <td className="px-4 py-2">{row.LoanAmountPaid}</td>
-                  <td className="px-4 py-2">{row.LoanPendingAmount}</td>
-                  <td className="px-4 py-2">{row.branch_id}</td>
+                  {[
+                    "Total Amt",
+                    "Loan Amt Paid",
+                    "Outstanding Amt",
+                    "Branch",
+                  ].map((label, i) => (
+                    <th key={i} className="px-2 py-2 text-left border-r">
+                      <div className="flex items-center gap-1">
+                        {label}
+                        {/* <HiMiniArrowsUpDown className="inline w-4 h-4" /> */}
+                      </div>
+                    </th>
+                  ))}
                 </tr>
-              ))}
-            </tbody>
-          </table>
+              </thead>
+
+              <tbody className="text-[12px]">
+                {loanData?.map((row, index) => (
+                  <tr
+                    key={row.id}
+                    className={`border-b ${
+                      index % 2 === 0 ? "bg-gray-50" : "bg-white"
+                    }`}
+                  >
+                    <td className="px-4 py-2 flex items-center justify-center">
+                      <input
+                        type="checkbox"
+                        checked={selectedLoans.includes(row.id)}
+                        onChange={() => handleSelectLoan(row.id)}
+                      />
+                    </td>
+                    <td className="px-4 py-2">{row.id}</td>
+                    <td className="px-4 py-2">{row.Scheme}</td>
+                    
+                    <td className="px-4 py-2">
+                      {row.approval_date
+                        ? new Date(row.approval_date).toLocaleDateString(
+                            "en-GB",
+                          )
+                        : "-"}
+                    </td>
+
+                    <td className="px-4 py-2">-</td>
+                    <td className="px-4 py-2">{row.Borrower}</td>
+                    <td className="px-4 py-2">
+                      {(() => {
+                        try {
+                          const items = JSON.parse(
+                            JSON.parse(row.Pledge_Item_List),
+                          );
+                          return items[0]?.valuation || "--";
+                        } catch (e) {
+                          return "--";
+                        }
+                      })()}
+                    </td>
+
+                    <td className="px-4 py-2">{row.Mobile_Number}</td>
+                    <td className="px-4 py-2">{row.Loan_amount}</td>
+                    <td className="px-4 py-2">{row.LoanAmountPaid}</td>
+                    <td className="px-4 py-2">{row.LoanPendingAmount}</td>
+                    <td className="px-4 py-2">{row.branch_id}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
         </div>
       </div>
     </div>

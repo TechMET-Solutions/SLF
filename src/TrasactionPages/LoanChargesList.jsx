@@ -1,5 +1,5 @@
 import axios from "axios";
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { FiEdit, FiEye, FiTrash2 } from "react-icons/fi";
 import { HiMagnifyingGlass } from "react-icons/hi2";
 import { useNavigate } from "react-router-dom";
@@ -56,15 +56,24 @@ function Pagination({ currentPage, totalPages, onPageChange }) {
 
 function LoanChargesList() {
   const navigate = useNavigate();
-
   const [data, setData] = useState([]);
   const [searchLoanNo, setSearchLoanNo] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [deleteModalOpen, setDeleteModalOpen] = useState(false);
   const [selectedRow, setSelectedRow] = useState(null);
-
   const [currentPage, setCurrentPage] = useState(1);
   const rowsPerPage = 5;
+  const [searchHeaders, setSearchHeaders] = useState([]); // Array of active headers
+const [searchQuery, setSearchQuery] = useState("");
+const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+const toggleHeader = (headerId) => {
+  setSearchHeaders(prev => 
+    prev.includes(headerId) 
+      ? prev.filter(id => id !== headerId) 
+      : [...prev, headerId]
+  );
+};
+
 
   useEffect(() => {
     document.title = "SLF | Loan Charges";
@@ -140,7 +149,7 @@ function LoanChargesList() {
           </h2>
 
           <div className="flex gap-3">
-            <div className="flex items-right">
+            {/* <div className="flex items-right">
             <input
               type="text"
               placeholder="Search by Loan No"
@@ -154,10 +163,83 @@ function LoanChargesList() {
             >
               <HiMagnifyingGlass className="text-white w-5 h-5" />
             </button>
+          </div> */}
+
+            <div className="flex items-center gap-3">
+  <div className="flex items-center bg-white border border-gray-400 rounded-[5px] h-[32px] px-2 relative w-[500px]">
+    
+    {/* Multi-Select Header Dropdown */}
+    <div className="relative border-r border-gray-300 pr-2 mr-2">
+      <button 
+        onClick={() => setIsDropdownOpen(!isDropdownOpen)}
+        className="text-[11px] font-source font-bold text-[#0A2478] flex items-center gap-1 outline-none h-full"
+      >
+        Headers ({searchHeaders.length}) <span className="text-[8px]">▼</span>
+      </button>
+
+      {isDropdownOpen && (
+        <div className="absolute top-[35px] left-[-8px] bg-white border border-gray-300 shadow-xl rounded-md z-[100] w-[160px] p-2">
+          {[
+            { id: "group_name", label: "Loan No" },
+            { id: "account_type", label: "Party Name" },
+            { id: "Amount", label: "Amount" }
+          ].map((col) => (
+            <label key={col.id} className="flex items-center gap-2 p-2 hover:bg-gray-50 cursor-pointer rounded">
+              <input
+                type="checkbox"
+                checked={searchHeaders.includes(col.id)}
+                onChange={() => toggleHeader(col.id)}
+                className="w-3 h-3 accent-[#0A2478]"
+              />
+              <span className="text-[11px] font-source text-gray-700">{col.label}</span>
+            </label>
+          ))}
+          <div className="border-t mt-1 pt-1 text-center">
+             <button 
+               onClick={() => setIsDropdownOpen(false)}
+               className="text-[10px] text-[#0A2478] font-bold"
+             >
+               Apply
+             </button>
           </div>
+        </div>
+      )}
+    </div>
+
+    {/* Text Input Field */}
+    <input
+      type="text"
+      value={searchQuery}
+      onChange={(e) => setSearchQuery(e.target.value)}
+      placeholder="Type multiple items (e.g. Cash, Asset)..."
+      className="flex-grow text-[11px] font-source outline-none h-full"
+    />
+
+    {/* Search Button */}
+    <button
+      onClick={() => {
+        setIsDropdownOpen(false);
+        // getAccountGroups();
+      }}
+      className="ml-2 bg-[#0b2c69] text-white text-[11px] px-4 h-[24px] rounded-[3px] font-source hover:bg-[#071d45]"
+    >
+      Search
+    </button>
+  </div>
+            </div>
+            <button
+                onClick={() => {
+                  setSearchQuery("");
+                  setSearchHeaders([]);
+                  // getAccountGroups();
+                }}
+                className="text-[10px] text-gray-500 hover:text-red-500 underline"
+              >
+                Clear
+              </button>
             <button
               onClick={() => navigate("/add-loan-charge")}
-              className="bg-[#0A2478] text-white text-sm rounded px-7 py-1 cursor-pointer"
+              className="bg-[#0A2478] text-white text-sm rounded px-3 py-1 cursor-pointer"
             >
               Add
             </button>
@@ -171,8 +253,9 @@ function LoanChargesList() {
       </div>
 
       {/* 🔹 Table Section */}
-      <div className="flex justify-center">
-        <div className="overflow-x-auto mt-6 w-[1300px] h-[500px]">
+      <div className='pr-[110px] pl-[110px]'>
+<div className="flex ">
+        <div className="overflow-x-auto mt-6  h-[500px]">
           {isLoading ? (
             <p className="text-center text-gray-500 mt-10">Loading...</p>
           ) : (
@@ -180,11 +263,11 @@ function LoanChargesList() {
               {/* ✅ Table Header */}
               <thead className="bg-[#0A2478] text-white text-sm">
                 <tr>
-                  <th className="px-4 py-2 text-left border-r">Loan No</th>
-                  <th className="px-10 py-2 text-left border-r">Party Name</th>
-                  <th className="px-4 py-2 text-left border-r">Amount</th>
-                  <th className="px-4 py-2 text-left border-r">Added On</th>
-                  <th className="px-4 py-2 text-left border-r">Added By Email</th>
+                  <th className="px-4 py-2 text-left border-r w-[130px]">Loan No</th>
+                  <th className="px-10 py-2 text-left border-r w-[200px]">Party Name</th>
+                  <th className="px-4 py-2 text-left border-r w-[150px]">Amount</th>
+                  <th className="px-4 py-2 text-left border-r w-[150px]">Added On</th>
+                  <th className="px-4 py-2 text-left border-r w-[200px]">Added By Email</th>
                   <th className="px-4 py-2 text-left border-r">Action</th>
                 </tr>
               </thead>
@@ -248,6 +331,8 @@ function LoanChargesList() {
           )}
         </div>
       </div>
+      </div>
+      
 
       {/* 🔹 Pagination */}
       {totalPages > 1 && (

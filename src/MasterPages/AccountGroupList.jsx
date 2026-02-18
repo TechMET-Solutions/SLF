@@ -1,7 +1,8 @@
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useState } from "react";
 
 import axios from "axios";
 import { API } from "../api";
+import { useAuth } from "../API/Context/AuthContext";
 import GroupData from "../assets/Group 124.svg";
 const AccountGroupList = () => {
   useEffect(() => {
@@ -15,7 +16,6 @@ const AccountGroupList = () => {
     comments: "",
   });
 
-  
   const [isEditMode, setIsEditMode] = useState(false);
   const [selectedId, setSelectedId] = useState(null);
   const [data, setData] = useState([]);
@@ -27,58 +27,87 @@ const AccountGroupList = () => {
       [name]: value,
     }));
   };
- 
 
-const [searchHeaders, setSearchHeaders] = useState([]); // Array of active headers
-const [searchQuery, setSearchQuery] = useState("");
-const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+  const [searchHeaders, setSearchHeaders] = useState([]); // Array of active headers
+  const [searchQuery, setSearchQuery] = useState("");
+  const [isDropdownOpen, setIsDropdownOpen] = useState(false);
 
+  const toggleHeader = (headerId) => {
+    setSearchHeaders((prev) =>
+      prev.includes(headerId)
+        ? prev.filter((id) => id !== headerId)
+        : [...prev, headerId],
+    );
+  };
 
-
-const toggleHeader = (headerId) => {
-  setSearchHeaders(prev => 
-    prev.includes(headerId) 
-      ? prev.filter(id => id !== headerId) 
-      : [...prev, headerId]
-  );
-};
-  
-
-const getAccountGroups = async () => {
-  try {
-    const response = await axios.get(
-      `${API}/api/account-group/list`,
-      {
+  const getAccountGroups = async () => {
+    try {
+      const response = await axios.get(`${API}/api/account-group/list`, {
         params: {
           headers: searchHeaders.join(","), // group_name,account_type
           search: searchQuery,
         },
-      }
-    );
+      });
 
-    setData(response.data.data);
-  } catch (error) {
-    console.error(error);
-  }
-};
+      setData(response.data.data);
+    } catch (error) {
+      console.error(error);
+    }
+  };
 
+  const { loginUser } = useAuth();
 
+  // const handleSave = async () => {
+  //   try {
+  //     if (isEditMode) {
+  //       await axios.put(
+  //         `${API}/api/account-group/update/${selectedId}`,
+  //         formData,
+  //       );
+  //       alert("Account Group Updated Successfully");
+  //     } else {
+  //       await axios.post(`${API}/api/account-group/create`, formData);
+  //       alert("Account Group Created Successfully");
+  //     }
 
+  //     setIsModalOpen(false);
+  //     setIsEditMode(false);
+  //     setSelectedId(null);
+  //     setFormData({
+  //       groupName: "",
+  //       accountType: "",
+  //       under: "",
+  //       comments: "",
+  //     });
 
-
+  //     getAccountGroups();
+  //   } catch (error) {
+  //     console.error(error);
+  //     alert("Error saving account group");
+  //   }
+  // };
   const handleSave = async () => {
     try {
+      // Prepare the payload with user tracking
+      const payload = {
+        ...formData,
+        // Pass the user info to the backend keys
+        addedBy: isEditMode ? formData.addedBy : loginUser,
+        // modifiedBy: loginUser
+      };
+
       if (isEditMode) {
         await axios.put(
           `${API}/api/account-group/update/${selectedId}`,
-          formData,
+          payload,
         );
         alert("Account Group Updated Successfully");
       } else {
-        await axios.post(`${API}/api/account-group/create`, formData);
+        await axios.post(`${API}/api/account-group/create`, payload);
         alert("Account Group Created Successfully");
       }
 
+      // Resetting state
       setIsModalOpen(false);
       setIsEditMode(false);
       setSelectedId(null);
@@ -87,6 +116,7 @@ const getAccountGroups = async () => {
         accountType: "",
         under: "",
         comments: "",
+        addedBy: "", // Reset these as well
       });
 
       getAccountGroups();
@@ -95,7 +125,6 @@ const getAccountGroups = async () => {
       alert("Error saving account group");
     }
   };
-
   useEffect(() => {
     document.title = "SLF | Account Group List";
     getAccountGroups();
@@ -173,82 +202,87 @@ const getAccountGroups = async () => {
                 </button>
               </div> */}
             </div>
-<div className="flex items-center gap-4">
-<div className="flex items-center gap-3">
-  <div className="flex items-center bg-white border border-gray-400 rounded-[5px] h-[32px] px-2 relative w-[500px]">
-    
-    {/* Multi-Select Header Dropdown */}
-    <div className="relative border-r border-gray-300 pr-2 mr-2">
-      <button 
-        onClick={() => setIsDropdownOpen(!isDropdownOpen)}
-        className="text-[11px] font-source font-bold text-[#0A2478] flex items-center gap-1 outline-none h-full"
-      >
-        Headers ({searchHeaders.length}) <span className="text-[8px]">▼</span>
-      </button>
+            <div className="flex items-center gap-4">
+              <div className="flex items-center gap-3">
+                <div className="flex items-center bg-white border border-gray-400 rounded-[5px] h-[32px] px-2 relative w-[500px]">
+                  {/* Multi-Select Header Dropdown */}
+                  <div className="relative border-r border-gray-300 pr-2 mr-2">
+                    <button
+                      onClick={() => setIsDropdownOpen(!isDropdownOpen)}
+                      className="text-[11px] font-source font-bold text-[#0A2478] flex items-center gap-1 outline-none h-full"
+                    >
+                      Headers ({searchHeaders.length}){" "}
+                      <span className="text-[8px]">▼</span>
+                    </button>
 
-      {isDropdownOpen && (
-        <div className="absolute top-[35px] left-[-8px] bg-white border border-gray-300 shadow-xl rounded-md z-[100] w-[160px] p-2">
-          {[
-            { id: "group_name", label: "Ledger Name" },
-            { id: "account_type", label: "Account Type" },
-            { id: "under_type", label: "Under" }
-          ].map((col) => (
-            <label key={col.id} className="flex items-center gap-2 p-2 hover:bg-gray-50 cursor-pointer rounded">
-              <input
-                type="checkbox"
-                checked={searchHeaders.includes(col.id)}
-                onChange={() => toggleHeader(col.id)}
-                className="w-3 h-3 accent-[#0A2478]"
-              />
-              <span className="text-[11px] font-source text-gray-700">{col.label}</span>
-            </label>
-          ))}
-          <div className="border-t mt-1 pt-1 text-center">
-             <button 
-               onClick={() => setIsDropdownOpen(false)}
-               className="text-[10px] text-[#0A2478] font-bold"
-             >
-               Apply
-             </button>
-          </div>
-        </div>
-      )}
-    </div>
+                    {isDropdownOpen && (
+                      <div className="absolute top-[35px] left-[-8px] bg-white border border-gray-300 shadow-xl rounded-md z-[100] w-[160px] p-2">
+                        {[
+                          { id: "group_name", label: "Ledger Name" },
+                          { id: "account_type", label: "Account Type" },
+                          { id: "under_type", label: "Under" },
+                        ].map((col) => (
+                          <label
+                            key={col.id}
+                            className="flex items-center gap-2 p-2 hover:bg-gray-50 cursor-pointer rounded"
+                          >
+                            <input
+                              type="checkbox"
+                              checked={searchHeaders.includes(col.id)}
+                              onChange={() => toggleHeader(col.id)}
+                              className="w-3 h-3 accent-[#0A2478]"
+                            />
+                            <span className="text-[11px] font-source text-gray-700">
+                              {col.label}
+                            </span>
+                          </label>
+                        ))}
+                        <div className="border-t mt-1 pt-1 text-center">
+                          <button
+                            onClick={() => setIsDropdownOpen(false)}
+                            className="text-[10px] text-[#0A2478] font-bold"
+                          >
+                            Apply
+                          </button>
+                        </div>
+                      </div>
+                    )}
+                  </div>
 
-    {/* Text Input Field */}
-    <input
-      type="text"
-      value={searchQuery}
-      onChange={(e) => setSearchQuery(e.target.value)}
-      placeholder="Type multiple items (e.g. Cash, Asset)..."
-      className="flex-grow text-[11px] font-source outline-none h-full"
-    />
+                  {/* Text Input Field */}
+                  <input
+                    type="text"
+                    value={searchQuery}
+                    onChange={(e) => setSearchQuery(e.target.value)}
+                    placeholder="Type multiple items (e.g. Cash, Asset)..."
+                    className="flex-grow text-[11px] font-source outline-none h-full"
+                  />
 
-    {/* Search Button */}
-    <button
-      onClick={() => {
-        setIsDropdownOpen(false);
-        getAccountGroups();
-      }}
-      className="ml-2 bg-[#0b2c69] text-white text-[11px] px-4 h-[24px] rounded-[3px] font-source hover:bg-[#071d45]"
-    >
-      Search
-    </button>
-  </div>
-</div>
+                  {/* Search Button */}
+                  <button
+                    onClick={() => {
+                      setIsDropdownOpen(false);
+                      getAccountGroups();
+                    }}
+                    className="ml-2 bg-[#0b2c69] text-white text-[11px] px-4 h-[24px] rounded-[3px] font-source hover:bg-[#071d45]"
+                  >
+                    Search
+                  </button>
+                </div>
+              </div>
 
-  {/* Clear Button */}
-  <button 
-    onClick={() => {
-      setSearchQuery("");
-      setSearchHeaders([]);
-      getAccountGroups();
-    }}
-    className="text-[10px] text-gray-500 hover:text-red-500 underline"
-  >
-    Clear
-  </button>
-</div>
+              {/* Clear Button */}
+              <button
+                onClick={() => {
+                  setSearchQuery("");
+                  setSearchHeaders([]);
+                  getAccountGroups();
+                }}
+                className="text-[10px] text-gray-500 hover:text-red-500 underline"
+              >
+                Clear
+              </button>
+            </div>
             {/* Buttons stuck to right */}
             <div className="flex gap-3">
               <button
@@ -463,14 +497,14 @@ const getAccountGroups = async () => {
                 <th className="px-4 py-2 text-left border-r border-gray-300 text-[13px] w-[250px]">
                   Comments
                 </th>
-                <th className="px-4 py-2 text-left text-[13px]">Action</th>
+                <th className="px-4 py-2 text-left text-[13px] w-[80px]">Action</th>
               </tr>
             </thead>
             <tbody className="text-[12px]">
               {data.map((row, index) => (
                 <tr
                   key={index}
-                className={index % 2 === 0 ? "bg-gray-50" : "bg-white"}
+                  className={index % 2 === 0 ? "bg-gray-50" : "bg-white"}
                 >
                   <td className="px-4 py-2">{row.group_name}</td>
                   <td className="px-4 py-2">{row.account_type}</td>

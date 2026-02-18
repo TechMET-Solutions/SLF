@@ -357,7 +357,7 @@ const verifyBankDetails = async () => {
             className="fixed inset-0 flex items-center justify-center z-50"
             style={{ background: "#0101017A", backdropFilter: "blur(6.8px)" }}
           >
-            <div className="bg-white w-[896px] rounded-lg shadow-lg h-auto p-10">
+            <div className="bg-white w-[800px] rounded-lg shadow-lg h-auto p-10">
               <h2 className="text-[#0A2478] mb-4 font-semibold text-[20px]">
                 {mode === "add"
                   ? "Add Bank Details"
@@ -368,22 +368,25 @@ const verifyBankDetails = async () => {
 
               <div className="gap-4">
                 {/* Bank Name / Holder / Account No */}
-                <div className="flex gap-2">
-                   <div>
-                    <label className="text-[14px]">Account No <span className="text-red-500">*</span></label>
-                    <input
-                      name="accountNo"
-                      value={formData.accountNo}
-                      onChange={handleChange}
-                      type="text"
-                      disabled={mode === "view"}
-                      placeholder="Account No"
-                      className="border border-gray-300 rounded w-[238px] h-[38px] p-[10px_14px]"
-                    />
-                  </div>
-<div>
-    <label className="text-[14px]">IFSC Code <span className="text-red-500">*</span></label>
-    <div className="flex w-[238px]">
+                <div className="flex flex-row items-end gap-3">
+  {/* Account Number */}
+  <div className="flex flex-col">
+    <label className="text-[13px] font-medium mb-1">Account No <span className="text-red-500">*</span></label>
+    <input
+      name="accountNo"
+      value={formData.accountNo}
+      onChange={handleChange}
+      type="text"
+      disabled={mode === "view"}
+      placeholder="Enter Account No"
+      className="border border-gray-300 rounded w-[250px] h-[32px] px-3 text-xs focus:outline-none focus:ring-1 focus:ring-blue-500 disabled:bg-gray-100"
+    />
+  </div>
+
+  {/* IFSC Code + Verify Button */}
+  <div className="flex flex-col">
+    <label className="text-[13px] font-medium mb-1">IFSC Code <span className="text-red-500">*</span></label>
+    <div className="flex">
       <input
         name="ifsc"
         value={formData.ifsc}
@@ -391,115 +394,118 @@ const verifyBankDetails = async () => {
         type="text"
         disabled={mode === "view"}
         placeholder="IFSC Code"
-        className="border border-gray-300 rounded-l w-[160px] h-[38px] p-[10px_14px] border-r-0"
+        className="border border-gray-300 rounded-l w-[130px] h-[32px] px-3 text-xs border-r-0 focus:outline-none focus:ring-1 focus:ring-blue-500 uppercase disabled:bg-gray-100"
       />
       <button
         type="button"
         onClick={verifyBankDetails}
-        className="bg-[#0A2478] text-white w-[78px] h-[38px] rounded-r text-[12px] font-medium hover:bg-[#081c5b]"
+        className="bg-[#0A2478] text-white px-3 h-[32px] rounded-r text-[11px] font-bold hover:bg-[#081c5b] transition-colors"
       >
         Verify
       </button>
     </div>
   </div>
-                  <div>
-                    <label className="text-[14px]">Bank Name <span className="text-red-500">*</span></label>
-                    <input
-                      name="bankName"
-                      value={formData.bankName}
-                      onChange={handleChange}
-                      type="text"
-                      disabled={mode === "view"}
-                      placeholder="Bank Name"
-                      className="border border-gray-300 rounded w-[238px] h-[38px] p-[10px_14px]"
-                    />
-                  </div>
 
-                 
-
-                 
-                </div>
+  {/* Bank Name */}
+  <div className="flex flex-col">
+    <label className="text-[13px] font-medium mb-1">Bank Name <span className="text-red-500">*</span></label>
+    <input
+      name="bankName"
+      value={formData.bankName}
+      onChange={handleChange}
+      type="text"
+      disabled={mode === "view"}
+      placeholder="Bank Name"
+      className="border border-gray-300 rounded w-[280px] h-[32px] px-3 text-xs focus:outline-none focus:ring-1 focus:ring-blue-500 disabled:bg-gray-100"
+    />
+  </div>
+</div>
 
                 {/* IFSC / Address / Cheque */}
-                <div className="flex mt-5 gap-2">
-                   <div>
-                    <label className="text-[14px]">Account Holder Name <span className="text-red-500">*</span></label>
-                    <input
-                      name="customerName"
-                      value={formData.customerName}
-                      onChange={handleChange}
-                      type="text"
-                      disabled={mode === "view"}
-                      placeholder="Holder Name"
-                      className="border border-gray-300 rounded w-[300px] h-[38px] p-[10px_14px]"
-                    />
-                  </div>
-                  
+               <div className="flex flex-row items-start mt-4 gap-4">
+  {/* Account Holder Name */}
+  <div className="flex flex-col">
+    <label className="text-[13px] font-medium mb-1">Account Holder Name <span className="text-red-500">*</span></label>
+    <input
+      name="customerName"
+      value={formData.customerName}
+      onChange={handleChange}
+      type="text"
+      disabled={mode === "view"}
+      placeholder="Holder Name"
+      className="border border-gray-300 rounded w-[220px] h-[32px] px-3 text-xs focus:outline-none focus:ring-1 focus:ring-blue-500 disabled:bg-gray-100"
+    />
+  </div>
 
-                  <div>
-                    <label className="text-[14px]">Bank Address <span className="text-red-500">*</span></label>
-                    <input
-                      name="bankAddress"
-                      value={formData.bankAddress}
-                      onChange={handleChange}
-                      type="text"
-                      disabled={mode === "view"}
-                      placeholder="Address"
-                      className="border border-gray-300 rounded w-[300px] h-[38px] p-[10px_14px]"
-                    />
-                  </div>
+  {/* Bank Address */}
+  <div className="flex flex-col">
+    <label className="text-[13px] font-medium mb-1">Bank Address <span className="text-red-500">*</span></label>
+    <input
+      name="bankAddress"
+      value={formData.bankAddress}
+      onChange={handleChange}
+      type="text"
+      disabled={mode === "view"}
+      placeholder="Address"
+      className="border border-gray-300 rounded w-[250px] h-[32px] px-3 text-xs focus:outline-none focus:ring-1 focus:ring-blue-500 disabled:bg-gray-100"
+    />
+  </div>
 
-                  {/* File Upload */}
-                  <div>
-                    <label className="text-[14px]">Attach Cancel Cheque </label>
-                    <div className="flex flex-col mt-1">
-                      <div className="flex items-center border border-gray-300 rounded w-[230px]">
-                        <label
-                          htmlFor="uploadFile"
-                          className={`${
-                            mode === "view"
-                              ? "bg-gray-300 cursor-not-allowed"
-                              : "bg-[#D9D9D9] cursor-pointer"
-                          } px-4 py-2 text-[12px] rounded-l border-r border w-[200px] text-black font-semibold`}
-                        >
-                          Choose File
-                        </label>
-                        <input
-                          id="uploadFile"
-                          type="file"
-                          className="hidden"
-                          disabled={mode === "view"}
-                          onChange={handleFileChange}
-                        />
-                        <span className="px-3 py-2 text-sm text-gray-500 w-full truncate">
-                          {formData.cancelCheque
-                            ? typeof formData.cancelCheque === "object"
-                              ? formData.cancelCheque.name
-                              : "Existing cheque selected"
-                            : "No file chosen"}
-                        </span>
-                      </div>
+  {/* File Upload Component */}
+  <div className="flex flex-col">
+    <label className="text-[13px] font-medium mb-1">Attach Cancel Cheque</label>
+    <div className="flex items-center">
+      <div className={`flex items-center border border-gray-300 rounded h-[32px] w-[240px] bg-white overflow-hidden ${mode === "view" ? "bg-gray-50" : ""}`}>
+        <label
+          htmlFor="uploadFile"
+          className={`${
+            mode === "view"
+              ? "bg-gray-200 cursor-not-allowed text-gray-500"
+              : "bg-gray-100 cursor-pointer text-[#0A2478] hover:bg-gray-200"
+          } px-3 h-full flex items-center text-[11px] font-bold border-r border-gray-300 transition-colors`}
+        >
+          Choose File
+        </label>
+        <input
+          id="uploadFile"
+          type="file"
+          className="hidden"
+          disabled={mode === "view"}
+          onChange={handleFileChange}
+        />
+        <span className="px-3 text-[11px] text-gray-500 truncate flex-1">
+          {formData.cancelCheque
+            ? typeof formData.cancelCheque === "object"
+              ? formData.cancelCheque.name
+              : "Cheque Attached"
+            : "No file chosen"}
+        </span>
+      </div>
 
-                      {/* Image Preview */}
-                      {formData.cancelCheque && (
-                        <div className="mt-3">
-                          <p className="text-sm text-gray-600 mb-1">
-                            Cheque Preview:
-                          </p>
-                          <img
-                            src={
-                              typeof formData.cancelCheque === "object"
-                                ? URL.createObjectURL(formData.cancelCheque)
-                                : formData.cancelCheque
-                            }
-                            alt="Cheque Preview"
-                            className="w-40 h-40 object-cover border rounded"
-                          />
-                        </div>
-                      )}
-                    </div>
-                  </div>
-                </div>
+      {/* Small Preview Thumbnail (Inline) */}
+      {formData.cancelCheque && (
+        <div className="ml-2 group relative">
+          <img
+            src={
+              typeof formData.cancelCheque === "object"
+                ? URL.createObjectURL(formData.cancelCheque)
+                : formData.cancelCheque
+            }
+            alt="Preview"
+            className="w-[32px] h-[32px] object-cover border rounded shadow-sm cursor-pointer"
+          />
+          {/* Tooltip on hover for larger view */}
+          <div className="hidden group-hover:block absolute bottom-10 left-0 z-50 p-1 bg-white border rounded shadow-lg">
+             <img 
+               src={typeof formData.cancelCheque === "object" ? URL.createObjectURL(formData.cancelCheque) : formData.cancelCheque}
+               className="w-40 h-auto rounded"
+             />
+          </div>
+        </div>
+      )}
+    </div>
+  </div>
+</div>
               </div>
 
               {/* Buttons */}

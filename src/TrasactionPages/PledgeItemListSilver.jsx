@@ -193,17 +193,17 @@ debugger
           Pledge Item List For Silver
         </h3>
 
-        <table className=" border border-gray-300 text-sm">
+        <table className=" text-sm">
           <thead className="bg-[#0A2478] text-white">
-            <tr>
-              <th className="px-4 py-2 border-r border-gray-200  w-[120px]">Particulars</th>
-              <th className="px-4 py-2 border-r border-gray-200  w-[50px]">Nos.</th>
-              <th className="px-4 py-2 border-r border-gray-200  w-[50px]">Gross</th>
-              <th className="px-4 py-2 border-r border-gray-200 ">Net Weight</th>
-                          <th className="px-4 py-2 border-r border-gray-200  w-[50px]">Purity</th>
-                           <th className="px-4 py-2 border-r border-gray-200 ">Calculated Purity</th>
-              <th className="px-4 py-2 border-r border-gray-200 ">Rate</th>
-              <th className="px-4 py-2 border-r border-gray-200 ">Valuation</th>
+             <tr>
+              <th className="px-4 py-2 border-r border-gray-200 w-[200px]">Particulars</th>
+              <th className="px-4 py-2 border-r border-gray-200 w-[50px]">Nos.</th>
+              <th className="px-4 py-2 border-r border-gray-200  w-[80px]">Gross</th>
+              <th className="px-4 py-2 border-r border-gray-200   w-[80px]">Net Weight</th>
+              <th className="px-4 py-2 border-r border-gray-200 w-[120px]">Purity</th>
+               <th className="px-4 py-2 border-r border-gray-200 w-[120px]">Calculated Purity</th>
+              <th className="px-4 py-2 border-r border-gray-200">Rate</th>
+              <th className="px-4 py-2 border-r border-gray-200">Valuation</th>
               <th className="px-4 py-2">Remark</th>
             </tr>
           </thead>
@@ -215,7 +215,7 @@ debugger
                   <select
                     value={row.particular}
                     onChange={(e) => handleChange(index, "particular", e.target.value)}
-                    className="border border-gray-300 px-2 py-1 rounded-md "
+                    className="border border-gray-300 px-2 py-1 rounded-md w-[200px] bg-white"
                   >
                     <option value="">Select Particular</option>
                     {pledgeItems.map((item, idx) => (
@@ -233,7 +233,7 @@ debugger
                     type="number"
                     value={row.gross}
                     onChange={(e) => handleChange(index, "gross", e.target.value)}
-                    className="border border-gray-300 rounded-md px-2 py-1 w-[50px] "
+                    className="border border-gray-300 rounded-md px-2 py-1  w-[80px] bg-white "
                   />
                 </td>
 
@@ -242,7 +242,7 @@ debugger
                     type="number"
                     value={row.netWeight}
                     onChange={(e) => handleChange(index, "netWeight", e.target.value)}
-                    className="border border-gray-300 rounded-md px-2 py-1 w-[50px] "
+                    className="border border-gray-300 rounded-md px-2 py-1  w-[80px] bg-white"
                   />
                 </td>
 
@@ -250,7 +250,7 @@ debugger
                   <select
                     value={row.purity}
                     onChange={(e) => handleChange(index, "purity", e.target.value)}
-                    className="border border-gray-300 px-2 py-1 rounded-md w-[100px]"
+                    className="border border-gray-300 px-2 py-1 rounded-md w-[130px] bg-white"
                   >
                     <option value="">Select Purity</option>
                     {purities.map((p) => (
@@ -264,7 +264,7 @@ debugger
                   <select
                     value={row.Calculated_Purity}
                     onChange={(e) => handleChange(index, "Calculated_Purity", e.target.value)}
-                    className="border border-gray-300 px-2 py-1 rounded-md w-[100px] "
+                    className="border border-gray-300 px-2 py-1 rounded-md w-[120px] bg-white "
                   >
                     <option value="">Select Calculated Purity</option>
                     {purities.map((p) => (
@@ -289,7 +289,7 @@ debugger
                     value={row.remark}
                     placeholder="Enter remark"
                     onChange={(e) => handleChange(index, "remark", e.target.value)}
-                    className="border border-gray-300 rounded-md px-2 py-1 "
+                    className="border border-gray-300 rounded-md px-2 py-1  w-[200px] bg-white"
                   />
                   <button
                     onClick={handleAddRow}

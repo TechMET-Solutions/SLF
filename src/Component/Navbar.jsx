@@ -579,7 +579,7 @@ const Navbar = () => {
                 {canSeeCustomerProfile && (
                   <Link
                     to={customerProfileItem.path}
-                    className="w-full text-left px-4 py-2 hover:bg-gray-100 flex justify-between items-center text-sm "
+                    className="w-full text-left px-4 py-2 hover:bg-gray-100 flex justify-between items-center "
                     onClick={() => {
                       setIsTransactionsOpen(false);
                       setIsGoldLoanOpen(false);
@@ -672,7 +672,7 @@ const Navbar = () => {
                 )}
                 {/* 🔹 Auction */}
                 {canSeeAuction && (
-                  <div className="relative mt-1 text-sm">
+                  <div className="relative mt-1 ">
                     <button
                       className="w-full text-left px-4 py-2 hover:bg-gray-100 flex justify-between items-center"
                       onClick={() => {
@@ -706,7 +706,7 @@ const Navbar = () => {
 
                 <Link
                   to={"/Cash_Balance"}
-                  className="w-full text-sm text-left px-4 py-2 hover:bg-gray-100 flex justify-between items-center"
+                  className="w-full  text-left px-4 py-2 hover:bg-gray-100 flex justify-between items-center"
                   onClick={() => {
                     setIsAccounting(!Accounting);
                     setIsAuctionOpen(false);

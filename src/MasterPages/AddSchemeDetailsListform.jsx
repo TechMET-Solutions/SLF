@@ -243,13 +243,33 @@ const AddSchemeDetailsListform = () => {
     }
   };
 
-  const addRow = () => {
-    setInterestRates((prev) => [
-      ...prev,
-      { id: Date.now(), from: "", to: "", type: "", addInt: "" },
-    ]);
-  };
+  // const addRow = () => {
+  //   setInterestRates((prev) => [
+  //     ...prev,
+  //     { id: Date.now(), from: "", to: "", type: "", addInt: "" },
+  //   ]);
+  // };
+const addRow = () => {
+  setInterestRates((prev) => {
+    // Get the last row in the current list
+    const lastRow = prev[prev.length - 1];
+    
+    // Calculate the next "From" value
+    // If lastRow.to exists, use it + 1, otherwise default to 0 or empty
+    const nextFrom = lastRow && lastRow.to !== "" ? Number(lastRow.to) + 1 : "";
 
+    return [
+      ...prev,
+      { 
+        id: Date.now(), 
+        from: nextFrom, 
+        to: "", 
+        type: lastRow?.type || "", // Carry over the type (Days/Months) for convenience
+        addInt: "" 
+      },
+    ];
+  });
+};
   const removeRow = (id) => {
     setInterestRates((prev) => prev.filter((rate) => rate.id !== id));
   };

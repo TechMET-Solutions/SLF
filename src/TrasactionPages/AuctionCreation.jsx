@@ -67,20 +67,21 @@ const fetchAuctions = async () => {
                 </div>
             </div>
 
-            {/* 🔹 Table Section */}
-         <div className="flex justify-center">
+        {/* 🔹 Table Section */}
+        <div className='mr-[110px] ml-[110px]'>
+          <div className="flex justify-center ">
   <div className="overflow-x-auto mt-6 w-[1300px]">
-    <table className="w-full border-collapse">
+    <table className=" border-collapse">
       <thead className="bg-[#0A2478] text-white text-sm">
         <tr>
-          <th className="px-4 py-2 text-left border-r">Auction Id</th>
-          <th className="px-4 py-2 text-left border-r">Venue</th>
+          <th className="px-4 py-2 text-left border-r w-[100px]">Auction Id</th>
+          <th className="px-4 py-2 text-left border-r w-[400px]">Venue</th>
           <th className="px-4 py-2 text-left border-r">Date</th>
           <th className="px-4 py-2 text-left border-r">Time</th>
           <th className="px-4 py-2 text-left border-r">Fees</th>
           <th className="px-4 py-2 text-left border-r">Loans</th>
           <th className="px-4 py-2 flex gap-3">
-            Status <IoIosArrowDown size={20} />
+            Status 
           </th>
         </tr>
       </thead>
@@ -139,6 +140,8 @@ const fetchAuctions = async () => {
     </table>
   </div>
 </div>
+        </div>
+         
 
         </div>
     );

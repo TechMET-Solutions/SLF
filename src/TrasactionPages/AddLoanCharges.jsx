@@ -216,7 +216,8 @@ function AddLoanCharges() {
       </div>
 
       {/* 🔹 Search Section */}
-      <div className="bg-[#FFE6E6] mt-5 p-6 rounded-md w-full mx-auto px-[120px] ">
+      <div className='ml-[110px] mr-[110px]'>
+<div className="bg-[#FFE6E6] mt-5 p-3 rounded-md w-full  ">
         <p className="font-bold text-[24px] text-[#0A2478] mb-6">Search Loan Applications</p>
 
         {/* 🔹 Search Fields Row */}
@@ -278,10 +279,11 @@ function AddLoanCharges() {
           </div>
         )}
       </div>
+      </div>
+      
 
-
-      {/* 🔹 Loan Details Section */}
-      <div className="bg-[#F7F7FF] p-8 rounded-md w-full mx-auto px-[120px] ">
+      <div className='mr-[110px] ml-[110px] '>
+         <div className="bg-[#F7F7FF] p-3 rounded-md w-full ">
         {/* Section Title */}
         <p className="font-bold text-[24px] text-[#0A2478] mb-6">Loan Details</p>
 
@@ -394,13 +396,16 @@ function AddLoanCharges() {
         </div>
       </div>
 
-
-      {/* Charges Table Section */}
-      <h1 className="font-bold text-[24px] text-[#0A2478] mb-4 mt-6 px-[120px]">
+</div>
+      {/* 🔹 Loan Details Section */}
+     
+      <div className='mr-[110px] ml-[110px]  p-2
+bg-[#FFE6E6]'>
+         <h1 className="font-bold text-[24px] text-[#0A2478] mb-4 mt-6 ">
         Charges Details
       </h1>
 
-      <div className="px-[120px]">
+      <div className="p-2">
         <div className="border border-gray-300 rounded-md overflow-hidden shadow-sm">
           <table className="w-full border-collapse text-sm">
             <thead>
@@ -560,6 +565,9 @@ function AddLoanCharges() {
           </table>
         </div>
       </div>
+</div>
+      {/* Charges Table Section */}
+     
     </div>
   );
 }

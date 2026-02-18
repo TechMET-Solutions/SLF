@@ -3,7 +3,7 @@ import JoditEditor from "jodit-react";
 import { useEffect, useRef, useState } from "react";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
-import { CiBarcode, CiEdit, CiSearch } from "react-icons/ci";
+import { CiBarcode, CiEdit } from "react-icons/ci";
 import { MdOutlineCancel } from "react-icons/md";
 import { useNavigate } from "react-router-dom";
 import calender from "../assets/calender.png";
@@ -80,6 +80,17 @@ const LoanApplication = () => {
   const [schemesLoading, setSchemesLoading] = useState(false);
   const [schemesError, setSchemesError] = useState("");
 
+  const [searchHeaders, setSearchHeaders] = useState(["group_name"]); // Array of active headers
+  const [searchQuery, setSearchQuery] = useState("");
+  const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+
+  const toggleHeader = (headerId) => {
+    setSearchHeaders((prev) =>
+      prev.includes(headerId)
+        ? prev.filter((id) => id !== headerId)
+        : [...prev, headerId],
+    );
+  };
   // Fetch active schemes from server
   useEffect(() => {
     let mounted = true;
@@ -145,96 +156,171 @@ const LoanApplication = () => {
     },
   });
 
-  const fetchLoanApplications = async (
-    page = 1,
-    immediateFilters = null,
-    immediateDate = undefined,
-    immediateScheme = undefined,
-  ) => {
-    setLoading(true);
-    setError("");
+  // const fetchLoanApplications = async (
+  //   page = 1,
+  //   immediateFilters = null,
+  //   immediateDate = undefined,
+  //   immediateScheme = undefined,
+  // ) => {
+  //   setLoading(true);
+  //   setError("");
 
-    try {
-      const activeFilters =
-        immediateFilters !== null ? immediateFilters : filters;
-      const activeDate =
-        immediateDate !== undefined ? immediateDate : selectedDate;
-      const activeScheme =
-        immediateScheme !== undefined ? immediateScheme : selectedScheme;
+  //   try {
+  //     const activeFilters =
+  //       immediateFilters !== null ? immediateFilters : filters;
+  //     const activeDate =
+  //       immediateDate !== undefined ? immediateDate : selectedDate;
+  //     const activeScheme =
+  //       immediateScheme !== undefined ? immediateScheme : selectedScheme;
 
-      const params = new URLSearchParams({
-        page: page.toString(),
-        limit: pagination.limit.toString(),
-      });
+  //     const params = new URLSearchParams({
+  //       page: page.toString(),
+  //       limit: pagination.limit.toString(),
+  //     });
 
-      // Add ALL existing filters
-      Object.entries(activeFilters).forEach(([key, value]) => {
-        if (value && key !== "field" && key !== "search") {
-          params.append(key, value);
-        }
-      });
+  //     // Add ALL existing filters
+  //     Object.entries(activeFilters).forEach(([key, value]) => {
+  //       if (value && key !== "field" && key !== "search") {
+  //         params.append(key, value);
+  //       }
+  //     });
 
-      // Add Product Filter (gold/silver)
-      if (activeFilters.loan_type) {
-        params.append("loan_type", activeFilters.loan_type);
-      }
+  //     // Add Product Filter (gold/silver)
+  //     if (activeFilters.loan_type) {
+  //       params.append("loan_type", activeFilters.loan_type);
+  //     }
 
-      // ⭐ ADD THIS ⭐ → Bullet/EMI filter
-      if (activeFilters.loans) {
-        params.append("loans", activeFilters.loans);
-      }
+  //     // ⭐ ADD THIS ⭐ → Bullet/EMI filter
+  //     if (activeFilters.loans) {
+  //       params.append("loans", activeFilters.loans);
+  //     }
 
-      // Add scheme filter
-      if (activeScheme) {
-        const selectedSchemeObj = schemes.find((s) => {
-          const label =
-            typeof s === "string"
-              ? s
-              : s.schemeName ||
-                s.SchemeName ||
-                s.name ||
-                s.schemeCode ||
-                s.scheme_code ||
-                s.code ||
-                JSON.stringify(s);
-          return label === activeScheme;
-        });
+  //     // Add scheme filter
+  //     if (activeScheme) {
+  //       const selectedSchemeObj = schemes.find((s) => {
+  //         const label =
+  //           typeof s === "string"
+  //             ? s
+  //             : s.schemeName ||
+  //               s.SchemeName ||
+  //               s.name ||
+  //               s.schemeCode ||
+  //               s.scheme_code ||
+  //               s.code ||
+  //               JSON.stringify(s);
+  //         return label === activeScheme;
+  //       });
 
-        if (selectedSchemeObj && selectedSchemeObj.id) {
-          params.append("scheme_id", selectedSchemeObj.id);
-        }
-      }
+  //       if (selectedSchemeObj && selectedSchemeObj.id) {
+  //         params.append("scheme_id", selectedSchemeObj.id);
+  //       }
+  //     }
 
-      // Add Date filter
-      if (activeDate) {
-        params.append("loan_date", activeDate.toISOString().split("T")[0]);
-      }
+  //     // Add Date filter
+  //     if (activeDate) {
+  //       params.append("loan_date", activeDate.toISOString().split("T")[0]);
+  //     }
 
-      const response = await apiClient.get(
-        `/Transactions/goldloan/all?${params}`,
-      );
+  //     const response = await apiClient.get(
+  //       `/Transactions/goldloan/all?${params}`,
+  //     );
 
-      if (response.data.success) {
-        setLoanApplication(response.data.data);
-        setPagination({
-          page: response.data.page,
-          totalPages: response.data.totalPages,
-          total: response.data.total,
-          limit: pagination.limit,
-        });
-      } else {
-        throw new Error(response.data.message || "No loan applications");
-      }
-    } catch (err) {
-      console.error("Error fetching loan applications:", err);
-      setError("No loan applications");
-      setLoanApplication([]);
-    } finally {
-      setLoading(false);
-    }
-  };
+  //     if (response.data.success) {
+  //       setLoanApplication(response.data.data);
+  //       setPagination({
+  //         page: response.data.page,
+  //         totalPages: response.data.totalPages,
+  //         total: response.data.total,
+  //         limit: pagination.limit,
+  //       });
+  //     } else {
+  //       throw new Error(response.data.message || "No loan applications");
+  //     }
+  //   } catch (err) {
+  //     console.error("Error fetching loan applications:", err);
+  //     setError("No loan applications");
+  //     setLoanApplication([]);
+  //   } finally {
+  //     setLoading(false);
+  //   }
+  // };
 
   // Initial fetch
+  const fetchLoanApplications = async (
+  page = 1,
+  immediateFilters = null,
+  immediateDate = undefined,
+  immediateScheme = undefined,
+) => {
+  setLoading(true);
+  setError("");
+
+  try {
+    const activeFilters =
+      immediateFilters !== null ? immediateFilters : filters;
+
+    const activeDate =
+      immediateDate !== undefined ? immediateDate : selectedDate;
+
+    const activeScheme =
+      immediateScheme !== undefined ? immediateScheme : selectedScheme;
+
+    const params = new URLSearchParams({
+      page: page.toString(),
+      limit: pagination.limit.toString(),
+    });
+
+    // ----------------------------
+    // ✅ NORMAL FILTERS
+    // ----------------------------
+    Object.entries(activeFilters).forEach(([key, value]) => {
+      if (value && key !== "field" && key !== "search") {
+        params.append(key, value);
+      }
+    });
+
+    // ----------------------------
+    // ✅ MULTI HEADER SEARCH
+    // ----------------------------
+    if (searchQuery && searchHeaders.length > 0) {
+      params.append("search", searchQuery);
+      params.append("fields", searchHeaders.join(",")); 
+    }
+
+    // ----------------------------
+    // DATE FILTER
+    // ----------------------------
+    if (activeDate) {
+      params.append("loan_date", activeDate.toISOString().split("T")[0]);
+    }
+
+    const response = await apiClient.get(
+      `/Transactions/goldloan/all?${params.toString()}`
+    );
+
+    if (response.data.success) {
+      setLoanApplication(response.data.data);
+      setPagination({
+        page: response.data.page,
+        totalPages: response.data.totalPages,
+        total: response.data.total,
+        limit: pagination.limit,
+      });
+    } else {
+      throw new Error(response.data.message || "No loan applications");
+    }
+  } catch (err) {
+    console.error("Error fetching loan applications:", err);
+    setError("No loan applications");
+    setLoanApplication([]);
+  } finally {
+    setLoading(false);
+  }
+};
+
+  
+  
+  
   useEffect(() => {
     fetchLoanApplications();
   }, []);
@@ -766,7 +852,7 @@ const LoanApplication = () => {
 
           <div className="flex gap-3">
             <div className="flex gap-5 items-center">
-              <div>
+              {/* <div>
                 <select
                   name="field"
                   value={filters.field}
@@ -808,6 +894,75 @@ const LoanApplication = () => {
                 >
                   <CiSearch className="w-[14px] h-[14px] font-bold" />
                 </button>
+              </div> */}
+
+              <div className="flex items-center gap-3">
+                <div className="flex items-center bg-white border border-gray-400 rounded-[5px] h-[32px] px-2 relative w-[300px]">
+                  {/* Multi-Select Header Dropdown */}
+                  <div className="relative border-r border-gray-300 pr-2 mr-2">
+                    <button
+                      onClick={() => setIsDropdownOpen(!isDropdownOpen)}
+                      className="text-[11px] font-source font-bold text-[#0A2478] flex items-center gap-1 outline-none h-full"
+                    >
+                      Headers ({searchHeaders.length}){" "}
+                      <span className="text-[8px]">▼</span>
+                    </button>
+
+                    {isDropdownOpen && (
+                      <div className="absolute top-[35px] left-[-8px] bg-white border border-gray-300 shadow-xl rounded-md z-[100] w-[160px] p-2">
+                        {[
+                          { id: "id", label: "Loan No" },
+                          { id: "Print_Name", label: "Party Name" },
+                          { id: "Scheme", label: "Scheme" },
+                          { id: "Loan_amount", label: "Loan Amount" },
+                        ].map((col) => (
+                          <label
+                            key={col.id}
+                            className="flex items-center gap-2 p-2 hover:bg-gray-50 cursor-pointer rounded"
+                          >
+                            <input
+                              type="checkbox"
+                              checked={searchHeaders.includes(col.id)}
+                              onChange={() => toggleHeader(col.id)}
+                              className="w-3 h-3 accent-[#0A2478]"
+                            />
+                            <span className="text-[11px] font-source text-gray-700">
+                              {col.label}
+                            </span>
+                          </label>
+                        ))}
+                        <div className="border-t mt-1 pt-1 text-center">
+                          <button
+                            onClick={() => setIsDropdownOpen(false)}
+                            className="text-[10px] text-[#0A2478] font-bold"
+                          >
+                            Apply
+                          </button>
+                        </div>
+                      </div>
+                    )}
+                  </div>
+
+                  {/* Text Input Field */}
+                  <input
+                    type="text"
+                    value={searchQuery}
+                    onChange={(e) => setSearchQuery(e.target.value)}
+                    placeholder="Type multiple items (e.g. Cash, Asset)..."
+                    className="flex-grow text-[11px] font-source outline-none h-full"
+                  />
+
+                  {/* Search Button */}
+                  <button
+                    onClick={() => {
+                      setIsDropdownOpen(false);
+                      fetchLoanApplications(1, filters, selectedDate, selectedScheme);
+                    }}
+                    className="ml-2 bg-[#0b2c69] text-white text-[11px] px-4 h-[24px] rounded-[3px] font-source hover:bg-[#071d45]"
+                  >
+                    Search
+                  </button>
+                </div>
               </div>
 
               {/* Scheme Filter */}
@@ -1074,7 +1229,7 @@ const LoanApplication = () => {
                 {loanApplication.map((row, index) => (
                   <tr
                     key={index}
-                   className={index % 2 === 0 ? "bg-gray-50" : "bg-white"}
+                    className={index % 2 === 0 ? "bg-gray-50" : "bg-white"}
                   >
                     <td
                       className="px-4 py-2 text-blue-600 cursor-pointer hover:underline font-medium"

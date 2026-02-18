@@ -35,7 +35,7 @@ const BidderRegistrationList = () => {
 
         <button
           onClick={() => navigate("/Bidder-Registration")}
-          className="bg-[#0A2478] hover:bg-[#0c2b94] text-white text-sm px-6 py-2 transition-all duration-200"
+          className="bg-[#0A2478] hover:bg-[#0c2b94] text-white rounded-[8px] px-6 py-2 transition-all duration-200"
         >
           Register
         </button>
@@ -45,18 +45,30 @@ const BidderRegistrationList = () => {
       {loading ? (
         <div className="mt-8 text-gray-600">Loading bidders...</div>
       ) : (
-        <div className="w-[90%] max-w-[1300px] mt-6 bg-white">
+        <div className=" mt-6 bg-white">
           <table className="w-full text-sm border-collapse">
             <thead className="bg-[#0A2478] text-white">
               <tr>
                 <th className="px-4 py-2 text-left border-r">ID</th>
-                <th className="px-4 py-2 text-left border-r">Bidder Name</th>
-                <th className="px-4 py-2 text-left border-r">Mobile No</th>
-                <th className="px-6 py-2 text-left border-r">Shop Address</th>
+                <th className="px-4 py-2 text-left border-r w-[180px]">
+                  Bidder Name
+                </th>
+                <th className="px-4 py-2 text-left border-r w-[120px]">
+                  Mobile No
+                </th>
+                <th className="px-6 py-2 text-left border-r w-[250px]">
+                  Shop Address
+                </th>
                 <th className="px-4 py-2 text-left border-r">Landline No</th>
-                <th className="px-4 py-2 text-left border-r">GST No</th>
-                <th className="px-6 py-2 text-left border-r">Firm Name</th>
-                <th className="px-6 py-2 text-left border-r">Email ID</th>
+                <th className="px-4 py-2 text-left border-r w-[200px]">
+                  GST No
+                </th>
+                <th className="px-6 py-2 text-left border-r w-[160px]">
+                  Firm Name
+                </th>
+                <th className="px-6 py-2 text-left border-r w-[160px]">
+                  Email ID
+                </th>
                 <th className="px-4 py-2 text-center">Action</th>
               </tr>
             </thead>
@@ -66,14 +78,18 @@ const BidderRegistrationList = () => {
                 data.map((item, index) => (
                   <tr
                     key={item.id}
-                    className={`${index % 2 === 0 ? "bg-gray-50" : "bg-white"
-                      } hover:bg-blue-50 transition-colors duration-150`}
+                    className={index % 2 === 0 ? "bg-gray-50" : "bg-white"}
                   >
-                    <td className="px-4 py-2 text-blue-500 cursor-pointer"  onClick={() =>
-                          navigate('/View-Bidder-Details', {
-                            state: { item: item.id }
-                          })
-                        }>{item.id}</td>
+                    <td
+                      className="px-4 py-2 text-blue-500 cursor-pointer"
+                      onClick={() =>
+                        navigate("/View-Bidder-Details", {
+                          state: { item: item.id },
+                        })
+                      }
+                    >
+                      {item.id}
+                    </td>
                     <td className="px-4 py-2">{item.bidder_name}</td>
                     <td className="px-4 py-2">{item.mobile_no}</td>
                     <td
@@ -100,8 +116,8 @@ const BidderRegistrationList = () => {
                       </button> */}
                       <button
                         onClick={() =>
-                          navigate('/EditBidderDetails', {
-                            state: { bidderId: item.id }
+                          navigate("/EditBidderDetails", {
+                            state: { bidderId: item.id },
                           })
                         }
                         className="bg-green-500 hover:bg-green-600 p-2 rounded text-white"

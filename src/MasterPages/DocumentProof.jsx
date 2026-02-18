@@ -303,47 +303,85 @@ const DocumentProof = () => {
     });
   };
 
-  const handleUpdateSubmit = async () => {
-    try {
-      if (!formData.proof_type?.trim()) {
-        alert("Please fill all required fields!");
-        return;
-      }
+//   const handleUpdateSubmit = async () => {
+//     debugger;
+//     try {
+//       if (!formData.proof_type?.trim()) {
+//         alert("Please fill all required fields!");
+//         return;
+//       }
 
-      const updateObj = {
-        ...formData,
-        id: selectedDataid,
-        modified_by: loginUser,
-      };
+//       const updateObj = {
+//         ...formData,
+//         id: selectedDataid,
+//         modified_by: loginUser,
+//       };
 
-      const encryptedData = encryptData(JSON.stringify(updateObj));
-      const payload = new FormData();
-      payload.append("data", encryptedData);
+//       const encryptedData = encryptData(JSON.stringify(updateObj));
+//       const payload = new FormData();
+//       payload.append("data", encryptedData);
 
-      const response = await axios.post(
-        `${API}/Master/Master_Profile/update_document`,
-        payload,
-      );
+//       const response = await axios.post(
+//         `${API}/Master/Master_Profile/update_document`,
+//         payload,
+//       );
 
-      // ✅ Decrypt success response
-      const decryptedResponse = JSON.parse(decryptData(response.data.data));
+//       // ✅ Decrypt success response
+//       const decryptedResponse = JSON.parse(decryptData(response.data.data));
+// console.log("✅ UPDATE RESPONSE:", decryptedResponse);
+//       alert(decryptedResponse.message);
 
-      alert(decryptedResponse.message);
+//       setIsModalOpen(false);
+//       fetchDocuments();
+//       resetForm();
+//     } catch (error) {
+//       console.error("❌ UPDATE Error:", error);
 
-      setIsModalOpen(false);
-      fetchDocuments();
-      resetForm();
-    } catch (error) {
-      console.error("❌ UPDATE Error:", error);
-
-      // ✅ Handle backend validation message properly
-      if (error.response && error.response.data) {
-        alert(error.response.data.message);
-      } else {
-        alert("Failed to update document proof.");
-      }
+//       // ✅ Handle backend validation message properly
+//       if (error.response && error.response.data) {
+//         alert(error.response.data.message);
+//       } else {
+//         alert("Failed to update document proof.");
+//       }
+//     }
+//   };
+const handleUpdateSubmit = async () => {
+  try {
+    if (!formData.proof_type?.trim()) {
+      alert("Please fill all required fields!");
+      return;
     }
-  };
+
+    const updateObj = {
+      ...formData,
+      id: selectedDataid,
+      modified_by: loginUser,
+    };
+
+    // ✅ Send normal JSON
+    const response = await axios.post(
+      `${API}/Master/Master_Profile/update_document`,
+      updateObj
+    );
+
+    console.log("✅ UPDATE RESPONSE:", response.data);
+
+    alert(response.data.message);
+
+    setIsModalOpen(false);
+    fetchDocuments();
+    resetForm();
+
+  } catch (error) {
+    console.error("❌ UPDATE Error:", error);
+
+    if (error.response && error.response.data) {
+      alert(error.response.data.message);
+    } else {
+      alert("Failed to update document proof.");
+    }
+  }
+};
 
   const updateDocumentStatus = async (id, currentStatus) => {
     try {

@@ -703,224 +703,222 @@ const AddGoldLoanApplication = () => {
         </div>
       </div>
 
-      <div className=" mt-7">
-
-        <div className="flex pl-[110px]  gap-5">
+      <div className=" mt-5">
+        <div className="flex ml-[110px] p-2  gap-5 bg-[#FFF5F5] mr-[110px]">
           <div>
-<div>
-            <div className="flex  gap-2">
-              <div className="flex flex-col">
-                <label className="text-[14px] font-medium">
-                  Borrower<span className="text-red-500">*</span>
-                </label>
-                <div className="flex items-center mt-1 w-[280px]">
-                  <div className="relative flex-1">
-                    <input
-                      type="text"
-                      placeholder="Enter Borrower Name"
-                      name="Borrower_Name"
-                      value={searchTerm}
-                      onChange={(e) => {
-                        setSearchTerm(e.target.value);
-                        setSelectedCustomer(null); // reset when typing new search
-                      }}
-                      className="border border-gray-300 rounded-l px-3 py-2 w-full focus:outline-none focus:ring-1 focus:ring-blue-500 bg-white"
-                    />
+            <div>
+              <div className="flex  gap-2">
+                <div className="flex flex-col">
+                  <label className="text-[14px] font-medium">
+                    Borrower<span className="text-red-500">*</span>
+                  </label>
+                  <div className="flex items-center mt-1 w-[280px]">
+                    <div className="relative flex-1">
+                      <input
+                        type="text"
+                        placeholder="Enter Borrower Name"
+                        name="Borrower_Name"
+                        value={searchTerm}
+                        onChange={(e) => {
+                          setSearchTerm(e.target.value);
+                          setSelectedCustomer(null); // reset when typing new search
+                        }}
+                        className="border border-gray-300 rounded-l px-3 py-2 w-full focus:outline-none focus:ring-1 focus:ring-blue-500 bg-white"
+                      />
 
-                    {loading && (
-                      <div className="absolute right-3 top-2 text-gray-400 text-sm">
-                        Loading...
-                      </div>
-                    )}
+                      {loading && (
+                        <div className="absolute right-3 top-2 text-gray-400 text-sm">
+                          Loading...
+                        </div>
+                      )}
 
-                    {results.length > 0 && !selectedCustomer && (
-                      <ul className="absolute left-0 top-full bg-white border border-gray-200 rounded-md w-full max-h-48 overflow-y-auto mt-1 shadow-lg z-50">
-                        {results.map((customer) => (
-                          <li
-                            key={customer.id}
-                            onClick={() =>
-                              handleSelectCustomer(customer, "Borrower")
-                            }
-                            className="px-3 py-2 hover:bg-blue-100 cursor-pointer"
-                          >
-                            {customer.printName}{" "}
-                            <span className="text-gray-500 text-sm">
-                              ({customer.printName})
-                            </span>
-                          </li>
-                        ))}
-                      </ul>
-                    )}
+                      {results.length > 0 && !selectedCustomer && (
+                        <ul className="absolute left-0 top-full bg-white border border-gray-200 rounded-md w-full max-h-48 overflow-y-auto mt-1 shadow-lg z-50">
+                          {results.map((customer) => (
+                            <li
+                              key={customer.id}
+                              onClick={() =>
+                                handleSelectCustomer(customer, "Borrower")
+                              }
+                              className="px-3 py-2 hover:bg-blue-100 cursor-pointer"
+                            >
+                              {customer.printName}{" "}
+                              <span className="text-gray-500 text-sm">
+                                ({customer.printName})
+                              </span>
+                            </li>
+                          ))}
+                        </ul>
+                      )}
+                    </div>
+
+                    <button
+                      className="bg-[#0A2478] text-white px-4 py-3 rounded-r border border-gray-300 border-l-0 hover:bg-[#081c5b]"
+                      type="button"
+                      onClick={() => OpenCustomerModel(selectedCustomer.id)}
+                    >
+                      <img src={timesvg} alt="eye" />
+                    </button>
                   </div>
-
-                  <button
-                    className="bg-[#0A2478] text-white px-4 py-3 rounded-r border border-gray-300 border-l-0 hover:bg-[#081c5b]"
-                    type="button"
-                    onClick={() => OpenCustomerModel(selectedCustomer.id)}
-                  >
-                    <img src={timesvg} alt="eye" />
-                  </button>
                 </div>
-              </div>
 
-              <div className="mb-6 mt-[-2px]">
-                <label className="text-[14px] font-medium block mb-1">
-                  Scheme<span className="text-red-500">*</span>
-                </label>
-                <select
-                  className="border border-gray-300 px-3 py-2 w-[130px] bg-white rounded-[8px] h-[40px] mt-1"
-                  onChange={handleSchemeChange}
-                  defaultValue=""
-                >
-                  <option value="" disabled>
-                    Select Scheme
-                  </option>
-                  {schemes.map((scheme) => (
-                    <option key={scheme.id} value={scheme.id}>
-                      {scheme.schemeName}
+                <div className="mb-6 mt-[-2px]">
+                  <label className="text-[14px] font-medium block mb-1">
+                    Scheme<span className="text-red-500">*</span>
+                  </label>
+                  <select
+                    className="border border-gray-300 px-3 py-2 w-[130px] bg-white rounded-[8px] h-[40px] mt-1"
+                    onChange={handleSchemeChange}
+                    defaultValue=""
+                  >
+                    <option value="" disabled>
+                      Select Scheme
                     </option>
-                  ))}
-                </select>
-              </div>
-
-              <div className="">
-                <div>
-                  <label className="text-[14px] font-medium">
-                    Print Name <span className="text-red-500">*</span>
-                  </label>
+                    {schemes.map((scheme) => (
+                      <option key={scheme.id} value={scheme.id}>
+                        {scheme.schemeName}
+                      </option>
+                    ))}
+                  </select>
                 </div>
 
-                <input
-                  type="text"
-                  name="printName"
-                  placeholder="Enter Print Name"
-                  value={formData.printName}
-                  onChange={handleInputChange}
-                  className="border border-gray-300 px-3 py-2  w-[200px] rounded-[8px] bg-white h-[40px] mt-1"
-                />
-              </div>
-
-              <div className="">
-                <div>
-                  <label className="text-[14px] font-medium">
-                    Mobile Number<span className="text-red-500">*</span>
-                  </label>
-                </div>
-
-                <input
-                  type="text"
-                  name="mobile"
-                  placeholder="Enter mobile Name"
-                  value={formData.mobile}
-                  onChange={handleInputChange}
-                  className="border border-gray-300 px-3 py-2 mt-1 w-[136px] rounded-[8px] bg-white h-[40px]"
-                />
-              </div>
-              <div className="">
-                <div>
-                  <label className="text-[14px] font-medium">
-                    Alternate Number
-                  </label>
-                </div>
-
-                <input
-                  type="text"
-                  name="altMobile"
-                  placeholder="Enter alt Mobile Name"
-                  value={formData.altMobile}
-                  onChange={handleInputChange}
-                  className="border border-gray-300 px-3 py-2 mt-1 w-[136px] rounded-[8px] bg-white h-[40px]"
-                />
-              </div>
-
-              <div></div>
-            </div>
-            <div className="flex gap-2">
-              <div className="flex flex-col">
-                <label className="text-[14px] font-medium">
-                  Co-Borrower<span className="text-red-500">*</span>
-                </label>
-                <div className="flex items-center w-[280px] mt-1">
-                  <div className="relative flex-1">
-                    <input
-                      type="text"
-                      placeholder="Enter Co-Borrower Name"
-                      name="CoBorrowerName"
-                      value={searchTermForCoBorrower}
-                      onChange={(e) => {
-                        setSearchTermForCoBorrower(e.target.value);
-                        setSelectedCoBorrower(null);
-                      }}
-                      className="border border-gray-300 rounded-l px-3 py-2 w-full focus:outline-none focus:ring-1 focus:ring-blue-500 bg-white h-[38px] "
-                    />
-
-                    {loading && (
-                      <div className="absolute right-3 top-2 text-gray-400 text-sm">
-                        Loading...
-                      </div>
-                    )}
-
-                    {results2.length > 0 && !selectedCoBorrower && (
-                      <ul className="absolute left-0 top-full bg-white border border-gray-200 rounded-md w-full max-h-48 overflow-y-auto mt-1 shadow-lg z-50">
-                        {results2.map((customer) => (
-                          <li
-                            key={customer.id}
-                            onClick={() =>
-                              handleSelectCoborrower(customer, "CoBorrower")
-                            }
-                            className="px-3 py-2 hover:bg-blue-100 cursor-pointer"
-                          >
-                            {customer.printName}{" "}
-                            <span className="text-gray-500 text-sm">
-                              ({customer.printName})
-                            </span>
-                          </li>
-                        ))}
-                      </ul>
-                    )}
-                  </div>
-
-                  <button
-                    className="bg-[#0A2478] text-white px-4 py-3 rounded-r border border-gray-300 border-l-0 hover:bg-[#081c5b] h-[40px]"
-                    type="button"
-                    onClick={() => OpenCustomerModel(selectedCoBorrower.id)} // <--- ADD
-                  >
-                    <img src={timesvg} alt="eye" />
-                  </button>
-                </div>
-              </div>
-
-              <div>
                 <div className="">
                   <div>
-                    <label className="text-[14px] font-medium">Relation</label>
+                    <label className="text-[14px] font-medium">
+                      Print Name <span className="text-red-500">*</span>
+                    </label>
                   </div>
 
                   <input
                     type="text"
-                    placeholder="Co-Borrower"
-                    name="CoBorrowerRelation"
-                    value={formData.CoBorrowerRelation}
+                    name="printName"
+                    placeholder="Enter Print Name"
+                    value={formData.printName}
                     onChange={handleInputChange}
-                    className="border border-gray-300 px-3 py-2  w-[120px] rounded-[8px] bg-white h-[40px]"
+                    className="border border-gray-300 px-3 py-2  w-[200px] rounded-[8px] bg-white h-[40px] mt-1"
+                  />
+                </div>
+
+                <div className="">
+                  <div>
+                    <label className="text-[14px] font-medium">
+                      Mobile Number<span className="text-red-500">*</span>
+                    </label>
+                  </div>
+
+                  <input
+                    type="text"
+                    name="mobile"
+                    placeholder="Enter mobile Name"
+                    value={formData.mobile}
+                    onChange={handleInputChange}
+                    className="border border-gray-300 px-3 py-2 mt-1 w-[136px] rounded-[8px] bg-white h-[40px]"
+                  />
+                </div>
+                <div className="">
+                  <div>
+                    <label className="text-[14px] font-medium">
+                      Alternate Number
+                    </label>
+                  </div>
+
+                  <input
+                    type="text"
+                    name="altMobile"
+                    placeholder="Enter alt Mobile Name"
+                    value={formData.altMobile}
+                    onChange={handleInputChange}
+                    className="border border-gray-300 px-3 py-2 mt-1 w-[136px] rounded-[8px] bg-white h-[40px]"
+                  />
+                </div>
+
+                <div></div>
+              </div>
+              <div className="flex gap-2">
+                <div className="flex flex-col">
+                  <label className="text-[14px] font-medium">
+                    Co-Borrower<span className="text-red-500">*</span>
+                  </label>
+                  <div className="flex items-center w-[280px] mt-1">
+                    <div className="relative flex-1">
+                      <input
+                        type="text"
+                        placeholder="Enter Co-Borrower Name"
+                        name="CoBorrowerName"
+                        value={searchTermForCoBorrower}
+                        onChange={(e) => {
+                          setSearchTermForCoBorrower(e.target.value);
+                          setSelectedCoBorrower(null);
+                        }}
+                        className="border border-gray-300 rounded-l px-3 py-2 w-full focus:outline-none focus:ring-1 focus:ring-blue-500 bg-white h-[38px] "
+                      />
+
+                      {loading && (
+                        <div className="absolute right-3 top-2 text-gray-400 text-sm">
+                          Loading...
+                        </div>
+                      )}
+
+                      {results2.length > 0 && !selectedCoBorrower && (
+                        <ul className="absolute left-0 top-full bg-white border border-gray-200 rounded-md w-full max-h-48 overflow-y-auto mt-1 shadow-lg z-50">
+                          {results2.map((customer) => (
+                            <li
+                              key={customer.id}
+                              onClick={() =>
+                                handleSelectCoborrower(customer, "CoBorrower")
+                              }
+                              className="px-3 py-2 hover:bg-blue-100 cursor-pointer"
+                            >
+                              {customer.printName}{" "}
+                              <span className="text-gray-500 text-sm">
+                                ({customer.printName})
+                              </span>
+                            </li>
+                          ))}
+                        </ul>
+                      )}
+                    </div>
+
+                    <button
+                      className="bg-[#0A2478] text-white px-4 py-3 rounded-r border border-gray-300 border-l-0 hover:bg-[#081c5b] h-[40px]"
+                      type="button"
+                      onClick={() => OpenCustomerModel(selectedCoBorrower.id)} // <--- ADD
+                    >
+                      <img src={timesvg} alt="eye" />
+                    </button>
+                  </div>
+                </div>
+
+                <div>
+                  <div className="">
+                    <div>
+                      <label className="text-[14px] font-medium">
+                        Relation
+                      </label>
+                    </div>
+
+                    <input
+                      type="text"
+                      placeholder="Co-Borrower"
+                      name="CoBorrowerRelation"
+                      value={formData.CoBorrowerRelation}
+                      onChange={handleInputChange}
+                      className="border border-gray-300 px-3 py-2  w-[120px] rounded-[8px] bg-white h-[40px]"
+                    />
+                  </div>
+                </div>
+                <div className="">
+                  <p>Address</p>
+                  <textarea
+                    name="borrowerAddress"
+                    value={formData.borrowerAddress}
+                    onChange={handleInputChange}
+                    className="border w-[500px] h-[40px] rounded-[8px] p-2 focus:outline-none focus:ring-1 focus:ring-blue-400 bg-white"
                   />
                 </div>
               </div>
-<div className="">
-          <p>Address</p>
-          <textarea
-         
-                name="borrowerAddress"
-                value={formData.borrowerAddress}
-                onChange={handleInputChange}
-                className="border w-[500px] h-[40px] rounded-[8px] p-2 focus:outline-none focus:ring-1 focus:ring-blue-400"
-              /></div>
-             
-             
-              </div>
-                
 
-               <div className="flex gap-2  mt-2 ">
+              <div className="flex gap-2  mt-2 ">
                 <div className="">
                   <div>
                     <label className="text-[14px] font-medium">
@@ -937,310 +935,301 @@ const AddGoldLoanApplication = () => {
                     className="border border-gray-300 px-3 py-2 mt-1 w-[200px] rounded-[8px] bg-white h-[38px]"
                   />
                 </div>
-                 <div>
-                <div className="">
-                  <div>
-                    <label className="text-[14px] font-medium">
-                      Relation<span className="text-red-500">*</span>
-                    </label>
-                  </div>
+                <div>
+                  <div className="">
+                    <div>
+                      <label className="text-[14px] font-medium">
+                        Relation<span className="text-red-500">*</span>
+                      </label>
+                    </div>
 
-                  <input
-                    type="text"
-                    placeholder="Relation"
-                    name="NomineeRelation"
-                    value={formData.NomineeRelation}
-                    onChange={handleInputChange}
-                    className="border border-gray-300 px-3 py-2 mt-1 w-[120px] rounded-[8px] bg-white h-[38px]"
-                  />
+                    <input
+                      type="text"
+                      placeholder="Relation"
+                      name="NomineeRelation"
+                      value={formData.NomineeRelation}
+                      onChange={handleInputChange}
+                      className="border border-gray-300 px-3 py-2 mt-1 w-[120px] rounded-[8px] bg-white h-[38px]"
+                    />
+                  </div>
                 </div>
               </div>
-              </div>
-
-             
-
-              
+            </div>
           </div>
-          </div>
-          
+
           <div>
- <div className="flex  gap-2">
-            
-            <div className=" h-[130px]  ">
-              {/* Profile Image */}
-              <p>Customer</p>
+            <div className="flex  gap-2">
+              <div className=" h-[130px]  ">
+                {/* Profile Image */}
+                <p className="text-[14px] font-medium">Customer</p>
 
-              <img
-                src={
-                  formData.Borrower_ProfileImg
-                    ? `${formData.Borrower_ProfileImg}` // backend image path
-                    : profileempty // fallback image
-                }
-                alt="profile"
-                className="w-[100px] h-[80px] rounded-[8px] object-cover border border-gray-300"
-              />
+                <img
+                  src={
+                    formData.Borrower_ProfileImg
+                      ? `${formData.Borrower_ProfileImg}` // backend image path
+                      : profileempty // fallback image
+                  }
+                  alt="profile"
+                  className="w-[100px] h-[80px] rounded-[8px] object-cover border border-gray-300"
+                />
 
-              <div className="mt-2 border w-[100px]  flex items-center justify-center bg-white">
-                {formData.Borrower_signature ? (
-                  <img
-                    src={`${formData.Borrower_signature}`}
-                    alt="signature"
-                    className="w-full h-full object-contain"
-                  />
-                ) : (
-                  <span className="text-gray-400 text-xs">No Signature</span>
-                )}
+                <div className="mt-2 border w-[100px]  flex items-center justify-center bg-white">
+                  {formData.Borrower_signature ? (
+                    <img
+                      src={`${formData.Borrower_signature}`}
+                      alt="signature"
+                      className="w-full h-full object-contain"
+                    />
+                  ) : (
+                    <span className="text-gray-400 text-xs">No Signature</span>
+                  )}
+                </div>
+              </div>
+              <div className="w-[100px] h-auto flex flex-col ">
+                <p className="text-[14px] font-medium">Co-Borrower</p>
+
+                <img
+                  src={
+                    formData.CoBorrower_ProfileImg
+                      ? formData.CoBorrower_ProfileImg
+                      : profileempty
+                  }
+                  alt="Co-Borrower Profile"
+                  className="w-[100px] h-[80px] rounded-[8px] object-cover border border-gray-300"
+                />
+
+                <div className="mt-2 w-[100px]  border flex items-center justify-center bg-white ">
+                  {formData.CoBorrower_signature ? (
+                    <img
+                      src={formData.CoBorrower_signature}
+                      alt="Co-Borrower Signature"
+                      className="max-h-[31px] object-contain"
+                    />
+                  ) : (
+                    <p className="text-gray-400 text-xs">No signature</p>
+                  )}
+                </div>
+              </div>
+
+              <div className="">
+                <p className="text-[14px] font-medium">Ornament Photo</p>
+
+                <img
+                  src={
+                    formData.OrnamentPhoto
+                      ? formData.OrnamentPhoto
+                      : profileempty
+                  }
+                  alt="Ornament"
+                  className="w-[100px] h-[80px] object-cover rounded-[8px] border border-gray-300 cursor-pointer"
+                  onClick={() => fileInputRef.current.click()}
+                />
+
+                <input
+                  type="file"
+                  ref={fileInputRef}
+                  id="ornamentFile"
+                  name="OrnamentFile"
+                  onChange={(e) => handleOrnamentUpload(e)}
+                  className="hidden"
+                />
               </div>
             </div>
-            <div className="w-[100px] h-auto flex flex-col ">
-              <p className="font-medium ">Co-Borrower</p>
-
-              <img
-                src={
-                  formData.CoBorrower_ProfileImg
-                    ? formData.CoBorrower_ProfileImg
-                    : profileempty
-                }
-                alt="Co-Borrower Profile"
-                className="w-[100px] h-[80px] rounded-[8px] object-cover border border-gray-300"
-              />
-
-              <div className="mt-2 w-[100px]  border flex items-center justify-center bg-white ">
-                {formData.CoBorrower_signature ? (
-                  <img
-                    src={formData.CoBorrower_signature}
-                    alt="Co-Borrower Signature"
-                    className="max-h-[31px] object-contain"
-                  />
-                ) : (
-                  <p className="text-gray-400 text-xs">No signature</p>
-                )}
-              </div>
-            </div>
-
-         
-            <div className="">
-              <p >Ornament Photo</p>
-
-              <img
-                src={
-                  formData.OrnamentPhoto ? formData.OrnamentPhoto : profileempty
-                }
-                alt="Ornament"
-                className="w-[100px] h-[80px] object-cover rounded-[8px] border border-gray-300 cursor-pointer"
-                onClick={() => fileInputRef.current.click()}
-              />
-
-              <input
-                type="file"
-                ref={fileInputRef}
-                id="ornamentFile"
-                name="OrnamentFile"
-                onChange={(e) => handleOrnamentUpload(e)}
-                className="hidden"
-              />
-
-            
-            </div>
-          </div>
           </div>
         </div>
-       
-       
-       
-        <div className=" gap-10  mb-10 pl-[110px] mt-5 ">
-          
-{selectedScheme?.product === "Gold" && (
-          <>
-            <div className="flex gap-2  mt-2 ">
-              <PledgeItemList
-                rows={PledgeItem}
-                setRows={setPledgeItem}
-                selectedScheme={selectedScheme}
-              />
-            </div>
-          </>
-        )}
-        {selectedScheme?.product === "Silver" && (
-          <>
-            <div className="flex gap-2 mt-2 ">
-              <PledgeItemListSilver
-                rows={PledgeItem}
-                setRows={setPledgeItem}
-                selectedScheme={selectedScheme}
-              />
-            </div>
-          </>
-        )}
 
-        <div className="flex  gap-2 ">
-          <div className="">
-            <div>
-              <label className="text-[14px] font-medium">
-                Loan amount <span className="text-red-500">*</span>
-              </label>
-            </div>
+        <div className=" gap-10  ml-[110px]  bg-[#F7F7FF] p-2 mr-[110px]">
+          {selectedScheme?.product === "Gold" && (
+            <>
+              <div className="flex gap-2  mt-2 ">
+                <PledgeItemList
+                  rows={PledgeItem}
+                  setRows={setPledgeItem}
+                  selectedScheme={selectedScheme}
+                />
+              </div>
+            </>
+          )}
+          {selectedScheme?.product === "Silver" && (
+            <>
+              <div className="flex gap-2 mt-2 ">
+                <PledgeItemListSilver
+                  rows={PledgeItem}
+                  setRows={setPledgeItem}
+                  selectedScheme={selectedScheme}
+                />
+              </div>
+            </>
+          )}
 
-            <input
-              type="text"
-              placeholder="Loan amount"
-              value={formData.Loan_amount}
-              onChange={(e) => {
-                const inputLoan = parseFloat(e.target.value) || 0;
+          <div className="flex  gap-2 ">
+            <div className="">
+              <div>
+                <label className="text-[14px] font-medium">
+                  Loan amount <span className="text-red-500">*</span>
+                </label>
+              </div>
 
-                // ---- Interest calculation ----
-                let interestAmount = 0;
-
-                if (selectedScheme?.calcBasisOn === "Monthly") {
-                  const tenure = Number(selectedScheme?.loanPeriod) || 0;
-                  const slab = selectedScheme?.interestRates?.[0];
-                  const rate = Number(slab?.addInt || 0);
-
-                  interestAmount = (inputLoan * rate * tenure) / (12 * 100);
-                }
-
-                // ---- Document Charges ----
-                let docCharges = 0;
-                const docPercent = Number(
-                  selectedScheme?.docChargePercent || 0,
-                );
-
-                if (inputLoan > 0 && docPercent > 0) {
-                  docCharges = (inputLoan * docPercent) / 100;
-
-                  const minDoc = Number(selectedScheme?.docChargeMin || 0);
-                  const maxDoc = Number(
-                    selectedScheme?.docChargeMax || Infinity,
-                  );
-
-                  docCharges = Math.max(minDoc, Math.min(docCharges, maxDoc));
-                }
-
-                // ---- Net Payable ----
-                const netPayable = inputLoan + interestAmount + docCharges;
-
-                setFormData((prev) => ({
-                  ...prev,
-                  Loan_amount: e.target.value, // keep exactly what user typed
-                  Interest_Amount: interestAmount.toFixed(2),
-                  Doc_Charges: docCharges.toFixed(2),
-                  Net_Payable: netPayable.toFixed(2),
-                }));
-              }}
-              className="border border-gray-300 px-3 py-2 w-[129px] rounded-[8px] bg-white h-[38px] mt-1"
-            />
-          </div>
-
-          <div className="flex flex-col">
-            <label className="text-[14px] font-medium text-gray-700 mb-1">
-              Doc Charges (%)
-            </label>
-
-            <div className="flex w-[129px]">
-              {/* Percentage Button first */}
-              <button className="bg-[#0A2478] text-white px-4 py-2 text-sm font-medium rounded-l-md border border-[#0A2478] hover:bg-[#081c5b] transition-all duration-200 mt-1">
-                {selectedScheme?.docChargePercent || 0}
-              </button>
-
-              {/* Input Field */}
               <input
                 type="text"
-                name="Doc_Charges"
-                value={formData.Doc_Charges}
+                placeholder="Loan amount"
+                value={formData.Loan_amount}
+                onChange={(e) => {
+                  const inputLoan = parseFloat(e.target.value) || 0;
+
+                  // ---- Interest calculation ----
+                  let interestAmount = 0;
+
+                  if (selectedScheme?.calcBasisOn === "Monthly") {
+                    const tenure = Number(selectedScheme?.loanPeriod) || 0;
+                    const slab = selectedScheme?.interestRates?.[0];
+                    const rate = Number(slab?.addInt || 0);
+
+                    interestAmount = (inputLoan * rate * tenure) / (12 * 100);
+                  }
+
+                  // ---- Document Charges ----
+                  let docCharges = 0;
+                  const docPercent = Number(
+                    selectedScheme?.docChargePercent || 0,
+                  );
+
+                  if (inputLoan > 0 && docPercent > 0) {
+                    docCharges = (inputLoan * docPercent) / 100;
+
+                    const minDoc = Number(selectedScheme?.docChargeMin || 0);
+                    const maxDoc = Number(
+                      selectedScheme?.docChargeMax || Infinity,
+                    );
+
+                    docCharges = Math.max(minDoc, Math.min(docCharges, maxDoc));
+                  }
+
+                  // ---- Net Payable ----
+                  const netPayable = inputLoan + interestAmount + docCharges;
+
+                  setFormData((prev) => ({
+                    ...prev,
+                    Loan_amount: e.target.value, // keep exactly what user typed
+                    Interest_Amount: interestAmount.toFixed(2),
+                    Doc_Charges: docCharges.toFixed(2),
+                    Net_Payable: netPayable.toFixed(2),
+                  }));
+                }}
+                className="border border-gray-300 px-3 py-2 w-[129px] rounded-[8px] bg-white h-[38px] mt-1"
+              />
+            </div>
+
+            <div className="flex flex-col">
+              <label className="text-[14px] font-medium text-gray-700 mb-1">
+                Doc Charges (%)
+              </label>
+
+              <div className="flex w-[129px]">
+                {/* Percentage Button first */}
+                <button className="bg-[#0A2478] text-white px-4 py-2 text-sm font-medium rounded-l-md border border-[#0A2478] hover:bg-[#081c5b] transition-all duration-200 mt-1">
+                  {selectedScheme?.docChargePercent || 0}
+                </button>
+
+                {/* Input Field */}
+                <input
+                  type="text"
+                  name="Doc_Charges"
+                  value={formData.Doc_Charges}
+                  onChange={handleInputChange}
+                  placeholder="Enter rate"
+                  className="flex-1 border border-gray-300 rounded-r-md px-3 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-[#0A2478] w-[50px] mt-1 bg-white"
+                />
+              </div>
+            </div>
+
+            <div className="">
+              <div>
+                <label className="text-[14px] font-medium">Net Payable </label>
+              </div>
+
+              <input
+                type="text"
+                placeholder="Net Payable"
+                name="Net_Payable"
+                value={formData.Net_Payable}
                 onChange={handleInputChange}
-                placeholder="Enter rate"
-                className="flex-1 border border-gray-300 rounded-r-md px-3 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-[#0A2478] w-[50px] mt-1"
+                className="border border-gray-300 px-3 py-2 mt-1  w-[129px] rounded-[8px] bg-white h-[38px]"
+              />
+            </div>
+
+            <div className="flex flex-col ">
+              <label className="text-[14px] font-medium">
+                Valuer 1<span className="text-red-500">*</span>
+              </label>
+              <select
+                name="value1"
+                value={formData.value1}
+                onChange={handleInputChange}
+                className="border border-gray-300 rounded-[8px] px-3 py-2 mt-1 bg-white"
+              >
+                <option value="">Select valuer 1</option>
+                {activeEmployees.map((emp) => (
+                  <option key={emp.id} value={emp.id}>
+                    {emp.emp_name}
+                  </option>
+                ))}
+              </select>
+            </div>
+
+            <div className="flex flex-col">
+              <label className="text-[14px] font-medium">
+                Valuer 2<span className="text-red-500">*</span>
+              </label>
+              <select
+                name="value2"
+                value={formData.value2}
+                onChange={handleInputChange}
+                className="border border-gray-300 rounded-[8px] px-3 py-2 mt-1 w-full bg-white"
+              >
+                <option value="">Select valuer 2</option>
+                {activeEmployees.map((emp) => (
+                  <option key={emp.id} value={emp.id}>
+                    {emp.emp_name}
+                  </option>
+                ))}
+              </select>
+            </div>
+            <div className="">
+              <div>
+                <label className="text-[14px] font-medium">
+                  Pay Date<span className="text-red-500">*</span>
+                </label>
+              </div>
+
+              <input
+                type="date"
+                name="payDate"
+                value={formData.payDate}
+                onChange={handleInputChange}
+                min={minDate} // today
+                max={maxDate} // today + 60 days
+                className="border border-gray-300 px-3 py-2 mt-1 w-[136px] rounded-[8px] bg-white h-[38px]"
               />
             </div>
           </div>
 
-          <div className="">
-            <div>
-              <label className="text-[14px] font-medium">Net Payable </label>
-            </div>
-
-            <input
-              type="text"
-              placeholder="Net Payable"
-              name="Net_Payable"
-              value={formData.Net_Payable}
-              onChange={handleInputChange}
-              className="border border-gray-300 px-3 py-2 mt-1  w-[129px] rounded-[8px] bg-white h-[38px]"
-            />
-          </div>
-
-          <div className="flex flex-col ">
-            <label className="text-[14px] font-medium">
-              Valuer 1<span className="text-red-500">*</span>
-            </label>
-            <select
-              name="value1"
-              value={formData.value1}
-              onChange={handleInputChange}
-              className="border border-gray-300 rounded-[8px] px-3 py-2 mt-1 "
-            >
-              <option value="">Select valuer 1</option>
-              {activeEmployees.map((emp) => (
-                <option key={emp.id} value={emp.id}>
-                  {emp.emp_name}
-                </option>
-              ))}
-            </select>
-          </div>
-
-          <div className="flex flex-col">
-            <label className="text-[14px] font-medium">
-              Valuer 2<span className="text-red-500">*</span>
-            </label>
-            <select
-              name="value2"
-              value={formData.value2}
-              onChange={handleInputChange}
-              className="border border-gray-300 rounded-[8px] px-3 py-2 mt-1 w-full"
-            >
-              <option value="">Select valuer 2</option>
-              {activeEmployees.map((emp) => (
-                <option key={emp.id} value={emp.id}>
-                  {emp.emp_name}
-                </option>
-              ))}
-            </select>
-          </div>
-          <div className="">
-            <div>
-              <label className="text-[14px] font-medium">
-                Pay Date<span className="text-red-500">*</span>
-              </label>
-            </div>
-
-            <input
-              type="date"
-              name="payDate"
-              value={formData.payDate}
-              onChange={handleInputChange}
-              min={minDate} // today
-              max={maxDate} // today + 60 days
-              className="border border-gray-300 px-3 py-2 mt-1 w-[136px] rounded-[8px] bg-white h-[38px]"
-            />
+          <div className="flex gap-10 ">
+            <p className="mt-2 ">
+              {numberToWords(Number(formData.Loan_amount) || 0)}
+            </p>
           </div>
         </div>
-
-        <div className="flex gap-10 pl-[110px]">
-          <p className="mt-5 mb-5">
-            {numberToWords(Number(formData.Loan_amount) || 0)}
-          </p>
-        </div>
-         </div>
-        
-
-        <div className="flex gap-10  mb-10 pl-[110px] ">
+        <div className="flex mb-10 ml-[110px]    mr-[110px]">
+          <div className="flex gap-18   
+bg-[#FFE6E6] p-2">
           <div className="flex ">
             <div className="">
               <h3 className="font-semibold  text-blue-900 text-lg">
                 Scheme Details
               </h3>
 
-              <table className="border border-gray-300 text-sm">
+              <table className="border border-gray-300 text-sm mt-2">
                 <thead className="bg-[#0A2478] text-white">
                   <tr>
                     <th className="px-4 py-2 border-r border-gray-200 w-[224px]">
@@ -1255,7 +1244,7 @@ const AddGoldLoanApplication = () => {
                   </tr>
                 </thead>
                 <tbody className="text-gray-700">
-                  <tr className="border border-[#4A4A4A38]">
+                  <tr className={"bg-gray-50"}>
                     <td className="px-4 py-2 border border-[#4A4A4A38]">
                       {selectedScheme?.loanPeriod}
                     </td>
@@ -1276,7 +1265,7 @@ const AddGoldLoanApplication = () => {
                 Effective Interest Rates
               </h3>
 
-              <table className="border border-gray-300 text-sm">
+              <table className="border border-gray-300 text-sm mt-2">
                 <thead className="bg-[#0A2478] text-white">
                   <tr>
                     <th className="px-4 py-2 border-r border-gray-200 w-[307px]">
@@ -1293,9 +1282,7 @@ const AddGoldLoanApplication = () => {
                     selectedScheme?.interestRates.map((rate, idx) => (
                       <tr
                         key={idx}
-                        className={`border border-[#4A4A4A38] ${
-                          idx % 2 === 0 ? "bg-[#FFCDCD]" : "bg-[#E5E5FF]"
-                        }`}
+                        className={idx % 2 === 0 ? "bg-gray-50" : "bg-white"}
                       >
                         <td className="px-4 py-2 border border-[#4A4A4A38]">
                           {rate.from} To {rate.to}{" "}
@@ -1323,6 +1310,8 @@ const AddGoldLoanApplication = () => {
             </div>
           </div>
         </div>
+ </div>
+        
         {showCustomerModal && selectedCustomer && (
           <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-[999]">
             <div className="bg-white rounded-lg p-6 shadow-2xl relative w-[1080px] max-h-[96vh] overflow-auto">
