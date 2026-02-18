@@ -97,61 +97,185 @@ const Balance_Sheet = () => {
   };
 
   return (
-    <div className="min-h-screen bg-[#f4f7f6] p-2 text-[12px] font-sans">
-      <div className="bg-white border border-gray-300 shadow-sm">
-        {/* Controls Bar */}
-        <div className="flex justify-between items-center p-2 border-b bg-gray-50">
-          <div className="flex items-center gap-4">
-            <div className="flex items-center gap-1"><label className="font-bold">From:</label><input type="date" value={fromDate} onChange={(e) => setFromDate(e.target.value)} className="border px-1 border-gray-400" /></div>
-            <div className="flex items-center gap-1"><label className="font-bold">To:</label><input type="date" value={toDate} onChange={(e) => setToDate(e.target.value)} className="border px-1 border-gray-400" /></div>
-            <button onClick={fetchBalanceSheet} className="bg-[#005a8d] text-white px-6 py-1 font-bold shadow-sm">{loading ? "..." : "View"}</button>
+    // <div className="min-h-screen bg-[#f4f7f6] p-2 text-[12px] font-sans">
+    //   <div className="bg-white border border-gray-300 shadow-sm">
+    //     {/* Controls Bar */}
+    //     <div className="flex justify-between items-center p-2 border-b bg-gray-50">
+    //       <div className="flex items-center gap-4">
+    //         <div className="flex items-center gap-1"><label className="font-bold">From:</label><input type="date" value={fromDate} onChange={(e) => setFromDate(e.target.value)} className="border px-1 border-gray-400" /></div>
+    //         <div className="flex items-center gap-1"><label className="font-bold">To:</label><input type="date" value={toDate} onChange={(e) => setToDate(e.target.value)} className="border px-1 border-gray-400" /></div>
+    //         <button onClick={fetchBalanceSheet} className="bg-[#005a8d] text-white px-6 py-1 font-bold shadow-sm">{loading ? "..." : "View"}</button>
+    //       </div>
+    //       <div className="flex gap-1">
+    //         <button className="p-1 border bg-white"><Printer size={16} className="text-blue-700" /></button>
+    //         <button className="p-1 border bg-white"><FileSpreadsheet size={16} className="text-green-700" /></button>
+    //         <button className="p-1 border bg-white"><FileText size={16} className="text-red-700" /></button>
+    //       </div>
+    //     </div>
+
+    //     <table className="w-full border-collapse table-fixed">
+    //       <thead>
+    //         <tr className="bg-[#e8ecef] border-b border-gray-400 text-left">
+    //           <th className="border-r border-gray-400 p-2 w-[35%] font-bold">LIABILITIES</th>
+    //           <th className="border-r border-gray-400 p-2 w-[15%] text-right font-bold">AMOUNT</th>
+    //           <th className="border-r border-gray-400 p-2 w-[35%] font-bold">ASSETS</th>
+    //           <th className="p-2 w-[15%] text-right font-bold">AMOUNT</th>
+    //         </tr>
+    //       </thead>
+    //       <tbody>
+    //         <tr className="align-top">
+    //           {/* LIABILITIES COLUMN */}
+    //           <td colSpan={2} className="border-r border-gray-400 p-0 vertical-align-top">
+    //             {renderColumn(balanceSheetData.liabilities, false)}
+    //           </td>
+
+    //           {/* ASSETS COLUMN */}
+    //           <td colSpan={2} className="p-0 vertical-align-top">
+    //             {renderColumn(balanceSheetData.assets, true)}
+    //           </td>
+    //         </tr>
+
+    //         {/* GRAND TOTAL ROW */}
+    //         <tr className="border-t-2 border-gray-400 font-bold bg-[#fdfdfd] h-12">
+    //           <td className="border-r border-gray-400"></td>
+    //           <td className="border-r border-gray-400 p-2 text-right">
+    //             <span className="border-b-[3px] border-double border-black font-mono text-[14px]">
+    //               {parseFloat(balanceSheetData.totals.totalLiabilities).toFixed(2)}
+    //             </span>
+    //           </td>
+    //           <td className="border-r border-gray-400"></td>
+    //           <td className="p-2 text-right">
+    //             <span className="border-b-[3px] border-double border-black font-mono text-[14px]">
+    //               {parseFloat(balanceSheetData.totals.totalAssets).toFixed(2)}
+    //             </span>
+    //           </td>
+    //         </tr>
+    //       </tbody>
+    //     </table>
+    //   </div>
+    // </div>
+
+    <div className="min-h-screen bg-gray-50 p-4 font-sans text-gray-800">
+      {/* 🟦 Single Line Header & Control Bar */}
+      <div className="flex justify-center mt-2 mb-4">
+        <div className="flex items-center justify-between px-6 py-4 w-full max-w-[1400px] min-h-[75px] rounded-[11px] border border-gray-200 shadow-sm bg-white gap-4">
+
+          {/* 🔴 Left — Title */}
+          <div className="flex-shrink-0">
+            <h2 className="text-red-600 font-bold text-[18px] whitespace-nowrap uppercase tracking-tight">
+              Balance Sheet
+            </h2>
           </div>
-          <div className="flex gap-1">
-            <button className="p-1 border bg-white"><Printer size={16} className="text-blue-700" /></button>
-            <button className="p-1 border bg-white"><FileSpreadsheet size={16} className="text-green-700" /></button>
-            <button className="p-1 border bg-white"><FileText size={16} className="text-red-700" /></button>
+
+          {/* 🟡 Middle — Inline Filters */}
+          <div className="flex items-center gap-6 flex-1 justify-center">
+            <div className="flex items-center gap-4">
+
+              {/* From Date */}
+              <div className="flex items-center gap-2">
+                <label className="text-[10px] font-bold text-gray-400 uppercase">From Date</label>
+                <input
+                  type="date"
+                  className="border border-gray-300 p-1.5 rounded text-[11px] w-[140px] outline-none focus:border-[#1a8a81] bg-white shadow-sm"
+                  value={fromDate}
+                  onChange={(e) => setFromDate(e.target.value)}
+                />
+              </div>
+
+              {/* To Date */}
+              <div className="flex items-center gap-2">
+                <label className="text-[10px] font-bold text-gray-400 uppercase">To Date</label>
+                <input
+                  type="date"
+                  className="border border-gray-300 p-1.5 rounded text-[11px] w-[140px] outline-none focus:border-[#1a8a81] bg-white shadow-sm"
+                  value={toDate}
+                  onChange={(e) => setToDate(e.target.value)}
+                />
+              </div>
+
+            </div>
+          </div>
+
+          {/* 🔵 Right — Actions */}
+          <div className="flex items-center gap-3">
+            <button
+              onClick={fetchBalanceSheet}
+              disabled={loading}
+              className="w-[110px] h-[34px] rounded bg-[#005a9c] text-white text-[12px] font-bold hover:bg-[#004a80] transition-all shadow-sm active:scale-95 uppercase tracking-wider"
+            >
+              {loading ? "..." : "View Report"}
+            </button>
+
+            <div className="flex border-l pl-3 gap-1">
+              <button title="Print" className="p-1.5 bg-gray-50 border border-gray-200 rounded hover:bg-gray-100 text-blue-700 transition-all">
+                <Printer size={16} />
+              </button>
+              <button title="Export Excel" className="p-1.5 bg-gray-50 border border-gray-200 rounded hover:bg-gray-100 text-green-700 transition-all">
+                <FileSpreadsheet size={16} />
+              </button>
+              <button title="Export PDF" className="p-1.5 bg-gray-50 border border-gray-200 rounded hover:bg-gray-100 text-red-600 transition-all">
+                <FileText size={16} />
+              </button>
+            </div>
           </div>
         </div>
+      </div>
 
-        <table className="w-full border-collapse table-fixed">
-          <thead>
-            <tr className="bg-[#e8ecef] border-b border-gray-400 text-left">
-              <th className="border-r border-gray-400 p-2 w-[35%] font-bold">LIABILITIES</th>
-              <th className="border-r border-gray-400 p-2 w-[15%] text-right font-bold">AMOUNT</th>
-              <th className="border-r border-gray-400 p-2 w-[35%] font-bold">ASSETS</th>
-              <th className="p-2 w-[15%] text-right font-bold">AMOUNT</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr className="align-top">
-              {/* LIABILITIES COLUMN */}
-              <td colSpan={2} className="border-r border-gray-400 p-0 vertical-align-top">
-                {renderColumn(balanceSheetData.liabilities, false)}
-              </td>
+      {/* 🟢 T-Shape Balance Sheet Section */}
+      <div className="flex justify-center">
+        <div className="w-full max-w-[1400px] bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden">
+          <div className="overflow-x-auto">
+            <table className="w-full border-collapse table-fixed min-w-[1000px]">
+              <thead>
+                <tr className="bg-[#0A2478] text-gray-100 text-[11px] font-bold uppercase tracking-wider">
+                  <th className="border-r border-gray-300 p-3 w-[35%]">Liabilities & Equity</th>
+                  <th className="border-r border-gray-300 p-3 w-[15%] text-right">Amount</th>
+                  <th className="border-r border-gray-300 p-3 w-[35%]">Assets</th>
+                  <th className="p-3 w-[15%] text-right">Amount</th>
+                </tr>
+              </thead>
+              <tbody className="text-[11px] text-gray-700">
+                <tr className="align-top divide-x divide-gray-200">
+                  {/* LIABILITIES COLUMN */}
+                  <td colSpan={2} className="p-0">
+                    <div className="min-h-[500px] bg-white">
+                      {renderColumn(balanceSheetData.liabilities, false)}
+                    </div>
+                  </td>
 
-              {/* ASSETS COLUMN */}
-              <td colSpan={2} className="p-0 vertical-align-top">
-                {renderColumn(balanceSheetData.assets, true)}
-              </td>
-            </tr>
+                  {/* ASSETS COLUMN */}
+                  <td colSpan={2} className="p-0">
+                    <div className="min-h-[500px] bg-white">
+                      {renderColumn(balanceSheetData.assets, true)}
+                    </div>
+                  </td>
+                </tr>
 
-            {/* GRAND TOTAL ROW */}
-            <tr className="border-t-2 border-gray-400 font-bold bg-[#fdfdfd] h-12">
-              <td className="border-r border-gray-400"></td>
-              <td className="border-r border-gray-400 p-2 text-right">
-                <span className="border-b-[3px] border-double border-black font-mono text-[14px]">
-                  {parseFloat(balanceSheetData.totals.totalLiabilities).toFixed(2)}
-                </span>
-              </td>
-              <td className="border-r border-gray-400"></td>
-              <td className="p-2 text-right">
-                <span className="border-b-[3px] border-double border-black font-mono text-[14px]">
-                  {parseFloat(balanceSheetData.totals.totalAssets).toFixed(2)}
-                </span>
-              </td>
-            </tr>
-          </tbody>
-        </table>
+                {/* GRAND TOTAL ROW */}
+                <tr className="border-t-2 border-[#1a8a81] font-bold bg-[#f8fafb] h-14">
+                  <td className="border-r border-gray-300 p-3 text-right uppercase text-gray-500 tracking-tighter">Total Liabilities</td>
+                  <td className="border-r border-gray-300 p-3 text-right">
+                    <div className="inline-block border-b-4 border-double border-gray-800 font-mono text-[15px] text-[#005a9c]">
+                      {parseFloat(balanceSheetData.totals.totalLiabilities).toLocaleString(undefined, { minimumFractionDigits: 2 })}
+                    </div>
+                  </td>
+                  <td className="border-r border-gray-300 p-3 text-right uppercase text-gray-500 tracking-tighter">Total Assets</td>
+                  <td className="p-3 text-right">
+                    <div className="inline-block border-b-4 border-double border-gray-800 font-mono text-[15px] text-[#005a9c]">
+                      {parseFloat(balanceSheetData.totals.totalAssets).toLocaleString(undefined, { minimumFractionDigits: 2 })}
+                    </div>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      {/* Status Footer */}
+      <div className="max-w-[1400px] mx-auto mt-2 flex justify-between text-[10px] text-gray-400 uppercase font-medium tracking-widest">
+        <span>Generated: {new Date().toLocaleString()}</span>
+        <span>Balance Sheet Statement</span>
       </div>
     </div>
   );

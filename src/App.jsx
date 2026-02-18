@@ -275,7 +275,7 @@ import Contactus from "./Component/contactus";
 import Footer from "./Component/footer";
 import MemberLoginTabs from "./MasterPages/MemberLoginTabs.jsx";
 import Accounts_Opening_Balance from "./Miscellaneous/Accounts_Opening_Balance.jsx";
-import AdvSettingsAddEdit from "./Miscellaneous/AdvSettingsAddEdit.jsx";
+// import AdvSettingsAddEdit from "./Miscellaneous/AdvSettingsAddEdit.jsx";
 import Application_Setting from "./Miscellaneous/Application_Setting.jsx";
 import Bank_Branch_Mapping from "./Miscellaneous/Bank_Branch_Mapping.jsx";
 import BankbranchMapping from "./Miscellaneous/BankbranchMapping.jsx";
@@ -725,7 +725,7 @@ function App() {
                     element={<Application_Setting />}
                   />
 
-                  <Route path="/AdvSettings" element={<AdvSettingsAddEdit />} />
+                  {/* <Route path="/AdvSettings" element={<AdvSettingsAddEdit />} /> */}
 
                   <Route
                     path="/BankBranchMapping"

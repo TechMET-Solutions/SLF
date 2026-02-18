@@ -57,14 +57,111 @@ const show = (val) =>
 
   return (
     <div className="min-h-screen bg-gray-100 p-4 font-sans text-sm">
-      <div className="bg-teal-700 rounded-t-md overflow-hidden shadow-lg">
-        <div className="px-4 py-2 text-white font-semibold">
-          Loan Application History
-        </div>
 
-        <div className="bg-white p-4 border-x">
+      {/* ===== Header ===== */}
+      <div className="flex justify-center mt-5 px-4">
+        <div className="flex items-center justify-between px-6 py-4 w-full max-w-[1290px] min-h-[70px] rounded-[11px] border border-gray-200 shadow-sm bg-white gap-4">
+
+          {/* 🔴 Left — Title */}
+          <div className="flex-shrink-0">
+            <h2 className="text-red-600 font-bold text-[18px] whitespace-nowrap">
+              Advance Setting List
+            </h2>
+          </div>
+
+          {/* 🟡 Middle — Filters (Label and Input on same line) */}
+          <div className="flex items-center gap-6 flex-1 justify-center">
+
+            {/* From Date */}
+            <div className="flex items-center gap-2">
+              <label className="text-[12px] font-bold text-gray-600 whitespace-nowrap">From</label>
+              <input
+                type="date"
+                className="border border-gray-300 p-1 rounded text-xs w-[120px] outline-none focus:border-[#0A2478]"
+                value={fromDate}
+                onChange={(e) => setFromDate(e.target.value)}
+              />
+            </div>
+
+            {/* To Date */}
+            <div className="flex items-center gap-2">
+              <label className="text-[12px] font-bold text-gray-600 whitespace-nowrap">To</label>
+              <input
+                type="date"
+                className="border border-gray-300 p-1 rounded text-xs w-[120px] outline-none focus:border-[#0A2478]"
+                value={toDate}
+                onChange={(e) => setToDate(e.target.value)}
+              />
+            </div>
+
+            {/* Scheme */}
+            <div className="flex items-center gap-2">
+              <label className="text-[12px] font-bold text-gray-600 whitespace-nowrap">Scheme</label>
+              <select
+                className="border border-gray-300 p-1 rounded text-xs w-[140px] bg-white outline-none focus:border-[#0A2478]"
+                value={schemeId}
+                onChange={(e) => setSchemeId(e.target.value)}
+              >
+                <option value="">All</option>
+                {loading ? (
+                  <option>Loading...</option>
+                ) : (
+                  schemes.map((s) => (
+                    <option key={s.id} value={s.id}>
+                      {s.schemeName}
+                    </option>
+                  ))
+                )}
+              </select>
+            </div>
+
+            {/* Status */}
+            <div className="flex items-center gap-2">
+              <label className="text-[12px] font-bold text-gray-600 whitespace-nowrap">Status</label>
+              <select
+                className="border border-gray-300 p-1 rounded text-xs w-[110px] bg-white outline-none focus:border-[#0A2478]"
+                value={status}
+                onChange={(e) => setStatus(e.target.value)}
+              >
+                <option value="">All</option>
+                <option value="Approved">Approved</option>
+                <option value="Pending">Pending</option>
+                <option value="Cancel">Cancel</option>
+                <option value="Closed">Closed</option>
+              </select>
+            </div>
+          </div>
+
+          {/* 🔵 Right — Action Button */}
+          <div className="flex-shrink-0 flex gap-2">
+            <button
+              onClick={handleView}
+              className="w-[75px] h-[30px] rounded bg-[#0A2478] text-white text-[12px] font-bold hover:bg-[#071d45] transition-colors"
+            >
+              View
+            </button>
+            <button
+              // onClick={handleView}
+              className="w-[75px] h-[30px] rounded bg-green-600 text-white text-[12px] font-bold hover:bg-green-700 transition-colors"
+            >
+              Excel
+            </button>
+            <button
+              // onClick={handleView}
+              className="w-[75px] h-[30px] rounded bg-red-600 text-white text-[12px] font-bold hover:bg-red-700 transition-colors"
+            >
+              PDF
+            </button>
+          </div>
+        </div>
+      </div>
+
+
+
+      <div className=" mt-6">
+       <div className="">
           {/* Filters */}
-          <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6 items-end border p-4 rounded bg-gray-50">
+          {/* <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6 items-end border p-4 rounded bg-gray-50">
             <div>
               <label className="block mb-1">From Date</label>
               <input
@@ -122,22 +219,23 @@ const show = (val) =>
                 <option value="Closed">Close</option>
               </select>
             </div>
-          </div>
+          </div> */}
 
           {/* Actions */}
-          <div className="flex gap-2 mb-4 border-b pb-4">
+          {/* <div className="flex gap-2 mb-4 border-b pb-4">
             <button
               onClick={handleView}
               className="bg-blue-800 text-white px-6 py-1 rounded flex items-center gap-2"
             >
               <span>💾</span> View
             </button>
-          </div>
+          </div> */}
 
           {/* Table */}
-          <div className="overflow-x-auto border">
-            <table className="w-full text-left border-collapse min-w-[1500px]">
-              <thead className="bg-gray-200 text-gray-700">
+          <div className="overflow-x-auto  mx-24">
+            <div className="overflow-x-auto ">
+              <table className="w-full text-left  rounded-lg border-collapse min-w-[1500px]">
+              <thead className="bg-[#0A2478] text-white text-xs">
                 <tr>
                   <th className="border p-2">SNo</th>
                   <th className="border p-2">Loan No</th>
@@ -231,7 +329,8 @@ const show = (val) =>
                   ))
                 )}
               </tbody>
-            </table>
+              </table>
+            </div>
           </div>
         </div>
       </div>

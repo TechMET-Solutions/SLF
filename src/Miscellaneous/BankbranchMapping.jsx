@@ -149,6 +149,8 @@ const BankbranchMapping = () => {
           <span>✖</span> Exit
         </button>
       </div>
+
+      
     </div>
   );
 };

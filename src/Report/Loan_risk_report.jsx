@@ -50,151 +50,292 @@ const LoanRiskReport = () => {
   };
 
   return (
-    <div className="min-h-screen bg-[#f0f2f5] font-sans text-[12px]">
-      <div className="m-3 border border-gray-300 bg-white shadow-md">
-        <div className="bg-[#008282] text-white px-3 py-1.5 font-bold text-[13px]">
-          Loan Risk Report
-        </div>
+    // <div className="min-h-screen bg-[#f0f2f5] font-sans text-[12px]">
+    //   <div className="m-3 border border-gray-300 bg-white shadow-md">
+    //     <div className="bg-[#008282] text-white px-3 py-1.5 font-bold text-[13px]">
+    //       Loan Risk Report
+    //     </div>
 
-        {/* Filter Toolbar */}
-        <div className="p-4 bg-white border-b border-gray-200 flex items-center gap-8">
-          <div className="flex items-center gap-2">
-            <label className="text-gray-700 font-medium">As On</label>
-            <div className="flex border border-gray-300">
+    //     {/* Filter Toolbar */}
+    //     <div className="p-4 bg-white border-b border-gray-200 flex items-center gap-8">
+    //       <div className="flex items-center gap-2">
+    //         <label className="text-gray-700 font-medium">As On</label>
+    //         <div className="flex border border-gray-300">
+    //           <input
+    //             type="date"
+    //             value={selectedDate}
+    //             onChange={(e) => setSelectedDate(e.target.value)}
+    //             className="px-2 py-1 outline-none focus:border-blue-500"
+    //           />
+    //         </div>
+    //       </div>
+
+    //       <div className="flex items-center gap-2">
+    //         <label className="text-gray-700 font-medium">Schemes</label>
+    //         <select
+    //           className="border border-gray-300 px-2 py-1 w-64 outline-none bg-white"
+    //           value={selectedScheme}
+    //           onChange={(e) => setSelectedScheme(e.target.value)}
+    //         >
+    //           {loading ? (
+    //             <option>Loading...</option>
+    //           ) : (
+    //             schemes.map((scheme) => (
+    //               <option key={scheme.id} value={scheme.id}>
+    //                 {scheme.schemeName || scheme.code}
+    //               </option>
+    //             ))
+    //           )}
+    //         </select>
+    //       </div>
+    //     </div>
+
+    //     {/* Action Buttons */}
+    //     <div className="px-3 py-2 flex justify-between items-center bg-gray-50 border-b border-gray-200">
+    //       <div className="flex gap-1">
+    //         <button
+    //           onClick={handleViewReport}
+    //           disabled={isSearching}
+    //           className="bg-[#005da3] text-white px-6 py-1 flex items-center gap-2 text-[13px] hover:bg-blue-800 disabled:bg-gray-400"
+    //         >
+    //           {isSearching ? "Searching..." : "💾 View"}
+    //         </button>
+    //         <button className="bg-[#005da3] text-white px-6 py-1 flex items-center gap-2 text-[13px] hover:bg-blue-800">
+    //           ✖ Exit
+    //         </button>
+    //       </div>
+    //     </div>
+
+    //     {/* Data Table */}
+    //     <div className="overflow-x-auto min-h-[450px]">
+    //       <table className="w-full border-collapse text-[11px]">
+    //         <thead className="bg-[#e9e4db] border-b border-gray-400">
+    //           <tr className="text-left text-gray-700">
+    //             <th className="border-r border-gray-300 p-1">S.No.</th>
+    //             <th className="border-r border-gray-300 p-1">Loan No.</th>
+    //             <th className="border-r border-gray-300 p-1">Loan Date</th>
+    //             <th className="border-r border-gray-300 p-1">Scheme</th>
+    //             <th className="border-r border-gray-300 p-1">Customer ID</th>
+    //             <th className="border-r border-gray-300 p-1">Customer Name</th>
+    //             <th className="border-r border-gray-300 p-1">Mobile No.</th>
+    //             <th className="border-r border-gray-300 p-1">Gross Weight</th>
+    //             <th className="border-r border-gray-300 p-1">Net Weight</th>
+    //             <th className="border-r border-gray-300 p-1">
+    //               Eligible Loan Amt.
+    //             </th>
+    //             <th className="border-r border-gray-300 p-1">Loan Amount</th>
+    //             <th className="border-r border-gray-300 p-1">Pending Int.</th>
+    //             <th className="p-1">Current Value</th>
+    //           </tr>
+    //         </thead>
+
+    //         <tbody>
+    //           {reportData.length > 0 ? (
+    //             reportData.map((row, index) => {
+    //               const grossWeight = (row.Pledge_Item_List || []).reduce(
+    //                 (sum, i) => sum + Number(i.gross || 0),
+    //                 0,
+    //               );
+    //               const netWeight = (row.Pledge_Item_List || []).reduce(
+    //                 (sum, i) => sum + Number(i.netWeight || 0),
+    //                 0,
+    //               );
+
+    //               return (
+    //                 <tr
+    //                   key={row.id}
+    //                   className="border-b border-gray-200 hover:bg-blue-50"
+    //                 >
+    //                   <td className="border-r border-gray-200 p-1">
+    //                     {index + 1}
+    //                   </td>
+    //                   <td className="border-r border-gray-200 p-1">{row.id}</td>
+    //                   <td className="border-r border-gray-200 p-1">
+    //                     {row.approval_date
+    //                       ? new Date(row.approval_date).toLocaleDateString()
+    //                       : ""}
+    //                   </td>
+    //                   <td className="border-r border-gray-200 p-1">
+    //                     {row.Scheme}
+    //                   </td>
+    //                   <td className="border-r border-gray-200 p-1">
+    //                     {row.BorrowerId}
+    //                   </td>
+    //                   <td className="border-r border-gray-200 p-1">
+    //                     {row.Borrower}
+    //                   </td>
+    //                   <td className="border-r border-gray-200 p-1">
+    //                     {row.Mobile_Number}
+    //                   </td>
+    //                   <td className="border-r border-gray-200 p-1 text-right">
+    //                     {grossWeight.toFixed(3)}
+    //                   </td>
+    //                   <td className="border-r border-gray-200 p-1 text-right">
+    //                     {netWeight.toFixed(3)}
+    //                   </td>
+    //                   <td className="border-r border-gray-200 p-1 text-right">
+    //                     {row.Max_Loan}
+    //                   </td>
+    //                   <td className="border-r border-gray-200 p-1 text-right">
+    //                     {row.Loan_amount}
+    //                   </td>
+    //                   <td className="border-r border-gray-200 p-1 text-right">
+    //                     {row.InterestDueAmount || "0"}
+    //                   </td>
+    //                   <td className="p-1 text-right">{row.Net_Payable}</td>
+    //                 </tr>
+    //               );
+    //             })
+    //           ) : (
+    //             <tr>
+    //               <td colSpan="13" className="p-4 text-center text-gray-500">
+    //                 No data found. Select filters and click "View".
+    //               </td>
+    //             </tr>
+    //           )}
+    //         </tbody>
+    //       </table>
+    //     </div>
+    //   </div>
+    // </div>
+
+    <div className="min-h-screen bg-gray-50 p-4 font-sans">
+      {/* 🟦 Top Header/Filter Bar */}
+      <div className="flex justify-center mt-2 mb-4">
+        <div className="flex items-center justify-between px-6 py-4 w-full max-w-[1290px] min-h-[75px] rounded-[11px] border border-gray-200 shadow-sm bg-white gap-4">
+
+          {/* 🔴 Left — Title */}
+          <div className="flex-shrink-0">
+            <h2 className="text-red-600 font-bold text-[18px] whitespace-nowrap uppercase tracking-tight">
+              Loan Risk Report
+            </h2>
+          </div>
+
+          {/* 🟡 Middle — Filters (Single Line) */}
+          <div className="flex items-center gap-8 flex-1 justify-center">
+
+            {/* As On Date */}
+            <div className="flex items-center gap-2">
+              <label className="text-[11px] font-bold text-gray-500 uppercase tracking-wider whitespace-nowrap">As On</label>
               <input
                 type="date"
+                className="border border-gray-300 p-1.5 rounded text-xs w-[140px] bg-white outline-none focus:border-[#0A2478] transition-all"
                 value={selectedDate}
                 onChange={(e) => setSelectedDate(e.target.value)}
-                className="px-2 py-1 outline-none focus:border-blue-500"
               />
+            </div>
+
+            {/* Schemes Selection */}
+            <div className="flex items-center gap-2">
+              <label className="text-[11px] font-bold text-gray-500 uppercase tracking-wider whitespace-nowrap">Scheme</label>
+              <select
+                className="border border-gray-300 p-1.5 rounded text-xs min-w-[220px] bg-white outline-none focus:border-[#0A2478]"
+                value={selectedScheme}
+                onChange={(e) => setSelectedScheme(e.target.value)}
+              >
+                <option value="">-- All Risk Profiles --</option>
+                {loading ? (
+                  <option>Loading...</option>
+                ) : (
+                  schemes.map((scheme) => (
+                    <option key={scheme.id} value={scheme.id}>
+                      {scheme.schemeName || scheme.code}
+                    </option>
+                  ))
+                )}
+              </select>
             </div>
           </div>
 
-          <div className="flex items-center gap-2">
-            <label className="text-gray-700 font-medium">Schemes</label>
-            <select
-              className="border border-gray-300 px-2 py-1 w-64 outline-none bg-white"
-              value={selectedScheme}
-              onChange={(e) => setSelectedScheme(e.target.value)}
-            >
-              {loading ? (
-                <option>Loading...</option>
-              ) : (
-                schemes.map((scheme) => (
-                  <option key={scheme.id} value={scheme.id}>
-                    {scheme.schemeName || scheme.code}
-                  </option>
-                ))
-              )}
-            </select>
-          </div>
-        </div>
-
-        {/* Action Buttons */}
-        <div className="px-3 py-2 flex justify-between items-center bg-gray-50 border-b border-gray-200">
-          <div className="flex gap-1">
+          {/* 🔵 Right — Action Buttons */}
+          <div className="flex items-center gap-2 flex-shrink-0">
             <button
               onClick={handleViewReport}
               disabled={isSearching}
-              className="bg-[#005da3] text-white px-6 py-1 flex items-center gap-2 text-[13px] hover:bg-blue-800 disabled:bg-gray-400"
+              className="w-[100px] h-[34px] rounded bg-[#0A2478] text-white text-[12px] font-bold hover:bg-[#071d45] disabled:bg-gray-400 transition-all shadow-sm active:scale-95 flex items-center justify-center gap-1"
             >
-              {isSearching ? "Searching..." : "💾 View"}
+              {isSearching ? "..." : "View"}
             </button>
-            <button className="bg-[#005da3] text-white px-6 py-1 flex items-center gap-2 text-[13px] hover:bg-blue-800">
-              ✖ Exit
+            <button
+              onClick={handleViewReport}
+              disabled={isSearching}
+              className="w-[100px] h-[34px] rounded bg-green-600 text-white text-[12px] font-bold hover:bg-green-700 disabled:bg-gray-400 transition-all shadow-sm active:scale-95 flex items-center justify-center gap-1"
+            >
+              Excel
             </button>
+            <button
+              onClick={() => window.history.back()}
+              className="w-[85px] h-[34px] rounded bg-[#C1121F] text-white text-[12px] font-bold hover:bg-[#a0101a] transition-all shadow-sm active:scale-95 flex items-center justify-center"
+            >
+              Exit
+            </button>
+            
           </div>
         </div>
+      </div>
 
-        {/* Data Table */}
-        <div className="overflow-x-auto min-h-[450px]">
-          <table className="w-full border-collapse text-[11px]">
-            <thead className="bg-[#e9e4db] border-b border-gray-400">
-              <tr className="text-left text-gray-700">
-                <th className="border-r border-gray-300 p-1">S.No.</th>
-                <th className="border-r border-gray-300 p-1">Loan No.</th>
-                <th className="border-r border-gray-300 p-1">Loan Date</th>
-                <th className="border-r border-gray-300 p-1">Scheme</th>
-                <th className="border-r border-gray-300 p-1">Customer ID</th>
-                <th className="border-r border-gray-300 p-1">Customer Name</th>
-                <th className="border-r border-gray-300 p-1">Mobile No.</th>
-                <th className="border-r border-gray-300 p-1">Gross Weight</th>
-                <th className="border-r border-gray-300 p-1">Net Weight</th>
-                <th className="border-r border-gray-300 p-1">
-                  Eligible Loan Amt.
-                </th>
-                <th className="border-r border-gray-300 p-1">Loan Amount</th>
-                <th className="border-r border-gray-300 p-1">Pending Int.</th>
-                <th className="p-1">Current Value</th>
-              </tr>
-            </thead>
-
-            <tbody>
-              {reportData.length > 0 ? (
-                reportData.map((row, index) => {
-                  const grossWeight = (row.Pledge_Item_List || []).reduce(
-                    (sum, i) => sum + Number(i.gross || 0),
-                    0,
-                  );
-                  const netWeight = (row.Pledge_Item_List || []).reduce(
-                    (sum, i) => sum + Number(i.netWeight || 0),
-                    0,
-                  );
-
-                  return (
-                    <tr
-                      key={row.id}
-                      className="border-b border-gray-200 hover:bg-blue-50"
-                    >
-                      <td className="border-r border-gray-200 p-1">
-                        {index + 1}
-                      </td>
-                      <td className="border-r border-gray-200 p-1">{row.id}</td>
-                      <td className="border-r border-gray-200 p-1">
-                        {row.approval_date
-                          ? new Date(row.approval_date).toLocaleDateString()
-                          : ""}
-                      </td>
-                      <td className="border-r border-gray-200 p-1">
-                        {row.Scheme}
-                      </td>
-                      <td className="border-r border-gray-200 p-1">
-                        {row.BorrowerId}
-                      </td>
-                      <td className="border-r border-gray-200 p-1">
-                        {row.Borrower}
-                      </td>
-                      <td className="border-r border-gray-200 p-1">
-                        {row.Mobile_Number}
-                      </td>
-                      <td className="border-r border-gray-200 p-1 text-right">
-                        {grossWeight.toFixed(3)}
-                      </td>
-                      <td className="border-r border-gray-200 p-1 text-right">
-                        {netWeight.toFixed(3)}
-                      </td>
-                      <td className="border-r border-gray-200 p-1 text-right">
-                        {row.Max_Loan}
-                      </td>
-                      <td className="border-r border-gray-200 p-1 text-right">
-                        {row.Loan_amount}
-                      </td>
-                      <td className="border-r border-gray-200 p-1 text-right">
-                        {row.InterestDueAmount || "0"}
-                      </td>
-                      <td className="p-1 text-right">{row.Net_Payable}</td>
-                    </tr>
-                  );
-                })
-              ) : (
-                <tr>
-                  <td colSpan="13" className="p-4 text-center text-gray-500">
-                    No data found. Select filters and click "View".
-                  </td>
+      {/* 🟢 Table Section */}
+      <div className="flex justify-center">
+        <div className="w-full max-w-[1290px] bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden">
+          <div className="overflow-x-auto min-h-[450px]">
+            <table className="w-full text-left border-collapse min-w-[1400px]">
+              <thead>
+                <tr className="bg-[#0A2478] text-gray-100 text-[10px] font-bold">
+                  <th className="border border-gray-300 p-2 w-12 text-center uppercase">S.No.</th>
+                  <th className="border border-gray-300 p-2 uppercase">Loan No.</th>
+                  <th className="border border-gray-300 p-2 uppercase">Loan Date</th>
+                  <th className="border border-gray-300 p-2 uppercase">Scheme</th>
+                  <th className="border border-gray-300 p-2 uppercase">Customer ID</th>
+                  <th className="border border-gray-300 p-2 uppercase">Customer Name</th>
+                  <th className="border border-gray-300 p-2 uppercase">Mobile No.</th>
+                  <th className="border border-gray-300 p-2 text-right uppercase ">Gross Wt.</th>
+                  <th className="border border-gray-300 p-2 text-right uppercase ">Net Wt.</th>
+                  <th className="border border-gray-300 p-2 text-right uppercase ">Eligible Amt.</th>
+                  <th className="border border-gray-300 p-2 text-right uppercase ">Loan Amount</th>
+                  <th className="border border-gray-300 p-2 text-right uppercase bg-[#0A2478]/30 text-red-700">Pending Int.</th>
+                  <th className="border border-gray-300 p-2 text-right uppercase font-bold">Current Value</th>
                 </tr>
-              )}
-            </tbody>
-          </table>
+              </thead>
+              <tbody className="text-[11px] text-gray-700">
+                {reportData.length > 0 ? (
+                  reportData.map((row, index) => {
+                    const grossWeight = (row.Pledge_Item_List || []).reduce((sum, i) => sum + Number(i.gross || 0), 0);
+                    const netWeight = (row.Pledge_Item_List || []).reduce((sum, i) => sum + Number(i.netWeight || 0), 0);
+
+                    return (
+                      <tr key={row.id} className="hover:bg-blue-50/30 transition-colors border-b border-gray-200">
+                        <td className="border border-gray-300 p-2 text-center text-gray-500">{index + 1}</td>
+                        <td className="border border-gray-300 p-2 font-semibold text-[#0A2478]">{row.id}</td>
+                        <td className="border border-gray-300 p-2">
+                          {row.approval_date ? new Date(row.approval_date).toLocaleDateString('en-GB') : ""}
+                        </td>
+                        <td className="border border-gray-300 p-2 uppercase">{row.Scheme}</td>
+                        <td className="border border-gray-300 p-2 text-gray-500">{row.BorrowerId}</td>
+                        <td className="border border-gray-300 p-2 font-medium uppercase">{row.Borrower}</td>
+                        <td className="border border-gray-300 p-2">{row.Mobile_Number}</td>
+                        <td className="border border-gray-300 p-2 text-right font-mono bg-yellow-50/10">{grossWeight.toFixed(3)}g</td>
+                        <td className="border border-gray-300 p-2 text-right font-mono font-bold text-orange-900 bg-yellow-50/10">{netWeight.toFixed(3)}g</td>
+                        <td className="border border-gray-300 p-2 text-right font-mono bg-blue-50/10">{Number(row.Max_Loan || 0).toLocaleString()}</td>
+                        <td className="border border-gray-300 p-2 text-right font-mono font-bold text-blue-800 bg-blue-50/10">{Number(row.Loan_amount || 0).toLocaleString()}</td>
+                        <td className="border border-gray-300 p-2 text-right font-mono font-bold text-red-600 bg-red-50/10">
+                          {Number(row.InterestDueAmount || 0).toLocaleString()}
+                        </td>
+                        <td className="border border-gray-300 p-2 text-right font-mono font-bold text-green-700">
+                          {Number(row.Net_Payable || 0).toLocaleString()}
+                        </td>
+                      </tr>
+                    );
+                  })
+                ) : (
+                  <tr>
+                    <td colSpan="13" className="p-12 text-center text-gray-400 italic bg-gray-50">
+                      No data found. Select filters and click "View" to generate risk analysis.
+                    </td>
+                  </tr>
+                )}
+              </tbody>
+            </table>
+          </div>
         </div>
       </div>
     </div>

@@ -169,7 +169,7 @@ const Navbar = () => {
     { name: "Application Setting", path: "/Application_Setting" },
     { name: "Bank Branch Mapping", path: "/Bank_Branch_Mapping" },
     { name: "Accounts Opening Balance", path: "/Accounts_Opening_Balance" },
-    { name: "Sub Ledger Opening Balance", path: "/Sub_Ledger_Opening_Balance" },
+    // { name: "Sub Ledger Opening Balance", path: "/Sub_Ledger_Opening_Balance" },
   ];
 
   const ReportTrasaction = [

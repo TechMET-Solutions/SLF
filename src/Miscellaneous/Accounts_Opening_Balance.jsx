@@ -47,40 +47,45 @@ const Accounts_Opening_Balance = () => {
 
   return (
     <div className="p-4 bg-gray-100 min-h-screen font-sans">
-      <div className="bg-teal-700 text-white p-2 text-sm font-bold mb-4">
-        Opening Account Balance
+      
+
+      <div className="flex justify-center mb-2">
+        <div className="flex justify-center mt-5">
+          <div className="flex items-center px-6 py-4 w-[1290px] h-[62px] rounded-[11px] border border-gray-200 justify-between shadow-sm bg-white">
+            {/* Left Side: Title */}
+            <h2 className="text-red-600 font-bold text-[20px] leading-[148%] whitespace-nowrap">
+              Opening Account Balance
+            </h2>
+          </div>
+        </div>
       </div>
 
-      <div className="bg-white border border-teal-600 rounded-sm shadow-sm">
-        <div className="p-2 border-b border-gray-300 bg-gray-50 text-xs text-teal-800 font-semibold">
-          Opening Account Balance
-        </div>
-
+      <div className="flex justify-start ml-30">
         {loading ? (
           <div className="p-4 text-center">Loading...</div>
         ) : (
-          <div className="overflow-x-auto">
-            <table className="w-full text-left text-xs border-collapse">
-              <thead>
-                <tr className="bg-gray-100 border-b">
-                  <th className="p-2 border-r w-12">ID</th>
-                  <th className="p-2 border-r w-1/4">Account Group</th>
-                  <th className="p-2 border-r w-1/3">Name</th>
-                  <th className="p-2">Opening Balance</th>
+            <div className="overflow-x-auto mt-2 max-w-3xl h-[500px]">
+              <table className="w-full border-collapse text-[12px]">
+                <thead className="bg-[#0A2478] text-white text-sm">
+                <tr>
+                    <th className="px-2 py-2 text-center border-r border-gray-300 text-[13px] w-[50px]">ID</th>
+                    <th className="px-2 py-2 text-center border-r border-gray-300 text-[13px] w-[130px]">Account Group</th>
+                    <th className="px-2 py-2 text-center border-r border-gray-300 text-[13px] w-[150px]">Name</th>
+                    <th className="px-2 py-2 text-center border-r border-gray-300 text-[13px] w-[150px]">Opening Balance</th>
                 </tr>
               </thead>
               <tbody>
-                {balances.map((row) => (
-                  <tr key={row.id} className="border-b hover:bg-blue-50">
-                    <td className="p-2 border-r text-gray-500">
+                  {balances.map((row, index) => (
+                  <tr key={row.id} className={index % 2 === 0 ? "bg-gray-100" : "bg-white"}>
+                      <td className="px-4 py-2 text-center">
                       {row.id}
                     </td>
 
-                    <td className="p-2 border-r">
+                    <td className="px-4 py-2 text-left">
                       {row.accountGroup}
                     </td>
 
-                    <td className="p-2 border-r">
+                    <td className="px-4 py-2 text-left">
                       {row.name}
                     </td>
 
