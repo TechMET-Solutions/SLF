@@ -9,6 +9,10 @@ import { decryptData, encryptData } from "../utils/cryptoHelper";
 const MemberLoginPeriod = () => {
   const [data, setData] = useState([]);
   const [loading, setLoading] = useState(false);
+  const [selectedIds, setSelectedIds] = useState([]);
+  const [bulkStart, setBulkStart] = useState("");
+  const [bulkEnd, setBulkEnd] = useState("");
+  const [bulkIp, setBulkIp] = useState("");
 
   useEffect(() => {
     document.title = "SLF | Member Login Period";
@@ -20,17 +24,20 @@ const MemberLoginPeriod = () => {
     try {
       const encryptedPayload = encryptData({});
 
-      const response = await axios.get(`${API}/Master/Employee_Profile/login-period`, {
-        params: {
-          payload: encryptedPayload,
-          page, // send current page number
-          limit: itemsPerPage, // number of rows per page
+      const response = await axios.get(
+        `${API}/Master/Employee_Profile/login-period`,
+        {
+          params: {
+            payload: encryptedPayload,
+            page, // send current page number
+            limit: itemsPerPage, // number of rows per page
+          },
         },
-      });
+      );
 
       const parsedData = decryptData(response.data.data);
 
-      console.log(parsedData)
+      console.log(parsedData);
       if (!parsedData || !parsedData.members) {
         console.error("❌ Invalid or decrypted data:", parsedData);
         return;
@@ -45,7 +52,7 @@ const MemberLoginPeriod = () => {
           startDate: m.start_time || "",
           endDate: m.end_time || "",
           ipAddress: m.ip_address || "",
-        }))
+        })),
       );
 
       // 📊 Set total count (use backend's total count or members.length fallback)
@@ -55,7 +62,6 @@ const MemberLoginPeriod = () => {
       console.error("❌ Error fetching member login period:", error);
     }
   };
-
 
   // ✅ Update Member Login Period - FIXED
   const updateMemberLoginPeriod = async (payload) => {
@@ -80,9 +86,9 @@ const MemberLoginPeriod = () => {
         { data: encryptedPayload },
         {
           headers: {
-            'Content-Type': 'application/json',
-          }
-        }
+            "Content-Type": "application/json",
+          },
+        },
       );
 
       if (response.data && response.data.data) {
@@ -132,8 +138,6 @@ const MemberLoginPeriod = () => {
     return `${hours.toString().padStart(2, "0")}:${minutes.toString().padStart(2, "0")}:00`;
   };
 
-
-
   // ✅ Trigger update on blur - FIXED
   const handleBlur = async (index) => {
     const record = data[index];
@@ -149,7 +153,6 @@ const MemberLoginPeriod = () => {
       ip_address: record.ipAddress || null,
     };
 
-
     console.log("📤 Sending Update Payload:", payload);
     await updateMemberLoginPeriod(payload);
   };
@@ -159,92 +162,185 @@ const MemberLoginPeriod = () => {
     updated[index][field] = value;
     setData(updated);
   };
+  const toggleSelect = (id) => {
+    setSelectedIds((prev) =>
+      prev.includes(id) ? prev.filter((i) => i !== id) : [...prev, id],
+    );
+  };
+  // const applyBulkUpdate = async () => {
+  //   if (selectedIds.length === 0) {
+  //     alert("Select employees first");
+  //     return;
+  //   }
+
+  //   const start_time = to24HourTime(bulkStart);
+  //   const end_time = to24HourTime(bulkEnd);
+
+  //   try {
+  //     setLoading(true);
+
+  //     for (const id of selectedIds) {
+  //       await updateMemberLoginPeriod({
+  //         id,
+  //         start_time,
+  //         end_time,
+  //         ip_address: bulkIp || null,
+  //       });
+  //     }
+
+  //     alert("Updated selected employees");
+  //     setSelectedIds([]);
+  //     fetchMemberLoginPeriod(currentPage);
+  //   } catch (err) {
+  //     console.error(err);
+  //   } finally {
+  //     setLoading(false);
+  //   }
+  // };
+  const applyBulkTime = async (field, time) => {
+    if (selectedIds.length === 0) {
+      alert("Select employees first");
+      return;
+    }
+
+    const updated = [...data];
+
+    for (let i = 0; i < updated.length; i++) {
+      if (selectedIds.includes(updated[i].id)) {
+        updated[i][field] = time;
+
+        await updateMemberLoginPeriod({
+          id: updated[i].id,
+          start_time: to24HourTime(
+            field === "startDate" ? time : updated[i].startDate,
+          ),
+          end_time: to24HourTime(
+            field === "endDate" ? time : updated[i].endDate,
+          ),
+          ip_address: updated[i].ipAddress || null,
+        });
+      }
+    }
+
+    setData(updated);
+    alert("Time updated for selected employees");
+  };
 
   return (
     <div className="min-h-screen w-full">
       {/* Header */}
+
       <div className="flex justify-center sticky top-[80px] z-40">
         <div className="flex items-center px-6 py-4 border-b mt-5 w-[1290px] h-[62px] border rounded-[11px] border-gray-200 justify-between shadow">
           <h2 className="text-red-600 font-bold text-[20px] flex items-center gap-2">
             Member Login Period
-            {loading && <span className="text-sm text-gray-500">Updating...</span>}
+            {loading && (
+              <span className="text-sm text-gray-500">Updating...</span>
+            )}
           </h2>
           <button
             onClick={() => navigate("/")}
-            className="bg-[#C1121F] text-white text-[10px] w-[74px] h-[24px] rounded">
+            className="bg-[#C1121F] text-white text-[10px] w-[74px] h-[24px] rounded"
+          >
             Exit
           </button>
         </div>
       </div>
+      <div className="flex  mt-5 gap-2 pl-[115px]">
+        <div>
+          <label className="text-xs font-semibold">Bulk Start Time</label>
+          <TimePicker
+            initialTime=""
+            onSave={(time) => applyBulkTime("startDate", time)}
+          />
+        </div>
 
+        <div>
+          <label className="text-xs font-semibold">Bulk End Time</label>
+          <TimePicker
+            initialTime=""
+            onSave={(time) => applyBulkTime("endDate", time)}
+          />
+        </div>
+      </div>
       {/* Table */}
-     <div className="flex justify-center">
-  <div className="overflow-x-auto mt-5 w-[1290px] h-[500px]">
-    <table className="w-full border-collapse">
-      <thead className="bg-[#0A2472] text-white text-sm">
-        <tr>
-          <th className="px-4 py-2 text-left border-r">Sr.</th>
-          <th className="px-4 py-2 text-left border-r">Name</th>
-          <th className="px-4 py-2 text-left border-r">User Id</th>
-          <th className="px-4 py-2 text-left border-r">Start Time</th>
-          <th className="px-4 py-2 text-left border-r">End Time</th>
-          <th className="px-4 py-2 text-left border-r">IP Address</th>
-        </tr>
-      </thead>
+      <div className="flex pl-[110px]">
+        <div className="overflow-x-auto mt-5 w-[900px] h-[500px]">
+          <table className="w-full border-collapse">
+            <thead className="bg-[#0A2472] text-white text-sm">
+              <tr>
+                <th className="px-4 py-2 border-r">Select</th>
+                <th className="px-4 py-2 border-r">Emp Id</th>
+                <th className="px-4 py-2 border-r w-[150px]">Name</th>
+                <th className="px-4 py-2 border-r w-[150px]">User Id</th>
+                <th className="px-4 py-2 border-r w-[50px]">Start Time</th>
+                <th className="px-4 py-2 border-r w-[50px]">End Time</th>
+                <th className="px-4 py-2 border-r">IP Address</th>
+              </tr>
+            </thead>
 
-      <tbody className="text-[12px]">
-        {data.map((row, index) => (
-          <tr
-            key={row.id}
-            className={`${index % 2 === 0 ? "bg-gray-50" : "bg-white"}`}
-          >
-            <td className="px-4 py-2 flex items-center justify-center">
-              {/* <input type="checkbox" className="w-4 h-4 accent-blue-900" /> */}
-              {row.id}
-            </td>
-            <td className="px-4 py-2">{row.name}</td>
-            <td className="px-4 py-2">{row.email}</td>
+            <tbody className="text-[12px]">
+              {data.map((row, index) => (
+                <tr
+                  key={row.id}
+                  className={`${index % 2 === 0 ? "bg-gray-50" : "bg-white"}`}
+                >
+                  <td className="px-4 py-2 text-center">
+                    <input
+                      type="checkbox"
+                      checked={selectedIds.includes(row.id)}
+                      onChange={() => toggleSelect(row.id)}
+                    />
+                  </td>
 
-            {/* Start Time */}
-            <td className="px-4 py-2">
-              <TimePicker
-                initialTime={row.startDate}
-                onSave={(newTime) => {
-                  handleChange(index, "startDate", newTime);
-                  handleBlur(index);
-                }}
-              />
-            </td>
+                  <td className="px-4 py-2 flex items-center justify-center">
+                    {/* <input type="checkbox" className="w-4 h-4 accent-blue-900" /> */}
+                    {row.id}
+                  </td>
+                  <td className="px-4 py-2">{row.name}</td>
+                  <td className="px-4 py-2">{row.email}</td>
 
-            {/* End Time */}
-            <td className="px-4 py-2">
-              <TimePicker
-                initialTime={row.endDate}
-                onSave={(newTime) => {
-                  handleChange(index, "endDate", newTime);
-                  handleBlur(index);
-                }}
-              />
-            </td>
+                  {/* Start Time */}
+                  <td className="px-4 py-2">
+                    <TimePicker
+                      initialTime={row.startDate}
+                      onSave={(newTime) => {
+                        handleChange(index, "startDate", newTime);
+                        handleBlur(index);
+                      }}
+                    />
+                  </td>
 
-            {/* ✅ Editable IP Address */}
-            <td className="px-4 py-2">
-              <input
-                type="text"
-                value={row.ipAddress}
-                onChange={(e) => handleChange(index, "ipAddress", e.target.value)}
-                onBlur={() => handleBlur(index)}
-                placeholder="Enter IP address"
-                className="border border-gray-300 rounded px-2 py-1 text-sm w-full focus:outline-none focus:ring-1 focus:ring-blue-500"
-              />
-            </td>
-          </tr>
-        ))}
-      </tbody>
-    </table>
-  </div>
-</div>
+                  {/* End Time */}
+                  <td className="px-4 py-2">
+                    <TimePicker
+                      initialTime={row.endDate}
+                      onSave={(newTime) => {
+                        handleChange(index, "endDate", newTime);
+                        handleBlur(index);
+                      }}
+                    />
+                  </td>
 
+                  {/* ✅ Editable IP Address */}
+                  <td className="px-4 py-2">
+                    <input
+                      type="text"
+                      value={row.ipAddress}
+                      onChange={(e) =>
+                        handleChange(index, "ipAddress", e.target.value)
+                      }
+                      onBlur={() => handleBlur(index)}
+                      placeholder="Enter IP address"
+                      className="border border-gray-300 rounded px-2 py-1 text-sm w-full focus:outline-none focus:ring-1 focus:ring-blue-500"
+                    />
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      </div>
 
       {totalPages > 1 && (
         <Pagination
@@ -253,7 +349,6 @@ const MemberLoginPeriod = () => {
           onPageChange={handlePageChange}
         />
       )}
-
     </div>
   );
 };

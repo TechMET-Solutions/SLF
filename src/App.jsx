@@ -273,18 +273,62 @@ import TermsOfService from "./Component/TermsOfService";
 import About from "./Component/about";
 import Contactus from "./Component/contactus";
 import Footer from "./Component/footer";
+import MemberLoginTabs from "./MasterPages/MemberLoginTabs.jsx";
+import Accounts_Opening_Balance from "./Miscellaneous/Accounts_Opening_Balance.jsx";
+import AdvSettingsAddEdit from "./Miscellaneous/AdvSettingsAddEdit.jsx";
+import Application_Setting from "./Miscellaneous/Application_Setting.jsx";
+import Bank_Branch_Mapping from "./Miscellaneous/Bank_Branch_Mapping.jsx";
+import BankbranchMapping from "./Miscellaneous/BankbranchMapping.jsx";
+import Cash_Balance from "./Miscellaneous/Cash_Balance.jsx";
+import Print_Cash_Balance from "./Miscellaneous/Print_Cash_Balance.jsx";
+import Add_Follow_Up from "./Report/Add_Follow_Up.jsx";
+import Balance_Sheet from "./Report/Balance_Sheet.jsx";
+import BankBookReport from "./Report/Bank_Book_report.jsx";
+import Branch_Loan_Report from "./Report/Branch_Loan_Report.jsx";
+import Cash_Book_Report from "./Report/Cash_Book_Report.jsx";
+import CustomerLedger from "./Report/Customer-Ledger.jsx";
+import Customer_History from "./Report/Customer_History.jsx";
+import Customer_list from "./Report/Customer_list.jsx";
+import Day_Book from "./Report/Day_Book.jsx";
+import FundTransferReciptCreate from "./Report/FundTransferReciptCreate.jsx";
+import Fund_Transfer_Report from "./Report/Fund_Transfer_Report.jsx";
 import GoldStockReport from "./Report/Gold_stock_report.jsx";
 import InterestCollectionReport from "./Report/Interest_collection_report.jsx";
 import Interest_due_report from "./Report/Interest_due_report.jsx";
+import LedgerDetailsPage from "./Report/LedgerDetailsPage.jsx";
+import Ledger_Report from "./Report/Ledger_Report.jsx";
 import Legal_notice_report from "./Report/Legal_notice_report.jsx";
 import LoanStatement from "./Report/Loan-statement.jsx";
+import LoanFollowup from "./Report/LoanFollowup.jsx";
+import Loan_Repay_Register from "./Report/Loan_Repay_Register.jsx";
+import Loan_Risk_managment from "./Report/Loan_Risk_managment.jsx";
 import LoanDetails from "./Report/Loan_details.jsx";
 import LoanRiskReport from "./Report/Loan_risk_report.jsx";
 import LoanCancellationReport from "./Report/Loancancellationreport.jsx";
 import NpaReport from "./Report/Npa_report.jsx";
 import Outstanding_amount_report from "./Report/Outstanding_amount_report.jsx";
+import PaymentGetWay_History from "./Report/PaymentGetWay_History.jsx";
+import Payment_Receipt_Report from "./Report/Payment_Receipt_Report.jsx";
+import Profit_Loss_Report from "./Report/Profit_Loss_Report.jsx";
+import Trial_Balance from "./Report/Trial_Balance.jsx";
+import Value_Wise_Loan_Report from "./Report/Value_Wise_Loan_Report.jsx";
 import Loan_application_history from "./Report/loan_application_history.jsx";
+import Loan_follow_up from "./Report/loan_follow_up.jsx";
+import BackupUtitlity from "./Tools/BackupUtitlity.jsx";
+import BankDetails from "./Tools/BankDetails.jsx";
 import GracePeriod from "./Tools/GracePeriod";
+import WhatsApp from "./Tools/WhatsApp.jsx";
+import SmsConfig from "./Tools/smsConfig.jsx";
+import AddpaymentAccounting from "./TrasactionPages/Accounting/AddpaymentAccounting.jsx";
+import FundTransferRecCreate from "./TrasactionPages/Accounting/FundTransferRecCreate.jsx";
+import FundTransferceissue from "./TrasactionPages/Accounting/FundTransferceissue.jsx";
+import FundTransferceissueCreate from "./TrasactionPages/Accounting/FundTransferceissueCreate.jsx";
+import FundTransferreceipt from "./TrasactionPages/Accounting/FundTransferreceipt.jsx";
+import JournalVoucherCreate from "./TrasactionPages/Accounting/JournalVoucherCreate.jsx";
+import JournalVoucherlist from "./TrasactionPages/Accounting/JournalVoucherlist.jsx";
+import PaymentInAccounting from "./TrasactionPages/Accounting/PaymentInAccounting.jsx";
+import ReceiptCreate from "./TrasactionPages/Accounting/ReceiptCreate.jsx";
+import RecieptAccounting from "./TrasactionPages/Accounting/RecieptAccounting.jsx";
 import AddAuctionCreation from "./TrasactionPages/AddAuctionCreation";
 import AddCreditNotePage from "./TrasactionPages/AddCreditNotePage";
 import AddGoldLoanApplication from "./TrasactionPages/AddGoldLoanApplication";
@@ -319,6 +363,7 @@ import ViewBidderDetails from "./TrasactionPages/ViewBidderDetails";
 import ViewCreditNote from "./TrasactionPages/ViewCreditNote";
 import ViewLoanCharges from "./TrasactionPages/ViewLoanCharges";
 import ViewLoanDetails from "./TrasactionPages/ViewLoanDeatils";
+import EmployeePayRoll from "./Report/EmployeePayRoll.jsx";
 // ---------------- LAYOUT WRAPPER ----------------
 function LayoutWithNavbar({ children }) {
   const location = useLocation();
@@ -353,9 +398,7 @@ function App() {
                 <Routes>
                   {/* Dashboard (Same path "/", but ONLY when logged in) */}
                   <Route path="/" element={<Dashboard />} />
-
                   {/* MASTER ROUTES */}
-
                   <Route
                     path="/account-groups"
                     element={<AccountGroupList />}
@@ -431,6 +474,11 @@ function App() {
                     path="/Member-Login-Period"
                     element={<MemberLoginPeriod />}
                   />
+                  <Route path="/Member-Details" element={<MemberLoginTabs />} />
+                  <Route
+                    path="/WhatsApp-Configuration"
+                    element={<WhatsApp />}
+                  />
                   <Route
                     path="/Member-Login-Details"
                     element={<MemberLoginDetails />}
@@ -479,6 +527,31 @@ function App() {
                     element={<Interest_due_report />}
                   />
                   <Route
+                    path="/Bank-Book-Report"
+                    element={<BankBookReport />}
+                  />
+                  <Route
+                    path="/Cash-Book-Report"
+                    element={<Cash_Book_Report />}
+                  />
+                  <Route path="/Trial-Balance" element={<Trial_Balance />} />
+                  <Route path="/Customer-Ledger" element={<CustomerLedger />} />
+                  <Route path="/Balance_Sheet" element={<Balance_Sheet />} />
+                  <Route path="/Ledger-Report" element={<Ledger_Report />} />
+                  <Route path="/Day-Book-Report" element={<Day_Book />} />
+                  <Route
+                    path="/Profit_Loss_Report"
+                    element={<Profit_Loss_Report />}
+                  />
+                  <Route
+                    path="/Fund_Transfer_Report"
+                    element={<Fund_Transfer_Report />}
+                  />
+                  <Route
+                    path="/Payment_Receipt_Report"
+                    element={<Payment_Receipt_Report />}
+                  />
+                  <Route
                     path="/legal-notice-report"
                     element={<Legal_notice_report />}
                   />
@@ -487,12 +560,47 @@ function App() {
                     element={<LoanRiskReport />}
                   />
                   <Route
+                    path="/Loan_Risk_managment"
+                    element={<Loan_Risk_managment />}
+                  />
+                  <Route path="/Customer_list" element={<Customer_list />} />
+                  <Route
+                    path="/Branch_Loan_Report"
+                    element={<Branch_Loan_Report />}
+                  />
+                  <Route
+                    path="/Loan_Repay_Register"
+                    element={<Loan_Repay_Register />}
+                  />
+                  <Route
+                    path="/Value_Wise_Loan_Report"
+                    element={<Value_Wise_Loan_Report />}
+                  />
+                  <Route
+                    path="/Value_Wise_Loan_Report"
+                    element={<Value_Wise_Loan_Report />}
+                  />
+                  <Route
+                    path="/Customer_history"
+                    element={<Customer_History />}
+                  />
+                  <Route
+                    path="/paymentgetway_history"
+                    element={<PaymentGetWay_History />}
+                  />
+                  <Route path="/add_follow_up" element={<Add_Follow_Up />} />
+                  <Route path="/loan_follow_up" element={<Loan_follow_up />} />
+                  <Route
                     path="/gold_stock_report"
                     element={<GoldStockReport />}
                   />
                   <Route
                     path="/interest_collection_report"
                     element={<InterestCollectionReport />}
+                  />
+                  <Route
+                    path="/Loan_Follow_up_Updated"
+                    element={<LoanFollowup />}
                   />
                   <Route
                     path="/loan-cancellation-report"
@@ -574,6 +682,90 @@ function App() {
                     element={<AuctionCreation />}
                   />
                   <Route
+                    path="/PaymentVoucher"
+                    element={<PaymentInAccounting />}
+                  />
+                  <Route
+                    path="/ReceiptVoucher/List"
+                    element={<RecieptAccounting />}
+                  />
+
+                  <Route
+                    path="/ReceiptVoucher/create"
+                    element={<ReceiptCreate />}
+                  />
+                  <Route
+                    path="/JournalVoucher/List"
+                    element={<JournalVoucherlist />}
+                  />
+
+                  <Route
+                    path="/FundTransfer/issue"
+                    element={<FundTransferceissue />}
+                  />
+                  <Route
+                    path="/JournalVoucher/create"
+                    element={<JournalVoucherCreate />}
+                  />
+
+                  <Route
+                    path="/PaymentVoucher/create"
+                    element={<AddpaymentAccounting />}
+                  />
+                  <Route
+                    path="/Print_Cash_Balance"
+                    element={<Print_Cash_Balance />}
+                  />
+                  <Route
+                    path="/ledger-details"
+                    element={<LedgerDetailsPage />}
+                  />
+                  <Route
+                    path="/Application_Setting"
+                    element={<Application_Setting />}
+                  />
+
+                  <Route path="/AdvSettings" element={<AdvSettingsAddEdit />} />
+
+                  <Route
+                    path="/BankBranchMapping"
+                    element={<BankbranchMapping />}
+                  />
+                  <Route path="/Bank_Details" element={<BankDetails />} />
+                  <Route
+                    path="/Bank_Branch_Mapping"
+                    element={<Bank_Branch_Mapping />}
+                  />
+
+                  <Route path="/Cash_Balance" element={<Cash_Balance />} />
+                  <Route
+                    path="/Accounts_Opening_Balance"
+                    element={<Accounts_Opening_Balance />}
+                  />
+                  <Route
+                    path="/FundTransfer/receipt"
+                    element={<FundTransferreceipt />}
+                  />
+                  <Route
+                    path="/FundTransferRec/Create"
+                    element={<FundTransferRecCreate />}
+                  />
+                   <Route
+                    path="/Employee-payroll"
+                    element={<EmployeePayRoll />}
+                  />
+                  <Route
+                    path="/FundTransfer/create"
+                    element={<FundTransferceissueCreate />}
+                  />
+
+                  <Route
+                    path="/FundTransfer/Receipt/create"
+                    element={<FundTransferReciptCreate />}
+                  />
+                  <Route path="/SmsConfig/Create" element={<SmsConfig />} />
+                  <Route path="/DBBackup" element={<BackupUtitlity />} />
+                  <Route
                     path="/Add-Auction-Creation"
                     element={<AddAuctionCreation />}
                   />
@@ -608,7 +800,6 @@ function App() {
                     element={<AuctionApplication />}
                   />
                   <Route path="/InvoicePrint" element={<InvoicePrint />} />
-
                   {/* Tools */}
                   <Route path="/Gress-Period" element={<GracePeriod />} />
                 </Routes>

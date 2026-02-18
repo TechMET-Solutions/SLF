@@ -205,98 +205,91 @@ const [formData, setFormData] = useState({
   return (
     <div className="min-h-screen w-full">
       {/* Top Bar */}
-      <div className="flex justify-center sticky top-[80px] z-40">
-        <div className="flex items-center px-6 py-4 border-b mt-5 w-[1290px] h-[62px] border rounded-[11px] border-gray-200 justify-around bg-white">
-          <h2
-            style={{
-              fontFamily: "Source Sans 3, sans-serif",
-              fontWeight: 700,
-              fontSize: "20px",
-              lineHeight: "148%",
-            }}
-            className="text-red-600"
-          >
-            Item Profile List
-          </h2>
+     <div className="flex justify-center sticky top-[80px] z-40">
+  {/* Changed justify-around to justify-between to push content to the edges */}
+  <div className="flex items-center px-6 py-4 border mt-5 w-[1290px] h-[62px] rounded-[11px] border-gray-200 justify-between bg-white shadow-sm">
+    
+    {/* LEFT SIDE: Name */}
+    <h2
+      style={{
+        fontFamily: "Source Sans 3, sans-serif",
+        fontWeight: 700,
+        fontSize: "20px",
+        lineHeight: "148%",
+      }}
+      className="text-red-600 whitespace-nowrap"
+    >
+      Item Profile List
+    </h2>
 
-          <div className="flex gap-10">
-            {/* Search */}
-            <div className="flex gap-5 items-center">
-              <p className="text-[11.25px]">Item Code</p>
-              <input
-                type="text"
-                value={searchCode}
-                onChange={(e) => setSearchCode(e.target.value)}
-                onKeyPress={handleKeyPress}
-                className="border border-gray-400 px-3 py-1 text-[11.25px] rounded"
-                style={{
-                  width: "120px",
-                  height: "27.49px",
-                }}
-              />
-            </div>
+    {/* RIGHT SIDE: All Inputs and Buttons Grouped */}
+    <div className="flex items-center gap-4">
+      
+      {/* Search Input Fields */}
+      <div className="flex items-center gap-3">
+        <div className="flex items-center gap-2">
+          <p className="text-[11.25px] font-semibold whitespace-nowrap">Item Code</p>
+          <input
+            type="text"
+            value={searchCode}
+            onChange={(e) => setSearchCode(e.target.value)}
+            onKeyPress={handleKeyPress}
+            className="border border-gray-400 px-3 py-1 text-[11.25px] rounded outline-none focus:border-[#0A2478]"
+            style={{ width: "120px", height: "27.49px" }}
+          />
+        </div>
 
-            <div className="flex gap-2 items-center">
-              <p className="text-[11.25px]">Item Name</p>
-              <input
-                type="text"
-                value={searchName}
-                onChange={(e) => setSearchName(e.target.value)}
-                onKeyPress={handleKeyPress}
-                className="border border-gray-400 px-3 py-1 text-[11.25px] rounded"
-                style={{
-                  width: "120px",
-                  height: "27.49px",
-                }}
-              />
-              <button
-                onClick={handleSearch}
-                className="bg-[#0b2c69] text-white text-[11.25px] px-3 py-1 rounded cursor-pointer"
-                style={{
-                  width: "70px",
-                  height: "27.49px",
-                }}
-              >
-                Search
-              </button>
-              <button
-                onClick={handleClearSearch}
-                className="bg-[#6c757d] text-white text-[11.25px] px-3 py-1 rounded cursor-pointer"
-                style={{
-                  width: "70px",
-                  height: "27.49px",
-                }}
-              >
-                Clear
-              </button>
-            </div>
-
-            {/* Buttons */}
-            <div className="flex justify-center items-center gap-2">
-              <button
-                onClick={() => handleOpenModal()}
-                className="bg-[#0A2478] text-white text-[11.25px] px-4 py-1 rounded cursor-pointer"
-                style={{
-                  width: "60px",
-                  height: "27.49px",
-                }}
-              >
-                Add
-              </button>
-              <button
-                onClick={() => navigate("/")}
-                className="bg-[#C1121F] text-white text-[10px] px-4 py-1 rounded cursor-pointer"
-                style={{
-                  width: "60px",
-                  height: "27.49px",
-                }}
-              >
-                Exit
-              </button>
-            </div>
-          </div>
+        <div className="flex items-center gap-2">
+          <p className="text-[11.25px] font-semibold whitespace-nowrap">Item Name</p>
+          <input
+            type="text"
+            value={searchName}
+            onChange={(e) => setSearchName(e.target.value)}
+            onKeyPress={handleKeyPress}
+            className="border border-gray-400 px-3 py-1 text-[11.25px] rounded outline-none focus:border-[#0A2478]"
+            style={{ width: "120px", height: "27.49px" }}
+          />
         </div>
       </div>
+
+      {/* Action Buttons Container */}
+      <div className="flex items-center gap-2 ml-2 border-l pl-4 border-gray-200">
+        <button
+          onClick={handleSearch}
+          className="bg-[#0b2c69] text-white text-[11.25px] rounded cursor-pointer hover:bg-[#071d45] transition-colors"
+          style={{ width: "70px", height: "27.49px" }}
+        >
+          Search
+        </button>
+        
+        <button
+          onClick={handleClearSearch}
+          className="bg-[#6c757d] text-white text-[11.25px] rounded cursor-pointer hover:bg-gray-700 transition-colors"
+          style={{ width: "70px", height: "27.49px" }}
+        >
+          Clear
+        </button>
+
+        <button
+          onClick={() => handleOpenModal()}
+          className="bg-[#0A2478] text-white text-[11.25px] rounded cursor-pointer hover:bg-[#071d45] transition-colors"
+          style={{ width: "60px", height: "27.49px" }}
+        >
+          Add
+        </button>
+
+        <button
+          onClick={() => navigate("/")}
+          className="bg-[#C1121F] text-white text-[10px] rounded cursor-pointer hover:bg-[#a40f1a] transition-colors"
+          style={{ width: "60px", height: "27.49px" }}
+        >
+          Exit
+        </button>
+      </div>
+
+    </div>
+  </div>
+</div>
 
       {/* Modal */}
       {isModalOpen && (
@@ -309,18 +302,18 @@ const [formData, setFormData] = useState({
               {isEditMode ? "Edit Item" : "Add New Item"}
             </h2>
 
-            <div className="grid grid-cols-3 gap-4 mb-6">
+            <div className="flex gap-4 ">
               <div>
-                <label className="text-[14px] font-medium">
+                <p className="text-[14px] font-medium">
                   Item Code <span className="text-red-500">*</span>
-                </label>
+                </p>
                 <input
                   type="text"
                   value={formData.code}
                   onChange={(e) =>
                     setFormData({ ...formData, code: e.target.value })
                   }
-                  className="border border-gray-300 rounded w-full px-3 py-2 mt-1"
+                  className="border border-gray-300 rounded w-[100px] px-3 py-2 mt-2"
                 />
               </div>
 
@@ -352,7 +345,9 @@ const [formData, setFormData] = useState({
                 />
               </div>
 
-              <div className="col-span-3">
+              
+            </div>
+<div className="col-span-3 mb-6 mt-2">
                 <label className="text-[14px] font-medium">Remark</label>
                 <input
                   type="text"
@@ -360,11 +355,9 @@ const [formData, setFormData] = useState({
                   onChange={(e) =>
                     setFormData({ ...formData, remark: e.target.value })
                   }
-                  className="border border-gray-300 rounded w-full px-3 py-2 mt-1"
+                  className="border border-gray-300 rounded w-full px-3 py-2 mt-2"
                 />
               </div>
-            </div>
-
             <div className="flex justify-center gap-4">
               <button
                 onClick={handleSave}
@@ -389,15 +382,15 @@ const [formData, setFormData] = useState({
           <table className="w-full border-collapse">
             <thead className="bg-[#0A2478] text-white text-sm">
               <tr>
-                <th className="px-4 py-2 border-r-2 text-left">Code</th>
-                <th className="px-4 py-2 border-r-2 text-left">Name</th>
-                <th className="px-4 py-2 border-r-2 text-left">Status</th>
-                <th className="px-4 py-2 border-r-2 text-left">Added By</th>
-                <th className="px-4 py-2 border-r-2 text-left">Added On</th>
-                <th className="px-4 py-2 border-r-2 text-left">Modified By</th>
-                <th className="px-4 py-2 border-r-2 text-left">Modified On</th>
-                <th className="px-4 py-2 border-r-2 text-left">Action</th>
-                <th className="px-4 py-2 border-r-2 text-left">Active</th>
+                <th className="px-4 py-2 border-r-2 text-left w-[100px]">Code</th>
+                <th className="px-4 py-2 border-r-2 text-left w-[220px]">Name</th>
+                {/* <th className="px-4 py-2 border-r-2 text-left">Status</th> */}
+                <th className="px-4 py-2 border-r-2 text-left w-[200px]">Added By</th>
+                <th className="px-4 py-2 border-r-2 text-left w-[120px]">Added On</th>
+                <th className="px-4 py-2 border-r-2 text-left w-[200px]">Modified By</th>
+                <th className="px-4 py-2 border-r-2 text-left w-[120px]">Modified On</th>
+                <th className="px-4 py-2 border-r-2 text-left w-[100px]">Action</th>
+                <th className="px-4 py-2 border-r-2 text-left  w-[50px]">Active</th>
               </tr>
             </thead>
 
@@ -415,14 +408,13 @@ const [formData, setFormData] = useState({
                 data.map((row, index) => (
                   <tr
                     key={row.id}
-                    className={`border-b ${index % 2 === 0 ? "bg-gray-50" : "bg-white"
-                      }`}
+                   className={index % 2 === 0 ? "bg-gray-50" : "bg-white"}
                   >
                     <td className="px-4 py-2">{row.code}</td>
                     <td className="px-4 py-2">{row.name}</td>
-                    <td className="px-4 py-2">
+                    {/* <td className="px-4 py-2">
                       {row.status === 1 ? "Active" : "Inactive"}
-                    </td>
+                    </td> */}
                     <td className="px-4 py-2">{row.added_by || "-"}</td>
                     <td className="px-4 py-2">
                       {row.add_on

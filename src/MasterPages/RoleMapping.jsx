@@ -117,7 +117,7 @@ const RoleMapping = () => {
       {/* Table */}
       <div className="flex justify-center">
         <div className="overflow-x-auto mt-5 w-[1290px]">
-          <table className="w-full border-collapse">
+          <table className="w-full border-collapse text-sm">
             <thead className="bg-[#0A2478] text-white text-sm">
               <tr>
                 <th className="w-[100px] px-4 py-2 text-center border-r border-gray-300 text-[18px]">
@@ -129,17 +129,17 @@ const RoleMapping = () => {
               </tr>
             </thead>
             <tbody className="text-[20px]">
-              {roles.map((role) => (
-                <tr key={role.id}>
-                  <td className="px-8 py-2 text-center">
+              {roles.map((role, index) => (
+                <tr key={role.id} className={index % 2 === 0 ? "bg-gray-50" : "bg-white"}>
+                  <td className="px-8 py-2 text-center ">
                     <input
                       type="checkbox"
                       checked={role.selected}
                       onChange={() => toggleRole(role.id)}
-                      className="w-5 h-5"
+                      className="w-3 h-3"
                     />
                   </td>
-                  <td className="px-4 py-2">{role.name}</td>
+                  <td className="px-4 py-2 text-sm">{role.name}</td>
                 </tr>
               ))}
             </tbody>

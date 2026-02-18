@@ -8,23 +8,30 @@ import { decryptData, encryptData } from "../../../utils/cryptoHelper";
 export const fetchBranchesApi = async (page = 1, limit = 10, search = "") => {
   try {
     const res = await axios.get(`${API}/Master/Master_Profile/get_Branches`, {
-      params: { page, limit, search }, // 🔍 include search parameter
+      params: { page, limit, search },
     });
 
-    const decrypted = decryptData(res.data.data);
+    // Based on your response JSON:
+    const { success, branches, total } = res.data;
 
-    if (!decrypted) {
-      console.warn("Decryption failed or empty, returning empty array.");
+    if (!success) {
+      console.warn("API reported success: false");
       return { branches: [], total: 0, page, limit };
     }
 
-    return decrypted; // { branches, total, page, limit }
+    // Return the object your frontend expects
+    return { 
+      branches: branches || [], 
+      total: total || 0, 
+      page, 
+      limit 
+    };
+
   } catch (error) {
     console.error("Error fetching branches:", error);
     throw error;
   }
 };
-
 
 export const updateBranchStatusApi = async (id, status) => {
   try {

@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import { useEffect, useState } from "react";
 
 const OutstandingAmountReport = () => {
   const [schemes, setSchemes] = useState([]);
@@ -10,13 +10,22 @@ const OutstandingAmountReport = () => {
   const [selectedLoan, setSelectedLoan] = useState("");
 
   const [reportRows, setReportRows] = useState([]);
+  const formatDate = (date) => {
+    const d = new Date(date);
+    const day = String(d.getDate()).padStart(2, "0");
+    const month = String(d.getMonth() + 1).padStart(2, "0");
+    const year = d.getFullYear();
+    return `${day}/${month}/${year}`;
+  };
+
+   const [asOnDate, setAsOnDate] = useState(new Date().toISOString().split("T")[0]);
 
   // 1. Fetch Schemes
   useEffect(() => {
     const fetchSchemes = async () => {
       try {
         const response = await fetch(
-          "https://slunawat.co.in/Scheme/getAllSchemes?page=1&limit=10"
+          "https://slunawat.co.in/Scheme/getAllSchemes?page=1&limit=10",
         );
         const result = await response.json();
         setSchemes(result.data || []);
@@ -39,7 +48,7 @@ const OutstandingAmountReport = () => {
 
       try {
         const res = await fetch(
-          `https://slunawat.co.in/api/Reports/loan-numbers?scheme=${selectedScheme}&search=${loanSearch}`
+          `https://slunawat.co.in/api/Reports/loan-numbers?scheme=${selectedScheme}&search=${loanSearch}`,
         );
         const data = await res.json();
         setLoanNumbers(data.data || []);
@@ -56,7 +65,7 @@ const OutstandingAmountReport = () => {
   const handleView = async () => {
     try {
       const res = await fetch(
-        `https://slunawat.co.in/api/Reports/outstanding-amount-report?scheme=${selectedScheme}&loanNo=${selectedLoan}`
+        `https://slunawat.co.in/api/Reports/outstanding-amount-report?scheme=${selectedScheme}&loanNo=${selectedLoan}`,
       );
       const data = await res.json();
       setReportRows(data.data || []);
@@ -68,7 +77,6 @@ const OutstandingAmountReport = () => {
   return (
     <div className="min-h-screen bg-gray-100 p-4 font-sans text-xs">
       {/* Top Info Bar */}
-     
 
       <div className="bg-[#108b83] rounded-t-md overflow-hidden shadow-sm">
         <div className="px-4 py-1.5 text-white font-medium text-sm">
@@ -85,13 +93,11 @@ const OutstandingAmountReport = () => {
               </label>
               <div className="flex items-center">
                 <input
-                  type="text"
+                  type="date"
+                  value={asOnDate}
+                  onChange={(e) => setAsOnDate(e.target.value)}
                   className="border border-gray-300 p-1 px-2 rounded-l w-28 bg-white outline-none"
-                  defaultValue="25/01/2026"
                 />
-                <button className="bg-[#8B5E3C] p-1.5 rounded-r border border-[#8B5E3C] flex items-center justify-center">
-                  <span className="text-white text-[10px]">📅</span>
-                </button>
               </div>
             </div>
 
@@ -179,9 +185,7 @@ const OutstandingAmountReport = () => {
                   <th className="border border-gray-400 p-1">Loan Date</th>
                   <th className="border border-gray-400 p-1">Scheme</th>
                   <th className="border border-gray-400 p-1">Customer ID</th>
-                  <th className="border border-gray-400 p-1">
-                    Customer Name
-                  </th>
+                  <th className="border border-gray-400 p-1">Customer Name</th>
                   <th className="border border-gray-400 p-1 text-right">
                     Principal Amount
                   </th>
@@ -213,9 +217,7 @@ const OutstandingAmountReport = () => {
                         ? new Date(row.created_at).toLocaleDateString()
                         : ""}
                     </td>
-                    <td className="border border-gray-400 p-1">
-                      {row.Scheme}
-                    </td>
+                    <td className="border border-gray-400 p-1">{row.Scheme}</td>
                     <td className="border border-gray-400 p-1">
                       {row.BorrowerId}
                     </td>
@@ -256,25 +258,25 @@ const OutstandingAmountReport = () => {
                   <td className="border border-gray-400 p-1 text-right">
                     {reportRows.reduce(
                       (s, r) => s + Number(r.Loan_amount || 0),
-                      0
+                      0,
                     )}
                   </td>
                   <td className="border border-gray-400 p-1 text-right">
                     {reportRows.reduce(
                       (s, r) => s + Number(r.InterestDueAmount || 0),
-                      0
+                      0,
                     )}
                   </td>
                   <td className="border border-gray-400 p-1 text-right">
                     {reportRows.reduce(
                       (s, r) => s + Number(r.Doc_Charges || 0),
-                      0
+                      0,
                     )}
                   </td>
                   <td className="border border-gray-400 p-1 text-right">
                     {reportRows.reduce(
                       (s, r) => s + Number(r.LoanPendingAmount || 0),
-                      0
+                      0,
                     )}
                   </td>
                   <td colSpan="3" className="border border-gray-400 p-1"></td>

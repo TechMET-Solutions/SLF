@@ -1,274 +1,3 @@
-// import axios from "axios";
-// import { useEffect, useState } from "react";
-// import { useNavigate } from "react-router-dom"; // Add this import
-// import GroupData from "../assets/Group 124.svg";
-// import eyeIcon from "../assets/Vectorimg.png";
-// import { formatIndianDate } from "../utils/Helpers";
-// import { API } from "../api";
-// import Pagination from "../Component/Pagination";
-
-// const SchemeDetailsList = () => {
-//   useEffect(() => {
-//     document.title = "SLF | Scheme Details List";
-//   }, []);
-//   const [isModalOpen, setIsModalOpen] = useState(false);
-//   const [data, setData] = useState([
-
-//   ]);
-//   console.log(data, "data")
-//   useEffect(() => {
-//     const fetchSchemes = async () => {
-//       try {
-//         const response = await axios.get(`${API}/Scheme/getAllSchemes?page=1&limit=10`);
-//         const schemes = response.data.map((item) => ({
-//           ...item,
-//           intCompound: item.calcMethod === "compound", // optional double-check
-//         }));
-//         setData(schemes);
-//       } catch (err) {
-//         console.error("❌ Error fetching schemes:", err);
-//       }
-//     };
-
-//     fetchSchemes();
-//   }, []);
-
-//   // 🔹 Pagination Controls
-//   const totalPages = Math.ceil(totalItems / itemsPerPage);
-
-//   const handlePageChange = (page) => {
-//     if (page < 1 || page > totalPages) return;
-//     setCurrentPage(page);
-//     fetchEmployee(page, searchTerm);
-//   };
-
-//   const navigate = useNavigate(); // Add this line
-
-
-//   const handleStatusToggle = async (row) => {
-//     const newStatus = row.status === 1 ? 0 : 1;
-
-//     try {
-//       // 🔄 Update status in backend
-//       const res = await axios.patch(`${API}/Scheme/statusScheme`, {
-//         id: row.id,
-//         status: newStatus,
-//       });
-
-//       console.log(res.data.message);
-
-//       // ✅ Update state immediately
-//       const updatedData = data.map((item) =>
-//         item.id === row.id ? { ...item, status: newStatus } : item
-//       );
-//       setData(updatedData);
-//     } catch (err) {
-//       console.error("Error updating scheme status:", err);
-//       alert("Failed to update status. Please try again.");
-//     }
-//   };
-
-
-//   return (
-//     <div className="min-h-screen w-full">
-//       {/* middletopbar */}
-//       <div className="flex justify-center ">
-//         <div className="flex items-center px-6 py-4 border-b mt-5 w-[1290px] h-[62px] border rounded-[11px] border-gray-200 justify-between shadow">
-//           {/* Left heading */}
-//           <h2
-//             style={{
-//               fontFamily: "Source Sans 3, sans-serif",
-//               fontWeight: 700,
-//               fontSize: "20px",
-//               lineHeight: "148%",
-//               letterSpacing: "0em",
-//             }}
-//             className="text-red-600"
-//           >
-//             Scheme Details List
-//           </h2>
-
-//           {/* Right section (search + buttons) */}
-//           <div className="flex items-center gap-6">
-//             {/* Search section */}
-//             {/* Buttons stuck to right */}
-//             <div className="flex gap-3">
-//               <button
-//                 style={{
-//                   width: "74px",
-//                   height: "24px",
-//                   borderRadius: "3.75px",
-//                 }}
-//                 className="bg-[#129121] text-white text-[11.25px] font-source font-normal flex items-center justify-center"
-//                 onClick={() => navigate("/Scheme-Renewal-List")}
-//               >
-//                 Renew
-//               </button>
-
-//               <button
-//                 style={{
-//                   width: "74px",
-//                   height: "24px",
-//                   borderRadius: "3.75px",
-//                 }}
-//                 className="bg-[#0A2478] text-white text-[11.25px] font-source font-normal flex items-center justify-center"
-//                 onClick={() => navigate("/Add-Scheme-Details-Listform")}
-
-//               >
-//                 Add
-//               </button>
-
-//               <button
-//                 onClick={() => navigate("/")}
-//                 className="text-white px-[6.25px] py-[6.25px] rounded-[3.75px] bg-[#C1121F] w-[74px] h-[24px] opacity-100 text-[10px]"
-//               >
-//                 Exit
-//               </button>
-//             </div>
-//           </div>
-//         </div>
-//       </div>
-//       {/* Table */}
-//       <div className="flex justify-center ">
-//         <div className="overflow-x-auto mt-5 w-[1290px] h-[500px]">
-//           <table className="w-full border-collapse">
-//             <thead className="bg-[#0A2478] text-white text-sm">
-//               <tr>
-//                 <th className="px-4 py-2 text-left border-r border-gray-300 text-[13px]">
-//                   Scheme Name
-//                 </th>
-//                 <th className="px-4 py-2 text-left border-r border-gray-300 text-[13px]">
-//                   App Form
-//                 </th>
-//                 <th className="px-4 py-2 text-left border-r border-gray-300 text-[13px]">
-//                   App To
-//                 </th>
-//                 <th className="px-4 py-2 text-left border-r border-gray-300 text-[13px]">
-//                   Int Compound
-//                 </th>
-//                 <th className="px-4 py-2 text-left border-r border-gray-300 text-[13px]">
-//                   Min Amount
-//                 </th>
-//                 <th className="px-4 py-2 text-left border-r border-gray-300 text-[13px]">
-//                   Max Amount
-//                 </th>
-//                 <th className="px-4 py-2 text-left border-r border-gray-300 text-[13px]">
-//                   Description
-//                 </th>
-//                 <th className="px-4 py-2 text-left border-r border-gray-300 text-[13px]">
-//                   Action
-//                 </th>
-//                 <th className="px-4 py-2 text-left border-r border-gray-300 text-[13px]"
-//                 >
-//                   Role Mapping
-//                 </th>
-//                 <th className="px-4 py-2 text-left border-r border-gray-300 text-[13px]">
-//                   Active
-//                 </th>
-//               </tr>
-//             </thead>
-//             <tbody className="text-[12px]">
-//               {data.map((row, index) => (
-//                 <tr
-//                   key={row.id}
-//                   className={`border-b ${index % 2 === 0 ? "bg-gray-50" : "bg-white"
-//                     }`}
-//                 >
-//                   <td className="px-4 py-2">{row.schemeName}</td>
-//                   {/* <td className="px-4 py-2">{row.applicableFrom}</td> */}
-//                   <td className="px-4 py-2">{formatIndianDate(row.applicableFrom)}</td>
-//                   <td className="px-4 py-2">{formatIndianDate(row.applicableTo)}</td>
-//                   {/* <td className="px-4 py-2">{row.applicableTo}</td> */}
-//                   <td className="px-4 py-2">
-//                     {row.calcMethod === "Compound" ? "True" : "False"}
-//                   </td>
-
-
-//                   <td className="px-4 py-2">{row.minLoanAmount}</td>
-//                   <td className="px-4 py-2">{row.maxLoanAmount}</td>
-//                   <td className="px-4 py-2">{row.description}</td>
-//                   <td className="px-4 py-2 text-center cursor-pointer">
-//                     <div className="flex items-center gap-2">
-
-//                       {/* View button */}
-                      
-
-//                       {/* Edit button */}
-//                       <div
-//                         className="w-5 h-5 bg-[#56A869] flex items-center justify-center rounded-[2px]"
-//                         onClick={() => navigate("/Add-Scheme-Details-Listform", { state: { type: "edit", data: row } })}
-//                         title="Edit"
-//                       >
-//                         <img
-//                           src={GroupData}
-//                           alt="group"
-//                           className="w-3.5 h-3.5"
-//                         />
-//                       </div>
-//                       <div
-//                         className="w-5 h-5 bg-[#646AD9] flex items-center justify-center rounded-[2px]"
-//                         onClick={() => navigate("/Add-Scheme-Details-Listform", { state: { type: "view", data: row } })}
-//                          title="View"
-//                       >
-//                         <img
-//                           src={eyeIcon}
-//                           alt="eye"
-//                           className="w-3.5 h-2.5"
-//                         />
-//                       </div>
-
-//                     </div>
-//                   </td>
-//                   <td className="px-4 py-2 text-[#1883EF] cursor-pointer"
-//                     // onClick={() => navigate("/Role-Mapping")}
-//                     onClick={() => navigate("/Role-Mapping", { state: { data: row } })}
-//                   >
-//                     Role Mapping
-//                   </td>
-
-//                   {/* Toggle */}
-//                   <td className="px-4 py-2 text-[#1883EF] cursor-pointer">
-//                     <button
-//                       onClick={() => handleStatusToggle(row)}
-//                       className={`w-12 h-6 flex items-center rounded-full p-1 transition-colors ${row.status === 1 ? "bg-[#0A2478]" : "bg-gray-400"
-//                         }`}
-//                       style={{
-//                         border: "none",
-//                         outline: "none",
-//                         cursor: "pointer",
-//                         padding: 0,
-//                       }}
-//                       aria-label="Toggle Active"
-//                     >
-//                       <div
-//                         className={`bg-white w-4 h-4 rounded-full shadow-md transform transition-transform ${row.status === 1 ? "translate-x-6" : "translate-x-0"
-//                           }`}
-//                       />
-//                     </button>
-//                   </td>
-
-//                 </tr>
-//               ))}
-//             </tbody>
-//           </table>
-//         </div>
-//       </div>
-
-//       {
-//         totalPages > 1 && (
-//           <Pagination
-//             currentPage={currentPage}
-//             totalPages={totalPages}
-//             onPageChange={handlePageChange}
-//           />
-//         )
-//       }
-//     </div>
-//   );
-// };
-
-// export default SchemeDetailsList;
-
 import axios from "axios";
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
@@ -284,31 +13,77 @@ const SchemeDetailsList = () => {
 
   const [data, setData] = useState([]);
 
-  console.log(data,"data")
+  console.log(data, "data");
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
 
   // 🔥 Fetch Schemes With Pagination
-  const fetchSchemes = async (page = 1) => {
-    try {
-      const response = await axios.get(
-        `${API}/Scheme/getAllSchemes?page=${page}&limit=10`
-      );
 
-      // Backend returns: { page, limit, totalItems, totalPages, data }
-      const result = response.data.data;
+  const [searchHeaders, setSearchHeaders] = useState([]); // Array of active headers
+  const [searchQuery, setSearchQuery] = useState("");
+  const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+  const [appFrom, setAppFrom] = useState("");
+  const [appTo, setAppTo] = useState("");
 
-      setData(result); // only the list
-      setCurrentPage(result.page);
-      setTotalPages(result.totalPages);
-    } catch (err) {
-      console.error("❌ Error fetching schemes:", err);
-    }
+  // Update your handleClearSearch to include these
+  const handleClearSearch = () => {
+    setSearchQuery("");
+    setAppFrom("");
+    setAppTo("");
+    // setFilteredData(schemes);
   };
+  //  const fetchSchemes = async (page = 1) => {
+  //     try {
+  //       const response = await axios.get(
+  //         `${API}/Scheme/getAllSchemes?page=${page}&limit=10`,
+  //       );
+
+  //       // Backend returns: { page, limit, totalItems, totalPages, data }
+  //       const result = response.data.data;
+
+  //       setData(result); // only the list
+  //       setCurrentPage(result.page);
+  //       setTotalPages(result.totalPages);
+  //     } catch (err) {
+  //       console.error("❌ Error fetching schemes:", err);
+  //     }
+  //   };
+ const fetchSchemes = async (page = 1) => {
+  try {
+    const response = await axios.get(`${API}/Scheme/getAllSchemes`, {
+      params: {
+        page,
+        limit: 10,
+        search: searchQuery || undefined,
+        keys: searchHeaders.length ? searchHeaders.join(",") : undefined,
+        appFrom: appFrom || undefined,
+        appTo: appTo || undefined,
+      },
+    });
+
+    const result = response.data;   // ✅ Correct
+
+    setData(result.items);          // ✅ Use items
+    setCurrentPage(result.page);    // ✅ From API
+    setTotalPages(result.totalPages);
+
+  } catch (err) {
+    console.error("❌ Error fetching schemes:", err);
+  }
+};
+
 
   useEffect(() => {
     fetchSchemes(currentPage);
   }, []);
+
+  const toggleHeader = (headerId) => {
+    setSearchHeaders((prev) =>
+      prev.includes(headerId)
+        ? prev.filter((id) => id !== headerId)
+        : [...prev, headerId],
+    );
+  };
 
   // 🔹 Pagination Controls
   const handlePageChange = (page) => {
@@ -328,7 +103,7 @@ const SchemeDetailsList = () => {
 
       // Update UI without refresh
       const updated = data.map((item) =>
-        item.id === row.id ? { ...item, status: newStatus } : item
+        item.id === row.id ? { ...item, status: newStatus } : item,
       );
       setData(updated);
     } catch (err) {
@@ -339,58 +114,173 @@ const SchemeDetailsList = () => {
 
   return (
     <div className="min-h-screen w-full">
-
       {/* Top Bar */}
       <div className="flex justify-center sticky top-[80px] z-40">
         <div className="flex items-center px-6 py-4 border-b mt-5 w-[1290px] h-[62px] border rounded-[11px] border-gray-200 justify-between shadow bg-white">
-
           <h2 className="text-red-600 text-[20px] font-semibold">
-            Scheme Details List
+            Scheme List
           </h2>
 
           <div className="flex items-center gap-3">
-            <button
-              className="bg-[#129121] text-white text-[11.25px] px-4 py-1 rounded"
-              onClick={() => navigate("/Scheme-Renewal-List")}
-            >
-              Renew
-            </button>
+            <div className="flex items-center gap-3">
+              <div className="flex items-center bg-white border border-gray-400 rounded-[5px] h-[32px] px-2 relative w-[300px]">
+                {/* Multi-Select Header Dropdown */}
+                <div className="relative border-r border-gray-300 pr-2 mr-2">
+                  <button
+                    onClick={() => setIsDropdownOpen(!isDropdownOpen)}
+                    className="text-[11px] font-source font-bold text-[#0A2478] flex items-center gap-1 outline-none h-full"
+                  >
+                    Headers ({searchHeaders.length}){" "}
+                    <span className="text-[8px]">▼</span>
+                  </button>
 
-            <button
-              className="bg-[#0A2478] text-white text-[11.25px] px-4 py-1 rounded"
-              onClick={() =>
-                navigate("/Add-Scheme-Details-Listform")
-              }
-            >
-              Add
-            </button>
+                  {isDropdownOpen && (
+                    <div className="absolute top-[35px] left-[-8px] bg-white border border-gray-300 shadow-xl rounded-md z-[100] w-[160px] p-2">
+                      {[
+                        { id: "schemeName", label: "Scheme Name" },
+                        { id: "product", label: "Product Name" },
+                        { id: "minLoanAmount", label: "Min Loan Amount" },
+                        { id: "maxLoanAmount", label: "Max Loan Amount" },
+                      ].map((col) => (
+                        <label
+                          key={col.id}
+                          className="flex items-center gap-2 p-2 hover:bg-gray-50 cursor-pointer rounded"
+                        >
+                          <input
+                            type="checkbox"
+                            checked={searchHeaders.includes(col.id)}
+                            onChange={() => toggleHeader(col.id)}
+                            className="w-3 h-3 accent-[#0A2478]"
+                          />
+                          <span className="text-[11px] font-source text-gray-700">
+                            {col.label}
+                          </span>
+                        </label>
+                      ))}
+                      <div className="border-t mt-1 pt-1 text-center">
+                        <button
+                          onClick={() => setIsDropdownOpen(false)}
+                          className="text-[10px] text-[#0A2478] font-bold"
+                        >
+                          Apply
+                        </button>
+                      </div>
+                    </div>
+                  )}
+                </div>
 
-            <button
-              onClick={() => navigate("/")}
-              className="bg-[#C1121F] text-white w-[74px] h-[24px] rounded text-[10px]"
-            >
-              Exit
-            </button>
+                {/* Text Input Field */}
+                <input
+                  type="text"
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                  placeholder="Type multiple items (e.g. Cash, Asset)..."
+                  className="flex-grow text-[11px] font-source outline-none h-full"
+                />
+
+                {/* Search Button */}
+                <button
+                  onClick={() => fetchSchemes(1)}
+                  className="ml-2 bg-[#0b2c69] text-white text-[11px] px-4 h-[24px] rounded-[3px]"
+                >
+                  Search
+                </button>
+              </div>
+
+              <div className="flex items-center bg-white border border-gray-400 rounded-[5px] h-[32px] px-2 relative">
+                {/* App From Date */}
+                <div className="flex items-center gap-1 border-r border-gray-200 pr-2 mr-2">
+                  <span className="text-[10px] text-gray-500 font-bold uppercase">
+                    From
+                  </span>
+                  <input
+                    type="date"
+                    value={appFrom}
+                    onChange={(e) => setAppFrom(e.target.value)}
+                    className="w-[110px] text-[11px] outline-none cursor-pointer bg-transparent uppercase"
+                  />
+                </div>
+
+                {/* App To Date */}
+                <div className="flex items-center gap-1 border-r border-gray-200 pr-2 mr-2">
+                  <span className="text-[10px] text-gray-500 font-bold uppercase">
+                    To
+                  </span>
+                  <input
+                    type="date"
+                    value={appTo}
+                    onChange={(e) => setAppTo(e.target.value)}
+                    className="w-[110px] text-[11px] outline-none cursor-pointer bg-transparent uppercase"
+                  />
+                </div>
+
+                {/* Search Button */}
+                <button
+                  onClick={() => fetchSchemes(1)}
+                  className="ml-2 bg-[#0b2c69] text-white text-[11px] px-4 h-[24px] rounded-[3px]"
+                >
+                  Search
+                </button>
+              </div>
+            </div>
+
+            <div className="flex items-center gap-3">
+              <button
+                onClick={() => {
+                  setSearchHeaders([]);
+                  setSearchQuery("");
+                  setAppFrom("");
+                  setAppTo("");
+                  fetchSchemes(1);
+                }}
+                className="bg-gray-500 text-white text-[11px] px-4 py-1 rounded"
+              >
+                Clear
+              </button>
+
+              <button
+                className="bg-[#129121] text-white text-[11.25px] px-4 py-1 rounded"
+                onClick={() => navigate("/Scheme-Renewal-List")}
+              >
+                Renew
+              </button>
+
+              <button
+                className="bg-[#0A2478] text-white text-[11.25px] px-4 py-1 rounded"
+                onClick={() => navigate("/Add-Scheme-Details-Listform")}
+              >
+                Add
+              </button>
+
+              <button
+                onClick={() => navigate("/")}
+                className="bg-[#C1121F] text-white w-[74px] h-[24px] rounded text-[10px]"
+              >
+                Exit
+              </button>
+            </div>
           </div>
         </div>
       </div>
 
       {/* Table */}
       <div className="flex justify-center">
-        <div className="overflow-x-auto mt-5 w-[1290px] h-[500px]">
+        <div className="overflow-x-auto mt-5  h-[500px]">
           <table className="w-full border-collapse">
             <thead className="bg-[#0A2478] text-white text-sm">
               <tr>
-                <th className="px-4 py-2 border">Scheme Name</th>
+                <th className="px-4 py-2 border w-[200px]">Scheme Name</th>
+                <th className="px-4 py-2 border w-[100px]">Product Name</th>
                 <th className="px-4 py-2 border">App From</th>
                 <th className="px-4 py-2 border">App To</th>
-                <th className="px-4 py-2 border ">Int. Compound</th>
-                
+                <th className="px-4 py-2 border w-[50px]">Int. Compound</th>
+
                 <th className="px-4 py-2 border">Min Amount</th>
                 <th className="px-4 py-2 border">Max Amount</th>
-                <th className="px-4 py-2 border">Description</th>
+
+                <th className="px-4 py-2 border w-[300px]">Description</th>
                 {/* <th className="px-4 py-2 border">Action</th> */}
-                <th className="px-4 py-2 border">Role Mapping</th>
+                <th className="px-4 py-2 border w-[110px]">Role Mapping</th>
                 <th className="px-4 py-2 border ">Active</th>
               </tr>
             </thead>
@@ -399,20 +289,19 @@ const SchemeDetailsList = () => {
               {data?.map((row, index) => (
                 <tr
                   key={row.id}
-                  className={`border-b border-gray-300 ${
-                    index % 2 === 0 ? "bg-white" : "bg-white"
-                  }`}
+                  className={index % 2 === 0 ? "bg-gray-50" : "bg-white"}
                 >
                   <td
-  className="px-4 py-2 cursor-pointer hover:underline text-blue-500"
-  onClick={() =>
-    navigate("/Add-Scheme-Details-Listform", {
-      state: { type: "view", data: row },
-    })
-  }
->
-  {row.schemeName}
-</td>
+                    className="px-4 py-2 cursor-pointer hover:underline text-blue-500"
+                    onClick={() =>
+                      navigate("/Add-Scheme-Details-Listform", {
+                        state: { type: "view", data: row },
+                      })
+                    }
+                  >
+                    {row.schemeName}
+                  </td>
+                  <td className="px-4 py-2">{row.product}</td>
 
                   <td className="px-4 py-2">
                     {formatIndianDate(row.applicableFrom)}
@@ -425,6 +314,7 @@ const SchemeDetailsList = () => {
                   </td>
                   <td className="px-4 py-2">{row.minLoanAmount}</td>
                   <td className="px-4 py-2">{row.maxLoanAmount}</td>
+
                   <td className="px-4 py-2">{row.description}</td>
 
                   {/* <td className="px-4 py-2 text-center">
@@ -446,7 +336,9 @@ const SchemeDetailsList = () => {
                   {/* Role Mapping */}
                   <td
                     className="px-4 py-2 text-[#1883EF] cursor-pointer"
-                    onClick={() => navigate("/Role-Mapping", { state: { data: row } })}
+                    onClick={() =>
+                      navigate("/Role-Mapping", { state: { data: row } })
+                    }
                   >
                     Role Mapping
                   </td>

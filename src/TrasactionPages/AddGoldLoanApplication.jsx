@@ -1,6 +1,5 @@
 import axios from "axios";
-import { useEffect, useState } from "react";
-import { MdOutlineFileUpload } from "react-icons/md";
+import { useEffect, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { API } from "../api";
 import { useAuth } from "../API/Context/AuthContext";
@@ -17,12 +16,12 @@ const AddGoldLoanApplication = () => {
   const navigate = useNavigate();
   const [activeEmployees, setActiveEmployees] = useState([]);
   console.log(activeEmployees, "activeEmployees");
-
+  const fileInputRef = useRef(null);
   useEffect(() => {
     const fetchSchemes = async () => {
       try {
         const response = await axios.get(`${API}/Scheme/getAllSchemes`);
-        const fetchedSchemes = response.data.data.map((item) => ({
+        const fetchedSchemes = response.data.items.map((item) => ({
           ...item,
           intCompound: item.calcMethod === "Compound",
         }));
@@ -64,19 +63,27 @@ const AddGoldLoanApplication = () => {
 
       // 👤 Borrower Details
       formDataToSend.append("BorrowerId", selectedCustomer?.id || "");
+
       formDataToSend.append("CoBorrowerId", selectedCoBorrower?.id || "");
-      formDataToSend.append("Borrower", formData.borrowerName || "");
+      formDataToSend.append("Borrower", formData.borrowerName || searchTerm);
       formDataToSend.append("Scheme", formData.schemeName || "");
+      formDataToSend.append("payDate", formData.payDate || "");
       formDataToSend.append("Scheme_type", formData.schemeType || "");
       formDataToSend.append("Scheme_ID", selectedScheme?.id || "");
       formDataToSend.append("Print_Name", formData.printName || "");
       formDataToSend.append("Mobile_Number", formData.mobile || "");
       formDataToSend.append("Alternate_Number", formData.altMobile || "");
-      formDataToSend.append("Co_Borrower", formData.CoBorrowerName || "");
+      formDataToSend.append(
+        "Co_Borrower",
+        formData.CoBorrowerName || searchTermForCoBorrower,
+      );
       formDataToSend.append("Relation", formData.CoBorrowerRelation || "");
       formDataToSend.append("Nominee", formData.Nominee_Name || "");
       formDataToSend.append("Nominee_Relation", formData.NomineeRelation || "");
       formDataToSend.append("interestType", formData.interestType || "");
+      formDataToSend.append("branchName", formData.branchName || "");
+      formDataToSend.append("financialYear", formData.financialYear || "");
+      formDataToSend.append("branch_id", Number(formData.branchId));
 
       // 💎 Ornament Photo
       if (formData.OrnamentFile) {
@@ -114,14 +121,8 @@ const AddGoldLoanApplication = () => {
       );
 
       // 🏢 Misc Info
-      formDataToSend.append("approved_by", loginUser);
-      formDataToSend.append(
-        "approval_date",
-        new Date().toISOString().split("T")[0],
-      );
-      formDataToSend.append("branch_id", 1);
+      formDataToSend.append("added_by", loginUser);
 
-      // 🚀 API Request
       const res = await axios.post(
         `${API}/Transactions/goldloan/addLoan`,
         formDataToSend,
@@ -178,6 +179,7 @@ const AddGoldLoanApplication = () => {
     mobile: "",
     altMobile: "",
     Borrower_ProfileImg: "",
+    payDate: "",
     Borrower_signature: "",
     CoBorrowerName: "",
     CoBorrower_ProfileImg: "",
@@ -193,7 +195,25 @@ const AddGoldLoanApplication = () => {
     Net_Payable: "",
     value1: "",
     value2: "",
+    branchId: "",
+    branchName: "",
+    financialYear: "",
   });
+  console.log(formData, "formData");
+
+  useEffect(() => {
+    debugger;
+    const userData = JSON.parse(sessionStorage.getItem("userData"));
+
+    if (userData) {
+      setFormData((prev) => ({
+        ...prev,
+        branchId: userData.branchId?.id || "",
+        branchName: userData.branchId?.branch_name || "",
+        financialYear: userData.financialYear || "",
+      }));
+    }
+  }, []);
   const [remarkModel, setSelectedremarkModel] = useState(false);
   const [selectedBorrowerRemark, setSelectedBorrowerRemark] = useState(null);
   const [selectedCoBorrowerRemark, setSelectedCoBorrowerRemark] =
@@ -264,10 +284,6 @@ const AddGoldLoanApplication = () => {
     if (selectedScheme?.calcBasisOn === "Monthly") {
       const tenure = Number(selectedScheme?.loanPeriod) || 0;
 
-      // find matching slab
-      // const slab = selectedScheme?.interestRates?.find(
-      //   (r) => tenure > Number(r.from) && tenure <= Number(r.to)
-      // );
       const slab = selectedScheme?.interestRates?.[0];
 
       const rate = Number(slab?.addInt || 0);
@@ -349,7 +365,7 @@ const AddGoldLoanApplication = () => {
     }
 
     // ---- Net Payable ----
-    const netPayable = loan + interestAmount;
+    const netPayable = loan + interestAmount + docCharges;
 
     setFormData((prev) => ({
       ...prev,
@@ -443,7 +459,7 @@ const AddGoldLoanApplication = () => {
     setLoading(false);
 
     // 2️⃣ Update input text
-    setSearchTerm(customer.firstName || "");
+    setSearchTerm(customer.printName || "");
 
     // 3️⃣ Update borrower remark if Borrower selected
     if (type === "Borrower") {
@@ -482,7 +498,7 @@ const AddGoldLoanApplication = () => {
       setSelectedCoBorrowerRemark(customer.Remark);
     }
     setSelectedCoBorrower(customer);
-    setSearchTermForCoBorrower(customer.firstName); // show name in input
+    setSearchTermForCoBorrower(customer.printName); // show name in input
     setResults2([]);
     setFormData((prev) => ({
       ...prev,
@@ -629,50 +645,74 @@ const AddGoldLoanApplication = () => {
       console.error(err);
     }
   };
+  const today = new Date();
+  const minDate = today.toISOString().split("T")[0];
+
+  const maxDateObj = new Date();
+  maxDateObj.setDate(maxDateObj.getDate() + 60);
+  const maxDate = maxDateObj.toISOString().split("T")[0];
 
   return (
     <div className="min-h-screen  ">
       {/* ===== Top Bar ===== */}
-      <div className="flex justify-center sticky top-[80px] z-40">
-        <div className="flex items-center px-6 py-4 border-b mt-5 w-[1290px] h-[62px] border rounded-[11px] border-gray-200 justify-between shadow bg-white">
-          <h2
-            style={{
-              fontFamily: "Source Sans 3, sans-serif",
-              fontWeight: 700,
-              fontSize: "20px",
-              lineHeight: "148%",
-              letterSpacing: "0em",
-            }}
-            className="text-red-600"
-          >
+      {/* <div className="sticky top-0 z-40 flex justify-center w-full bg-gray-50/50 backdrop-blur-sm py-2">
+        <div className="flex items-center justify-between w-full max-w-[1290px] h-12 px-4 bg-white border border-gray-200 rounded-lg shadow-sm mx-4">
+        
+          <h2 className="text-red-600 font-bold text-base tracking-tight leading-tight">
             Add Gold Loan Application
           </h2>
-          <div className="flex gap-3">
+
+        
+          <div className="flex gap-2">
             <button
               onClick={handleSaveLoan}
-              className="text-white px-[6.25px] py-[6.25px] rounded-[3.75px] bg-[#0A2478] w-[74px] h-[24px] text-[10px]"
+              className="bg-[#0A2478] text-white text-xs font-medium px-4 py-1.5 rounded hover:bg-blue-900 transition-colors"
             >
               Submit
             </button>
             <button
               onClick={() => navigate("/Loan-Application")}
-              className="text-white px-[6.25px] py-[6.25px] rounded-[3.75px] bg-[#C1121F] w-[74px] h-[24px] text-[10px]"
+              className="bg-[#C1121F] text-white text-xs font-medium px-4 py-1.5 rounded hover:bg-red-800 transition-colors"
+            >
+              Close
+            </button>
+          </div>
+        </div>
+      </div> */}
+
+      <div className="flex justify-center sticky top-[80px] z-40">
+        <div className="flex items-center px-6 py-4 border-b mt-2 w-[1290px] h-[62px] border rounded-[11px] border-gray-200 justify-between shadow bg-white">
+          <h2 className="text-red-600 text-[20px] font-semibold">
+            Add Gold Loan Application
+          </h2>
+
+          <div className="flex gap-2">
+            <button
+              onClick={handleSaveLoan}
+              className="bg-[#0A2478] text-white text-xs font-medium px-4 py-1.5 rounded hover:bg-blue-900 transition-colors"
+            >
+              Submit
+            </button>
+            <button
+              onClick={() => navigate("/Loan-Application")}
+              className="bg-[#C1121F] text-white text-xs font-medium px-4 py-1.5 rounded hover:bg-red-800 transition-colors"
             >
               Close
             </button>
           </div>
         </div>
       </div>
-      <div className="">
+
+      <div className=" mt-7">
         {/* ===== FORM SECTIONS ===== */}
-        <div className="flex gap-2 mt-10 pl-[110px] ">
+        <div className="flex gap-2  pl-[110px] ">
           <div>
             <div className="flex  gap-2">
               <div className="flex flex-col">
                 <label className="text-[14px] font-medium">
                   Borrower<span className="text-red-500">*</span>
                 </label>
-                <div className="flex items-center mt-1 w-[220px]">
+                <div className="flex items-center mt-1 w-[280px]">
                   <div className="relative flex-1">
                     <input
                       type="text"
@@ -686,14 +726,12 @@ const AddGoldLoanApplication = () => {
                       className="border border-gray-300 rounded-l px-3 py-2 w-full focus:outline-none focus:ring-1 focus:ring-blue-500 bg-white"
                     />
 
-                    {/* Loading */}
                     {loading && (
                       <div className="absolute right-3 top-2 text-gray-400 text-sm">
                         Loading...
                       </div>
                     )}
 
-                    {/* Dropdown */}
                     {results.length > 0 && !selectedCustomer && (
                       <ul className="absolute left-0 top-full bg-white border border-gray-200 rounded-md w-full max-h-48 overflow-y-auto mt-1 shadow-lg z-50">
                         {results.map((customer) => (
@@ -704,9 +742,9 @@ const AddGoldLoanApplication = () => {
                             }
                             className="px-3 py-2 hover:bg-blue-100 cursor-pointer"
                           >
-                            {customer.firstName}{" "}
+                            {customer.printName}{" "}
                             <span className="text-gray-500 text-sm">
-                              ({customer.mobile})
+                              ({customer.printName})
                             </span>
                           </li>
                         ))}
@@ -717,7 +755,6 @@ const AddGoldLoanApplication = () => {
                   <button
                     className="bg-[#0A2478] text-white px-4 py-3 rounded-r border border-gray-300 border-l-0 hover:bg-[#081c5b]"
                     type="button"
-                    // onClick={() => setShowCustomerModal(true)} // <--- ADD
                     onClick={() => OpenCustomerModel(selectedCustomer.id)}
                   >
                     <img src={timesvg} alt="eye" />
@@ -730,7 +767,7 @@ const AddGoldLoanApplication = () => {
                   Scheme<span className="text-red-500">*</span>
                 </label>
                 <select
-                  className="border border-gray-300 px-3 py-2 w-[150px] bg-white rounded-[8px]"
+                  className="border border-gray-300 px-3 py-2 w-[130px] bg-white rounded-[8px] h-[40px] mt-1"
                   onChange={handleSchemeChange}
                   defaultValue=""
                 >
@@ -758,7 +795,7 @@ const AddGoldLoanApplication = () => {
                   placeholder="Enter Print Name"
                   value={formData.printName}
                   onChange={handleInputChange}
-                  className="border border-gray-300 px-3 py-2 mt-1 w-[150px] rounded-[8px] bg-white h-[38px]"
+                  className="border border-gray-300 px-3 py-2  w-[200px] rounded-[8px] bg-white h-[40px] mt-1"
                 />
               </div>
 
@@ -775,7 +812,7 @@ const AddGoldLoanApplication = () => {
                   placeholder="Enter mobile Name"
                   value={formData.mobile}
                   onChange={handleInputChange}
-                  className="border border-gray-300 px-3 py-2 mt-1 w-[136px] rounded-[8px] bg-white h-[38px]"
+                  className="border border-gray-300 px-3 py-2 mt-1 w-[136px] rounded-[8px] bg-white h-[40px]"
                 />
               </div>
               <div className="">
@@ -791,18 +828,18 @@ const AddGoldLoanApplication = () => {
                   placeholder="Enter alt Mobile Name"
                   value={formData.altMobile}
                   onChange={handleInputChange}
-                  className="border border-gray-300 px-3 py-2 mt-1 w-[136px] rounded-[8px] bg-white h-[38px]"
+                  className="border border-gray-300 px-3 py-2 mt-1 w-[136px] rounded-[8px] bg-white h-[40px]"
                 />
               </div>
 
               <div></div>
             </div>
-            <div className="flex   mt-5 gap-2">
+            <div className="flex mt-1 gap-2">
               <div className="flex flex-col">
                 <label className="text-[14px] font-medium">
                   Co-Borrower<span className="text-red-500">*</span>
                 </label>
-                <div className="flex items-center mt-1 w-[220px]">
+                <div className="flex items-center mt-1 w-[280px]">
                   <div className="relative flex-1">
                     <input
                       type="text"
@@ -811,19 +848,17 @@ const AddGoldLoanApplication = () => {
                       value={searchTermForCoBorrower}
                       onChange={(e) => {
                         setSearchTermForCoBorrower(e.target.value);
-                        setSelectedCoBorrower(null); // reset when typing new search
+                        setSelectedCoBorrower(null);
                       }}
                       className="border border-gray-300 rounded-l px-3 py-2 w-full focus:outline-none focus:ring-1 focus:ring-blue-500 bg-white"
                     />
 
-                    {/* Loading */}
                     {loading && (
                       <div className="absolute right-3 top-2 text-gray-400 text-sm">
                         Loading...
                       </div>
                     )}
 
-                    {/* Dropdown */}
                     {results2.length > 0 && !selectedCoBorrower && (
                       <ul className="absolute left-0 top-full bg-white border border-gray-200 rounded-md w-full max-h-48 overflow-y-auto mt-1 shadow-lg z-50">
                         {results2.map((customer) => (
@@ -834,9 +869,9 @@ const AddGoldLoanApplication = () => {
                             }
                             className="px-3 py-2 hover:bg-blue-100 cursor-pointer"
                           >
-                            {customer.firstName}{" "}
+                            {customer.printName}{" "}
                             <span className="text-gray-500 text-sm">
-                              ({customer.mobile})
+                              ({customer.printName})
                             </span>
                           </li>
                         ))}
@@ -866,7 +901,7 @@ const AddGoldLoanApplication = () => {
                     name="CoBorrowerRelation"
                     value={formData.CoBorrowerRelation}
                     onChange={handleInputChange}
-                    className="border border-gray-300 px-3 py-2 mt-1 w-[72px] rounded-[8px] bg-white h-[38px]"
+                    className="border border-gray-300 px-3 py-2 mt-1 w-[120px] rounded-[8px] bg-white h-[38px]"
                   />
                 </div>
               </div>
@@ -885,7 +920,7 @@ const AddGoldLoanApplication = () => {
                     name="Nominee_Name"
                     value={formData.Nominee_Name}
                     onChange={handleInputChange}
-                    className="border border-gray-300 px-3 py-2 mt-1 w-[150px] rounded-[8px] bg-white h-[38px]"
+                    className="border border-gray-300 px-3 py-2 mt-1 w-[200px] rounded-[8px] bg-white h-[38px]"
                   />
                 </div>
               </div>
@@ -904,25 +939,20 @@ const AddGoldLoanApplication = () => {
                     name="NomineeRelation"
                     value={formData.NomineeRelation}
                     onChange={handleInputChange}
-                    className="border border-gray-300 px-3 py-2 mt-1 w-[113px] rounded-[8px] bg-white h-[38px]"
+                    className="border border-gray-300 px-3 py-2 mt-1 w-[120px] rounded-[8px] bg-white h-[38px]"
                   />
                 </div>
               </div>
-              <textarea
-                name="borrowerAddress"
-                value={formData.borrowerAddress}
-                onChange={handleInputChange}
-                className="border w-[200px] h-[62px] rounded-[8px] p-2 focus:outline-none focus:ring-1 focus:ring-blue-400"
-              />
+             
             </div>
           </div>
 
           <div className="flex ">
+            
             <div className="  h-[130px] ">
               {/* Profile Image */}
               <p>Customer</p>
 
-              {/* Profile Image */}
               <img
                 src={
                   formData.Borrower_ProfileImg
@@ -930,11 +960,10 @@ const AddGoldLoanApplication = () => {
                     : profileempty // fallback image
                 }
                 alt="profile"
-                className="w-[111px] h-[130px] rounded-[8px] object-cover border border-gray-300"
+                className="w-[100px] h-[80px] rounded-[8px] object-cover border border-gray-300"
               />
 
-              {/* Signature Image Box */}
-              <div className="mt-2 border w-[111px] h-[33px] flex items-center justify-center bg-white">
+              <div className="mt-2 border w-[100px]  flex items-center justify-center bg-white">
                 {formData.Borrower_signature ? (
                   <img
                     src={`${formData.Borrower_signature}`}
@@ -947,10 +976,8 @@ const AddGoldLoanApplication = () => {
               </div>
             </div>
             <div className="w-[139px] h-auto flex flex-col items-center">
-              {/* Co-Borrower Label */}
-              <p className="font-medium mb-1">Co-Borrower</p>
+              <p className="font-medium ">Co-Borrower</p>
 
-              {/* Co-Borrower Profile Image */}
               <img
                 src={
                   formData.CoBorrower_ProfileImg
@@ -958,11 +985,10 @@ const AddGoldLoanApplication = () => {
                     : profileempty
                 }
                 alt="Co-Borrower Profile"
-                className="w-[111px] h-[130px] rounded-[8px] object-cover border border-gray-300"
+                className="w-[100px] h-[80px] rounded-[8px] object-cover border border-gray-300"
               />
 
-              {/* Signature Box */}
-              <div className="mt-2 w-[111px] h-[33px] border flex items-center justify-center bg-white rounded-[6px]">
+              <div className="mt-2 w-[100px]  border flex items-center justify-center bg-white ">
                 {formData.CoBorrower_signature ? (
                   <img
                     src={formData.CoBorrower_signature}
@@ -975,25 +1001,23 @@ const AddGoldLoanApplication = () => {
               </div>
             </div>
 
-            <div className="">
+            {/* <div className="">
               <p>Ornament Photo</p>
 
-              {/* Preview image */}
               <img
                 src={
                   formData.OrnamentPhoto ? formData.OrnamentPhoto : profileempty
                 }
                 alt="Ornament"
-                className="w-[139px] h-[130px] object-cover rounded-[8px] border border-gray-300"
+                className="w-[81px]  object-cover rounded-[8px] border border-gray-300"
               />
 
-              {/* File Upload */}
-              <div className="mt-2">
+              <div className="mt-1">
                 <label
                   htmlFor="ornamentFile"
-                  className="w-[150px] h-[35px] border rounded-[8px] bg-[#0A2478] text-[12px] text-white flex justify-center items-center gap-2 cursor-pointer"
+                  className="w-[90px] h-[25px]  border rounded-[8px] bg-[#0A2478] text-[12px] text-white flex justify-center items-center gap-2 cursor-pointer"
                 >
-                  <p>Choose File</p>
+                  <p className="text-xs">Choose File</p>
                   <MdOutlineFileUpload />
                 </label>
 
@@ -1013,12 +1037,53 @@ const AddGoldLoanApplication = () => {
                   </p>
                 )}
               </div>
+            </div> */}
+
+            <div className="">
+              <p >Ornament Photo</p>
+
+              <img
+                src={
+                  formData.OrnamentPhoto ? formData.OrnamentPhoto : profileempty
+                }
+                alt="Ornament"
+                className="w-[110px] h-[100px] object-cover rounded-[8px] border border-gray-300 cursor-pointer"
+                onClick={() => fileInputRef.current.click()}
+              />
+
+              <input
+                type="file"
+                ref={fileInputRef}
+                id="ornamentFile"
+                name="OrnamentFile"
+                onChange={(e) => handleOrnamentUpload(e)}
+                className="hidden"
+              />
+
+              {/* {formData.OrnamentFile && (
+                <p className="text-[13px] text-gray-700 mt-1">
+                  Selected File:{" "}
+                  <span className="font-medium text-[#0A2478]">
+                    {formData.OrnamentFile.name}
+                  </span>
+                </p>
+              )} */}
             </div>
           </div>
         </div>
+         <div className=" gap-2 mt-2 pl-[110px] ">
+          <p>Address</p>
+          <textarea
+         
+                name="borrowerAddress"
+                value={formData.borrowerAddress}
+                onChange={handleInputChange}
+                className="border w-[400px] h-[62px] rounded-[8px] p-2 focus:outline-none focus:ring-1 focus:ring-blue-400"
+              /></div>
+         
         {selectedScheme?.product === "Gold" && (
           <>
-            <div className="flex gap-2 mt-10 pl-[110px] ">
+            <div className="flex gap-2  pl-[110px] ">
               <PledgeItemList
                 rows={PledgeItem}
                 setRows={setPledgeItem}
@@ -1029,7 +1094,7 @@ const AddGoldLoanApplication = () => {
         )}
         {selectedScheme?.product === "Silver" && (
           <>
-            <div className="flex gap-2 mt-5 pl-[110px] ">
+            <div className="flex gap-2 pl-[110px] ">
               <PledgeItemListSilver
                 rows={PledgeItem}
                 setRows={setPledgeItem}
@@ -1039,7 +1104,7 @@ const AddGoldLoanApplication = () => {
           </>
         )}
 
-        <div className="flex  gap-2 pl-[110px] ">
+        <div className="flex  gap-2 pl-[110px] mt-2 ">
           <div className="">
             <div>
               <label className="text-[14px] font-medium">
@@ -1083,7 +1148,7 @@ const AddGoldLoanApplication = () => {
                 }
 
                 // ---- Net Payable ----
-                const netPayable = inputLoan + interestAmount - docCharges;
+                const netPayable = inputLoan + interestAmount + docCharges;
 
                 setFormData((prev) => ({
                   ...prev,
@@ -1135,7 +1200,7 @@ const AddGoldLoanApplication = () => {
             />
           </div>
 
-          <div className="flex flex-col">
+          <div className="flex flex-col ">
             <label className="text-[14px] font-medium">
               Valuer 1<span className="text-red-500">*</span>
             </label>
@@ -1143,11 +1208,11 @@ const AddGoldLoanApplication = () => {
               name="value1"
               value={formData.value1}
               onChange={handleInputChange}
-              className="border border-gray-300 rounded px-3 py-2 mt-1 w-full"
+              className="border border-gray-300 rounded px-3 py-2 mt-1 "
             >
               <option value="">Select valuer 1</option>
               {activeEmployees.map((emp) => (
-                <option key={emp.id} value={emp.emp_name}>
+                <option key={emp.id} value={emp.id}>
                   {emp.emp_name}
                 </option>
               ))}
@@ -1166,22 +1231,39 @@ const AddGoldLoanApplication = () => {
             >
               <option value="">Select valuer 2</option>
               {activeEmployees.map((emp) => (
-                <option key={emp.id} value={emp.emp_name}>
+                <option key={emp.id} value={emp.id}>
                   {emp.emp_name}
                 </option>
               ))}
             </select>
           </div>
+          <div className="">
+            <div>
+              <label className="text-[14px] font-medium">
+                Pay Date<span className="text-red-500">*</span>
+              </label>
+            </div>
+
+            <input
+              type="date"
+              name="payDate"
+              value={formData.payDate}
+              onChange={handleInputChange}
+              min={minDate} // today
+              max={maxDate} // today + 60 days
+              className="border border-gray-300 px-3 py-2 mt-1 w-[136px] rounded-[8px] bg-white h-[38px]"
+            />
+          </div>
         </div>
 
-        <div className="flex gap-10  mb-10 pl-[110px]">
+        <div className="flex gap-10 pl-[110px]">
           <p className="mt-5 mb-5">
             {numberToWords(Number(formData.Loan_amount) || 0)}
           </p>
         </div>
 
         <div className="flex gap-10  mb-10 pl-[110px] ">
-          <div className="flex mt-5">
+          <div className="flex ">
             <div className="">
               <h3 className="font-semibold  text-blue-900 text-lg">
                 Scheme Details
@@ -1217,7 +1299,7 @@ const AddGoldLoanApplication = () => {
               </table>
             </div>
           </div>
-          <div className="flex justify-center  mt-5">
+          <div className="flex justify-center">
             <div className="">
               <h3 className="font-semibold  text-blue-900 text-lg">
                 Effective Interest Rates

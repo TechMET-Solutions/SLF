@@ -1,5 +1,5 @@
 import axios from "axios";
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { API } from "../api";
 import GroupData from "../assets/Group 124.svg";
 import { formatIndianDate } from "../utils/Helpers";
@@ -9,9 +9,9 @@ const AccountCodeList = () => {
     document.title = "SLF | Account Code List";
   }, []);
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [data, setData] = useState([
+  const [data, setData] = useState([]);
 
-  ]);
+  console.log(data, "data");
   const [editMode, setEditMode] = useState(false);
   const [selectedId, setSelectedId] = useState(null);
   const [formData, setFormData] = useState({
@@ -19,26 +19,105 @@ const AccountCodeList = () => {
     accountGroup: "",
     financialDate: "",
     type: "",
-    addedBy: localStorage.getItem("email") // or whatever you store
+    addedBy: localStorage.getItem("email"), // or whatever you store
   });
+
+  const [accountGroups, setAccountGroups] = useState([]);
+
+  const [searchHeaders, setSearchHeaders] = useState([]); // Array of active headers
+
+  console.log(searchHeaders, "searchHeaders");
+  const [searchQuery, setSearchQuery] = useState("");
+  const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+
+  const filteredData = useMemo(() => {
+    if (!searchQuery.trim()) return data;
+
+    const keywords = searchQuery
+      .toLowerCase()
+      .split(",")
+      .map((k) => k.trim())
+      .filter((k) => k);
+
+    return data.filter((row) => {
+      // Check if any keyword matches any of the checked headers
+      return keywords.some((keyword) =>
+        searchHeaders.some((header) =>
+          row[header]?.toString().toLowerCase().includes(keyword),
+        ),
+      );
+    });
+  }, [data, searchQuery, searchHeaders]);
+
+  const toggleHeader = (headerId) => {
+    setSearchHeaders((prev) =>
+      prev.includes(headerId)
+        ? prev.filter((id) => id !== headerId)
+        : [...prev, headerId],
+    );
+  };
+
+  useEffect(() => {
+    fetchAccountGroups();
+  }, []);
+
+  const fetchAccountGroups = async () => {
+    try {
+      const res = await axios.get(
+        "https://slunawat.co.in/api/account-group/list",
+      );
+
+      if (res.data.success) {
+        setAccountGroups(res.data.data);
+      }
+    } catch (error) {
+      console.error("Error fetching account groups:", error);
+    }
+  };
+
+  console.log(formData, "formData");
   useEffect(() => {
     fetchData();
   }, []);
 
+  // const fetchData = async () => {
+  //   try {
+  //     const res = await axios.get(`${API}/account-code/get`);
+  //     setData(res.data.data);
+  //   } catch (err) {
+  //     console.log(err);
+  //   }
+  // };
+
   const fetchData = async () => {
     try {
-      const res = await axios.get(`${API}/account-code/get`);
-      setData(res.data);
-    } catch (err) {
-      console.log(err);
+      const res = await axios.get("https://slunawat.co.in/account-code/get", {
+        params: {
+          headers: searchHeaders.join(","),
+          search: searchQuery,
+        },
+      });
+
+      if (res.data.success) {
+        setData(res.data.data);
+      }
+    } catch (error) {
+      console.error("Error fetching account groups:", error);
     }
   };
+
   const handleSave = async () => {
-    if (!formData.name || !formData.financialDate || !formData.accountGroup || !formData.type) {
+    debugger;
+    if (
+      !formData.name ||
+      !formData.financialDate ||
+      !formData.accountGroup ||
+      !formData.type
+    ) {
       alert("Please fill all required fields");
       return;
     }
-    
+
     try {
       if (editMode) {
         await axios.put(`${API}/account-code/update/${selectedId}`, formData);
@@ -55,8 +134,8 @@ const AccountCodeList = () => {
         accountGroup: "",
         financialDate: "",
         type: "",
-        addedBy: localStorage.getItem("email")
-      });// refresh table
+        addedBy: localStorage.getItem("email"),
+      }); // refresh table
     } catch (err) {
       console.log(err);
     }
@@ -68,7 +147,7 @@ const AccountCodeList = () => {
       accountGroup: row.accountGroup,
       financialDate: row.financialDate,
       type: row.type,
-      addedBy: row.addedBy
+      addedBy: row.addedBy,
     });
 
     setSelectedId(row.id);
@@ -79,48 +158,113 @@ const AccountCodeList = () => {
     <div className="min-h-screen w-full font-[Source_Sans_3]">
       {/* Topbar */}
       <div className="flex justify-center">
-        <div className="flex items-center px-6 py-4 border-b mt-5 w-[1290px] h-[62px] rounded-[11px] border border-gray-200 justify-around">
-          <h2 className="text-red-600 font-bold text-[20px] leading-[148%]">
-            Account Code list
-          </h2>
+        <div className="flex justify-center mt-5">
+          <div className="flex items-center px-6 py-4 w-[1290px] h-[62px] rounded-[11px] border border-gray-200 justify-between shadow-sm bg-white">
+            {/* Left Side: Title */}
+            <h2 className="text-red-600 font-bold text-[20px] leading-[148%] whitespace-nowrap">
+              Sub Ledger List
+            </h2>
 
-          <div className="flex gap-3">
-            {/* Account Group Search */}
-            <div className="flex gap-5 items-center">
-              <p className="text-[11.25px] leading-[15px] font-normal">
-                Account Group
-              </p>
-              <input
-                type="text"
-                className="w-[168.64px] h-[27.49px] rounded-md border border-gray-400 px-3 py-1 text-[11.25px]"
-              />
-            </div>
+            {/* Right Side: Filters and Buttons Container */}
+            <div className="flex items-center gap-6">
+              {/* 1. Multi-Select Search Bar */}
+              <div className="flex items-center bg-white border border-gray-400 rounded-[5px] h-[32px] px-2 relative w-[450px]">
+                {/* Header Dropdown */}
+                <div className="relative border-r border-gray-300 pr-2 mr-2">
+                  <button
+                    onClick={() => setIsDropdownOpen(!isDropdownOpen)}
+                    className="text-[11px] font-source font-bold text-[#0A2478] flex items-center gap-1 outline-none h-full whitespace-nowrap"
+                  >
+                    {/* This will now show 0 if the array is empty */}
+                    Headers ({searchHeaders.length}){" "}
+                    <span className="text-[8px]">▼</span>
+                  </button>
 
-            {/* Account Name Search */}
-            <div className="flex gap-5 items-center">
-              <p className="text-[11.25px] leading-[15px] font-normal">
-                Account Name
-              </p>
-              <input
-                type="text"
-                className="w-[168.64px] h-[27.49px] rounded-md border border-gray-400 px-3 py-1 text-[11.25px]"
-              />
-              <button className="w-[84.36px] h-[26.87px] rounded-md bg-[#0b2c69] text-white text-[11.25px] flex items-center justify-center">
-                Search
-              </button>
-            </div>
+                  {isDropdownOpen && (
+                    <div className="absolute top-[35px] left-[-8px] bg-white border border-gray-300 shadow-xl rounded-md z-[100] w-[160px] p-2">
+                      {[
+                        // { id: "sub_ledger_name", label: "Sub Ledger Name" },
+                        // { id: "financial_type", label: "Financial" },
+                        // { id: "ledger_group", label: "Ledger" },
+                        // { id: "account_type", label: "Type" },
 
-            {/* Action Buttons */}
-            <div className="flex justify-center items-center gap-5">
-              <button
-                onClick={() => setIsModalOpen(true)}
-                className="w-[74px] h-[24px] rounded-[3.75px] bg-[#0A2478] text-white text-[11.25px] flex items-center justify-center"
-              >
-                Add
-              </button>
-              <button className="w-[74px] h-[24px] rounded-[3.75px] bg-[#C1121F] text-white text-[10px]">
-                Exit
-              </button>
+                        { id: "name", label: "Sub Ledger Name" },
+                        { id: "accountGroup", label: "Ledger" },
+                        { id: "financialDate", label: "Financial" },
+                        { id: "type", label: "Type" },
+                      ].map((col) => (
+                        <label
+                          key={col.id}
+                          className="flex items-center gap-2 p-2 hover:bg-gray-50 cursor-pointer rounded"
+                        >
+                          <input
+                            type="checkbox"
+                            checked={searchHeaders.includes(col.id)}
+                            onChange={() => toggleHeader(col.id)}
+                            className="w-3 h-3 accent-[#0A2478]"
+                          />
+                          <span className="text-[11px] font-source text-gray-700">
+                            {col.label}
+                          </span>
+                        </label>
+                      ))}
+                      <div className="border-t mt-1 pt-1 text-center">
+                        <button
+                          onClick={() => setIsDropdownOpen(false)}
+                          className="text-[10px] text-[#0A2478] font-bold uppercase"
+                        >
+                          Apply
+                        </button>
+                      </div>
+                    </div>
+                  )}
+                </div>
+
+                {/* Search Input */}
+                <input
+                  type="text"
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                  placeholder="Search multiple items..."
+                  className="flex-grow text-[11px] font-source outline-none h-full bg-transparent"
+                />
+
+                {/* Search Button */}
+                <button
+                  onClick={() => {
+                    setIsDropdownOpen(false);
+                    fetchData(); // call API
+                  }}
+                  className="ml-2 bg-[#0b2c69] text-white text-[10px] px-3 h-[22px] rounded-[3px] font-source hover:opacity-90"
+                >
+                  Search
+                </button>
+              </div>
+
+              {/* 2. Action Buttons (Clear, Add, Exit) */}
+              <div className="flex items-center gap-3 border-l pl-6 border-gray-200">
+                <button
+                  onClick={() => {
+                    setSearchQuery(""); // Clears the search text
+                    setSearchHeaders([]); // Resets checkboxes to 0
+                    fetchData()
+                  }}
+                  className="text-[10px] text-gray-400 hover:text-red-500 underline whitespace-nowrap"
+                >
+                  Clear
+                </button>
+
+                <button
+                  onClick={() => setIsModalOpen(true)}
+                  className="w-[70px] h-[26px] rounded-[4px] bg-[#0A2478] text-white text-[11px] font-medium transition-colors hover:bg-[#071d45]"
+                >
+                  Add
+                </button>
+
+                <button className="w-[70px] h-[26px] rounded-[4px] bg-[#C1121F] text-white text-[11px] font-medium transition-colors hover:bg-[#a40f1a]">
+                  Exit
+                </button>
+              </div>
             </div>
           </div>
         </div>
@@ -130,56 +274,71 @@ const AccountCodeList = () => {
       {isModalOpen && (
         <div className="fixed inset-0 flex items-center justify-center z-50 bg-black/50 backdrop-blur-sm">
           <div className="bg-white w-full rounded-lg max-w-2xl p-8 mx-4">
-            <h2 className="text-[#0A2478] mb-6 font-semibold text-xl">
-              Create New Account
-            </h2>
-
+            {editMode ? (
+              <h2 className="text-[#0A2478] mb-6 font-semibold text-xl">
+                Edit Sub Ledger
+              </h2>
+            ) : (
+              <h2 className="text-[#0A2478] mb-6 font-semibold text-xl">
+                Create Sub Ledger
+              </h2>
+            )}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
               <div>
                 <label className="text-sm font-medium text-gray-700 mb-2 block">
-                  Account Group Name <span className="text-red-500">*</span>
+                  Sub Ledger <span className="text-red-500">*</span>
                 </label>
                 <input
                   type="text"
-                  placeholder="Enter Group Name"
+                  placeholder="Enter Ledger Name"
                   value={formData.name}
-                  onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+                  onChange={(e) =>
+                    setFormData({ ...formData, name: e.target.value })
+                  }
                   className="w-full h-10 px-3 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm"
                   required
                 />
               </div>
+              <div>
+                <label className="text-sm font-medium text-gray-700 mb-2 block">
+                  Ledger
+                </label>
 
+                <select
+                  value={formData.accountGroup}
+                  onChange={(e) =>
+                    setFormData({ ...formData, accountGroup: e.target.value })
+                  }
+                  className="w-full h-10 px-3 rounded-lg border border-gray-300 
+  focus:outline-none focus:ring-2 focus:ring-blue-500 
+  focus:border-transparent text-sm bg-white"
+                  required
+                >
+                  <option value="">Select Ledger</option>
+
+                  {accountGroups.map((group) => (
+                    <option key={group.id} value={group.group_name}>
+                      {group.group_name}
+                    </option>
+                  ))}
+                </select>
+              </div>
               <div>
                 <label className="text-sm font-medium text-gray-700 mb-2 block">
                   Financial <span className="text-red-500">*</span>
                 </label>
+
                 <select
                   value={formData.financialDate}
-                  onChange={(e) => setFormData({ ...formData, financialDate: e.target.value })}
+                  onChange={(e) =>
+                    setFormData({ ...formData, financialDate: e.target.value })
+                  }
                   className="w-full h-10 px-3 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm bg-white"
                   required
                 >
-                  <option>Balance Sheet</option>
-                  <option>Income Statement</option>
-                </select>
-
-              </div>
-
-              <div>
-                <label className="text-sm font-medium text-gray-700 mb-2 block">
-                  Head
-                </label>
-                <select
-                  value={formData.accountGroup}
-                  onChange={(e) => setFormData({ ...formData, accountGroup: e.target.value })}
-                  className="w-full h-10 px-3 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm bg-white"
-                  required
-                >
-                  <option>Bank Account</option>
-                  <option>Bank O\D Account</option>
-                  <option>Captical Account</option>
-                  <option>Cash in Hand</option>
-                  <option>Income (DE)</option>
+                  <option value="">Select Financial Type</option>
+                  <option value="Balance Sheet">Balance Sheet</option>
+                  <option value="Profit & Loss">Profit & Loss</option>
                 </select>
               </div>
 
@@ -187,16 +346,24 @@ const AccountCodeList = () => {
                 <label className="text-sm font-medium text-gray-700 mb-2 block">
                   Type
                 </label>
+
                 <select
                   value={formData.type}
-                  onChange={(e) => setFormData({ ...formData, type: e.target.value })}
+                  onChange={(e) =>
+                    setFormData({ ...formData, type: e.target.value })
+                  }
                   className="w-full h-10 px-3 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm bg-white"
                   required
                 >
-                  <option>Balance Sheet</option>
-                  <option>Income Statement</option>
+                  <option value="">Select Type</option>
+                  <option value="General">General</option>
+                  <option value="Sub Ledger">Sub Ledger</option>
+                  <option value="Cash">Cash</option>
+                  <option value="Bank">Bank</option>
+                  <option value="Petty Cash">Petty Cash</option>
+                  <option value="Card">Card</option>
+                  <option value="Equity">Equity</option>
                 </select>
-
               </div>
             </div>
 
@@ -217,13 +384,12 @@ const AccountCodeList = () => {
                     accountGroup: "",
                     financialDate: "",
                     type: "",
-                    addedBy: localStorage.getItem("email")
+                    addedBy: localStorage.getItem("email"),
                   });
                 }}
               >
                 Exit
               </button>
-
             </div>
           </div>
         </div>
@@ -235,50 +401,55 @@ const AccountCodeList = () => {
           <table className="w-full border-collapse">
             <thead className="bg-[#0A2478] text-white text-sm">
               <tr>
-                <th className="px-4 py-2 text-left border-r border-gray-300 text-[13px]">
-                  Name
+                <th className="px-4 py-2 text-left border-r border-gray-300 text-[13px] w-[250px]">
+                  Sub Ledger Name
                 </th>
-                <th className="px-4 py-2 text-left border-r border-gray-300 text-[13px]">
+                <th className="px-4 py-2 text-left border-r border-gray-300 text-[13px] w-[150px]">
                   Financial
                 </th>
-                <th className="px-4 py-2 text-left border-r border-gray-300 text-[13px]">
-                  Account Group
+                <th className="px-4 py-2 text-left border-r border-gray-300 text-[13px] w-[180px]">
+                  Ledger
                 </th>
-                <th className="px-4 py-2 text-left border-r border-gray-300 text-[13px]">
+                <th className="px-4 py-2 text-left border-r border-gray-300 text-[13px] w-[100px]">
                   Type
                 </th>
-                <th className="px-4 py-2 text-left border-r border-gray-300 text-[13px]">
+                <th className="px-4 py-2 text-left border-r border-gray-300 text-[13px] w-[300px]">
                   Added by Email
                 </th>
-                <th className="px-4 py-2 text-left border-r border-gray-300 text-[13px]">
+                <th className="px-4 py-2 text-left border-r border-gray-300 text-[13px] w-[100px]">
                   Added On
                 </th>
-                <th className="px-4 py-2 text-left border-r border-gray-300 text-[13px]">
+                <th className="px-4 py-2 text-left border-r border-gray-300 text-[13px] w-[100px]">
                   Modified by
                 </th>
                 <th className="px-4 py-2 text-left text-[13px]">Action</th>
               </tr>
             </thead>
             <tbody className="text-[12px]">
-              {data.map((row, index) => (
+              {data?.map((row, index) => (
                 <tr
                   key={index}
-                  className={`border-b ${index % 2 === 0 ? "bg-gray-50" : "bg-white"
-                    }`}
+                  className={index % 2 === 0 ? "bg-gray-50" : "bg-white"}
                 >
                   <td className="px-4 py-2">{row.name}</td>
                   <td className="px-4 py-2">{row.financialDate}</td>
                   <td className="px-4 py-2">{row.accountGroup}</td>
                   <td className="px-4 py-2">{row.type}</td>
                   <td className="px-4 py-2">{row.addedBy}</td>
-                  <td className="px-4 py-2">{formatIndianDate(row.created_at)}</td>
+                  <td className="px-4 py-2">
+                    {formatIndianDate(row.created_at)}
+                  </td>
                   <td className="px-4 py-2">{row.modifiedBy || "-"}</td>
                   <td className="px-4 py-2 text-[#1883EF] cursor-pointer">
                     <div
                       className="w-[17px] h-[17px] bg-[#56A869] rounded-[2.31px] flex items-center justify-center p-0.5"
                       onClick={() => handleEdit(row)}
                     >
-                      <img src={GroupData} alt="action-icon" className="w-[18px] h-[18px]" />
+                      <img
+                        src={GroupData}
+                        alt="action-icon"
+                        className="w-[18px] h-[18px]"
+                      />
                     </div>
                   </td>
                 </tr>

@@ -192,7 +192,7 @@ const UserRolePermission = () => {
             backdropFilter: "blur(6.8px)",
           }}
         >
-          <div className="bg-white w-[600px] rounded-lg shadow-lg p-6">
+          <div className="bg-white w-[300px] rounded-lg shadow-lg p-6">
             {/* Modal Header */}
             <h2
               className="text-[#0A2478] mb-6"
@@ -226,7 +226,7 @@ const UserRolePermission = () => {
                 </div>
 
                 {/* System Name Input */}
-                <div className="flex-1">
+                {/* <div className="flex-1">
                   <label className="text-[14px]">
                     System Name <span className="text-red-500">*</span>
                   </label>
@@ -239,11 +239,11 @@ const UserRolePermission = () => {
                     className="border border-gray-300 rounded px-3 py-2 mt-1 w-full"
                     required
                   />
-                </div>
+                </div> */}
               </div>
 
               <div className="flex gap-10 justify-center items-center mt-5">
-                <div className="flex items-center space-x-2">
+                {/* <div className="flex items-center space-x-2">
                   
                   <input
                     type="checkbox"
@@ -256,7 +256,7 @@ const UserRolePermission = () => {
                   <label htmlFor="is_system_role" className="text-[14px]">
                     Is System Role 
                   </label>
-                </div>
+                </div> */}
 
                 {/* <div className="flex items-center space-x-2">
                  
@@ -297,15 +297,15 @@ const UserRolePermission = () => {
 
       {/* Table */}
       <div className="flex pl-[110px]">
-        <div className="overflow-x-auto mt-5 w-[984px] h-[500px]">
+        <div className="overflow-x-auto mt-5  h-[500px]">
           <table className="w-full border-collapse">
             <thead className="bg-[#0A2478] text-white text-sm">
               <tr>
-                <th className="px-4 py-2 text-left border-r border-gray-300 text-[13px] w-[320px]">Name</th>
-                <th className="px-4 py-2 text-left border-r border-gray-300 text-[13px] w-[363px]">System Name</th>
-                <th className="px-4 py-2 text-left border-r border-gray-300 text-[13px] w-[92px]">Active</th>
-                <th className="px-4 py-2 text-left border-r border-gray-300 text-[13px] w-[98px]">Action</th>
-                <th className="px-4 py-2 text-left border-r border-gray-300 text-[13px] w-[98px]">Rights</th>
+                <th className="px-4 py-2 text-left border-r border-gray-300 text-[13px] w-[250px]">Name</th>
+                {/* <th className="px-4 py-2 text-left border-r border-gray-300 text-[13px] w-[363px]">System Name</th> */}
+                <th className="px-4 py-2 text-left border-r border-gray-300 text-[13px] w-[50px]">Active</th>
+                <th className="px-4 py-2 text-left border-r border-gray-300 text-[13px] w-[50px]">Action</th>
+                <th className="px-4 py-2 text-left border-r border-gray-300 text-[13px] w-[50px]">Rights</th>
               </tr>
             </thead>
             <tbody className="text-[12px]">
@@ -313,10 +313,10 @@ const UserRolePermission = () => {
                 roles.map((row, index) => (
                   <tr
                     key={row.id || index}
-                    className={`border-b ${index % 2 === 0 ? "bg-gray-50" : "bg-white"}`}
+                 className={index % 2 === 0 ? "bg-gray-50" : "bg-white"}
                   >
                     <td className="px-4 py-2">{row.name || row.role_name}</td>
-                    <td className="px-4 py-2">{row.SystemName || row.system_name}</td>
+                    {/* <td className="px-4 py-2">{row.SystemName || row.system_name}</td> */}
                     <td className="px-4 py-2">
                       <button
                         onClick={() => handleToggleStatus(row)}

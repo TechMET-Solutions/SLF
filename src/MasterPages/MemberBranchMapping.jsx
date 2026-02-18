@@ -24,16 +24,20 @@ const MemberBranchMapping = () => {
     loadEmployees();
   }, []);
 
-   const navigate = useNavigate();
+  const navigate = useNavigate();
 
   const loadEmployees = async (page = 1) => {
     setLoading(true);
     try {
       const response = await fetchEmployeeProfileApi(page, itemsPerPage);
       setData(response.items || []);
-      setTotalItems(response.total || (response.items ? response.items.length : 0));
+      setTotalItems(
+        response.total || (response.items ? response.items.length : 0),
+      );
       setCurrentPage(response.page || page);
-      setShowPagination(response.showPagination !== undefined ? response.showPagination : true);
+      setShowPagination(
+        response.showPagination !== undefined ? response.showPagination : true,
+      );
     } catch (error) {
       console.error("❌ Error fetching employees:", error);
       setData([]);
@@ -54,31 +58,32 @@ const MemberBranchMapping = () => {
           </h2>
           <div className="flex gap-3">
             <button
-            onClick={() => navigate("/")}
-            className="bg-[#C1121F] text-white text-[10px] w-[74px] h-[24px] rounded">
+              onClick={() => navigate("/")}
+              className="bg-[#C1121F] text-white text-[10px] w-[74px] h-[24px] rounded"
+            >
               Exit
             </button>
           </div>
         </div>
       </div>
 
-      <div className="flex justify-center">
-        <div className="overflow-x-auto mt-5 w-[1290px] h-[500px]">
+      <div className="flex pl-[120px]">
+        <div className="overflow-x-auto mt-5  h-[500px]">
           <table className="w-full border-collapse">
             <thead className="bg-[#0A2478] text-white text-sm">
               <tr>
-                <th className="px-4 py-2 border-r">Emp Id</th>
-                <th className="px-4 py-2 border-r">Name</th>
-                <th className="px-4 py-2 border-r">Email</th>
-                <th className="px-4 py-2 border-r">Mobile</th>
-                <th className="px-4 py-2 border-r">Branch Mapping</th>
+                <th className="px-4 py-2 border-r w-[100px]">Emp Id</th>
+                <th className="px-4 py-2 border-r w-[200px]">Name</th>
+                <th className="px-4 py-2 border-r w-[200px]">Email</th>
+                <th className="px-4 py-2 border-r w-[100px]">Mobile</th>
+                <th className="px-4 py-2 border-r w-[100px]">Branch Mapping</th>
               </tr>
             </thead>
             <tbody className="text-[12px]">
               {data.map((row, index) => (
                 <tr
                   key={row.id}
-                  className={`border-b ${index % 2 === 0 ? "bg-gray-50" : "bg-white"}`}
+                 className={index % 2 === 0 ? "bg-gray-50" : "bg-white"}
                 >
                   <td className="px-4 py-2">{row.id}</td>
                   <td className="px-4 py-2">{row.emp_name}</td>

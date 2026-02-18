@@ -4,13 +4,19 @@ import { useNavigate } from "react-router-dom";
 import {
   addPurityApi,
   deletePurityApi,
+  deletePurityApiSilver,
   fetchPuritiesApi,
   updatePurityApi,
   updatePurityStatusApi,
 } from "../API/Master/Master_Profile/Purity_Details";
 
 import { useAuth } from "../API/Context/AuthContext";
-import { addPurityApiForSilver, fetchPuritiesApiForSilver, updatePurityApiForSilver, updatePurityStatusApiForSilver } from "../API/Master/Master_Profile/Purity_Details_silver";
+import {
+  addPurityApiForSilver,
+  fetchPuritiesApiForSilver,
+  updatePurityApiForSilver,
+  updatePurityStatusApiForSilver,
+} from "../API/Master/Master_Profile/Purity_Details_silver";
 import blockimg from "../assets/blockimg.png";
 import Pagination from "../Component/Pagination";
 
@@ -27,6 +33,7 @@ const PurityProfile = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [data, setData] = useState([]);
   const [Silverdata, setSilverData] = useState([]);
+  const [productfordelete, setIsProductForDelete] = useState("");
   const [formData, setFormData] = useState({
     id: null,
     loan_type: "Gold",
@@ -73,7 +80,10 @@ const PurityProfile = () => {
   const fetchPuritiesForSilver = async (page = 1) => {
     setIsLoading(true);
     try {
-      const result = await fetchPuritiesApiForSilver(page, itemsPerPageForSilver);
+      const result = await fetchPuritiesApiForSilver(
+        page,
+        itemsPerPageForSilver,
+      );
       if (result?.items) {
         setSilverData(result.items);
         setTotalItemsForSilver(result.total);
@@ -93,7 +103,7 @@ const PurityProfile = () => {
   };
   useEffect(() => {
     fetchPurities();
-    fetchPuritiesForSilver()
+    fetchPuritiesForSilver();
   }, []);
 
   // 🟦 Toggle Status
@@ -161,7 +171,6 @@ const PurityProfile = () => {
       return;
     }
 
-
     setIsLoading(true);
     try {
       const payload = {
@@ -176,24 +185,20 @@ const PurityProfile = () => {
         payload.id = formData.id;
         if (formData.loan_type === "Gold") {
           await updatePurityApi(payload);
-        }
-        else {
+        } else {
           await updatePurityApiForSilver(payload);
         }
-
       } else {
         if (formData.loan_type === "Gold") {
           await addPurityApi(payload);
-        }
-        else {
+        } else {
           await addPurityApiForSilver(payload);
         }
-
       }
 
       setIsModalOpen(false);
       fetchPurities(currentPageForSilver);
-      fetchPuritiesForSilver()
+      fetchPuritiesForSilver();
     } catch (error) {
       console.error("❌ Error saving item:", error);
     } finally {
@@ -202,18 +207,27 @@ const PurityProfile = () => {
   };
 
   // 🗑️ Show delete confirmation modal
-  const handleDeleteClick = (id) => {
+  const handleDeleteClick = (id, item) => {
+    debugger;
     setDeleteId(id);
     setDeleteModalOpen(true);
+    setIsProductForDelete(item);
   };
 
   // 🟥 Confirm delete
   const handleDeleteConfirm = async () => {
     try {
-      await deletePurityApi(deleteId);
+      if (productfordelete === "Silver") {
+        await deletePurityApiSilver(deleteId);
+      } else {
+        await deletePurityApi(deleteId);
+      }
+
       setDeleteModalOpen(false);
       setDeleteId(null);
+      setIsProductForDelete("");
       fetchPurities(currentPage);
+      fetchPuritiesForSilver(currentPage);
     } catch (error) {
       console.error("❌ Error deleting purity:", error);
       alert("Error deleting purity");
@@ -222,7 +236,9 @@ const PurityProfile = () => {
 
   // 🔹 Pagination Controls
   const totalPages = Math.ceil(totalItems / itemsPerPage);
-  const totalPagesForSilver = Math.ceil(totalItemsForSilver / itemsPerPageForSilver);
+  const totalPagesForSilver = Math.ceil(
+    totalItemsForSilver / itemsPerPageForSilver,
+  );
   const handlePageChange = (page) => {
     if (page < 1 || page > totalPages) return;
     fetchPurities(page);
@@ -246,7 +262,8 @@ const PurityProfile = () => {
               </button>
               <button
                 onClick={() => navigate("/")}
-                className="w-[74px] h-[24px] cursor-pointer  rounded bg-[#C1121F] text-white text-[10px]">
+                className="w-[74px] h-[24px] cursor-pointer  rounded bg-[#C1121F] text-white text-[10px]"
+              >
                 Exit
               </button>
             </div>
@@ -262,7 +279,7 @@ const PurityProfile = () => {
             <h2 className="text-[#0A2478] mb-6 font-semibold text-[20px]">
               {isEditMode ? "Edit Purity" : "Add New Purity"}
             </h2>
-            <div className="grid grid-cols-2 gap-4">
+            <div className="grid grid-cols-3 gap-4">
               <div>
                 <label className="text-[14px] font-medium">
                   Product Type <span className="text-red-500">*</span>
@@ -289,13 +306,15 @@ const PurityProfile = () => {
                   type="text"
                   placeholder="Purity Name"
                   value={formData.purity_name}
-                  onChange={(e) => setFormData({ ...formData, purity_name: e.target.value })}
+                  onChange={(e) =>
+                    setFormData({ ...formData, purity_name: e.target.value })
+                  }
                   className="border border-gray-300 rounded px-3 py-2 mt-1 w-full focus:outline-none focus:ring-2 focus:ring-[#0A2478]"
                 />
               </div>
               <div>
                 <label className="text-[14px] font-medium">
-                  Purity Percent <span className="text-red-500">*</span>
+                  Purity % <span className="text-red-500">*</span>
                 </label>
                 <input
                   type="number"
@@ -317,8 +336,11 @@ const PurityProfile = () => {
               <button
                 disabled={isLoading}
                 onClick={handleSave}
-                className={`bg-[#0A2478] cursor-pointer text-white px-5 py-2 rounded ${isLoading ? "opacity-50 cursor-not-allowed" : "hover:bg-[#081b5c]"
-                  }`}
+                className={`bg-[#0A2478] cursor-pointer text-white px-5 py-2 rounded ${
+                  isLoading
+                    ? "opacity-50 cursor-not-allowed"
+                    : "hover:bg-[#081b5c]"
+                }`}
               >
                 {isLoading ? "Saving..." : isEditMode ? "Update" : "Save"}
               </button>
@@ -338,7 +360,11 @@ const PurityProfile = () => {
         <div className="fixed inset-0 flex items-center justify-center z-50 bg-[#0101017A] backdrop-blur-[6.8px]">
           <div className="bg-white w-[396.27px] rounded-lg shadow-lg h-[386px] p-5">
             <div className="flex justify-center items-center mt-2">
-              <img src={blockimg} alt="action" className="w-[113px] h-[113px]" />
+              <img
+                src={blockimg}
+                alt="action"
+                className="w-[113px] h-[113px]"
+              />
             </div>
 
             <div className="mt-10">
@@ -387,7 +413,7 @@ const PurityProfile = () => {
             Gold Purity
           </p>
 
-          <div className="overflow-x-auto mt-5 w-[620px] h-[500px]">
+          {/* <div className="overflow-x-auto mt-5 w-[620px] h-[500px]">
             {data.length === 0 && !isLoading ? (
               <div className="flex justify-center items-center h-full">
                 <p className="text-lg text-gray-500">No Data Found</p>
@@ -396,20 +422,31 @@ const PurityProfile = () => {
               <table className="w-full border-collapse">
                 <thead className="bg-[#0A2478] text-white text-sm">
                   <tr>
-                    <th className="px-4 py-2 text-left border-r border-gray-300 text-[13px]">Purity Name</th>
-                    <th className="px-4 py-2 text-left border-r border-gray-300 text-[13px]">Purity Percent</th>
-                    <th className="px-4 py-2 text-left border-r border-gray-300 text-[13px]">Product Name</th>
-                    <th className="px-4 py-2 text-left border-r border-gray-300 text-[13px]">Added By</th>
-                    <th className="px-4 py-2 text-left border-r border-gray-300 text-[13px]">Action</th>
-                    <th className="px-4 py-2 text-left border-r border-gray-300 text-[13px]">Active</th>
+                    <th className="px-4 py-2 text-left border-r border-gray-300 text-[13px] w-[80px]">
+                      Purity Name
+                    </th>
+                    <th className="px-4 py-2 text-left border-r border-gray-300 text-[13px] w-[80px]">
+                      Purity %
+                    </th>
+                    <th className="px-4 py-2 text-left border-r border-gray-300 text-[13px] w-[80px]">
+                      Product Name
+                    </th>
+                    <th className="px-4 py-2 text-left border-r border-gray-300 text-[13px] w-[200px]">
+                      Added By
+                    </th>
+                    <th className="px-4 py-2 text-left border-r border-gray-300 text-[13px]">
+                      Action
+                    </th>
+                    <th className="px-4 py-2 text-left border-r border-gray-300 text-[13px]">
+                      Active
+                    </th>
                   </tr>
                 </thead>
                 <tbody className="text-[12px]">
                   {data.map((row, index) => (
                     <tr
                       key={index}
-                      className={`border-b ${index % 2 === 0 ? "bg-gray-50" : "bg-white"
-                        }`}
+                     className={index % 2 === 0 ? "bg-gray-50" : "bg-white"}
                     >
                       <td className="px-4 py-2">{row.purity_name}</td>
                       <td className="px-4 py-2">{row.purity_percent}</td>
@@ -419,13 +456,17 @@ const PurityProfile = () => {
                         <div className="flex gap-2 justify-center">
                           <button
                             className="bg-[#3dbd5a] cursor-pointer p-1.5 text-white rounded-sm"
-                            onClick={() => handleOpenModal(row)} title="Edit"
+                            onClick={() => handleOpenModal(row)}
+                            title="Edit"
                           >
                             <FiEdit />
                           </button>
                           <button
                             className="bg-[#f51111ec] cursor-pointer p-1.5 text-white rounded-sm"
-                            onClick={() => handleDeleteClick(row.id)} title="Delete"
+                            onClick={() =>
+                              handleDeleteClick(row.id, row.loan_type)
+                            }
+                            title="Delete"
                           >
                             <FiTrash2 />
                           </button>
@@ -434,12 +475,16 @@ const PurityProfile = () => {
                       <td className="px-4 py-2 text-[#1883EF] cursor-pointer">
                         <button
                           onClick={() => handleToggleStatus(row)}
-                          className={`w-12 h-6 flex items-center rounded-full p-1 transition-colors duration-300 ease-in-out ${row.status === 1 ? "bg-[#0A2478]" : "bg-gray-400"
-                            }`}
+                          className={`w-12 h-6 flex items-center rounded-full p-1 transition-colors duration-300 ease-in-out ${
+                            row.status === 1 ? "bg-[#0A2478]" : "bg-gray-400"
+                          }`}
                         >
                           <div
-                            className={`bg-white w-4 h-4 rounded-full shadow-md transform transition-transform duration-300 ease-in-out ${row.status === 1 ? "translate-x-6" : "translate-x-0"
-                              }`}
+                            className={`bg-white w-4 h-4 rounded-full shadow-md transform transition-transform duration-300 ease-in-out ${
+                              row.status === 1
+                                ? "translate-x-6"
+                                : "translate-x-0"
+                            }`}
                           />
                         </button>
                       </td>
@@ -448,7 +493,72 @@ const PurityProfile = () => {
                 </tbody>
               </table>
             )}
-          </div>
+          </div> */}
+
+          <div className="overflow-x-auto mt-5 w-[620px] h-[500px]">
+  <table className="w-full border-collapse">
+    <thead className="bg-[#0A2478] text-white text-sm sticky top-0">
+      <tr>
+        <th className="px-4 py-2 text-left border-r border-gray-300 text-[13px] w-[80px]">Purity Name</th>
+        <th className="px-4 py-2 text-left border-r border-gray-300 text-[13px] w-[80px]">Purity %</th>
+        <th className="px-4 py-2 text-left border-r border-gray-300 text-[13px] w-[80px]">Product Name</th>
+        <th className="px-4 py-2 text-left border-r border-gray-300 text-[13px] w-[200px]">Added By</th>
+        <th className="px-4 py-2 text-left border-r border-gray-300 text-[13px]">Action</th>
+        <th className="px-4 py-2 text-left border-r border-gray-300 text-[13px]">Active</th>
+      </tr>
+    </thead>
+    <tbody className="text-[12px]">
+      {data.length === 0 && !isLoading ? (
+        <tr>
+          <td colSpan="6" className="text-center py-10">
+            <p className="text-lg text-gray-500">No Data Found</p>
+          </td>
+        </tr>
+      ) : (
+        data.map((row, index) => (
+          <tr key={index} className={index % 2 === 0 ? "bg-gray-50" : "bg-white"}>
+            <td className="px-4 py-2">{row.purity_name}</td>
+            <td className="px-4 py-2">{row.purity_percent}</td>
+            <td className="px-4 py-2">{row.loan_type}</td>
+            <td className="px-4 py-2">{row.added_by}</td>
+            <td className="px-4 py-2 text-center">
+              <div className="flex gap-2 justify-center">
+                <button
+                  className="bg-[#3dbd5a] cursor-pointer p-1.5 text-white rounded-sm"
+                  onClick={() => handleOpenModal(row)}
+                  title="Edit"
+                >
+                  <FiEdit />
+                </button>
+                <button
+                  className="bg-[#f51111ec] cursor-pointer p-1.5 text-white rounded-sm"
+                  onClick={() => handleDeleteClick(row.id, row.loan_type)}
+                  title="Delete"
+                >
+                  <FiTrash2 />
+                </button>
+              </div>
+            </td>
+            <td className="px-4 py-2">
+              <button
+                onClick={() => handleToggleStatus(row)}
+                className={`w-12 h-6 flex items-center rounded-full p-1 transition-colors duration-300 ease-in-out ${
+                  row.status === 1 ? "bg-[#0A2478]" : "bg-gray-400"
+                }`}
+              >
+                <div
+                  className={`bg-white w-4 h-4 rounded-full shadow-md transform transition-transform duration-300 ease-in-out ${
+                    row.status === 1 ? "translate-x-6" : "translate-x-0"
+                  }`}
+                />
+              </button>
+            </td>
+          </tr>
+        ))
+      )}
+    </tbody>
+  </table>
+</div>
           <Pagination
             currentPage={currentPage}
             totalPages={totalPages}
@@ -468,78 +578,77 @@ const PurityProfile = () => {
           >
             Silver Purity
           </p>
-          <div className="overflow-x-auto mt-5 w-[620px] h-[500px]">
-            {Silverdata.length === 0 && !isLoading ? (
-              <div className="flex justify-center items-center h-full">
-                <p className="text-lg text-gray-500">No Data Found</p>
+         <div className="overflow-x-auto mt-5 w-[620px] h-[500px]">
+  <table className="w-full border-collapse">
+    <thead className="bg-[#0A2478] text-white text-sm sticky top-0">
+      <tr>
+        <th className="px-4 py-2 text-left border-r border-gray-300 text-[13px] w-[80px]">Purity Name</th>
+        <th className="px-4 py-2 text-left border-r border-gray-300 text-[13px] w-[80px]">Purity %</th>
+        <th className="px-4 py-2 text-left border-r border-gray-300 text-[13px] w-[80px]">Product Name</th>
+        <th className="px-4 py-2 text-left border-r border-gray-300 text-[13px] w-[200px]">Added By</th>
+        <th className="px-4 py-2 text-left border-r border-gray-300 text-[13px]">Action</th>
+        <th className="px-4 py-2 text-left border-r border-gray-300 text-[13px]">Active</th>
+      </tr>
+    </thead>
+    <tbody className="text-[12px]">
+      {Silverdata.length === 0 && !isLoading ? (
+        <tr>
+          <td colSpan="6" className="py-20 text-center">
+            <p className="text-lg text-gray-500">No Data Found</p>
+          </td>
+        </tr>
+      ) : (
+        Silverdata.map((row, index) => (
+          <tr key={index} className={index % 2 === 0 ? "bg-gray-50" : "bg-white"}>
+            <td className="px-4 py-2">{row.purity_name}</td>
+            <td className="px-4 py-2">{row.purity_percent}</td>
+            <td className="px-4 py-2">{row.loan_type}</td>
+            <td className="px-4 py-2">{row.added_by}</td>
+            <td className="px-4 py-2 text-center">
+              <div className="flex gap-2 justify-center">
+                <button
+                  className="bg-[#3dbd5a] cursor-pointer p-1.5 text-white rounded-sm"
+                  onClick={() => handleOpenModal(row)}
+                  title="Edit"
+                >
+                  <FiEdit />
+                </button>
+                <button
+                  className="bg-[#f51111ec] cursor-pointer p-1.5 text-white rounded-sm"
+                  onClick={() => handleDeleteClick(row.id, row.loan_type)}
+                  title="Delete"
+                >
+                  <FiTrash2 />
+                </button>
               </div>
-            ) : (
-              <table className="w-full border-collapse">
-                <thead className="bg-[#0A2478] text-white text-sm">
-                  <tr>
-                    <th className="px-4 py-2 text-left border-r border-gray-300 text-[13px]">Purity Name</th>
-                    <th className="px-4 py-2 text-left border-r border-gray-300 text-[13px]">Purity Percent</th>
-                    <th className="px-4 py-2 text-left border-r border-gray-300 text-[13px]">Product Name</th>
-                    <th className="px-4 py-2 text-left border-r border-gray-300 text-[13px]">Added By</th>
-                    <th className="px-4 py-2 text-left border-r border-gray-300 text-[13px]">Action</th>
-                    <th className="px-4 py-2 text-left border-r border-gray-300 text-[13px]">Active</th>
-                  </tr>
-                </thead>
-                <tbody className="text-[12px]">
-                  {Silverdata.map((row, index) => (
-                    <tr
-                      key={index}
-                      className={`border-b ${index % 2 === 0 ? "bg-gray-50" : "bg-white"
-                        }`}
-                    >
-                      <td className="px-4 py-2">{row.purity_name}</td>
-                      <td className="px-4 py-2">{row.purity_percent}</td>
-                      <td className="px-4 py-2">{row.loan_type}</td>
-                      <td className="px-4 py-2">{row.added_by}</td>
-                      <td className="px-4 py-2 text-center">
-                        <div className="flex gap-2 justify-center">
-                          <button
-                            className="bg-[#3dbd5a] cursor-pointer p-1.5 text-white rounded-sm"
-                            onClick={() => handleOpenModal(row)} title="Edit"
-                          >
-                            <FiEdit />
-                          </button>
-                          <button
-                            className="bg-[#f51111ec] cursor-pointer p-1.5 text-white rounded-sm"
-                            onClick={() => handleDeleteClick(row.id)} title="Delete"
-                          >
-                            <FiTrash2 />
-                          </button>
-                        </div>
-                      </td>
-                      <td className="px-4 py-2 text-[#1883EF] cursor-pointer">
-                        <button
-                          onClick={() => handleToggleStatusForSilver(row)}
-                          className={`w-12 h-6 flex items-center rounded-full p-1 transition-colors duration-300 ease-in-out ${row.status === 1 ? "bg-[#0A2478]" : "bg-gray-400"
-                            }`}
-                        >
-                          <div
-                            className={`bg-white w-4 h-4 rounded-full shadow-md transform transition-transform duration-300 ease-in-out ${row.status === 1 ? "translate-x-6" : "translate-x-0"
-                              }`}
-                          />
-                        </button>
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            )}
-          </div>
+            </td>
+            <td className="px-4 py-2">
+              <button
+                onClick={() => handleToggleStatusForSilver(row)}
+                className={`w-12 h-6 flex items-center rounded-full p-1 transition-colors duration-300 ease-in-out ${
+                  row.status === 1 ? "bg-[#0A2478]" : "bg-gray-400"
+                }`}
+              >
+                <div
+                  className={`bg-white w-4 h-4 rounded-full shadow-md transform transition-transform duration-300 ease-in-out ${
+                    row.status === 1 ? "translate-x-6" : "translate-x-0"
+                  }`}
+                />
+              </button>
+            </td>
+          </tr>
+        ))
+      )}
+    </tbody>
+  </table>
+</div>
           <Pagination
             currentPage={currentPageForSilver}
             totalPages={totalPagesForSilver}
             onPageChange={handlePageChange}
           />
         </div>
-
       </div>
-
-
     </div>
   );
 };

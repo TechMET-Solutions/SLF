@@ -32,15 +32,21 @@ const PushGoldRateList = () => {
   const itemsPerPageForSilver = 10;
   const [metalType, setMetalType] = useState("Gold");
   const [actualRate, setActualRate] = useState("");
-
+  const [filterDateGold, setFilterDateGold] = useState("");
+  const [filterDateSilver, setFilterDateSilver] = useState("");
   const { loginUser } = useAuth();
 
   console.log("Logged in user:", loginUser);
   // 🔹 Fetch gold rates with pagination
   const fetchGoldRates = async (page = 1) => {
+    debugger;
     setIsLoading(true);
     try {
-      const result = await fetchGoldRatesApi(page, itemsPerPage);
+      const result = await fetchGoldRatesApi(
+        page,
+        itemsPerPage,
+        filterDateGold,
+      );
       if (result?.items) {
         setData(result.items);
         setTotalItems(result.total);
@@ -59,9 +65,14 @@ const PushGoldRateList = () => {
     }
   };
   const fetchSilverRates = async (page = 1) => {
+    debugger;
     setIsLoading(true);
     try {
-      const result = await fetchSilverRatesApi(page, itemsPerPage);
+      const result = await fetchSilverRatesApi(
+        page,
+        itemsPerPage,
+        filterDateSilver,
+      );
       if (result?.items) {
         setSilverData(result.items);
         setTotalItemsForSilver(result.total);
@@ -140,7 +151,7 @@ const PushGoldRateList = () => {
   // 🔹 Pagination Controls
   const totalPages = Math.ceil(totalItems / itemsPerPage);
   const totalPagesForSilver = Math.ceil(
-    totalItemsForSilver / itemsPerPageForSilver
+    totalItemsForSilver / itemsPerPageForSilver,
   );
   const handlePageChange = (page) => {
     if (page < 1 || page > totalPages) return;
@@ -154,8 +165,10 @@ const PushGoldRateList = () => {
 
   useEffect(() => {
     fetchGoldRates();
+  }, [filterDateGold]);
+  useEffect(() => {
     fetchSilverRates();
-  }, []);
+  }, [filterDateSilver]);
 
   return (
     <div className="min-h-screen w-full">
@@ -245,60 +258,76 @@ const PushGoldRateList = () => {
 
       {/* Table */}
       <div className="flex justify-center">
-        <div className="overflow-x-auto mt-5 w-[1290px] h-[500px] flex gap-10">
+        <div className="overflow-x-auto mt-5  flex gap-10 h-auto">
           <div className="mt-5">
-            <p
-              className="font-semibold text-[#0A2478]"
-              style={{
-                fontFamily: "Playfair Display",
-                fontSize: "23.23px",
-                lineHeight: "148%",
-              }}
-            >
-              Gold rate
-            </p>
-            {data.length === 0 && !isLoading ? (
-              <div className="flex justify-center items-center h-full">
-                <p className="text-lg text-gray-500">No Data Found</p>
-              </div>
-            ) : (
-              <table className="w-[620px] border-collapse mt-2">
-                <thead className="bg-[#0A2478] text-white text-sm">
-                  <tr>
-                    {/* <th className="px-4 py-2 text-left border-r">ID</th> */}
-                    <th className="px-4 py-2 text-left border-r">Date</th>
-                    <th className="px-4 py-2 text-left border-r">Type</th>
-                    <th className="px-4 py-2 text-left border-r"> Rate</th>
-                    <th className="px-4 py-2 text-left border-r">
-                      {" "}
-                      Actual Rate
-                    </th>
-                    <th className="px-4 py-2 text-left border-r">Added On</th>
-                    <th className="px-4 py-2 text-left border-r">Added By</th>
-                  </tr>
-                </thead>
-                <tbody className="text-[12px]">
-                  {data.map((row, index) => (
-                    <tr
-                      key={row.id}
-                      className={`border-b ${index % 2 === 0 ? "bg-gray-50" : "bg-white"}`}
-                    >
-                      {/* <td className="px-4 py-2">{row.id}</td> */}
-                      <td className="px-4 py-2">
-                        {formatIndianDate(row.push_date)}
-                      </td>
-                      <td className="px-4 py-2">{row.metalType}</td>
-                      <td className="px-4 py-2">{row.gold_rate}</td>
-                      <td className="px-4 py-2">{row.actual_rate}</td>
-                      <td className="px-4 py-2">
-                        {formatIndianDate(row.added_on)}
-                      </td>
-                      <td className="px-4 py-2">{row.added_by}</td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            )}
+            <div className="flex items-center gap-2 mb-2">
+              <p
+                className="font-semibold text-[#0A2478]"
+                style={{
+                  fontFamily: "Playfair Display",
+                  fontSize: "23.23px",
+                  lineHeight: "148%",
+                }}
+              >
+                Gold rate
+              </p>
+              <input
+                type="date"
+                value={filterDateGold}
+                onChange={(e) => {
+                  const newDate = e.target.value; // ✅ take latest value
+                  setFilterDateGold(newDate); // update state
+                  // fetchGoldRates(1, newDate);       // ✅ pass SAME value
+                }}
+                className="border border-gray-300 rounded px-2 py-1 text-[11px]"
+              />
+
+              <button
+                onClick={() => {
+                  setFilterDateGold("");
+                  fetchGoldRates(1, "");
+                }}
+                className="text-[10px] text-red-500 underline"
+              >
+                Reset
+              </button>
+            </div>
+
+           <div className="overflow-x-auto mt-5 w-[620px] h-[500px]">
+  <table className="w-[620px] border-collapse mt-2">
+    <thead className="bg-[#0A2478] text-white text-sm">
+      <tr>
+        <th className="px-4 py-2 text-left border-r w-[100px]">Date</th>
+        <th className="px-4 py-2 text-left border-r">Type</th>
+        <th className="px-4 py-2 text-left border-r w-[100px]">Rate</th>
+        <th className="px-4 py-2 text-left border-r w-[100px]">Actual Rate</th>
+        <th className="px-4 py-2 text-left border-r w-[200px]">Added By</th>
+      </tr>
+    </thead>
+    <tbody className="text-[12px]">
+      {data.length === 0 && !isLoading ? (
+        <tr>
+          <td colSpan="5" className="py-10 text-center">
+            <p className="text-lg text-gray-500">No Data Found</p>
+          </td>
+        </tr>
+      ) : (
+        data.map((row, index) => (
+          <tr
+            key={row.id}
+            className={index % 2 === 0 ? "bg-gray-50" : "bg-white"}
+          >
+            <td className="px-4 py-2">{formatIndianDate(row.push_date)}</td>
+            <td className="px-4 py-2">{row.metalType}</td>
+            <td className="px-4 py-2">{row.gold_rate}</td>
+            <td className="px-4 py-2">{row.actual_rate}</td>
+            <td className="px-4 py-2">{row.added_by}</td>
+          </tr>
+        ))
+      )}
+    </tbody>
+  </table>
+</div>
 
             <Pagination
               currentPage={currentPage}
@@ -307,59 +336,72 @@ const PushGoldRateList = () => {
             />
           </div>
           <div className="mt-5">
-            <p
-              className="font-semibold text-[#0A2478]"
-              style={{
-                fontFamily: "Playfair Display",
-                fontSize: "23.23px",
-                lineHeight: "148%",
-              }}
-            >
-              Silver rate
-            </p>
-            {Silverdata.length === 0 && !isLoading ? (
-              <div className="flex justify-center items-center h-full">
-                <p className="text-lg text-gray-500">No Data Found</p>
-              </div>
-            ) : (
-              <table className="w-[620px] border-collapse mt-2">
-                <thead className="bg-[#0A2478] text-white text-sm">
-                  <tr>
-                    {/* <th className="px-4 py-2 text-left border-r">ID</th> */}
-                    <th className="px-4 py-2 text-left border-r"> Date</th>
-                    <th className="px-4 py-2 text-left border-r">Type</th>
-                    <th className="px-4 py-2 text-left border-r"> Rate</th>
-                    <th className="px-4 py-2 text-left border-r">
-                      {" "}
-                      Actual Rate
-                    </th>
-                    <th className="px-4 py-2 text-left border-r">Added On</th>
-                    <th className="px-4 py-2 text-left border-r">Added By</th>
-                  </tr>
-                </thead>
-                <tbody className="text-[12px]">
-                  {Silverdata.map((row, index) => (
-                    <tr
-                      key={row.id}
-                      className={`border-b ${index % 2 === 0 ? "bg-gray-50" : "bg-white"}`}
-                    >
-                      {/* <td className="px-4 py-2">{row.id}</td> */}
-                      <td className="px-4 py-2">
-                        {formatIndianDate(row.push_date)}
-                      </td>
-                      <td className="px-4 py-2">{row.metalType}</td>
-                      <td className="px-4 py-2">{row.Silver_rate}</td>
-                      <td className="px-4 py-2">{row.actual_rate}</td>
-                      <td className="px-4 py-2">
-                        {formatIndianDate(row.added_on)}
-                      </td>
-                      <td className="px-4 py-2">{row.added_by}</td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            )}
+            <div className="flex items-center gap-2 mb-2">
+              <p
+                className="font-semibold text-[#0A2478]"
+                style={{
+                  fontFamily: "Playfair Display",
+                  fontSize: "23.23px",
+                  lineHeight: "148%",
+                }}
+              >
+                Silver rate
+              </p>
+              <input
+                type="date"
+                value={filterDateSilver}
+                onChange={(e) => {
+                  setFilterDateSilver(e.target.value);
+                  fetchSilverRates(1, e.target.value); // Fetch immediately on change
+                }}
+                className="border border-gray-300 rounded px-2 py-1 text-[11px]"
+              />
+              <button
+                onClick={() => {
+                  setFilterDateSilver("");
+                  fetchSilverRates(1, "");
+                }}
+                className="text-[10px] text-red-500 underline"
+              >
+                Reset
+              </button>
+            </div>
 
+           <div className="overflow-x-auto mt-5 w-[620px] h-[500px]">
+  <table className="w-[620px] border-collapse mt-2">
+    <thead className="bg-[#0A2478] text-white text-sm">
+      <tr>
+        <th className="px-4 py-2 text-left border-r w-[100px]">Date</th>
+        <th className="px-4 py-2 text-left border-r">Type</th>
+        <th className="px-4 py-2 text-left border-r w-[100px]">Rate</th>
+        <th className="px-4 py-2 text-left border-r w-[100px]">Actual Rate</th>
+        <th className="px-4 py-2 text-left border-r w-[200px]">Added By</th>
+      </tr>
+    </thead>
+    <tbody className="text-[12px]">
+      {Silverdata.length === 0 && !isLoading ? (
+        <tr>
+          <td colSpan="5" className="py-20 text-center">
+            <p className="text-lg text-gray-500">No Data Found</p>
+          </td>
+        </tr>
+      ) : (
+        Silverdata.map((row, index) => (
+          <tr
+            key={row.id}
+            className={index % 2 === 0 ? "bg-gray-50" : "bg-white"}
+          >
+            <td className="px-4 py-2">{formatIndianDate(row.push_date)}</td>
+            <td className="px-4 py-2">{row.metalType}</td>
+            <td className="px-4 py-2">{row.Silver_rate}</td>
+            <td className="px-4 py-2">{row.actual_rate}</td>
+            <td className="px-4 py-2">{row.added_by}</td>
+          </tr>
+        ))
+      )}
+    </tbody>
+  </table>
+</div>
             <Pagination
               currentPage={currentPageForSilver}
               totalPages={totalPagesForSilver}

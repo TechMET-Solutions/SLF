@@ -329,7 +329,7 @@ const AddSchemeDetailsListform = () => {
         </div>
       </div>
 
-      <div className="bg-white rounded-lg mt-5 ">
+      <div className="bg-white rounded-lg mt-2 ">
         {/* First Row (ALWAYS VISIBLE) */}
         <div className="flex gap-2 justify-center">
           <div className="w-[739px] h-auto bg-[#FFE6E6] p-[20px]">
@@ -1216,63 +1216,46 @@ const AddSchemeDetailsListform = () => {
                       </thead>
 
                       <tbody>
-                        {data?.renewalHistory?.length > 0 ? (
-                          data.renewalHistory.map((item) => (
-                            <tr
-                              key={item.id}
-                              className="bg-white border border-gray-300"
-                            >
-                              {/* App From */}
-                              <td className="p-2 text-center">
-                                {
-                                  new Date(item.app_from)
-                                    .toISOString()
-                                    .split("T")[0]
-                                }
-                              </td>
+                        {data?.renewalHistory?.map((item) => {
+  const slabs =
+    typeof item.interest_json === "string"
+      ? JSON.parse(item.interest_json)
+      : item.interest_json;
 
-                              {/* App To */}
-                              <td className="p-2 text-center">
-                                {
-                                  new Date(item.app_to)
-                                    .toISOString()
-                                    .split("T")[0]
-                                }
-                              </td>
+  return (
+    <tr
+      key={item.id}
+      className="bg-white border border-gray-300"
+    >
+      <td className="p-2 text-center">
+        {new Date(item.app_from).toISOString().split("T")[0]}
+      </td>
 
-                              {/* Interest JSON */}
-                              <td
-                                className="p-2 text-center text-blue-600 underline cursor-pointer"
-                                onClick={() => {
-                                  setSelectedSlabs(
-                                    JSON.parse(item.interest_json)
-                                  );
-                                  setOpenSlabModal(true);
-                                }}
-                              >
-                                {JSON.parse(item.interest_json).length} Slabs
-                              </td>
+      <td className="p-2 text-center">
+        {new Date(item.app_to).toISOString().split("T")[0]}
+      </td>
 
-                              {/* Approval % */}
-                              <td className="p-2 text-center">
-                                {item.gold_approve_percent}%
-                              </td>
+      <td
+        className="p-2 text-center text-blue-600 underline cursor-pointer"
+        onClick={() => {
+          setSelectedSlabs(slabs);
+          setOpenSlabModal(true);
+        }}
+      >
+        {slabs?.length || 0} Slabs
+      </td>
 
-                              {/* Renewal Date */}
-                              <td className="p-2 text-center">
-                                {new Date(item.renewal_date).toLocaleDateString(
-                                  "en-IN"
-                                )}
-                              </td>
-                            </tr>
-                          ))
-                        ) : (
-                          <tr>
-                            <td className="text-center p-3" colSpan={5}>
-                              No Renewal History Found
-                            </td>
-                          </tr>
-                        )}
+      <td className="p-2 text-center">
+        {item.gold_approve_percent}%
+      </td>
+
+      <td className="p-2 text-center">
+        {new Date(item.renewal_date).toLocaleDateString("en-IN")}
+      </td>
+    </tr>
+  );
+})}
+
                       </tbody>
                     </table>
                   </div>

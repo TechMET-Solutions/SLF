@@ -1,7 +1,6 @@
 import axios from "axios";
-import { encryptData, decryptData } from "../../../utils/cryptoHelper";
 import { API } from "../../../api";
-
+import { decryptData, encryptData } from "../../../utils/cryptoHelper";
 
 const API_BASE = `${API}/Master/User-Management`;
 
@@ -30,9 +29,13 @@ export const fetchRolesApi = async (page = 1, limit = 10) => {
 export const updateRolesStatusApi = async (id, is_active) => {
   try {
     const encryptedPayload = encryptData({ id, is_active });
-    return await axios.put(`${API_BASE}/update-roles`, { data: encryptedPayload }, {
-      headers: { "Content-Type": "application/json" },
-    });
+    return await axios.put(
+      `${API_BASE}/update-roles`,
+      { data: encryptedPayload },
+      {
+        headers: { "Content-Type": "application/json" },
+      },
+    );
   } catch (error) {
     console.error("❌ Error updating roles status:", error);
     throw error;
@@ -40,25 +43,40 @@ export const updateRolesStatusApi = async (id, is_active) => {
 };
 
 // 🔹 Add New roles
-export const addRolesApi = async (payload) => {
-  try {
-    const encryptedPayload = encryptData(payload);
-    return await axios.post(`${API_BASE}/add-roles`, { data: encryptedPayload }, {
-      headers: { "Content-Type": "application/json" },
-    });
-  } catch (error) {
-    console.error("❌ Error adding roles:", error);
-    throw error;
-  }
+// export const addRolesApi = async (payload) => {
+//   try {
+//     const encryptedPayload = encryptData(payload);
+//     return await axios.post(`${API_BASE}/add-roles`, { data: encryptedPayload }, {
+//       headers: { "Content-Type": "application/json" },
+//     });
+//   } catch (error) {
+//     console.error("❌ Error adding roles:", error);
+//     throw error;
+//   }
+// };
+export const addRolesApi = async (formData) => {
+  const res = await fetch(`${API}/Master/User-Management/add-roles`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify(formData), // ✅ send directly
+  });
+
+  return res.json();
 };
 
 // 🔹 Update Existing roles
 export const updateRolesApi = async (payload) => {
   try {
     const encryptedPayload = encryptData(payload);
-    return await axios.put(`${API_BASE}/update-roles`, { data: encryptedPayload }, {
-      headers: { "Content-Type": "application/json" },
-    });
+    return await axios.put(
+      `${API_BASE}/update-roles`,
+      { data: encryptedPayload },
+      {
+        headers: { "Content-Type": "application/json" },
+      },
+    );
   } catch (error) {
     console.error("❌ Error updating Roles:", error);
     throw error;

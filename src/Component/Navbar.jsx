@@ -7,7 +7,7 @@ import {
   FiLogOut,
 } from "react-icons/fi";
 import { TfiReload } from "react-icons/tfi";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 
 const Navbar = () => {
   const [isBranchModelOpen, setIsBranchModelOpen] = useState(false);
@@ -26,8 +26,12 @@ const Navbar = () => {
   // Masters
   const [isMasterOpen, setIsMasterOpen] = useState(false);
   const [isReportsOpen, setIsReportsOpen] = useState(false);
+  const [isMiscellaneous, setIsMiscellaneous] = useState(false);
   const [isMasterProfileOpen, setIsMasterProfileOpen] = useState(false);
   const [isReportsTransaction, setIsReportsTransaction] = useState(false);
+  const [isCashBankFinancialReport, setIsCashBankFinancialReport] =
+    useState(false);
+  const [ismisReports, setIsMisReports] = useState(false);
   const [isMasterSchemeMaster, setIsMasterSchemeMaster] = useState(false);
   const [isMasterSchemeEmployeeProfile, setIsMasterSchemeEmployeeProfile] =
     useState(false);
@@ -37,14 +41,16 @@ const Navbar = () => {
   // Transactions
   const [isTransactionsOpen, setIsTransactionsOpen] = useState(false);
   const [isGoldLoanOpen, setIsGoldLoanOpen] = useState(false);
+  const [Accounting, setIsAccounting] = useState(false);
   const [isAuctionOpen, setIsAuctionOpen] = useState(false);
 
   // Tools/Utilities
   const [isToolsOpen, setIsToolsOpen] = useState(false);
   const [isSettingsOpen, setIsSettingsOpen] = useState(false);
+  const [isSystemTools, setIsSystemTools] = useState(false);
 
   const dropdownRef = useRef(null);
-
+  const navigate = useNavigate();
   function convertPermissions(permissions) {
     const result = {};
 
@@ -147,8 +153,8 @@ const Navbar = () => {
   console.log(canSeeMasterProfile, "canSeeMasterProfile");
 
   const masterProfileList = [
-    { name: "Account Group", path: "/account-groups" },
-    { name: "Account Code", path: "/account-code-list" },
+    { name: "Ledger", path: "/account-groups" },
+    { name: "Sub Ledger ", path: "/account-code-list" },
     { name: "Branch Details", path: "/Branch-Profile-List" },
     { name: "Item Profile", path: "/Item-Profile-List" },
     { name: "Product Purity", path: "/Product-Purity" },
@@ -156,6 +162,14 @@ const Navbar = () => {
     { name: "Push Rate", path: "/Push-Rate-List" },
     { name: "Charges Profile", path: "/Charges-Profile-List" },
     { name: "Area", path: "/Area" },
+  ];
+  const masterMiscellaneousList = [
+    // { name: "Cash Balance", path: "/Cash_Balance" },
+    // { name: "Print Cash Balance", path: "/Print_Cash_Balance" },
+    { name: "Application Setting", path: "/Application_Setting" },
+    { name: "Bank Branch Mapping", path: "/Bank_Branch_Mapping" },
+    { name: "Accounts Opening Balance", path: "/Accounts_Opening_Balance" },
+    { name: "Sub Ledger Opening Balance", path: "/Sub_Ledger_Opening_Balance" },
   ];
 
   const ReportTrasaction = [
@@ -167,29 +181,65 @@ const Navbar = () => {
     { name: "Loan Cancellation Report", path: "/loan-cancellation-report" },
     { name: "Gold Stock Report", path: "/gold_stock_report" },
     { name: "Loan Risk Report", path: "/loan-risk-report" },
-     { name: "Loan Statement", path: "/loan-statement" },
+    { name: "Loan Statement", path: "/loan-statement" },
     { name: "NPA Report", path: "/npa-report" },
-      { name: "Loan Details", path: "/loan-details" },
-      { name: "Legal Notice Report", path: "/legal-notice-report" },
+    { name: "Loan Details", path: "/loan-details" },
+    { name: "Legal Notice Report", path: "/legal-notice-report" },
   ];
   const filteredMasterProfile = isAdmin
     ? masterProfileList
     : masterProfileList.filter(
         (item) => masterPermissions[item.name]?.view === true,
       );
- const filteredReporttrasaction = isAdmin
+  const filteredReporttrasaction = isAdmin
     ? ReportTrasaction
     : ReportTrasaction.filter(
+        (item) => masterPermissions[item.name]?.view === true,
+      );
+  const filteredMiscellaneousrasaction = isAdmin
+    ? masterMiscellaneousList
+    : masterMiscellaneousList.filter(
         (item) => masterPermissions[item.name]?.view === true,
       );
   const schemeMasterItems = [
     { name: "Scheme Details", path: "/Scheme-Details-List" },
     { name: "Scheme Branch Mapping", path: "/Branch-Scheme-Mapping-List" },
   ];
+  const cashBankFinancialReport = [
+    { name: "Bank Book Report", path: "/Bank-Book-Report" },
+    // { name: "Cash Book Report", path: "/Cash-Book-Report" },
+    { name: "Day Book Report", path: "/Day-Book-Report" },
+    { name: "Trial Balance", path: "/Trial-Balance" },
+    { name: "Customer Ledger", path: "/Customer-Ledger" },
+    { name: "Ledger Report", path: "/Ledger-Report" },
+    { name: "Balance Sheet", path: "/Balance_Sheet" },
+    { name: "Profit & Loss Report", path: "/Profit_Loss_Report" },
+    { name: "Payment/Receipt Report", path: "/Payment_Receipt_Report" },
+    { name: "Fund Transfer Report", path: "/Fund_Transfer_Report" },
+  ];
 
+  const misreporttab = [
+    { name: "Loan Risk managment [Margin]", path: "/Loan_Risk_managment" },
+    { name: "Customer List", path: "/Customer_list" },
+    { name: "Branch Loan Report", path: "/Branch_Loan_Report" },
+    { name: "Loan Repay Register", path: "/Loan_Repay_Register" },
+    { name: "Consumer Report", path: "/Consumer_Report" },
+    { name: "Value Wise Loan Report", path: "/Value_Wise_Loan_Report" },
+  ];
   const filteredSchemeMaster = isAdmin
     ? schemeMasterItems
     : schemeMasterItems.filter(
+        (item) => masterPermissions[item.name]?.view === true,
+      );
+  const cashfinancialreport = isAdmin
+    ? cashBankFinancialReport
+    : cashBankFinancialReport.filter(
+        (item) => masterPermissions[item.name]?.view === true,
+      );
+
+  const misreportsection = isAdmin
+    ? misreporttab
+    : misreporttab.filter(
         (item) => masterPermissions[item.name]?.view === true,
       );
 
@@ -197,8 +247,9 @@ const Navbar = () => {
 
   const employeeProfileItems = [
     { name: "Employee Profile", path: "/Employee-Profile-list" },
-    { name: "Member Login Period", path: "/Member-Login-Period" },
-    { name: "Member Login Details", path: "/Member-Login-Details" },
+    // { name: "Member Login Period", path: "/Member-Login-Period" },
+    // { name: "Member Login Details", path: "/Member-Login-Details" },
+    { name: "Member Details", path: "/Member-Details" },
     { name: "Employee Attendance", path: "/Employee-Attendance" },
     { name: "Employee Designation", path: "/Employee-Designation" },
   ];
@@ -229,6 +280,14 @@ const Navbar = () => {
     { name: "Loan Charges List", path: "/Loan-Charges-List" },
   ];
 
+  const AccountingItems = [
+    { name: "Expences", path: "/PaymentVoucher" },
+    { name: "Receipt", path: "/ReceiptVoucher/List" },
+    { name: "Journal", path: "/JournalVoucher/List" },
+    { name: "FT Issue", path: "/FundTransfer/issue" },
+    { name: "FT Receipt", path: "/FundTransfer/receipt" },
+  ];
+
   const customerProfileItem = {
     name: "Customer Profile",
     path: "/Customer-Profile-List",
@@ -246,7 +305,11 @@ const Navbar = () => {
     : loanItems.filter(
         (item) => TrasactionPermissions[item.name]?.view === true,
       );
-
+  const filteredAccounting = isAdmin
+    ? AccountingItems
+    : AccountingItems.filter(
+        (item) => TrasactionPermissions[item.name]?.view === true,
+      );
   const canSeeLoan = filteredLoan.length > 0;
 
   const canSeeCustomerProfile = isAdmin
@@ -266,15 +329,17 @@ const Navbar = () => {
 
   return (
     <div className="flex justify-center sticky top-0 z-50 bg-transparent">
-      <div className="bg-[#0A2478] text-white flex items-center justify-between relative mt-5 p-5 w-[1360px] h-[50px] rounded-[10px]">
+      <div className="bg-[#0A2478] text-white flex items-center justify-between relative mt-5 p-5 w-[1460px] h-[50px] rounded-[10px]">
         {/* Left side placeholder */}
         <div className="flex items-center gap-3">
-          <img
-            src="/logo.svg"
-            alt="Logo"
-            className="w-12 h-12 object-contain"
-          />
-        </div>
+  <Link to="/">
+    <img
+      src="/logo.svg"
+      alt="Logo"
+      className="w-12 h-12 object-contain cursor-pointer"
+    />
+  </Link>
+</div>
 
         {/* ===== Center Menu ===== */}
         <div
@@ -524,7 +589,87 @@ const Navbar = () => {
                     <span>Customer Profile</span>
                   </Link>
                 )}
+                {canSeeLoan && (
+                  <div className="relative">
+                    <button
+                      className="w-full text-left px-4 py-2 hover:bg-gray-100 flex justify-between items-center"
+                      onClick={() => {
+                        setIsAccounting(!Accounting);
+                        setIsAuctionOpen(false);
+                        // setIsTransactionsOpen(false);
+                        setIsGoldLoanOpen(false);
+                      }}
+                    >
+                      Accounting
+                      {Accounting ? <FiChevronDown /> : <FiChevronRight />}
+                    </button>
 
+                    {/* {Accounting && (
+                      <div className="absolute top-0 left-full ml-1 w-[200px] bg-white text-black rounded shadow-lg flex flex-col gap-1 z-50 text-sm">
+                        {filteredAccounting.map((item) => (
+                          <Link
+                            key={item.path}
+                            to={item.path}
+                            className="px-4 py-2 hover:bg-gray-100 text-left"
+                            onClick={() => {
+                              setIsTransactionsOpen(false);
+                              setIsGoldLoanOpen(false);
+                            }}
+                          >
+                            {item.name}
+                          </Link>
+                        ))}
+                      </div>
+                    )} */}
+                    {Accounting && (
+                      <div className="absolute top-0 left-full ml-1 w-[200px] bg-white text-black rounded shadow-lg flex flex-col z-50 text-[13px] border border-gray-200">
+                        {filteredAccounting.map((item) => (
+                          <div key={item.name} className="relative group/fund">
+                            <Link
+                              to={item.path}
+                              className="px-4 py-1.5 hover:bg-[#0D3082] hover:text-white text-left transition-colors border-b border-gray-100 last:border-0 flex justify-between items-center"
+                              onClick={() => {
+                                setIsTransactionsOpen(false);
+                              }}
+                            >
+                              {item.name}
+                              {/* Arrow indicator for items with sub-menus like Fund Transfer */}
+                              {/* {item.name === "Fund Transfer" && (
+                                <span className="text-[10px]">▶</span>
+                              )} */}
+                            </Link>
+
+                            {/* 3rd Level Dropdown for Issue/Receipt */}
+                            {/* {item.name === "Fund Transfer" && (
+                              <div className="absolute top-0 left-full ml-1 w-[150px] bg-white text-black rounded shadow-lg hidden group-hover/fund:flex flex-col border border-gray-200">
+                                <Link
+                                  to="/FundTransfer/issue"
+                                  className="px-4 py-2 hover:bg-gray-100 border-b border-gray-50 text-left"
+                                  onClick={() => {
+                                    setIsTransactionsOpen(false);
+                                    // setAccounting(false);
+                                  }}
+                                >
+                                  Issue
+                                </Link>
+                                <Link
+                                  to="/FundTransfer/receipt"
+                                  className="px-4 py-2 hover:bg-gray-100 text-left"
+                                  onClick={() => {
+                                    setIsTransactionsOpen(false);
+                                    // setAccounting(false);
+                                  }}
+                                >
+                                  Receipt
+                                </Link>
+                              </div>
+                            )} */}
+                          </div>
+                        ))}
+                      </div>
+                    )}
+                  </div>
+                )}
                 {/* 🔹 Auction */}
                 {canSeeAuction && (
                   <div className="relative mt-1 text-sm">
@@ -558,6 +703,20 @@ const Navbar = () => {
                     )}
                   </div>
                 )}
+
+                <Link
+                  to={"/Cash_Balance"}
+                  className="w-full text-sm text-left px-4 py-2 hover:bg-gray-100 flex justify-between items-center"
+                  onClick={() => {
+                    setIsAccounting(!Accounting);
+                    setIsAuctionOpen(false);
+                    setIsTransactionsOpen(false);
+                    setIsGoldLoanOpen(false);
+                  }}
+                >
+                  Cash Balance
+                  {/* {Accounting ? <FiChevronDown /> : <FiChevronRight />} */}
+                </Link>
               </div>
             )}
           </div>
@@ -565,66 +724,258 @@ const Navbar = () => {
           {/* ================== OTHER BUTTONS ================== */}
           {/* <button className="hover:underline text-[20px]">Miscellaneous</button> */}
           {/* <button className="hover:underline text-[20px]">Reports</button> */}
+
+          {/* <div className="relative">
+            <button
+              className="hover:underline text-[20px] flex items-center gap-1"
+              onClick={() => {
+                setIsMiscellaneous(!isMiscellaneous);
+                setIsMasterOpen(false);
+                setIsTransactionsOpen(false);
+                setIsToolsOpen(false);
+              }}
+            >
+              Miscellaneous
+              {isMiscellaneous ? <FiChevronUp /> : <FiChevronDown />}
+            </button>
+            {isMiscellaneous && (
+              <>
+                <div  className="absolute top-full left-0 mt-2 bg-white text-black rounded shadow-lg w-[200px] z-50">
+                 
+                   
+
+                    {isMiscellaneous && (
+                      <div className="absolute top-0 left-full ml-1 w-[200px] bg-white text-black rounded shadow-lg flex flex-col text-sm">
+                        {filteredMiscellaneousrasaction.map((item) => (
+                          <Link
+                            key={item.path}
+                            to={item.path}
+                            className="px-4 py-2 hover:bg-gray-100"
+                            onClick={() => setIsMasterOpen(false)}
+                          >
+                            {item.name}
+                          </Link>
+                        ))}
+                      </div>
+                    )}
+                  
+
+                </div>
+              </>
+            )}
+          </div> */}
           <div className="relative">
-<button
-            className="hover:underline text-[20px] flex items-center gap-1"
-            onClick={() => {
-              setIsReportsOpen(!isReportsOpen);
-              setIsMasterOpen(false);
-              setIsTransactionsOpen(false);
-              setIsToolsOpen(false);
-            }}
-          >
-            Reports
-            {isReportsOpen ? <FiChevronUp /> : <FiChevronDown />}
-          </button>
-           {isReportsOpen && (
-              <div className="absolute top-full  mt-2 bg-white text-black rounded shadow-lg w-[200px] z-50">
-                {/* Master Profile */}
-                <div className="relative">
-                  {canSeeMasterProfile && (
+            <button
+              className="hover:underline text-[20px] flex items-center gap-1"
+              onClick={() => {
+                setIsMiscellaneous((prev) => !prev);
+                setIsMasterOpen(false);
+                setIsTransactionsOpen(false);
+                setIsToolsOpen(false);
+              }}
+            >
+              Miscellaneous
+              {isMiscellaneous ? <FiChevronUp /> : <FiChevronDown />}
+            </button>
+
+            {isMiscellaneous && (
+              <div className="absolute top-full left-0 mt-2 w-[200px] bg-white text-black rounded shadow-lg z-50">
+                {filteredMiscellaneousrasaction.map((item) => (
+                  <Link
+                    key={item.path}
+                    to={item.path}
+                    className="block px-4 py-2 text-sm hover:bg-gray-100"
+                    onClick={() => setIsMiscellaneous(false)}
+                  >
+                    {item.name}
+                  </Link>
+                ))}
+              </div>
+            )}
+          </div>
+
+          <div className="relative">
+            <button
+              className="hover:underline text-[20px] flex items-center gap-1"
+              onClick={() => {
+                setIsReportsOpen(!isReportsOpen);
+                setIsMasterOpen(false);
+                setIsTransactionsOpen(false);
+                setIsToolsOpen(false);
+              }}
+            >
+              Reports
+              {isReportsOpen ? <FiChevronUp /> : <FiChevronDown />}
+            </button>
+            {isReportsOpen && (
+              <>
+                <div className="absolute top-full left-0 mt-2 bg-white text-black rounded shadow-lg w-[200px] z-50">
+                  {/* Master Profile */}
+                  <div className="relative">
+                    {canSeeMasterProfile && (
+                      <button
+                        className="w-full text-left px-4 py-2 hover:bg-gray-100 flex justify-between items-center"
+                        onClick={() => {
+                          setIsMasterProfileOpen(!isMasterProfileOpen);
+                          setIsMasterSchemeMaster(false);
+                          setIsReportsTransaction(!isReportsTransaction);
+                          setIsMasterSchemeEmployeeProfile(false);
+                          setIsMasterSchemeUserManagement(false);
+                        }}
+                      >
+                        Trasaction Reports
+                        {isReportsTransaction ? (
+                          <FiChevronDown />
+                        ) : (
+                          <FiChevronRight />
+                        )}
+                      </button>
+                    )}
+
+                    {isReportsTransaction && (
+                      <div className="absolute top-0 left-full ml-1 w-[200px] bg-white text-black rounded shadow-lg flex flex-col text-sm">
+                        {filteredReporttrasaction.map((item) => (
+                          <Link
+                            key={item.path}
+                            to={item.path}
+                            className="px-4 py-2 hover:bg-gray-100"
+                            onClick={() => setIsMasterOpen(false)}
+                          >
+                            {item.name}
+                          </Link>
+                        ))}
+                      </div>
+                    )}
+                  </div>
+
+                  <div className="relative">
+                    {canSeeSchemeMaster && (
+                      <button
+                        className=" w-full text-left px-4 py-2 hover:bg-gray-100 flex justify-between items-center"
+                        onClick={() => {
+                          // setIsMasterSchemeMaster(!isMasterSchemeMaster);
+                          // setIsMasterProfileOpen(false);
+                          // setIsMasterSchemeEmployeeProfile(false);
+                          // setIsMasterSchemeUserManagement(false);
+                          setIsCashBankFinancialReport(
+                            !isCashBankFinancialReport,
+                          );
+                        }}
+                      >
+                        Cash/Bank/Financial Report
+                        {isCashBankFinancialReport ? (
+                          <FiChevronDown />
+                        ) : (
+                          <FiChevronRight />
+                        )}
+                      </button>
+                    )}
+
+                    {isCashBankFinancialReport && (
+                      <div className="absolute top-0 left-full ml-1 w-[200px] bg-white text-black rounded shadow-lg flex flex-col gap-1">
+                        {cashfinancialreport.map((item) => (
+                          <Link
+                            key={item.path}
+                            to={item.path}
+                            className="px-4 py-2 hover:bg-gray-100 text-sm"
+                            onClick={() => setIsMasterOpen(false)}
+                          >
+                            {item.name}
+                          </Link>
+                        ))}
+                      </div>
+                    )}
+                  </div>
+                  <div className="relative">
+                    {canSeeSchemeMaster && (
+                      <button
+                        className="w-full text-left px-4 py-2 hover:bg-gray-100 flex justify-between items-center"
+                        onClick={() => {
+                          // setIsMasterSchemeMaster(!isMasterSchemeMaster);
+                          // setIsMasterProfileOpen(false);
+                          // setIsMasterSchemeEmployeeProfile(false);
+                          // setIsMasterSchemeUserManagement(false);
+                          setIsMisReports(!ismisReports);
+                        }}
+                      >
+                        MIS Report
+                        {ismisReports ? <FiChevronDown /> : <FiChevronRight />}
+                      </button>
+                    )}
+
+                    {ismisReports && (
+                      <div className="absolute top-0 left-full ml-1 w-[200px] bg-white text-black rounded shadow-lg flex flex-col gap-1">
+                        {misreportsection.map((item) => (
+                          <Link
+                            key={item.path}
+                            to={item.path}
+                            className="px-4 py-2 hover:bg-gray-100 text-sm"
+                            onClick={() => setIsMasterOpen(false)}
+                          >
+                            {item.name}
+                          </Link>
+                        ))}
+                      </div>
+                    )}
+                  </div>
+                  <div className="relative">
                     <button
                       className="w-full text-left px-4 py-2 hover:bg-gray-100 flex justify-between items-center"
                       onClick={() => {
-                        setIsReportsTransaction(!isReportsTransaction);
-                        // setIsMasterSchemeMaster(false);
-                        // setIsMasterSchemeEmployeeProfile(false);
-                        // setIsMasterSchemeUserManagement(false);
+                        // setIsCashBankFinancialReport(
+                        //   !isCashBankFinancialReport,
+                        // );
+                        navigate("/loan_follow_up");
                       }}
                     >
-                     Trasaction Reports
-                      {isReportsTransaction ? (
-                        <FiChevronDown />
-                      ) : (
-                        <FiChevronRight />
-                      )}
+                      Loan Follow Up
                     </button>
-                  )}
+                  </div>
+                  <div className="relative">
+                    <button
+                      className="w-full text-left px-4 py-2 hover:bg-gray-100 flex justify-between items-center"
+                      onClick={() => {
+                        // setIsCashBankFinancialReport(
+                        //   !isCashBankFinancialReport,
+                        // );
+                        navigate("/Customer_history");
+                      }}
+                    >
+                      Customer History
+                    </button>
+                  </div>
 
-                  {isReportsTransaction && (
-                    <div className="absolute top-0 left-full ml-1 w-[200px] bg-white text-black rounded shadow-lg flex flex-col text-sm">
-                      {filteredReporttrasaction.map((item) => (
-                        <Link
-                          key={item.path}
-                          to={item.path}
-                          className="px-4 py-2 hover:bg-gray-100"
-                          onClick={() => setIsMasterOpen(false)}
-                        >
-                          {item.name}
-                        </Link>
-                      ))}
-                    </div>
-                  )}
+                  <div className="relative">
+                    <button
+                      className="w-full text-left px-4 py-2 hover:bg-gray-100 flex justify-between items-center"
+                      onClick={() => {
+                        // setIsCashBankFinancialReport(
+                        //   !isCashBankFinancialReport,
+                        // );
+                        navigate("/paymentgetway_history");
+                      }}
+                    >
+                      PaymentGetWay History
+                    </button>
+                  </div>
+                  <div className="relative">
+                    <button
+                      className="w-full text-left px-4 py-2 hover:bg-gray-100 flex justify-between items-center"
+                      onClick={() => {
+                        // setIsCashBankFinancialReport(
+                        //   !isCashBankFinancialReport,
+                        // );
+                        navigate("/Employee-payroll");
+                      }}
+                    >
+                      Employee PayRoll Report
+                    </button>
+                  </div>
                 </div>
-
-               
-
-               
-              </div>
+              </>
             )}
-
           </div>
-          
+
           {/* ================== TOOLS/UTILITIES ================== */}
           <div className="relative">
             <button
@@ -677,16 +1028,79 @@ const Navbar = () => {
                     </div>
                   )}
                 </div>
+                <div className="relative">
+                  <button
+                    className="w-full text-left px-4 py-2 hover:bg-gray-100 flex justify-between items-center"
+                    onClick={() => setIsSystemTools(!isSystemTools)}
+                  >
+                    <div className="flex items-center gap-2">System tools</div>
+                    {isSystemTools ? <FiChevronDown /> : <FiChevronRight />}
+                  </button>
 
+                  {isSystemTools && (
+                    <>
+                      <div className="absolute top-0 left-full ml-1 w-[200px] bg-white text-black rounded shadow-lg flex flex-col z-50">
+                        <Link
+                          to="/SmsConfig/Create"
+                          className="px-4 py-2 hover:bg-gray-100 text-sm flex items-center"
+                          onClick={() => {
+                            setIsToolsOpen(false);
+                            setIsSettingsOpen(false);
+                            setIsSystemTools(false);
+                          }}
+                        >
+                          SMS Config
+                        </Link>
+                        <Link
+                          to="/WhatsApp-Configuration"
+                          className="px-4 py-2 hover:bg-gray-100 text-sm flex items-center"
+                          onClick={() => {
+                            setIsToolsOpen(false);
+                            setIsSettingsOpen(false);
+                            setIsSystemTools(false);
+                          }}
+                        >
+                          WhatsApp Config
+                        </Link>
+                        <Link
+                          to="/DBBackup"
+                          className="px-4 py-2 hover:bg-gray-100 text-sm flex items-center"
+                          onClick={() => {
+                            setIsToolsOpen(false);
+                            setIsSettingsOpen(false);
+                            setIsSystemTools(false);
+                          }}
+                        >
+                          Backup utility
+                        </Link>
+
+                        {/* You can add more settings items here */}
+                        {/* <Link
+                        to="/another-setting"
+                        className="px-4 py-2 hover:bg-gray-100 text-sm flex items-center"
+                        onClick={() => {
+                          setIsToolsOpen(false);
+                          setIsSettingsOpen(false);
+                        }}
+                      >
+                        Another Setting
+                      </Link> */}
+                      </div>
+                    </>
+                  )}
+                </div>
                 {/* You can add more Tools/Utilities items here */}
-                {/* <Link
-                  to="/another-tool"
-                  className="w-full text-left px-4 py-2 hover:bg-gray-100 flex items-center gap-2"
-                  onClick={() => setIsToolsOpen(false)}
+                <Link
+                  to="/Bank_Details"
+                  className="px-4 py-2 hover:bg-gray-100 text-sm flex items-center"
+                  onClick={() => {
+                    setIsToolsOpen(false);
+                    setIsSettingsOpen(false);
+                    setIsSystemTools(false);
+                  }}
                 >
-                  <FiTool className="text-gray-600" size={16} />
-                  Another Tool
-                </Link> */}
+                  Bank Details
+                </Link>
               </div>
             )}
           </div>

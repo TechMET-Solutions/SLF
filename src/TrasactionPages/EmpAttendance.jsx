@@ -1,8 +1,8 @@
 import { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { API } from "../api";
 import { decryptData } from "../utils/cryptoHelper";
 import { formatIndianDate } from "../utils/Helpers";
-import { useNavigate } from "react-router-dom";
 // <-- your decode function import
 
 const EmpAttendance = () => {
@@ -10,40 +10,42 @@ const EmpAttendance = () => {
   const [page, setPage] = useState(1);
   const [limit] = useState(10);
   const [totalPages, setTotalPages] = useState(1);
-  console.log(employees, "employees")
+  console.log(employees, "employees");
   const [showModal, setShowModal] = useState(false);
   const [selectedEmp, setSelectedEmp] = useState(null);
 
   const [month, setMonth] = useState(new Date().getMonth() + 1);
   const [year, setYear] = useState(new Date().getFullYear());
   const [attendanceData, setAttendanceData] = useState([]);
-  console.log(attendanceData, "attendanceData")
+  console.log(attendanceData, "attendanceData");
 
   const navigate = useNavigate();
   useEffect(() => {
     fetchEmployees();
   }, [page]);
 
-  const fetchEmployees = async () => {
-    debugger
-    try {
-      const res = await fetch(
-        `${API}/Master/Employee_Profile/getAll-employees?page=${page}&limit=${limit}`
-      );
+ const fetchEmployees = async () => {
+  try {
+    const res = await fetch(
+      `${API}/Master/Employee_Profile/getAll-employees?page=${page}&limit=${limit}`
+    );
 
-      const response = await res.json();
-      const decrypted = decryptData(response.data);
-      setEmployees(decrypted.items);
-      setTotalPages(decrypted.total);
-    } catch (error) {
-      console.error("Error fetching employees:", error);
-    }
-  };
+    const response = await res.json();
+
+    // 🔥 Direct use response
+    setEmployees(response.items);
+    setTotalPages(response.total);
+
+  } catch (error) {
+    console.error("Error fetching employees:", error);
+  }
+};
+
   const getMonthlyAttendance = async () => {
-    debugger
+    debugger;
     try {
       const res = await fetch(
-        `${API}/Transactions/monthly?emp_id=${selectedEmp.id}&month=${month}&year=${year}`
+        `${API}/Transactions/monthly?emp_id=${selectedEmp.id}&month=${month}&year=${year}`,
       );
 
       const data = await res.json();
@@ -53,7 +55,6 @@ const EmpAttendance = () => {
       } else {
         setAttendanceData([]);
       }
-
     } catch (err) {
       console.error("Error fetching monthly attendance:", err);
     }
@@ -63,7 +64,6 @@ const EmpAttendance = () => {
       getMonthlyAttendance();
     }
   }, [selectedEmp, month, year]);
-
 
   return (
     <div className="p-4">
@@ -83,30 +83,36 @@ const EmpAttendance = () => {
 
           <button
             onClick={() => navigate("/")}
-            className="text-white px-[6px] py-[6px] rounded bg-[#C1121F] w-[74px] h-[24px] text-[10px]">
+            className="text-white px-[6px] py-[6px] rounded bg-[#C1121F] w-[74px] h-[24px] text-[10px]"
+          >
             Close
           </button>
         </div>
       </div>
 
       {/* Table */}
-      <div className="flex justify-center mt-6">
-        <table className="w-[1290px] ">
-          <thead className="bg-[#0A2478] text-white">
+      <div className="flex  mt-6 pl-[100px]">
+        <table className=" ">
+          <thead className="bg-[#0A2478] text-white text-sm">
             <tr>
-              <th className="p-2 border">ID</th>
-              <th className="p-2 border">Name</th>
-              <th className="p-2 border">Email</th>
-              <th className="p-2 border">Mobile</th>
-              <th className="p-2 border">Branch</th>
-              <th className="p-2 border">Action</th>
+              <th className="p-2 border w-[80px]">Emp Id</th>
+              <th className="p-2 border w-[250px]">Name</th>
+              <th className="p-2 border w-[250px]">Email</th>
+              <th className="p-2 border w-[100px]">Mobile</th>
+              <th className="p-2 border w-[150px]">Branch</th>
+              <th className="p-2 border w-[100px]">Action</th>
             </tr>
           </thead>
 
           <tbody>
             {employees?.length > 0 ? (
               employees.map((emp, i) => (
-                <tr key={i} className="hover:bg-gray-50 text-center">
+                <tr
+                  key={i}
+                  className={
+                    i % 2 === 0 ? "bg-gray-50 text-sm" : "bg-white text-sm"
+                  }
+                >
                   <td className="p-2 ">{emp.id}</td>
                   <td className="p-2 ">{emp.emp_name}</td>
                   <td className="p-2 ">{emp.email}</td>
@@ -119,10 +125,8 @@ const EmpAttendance = () => {
                       setShowModal(true);
                     }}
                   >
-                    View Attendance
+                     Attendance
                   </td>
-
-
                 </tr>
               ))
             ) : (
@@ -137,7 +141,7 @@ const EmpAttendance = () => {
       </div>
 
       {/* Pagination */}
-      <div className="flex justify-center gap-3 mt-4">
+      <div className="flex justify-center gap-3 mt-4 text-sm">
         <button
           disabled={page === 1}
           onClick={() => setPage(page - 1)}
@@ -146,7 +150,9 @@ const EmpAttendance = () => {
           Previous
         </button>
 
-        <span className="px-4 py-2">Page {page} of {totalPages}</span>
+        <span className="px-4 py-2">
+          Page {page} of {totalPages}
+        </span>
 
         <button
           disabled={page === totalPages}
@@ -166,7 +172,6 @@ const EmpAttendance = () => {
           }}
         >
           <div className="bg-white p-6 w-[800px] rounded-lg shadow-lg h-[500px] relative">
-
             {/* ❌ Close Icon (TOP RIGHT) */}
             <button
               onClick={() => setShowModal(false)}
@@ -181,9 +186,15 @@ const EmpAttendance = () => {
 
             {/* Employee Info */}
             <div className="mb-4 text-sm text-gray-700">
-              <p><b>ID:</b> {selectedEmp?.id}</p>
-              <p><b>Mobile:</b> {selectedEmp?.mobile_no}</p>
-              <p><b>Branch:</b> {selectedEmp?.branch}</p>
+              <p>
+                <b>ID:</b> {selectedEmp?.id}
+              </p>
+              <p>
+                <b>Mobile:</b> {selectedEmp?.mobile_no}
+              </p>
+              <p>
+                <b>Branch:</b> {selectedEmp?.branch}
+              </p>
             </div>
 
             {/* Month & Year Selector */}
@@ -207,17 +218,19 @@ const EmpAttendance = () => {
                 value={year}
                 onChange={(e) => setYear(Number(e.target.value))}
               >
-                {Array.from({ length: 5 }, (_, i) => new Date().getFullYear() - i).map(
-                  (yr) => (
-                    <option key={yr} value={yr}>{yr}</option>
-                  )
-                )}
+                {Array.from(
+                  { length: 5 },
+                  (_, i) => new Date().getFullYear() - i,
+                ).map((yr) => (
+                  <option key={yr} value={yr}>
+                    {yr}
+                  </option>
+                ))}
               </select>
             </div>
 
             {/* Placeholder */}
             <div className="max-h-[260px] overflow-y-auto border rounded mt-3">
-
               <table className="w-full text-sm text-center">
                 <thead className="bg-[#0A2478] text-white">
                   <tr>
@@ -231,13 +244,23 @@ const EmpAttendance = () => {
                   {attendanceData.length > 0 ? (
                     attendanceData.map((row, i) => (
                       <tr key={i} className="border-b hover:bg-gray-50">
-                        <td className="p-2 border">{formatIndianDate(row.date)}</td>
+                        <td className="p-2 border">
+                          {formatIndianDate(row.date)}
+                        </td>
 
                         <td className="p-2 border">
-                          {row.punch_in ? row.punch_in : <span className="text-gray-400">-</span>}
+                          {row.punch_in ? (
+                            row.punch_in
+                          ) : (
+                            <span className="text-gray-400">-</span>
+                          )}
                         </td>
                         <td className="p-2 border">
-                          {row.punch_out ? row.punch_out : <span className="text-gray-400">-</span>}
+                          {row.punch_out ? (
+                            row.punch_out
+                          ) : (
+                            <span className="text-gray-400">-</span>
+                          )}
                         </td>
                       </tr>
                     ))
@@ -250,9 +273,7 @@ const EmpAttendance = () => {
                   )}
                 </tbody>
               </table>
-
             </div>
-
 
             {/* Bottom Close Button (Optional, you can remove) */}
             <div className="text-center mt-4">
@@ -263,12 +284,9 @@ const EmpAttendance = () => {
                 Close
               </button>
             </div>
-
           </div>
         </div>
       )}
-
-
     </div>
   );
 };

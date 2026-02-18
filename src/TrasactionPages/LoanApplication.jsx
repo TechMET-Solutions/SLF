@@ -149,7 +149,7 @@ const LoanApplication = () => {
     page = 1,
     immediateFilters = null,
     immediateDate = undefined,
-    immediateScheme = undefined
+    immediateScheme = undefined,
   ) => {
     setLoading(true);
     setError("");
@@ -211,7 +211,7 @@ const LoanApplication = () => {
       }
 
       const response = await apiClient.get(
-        `/Transactions/goldloan/all?${params}`
+        `/Transactions/goldloan/all?${params}`,
       );
 
       if (response.data.success) {
@@ -350,7 +350,7 @@ const LoanApplication = () => {
     setDocumentsLoading(true);
     try {
       const response = await apiClient.get(
-        `/Transactions/get-loan-documents/${loanId}`
+        `/Transactions/get-loan-documents/${loanId}`,
       );
 
       if (response.data.success) {
@@ -374,22 +374,23 @@ const LoanApplication = () => {
   };
 
   const handleOpenRemark = async (row) => {
+    debugger;
     setLoadingRemark(true);
     try {
       let response;
       const status = row.Status.toLowerCase();
 
-      if (status === "cancelled") {
+      if (status === "cancelled" || status === "closed") {
         response = await axios.get(
-          `${API}/Transactions/goldloan/remark/${row.Loan_No}`
+          `${API}/Transactions/goldloan/remark/${row.Loan_No}`,
         );
       } else if (status === "pending" || status === "approved") {
         response = await axios.get(
-          `${API}/Transactions/Customer/remark/${row.BorrowerId}`
+          `${API}/Transactions/Customer/remark/${row.BorrowerId}`,
         );
       }
 
-      if (response.data.success) {
+      if (response?.data?.success) {
         setRemarkData(response.data.data);
         setIsRemarkOpen(true);
       } else {
@@ -446,7 +447,7 @@ const LoanApplication = () => {
         setTimeout(() => setSuccessMessage(""), 3000);
       } else {
         throw new Error(
-          response.data.message || "Failed to cancel loan application"
+          response.data.message || "Failed to cancel loan application",
         );
       }
     } catch (err) {
@@ -517,7 +518,7 @@ const LoanApplication = () => {
           headers: {
             "Content-Type": "multipart/form-data",
           },
-        }
+        },
       );
 
       if (response.data.success) {
@@ -636,7 +637,7 @@ const LoanApplication = () => {
         disabled={currentPage === 1}
       >
         Previous
-      </button>
+      </button>,
     );
 
     if (totalPages <= 5) {
@@ -652,7 +653,7 @@ const LoanApplication = () => {
             onClick={() => handlePageChange(i)}
           >
             {i}
-          </button>
+          </button>,
         );
       }
     } else {
@@ -665,14 +666,14 @@ const LoanApplication = () => {
           onClick={() => handlePageChange(1)}
         >
           1
-        </button>
+        </button>,
       );
 
       if (currentPage > 3) {
         buttons.push(
           <span key="ellipsis1" className="px-2 py-1">
             ...
-          </span>
+          </span>,
         );
       }
 
@@ -691,7 +692,7 @@ const LoanApplication = () => {
             onClick={() => handlePageChange(i)}
           >
             {i}
-          </button>
+          </button>,
         );
       }
 
@@ -699,7 +700,7 @@ const LoanApplication = () => {
         buttons.push(
           <span key="ellipsis2" className="px-2 py-1">
             ...
-          </span>
+          </span>,
         );
       }
 
@@ -714,7 +715,7 @@ const LoanApplication = () => {
           onClick={() => handlePageChange(totalPages)}
         >
           {totalPages}
-        </button>
+        </button>,
       );
     }
 
@@ -726,7 +727,7 @@ const LoanApplication = () => {
         disabled={currentPage === totalPages}
       >
         Next
-      </button>
+      </button>,
     );
 
     return buttons;
@@ -931,7 +932,7 @@ const LoanApplication = () => {
                 selectedScheme ||
                 filters.status ||
                 Object.values(filters).some(
-                  (val) => val && val !== "field" && val !== "search"
+                  (val) => val && val !== "field" && val !== "search",
                 )) && (
                 <button
                   onClick={clearAllFilters}
@@ -1017,19 +1018,19 @@ const LoanApplication = () => {
                   <th className="px-4 py-2 border-r border-gray-300 text-[14px] w-[103px]">
                     Loan No
                   </th>
-                  <th className="px-4 py-2 border-r border-gray-300 text-[14px] w-[204px]">
+                  <th className="px-4 py-2 border-r border-gray-300 text-[14px] w-[350px]">
                     Party Name
                   </th>
                   <th className="px-4 py-2 border-r border-gray-300 text-[14px] w-[101px]">
                     Loan Date
                   </th>
-                  <th className="px-4 py-2 border-r border-gray-300 text-[14px] w-[204px]">
+                  <th className="px-4 py-2 border-r border-gray-300 text-[14px] w-[160px]">
                     Scheme
                   </th>
-                  <th className="px-4 py-2 border-r border-gray-300 text-[14px] w-[104px]">
+                  <th className="px-4 py-2 border-r border-gray-300 text-[14px] w-[170px]">
                     Loan Amount
                   </th>
-                  <th className="px-4 py-2 border-r border-gray-300 text-[14px] w-[128px]">
+                  <th className="px-4 py-2 border-r border-gray-300 text-[14px] w-[180px]">
                     <select
                       className="rounded text-[13px] w-full bg-transparent text-white focus:outline-none"
                       value={filters.status}
@@ -1052,19 +1053,19 @@ const LoanApplication = () => {
                       </option>
                     </select>
                   </th>
-                  <th className="px-4 py-2 border-r border-gray-300 text-[14px] w-[187px]">
+                  <th className="px-4 py-2 border-r border-gray-300 text-[14px] w-[100px]">
                     Added By
                   </th>
-                  <th className="px-4 py-2 border-r border-gray-300 text-[14px] w-[176px]">
+                  <th className="px-4 py-2 border-r border-gray-300 text-[14px] w-[156px]">
                     Approved By
                   </th>
                   <th className="px-4 py-2 border-r border-gray-300 text-[14px] w-[156px]">
                     Action
                   </th>
-                  <th className="px-4 py-2 border-r border-gray-300 text-[14px] w-[156px]">
+                  <th className="px-4 py-2 border-r border-gray-300 text-[14px] w-[100px]">
                     Payment
                   </th>
-                  <th className="px-4 py-2 border-r border-gray-300 text-[13px] w-[111px]">
+                  <th className="px-4 py-2 border-r border-gray-300 text-[13px] w-[60px]">
                     Loan Repayment
                   </th>
                 </tr>
@@ -1073,9 +1074,7 @@ const LoanApplication = () => {
                 {loanApplication.map((row, index) => (
                   <tr
                     key={index}
-                    className={`border-b ${
-                      index % 2 === 0 ? "bg-white" : "bg-white"
-                    } `}
+                   className={index % 2 === 0 ? "bg-gray-50" : "bg-white"}
                   >
                     <td
                       className="px-4 py-2 text-blue-600 cursor-pointer hover:underline font-medium"
@@ -1093,12 +1092,12 @@ const LoanApplication = () => {
                     </td>
                     <td
                       className={`px-4 py-2 font-semibold ${getStatusColor(
-                        row.Status
+                        row.Status,
                       )}`}
                     >
                       {getStatusText(row.Status)}
                     </td>
-                    <td className="px-4 py-2">{row.Added_By || "N/A"}</td>
+                    <td className="px-4 py-2">{row.added_by || "N/A"}</td>
                     <td className="px-4 py-2">{row.Approved_By || "N/A"}</td>
 
                     {/* Action buttons */}
@@ -1394,25 +1393,24 @@ const LoanApplication = () => {
                         const st = (row.Status || "").toLowerCase();
                         if (st === "approved") {
                           return (
-                           <button
-  className="bg-[#0A2478] text-white px-3 py-1 rounded text-[11px] hover:bg-[#091f6c]"
-  onClick={() => {
-    const path =
-      row.Scheme_type === "Monthly"
-        ? "/Emi_Loan-Repayment"
-        : "/Add-Loan-Repayment";
+                            <button
+                              className="bg-[#0A2478] text-white px-3 py-1 rounded text-[11px] hover:bg-[#091f6c]"
+                              onClick={() => {
+                                const path =
+                                  row.Scheme_type === "Monthly"
+                                    ? "/Emi_Loan-Repayment"
+                                    : "/Add-Loan-Repayment";
 
-    navigate(path, {
-      state: {
-        loanId: row.Loan_No,
-        loanData: row,
-      },
-    });
-  }}
->
-  Repay
-</button>
-
+                                navigate(path, {
+                                  state: {
+                                    loanId: row.Loan_No,
+                                    loanData: row,
+                                  },
+                                });
+                              }}
+                            >
+                              Repay
+                            </button>
                           );
                         }
                         return <span className="text-gray-500">NA</span>;

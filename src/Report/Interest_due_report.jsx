@@ -71,13 +71,13 @@ const InterestDueReport = () => {
     <label className="whitespace-nowrap">As On</label>
     <div className="flex items-center">
       <input
-        type="text"
+        type="date"
         className="border border-gray-300 p-1 px-2 rounded-l w-28 bg-white outline-none"
         defaultValue="25/01/2026"
       />
-      <button className="bg-[#8B5E3C] p-1.5 rounded-r border border-[#8B5E3C] flex items-center justify-center">
+      {/* <button className="bg-[#8B5E3C] p-1.5 rounded-r border border-[#8B5E3C] flex items-center justify-center">
         <span className="text-white text-[10px]">📅</span>
-      </button>
+      </button> */}
     </div>
   </div>
 

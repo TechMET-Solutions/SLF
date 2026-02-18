@@ -5,7 +5,9 @@ const NpaReport = () => {
   const [loading, setLoading] = useState(true);
 
   // Filters
-  const [asOnDate, setAsOnDate] = useState("2026-01-25");
+  const [asOnDate, setAsOnDate] = useState(
+    new Date().toISOString().split("T")[0],
+  );
   const [selectedScheme, setSelectedScheme] = useState("");
 
   // Table data
@@ -17,7 +19,7 @@ const NpaReport = () => {
     const fetchSchemes = async () => {
       try {
         const response = await fetch(
-          "https://slunawat.co.in/Scheme/getAllSchemes?page=1&limit=10"
+          "https://slunawat.co.in/Scheme/getAllSchemes?page=1&limit=10",
         );
         const result = await response.json();
         setSchemes(result.data || []);
@@ -43,7 +45,7 @@ const NpaReport = () => {
     setIsLoading(true);
     try {
       const res = await fetch(
-        `https://slunawat.co.in/api/Reports/npa-report?date=${asOnDate}&schemeId=${selectedScheme}`
+        `https://slunawat.co.in/api/Reports/npa-report?date=${asOnDate}&schemeId=${selectedScheme}`,
       );
       const data = await res.json();
       setRows(data.data || []);
@@ -156,9 +158,7 @@ const NpaReport = () => {
                     </td>
                     <td className="border p-1">
                       {r.LastInterestPaidDate
-                        ? new Date(
-                            r.LastInterestPaidDate
-                          ).toLocaleDateString()
+                        ? new Date(r.LastInterestPaidDate).toLocaleDateString()
                         : ""}
                     </td>
                   </tr>

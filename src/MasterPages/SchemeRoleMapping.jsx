@@ -167,7 +167,7 @@ const SchemeRoleMapping = () => {
           </div>
 
           {/* Right - Scheme Selection */}
-          <div className="w-1/2 shadow rounded-md flex flex-col">
+          <div className="w-[300px] shadow rounded-md flex flex-col">
             <div className="bg-[#0A2478] text-white px-4 py-2 font-medium rounded-t">
               Select Scheme
             </div>

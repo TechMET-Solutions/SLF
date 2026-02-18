@@ -1,15 +1,12 @@
 import axios from "axios";
-import { useEffect, useState } from "react";
-import { FaSave } from "react-icons/fa";
+import { useEffect, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { API } from "../api";
-import { encryptData, decryptData } from "../../src/utils/cryptoHelper";
-import Loader from "../Component/Loader";
 import Pagination from "../Component/Pagination";
 
 const MemberLoginDetails = () => {
   const navigate = useNavigate();
-
+  const typingTimers = useRef({});
   const [employeeList, setEmployeeList] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
   const [searchTerm, setSearchTerm] = useState("");
@@ -27,30 +24,22 @@ const MemberLoginDetails = () => {
   // ✅ Fetch employee list with search
   const fetchEmployeeProfileApi = async (page = 1, limit = 10, search = "") => {
     try {
-      // Build query string with search parameter
       const queryParams = new URLSearchParams({
         page: page.toString(),
         limit: limit.toString(),
       });
 
-      // Add search filter if provided
+      // ✅ Add search filter if provided
       if (search && search.trim()) {
-        queryParams.append('search', search.trim());
+        queryParams.append("search", search.trim());
       }
 
-      const encryptedPayload = encryptData({});
-      const response = await axios({
-        method: "get",
-        url: `${API_BASE}/getAll-employees?${queryParams.toString()}`,
-        headers: { "Content-Type": "application/json" },
-        data: { data: encryptedPayload },
-      });
+      // ✅ Normal GET request (NO encryption)
+      const response = await axios.get(
+        `${API_BASE}/getAll-employees?${queryParams.toString()}`,
+      );
 
-      if (response.data?.data) {  
-        return decryptData(response.data.data);
-      }
-      console.log("API Response:", response.data);
-      return { items: [], total: 0, page: 1, showPagination: false };
+      return response.data; // direct return
     } catch (error) {
       console.error("❌ Error fetching employee profiles:", error);
       return { items: [], total: 0, page: 1, showPagination: false };
@@ -106,30 +95,66 @@ const MemberLoginDetails = () => {
   };
 
   // 📱 Update sender mobile numbers
+  // const updateSender = async (empId, sm1, sm2) => {
+  //   if (sm1 && sm1.toString().length !== 10) {
+  //     alert("Sender Mobile 1 must be 10 digits");
+  //     return;
+  //   }
+
+  //   if (sm2 && sm2.toString().length !== 10) {
+  //     alert("Sender Mobile 2 must be 10 digits");
+  //     return;
+  //   }
+
+  //   try {
+  //     await axios.post(`${API_BASE}/updateSender`, {
+  //       empId: empId,
+  //       sender_mobile1: sm1,
+  //       sender_mobile2: sm2,
+  //     });
+
+  //     alert("Updated Successfully");
+  //     fetchEmployee(currentPage, searchTerm); // refresh with current search
+  //   } catch (e) {
+  //     console.log(e);
+  //     alert("Update Failed");
+  //   }
+  // };
   const updateSender = async (empId, sm1, sm2) => {
-    if (sm1 && sm1.toString().length !== 10) {
-      alert("Sender Mobile 1 must be 10 digits");
-      return;
-    }
-
-    if (sm2 && sm2.toString().length !== 10) {
-      alert("Sender Mobile 2 must be 10 digits");
-      return;
-    }
-
     try {
       await axios.post(`${API_BASE}/updateSender`, {
-        empId: empId,
+        empId,
         sender_mobile1: sm1,
         sender_mobile2: sm2,
       });
-
-      alert("Updated Successfully");
-      fetchEmployee(currentPage, searchTerm); // refresh with current search
     } catch (e) {
-      console.log(e);
-      alert("Update Failed");
+      console.log("Update failed", e);
     }
+  };
+  const handleMobileChange = (empId, field, value, row) => {
+    const cleaned = value.replace(/\D/g, "");
+
+    // update UI immediately
+    setEmployeeList((prev) =>
+      prev.map((emp) =>
+        emp.id === empId ? { ...emp, [field]: cleaned } : emp,
+      ),
+    );
+
+    // debounce per row
+    if (typingTimers.current[empId]) {
+      clearTimeout(typingTimers.current[empId]);
+    }
+
+    typingTimers.current[empId] = setTimeout(() => {
+      const sm1 = field === "sender_mobile1" ? cleaned : row.sender_mobile1;
+      const sm2 = field === "sender_mobile2" ? cleaned : row.sender_mobile2;
+
+      // call API ONLY if number length is 10
+      if ((sm1 && sm1.length === 10) || (sm2 && sm2.length === 10)) {
+        updateSender(empId, sm1, sm2);
+      }
+    }, 700);
   };
 
   // 🔐 Update OTP override
@@ -137,7 +162,7 @@ const MemberLoginDetails = () => {
     try {
       await axios.post(`${API_BASE}/updateOTP`, {
         empId: empId,
-        value: boolValue ? 1 : 0,   // convert boolean → 0/1
+        value: boolValue ? 1 : 0, // convert boolean → 0/1
       });
 
       fetchEmployee(currentPage, searchTerm); // refresh with current search
@@ -172,7 +197,7 @@ const MemberLoginDetails = () => {
                 type="text"
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
-                onKeyPress={(e) => e.key === 'Enter' && handleSearch()}
+                onKeyPress={(e) => e.key === "Enter" && handleSearch()}
                 placeholder="Search by employee name..."
                 className="border border-gray-400 rounded px-3 py-1 text-[11.25px] w-[168px] h-[28px] focus:outline-none focus:ring-1 focus:ring-blue-500"
               />
@@ -202,25 +227,33 @@ const MemberLoginDetails = () => {
         </div>
       </div>
 
-    
-
       {/* Table */}
-      <div className="flex justify-center">
-        <div className="overflow-x-auto mt-5 w-full max-w-[1290px] h-[500px] border border-gray-300 rounded">
-          <table className="w-full border-collapse">
-            {/* Table Header */}
+     
+      <div className="overflow-x-auto mt-5 h-[500px] border-gray-300 rounded pl-[110px]">
+       <table className="table-fixed border-collapse ">
+           
             <thead className="bg-[#0A2478] text-white text-sm top-0">
               <tr>
-                <th className="px-4 py-2 border-r text-center">#</th>
-                <th className="px-4 py-2 border-r text-left">Name</th>
-                <th className="px-4 py-2 border-r text-left">User ID</th>
-                <th className="px-4 py-2 border-r text-center">OTP Override</th>
-                <th className="px-4 py-2 border-r text-center">Sender Mobile No 1</th>
-                <th className="px-4 py-2 border-r text-center">Sender Mobile No 2</th>
+                <th className="px-4 py-2 border-r text-center w-[50px]">#</th>
+                <th className="px-4 py-2 border-r text-left  w-[200px]">
+                  Name
+                </th>
+                <th className="px-4 py-2 border-r text-left  w-[200px]">
+                  User ID
+                </th>
+                <th className="px-4 py-2 border-r text-center w-[100px]">
+                  OTP Override
+                </th>
+                <th className="px-2 py-2 border-r text-center w-[100px] ">
+                  Manager Mobile No
+                </th>
+                <th className="px-2 py-2 border-r text-center w-[100px] ">
+                  Admin Mobile No
+                </th>
               </tr>
             </thead>
 
-            {/* Table Body */}
+          
             <tbody className="text-[12px]">
               {employeeList.length > 0 ? (
                 employeeList.map((row, index) => (
@@ -233,13 +266,13 @@ const MemberLoginDetails = () => {
                       {(currentPage - 1) * itemsPerPage + index + 1}
                     </td>
 
-                    {/* Name */}
+                  
                     <td className="px-4 py-2 font-medium">{row.emp_name}</td>
 
-                    {/* User ID */}
+                  
                     <td className="px-4 py-2">{row.email}</td>
 
-                    {/* OTP Override */}
+                 
                     <td className="px-4 py-2 text-center">
                       <input
                         type="checkbox"
@@ -250,60 +283,45 @@ const MemberLoginDetails = () => {
                     </td>
 
                     {/* Sender Mobile 1 */}
-                    <td className="px-4 py-2">
+                    <td className="">
                       <div className="flex items-center gap-2">
                         <input
                           type="text"
                           maxLength="10"
-                          pattern="[0-9]*"
                           value={row.sender_mobile1 || ""}
-                          className="py-1 text-sm px-2 border rounded-sm no-spinner flex-1 focus:outline-none focus:ring-1 focus:ring-blue-500"
-                          onChange={(e) => {
-                            const value = e.target.value.replace(/\D/g, '');
-                            setEmployeeList(employeeList.map(emp => {
-                              if (emp.id === row.id) {
-                                return { ...emp, sender_mobile1: value };
-                              }
-                              return emp;
-                            }));
-                          }}
+                          className="py-1 text-sm px-2 border rounded-sm flex-1 focus:outline-none focus:ring-1 focus:ring-blue-500"
+                          onChange={(e) =>
+                            handleMobileChange(
+                              row.id,
+                              "sender_mobile1",
+                              e.target.value,
+                              row,
+                            )
+                          }
                         />
-                        <button
-                          className="text-blue-600 hover:text-blue-800 transition"
-                          onClick={() => updateSender(row.id, row.sender_mobile1, row.sender_mobile2)}
-                          title="Save Mobile 1"
-                        >
-                          <FaSave size={18} />
-                        </button>
+
                       </div>
                     </td>
 
-                    {/* Sender Mobile 2 */}
-                    <td className="px-4 py-2">
+                  
+                    <td className="">
                       <div className="flex items-center gap-2">
                         <input
                           type="text"
                           maxLength="10"
-                          pattern="[0-9]*"
                           value={row.sender_mobile2 || ""}
-                          className="py-1 text-sm px-2 border rounded-sm no-spinner flex-1 focus:outline-none focus:ring-1 focus:ring-blue-500"
-                          onChange={(e) => {
-                            const value = e.target.value.replace(/\D/g, '');
-                            setEmployeeList(employeeList.map(emp => {
-                              if (emp.id === row.id) {
-                                return { ...emp, sender_mobile2: value };
-                              }
-                              return emp;
-                            }));
-                          }}
+                          className="py-1 text-sm px-2 border rounded-sm flex-1 focus:outline-none focus:ring-1 focus:ring-blue-500"
+                          onChange={(e) =>
+                            handleMobileChange(
+                              row.id,
+                              "sender_mobile2",
+                              e.target.value,
+                              row,
+                            )
+                          }
                         />
-                        <button
-                          className="text-blue-600 hover:text-blue-800 transition"
-                          onClick={() => updateSender(row.id, row.sender_mobile1, row.sender_mobile2)}
-                          title="Save Mobile 2"
-                        >
-                          <FaSave size={18} />
-                        </button>
+
+                     
                       </div>
                     </td>
                   </tr>
@@ -314,14 +332,16 @@ const MemberLoginDetails = () => {
                     colSpan="6"
                     className="text-center text-gray-500 py-6 font-medium"
                   >
-                    {searchTerm ? "No employees found matching your search." : "No records found."}
+                    {searchTerm
+                      ? "No employees found matching your search."
+                      : "No records found."}
                   </td>
                 </tr>
               )}
             </tbody>
           </table>
         </div>
-      </div>
+     
 
       {/* Pagination */}
       {showPagination && totalPages > 1 && (

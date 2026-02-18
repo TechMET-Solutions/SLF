@@ -5,22 +5,40 @@ import { useLocation, useNavigate } from "react-router-dom";
 import { API } from "../api";
 import profileempty from "../assets/profileempty.png";
 const GoldLoanApproval = () => {
-  const dummyBanks = [
-    { id: 1, name: "HDFC Bank" },
-    { id: 2, name: "SBI Bank" },
-    { id: 3, name: "ICICI Bank" },
-  ];
+  // const dummyBanks = [
+  //   { id: 1, name: "HDFC Bank" },
+  //   { id: 2, name: "SBI Bank" },
+  //   { id: 3, name: "ICICI Bank" },
+  // ];
   const branches = [
     { id: 1, name: "Bhagur" },
     { id: 2, name: "Nashik Road" },
     { id: 3, name: "Mumbai" },
     { id: 4, name: "Pune" },
   ];
+  const [dummyBanks, setDummyBanks] = useState([]);
+  useEffect(() => {
+    const fetchBanks = async () => {
+      try {
+        const res = await axios.get("https://slunawat.co.in/api/banks/list");
+        // Convert API data to your dropdown format
+        const formattedBanks = res.data.map((bank) => ({
+          id: bank.id,
+          name: bank.bank_name,
+        }));
 
+        setDummyBanks(formattedBanks);
+      } catch (error) {
+        console.error("Error fetching banks:", error);
+      }
+    };
+
+    fetchBanks();
+  }, []);
   const paidByOptions = ["Cash", "Bank Transfer", "UPI", "Online Payment"];
 
   const [rows, setRows] = useState([
-    { paidBy: "", utrNumber: "", bank: "", customerAmount: "" },
+    { paidBy: "", utrNumber: "", bankId: "", bankName: "", customerAmount: "" },
   ]);
 
   console.log(rows, "rows");
@@ -51,13 +69,17 @@ const GoldLoanApproval = () => {
   const [loanData, setLoanData] = useState(null);
   console.log(loanData, "loandata");
   const [loanSchemeData, setLoanSchemeData] = useState(null);
+  const [coBorrowerBankDetails, setcoBorrowerBankDetails] = useState(null);
+  const [BorrowerBankDetails, setBorrowerBankDetails] = useState(null);
+  console.log(BorrowerBankDetails, "");
   console.log(loanSchemeData, "loanschemedata");
   console.log(loanData, "LoanData");
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const navigate = useNavigate();
   const location = useLocation();
-
+  const roundToNext10 = (num) => Math.ceil(num / 10) * 10;
+  const [emiTable, setEmiTable] = useState([]);
   // Get loan ID from URL params or location state
   const { loanId } = location.state || {};
 
@@ -71,6 +93,102 @@ const GoldLoanApproval = () => {
     }
   }, [loanId]);
 
+  const generateEMISchedule = (P, annualRate, months, type) => {
+    const r = annualRate / 12 / 100;
+    const rows = [];
+
+    let emi = 0;
+    let balance = P;
+
+    // ================= FLAT =================
+    if (type === "Flat") {
+      const totalInterest = P * r * months;
+      const rawEmi = (P + totalInterest) / months;
+
+      // 👉 Rounded EMI
+      emi = roundToNext10(rawEmi);
+
+      const monthlyInterest = totalInterest / months;
+
+      for (let i = 1; i <= months; i++) {
+        const opening = balance;
+        const interest = monthlyInterest;
+
+        // last month adjustment
+        let principal = emi - interest;
+        if (i === months) {
+          principal = balance;
+          emi = principal + interest;
+        }
+
+        const closing = opening - principal;
+
+        rows.push({
+          month: i,
+          opening: opening.toFixed(2),
+          emi: emi.toFixed(2),
+          interest: interest.toFixed(2),
+          principal: principal.toFixed(2),
+          closing: Math.max(closing, 0).toFixed(2),
+        });
+
+        balance = closing;
+      }
+
+      return rows;
+    }
+
+    // ================= REDUCING =================
+    const rawEmi =
+      (P * r * Math.pow(1 + r, months)) / (Math.pow(1 + r, months) - 1);
+
+    // 👉 Rounded EMI
+    emi = roundToNext10(rawEmi);
+
+    for (let i = 1; i <= months; i++) {
+      const opening = balance;
+      const interest = opening * r;
+
+      let principal = emi - interest;
+
+      // last month adjustment
+      if (i === months) {
+        principal = balance;
+        emi = principal + interest;
+      }
+
+      const closing = opening - principal;
+
+      rows.push({
+        month: i,
+        opening: opening.toFixed(2),
+        emi: emi.toFixed(2),
+        interest: interest.toFixed(2),
+        principal: principal.toFixed(2),
+        closing: Math.max(closing, 0).toFixed(2),
+      });
+
+      balance = closing;
+    }
+
+    return rows;
+  };
+
+  useEffect(() => {
+    debugger;
+    if (!loanData || !loanData) return;
+
+    const P = Number(loanData.Loan_amount);
+    const tenure = Number(loanData.Loan_Tenure);
+    const type = loanData.interestType; // "Flat" or "Reducing"
+
+    const slabs = loanData.Effective_Interest_Rates || [];
+    const annualRate = slabs.length ? Number(slabs[0].addInt) : 0; // first slab
+
+    const rows = generateEMISchedule(P, annualRate, tenure, type);
+    setEmiTable(rows);
+  }, [loanData]);
+
   const fetchLoanData = async () => {
     try {
       setLoading(true);
@@ -79,6 +197,8 @@ const GoldLoanApproval = () => {
       );
       setLoanData(response.data.loanApplication); // Access the data property
       setLoanSchemeData(response.data.schemeData);
+      setcoBorrowerBankDetails(response.data.coborrowerBankDetails);
+      setBorrowerBankDetails(response.data.borrowerBankDetails);
       setError(null);
     } catch (err) {
       console.error("❌ Error fetching loan data:", err);
@@ -724,30 +844,71 @@ const GoldLoanApproval = () => {
                         ))}
                       </select>
                     </td>
-                    {/* <td className="py-2">
-                      <input
-                        type="text"
-                        value={row.utrNumber}
-                        onChange={(e) => handleRowChange(index, "utrNumber", e.target.value)}
-                        className="border border-gray-300 rounded-md px-2 py-1 w-[150px]"
-                      />
-                    </td> */}
-                    {/* <td className="py-2">
-                  <select
-                    value={row.bank}
-                    onChange={(e) => handleRowChange(index, "bank", e.target.value)}
-                    className="border border-gray-300 rounded-md px-2 py-1 w-[140px]"
-                  >
-                    <option value="">Select Bank</option>
-                    {dummyBanks.map((b) => (
-                      <option key={b.id} value={b.name}>
-                        {b.name}
-                      </option>
-                    ))}
-                  </select>
-                </td> */}
+
                     <td className="py-2">
                       {row.paidBy === "Cash" ? (
+                        <td className="py-2">
+                          <select
+                            value={row.bankId}
+                            onChange={(e) => {
+                              const selectedBank = dummyBanks.find(
+                                (b) => String(b.id) === e.target.value,
+                              );
+
+                              const updatedRows = [...rows];
+
+                              updatedRows[index].bankId =
+                                selectedBank?.id || "";
+                              updatedRows[index].bankName =
+                                selectedBank?.name || "";
+
+                              setRows(updatedRows);
+                            }}
+                            className="border border-gray-300 rounded-md px-2 py-1 w-[140px]"
+                          >
+                            <option value="">Select Bank</option>
+                            {dummyBanks.map((b) => (
+                              <option key={b.id} value={b.id}>
+                                {b.name}
+                              </option>
+                            ))}
+                          </select>
+                        </td>
+                      ) : (
+                        <td className="py-2">
+                          <select
+                            value={row.bankId}
+                            onChange={(e) => {
+                              const selectedBank = dummyBanks.find(
+                                (b) => String(b.id) === e.target.value,
+                              );
+
+                              const updatedRows = [...rows];
+
+                              updatedRows[index].bankId =
+                                selectedBank?.id || "";
+                              updatedRows[index].bankName =
+                                selectedBank?.name || "";
+
+                              setRows(updatedRows);
+                            }}
+                            className="border border-gray-300 rounded-md px-2 py-1 w-[140px]"
+                          >
+                            <option value="">Select Bank</option>
+                            {dummyBanks.map((b) => (
+                              <option key={b.id} value={b.id}>
+                                {b.name}
+                              </option>
+                            ))}
+                          </select>
+                        </td>
+                      )}
+                    </td>
+
+                    <td className="py-2">
+                      {row.paidBy === "Cash" ? (
+                        <p>--</p>
+                      ) : (
                         <select
                           value={row.customerBank}
                           onChange={(e) =>
@@ -757,69 +918,19 @@ const GoldLoanApproval = () => {
                               e.target.value,
                             )
                           }
-                          className="border border-gray-300 rounded-md px-2 py-1 w-[140px]"
+                          className="border border-gray-300 rounded-md px-2 py-1 w-[240px]"
                         >
-                          <option value="">Select Branch</option>
-                          {branches.map((b) => (
-                            <option key={b.id} value={b.name}>
-                              {b.name}
-                            </option>
-                          ))}
-                        </select>
-                      ) : (
-                        <select
-                          value={row.bank}
-                          onChange={(e) =>
-                            handleRowChange(index, "bank", e.target.value)
-                          }
-                          className="border border-gray-300 rounded-md px-2 py-1 w-[140px]"
-                        >
-                          <option value="">Select Bank</option>
-                          {dummyBanks.map((b) => (
-                            <option key={b.id} value={b.name}>
-                              {b.name}
+                          <option value="">Select Customer Bank</option>
+
+                          {BorrowerBankDetails.map((bank) => (
+                            <option key={bank.id} value={bank.id}>
+                              {bank.bankName} — {bank.Account_No}
                             </option>
                           ))}
                         </select>
                       )}
                     </td>
 
-                    <td className="py-2">
-                      {/* <select
-                    value={row.customerBank}
-                    onChange={(e) => handleRowChange(index, "customerBank", e.target.value)}
-                    className="border border-gray-300 rounded-md px-2 py-1 w-[140px]"
-                  >
-                    <option value="">Select Customer Bank</option>
-                    {dummyBanks.map((b) => (
-                      <option key={b.id} value={b.name}>
-                        {b.name}
-                      </option>
-                    ))}
-                  </select> */}
-                      {row.paidBy === "Cash" ? (
-                        <p>-- </p>
-                      ) : (
-                        <select
-                          value={row.customerBank}
-                          onChange={(e) =>
-                            handleRowChange(
-                              index,
-                              "customerBank",
-                              e.target.value,
-                            )
-                          }
-                          className="border border-gray-300 rounded-md px-2 py-1 w-[140px]"
-                        >
-                          <option value="">Select Customer Bank</option>
-                          {dummyBanks.map((b) => (
-                            <option key={b.id} value={b.name}>
-                              {b.name}
-                            </option>
-                          ))}
-                        </select>
-                      )}
-                    </td>
                     <td className="py-2">
                       <input
                         type="number"
@@ -865,6 +976,49 @@ const GoldLoanApproval = () => {
             </table>
           </div>
         </div>
+         <div className="px-[100px] mt-6">
+  <h3 className="font-semibold mb-4 text-[#0A2478] text-lg mt-5">
+          Loan Details table
+        </h3>
+        <table className="w-full border text-sm">
+          <thead className="bg-[#0A2478] text-white">
+            <tr>
+              <th className="p-2 border">Month</th>
+              <th className="p-2 border">Opening Balance</th>
+              <th className="p-2 border">EMI</th>
+              <th className="p-2 border">Interest</th>
+              <th className="p-2 border">Principal</th>
+              <th className="p-2 border">Closing Balance</th>
+              <th className="p-2 border">Status</th>
+            </tr>
+          </thead>
+          <tbody>
+            {emiTable.map((row) => {
+              const isPaid = Number(loanData?.EMIPaidCount || 0) >= row.month;
+
+              return (
+                <tr key={row.month} className="text-center">
+                  <td className="p-2 border">{row.month}</td>
+                  <td className="p-2 border">₹{row.opening}</td>
+                  <td className="p-2 border">₹{row.emi}</td>
+                  <td className="p-2 border">₹{row.interest}</td>
+                  <td className="p-2 border">₹{row.principal}</td>
+                  <td className="p-2 border">₹{row.closing}</td>
+                  <td
+                    className={`p-2 border font-medium ${
+                      isPaid ? "text-green-600" : "text-gray-400"
+                    }`}
+                  >
+                    {isPaid ? "Paid" : "---"}
+                  </td>
+                </tr>
+              );
+            })}
+          </tbody>
+        </table>
+
+         </div>
+      
         {/* ===== Scheme Details & Effective Interest Rates ===== */}
         <div className="flex gap-8 text-xs mx-14 justify-center">
           {/* Scheme Details Table */}

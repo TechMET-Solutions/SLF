@@ -1,99 +1,350 @@
-import { useState } from "react";
+import axios from "axios";
+import { useEffect, useState } from "react";
 import { API } from "../api";
 import reactlogo from "../assets/LoginBanner.png";
 
 function LoginPage() {
   const [showExtra, setShowExtra] = useState(false);
   const [tempLogin, setTempLogin] = useState({});
-const [emailCorrect, setEmailCorrect] = useState(false);
+  const [emailCorrect, setEmailCorrect] = useState(false);
 
-    
-const handleLogin = async (e) => {
-  e.preventDefault();
+  const [branches, setBranches] = useState([]);
+  const [selectedBranch, setSelectedBranch] = useState(null);
+  const [selectedYear, setSelectedYear] = useState("");
+  console.log(selectedBranch, selectedYear);
+  const fetchBranches = async () => {
+    try {
+      const res = await axios.get(`${API}/Master/Master_Profile/Branchess`);
 
-  const email = e.target.email?.value;
-  const password = e.target.password?.value;
-  const branch = e.target.branch?.value;
-  const year = e.target.year?.value;
+      if (res.data.success) {
+        setBranches(res.data.data);
+      }
+    } catch (error) {
+      console.error("Error fetching branches:", error);
+    }
+  };
 
-  // -----------------------------
-  // STEP 1 → Admin Login (NO API)
-  // -----------------------------
-  if (!showExtra && email === "admin@gmail.com" && password === "123") {
-    setTempLogin({
+  // Fetch branches when step 2 opens
+  useEffect(() => {
+    if (showExtra) {
+      fetchBranches();
+    }
+  }, [showExtra]);
+
+  // const handleLogin = async (e) => {
+  //   e.preventDefault();
+
+  //   const email = e.target.email?.value;
+  //   const password = e.target.password?.value;
+  //   const branch = e.target.branch?.value;
+  //   const year = e.target.year?.value;
+
+  //   // -----------------------------
+  //   // STEP 1 → Admin Login (NO API)
+  //   // -----------------------------
+  //   if (!showExtra && email === "admin@gmail.com" && password === "123") {
+  //     setTempLogin({
+  //       id: 0,
+  //       email: "admin@gmail.com",
+  //       role: "Admin",
+  //       isAdmin: true, // IMPORTANT FLAG
+  //       permissions: "all", // full access
+  //     });
+
+  //     setShowExtra(true); // show Branch + Year
+  //     setEmailCorrect(true); // allow Step 2
+  //     return; // stop here
+  //   }
+
+  //   // -----------------------------------
+  //   // STEP 1 → Non-admin Login (Call API)
+  //   // -----------------------------------
+  //   if (!showExtra) {
+  //     try {
+  //       const res = await fetch(`${API}/Master/Emp-login`, {
+  //         method: "POST",
+  //         headers: { "Content-Type": "application/json" },
+  //         body: JSON.stringify({ email, password }),
+  //       });
+
+  //       const data = await res.json();
+
+  //       if (!data.status) {
+  //         alert(data.message);
+  //         return;
+  //       }
+
+  //       // Save user info for Step 2
+  //       setTempLogin(data.user);
+  //       setShowExtra(true);
+  //       setEmailCorrect(true);
+  //     } catch (err) {
+  //       alert("Server Problem");
+  //     }
+
+  //     return;
+  //   }
+
+  //   // -------------------------------
+  //   // STEP 2 → Validate Branch + Year
+  //   // -------------------------------
+  //   if (!branch || !year) {
+  //     alert("Please select branch & financial year");
+  //     return;
+  //   }
+
+  //   // -------------------------------
+  //   // STEP 2 → Save final user session
+  //   // -------------------------------
+  //   const selectedBranchData = branches.find(
+  //     (branch) => branch.id.toString() === selectedBranch.toString(),
+  //   );
+
+  //   const finalUserData = {
+  //     ...tempLogin,
+  //     branchId: selectedBranch,
+  //     branchName: selectedBranchData?.branchName || "",
+  //     financialYear: selectedYear,
+  //     loginTime: new Date().toISOString(),
+  //   };
+
+  //   sessionStorage.setItem("isLoggedIn", "true");
+  //   sessionStorage.setItem("userData", JSON.stringify(finalUserData));
+
+  //   // Redirect to dashboard
+  //   window.location.href = "/";
+  // };
+
+  //   const staticUsers = [
+  //   {
+  //     id: 0,
+  //     email: "admin@gmail.com",
+  //     password: "123",
+  //     role: "Admin",
+  //     permissions: "all",
+  //   },
+  //   {
+  //     id: 1,
+  //     email: "tester1@gmail.com",
+  //     password: "123",
+  //     role: "Tester",
+  //     permissions: "limited",
+  //   },
+  //   {
+  //     id: 2,
+  //     email: "tester2@gmail.com",
+  //     password: "123",
+  //     role: "Tester",
+  //     permissions: "limited",
+  //   },
+  //   {
+  //     id: 3,
+  //     email: "sumittest@gmail.com",
+  //     password: "123",
+  //     role: "Manager",
+  //     permissions: "custom",
+  //   },
+  // ];
+
+  //   const handleLogin = async (e) => {
+  //     e.preventDefault();
+
+  //     const email = e.target.email?.value;
+  //     const password = e.target.password?.value;
+
+  //     // -----------------------------
+  //     // STEP 1 → Admin Login (NO API)
+  //     // -----------------------------
+  //     if (!showExtra && email === "admin@gmail.com" && password === "123") {
+  //       setTempLogin({
+  //         id: 0,
+  //         email: "admin@gmail.com",
+  //         role: "Admin",
+  //         isAdmin: true,
+  //         permissions: "all",
+  //       });
+
+  //       setShowExtra(true);
+  //       return;
+  //     }
+
+  //     // -----------------------------------
+  //     // STEP 1 → Employee Login (API)
+  //     // -----------------------------------
+  //     if (!showExtra) {
+  //       try {
+  //         const res = await fetch(`${API}/Master/Emp-login`, {
+  //           method: "POST",
+  //           headers: { "Content-Type": "application/json" },
+  //           body: JSON.stringify({ email, password }),
+  //         });
+
+  //         const data = await res.json();
+
+  //         if (!data.status) {
+  //           alert(data.message);
+  //           return;
+  //         }
+
+  //         setTempLogin(data.user);
+  //         setShowExtra(true);
+  //       } catch (err) {
+  //         alert("Server Problem");
+  //       }
+
+  //       return;
+  //     }
+
+  //     // -------------------------------
+  //     // STEP 2 → Validate Branch + Year
+  //     // -------------------------------
+  //     if (!selectedBranch || !selectedYear) {
+  //       alert("Please select branch & financial year");
+  //       return;
+  //     }
+
+  //     // Get selected branch object
+  //     const selectedBranchData = branches.find(
+  //       (b) => b.id.toString() === selectedBranch.toString(),
+  //     );
+
+  //     // -------------------------------
+  //     // FINAL USER SESSION OBJECT
+  //     // -------------------------------
+  //     const finalUserData = {
+  //       ...tempLogin,
+  //       branchId: selectedBranch,
+  //       branchName: selectedBranchData?.branchName || "",
+  //       financialYear: selectedYear,
+  //       loginTime: new Date().toISOString(),
+  //     };
+
+  //     sessionStorage.setItem("isLoggedIn", "true");
+  //     sessionStorage.setItem("userData", JSON.stringify(finalUserData));
+
+  //     window.location.href = "/";
+  //   };
+
+  // ✅ Static Users (Development Only)
+  const staticUsers = [
+    {
       id: 0,
       email: "admin@gmail.com",
+      password: "123",
       role: "Admin",
-      isAdmin: true,              // IMPORTANT FLAG
-      permissions: "all",         // full access
-    });
+      permissions: "all",
+    },
+    {
+      id: 1,
+      email: "tester1@gmail.com",
+      password: "123",
+      role: "Admin",
+      permissions: "limited",
+    },
+    {
+      id: 2,
+      email: "tester2@gmail.com",
+      password: "123",
+      role: "Admin",
+      permissions: "limited",
+    },
+    {
+      id: 3,
+      email: "sumittest@gmail.com",
+      password: "123",
+      role: "Admin",
+      permissions: "custom",
+    },
+  ];
 
-    setShowExtra(true);           // show Branch + Year
-    setEmailCorrect(true);        // allow Step 2
-    return;                       // stop here
-  }
+  const handleLogin = async (e) => {
+    e.preventDefault();
 
-  // -----------------------------------
-  // STEP 1 → Non-admin Login (Call API)
-  // -----------------------------------
-  if (!showExtra) {
-    try {
-      const res = await fetch(`${API}/Master/Emp-login`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email, password }),
-      });
+    const email = e.target.email?.value?.trim();
+    const password = e.target.password?.value?.trim();
 
-      const data = await res.json();
+    // ==========================================
+    // STEP 1 → LOGIN (STATIC USERS + API LOGIN)
+    // ==========================================
+    if (!showExtra) {
+      // 🔎 Check Static Users First
+      const matchedUser = staticUsers.find(
+        (user) =>
+          user.email.toLowerCase() === email.toLowerCase() &&
+          user.password === password,
+      );
 
-      if (!data.status) {
-        alert(data.message);
+      if (matchedUser) {
+        setTempLogin({
+          id: matchedUser.id,
+          email: matchedUser.email,
+          role: matchedUser.role,
+          isAdmin: matchedUser.role === "Admin",
+          permissions: matchedUser.permissions,
+        });
+
+        setShowExtra(true);
         return;
       }
 
-      // Save user info for Step 2
-      setTempLogin(data.user);
-      setShowExtra(true);
-      setEmailCorrect(true);
+      // 🔎 If Not Static → Call Employee API
+      try {
+        const res = await fetch(`${API}/Master/Emp-login`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ email, password }),
+        });
 
-    } catch (err) {
-      alert("Server Problem");
+        const data = await res.json();
+
+        if (!data.status) {
+          alert(data.message);
+          return;
+        }
+
+        setTempLogin(data.user);
+        setShowExtra(true);
+      } catch (err) {
+        alert("Server Problem");
+      }
+
+      return;
     }
 
-    return;
-  }
+    // ==========================================
+    // STEP 2 → VALIDATE BRANCH + FINANCIAL YEAR
+    // ==========================================
+    if (!selectedBranch || !selectedYear) {
+      alert("Please select branch & financial year");
+      return;
+    }
 
-  // -------------------------------
-  // STEP 2 → Validate Branch + Year
-  // -------------------------------
-  if (!branch || !year) {
-    alert("Please select branch & financial year");
-    return;
-  }
+    const selectedBranchData = branches.find(
+      (b) => b.id.toString() === selectedBranch.toString(),
+    );
 
-  // -------------------------------
-  // STEP 2 → Save final user session
-  // -------------------------------
-  const finalUserData = {
-    ...tempLogin,
-    branch,
-    financialYear: year,
-    loginTime: new Date().toISOString(),
+    // ==========================================
+    // FINAL SESSION OBJECT
+    // ==========================================
+    const finalUserData = {
+      ...tempLogin,
+      branchId: selectedBranch,
+      branchName: selectedBranchData?.branchName || "",
+      financialYear: selectedYear,
+      loginTime: new Date().toISOString(),
+    };
+
+    sessionStorage.setItem("isLoggedIn", "true");
+    sessionStorage.setItem("userData", JSON.stringify(finalUserData));
+
+    // ✅ Redirect
+    window.location.href = "/";
   };
-
-  sessionStorage.setItem("isLoggedIn", "true");
-  sessionStorage.setItem("userData", JSON.stringify(finalUserData));
-
-  // Redirect to dashboard
-  window.location.href = "/";
-};
-
 
   return (
     <>
       <div className="flex items-center justify-center h-screen w-screen overflow-hidden bg-gray-200">
         <div className="flex border-2 border-blue-200 w-[1156px] h-[650px] bg-gray-200 rounded-lg shadow-lg overflow-hidden">
-          
           {/* Left Section */}
           <div className="bg-[#0048B3] w-1/2 h-full flex items-center justify-center relative">
             <img
@@ -119,7 +370,6 @@ const handleLogin = async (e) => {
               </h2>
 
               <form onSubmit={handleLogin} className="space-y-2 mt-4">
-                
                 {/* FIRST STEP FIELDS */}
                 <label className="text-sm font-semibold">Email-ID</label>
                 <div className="w-full flex items-center bg-white border border-gray-300 px-2 py-1.5 shadow-sm rounded-md">
@@ -128,7 +378,7 @@ const handleLogin = async (e) => {
                     type="email"
                     placeholder="Email-ID"
                     autoComplete="off"
-                    disabled={showExtra}   // lock after step 1
+                    disabled={showExtra} // lock after step 1
                     className="flex-1 focus:outline-none"
                   />
                 </div>
@@ -140,7 +390,7 @@ const handleLogin = async (e) => {
                     type="password"
                     placeholder="Password"
                     autoComplete="off"
-                    disabled={showExtra}   // lock after step 1
+                    disabled={showExtra} // lock after step 1
                     className="flex-1 bg-transparent focus:outline-none"
                   />
                 </div>
@@ -157,25 +407,36 @@ const handleLogin = async (e) => {
                   <>
                     <label className="text-sm font-semibold">Branch</label>
                     <select
-                      name="branch"
-                      className="w-full border border-gray-300 bg-white px-3 py-2 shadow-sm rounded-md"
+                      value={selectedBranch?.id || ""}
+                      onChange={(e) => {
+                        const branchObj = branches.find(
+                          (b) => b.id.toString() === e.target.value,
+                        );
+                        setSelectedBranch(branchObj); // ✅ store full object
+                      }}
+                      className="w-full border border-gray-300 px-3 py-2 rounded-md"
                     >
-                      <option value="">Select</option>
-                      <option value="Nashik-Road">Nashik-Road</option>
-                      <option value="Nashik">Nashik</option>
-                      <option value="Bhagur">Bhagur</option>
+                      <option value="">Select Branch</option>
+                      {branches.map((branch) => (
+                        <option key={branch.id} value={branch.id}>
+                          {branch.branch_name}
+                        </option>
+                      ))}
                     </select>
 
                     <label className="text-sm font-semibold">
                       Financial Year
                     </label>
+
                     <select
                       name="year"
+                      value={selectedYear} // ✅ bind state
+                      onChange={(e) => setSelectedYear(e.target.value)} // ✅ update state
                       className="w-full border border-gray-300 bg-white px-3 py-2 shadow-sm rounded-md"
                     >
                       <option value="">Select</option>
-                      <option value="2023-2024">01/04/2023-31/03/2024</option>
-                      <option value="2024-2025">01/04/2024-31/03/2025</option>
+                      <option value="2023-2024">01/04/2023 - 31/03/2024</option>
+                      <option value="2025-2026">01/01/2025 - 31/12/2026</option>
                     </select>
                   </>
                 )}
@@ -197,10 +458,8 @@ const handleLogin = async (e) => {
                   Terms
                 </a>
               </div>
-
             </div>
           </div>
-
         </div>
       </div>
     </>

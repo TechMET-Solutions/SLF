@@ -1,5 +1,7 @@
 import axios from "axios";
 import { useEffect, useState } from "react";
+import { FaTrash } from "react-icons/fa";
+import { useNavigate } from "react-router-dom";
 import { API } from "../api";
 import { useAuth } from "../API/Context/AuthContext";
 import GroupData from "../assets/Group 124.svg";
@@ -13,7 +15,7 @@ const DocumentProof = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const { loginUser } = useAuth();
-
+  const navigate = useNavigate();
   console.log("Logged in user:", loginUser);
   const [formData, setFormData] = useState({
     proof_type: "",
@@ -25,13 +27,13 @@ const DocumentProof = () => {
   });
   const [selectedDataid, setselectedDataid] = useState(null);
 
-  console.log(formData,"formData")
+  console.log(formData, "formData");
   const [file, setFile] = useState(null);
   const [fileName, setFileName] = useState("No file chosen");
   const [previewUrl, setPreviewUrl] = useState("");
   // handle input change
   const [documents, setDocuments] = useState([]);
-  console.log(documents, "documents")
+  console.log(documents, "documents");
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const handleChange = (e) => {
@@ -41,21 +43,46 @@ const DocumentProof = () => {
       [name]: type === "checkbox" ? checked : value,
     }));
   };
-
-  const resetModal = () => {
-  setFormData({
-    proof_type: "",
-    is_id_proof: false,
-    is_address_proof: false,
-    added_by: "",
-    modified_by: "",
-    status: "Active",
+  const [searchFilters, setSearchFilters] = useState({
+    type: "",
+    name: "",
   });
 
-  setFileName("");
+  // 2. Handle Input Changes
+  const handleInputChange = (e) => {
+    const { name, value } = e.target;
+    setSearchFilters((prev) => ({
+      ...prev,
+      [name]: value,
+    }));
+  };
+
+  // 3. Define the missing handleKeyPress function
+  const handleKeyPress = (e) => {
+    if (e.key === "Enter") {
+      handleSearch();
+    }
+  };
+
+  // 4. Search Logic
+
+  const handleClearSearch = () => {
+    setSearchFilters({ type: "", name: "" });
+  };
+  const resetModal = () => {
+    setFormData({
+      proof_type: "",
+      is_id_proof: false,
+      is_address_proof: false,
+      added_by: "",
+      modified_by: "",
+      status: "Active",
+    });
+
+    setFileName("");
     setIsModalOpen(false);
-    setIsEditModalOpen(false)
-};
+    setIsEditModalOpen(false);
+  };
 
   // handle file select
   const handleFileChange = (e) => {
@@ -68,30 +95,64 @@ const DocumentProof = () => {
       setFileName("No file chosen");
     }
   };
-const handleEditClick = (doc) => {
-  setFormData({
-    proof_type: doc.proof_type || "",
-    is_id_proof: doc.is_id_proof === 1,         // convert number → boolean
-    is_address_proof: doc.is_address_proof === 1,
-    added_by: doc.added_by || "",
-    modified_by: doc.modified_by || "",
-    status: doc.status === 1 ? "Active" : "Inactive",
-  });
-  setselectedDataid(doc.id)
+  const handleEditClick = (doc) => {
+    setFormData({
+      proof_type: doc.proof_type || "",
+      is_id_proof: doc.is_id_proof === 1, // convert number → boolean
+      is_address_proof: doc.is_address_proof === 1,
+      added_by: doc.added_by || "",
+      modified_by: doc.modified_by || "",
+      status: doc.status === 1 ? "Active" : "Inactive",
+    });
+    setselectedDataid(doc.id);
 
-  setFileName(doc.file_path?.split("/")?.pop() || "");
-  setIsModalOpen(true);
-  setIsEditModalOpen(true);
-};
+    setFileName(doc.file_path?.split("/")?.pop() || "");
+    setIsModalOpen(true);
+    setIsEditModalOpen(true);
+  };
+
+  // const fetchDocuments = async () => {
+  //   try {
+  //     setLoading(true);
+  //     const response = await axios.get(
+  //       `${API}/Master/Master_Profile/get_document`,
+  //     );
+
+  //     // Decrypt the response safely
+  //     const decryptedRaw = decryptData(response.data.data);
+  //     const decrypted =
+  //       typeof decryptedRaw === "string"
+  //         ? JSON.parse(decryptedRaw)
+  //         : decryptedRaw;
+
+  //     setDocuments(decrypted);
+  //     setLoading(false);
+  //   } catch (err) {
+  //     console.error("Error fetching documents:", err);
+  //     setError("Failed to fetch documents");
+  //     setLoading(false);
+  //   }
+  // };
 
   const fetchDocuments = async () => {
     try {
       setLoading(true);
-      const response = await axios.get(`${API}/Master/Master_Profile/get_document`);
 
-      // Decrypt the response safely
+      const response = await axios.get(
+        `${API}/Master/Master_Profile/get_document`,
+        {
+          params: {
+            type: searchFilters.type,
+            name: searchFilters.name,
+          },
+        },
+      );
+
       const decryptedRaw = decryptData(response.data.data);
-      const decrypted = typeof decryptedRaw === "string" ? JSON.parse(decryptedRaw) : decryptedRaw;
+      const decrypted =
+        typeof decryptedRaw === "string"
+          ? JSON.parse(decryptedRaw)
+          : decryptedRaw;
 
       setDocuments(decrypted);
       setLoading(false);
@@ -101,127 +162,139 @@ const handleEditClick = (doc) => {
       setLoading(false);
     }
   };
-
   useEffect(() => {
     fetchDocuments();
   }, []);
 
-   
-//   const handleSubmit = async () => {
+  const handleSearch = () => {
+    console.log("Searching for:", searchFilters);
+    fetchDocuments();
+    // Add your API call or filtering logic here using searchFilters.type and searchFilters.name
+  };
 
-//     try {
-//       if (!formData.proof_type?.trim()) {
-//   alert("Please select or enter the Proof Type!");
-//   return;
-// }
+  //   const handleSubmit = async () => {
 
-// // ✅ Check that at least one proof type is true
-// if (!formData.is_id_proof && !formData.is_address_proof) {
-//   alert("Please select at least one: ID Proof or Address Proof!");
-//   return;
-// }
+  //     try {
+  //       if (!formData.proof_type?.trim()) {
+  //   alert("Please select or enter the Proof Type!");
+  //   return;
+  // }
 
-//       const encryptedData = encryptData(JSON.stringify(formData));
-//       const payload = new FormData();
-//       payload.append("data", encryptedData);
-     
+  // // ✅ Check that at least one proof type is true
+  // if (!formData.is_id_proof && !formData.is_address_proof) {
+  //   alert("Please select at least one: ID Proof or Address Proof!");
+  //   return;
+  // }
 
-//       const response = await axios.post(`${API}/Master/Master_Profile/add_Document`, payload, {
-//         headers: { "Content-Type": "multipart/form-data" },
-//       });
+  //       const encryptedData = encryptData(JSON.stringify(formData));
+  //       const payload = new FormData();
+  //       payload.append("data", encryptedData);
 
-//       const result = response.data;
-//       console.log("✅ API Response:", result);
-//       alert("Document proof added successfully!");
-//       setIsModalOpen(false);
-//       fetchDocuments()
-//       setFormData({
-//     proof_type: "",
-//     is_id_proof: false,
-//     is_address_proof: false,
-//     added_by: "",
-//     modified_by: "",
-//     status: "Active",
-//   });
-//     } catch (error) {
-//       console.error("❌ Error:", error);
-//       alert("Failed to add document proof.");
-//     }
-//   };
+  //       const response = await axios.post(`${API}/Master/Master_Profile/add_Document`, payload, {
+  //         headers: { "Content-Type": "multipart/form-data" },
+  //       });
+
+  //       const result = response.data;
+  //       console.log("✅ API Response:", result);
+  //       alert("Document proof added successfully!");
+  //       setIsModalOpen(false);
+  //       fetchDocuments()
+  //       setFormData({
+  //     proof_type: "",
+  //     is_id_proof: false,
+  //     is_address_proof: false,
+  //     added_by: "",
+  //     modified_by: "",
+  //     status: "Active",
+  //   });
+  //     } catch (error) {
+  //       console.error("❌ Error:", error);
+  //       alert("Failed to add document proof.");
+  //     }
+  //   };
+  // const resetForm = () => {
+  //   setFormData({
+  //     proof_type: "",
+  //     is_id_proof: false,
+  //     is_address_proof: false,
+  //     status: "Active",
+  //   });
+  // };
 
   const handleSubmit = async () => {
-  try {
-    if (!formData.proof_type?.trim()) {
-      alert("Please select or enter the Proof Type!");
-      return;
+    try {
+      if (!formData.proof_type?.trim()) {
+        alert("Please select or enter the Proof Type!");
+        return;
+      }
+
+      if (!formData.is_id_proof && !formData.is_address_proof) {
+        alert("Please select at least one: ID Proof or Address Proof!");
+        return;
+      }
+
+      const payload = {
+        ...formData,
+        proof_type: formData.proof_type.trim(),
+        added_by: loginUser,
+        modified_by: "",
+        status: "Active",
+      };
+
+      const response = await axios.post(
+        `${API}/Master/Master_Profile/add_Document`,
+        payload,
+      );
+
+      alert(response.data.message);
+
+      setIsModalOpen(false);
+      fetchDocuments();
+      resetForm();
+    } catch (error) {
+      console.error("❌ Error:", error);
+
+      alert(error.response?.data?.message || "Failed to add document proof.");
     }
+  };
 
-    if (!formData.is_id_proof && !formData.is_address_proof) {
-      alert("Please select at least one: ID Proof or Address Proof!");
-      return;
-    }
+  //   const handleUpdateSubmit = async () => {
+  //     debugger
+  //   try {
+  //     if (!formData.proof_type) {
+  //       alert("Please fill all required fields!");
+  //       return;
+  //     }
 
-    const payloadObj = {
-      ...formData,
-      added_by: loginUser,      // ⭐ add here
-       modified_by: "",   // ⭐ first time modify also
-    };
+  //     // add id in object
+  //     const updatePayloadObject = {
+  //       ...formData,
+  //       id: selectedDataid,  // <-- this will come from selected row
+  //     };
 
-    const encryptedData = encryptData(JSON.stringify(payloadObj));
-    const payload = new FormData();
-    payload.append("data", encryptedData);
+  //     const encryptedData = encryptData(JSON.stringify(updatePayloadObject));
 
-    await axios.post(`${API}/Master/Master_Profile/add_Document`, payload);
+  //     const payload = new FormData();
+  //     payload.append("data", encryptedData);
 
-    alert("Document proof added successfully!");
-    setIsModalOpen(false);
-    fetchDocuments();
-    // resetForm();
-  } catch (error) {
-    console.error("❌ Error:", error);
-    alert("Failed to add document proof.");
-  }
-};
+  //     const response = await axios.post(
+  //       `${API}/Master/Master_Profile/update_document`,
+  //       payload,
+  //       { headers: { "Content-Type": "multipart/form-data" } }
+  //     );
 
-//   const handleUpdateSubmit = async () => {
-//     debugger
-//   try {
-//     if (!formData.proof_type) {
-//       alert("Please fill all required fields!");
-//       return;
-//     }
+  //     const result = response.data;
+  //     console.log("✅ UPDATE RESPONSE:", result);
 
-//     // add id in object
-//     const updatePayloadObject = {
-//       ...formData,
-//       id: selectedDataid,  // <-- this will come from selected row
-//     };
-
-//     const encryptedData = encryptData(JSON.stringify(updatePayloadObject));
-
-//     const payload = new FormData();
-//     payload.append("data", encryptedData);
-
-   
-   
-//     const response = await axios.post(
-//       `${API}/Master/Master_Profile/update_document`,
-//       payload,
-//       { headers: { "Content-Type": "multipart/form-data" } }
-//     );
-
-//     const result = response.data;
-//     console.log("✅ UPDATE RESPONSE:", result);
-
-//     alert("Document proof updated successfully!");
-//     setIsModalOpen(false);
-//     fetchDocuments();
-//   } catch (error) {
-//     console.error("❌ UPDATE Error:", error);
-//     alert("Failed to update document proof.");
-//   }
+  //     alert("Document proof updated successfully!");
+  //     setIsModalOpen(false);
+  //     fetchDocuments();
+  //   } catch (error) {
+  //     console.error("❌ UPDATE Error:", error);
+  //     alert("Failed to update document proof.");
+  //   }
   // };
-  
+
   const resetForm = () => {
     setFormData({
       proof_type: "",
@@ -231,35 +304,46 @@ const handleEditClick = (doc) => {
   };
 
   const handleUpdateSubmit = async () => {
-  try {
-    if (!formData.proof_type?.trim()) {
-      alert("Please fill all required fields!");
-      return;
+    try {
+      if (!formData.proof_type?.trim()) {
+        alert("Please fill all required fields!");
+        return;
+      }
+
+      const updateObj = {
+        ...formData,
+        id: selectedDataid,
+        modified_by: loginUser,
+      };
+
+      const encryptedData = encryptData(JSON.stringify(updateObj));
+      const payload = new FormData();
+      payload.append("data", encryptedData);
+
+      const response = await axios.post(
+        `${API}/Master/Master_Profile/update_document`,
+        payload,
+      );
+
+      // ✅ Decrypt success response
+      const decryptedResponse = JSON.parse(decryptData(response.data.data));
+
+      alert(decryptedResponse.message);
+
+      setIsModalOpen(false);
+      fetchDocuments();
+      resetForm();
+    } catch (error) {
+      console.error("❌ UPDATE Error:", error);
+
+      // ✅ Handle backend validation message properly
+      if (error.response && error.response.data) {
+        alert(error.response.data.message);
+      } else {
+        alert("Failed to update document proof.");
+      }
     }
-
-    const updateObj = {
-      ...formData,
-      id: selectedDataid,
-      modified_by: loginUser,  // ⭐ update user
-    };
-
-    const encryptedData = encryptData(JSON.stringify(updateObj));
-    const payload = new FormData();
-    payload.append("data", encryptedData);
-
-    await axios.post(`${API}/Master/Master_Profile/update_document`, payload);
-
-    alert("Document proof updated successfully!");
-    setIsModalOpen(false);
-    // setIsEditModalOpen(false);
-    fetchDocuments();
-    resetForm();
-  } catch (error) {
-    console.error("❌ UPDATE Error:", error);
-    alert("Failed to update document proof.");
-  }
-};
-
+  };
 
   const updateDocumentStatus = async (id, currentStatus) => {
     try {
@@ -269,7 +353,7 @@ const handleEditClick = (doc) => {
 
       const response = await axios.post(
         `${API}/Master/Master_Profile/update_document_status`,
-        { data: encryptedPayload }
+        { data: encryptedPayload },
       );
 
       // Safely handle response
@@ -288,7 +372,6 @@ const handleEditClick = (doc) => {
 
       // Refresh documents
       await fetchDocuments();
-
     } catch (err) {
       console.error("Failed to update status:", err);
       // Only alert if it's really a network/server error
@@ -298,15 +381,32 @@ const handleEditClick = (doc) => {
     }
   };
 
+  const handleDelete = async (id) => {
+    try {
+      const confirmDelete = window.confirm(
+        "Are you sure you want to delete this record?",
+      );
 
+      if (!confirmDelete) return;
+
+      const response = await axios.delete(
+        `${API}/Master/delete_document/${id}`,
+      );
+
+      alert(response.data.message);
+
+      fetchDocuments(); // refresh table
+    } catch (error) {
+      console.error("❌ Delete Error:", error);
+
+      alert(error.response?.data?.message || "Failed to delete document.");
+    }
+  };
 
   return (
     <div className=" min-h-screen w-full">
-
-
-
       {/* middletopbar */}
-      <div className="flex justify-center sticky top-[80px] z-40">
+      {/* <div className="flex justify-center sticky top-[80px] z-40">
         <div className="flex  items-center px-6 py-4 border-b mt-5 w-[1290px] h-[62px] border rounded-[11px] border-gray-200 justify-between">
           <h2
             style={{
@@ -322,9 +422,6 @@ const handleEditClick = (doc) => {
           </h2>
 
           <div className="flex gap-3 ">
-
-
-
             <div className="flex justify-between gap-5">
               <button
                 style={{
@@ -340,20 +437,118 @@ const handleEditClick = (doc) => {
                 Add
               </button>
 
+              <button className="text-white px-[6.25px] py-[6.25px] rounded-[3.75px] bg-[#C1121F] w-[74px] h-[24px] opacity-100 text-[10px]">
+                Exit
+              </button>
+            </div>
+          </div>
+        </div>
+      </div> */}
+      <div className="flex justify-center sticky top-[80px] z-40">
+        {/* Changed justify-around to justify-between to push content to the edges */}
+        <div className="flex items-center px-6 py-4 border mt-5 w-[1290px] h-[62px] rounded-[11px] border-gray-200 justify-between bg-white shadow-sm">
+          {/* LEFT SIDE: Name */}
+          <h2
+            style={{
+              fontFamily: "Source Sans 3, sans-serif",
+              fontWeight: 700,
+              fontSize: "20px",
+              lineHeight: "148%",
+            }}
+            className="text-red-600 whitespace-nowrap"
+          >
+            Document Proof List
+          </h2>
+
+          {/* RIGHT SIDE: All Inputs and Buttons Grouped */}
+          <div className="flex items-center gap-4">
+            {/* Search Input Fields */}
+            <div className="flex items-center gap-3">
+              {/* Type Input */}
+              <div className="flex items-center gap-2">
+                <p className="text-[11.25px] font-semibold whitespace-nowrap">
+                  Type
+                </p>
+                <select
+                  name="type"
+                  value={searchFilters.type}
+                  onChange={handleInputChange}
+                  className="border border-gray-400 px-2 text-[11.25px] rounded outline-none focus:border-[#0A2478] bg-white"
+                  style={{ width: "140px", height: "27.49px" }}
+                >
+                  <option value="">Select</option>
+                  <option value="Address Proof">Address Proof</option>
+                  <option value="ID Proof">ID Proof</option>
+                </select>
+              </div>
+
+              {/* Name Input */}
+              <div className="flex items-center gap-2">
+                <p className="text-[11.25px] font-semibold whitespace-nowrap">
+                  Name
+                </p>
+                <input
+                  type="text"
+                  name="name" // Matches the state key
+                  value={searchFilters.name}
+                  onChange={handleInputChange}
+                  onKeyPress={handleKeyPress}
+                  className="border border-gray-400 px-3 py-1 text-[11.25px] rounded outline-none focus:border-[#0A2478]"
+                  style={{ width: "120px", height: "27.49px" }}
+                />
+              </div>
+            </div>
+
+            {/* Action Buttons Container */}
+            <div className="flex items-center gap-2 ml-2 border-l pl-4 border-gray-200">
               <button
-                className="text-white px-[6.25px] py-[6.25px] rounded-[3.75px] bg-[#C1121F] w-[74px] h-[24px] opacity-100 text-[10px]"
+                onClick={handleSearch}
+                className="bg-[#0b2c69] text-white text-[11.25px] rounded cursor-pointer hover:bg-[#071d45] transition-colors"
+                style={{ width: "70px", height: "27.49px" }}
+              >
+                Search
+              </button>
+
+              {/* <button
+                onClick={handleClearSearch}
+                className="bg-[#6c757d] text-white text-[11.25px] rounded cursor-pointer hover:bg-gray-700 transition-colors"
+                style={{ width: "70px", height: "27.49px" }}
+              >
+                Clear
+              </button> */}
+              <button
+                onClick={() => {
+                  setSearchFilters({
+                    type: "",
+                    name: "",
+                  });
+
+                  fetchDocuments(); // reload all data
+                }}
+                className="text-[10px] text-gray-500 hover:text-red-500 underline"
+              >
+                Clear
+              </button>
+
+              <button
+                onClick={() => setIsModalOpen(true)}
+                className="bg-[#0A2478] text-white text-[11.25px] rounded cursor-pointer hover:bg-[#071d45] transition-colors"
+                style={{ width: "60px", height: "27.49px" }}
+              >
+                Add
+              </button>
+
+              <button
+                onClick={() => navigate("/")}
+                className="bg-[#C1121F] text-white text-[10px] rounded cursor-pointer hover:bg-[#a40f1a] transition-colors"
+                style={{ width: "60px", height: "27.49px" }}
               >
                 Exit
               </button>
-
-
             </div>
-
           </div>
         </div>
       </div>
-
-     
       {isModalOpen && (
         <div
           className="fixed inset-0 flex items-center justify-center z-50"
@@ -372,83 +567,75 @@ const handleEditClick = (doc) => {
                 lineHeight: "24px",
               }}
             >
-              Add Document Proof
+              {isEditModalOpen ? "Edit Document Proof" : "Add Document Proof"}
             </h2>
 
             {/* Form Inputs */}
-            <div className="">
+            <div className=" flex justify-center gap-5">
               {/* Proof Type Dropdown */}
               <div>
-  <label className="text-[14px]">
-    Proof Type Name <span className="text-red-500">*</span>
-  </label>
+                <label className="text-[14px]">
+                  Proof Type Name <span className="text-red-500">*</span>
+                </label>
 
-  <input
-    type="text"
-    name="proof_type"
-    value={formData.proof_type}
-    onChange={handleChange}
-    placeholder="Enter Proof Type Name"
-    className="border border-gray-300 rounded px-3 py-2 mt-1 w-full"
-  />
-</div>
-
-
-             
-
-              {/* Checkboxes */}
-              <div className="flex justify-center gap-10">
-
-                <div className="flex items-center space-x-2 mt-10">
-                  <input
-                    type="checkbox"
-                    id="idProof"
-                    name="is_id_proof"
-                    checked={formData.is_id_proof}
-                    onChange={handleChange}
-                    className="w-[24px] h-[24px]"
-                  />
-                  <label htmlFor="idProof" className="text-[14px]">
-                    ID Proof
-                  </label>
-                </div>
-                <div className="flex items-center space-x-2 mt-10">
-                  <input
-                    type="checkbox"
-                    id="addressProof"
-                    name="is_address_proof"
-                    checked={formData.is_address_proof}
-                    onChange={handleChange}
-                    className="w-[24px] h-[24px]"
-                  />
-                  <label htmlFor="addressProof" className="text-[14px]">
-                    Address Proof
-                  </label>
-                </div>
+                <input
+                  type="text"
+                  name="proof_type"
+                  value={formData.proof_type}
+                  onChange={handleChange}
+                  placeholder="Enter Proof Type Name"
+                  className="border border-gray-300 rounded px-3 py-2 mt-1 w-full"
+                />
               </div>
 
+              <div className="flex items-center space-x-2 mt-10">
+                <input
+                  type="checkbox"
+                  id="idProof"
+                  name="is_id_proof"
+                  checked={formData.is_id_proof}
+                  onChange={handleChange}
+                  className="w-[24px] h-[24px]"
+                />
+                <label htmlFor="idProof" className="text-[14px]">
+                  ID Proof
+                </label>
+              </div>
+              <div className="flex items-center space-x-2 mt-10">
+                <input
+                  type="checkbox"
+                  id="addressProof"
+                  name="is_address_proof"
+                  checked={formData.is_address_proof}
+                  onChange={handleChange}
+                  className="w-[24px] h-[24px]"
+                />
+                <label htmlFor="addressProof" className="text-[14px]">
+                  Address Proof
+                </label>
+              </div>
             </div>
 
             {/* Buttons */}
             <div className="flex justify-center gap-4 mt-6">
-             { isEditModalOpen ? (
-  <button
-    className="bg-[#0A2478] text-white px-6 py-2 rounded"
-    onClick={handleUpdateSubmit}
-  >
-    Update
-  </button>
-) : (
-  <button
-    className="bg-[#0A2478] text-white px-6 py-2 rounded"
-    onClick={handleSubmit}
-  >
-    Submit
-  </button>
-)}
+              {isEditModalOpen ? (
+                <button
+                  className="bg-[#0A2478] text-white px-6 py-2 rounded"
+                  onClick={handleUpdateSubmit}
+                >
+                  Update
+                </button>
+              ) : (
+                <button
+                  className="bg-[#0A2478] text-white px-6 py-2 rounded"
+                  onClick={handleSubmit}
+                >
+                  Submit
+                </button>
+              )}
               <button
                 className="bg-[#C1121F] text-white px-6 py-2 rounded"
-               onClick={resetModal}
+                onClick={resetModal}
               >
                 Exit
               </button>
@@ -463,21 +650,37 @@ const handleEditClick = (doc) => {
           <table className="w-full border-collapse">
             <thead className="bg-[#0A2478] text-white text-sm">
               <tr>
-                <th className="px-4 py-2 text-left border-r border-gray-300 text-[13px]">Type</th>
-                <th className="px-4 py-2 text-left border-r border-gray-300 text-[13px]">Name</th>
-                <th className="px-4 py-2 text-left border-r border-gray-300 text-[13px]">Added By</th>
-                <th className="px-4 py-2 text-left border-r border-gray-300 text-[13px]">Added On</th>
-                <th className="px-4 py-2 text-left border-r border-gray-300 text-[13px]">Modified By</th>
-                <th className="px-4 py-2 text-left border-r border-gray-300 text-[13px]">Modified On</th>
-                <th className="px-4 py-2 text-left border-r border-gray-300 text-[13px]">Action</th>
-                <th className="px-4 py-2 text-left border-r border-gray-300 text-[13px]">Active</th>
+                <th className="px-4 py-2 text-left border-r border-gray-300 text-[13px] w-[200px]">
+                  Type
+                </th>
+                <th className="px-4 py-2 text-left border-r border-gray-300 text-[13px] w-[150px]">
+                  Name
+                </th>
+                <th className="px-4 py-2 text-left border-r border-gray-300 text-[13px] w-[150px]">
+                  Added By
+                </th>
+                <th className="px-4 py-2 text-left border-r border-gray-300 text-[13px] w-[100px]">
+                  Added On
+                </th>
+                <th className="px-4 py-2 text-left border-r border-gray-300 text-[13px] w-[150px]">
+                  Modified By
+                </th>
+                <th className="px-4 py-2 text-left border-r border-gray-300 text-[13px]  w-[100px]">
+                  Modified On
+                </th>
+                <th className="px-4 py-2 text-left border-r border-gray-300 text-[13px] w-[80px]">
+                  Action
+                </th>
+                <th className="px-4 py-2 text-left border-r border-gray-300 text-[13px] w-[80px]">
+                  Active
+                </th>
               </tr>
             </thead>
             <tbody className="text-[12px]">
               {documents.map((row, index) => (
                 <tr
                   key={row.id}
-                  className={`border-b ${index % 2 === 0 ? "bg-gray-50" : "bg-white"}`}
+                  className={index % 2 === 0 ? "bg-gray-50" : "bg-white"}
                 >
                   <td className="px-4 py-2">
                     {row.is_id_proof && row.is_address_proof
@@ -491,29 +694,68 @@ const handleEditClick = (doc) => {
 
                   <td className="px-4 py-2">{row.proof_type}</td>
                   <td className="px-4 py-2">{row.added_by}</td>
-                  <td className="px-4 py-2">{formatIndianDate(row.added_on)}</td>
+                  <td className="px-4 py-2">
+                    {formatIndianDate(row.added_on)}
+                  </td>
                   <td className="px-4 py-2">{row.modified_by || "-"}</td>
-                  <td className="px-4 py-2">{formatIndianDate(row.modified_on)}</td>
+                  <td className="px-4 py-2">
+                    {formatIndianDate(row.modified_on)}
+                  </td>
 
                   {/* Action icons */}
-                  <td className="px-4 py-2 text-[#1883EF] cursor-pointer">
+                  {/* <td className="px-4 py-2 text-[#1883EF] cursor-pointer">
                     <div className="flex gap-2 justify-center">
-                      <div className="w-[17px] h-[17px] bg-[#56A869] rounded-[2.31px] flex items-center justify-center p-0.5" onClick={() => handleEditClick(row)}>
-                        <img src={GroupData} alt="view" className="w-[18px] h-[18px] " title="Edit" />
+                      <div
+                        className="w-[17px] h-[17px] bg-[#56A869] rounded-[2.31px] flex items-center justify-center p-0.5"
+                        onClick={() => handleEditClick(row)}
+                      >
+                        <img
+                          src={GroupData}
+                          alt="view"
+                          className="w-[18px] h-[18px] "
+                          title="Edit"
+                        />
+                      </div>
+                    </div>
+                  </td> */}
+                  <td className="px-4 py-2 text-[#1883EF]">
+                    <div className="flex gap-2 justify-center">
+                      {/* Edit */}
+                      <div
+                        className="w-[20px] h-[20px] bg-[#56A869] rounded-[3px] flex items-center justify-center cursor-pointer hover:opacity-80"
+                        onClick={() => handleEditClick(row)}
+                        title="Edit"
+                      >
+                        <img
+                          src={GroupData}
+                          alt="edit"
+                          className="w-[14px] h-[14px]"
+                        />
+                      </div>
+
+                      {/* Delete */}
+                      <div
+                        className="w-[20px] h-[20px] bg-[#C1121F] rounded-[3px] flex items-center justify-center cursor-pointer hover:bg-red-700 transition"
+                        onClick={() => handleDelete(row.id)}
+                        title="Delete"
+                      >
+                        <FaTrash className="text-white text-[11px]" />
                       </div>
                     </div>
                   </td>
 
                   {/* Toggle */}
-                  <td>
+                  <td className="flex justify-center items-center">
                     <button
-                      className={`w-12 h-6 flex items-center rounded-full p-1 transition-colors ${row.status ? "bg-[#0A2478]" : "bg-gray-400"
-                        }`}
+                      className={`w-12 h-6 flex  rounded-full p-1 transition-colors mt-2 ${
+                        row.status ? "bg-[#0A2478]" : "bg-gray-400"
+                      }`}
                       onClick={() => updateDocumentStatus(row.id, row.status)}
                     >
                       <div
-                        className={`bg-white w-4 h-4 rounded-full shadow-md transform transition-transform ${row.status ? "translate-x-6" : "translate-x-0"
-                          }`}
+                        className={`bg-white w-4 h-4 rounded-full shadow-md transform transition-transform ${
+                          row.status ? "translate-x-6" : "translate-x-0"
+                        }`}
                       />
                     </button>
                   </td>
@@ -522,14 +764,15 @@ const handleEditClick = (doc) => {
             </tbody>
           </table>
         </div>
-
       </div>
 
       {/* Pagination */}
       <div className="flex justify-center items-center px-6 py-3 border-t gap-2">
         <button className="px-3 py-1 border rounded-md">Previous</button>
         <div className="flex gap-2">
-          <button className="px-3 py-1 border bg-[#0b2c69] text-white rounded-md">1</button>
+          <button className="px-3 py-1 border bg-[#0b2c69] text-white rounded-md">
+            1
+          </button>
           <button className="px-3 py-1 border rounded-md">2</button>
           <button className="px-3 py-1 border rounded-md">3</button>
           <button className="px-3 py-1 border rounded-md">...</button>
@@ -537,7 +780,6 @@ const handleEditClick = (doc) => {
         </div>
         <button className="px-3 py-1 border rounded-md">Next</button>
       </div>
-
     </div>
   );
 };

@@ -198,7 +198,7 @@ useEffect(() => {
       </div>
 
       {/* Tabs */}
-      <div className="flex justify-center gap-2 mt-5 items-center">
+      <div className="flex  gap-2 mt-5 pl-[120px] mt-2">
         {Object.keys(tabData).map((tab) => (
           <div
             key={tab}
@@ -206,7 +206,7 @@ useEffect(() => {
             className={`cursor-pointer text-center rounded-[5px] border h-[31px] flex items-center justify-center px-4 transition 
               ${activeTab === tab ? "bg-[#0A2478] text-white" : "hover:bg-[#0A2478] hover:text-white"}
             `}
-            style={{ minWidth: "200px" }}
+            style={{ minWidth: "100px" }}
           >
             {tab}
           </div>
@@ -214,17 +214,17 @@ useEffect(() => {
       </div>
 
       {/* Table */}
-      <div className="flex justify-center">
-        <div className="overflow-x-auto mt-5 w-[1290px]">
+      <div className="flex pl-[120px] mt-2">
+        <div className="overflow-x-auto mt-5 ">
           <table className="w-full border-collapse">
             <thead className="bg-[#0A2478] text-white text-sm">
               <tr>
-                <th className="px-4 py-2 text-left border-r border-gray-300">Name</th>
-                <th className="px-4 py-2 text-center border-r border-gray-300">View</th>
-                <th className="px-4 py-2 text-center border-r border-gray-300">Add</th>
-                <th className="px-4 py-2 text-center border-r border-gray-300">Edit</th>
-                <th className="px-4 py-2 text-center border-r border-gray-300">Delete</th>
-                <th className="px-4 py-2 text-center">Approve</th>
+                <th className="px-4 py-2 text-left border-r border-gray-300 w-[250px]">Name</th>
+                <th className="px-4 py-2 text-center border-r border-gray-300 w-[100px]">View</th>
+                <th className="px-4 py-2 text-center border-r border-gray-300 w-[100px]">Add</th>
+                <th className="px-4 py-2 text-center border-r border-gray-300 w-[100px]">Edit</th>
+                <th className="px-4 py-2 text-center border-r border-gray-300 w-[100px]">Delete</th>
+                <th className="px-4 py-2 text-center w-[100px]">Approve</th>
               </tr>
             </thead>
             <tbody className="text-[13px]">

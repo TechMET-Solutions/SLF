@@ -108,6 +108,7 @@ const EditLoanApplication = () => {
     schemeName: "",
     printName: "",
     mobile: "",
+    payDate: "",
     altMobile: "",
     Borrower_ProfileImg: "",
     Borrower_signature: "",
@@ -171,6 +172,7 @@ const EditLoanApplication = () => {
       setFormData({
         borrowerId: data.BorrowerId,
         CoBorrowerId: data.CoBorrowerId,
+        payDate: data.Pay_Date || "",
         borrowerName: data.Borrower || "",
         borrowerAddress: data.Address, // if you are not getting from api leave empty
         schemeId: data.Scheme_ID || "",
@@ -227,6 +229,7 @@ const EditLoanApplication = () => {
       formDataToSend.append("CoBorrowerId", formData.CoBorrowerId || "");
       formDataToSend.append("Borrower", formData.borrowerName || "");
       formDataToSend.append("Scheme", formData.schemeName || "");
+      formDataToSend.append("payDate", formData.payDate || "");
       formDataToSend.append("Scheme_ID", selectedScheme?.id || "");
       formDataToSend.append("Print_Name", formData.printName || "");
       formDataToSend.append("Mobile_Number", formData.mobile || "");
@@ -245,7 +248,7 @@ const EditLoanApplication = () => {
 
       formDataToSend.append(
         "Pledge_Item_List",
-        JSON.stringify(PledgeItem || [])
+        JSON.stringify(PledgeItem || []),
       );
       formDataToSend.append("Loan_amount", formData.Loan_amount || 0);
       formDataToSend.append("Doc_Charges", formData.Doc_Charges || 0);
@@ -253,13 +256,13 @@ const EditLoanApplication = () => {
 
       formDataToSend.append(
         "Effective_Interest_Rates",
-        JSON.stringify(selectedScheme?.interestRates)
+        JSON.stringify(selectedScheme?.interestRates),
       );
 
       const res = await axios.put(
         `${API}/Transactions/goldloan/updateLoan/${loanId}`,
         formDataToSend,
-        { headers: { "Content-Type": "multipart/form-data" } }
+        { headers: { "Content-Type": "multipart/form-data" } },
       );
 
       alert("✅ Loan Updated Successfully!");
@@ -282,7 +285,7 @@ const EditLoanApplication = () => {
       try {
         setLoading(true);
         const res = await axios.get(
-          `${API}/Master/doc/Customer_list?search=${searchTerm}`
+          `${API}/Master/doc/Customer_list?search=${searchTerm}`,
         );
         setResults(res.data);
       } catch (err) {
@@ -305,7 +308,7 @@ const EditLoanApplication = () => {
       try {
         setLoading(true);
         const res = await axios.get(
-          `${API}/Master/doc/Customer_list?search=${searchTermForCoBorrower}`
+          `${API}/Master/doc/Customer_list?search=${searchTermForCoBorrower}`,
         );
         setResults2(res.data);
       } catch (err) {
@@ -816,7 +819,7 @@ const EditLoanApplication = () => {
 
               // Calculate document charges and round to nearest integer
               const docCharges = Math.round(
-                (inputLoan * (selectedScheme?.docChargePercent ?? 0)) / 100
+                (inputLoan * (selectedScheme?.docChargePercent ?? 0)) / 100,
               );
 
               // Subtract docCharges from inputLoan
@@ -904,6 +907,21 @@ const EditLoanApplication = () => {
               </option>
             ))}
           </select>
+        </div>
+        <div className="">
+          <div>
+            <label className="text-[14px] font-medium">
+              Pay Date<span className="text-red-500">*</span>
+            </label>
+          </div>
+
+          <input
+            type="date"
+            name="payDate"
+            value={formData.payDate}
+            onChange={handleInputChange}
+            className="border border-gray-300 px-3 py-2 mt-1 w-[136px] rounded-[8px] bg-white h-[38px]"
+          />
         </div>
       </div>
 

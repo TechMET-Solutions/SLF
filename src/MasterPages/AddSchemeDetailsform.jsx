@@ -72,7 +72,7 @@ const AddSchemeDetailsform = () => {
         </div>
       </div>
       {/* Form Fields */}
-      <div className="bg-white rounded-lg px-2 mt-6 flex flex-col gap-4">
+      <div className="bg-white rounded-lg px-2 mt-2 flex flex-col gap-4">
         {/* Row 1 */}
         <div className="flex gap-6 ">
           <div className="flex flex-col ">

@@ -252,11 +252,11 @@ function EmployeeDesignation() {
                             <p className="text-lg text-gray-500">No Data Found</p>
                         </div>
                     ) : (
-                        <table className="w-full border-collapse">
+                        <table className=" border-collapse">
                             <thead className="bg-[#0A2478] text-white text-sm">
                                 <tr>
                                     <th className="px-4 py-2 text-left border-r">ID</th>
-                                    <th className="px-4 py-2 text-left border-r">Designation</th>
+                                    <th className="px-4 py-2 text-left border-r w-[350px]">Designation</th>
                                     <th className="px-4 py-2 text-center border-r">Action</th>
                                 </tr>
                             </thead>

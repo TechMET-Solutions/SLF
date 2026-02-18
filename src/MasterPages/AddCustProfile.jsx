@@ -2,7 +2,7 @@ import { FaPaperclip } from "react-icons/fa";
 
 import axios from "axios";
 import JoditEditor from "jodit-react";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { MdOutlineFileUpload } from "react-icons/md";
 import { useLocation, useNavigate } from "react-router-dom";
 import { API } from "../api";
@@ -30,7 +30,49 @@ const AddCustProfile = () => {
   console.log(mode, "mode");
   const [bankData, setBankData] = useState([]);
   console.log(bankData, "bankData");
-
+const config = useMemo(
+  () => ({
+    readonly: false,
+    height: 300,
+    toolbarAdaptive: false,
+    buttons: [
+      "bold",
+      "italic",
+      "underline",
+      "|",
+      "ul",
+      "ol",
+      "|",
+      "font",
+      "fontsize",
+      "|",
+      "align",
+      "|",
+      "link",
+      "|",
+      "undo",
+      "redo",
+    ],
+    removeButtons: [
+      "image",
+      "video",
+      "table",
+      "file",
+      "source",
+      "fullsize",
+      "about",
+      "print",
+      "eraser",
+      "brush",
+      "superscript",
+      "subscript",
+      "hr",
+      "symbol",
+      "copyformat",
+    ],
+  }),
+  []
+);
   const [formData, setFormData] = useState({
     panNo: "",
     panFile: null, // store selected file here
@@ -108,7 +150,26 @@ const AddCustProfile = () => {
     password: "",
     badDebtor: false,
     badDebtorReason: "",
+
+
+     branchId: "",
+  branchName: "",
+  financialYear: "",
   });
+
+  console.log(formData, "formData");
+useEffect(() => {
+  const userData = JSON.parse(sessionStorage.getItem("userData"));
+
+  if (userData) {
+    setFormData((prev) => ({
+      ...prev,
+      branchId: userData.branchId?.id || "",
+      branchName: userData.branchId?.branch_name || "",
+      financialYear: userData.financialYear || "",
+    }));
+  }
+}, []);
 
   const [adharMaskingData, setAdharMaskingData] = useState("");
 
@@ -125,15 +186,7 @@ const AddCustProfile = () => {
     bankAddress: "",
     cancelCheque: null,
   });
-  const editorConfig = {
-    readonly: false,
-    autofocus: false,
-    toolbar: true,
-    buttons: ["bold", "italic", "underline", "|", "eraser"],
-    showCharsCounter: false,
-    showWordsCounter: false,
-    showXPathInStatusbar: false,
-  };
+ 
 
   const [documents, setDocuments] = useState([]); // main list from API
   const [idProofList, setIdProofList] = useState([]); // filtered only id proof
@@ -2408,6 +2461,7 @@ const AddCustProfile = () => {
         <JoditEditor
           ref={editor}
           value={content}
+           config={config}
           onChange={(newContent) => setContent(newContent)}
         />
       </div>

@@ -301,18 +301,19 @@ const SchemeDetailsList = () => {
 
       {/* Table */}
       <div className="flex justify-center">
-        <div className="overflow-x-auto mt-5 w-[1290px] h-[500px]">
+        <div className="overflow-x-auto mt-5  h-[500px]">
           <table className="w-full border-collapse">
             <thead className="bg-[#0A2478] text-white text-sm">
               <tr>
-                <th className="px-4 py-2 border">Product Name</th>
-                <th className="px-4 py-2 border">Scheme Name</th>
-                <th className="px-4 py-2 border">App From</th>
-                <th className="px-4 py-2 border">App To</th>
+             
+                <th className="px-4 py-2 border w-[190px]">Scheme Name</th>
+                   <th className="px-4 py-2 border w-[80px]">Product Name</th>
+                <th className="px-4 py-2 border w-[120px]">App From</th>
+                <th className="px-4 py-2 border w-[120px]">App To</th>
                 <th className="px-4 py-2 border">Approval %</th>
-                <th className="px-4 py-2 border">Min Loan</th>
-                <th className="px-4 py-2 border">Max Loan</th>
-                <th className="px-4 py-2 border">Renewed By</th>
+                <th className="px-4 py-2 border w-[150px]">Min Loan</th>
+                <th className="px-4 py-2 border w-[150px]">Max Loan</th>
+                <th className="px-4 py-2 border w-[150px]">Renewed By</th>
                 <th className="px-4 py-2 border">Renewed On</th>
                 <th className="px-4 py-2 border">Action</th>
               </tr>
@@ -322,9 +323,7 @@ const SchemeDetailsList = () => {
               {data?.map((row, index) => (
                 <tr
                   key={row.id}
-                  className={`border-b ${
-                    index % 2 === 0 ? "bg-white" : "bg-white"
-                  }`}
+                  className={index % 2 === 0 ? "bg-gray-50" : "bg-white"}
                 >
                   <td className="px-4 py-2">{row.product}</td>
                   <td className="px-4 py-2">{row.schemeName}</td>

@@ -8,7 +8,6 @@ import DeleteData from "../assets/deletimg.png";
 import { decryptData, encryptData } from "../utils/cryptoHelper";
 
 const ChargesProfileList = () => {
-
   const navigate = useNavigate();
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [data, setData] = useState([]);
@@ -24,6 +23,37 @@ const ChargesProfileList = () => {
     addedBy: "",
   });
   const { loginUser } = useAuth();
+
+  const [searchFilters, setSearchFilters] = useState({
+    code: "",
+    Description: "",
+  });
+
+  // 2. Handle Input Changes
+  const handleInputChange = (e) => {
+    const { name, value } = e.target;
+    setSearchFilters((prev) => ({
+      ...prev,
+      [name]: value,
+    }));
+  };
+
+  // 3. Define the missing handleKeyPress function
+  const handleKeyPress = (e) => {
+    if (e.key === "Enter") {
+      handleSearch();
+    }
+  };
+
+  // 4. Search Logic
+  const handleSearch = () => {
+    console.log("Searching for:", searchFilters);
+    // Add your API call or filtering logic here using searchFilters.type and searchFilters.name
+  };
+
+  // const handleClearSearch = () => {
+  //   setSearchFilters({ code: "", Description: "" });
+  // };
 
   console.log("Logged in user:", loginUser);
   useEffect(() => {
@@ -42,13 +72,32 @@ const ChargesProfileList = () => {
     fetchAccounts();
   }, []);
   // ✅ Fetch data
+  // const fetchChargeProfiles = async () => {
+  //   try {
+  //     const response = await axios.get(`${API}/Master/GetChargesProfile/get`);
+  //     if (response.status === 200 && response.data?.data) {
+  //       const decrypted = decryptData(response.data.data);
+  //       const parsedData =
+  //         typeof decrypted === "string" ? JSON.parse(decrypted) : decrypted;
+  //       setData(parsedData.data || []);
+  //     }
+  //   } catch (error) {
+  //     console.error("❌ Error fetching charge profiles:", error);
+  //     alert("❌ Failed to fetch charge profiles");
+  //   }
+  // };
   const fetchChargeProfiles = async () => {
     try {
-      const response = await axios.get(`${API}/Master/GetChargesProfile/get`);
-      if (response.status === 200 && response.data?.data) {
-        const decrypted = decryptData(response.data.data);
-        const parsedData = typeof decrypted === "string" ? JSON.parse(decrypted) : decrypted;
-        setData(parsedData.data || []);
+      const response = await axios.get(`${API}/Master/GetChargesProfile/get`, {
+        params: {
+          code: searchFilters.code,
+          description: searchFilters.Description,
+        },
+      });
+
+      if (response.status === 200) {
+        setData(response.data.data || []);
+        // setTotal(response.data.total || 0);
       }
     } catch (error) {
       console.error("❌ Error fetching charge profiles:", error);
@@ -65,112 +114,64 @@ const ChargesProfileList = () => {
     }));
   };
 
-  // ✅ Save or Update form
-  // const handleSave = async () => {
-  //   try {
-  //     const encryptedPayload = encryptData(
-  //       JSON.stringify(editingId ? { ...formData, id: editingId } : formData)
-  //     );
-
-  //     let response;
-  //     if (editingId) {
-  //       // Update API
-  //       response = await axios.put(
-  //         `${API}/Master/updateChargesProfile`,
-  //         { data: encryptedPayload }
-  //       );
-  //     } else {
-  //       // Add API
-  //       response = await axios.post(
-  //         `${API}/Master/ChargesProfile/add`,
-  //         { data: encryptedPayload }
-  //       );
-  //       console.log(data)
-  //     }
-
-  //     if (response.status === 200 || response.status === 201) {
-  //       const decryptedText = decryptData(response.data.data);
-  //       const parsedData =
-  //         typeof decryptedText === "string" ? JSON.parse(decryptedText) : decryptedText;
-
-  //       alert(`✅ ${parsedData.message}`);
-  //       setIsModalOpen(false);
-  //       setEditingId(null);
-  //       setFormData({
-  //         code: "",
-  //         description: "",
-  //         amount: "",
-  //         account: "",
-  //         isActive: true,
-  //         addedBy: "",
-  //       });
-  //       fetchChargeProfiles();
-  //     }
-  //   } catch (error) {
-  //     console.error("❌ Error saving/updating charge profile:", error);
-  //     alert("❌ Failed to save/update. Please try again.");
-  //   }
-  // };
-
   const handleSave = async () => {
-  try {
-    let payloadObj;
+    try {
+      let payloadObj;
 
-    if (editingId) {
-      // 🟡 UPDATE
-      payloadObj = {
-        ...formData,
-        id: editingId,
-      };
-    } else {
-      // 🟢 ADD
-      payloadObj = {
-        ...formData,
-        addedBy: loginUser,   // ⭐ Add logged-in user on save
-      };
+      if (editingId) {
+        // 🟡 UPDATE
+        payloadObj = {
+          ...formData,
+          id: editingId,
+        };
+      } else {
+        // 🟢 ADD
+        payloadObj = {
+          ...formData,
+          addedBy: loginUser, // ⭐ Add logged-in user on save
+        };
+      }
+
+      const encryptedPayload = encryptData(JSON.stringify(payloadObj));
+
+      let response;
+      if (editingId) {
+        response = await axios.put(`${API}/Master/updateChargesProfile`, {
+          data: encryptedPayload,
+        });
+      } else {
+        response = await axios.post(`${API}/Master/ChargesProfile/add`, {
+          data: encryptedPayload,
+        });
+      }
+
+      if (response.status === 200 || response.status === 201) {
+        const decryptedText = decryptData(response.data.data);
+        const parsedData =
+          typeof decryptedText === "string"
+            ? JSON.parse(decryptedText)
+            : decryptedText;
+
+        alert(`✅ ${parsedData.message}`);
+        setIsModalOpen(false);
+        setEditingId(null);
+
+        setFormData({
+          code: "",
+          description: "",
+          amount: "",
+          account: "",
+          isActive: true,
+          addedBy: "",
+        });
+
+        fetchChargeProfiles();
+      }
+    } catch (error) {
+      console.error("❌ Error saving/updating charge profile:", error);
+      alert("❌ Failed to save/update. Please try again.");
     }
-
-    const encryptedPayload = encryptData(JSON.stringify(payloadObj));
-
-    let response;
-    if (editingId) {
-      response = await axios.put(
-        `${API}/Master/updateChargesProfile`,
-        { data: encryptedPayload }
-      );
-    } else {
-      response = await axios.post(
-        `${API}/Master/ChargesProfile/add`,
-        { data: encryptedPayload }
-      );
-    }
-
-    if (response.status === 200 || response.status === 201) {
-      const decryptedText = decryptData(response.data.data);
-      const parsedData =
-        typeof decryptedText === "string" ? JSON.parse(decryptedText) : decryptedText;
-
-      alert(`✅ ${parsedData.message}`);
-      setIsModalOpen(false);
-      setEditingId(null);
-
-      setFormData({
-        code: "",
-        description: "",
-        amount: "",
-        account: "",
-        isActive: true,
-        addedBy: "",
-      });
-
-      fetchChargeProfiles();
-    }
-  } catch (error) {
-    console.error("❌ Error saving/updating charge profile:", error);
-    alert("❌ Failed to save/update. Please try again.");
-  }
-};
-
+  };
 
   // ✅ Edit a profile
   const handleEdit = (profile) => {
@@ -198,8 +199,10 @@ const ChargesProfileList = () => {
     setIsModalOpen(true);
   };
   const handleDelete = async (profile) => {
-    debugger
-    if (!window.confirm("Are you sure you want to delete this charge profile?")) {
+    debugger;
+    if (
+      !window.confirm("Are you sure you want to delete this charge profile?")
+    ) {
       return;
     }
 
@@ -211,22 +214,28 @@ const ChargesProfileList = () => {
       const encryptedPayload = encryptData(JSON.stringify(payload));
 
       // Call DELETE API
-      const response = await axios.delete(`${API}/Master/charge-profile/delete`, {
-        data: { data: encryptedPayload },
-        headers: {
-          "Content-Type": "application/json",
+      const response = await axios.delete(
+        `${API}/Master/charge-profile/delete`,
+        {
+          data: { data: encryptedPayload },
+          headers: {
+            "Content-Type": "application/json",
+          },
         },
-      });
+      );
 
       // Decrypt response
       const decryptedResponse = decryptData(response.data.data);
-      const result = typeof decryptedResponse === "string" ? JSON.parse(decryptedResponse) : decryptedResponse;
+      const result =
+        typeof decryptedResponse === "string"
+          ? JSON.parse(decryptedResponse)
+          : decryptedResponse;
 
       if (result.message) {
         // Remove deleted profile from local state
         // setChargeProfiles((prev) => prev.filter((p) => p.id !== profile.id));
         alert(result.message);
-        fetchChargeProfiles()
+        fetchChargeProfiles();
       }
     } catch (err) {
       console.error("Error deleting charge profile:", err);
@@ -237,15 +246,18 @@ const ChargesProfileList = () => {
   // ✅ Toggle active state
   const handleToggle = async (id, currentState) => {
     try {
-      const payload = encryptData(JSON.stringify({ id, isActive: !currentState }));
+      const payload = encryptData(
+        JSON.stringify({ id, isActive: !currentState }),
+      );
       const response = await axios.patch(
         `${API}/Master/statusChangeChargesProfile`,
-        { data: payload }
+        { data: payload },
       );
 
       if (response.status === 200 && response.data?.data) {
         const decrypted = decryptData(response.data.data);
-        const parsed = typeof decrypted === "string" ? JSON.parse(decrypted) : decrypted;
+        const parsed =
+          typeof decrypted === "string" ? JSON.parse(decrypted) : decrypted;
         alert(`✅ ${parsed.message}`);
         fetchChargeProfiles();
       }
@@ -253,6 +265,16 @@ const ChargesProfileList = () => {
       console.error("❌ Error updating status:", error);
       alert("❌ Failed to update status");
     }
+  };
+  const handleClearSearch = () => {
+    // 1️⃣ Reset search fields
+    setSearchFilters({
+      code: "",
+      Description: "",
+    });
+
+    // 2️⃣ Call API again (fetch all data)
+    fetchChargeProfiles("", "");
   };
 
   return (
@@ -264,6 +286,54 @@ const ChargesProfileList = () => {
             Charges Profile List
           </h2>
           <div className="flex items-center gap-6">
+            <div className="flex items-center gap-3">
+              {/* Type Input */}
+              <div className="flex items-center gap-2">
+                <p className="text-[11.25px] font-semibold whitespace-nowrap">
+                  Code
+                </p>
+                <input
+                  type="text"
+                  name="code" // This must match the state key
+                  value={searchFilters.code}
+                  onChange={handleInputChange}
+                  onKeyDown={handleKeyPress} // Use onKeyDown for better compatibility
+                  className="border border-gray-400 px-3 py-1 text-[11.25px] rounded outline-none"
+                  style={{ width: "120px", height: "27.49px" }}
+                />
+              </div>
+
+              {/* Name Input */}
+              <div className="flex items-center gap-2">
+                <p className="text-[11.25px] font-semibold whitespace-nowrap">
+                  Description
+                </p>
+                <input
+                  type="text"
+                  name="Description" // This must match the state key
+                  value={searchFilters.Description}
+                  onChange={handleInputChange}
+                  onKeyDown={handleKeyPress}
+                  className="border border-gray-400 px-3 py-1 text-[11.25px] rounded outline-none"
+                  style={{ width: "300px", height: "27.49px" }}
+                />
+              </div>
+
+              {/* Buttons */}
+              <button
+                onClick={fetchChargeProfiles}
+                className="bg-[#0b2c69] text-white text-[11px] px-4 py-1 rounded"
+              >
+                Search
+              </button>
+
+              <button
+                onClick={handleClearSearch}
+                className="bg-gray-500 text-white text-[11px] px-4 py-1 rounded"
+              >
+                Clear
+              </button>
+            </div>
             <div className="flex gap-3">
               <button
                 onClick={() => {
@@ -284,7 +354,8 @@ const ChargesProfileList = () => {
               </button>
               <button
                 onClick={() => navigate("/")}
-                className="bg-[#C1121F] text-white text-[10px] px-4 py-1 rounded cursor-pointer">
+                className="bg-[#C1121F] text-white text-[10px] px-4 py-1 rounded cursor-pointer"
+              >
                 Exit
               </button>
             </div>
@@ -295,43 +366,50 @@ const ChargesProfileList = () => {
       {/* Modal */}
       {isModalOpen && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-sm">
-          <div className="bg-white w-[717px] rounded-lg shadow-lg h-[400px] p-10">
+          <div className="bg-white w-[500px] rounded-lg shadow-lg h-[400px] p-10">
             <h2 className="text-[#0A2478] text-[20px] font-semibold font-source mb-4">
               {isview
                 ? "View Charges Profile"
                 : editingId
-                  ? "Update Charges Profile"
+                  ? "Edit Charges Profile"
                   : "Add Charges Profile"}
             </h2>
 
-
-            <div className="grid grid-cols-2 gap-4">
+            <div className="flex justify-center gap-4">
               {/* Form Fields */}
               <div>
-                <label className="text-[14px]">Code <span className="text-red-500">*</span></label>
+                <p className="text-[14px]">
+                  Code <span className="text-red-500">*</span>
+                </p>
                 <input
                   type="text"
                   name="code"
                   value={formData.code}
                   disabled={isview}
                   onChange={handleChange}
-                  className="border border-gray-300 rounded w-[280px] h-[38px] px-3"
+                  className="border border-gray-300 rounded w-[120px] h-[38px] px-3"
                 />
               </div>
 
               <div>
-                <label className="text-[14px]">Description <span className="text-red-500">*</span></label>
+                <p className="text-[14px]">
+                  Description <span className="text-red-500">*</span>
+                </p>
                 <input
                   type="text"
                   name="description"
                   value={formData.description}
                   disabled={isview}
                   onChange={handleChange}
-                  className="border border-gray-300 rounded w-[280px] h-[38px] px-3"
+                  className="border border-gray-300 rounded w-[300px] h-[38px] px-3"
                 />
               </div>
+            </div>
+            <div className="flex  gap-4 mt-5">
               <div>
-                <label className="text-[12px] font-medium">Amount <span className="text-red-500">*</span></label>
+                <p className="text-[12px] font-medium">
+                  Amount <span className="text-red-500">*</span>
+                </p>
                 <input
                   type="number"
                   name="amount"
@@ -339,20 +417,22 @@ const ChargesProfileList = () => {
                   disabled={isview}
                   onChange={handleChange}
                   style={{
-                        MozAppearance: "textfield",
-                      }}
-                      onWheel={(e) => e.target.blur()}
-                  className="border border-gray-300 rounded w-[280px] h-[38px] px-3"
+                    MozAppearance: "textfield",
+                  }}
+                  onWheel={(e) => e.target.blur()}
+                  className="border border-gray-300 rounded w-[120px] h-[38px] px-3"
                 />
               </div>
               <div>
-                <label className="text-[12px] font-medium">Account <span className="text-red-500">*</span></label>
+                <p className="text-[12px] font-medium">
+                  Account <span className="text-red-500">*</span>
+                </p>
                 <select
                   name="account"
                   value={formData.account}
                   disabled={isview}
                   onChange={handleChange}
-                  className="border border-gray-300 rounded w-[280px] h-[38px] px-3"
+                  className="border border-gray-300 rounded w-[250px] h-[38px] px-3"
                 >
                   <option value="">-- Select --</option>
 
@@ -365,37 +445,24 @@ const ChargesProfileList = () => {
               </div>
             </div>
 
-            {/* <div className="flex justify-center gap-3 m-4">
-              <input
-                type="checkbox"
-                name="isActive"
-                checked={formData.isActive}
-                disabled={isview}
-                onChange={handleChange}
-                className="w-5 h-5"
-              />
-              <label className="text-[14px] font-medium">is Active</label>
-            </div> */}
-
             <div className="flex justify-center gap-3 my-6 mt-10">
-              {
-                !isview && (
-                  <button
-                    className="bg-[#0A2478] cursor-pointer text-white w-[92px] h-[30px] rounded"
-                    onClick={handleSave}
-                  >
-                    Save
-                  </button>
-                )
-              }
+              {!isview && (
+                <button
+                  className="bg-[#0A2478] cursor-pointer text-white w-[92px] h-[30px] rounded"
+                  onClick={handleSave}
+                >
+                  Save
+                </button>
+              )}
 
               <button
                 className="bg-[#C1121F] cursor-pointer text-white w-[92px] h-[30px] rounded"
                 onClick={() => {
-                  setIsModalOpen(false);    // close modal
-                  setEditingId(null);       // reset edit tracking
-                  setIsview(null);          // reset view mode
-                  setFormData({             // reset form fields
+                  setIsModalOpen(false); // close modal
+                  setEditingId(null); // reset edit tracking
+                  setIsview(null); // reset view mode
+                  setFormData({
+                    // reset form fields
                     code: "",
                     description: "",
                     amount: "",
@@ -407,7 +474,6 @@ const ChargesProfileList = () => {
               >
                 Exit
               </button>
-
             </div>
           </div>
         </div>
@@ -419,12 +485,22 @@ const ChargesProfileList = () => {
           <table className="w-full border-collapse">
             <thead className="bg-[#0A2478] text-white text-sm">
               <tr>
-                <th className="px-4 py-2 text-left border-r">Code</th>
-                <th className="px-4 py-2 text-left border-r">Description</th>
-                <th className="px-4 py-2 text-left border-r">Amount</th>
-                <th className="px-4 py-2 text-left border-r">Added By</th>
-                <th className="px-4 py-2 text-left border-r">Added On</th>
-                <th className="px-4 py-2 text-left border-r">Action</th>
+                <th className="px-4 py-2 text-left border-r w-[100px]">Code</th>
+                <th className="px-4 py-2 text-left border-r w-[500px]">
+                  Description
+                </th>
+                <th className="px-4 py-2 text-left border-r w-[100px]">
+                  Amount
+                </th>
+                <th className="px-4 py-2 text-left border-r w-[250px]">
+                  Added By
+                </th>
+                <th className="px-4 py-2 text-left border-r w-[150px]">
+                  Added On
+                </th>
+                <th className="px-4 py-2 text-left border-r w-[100px]">
+                  Action
+                </th>
                 <th className="px-4 py-2 text-left">Active</th>
               </tr>
             </thead>
@@ -432,39 +508,60 @@ const ChargesProfileList = () => {
               {data?.map((row, index) => (
                 <tr
                   key={row.id}
-                  className={`border-b ${index % 2 === 0 ? "bg-gray-50" : "bg-white"}`}
+                  className={index % 2 === 0 ? "bg-gray-50" : "bg-white"}
                 >
-                  <td className="px-4 py-2 text-blue-500 cursor-pointer" onClick={() => handleView(row)}>{row.code}</td>
+                  <td
+                    className="px-4 py-2 text-blue-500 cursor-pointer"
+                    onClick={() => handleView(row)}
+                  >
+                    {row.code}
+                  </td>
                   <td className="px-4 py-2">{row.description}</td>
                   <td className="px-4 py-2">{row.amount}</td>
                   <td className="px-4 py-2">{row.addedBy}</td>
-                  <td className="px-4 py-2">{new Date(row.createdAt).toLocaleDateString()}</td>
+                  <td className="px-4 py-2">
+                    {new Date(row.createdAt).toLocaleDateString()}
+                  </td>
                   <td className="px-4 py-2 text-[#1883EF] cursor-pointer">
                     <div className="flex gap-2">
                       <div
                         className="w-[20px] h-[20px] bg-[#56A869] rounded flex items-center justify-center p-1"
                         onClick={() => handleEdit(row)}
                       >
-                        <img src={GroupData} alt="edit" className="w-[18px] h-[18px]" title="Edit" />
+                        <img
+                          src={GroupData}
+                          alt="edit"
+                          className="w-[18px] h-[18px]"
+                          title="Edit"
+                        />
                       </div>
                       {/* <div className="w-[20px] h-[20px] bg-[#646AD9] rounded flex items-center justify-center p-1" onClick={() => handleView(row)}>
                         <img src={EyeData} alt="view" className="w-[18px] h-[18px]" title="view" />
                       </div> */}
-                      <div className="w-[20px] h-[20px] bg-red-400 rounded flex items-center justify-center p-1"
-                        onClick={() => handleDelete(row)}>
-                        <img src={DeleteData} alt="delete" className="w-[12px] h-[14px]" title="Delete" />
+                      <div
+                        className="w-[20px] h-[20px] bg-red-400 rounded flex items-center justify-center p-1"
+                        onClick={() => handleDelete(row)}
+                      >
+                        <img
+                          src={DeleteData}
+                          alt="delete"
+                          className="w-[12px] h-[14px]"
+                          title="Delete"
+                        />
                       </div>
                     </div>
                   </td>
                   <td className="px-4 py-2">
                     <button
                       onClick={() => handleToggle(row.id, row.isActive)}
-                      className={`w-12 h-6 flex cursor-pointer items-center rounded-full p-1 transition-colors ${row.isActive ? "bg-[#0A2478]" : "bg-gray-300"
-                        }`}
+                      className={`w-12 h-6 flex cursor-pointer items-center rounded-full p-1 transition-colors ${
+                        row.isActive ? "bg-[#0A2478]" : "bg-gray-300"
+                      }`}
                     >
                       <div
-                        className={`bg-white w-4 h-4 rounded-full shadow-md transform transition-transform ${row.isActive ? "translate-x-6" : "translate-x-0"
-                          }`}
+                        className={`bg-white w-4 h-4 rounded-full shadow-md transform transition-transform ${
+                          row.isActive ? "translate-x-6" : "translate-x-0"
+                        }`}
                       />
                     </button>
                   </td>

@@ -6,7 +6,10 @@ const LoanStatement = () => {
 
   // Filters
   const [fromDate, setFromDate] = useState("2025-04-01");
-  const [toDate, setToDate] = useState("2026-01-25");
+ const [toDate, setToDate] = useState(
+  new Date().toISOString().split("T")[0]
+);
+
   const [selectedScheme, setSelectedScheme] = useState("");
 
   // Loan + Customer

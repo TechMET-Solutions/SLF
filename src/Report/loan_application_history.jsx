@@ -5,7 +5,10 @@ const LoanApplicationHistory = () => {
   const [loading, setLoading] = useState(true);
 
   const [fromDate, setFromDate] = useState("2025-04-01");
-  const [toDate, setToDate] = useState("2026-01-25");
+const [toDate, setToDate] = useState(
+  new Date().toISOString().split("T")[0]
+);
+
   const [schemeId, setSchemeId] = useState("");
   const [status, setStatus] = useState("Approved");
 
@@ -149,7 +152,7 @@ const show = (val) =>
                   <th className="border p-2">Approval Date</th>
                   <th className="border p-2">Eligible Amt</th>
                   <th className="border p-2">Loan Amt</th>
-                  <th className="border p-2">Is OD</th>
+                  
                   <th className="border p-2">Cash</th>
 
                   <th className="border p-2">Bandhan Bank</th>
@@ -204,7 +207,7 @@ const show = (val) =>
                       </td>
                       <td className="border p-2">{show(row.Min_Loan)}</td>
                       <td className="border p-2">{show(row.Loan_amount)}</td>
-                      <td className="border p-2">{show(row.IsOD)}</td>
+                 
 
                       {/* Example for payment columns */}
                       <td className="border p-2">

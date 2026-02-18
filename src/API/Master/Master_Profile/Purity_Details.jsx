@@ -29,9 +29,13 @@ export const fetchPuritiesApi = async (page = 1, limit = 10) => {
 export const addPurityApi = async (payload) => {
   try {
     const encryptedPayload = encryptData(payload);
-    return await axios.post(`${API_BASE}/add-purity`, { data: encryptedPayload }, {
-      headers: { "Content-Type": "application/json" },
-    });
+    return await axios.post(
+      `${API_BASE}/add-purity`,
+      { data: encryptedPayload },
+      {
+        headers: { "Content-Type": "application/json" },
+      },
+    );
   } catch (error) {
     console.error("❌ Error adding purity:", error);
     throw error;
@@ -42,9 +46,13 @@ export const addPurityApi = async (payload) => {
 export const updatePurityApi = async (payload) => {
   try {
     const encryptedPayload = encryptData(payload);
-    return await axios.put(`${API_BASE}/update-purity`, { data: encryptedPayload }, {
-      headers: { "Content-Type": "application/json" },
-    });
+    return await axios.put(
+      `${API_BASE}/update-purity`,
+      { data: encryptedPayload },
+      {
+        headers: { "Content-Type": "application/json" },
+      },
+    );
   } catch (error) {
     console.error("❌ Error updating purity:", error);
     throw error;
@@ -55,9 +63,13 @@ export const updatePurityApi = async (payload) => {
 export const updatePurityStatusApi = async (id, status) => {
   try {
     const encryptedPayload = encryptData({ id, status });
-    return await axios.put(`${API_BASE}/update-purity`, { data: encryptedPayload }, {
-      headers: { "Content-Type": "application/json" },
-    });
+    return await axios.put(
+      `${API_BASE}/update-purity`,
+      { data: encryptedPayload },
+      {
+        headers: { "Content-Type": "application/json" },
+      },
+    );
   } catch (error) {
     console.error("❌ Error updating purity status:", error);
     throw error;
@@ -68,9 +80,28 @@ export const updatePurityStatusApi = async (id, status) => {
 export const deletePurityApi = async (id) => {
   try {
     const encryptedPayload = encryptData({ id });
-    return await axios.post(`${API_BASE}/delete-purity`, { data: encryptedPayload }, {
-      headers: { "Content-Type": "application/json" },
-    });
+    return await axios.post(
+      `${API_BASE}/delete-purity`,
+      { data: encryptedPayload },
+      {
+        headers: { "Content-Type": "application/json" },
+      },
+    );
+  } catch (error) {
+    console.error("❌ Error deleting purity:", error);
+    throw error;
+  }
+};
+export const deletePurityApiSilver = async (id) => {
+  try {
+    const encryptedPayload = encryptData({ id });
+    return await axios.post(
+      `${API_BASE}/delete-purity-silver`,
+      { data: encryptedPayload },
+      {
+        headers: { "Content-Type": "application/json" },
+      },
+    );
   } catch (error) {
     console.error("❌ Error deleting purity:", error);
     throw error;

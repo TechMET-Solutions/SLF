@@ -1,166 +1,121 @@
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 
+import axios from "axios";
+import { API } from "../api";
 import GroupData from "../assets/Group 124.svg";
 const AccountGroupList = () => {
   useEffect(() => {
     document.title = "SLF | Account Group List";
   }, []);
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [data] = useState([
-    {
-      groupName: "Recoverable",
-      appForm: "29-05-2025",
-      comments: "TDS of interest on FDR",
-      under: "Balance sheet",
-      addByEmail: "mjpl@mareakat.com",
-      docPercentOfLoanAmt: 0,
-      addOn: "22-09-2017",
-      modifyBy: "",
-      edit: true,
-    },
-    {
-      groupName: "IND 95",
-      appForm: "29-05-2025",
-      comments: "Test",
-      under: "Profit & loss",
-      addByEmail: "mjpl@mareakat.com",
-      docPercentOfLoanAmt: 0,
-      addOn: "22-09-2017",
-      modifyBy: "",
-      edit: true,
-    },
-    {
-      groupName: "IND 95",
-      appForm: "29-05-2025",
-      comments: "",
-      under: "Balance sheet",
-      addByEmail: "mjpl@mareakat.com",
-      docPercentOfLoanAmt: 0,
-      addOn: "22-09-2017",
-      modifyBy: "",
-      edit: true,
-    },
-  ]);
+  const [formData, setFormData] = useState({
+    groupName: "",
+    accountType: "",
+    under: "",
+    comments: "",
+  });
+
+  
+  const [isEditMode, setIsEditMode] = useState(false);
+  const [selectedId, setSelectedId] = useState(null);
+  const [data, setData] = useState([]);
+  console.log("Account Group List Data:", data);
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+    setFormData((prev) => ({
+      ...prev,
+      [name]: value,
+    }));
+  };
+ 
+
+const [searchHeaders, setSearchHeaders] = useState([]); // Array of active headers
+const [searchQuery, setSearchQuery] = useState("");
+const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+
+
+
+const toggleHeader = (headerId) => {
+  setSearchHeaders(prev => 
+    prev.includes(headerId) 
+      ? prev.filter(id => id !== headerId) 
+      : [...prev, headerId]
+  );
+};
+  
+
+const getAccountGroups = async () => {
+  try {
+    const response = await axios.get(
+      `${API}/api/account-group/list`,
+      {
+        params: {
+          headers: searchHeaders.join(","), // group_name,account_type
+          search: searchQuery,
+        },
+      }
+    );
+
+    setData(response.data.data);
+  } catch (error) {
+    console.error(error);
+  }
+};
+
+
+
+
+
+  const handleSave = async () => {
+    try {
+      if (isEditMode) {
+        await axios.put(
+          `${API}/api/account-group/update/${selectedId}`,
+          formData,
+        );
+        alert("Account Group Updated Successfully");
+      } else {
+        await axios.post(`${API}/api/account-group/create`, formData);
+        alert("Account Group Created Successfully");
+      }
+
+      setIsModalOpen(false);
+      setIsEditMode(false);
+      setSelectedId(null);
+      setFormData({
+        groupName: "",
+        accountType: "",
+        under: "",
+        comments: "",
+      });
+
+      getAccountGroups();
+    } catch (error) {
+      console.error(error);
+      alert("Error saving account group");
+    }
+  };
+
+  useEffect(() => {
+    document.title = "SLF | Account Group List";
+    getAccountGroups();
+  }, []);
+  const handleEdit = (row) => {
+    setFormData({
+      groupName: row.group_name,
+      accountType: row.account_type,
+      under: row.under_type,
+      comments: row.comments,
+    });
+
+    setSelectedId(row.id); // or row._id depending on backend
+    setIsEditMode(true);
+    setIsModalOpen(true);
+  };
 
   return (
     <div className=" min-h-screen w-full">
-
-
-
-      {/* middletopbar */}
       <div className="flex justify-center ">
-        {/* <div className="flex  items-center px-6 py-4 border-b mt-5 w-[1290px] h-[62px] border rounded-[11px] border-gray-200 justify-around shadow">
-         <h2
-  style={{
-    fontFamily: "Source Sans 3, sans-serif",
-    fontWeight: 700, // Bold
-    fontSize: "20px",
-    lineHeight: "148%",
-    letterSpacing: "0em",
-  }}
-  className="text-red-600"
->
-  Account Group List
-</h2>
-
-          <div className="flex gap-5 ">
-            <div className="flex gap-3">
-
-<div className="flex gap-5 items-center">
-<p
-  style={{
-    fontFamily: "Source Sans 3, sans-serif",
-    fontWeight: 400,
-    fontStyle: "normal",
-    fontSize: "11.25px",
-    lineHeight: "15px",
-    letterSpacing: "0em",
-  }}
->
-  Account Type
-</p>
-
-            <input
-  type="text"
- 
-  style={{
-    width: "168.64px",
-    height: "27.49px",
-    borderRadius: "5px",
-    borderWidth: "0.62px",
-  }}
-  className="border border-gray-400 px-3 py-1 text-[11.25px] font-source"
-/>
-
-            </div>
-          
-            <div className="flex gap-5 items-center">
-<p
-  style={{
-    fontFamily: "Source Sans 3, sans-serif",
-    fontWeight: 400,
-    fontStyle: "normal",
-    fontSize: "11.25px",
-    lineHeight: "15px",
-    letterSpacing: "0em",
-  }}
->
- Account Group
-</p>
-
-            <input
-  type="text"
- 
-  style={{
-    width: "168.64px",
-    height: "27.49px",
-    borderRadius: "5px",
-    borderWidth: "0.62px",
-  }}
-  className="border border-gray-400 px-3 py-1 text-[11.25px] font-source"
-/>
-<button
-  style={{
-    width: "84.36px",
-    height: "26.87px",
-    borderRadius: "5px",
-  }}
-  className="bg-[#0b2c69] text-white text-[11.25px] font-source font-normal flex items-center justify-center"
->
-  Search
-</button>
-
-            </div>
-            </div>
-            <div className="flex justify-end">
- <div className="flex  item-center gap-5 justify-end">
-<button
-  style={{
-    width: "74px",
-    height: "24px",
-    borderRadius: "3.75px",
-   
-    gap: "6.25px",
-                }}
-                  onClick={() => setIsModalOpen(true)}
-  className="bg-[#0A2478] text-white text-[11.25px] font-source font-normal flex items-center justify-center"
->
-  Add
-</button>
-
-           <button
-  className="text-white px-[6.25px] py-[6.25px] rounded-[3.75px] bg-[#C1121F] w-[74px] h-[24px] opacity-100 text-[10px]"
->
-  Exit
-</button>
-
-            </div>
-
-            </div>
-           
-           
-          </div>
-        </div> */}
         <div className="flex items-center px-6 py-4 border-b mt-5 w-[1290px] h-[62px] border rounded-[11px] border-gray-200 justify-between shadow">
           {/* Left heading */}
           <h2
@@ -173,14 +128,14 @@ const AccountGroupList = () => {
             }}
             className="text-red-600"
           >
-            Account Group List
+            Ledger List
           </h2>
 
           {/* Right section (search + buttons) */}
           <div className="flex items-center gap-6">
             {/* Search section */}
             <div className="flex gap-5 ">
-              <div className="flex gap-3 items-center">
+              {/* <div className="flex gap-3 items-center">
                 <p className="text-[11.25px] font-source">Account Type</p>
                 <input
                   type="text"
@@ -192,10 +147,10 @@ const AccountGroupList = () => {
                   }}
                   className="border border-gray-400 px-3 py-1 text-[11.25px] font-source"
                 />
-              </div>
+              </div> */}
 
-              <div className="flex gap-3 items-center">
-                <p className="text-[11.25px] font-source">Account Group</p>
+              {/* <div className="flex gap-3 items-center">
+                <p className="text-[11.25px] font-source">Ledger Group</p>
                 <input
                   type="text"
                   style={{
@@ -216,9 +171,84 @@ const AccountGroupList = () => {
                 >
                   Search
                 </button>
-              </div>
+              </div> */}
             </div>
+<div className="flex items-center gap-4">
+<div className="flex items-center gap-3">
+  <div className="flex items-center bg-white border border-gray-400 rounded-[5px] h-[32px] px-2 relative w-[500px]">
+    
+    {/* Multi-Select Header Dropdown */}
+    <div className="relative border-r border-gray-300 pr-2 mr-2">
+      <button 
+        onClick={() => setIsDropdownOpen(!isDropdownOpen)}
+        className="text-[11px] font-source font-bold text-[#0A2478] flex items-center gap-1 outline-none h-full"
+      >
+        Headers ({searchHeaders.length}) <span className="text-[8px]">▼</span>
+      </button>
 
+      {isDropdownOpen && (
+        <div className="absolute top-[35px] left-[-8px] bg-white border border-gray-300 shadow-xl rounded-md z-[100] w-[160px] p-2">
+          {[
+            { id: "group_name", label: "Ledger Name" },
+            { id: "account_type", label: "Account Type" },
+            { id: "under_type", label: "Under" }
+          ].map((col) => (
+            <label key={col.id} className="flex items-center gap-2 p-2 hover:bg-gray-50 cursor-pointer rounded">
+              <input
+                type="checkbox"
+                checked={searchHeaders.includes(col.id)}
+                onChange={() => toggleHeader(col.id)}
+                className="w-3 h-3 accent-[#0A2478]"
+              />
+              <span className="text-[11px] font-source text-gray-700">{col.label}</span>
+            </label>
+          ))}
+          <div className="border-t mt-1 pt-1 text-center">
+             <button 
+               onClick={() => setIsDropdownOpen(false)}
+               className="text-[10px] text-[#0A2478] font-bold"
+             >
+               Apply
+             </button>
+          </div>
+        </div>
+      )}
+    </div>
+
+    {/* Text Input Field */}
+    <input
+      type="text"
+      value={searchQuery}
+      onChange={(e) => setSearchQuery(e.target.value)}
+      placeholder="Type multiple items (e.g. Cash, Asset)..."
+      className="flex-grow text-[11px] font-source outline-none h-full"
+    />
+
+    {/* Search Button */}
+    <button
+      onClick={() => {
+        setIsDropdownOpen(false);
+        getAccountGroups();
+      }}
+      className="ml-2 bg-[#0b2c69] text-white text-[11px] px-4 h-[24px] rounded-[3px] font-source hover:bg-[#071d45]"
+    >
+      Search
+    </button>
+  </div>
+</div>
+
+  {/* Clear Button */}
+  <button 
+    onClick={() => {
+      setSearchQuery("");
+      setSearchHeaders([]);
+      getAccountGroups();
+    }}
+    className="text-[10px] text-gray-500 hover:text-red-500 underline"
+  >
+    Clear
+  </button>
+</div>
             {/* Buttons stuck to right */}
             <div className="flex gap-3">
               <button
@@ -233,44 +263,67 @@ const AccountGroupList = () => {
                 Add
               </button>
 
-              <button
-                className="text-white px-[6.25px] py-[6.25px] rounded-[3.75px] bg-[#C1121F] w-[74px] h-[24px] opacity-100 text-[10px]"
-              >
+              <button className="text-white px-[6.25px] py-[6.25px] rounded-[3.75px] bg-[#C1121F] w-[74px] h-[24px] opacity-100 text-[10px]">
                 Exit
               </button>
             </div>
           </div>
         </div>
-
       </div>
 
       {/* modelforAdd */}
       {isModalOpen && (
-        <div className="fixed inset-0 flex items-center justify-center z-50"
+        <div
+          className="fixed inset-0 flex items-center justify-center z-50"
           style={{
             background: "#0101017A",
             backdropFilter: "blur(6.8px)",
-          }}>
+          }}
+        >
           <div className="bg-white w-[717px] rounded-lg shadow-lg h-[322px] p-10">
-            <h2
-              className="text-[#0A2478] mb-4"
-              style={{
-                fontFamily: "Source Sans 3, sans-serif",
-                fontWeight: 600,
-                fontSize: "20px",
-                lineHeight: "24px",
-                letterSpacing: "0%",
-              }}
-            >
-              Add New Account Group
-            </h2>
-
+            {isEditMode && (
+              <>
+                <h2
+                  className="text-[#0A2478] mb-4"
+                  style={{
+                    fontFamily: "Source Sans 3, sans-serif",
+                    fontWeight: 600,
+                    fontSize: "20px",
+                    lineHeight: "24px",
+                    letterSpacing: "0%",
+                  }}
+                >
+                  Edit Ledger
+                </h2>
+              </>
+            )}
+            {!isEditMode && (
+              <>
+                <h2
+                  className="text-[#0A2478] mb-4"
+                  style={{
+                    fontFamily: "Source Sans 3, sans-serif",
+                    fontWeight: 600,
+                    fontSize: "20px",
+                    lineHeight: "24px",
+                    letterSpacing: "0%",
+                  }}
+                >
+                  Add New Ledger
+                </h2>
+              </>
+            )}
 
             <div className="grid grid-cols-2 gap-4">
               <div>
-                <label className="text-[14px] ">Group Name <span className="text-red-500">*</span></label>
+                <label className="text-[14px] ">
+                  Ledger Name <span className="text-red-500">*</span>
+                </label>
                 <input
                   type="text"
+                  name="groupName"
+                  value={formData.groupName}
+                  onChange={handleChange}
                   placeholder="Interest Accrued on FDR"
                   className="border border-gray-300 rounded"
                   style={{
@@ -278,15 +331,14 @@ const AccountGroupList = () => {
                     height: "38px",
                     padding: "10px 14px",
                     borderRadius: "5px",
-                    borderWidth: "1px",
-                    opacity: 1,
                   }}
                 />
-
               </div>
               <div>
                 {/* <label className="text-[12px] font-medium">Account Type *</label> */}
-                <label className="text-[14px] ">Account Type <span className="text-red-500">*</span></label>
+                <label className="text-[14px] ">
+                  Account Type <span className="text-red-500">*</span>
+                </label>
                 {/* <input
                   type="text"
                   className="border border-gray-300 rounded px-2 py-1 w-full mt-1 text-[12px]"
@@ -295,6 +347,9 @@ const AccountGroupList = () => {
 
                 <input
                   type="text"
+                  name="accountType"
+                  value={formData.accountType}
+                  onChange={handleChange}
                   placeholder="Current Assets"
                   className="border border-gray-300 rounded"
                   style={{
@@ -302,48 +357,47 @@ const AccountGroupList = () => {
                     height: "38px",
                     padding: "10px 14px",
                     borderRadius: "5px",
-                    borderWidth: "1px",
-                    opacity: 1,
                   }}
                 />
-
               </div>
               <div>
                 <label className="text-[12px] font-medium">Under</label>
-                <select className="border border-gray-300 rounded px-2 py-1 w-full mt-1 text-[12px]" style={{
-                  width: "280px",
-                  height: "38px",
-                  padding: "10px 14px",
-                  borderRadius: "5px",
-                  borderWidth: "1px",
-                  opacity: 1,
-                }}>
-                  <option value="" disabled>
-                    Select Under
-                  </option>
-                  <option>Balance Sheet</option>
-                  <option>Income Statement</option>
+                <select
+                  name="under"
+                  value={formData.under}
+                  onChange={handleChange}
+                  className="border border-gray-300 rounded"
+                  style={{
+                    width: "280px",
+                    height: "38px",
+                    padding: "10px 14px",
+                    borderRadius: "5px",
+                  }}
+                >
+                  <option value="">Select Under</option>
+                  <option value="Balance Sheet">Balance Sheet</option>
+                  <option value="Profit & Loss">Profit & Loss</option>
                 </select>
               </div>
               <div>
                 <label className="text-[12px] font-medium">Comments</label>
                 <input
                   type="text"
-                  className="border border-gray-300 rounded px-2 py-1 w-full mt-1 text-[12px]"
+                  name="comments"
+                  value={formData.comments}
+                  onChange={handleChange}
                   placeholder="Test"
+                  className="border border-gray-300 rounded"
                   style={{
                     width: "280px",
                     height: "38px",
                     padding: "10px 14px",
                     borderRadius: "5px",
-                    borderWidth: "1px",
-                    opacity: 1,
                   }}
                 />
               </div>
             </div>
             <div className="flex justify-center gap-5 items-center">
-
               <div className="flex justify-end gap-3 mt-6 item-center">
                 <button
                   className="bg-[#0A2478] text-white"
@@ -354,7 +408,7 @@ const AccountGroupList = () => {
 
                     opacity: 1,
                   }}
-                  onClick={() => setIsModalOpen(false)}
+                  onClick={handleSave}
                 >
                   Save
                 </button>
@@ -373,12 +427,8 @@ const AccountGroupList = () => {
                 >
                   Exit
                 </button>
-
               </div>
-
             </div>
-
-
           </div>
         </div>
       )}
@@ -389,14 +439,30 @@ const AccountGroupList = () => {
           <table className="w-full border-collapse">
             <thead className="bg-[#0A2478] text-white text-sm">
               <tr>
-                <th className="px-4 py-2 text-left border-r border-gray-300 text-[13px]">Group Name</th>
-                <th className="px-4 py-2 text-left border-r border-gray-300 text-[13px]">App form</th>
-                <th className="px-4 py-2 text-left border-r border-gray-300 text-[13px]">Comments</th>
-                <th className="px-4 py-2 text-left border-r border-gray-300 text-[13px]">Under</th>
-                <th className="px-4 py-2 text-left border-r border-gray-300 text-[13px]">Added by Email</th>
-                <th className="px-4 py-2 text-left border-r border-gray-300 text-[13px]">Doc % Of Loan Amt</th>
-                <th className="px-4 py-2 text-left border-r border-gray-300 text-[13px]">Added On</th>
-                <th className="px-4 py-2 text-left border-r border-gray-300 text-[13px]">Modified On</th>
+                <th className="px-4 py-2 text-left border-r border-gray-300 text-[13px]">
+                  Ledger Name
+                </th>
+                <th className="px-4 py-2 text-left border-r border-gray-300 text-[13px] w-[150px]">
+                  Account Type
+                </th>
+
+                <th className="px-4 py-2 text-left border-r border-gray-300 text-[13px] w-[100px]">
+                  Under
+                </th>
+                <th className="px-4 py-2 text-left border-r border-gray-300 text-[13px]">
+                  Added by Email
+                </th>
+
+                <th className="px-4 py-2 text-left border-r border-gray-300 text-[13px] w-[100px]">
+                  Added On
+                </th>
+                <th className="px-4 py-2 text-left border-r border-gray-300 text-[13px]  w-[110px]">
+                  Modified On
+                </th>
+
+                <th className="px-4 py-2 text-left border-r border-gray-300 text-[13px] w-[250px]">
+                  Comments
+                </th>
                 <th className="px-4 py-2 text-left text-[13px]">Action</th>
               </tr>
             </thead>
@@ -404,23 +470,36 @@ const AccountGroupList = () => {
               {data.map((row, index) => (
                 <tr
                   key={index}
-                  className={`border-b ${index % 2 === 0 ? "bg-gray-50" : "bg-white"
-                    }`}
+                className={index % 2 === 0 ? "bg-gray-50" : "bg-white"}
                 >
-                  <td className="px-4 py-2">{row.groupName}</td>
-                  <td className="px-4 py-2">{row.appForm}</td>
-                  <td className="px-4 py-2">{row.comments}</td>
-                  <td className="px-4 py-2">{row.under}</td>
-                  <td className="px-4 py-2">{row.addByEmail}</td>
-                  <td className="px-4 py-2">{row.docPercentOfLoanAmt}</td>
-                  <td className="px-4 py-2">{row.addOn}</td>
-                  <td className="px-4 py-2">{row.modifyBy}</td>
-                  <td className="px-4 py-2 text-[#1883EF] cursor-pointer">
-                    <div className="w-[17px] h-[17px] bg-[#56A869] rounded-[2.31px] flex items-center  p-0.5 justify-center">
-                      <img src={GroupData} alt="logout" className="w-[18px] h-[18px]" />
-                    </div>
+                  <td className="px-4 py-2">{row.group_name}</td>
+                  <td className="px-4 py-2">{row.account_type}</td>
+
+                  <td className="px-4 py-2">{row.under_type}</td>
+                  <td className="px-4 py-2">{row.added_by_email}</td>
+
+                  <td className="px-4 py-2">
+                    {new Date(row.created_at).toLocaleDateString("en-GB")}
                   </td>
 
+                  <td className="px-4 py-2">
+                    {new Date(row.updated_at).toLocaleDateString("en-GB")}
+                  </td>
+                  <td className="px-4 py-2">{row.comments}</td>
+                  <td className="px-4 py-2 text-[#1883EF] cursor-pointer">
+                    <td className="px-4 py-2 text-[#1883EF] cursor-pointer">
+                      <div
+                        onClick={() => handleEdit(row)}
+                        className="w-[17px] h-[17px] bg-[#56A869] rounded-[2.31px] flex items-center p-0.5 justify-center cursor-pointer"
+                      >
+                        <img
+                          src={GroupData}
+                          alt="edit"
+                          className="w-[18px] h-[18px]"
+                        />
+                      </div>
+                    </td>
+                  </td>
                 </tr>
               ))}
             </tbody>
@@ -428,12 +507,13 @@ const AccountGroupList = () => {
         </div>
       </div>
 
-
       {/* Pagination */}
       <div className="flex justify-center items-center px-6 py-3 border-t gap-2">
         <button className="px-3 py-1 border rounded-md">Previous</button>
         <div className="flex gap-2">
-          <button className="px-3 py-1 border bg-[#0b2c69] text-white rounded-md">1</button>
+          <button className="px-3 py-1 border bg-[#0b2c69] text-white rounded-md">
+            1
+          </button>
           <button className="px-3 py-1 border rounded-md">2</button>
           <button className="px-3 py-1 border rounded-md">3</button>
           <button className="px-3 py-1 border rounded-md">...</button>
@@ -441,7 +521,6 @@ const AccountGroupList = () => {
         </div>
         <button className="px-3 py-1 border rounded-md">Next</button>
       </div>
-
     </div>
   );
 };

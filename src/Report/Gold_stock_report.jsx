@@ -6,8 +6,10 @@ const GoldStockReport = () => {
 
   const [selectedScheme, setSelectedScheme] = useState("IND01"); // Selected scheme
 
-  const [fromDate, setFromDate] = useState("2025-04-01"); // From date
-  const [toDate, setToDate] = useState("2026-01-25"); // To date
+  const [fromDate, setFromDate] = useState( new Date().toISOString().split("T")[0]); // From date
+  const [toDate, setToDate] = useState(
+  new Date().toISOString().split("T")[0]
+);
 
   const [loanNos, setLoanNos] = useState([]); // Loan numbers based on filters
   const [selectedLoanNo, setSelectedLoanNo] = useState(""); // Selected loan no
@@ -69,7 +71,7 @@ const GoldStockReport = () => {
                 className="border border-gray-300 p-1 w-32 outline-none"
               />
 
-              <button className="bg-[#8b4513] p-1.5 text-white">📅</button>
+             
             </div>
           </div>
 

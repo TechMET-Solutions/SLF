@@ -7,7 +7,9 @@ const LoanCancellationReport = () => {
   const [loanNos, setLoanNos] = useState([]);
   const [selectedLoanNo, setSelectedLoanNo] = useState("");
   const [fromDate, setFromDate] = useState("2025-04-01");
-  const [toDate, setToDate] = useState("2026-01-25");
+  const [toDate, setToDate] = useState(
+  new Date().toISOString().split("T")[0]
+);
   // Fetching Schemes for the dropdown to match the "IND01" style in your image
   const [rows, setRows] = useState([]);
 
@@ -92,9 +94,7 @@ const LoanCancellationReport = () => {
                   onChange={(e) => setFromDate(e.target.value)}
                 />
 
-                <button className="bg-[#8B5E3C] p-1.5 rounded-r border border-[#8B5E3C] flex items-center justify-center hover:bg-[#764f32] transition-colors">
-                  <span className="text-white text-[10px]">📅</span>
-                </button>
+               
               </div>
             </div>
 
@@ -111,9 +111,7 @@ const LoanCancellationReport = () => {
                   onChange={(e) => setToDate(e.target.value)}
                 />
 
-                <button className="bg-[#8B5E3C] p-1.5 rounded-r border border-[#8B5E3C] flex items-center justify-center hover:bg-[#764f32] transition-colors">
-                  <span className="text-white text-[10px]">📅</span>
-                </button>
+                
               </div>
             </div>
 

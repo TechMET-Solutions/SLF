@@ -5,7 +5,9 @@ const InterestCollectionReport = () => {
   const [loading, setLoading] = useState(true);
   const [selectedScheme, setSelectedScheme] = useState("");
   const [fromDate, setFromDate] = useState("2025-04-01");
-  const [toDate, setToDate] = useState("2026-01-25");
+ const [toDate, setToDate] = useState(
+  new Date().toISOString().split("T")[0]
+);
   const [rows, setRows] = useState([]);
   const [total, setTotal] = useState(0);
   // Fetching Schemes for the dropdown
@@ -69,9 +71,7 @@ const InterestCollectionReport = () => {
                   onChange={(e) => setFromDate(e.target.value)}
                   className="border border-gray-300 p-1 px-2 rounded-l w-28 bg-white outline-none"
                 />
-                <button className="bg-[#8B5E3C] p-1.5 rounded-r border border-[#8B5E3C] flex items-center justify-center">
-                  <span className="text-white text-[10px]">📅</span>
-                </button>
+               
               </div>
             </div>
 
@@ -87,9 +87,7 @@ const InterestCollectionReport = () => {
                   onChange={(e) => setToDate(e.target.value)}
                   className="border border-gray-300 p-1 px-2 rounded-l w-28 bg-white outline-none"
                 />
-                <button className="bg-[#8B5E3C] p-1.5 rounded-r border border-[#8B5E3C] flex items-center justify-center">
-                  <span className="text-white text-[10px]">📅</span>
-                </button>
+                
               </div>
             </div>
 
@@ -100,7 +98,7 @@ const InterestCollectionReport = () => {
                 className="border border-gray-300 p-1 rounded min-w-[160px] bg-white outline-none"
                 onChange={(e) => setSelectedScheme(e.target.value)}
               >
-                <option value="">INDEMITEST</option>
+                {/* <option value="">INDEMITEST</option> */}
                 {loading ? (
                   <option>Loading...</option>
                 ) : (
