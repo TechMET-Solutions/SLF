@@ -290,6 +290,7 @@ import CustomerLedger from "./Report/Customer-Ledger.jsx";
 import Customer_History from "./Report/Customer_History.jsx";
 import Customer_list from "./Report/Customer_list.jsx";
 import Day_Book from "./Report/Day_Book.jsx";
+import EmployeePayRoll from "./Report/EmployeePayRoll.jsx";
 import FundTransferReciptCreate from "./Report/FundTransferReciptCreate.jsx";
 import Fund_Transfer_Report from "./Report/Fund_Transfer_Report.jsx";
 import GoldStockReport from "./Report/Gold_stock_report.jsx";
@@ -363,7 +364,6 @@ import ViewBidderDetails from "./TrasactionPages/ViewBidderDetails";
 import ViewCreditNote from "./TrasactionPages/ViewCreditNote";
 import ViewLoanCharges from "./TrasactionPages/ViewLoanCharges";
 import ViewLoanDetails from "./TrasactionPages/ViewLoanDeatils";
-import EmployeePayRoll from "./Report/EmployeePayRoll.jsx";
 // ---------------- LAYOUT WRAPPER ----------------
 function LayoutWithNavbar({ children }) {
   const location = useLocation();
@@ -750,7 +750,7 @@ function App() {
                     path="/FundTransferRec/Create"
                     element={<FundTransferRecCreate />}
                   />
-                   <Route
+                  <Route
                     path="/Employee-payroll"
                     element={<EmployeePayRoll />}
                   />

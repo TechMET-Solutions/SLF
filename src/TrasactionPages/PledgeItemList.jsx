@@ -185,15 +185,15 @@ console.log(purities,"purities")
           Pledge Item List For Gold
         </h3>
 
-        <table className=" border border-gray-300 text-sm">
+        <table className="   text-sm">
           <thead className="bg-[#0A2478] text-white">
             <tr>
-              <th className="px-4 py-2 border-r border-gray-200 w-[120px]">Particulars</th>
+              <th className="px-4 py-2 border-r border-gray-200 w-[200px]">Particulars</th>
               <th className="px-4 py-2 border-r border-gray-200 w-[50px]">Nos.</th>
-              <th className="px-4 py-2 border-r border-gray-200  w-[50px]">Gross</th>
-              <th className="px-4 py-2 border-r border-gray-200  w-[50px]">Net Weight</th>
-              <th className="px-4 py-2 border-r border-gray-200 w-[50px]">Purity</th>
-               <th className="px-4 py-2 border-r border-gray-200 w-[50px]">Calculated Purity</th>
+              <th className="px-4 py-2 border-r border-gray-200  w-[80px]">Gross</th>
+              <th className="px-4 py-2 border-r border-gray-200   w-[80px]">Net Weight</th>
+              <th className="px-4 py-2 border-r border-gray-200 w-[120px]">Purity</th>
+               <th className="px-4 py-2 border-r border-gray-200 w-[120px]">Calculated Purity</th>
               <th className="px-4 py-2 border-r border-gray-200">Rate</th>
               <th className="px-4 py-2 border-r border-gray-200">Valuation</th>
               <th className="px-4 py-2">Remark</th>
@@ -202,14 +202,14 @@ console.log(purities,"purities")
 
           <tbody className="text-gray-700">
             {rows.map((row, index) => (
-              <tr key={row.id} className="border-t border-gray-200">
+              <tr key={row.id} className={index % 2 === 0 ? "bg-gray-50" : "bg-white"}>
                 <td className="px-4 py-2">
                   <select
                     value={row.particular}
                     onChange={(e) =>
                       handleChange(index, "particular", e.target.value)
                     }
-                    className="border border-gray-300 rounded-md px-2 py-1 w-[120px] focus:outline-none focus:ring-1 focus:ring-blue-500"
+                    className="border border-gray-300 rounded-md px-2 py-1 w-[200px] focus:outline-none focus:ring-1 focus:ring-blue-500"
                   >
                     <option value="">Select Particular</option>
                     {pledgeItems.map((item, idx) => (
@@ -233,7 +233,7 @@ console.log(purities,"purities")
                         MozAppearance: "textfield",
                       }}
                       onWheel={(e) => e.target.blur()}
-                    className="border border-gray-300 rounded-md px-2 py-1  w-[50px] focus:outline-none focus:ring-1 focus:ring-blue-500"
+                    className="border border-gray-300 rounded-md px-2 py-1  w-[80px] focus:outline-none focus:ring-1 focus:ring-blue-500"
                   />
                 </td>
 
@@ -248,7 +248,7 @@ console.log(purities,"purities")
                         MozAppearance: "textfield",
                       }}
                       onWheel={(e) => e.target.blur()}
-                    className="border border-gray-300 rounded-md px-2 py-1  w-[50px] focus:outline-none focus:ring-1 focus:ring-blue-500"
+                    className="border border-gray-300 rounded-md px-2 py-1   w-[80px] focus:outline-none focus:ring-1 focus:ring-blue-500"
                   />
                 </td>
 
@@ -256,7 +256,7 @@ console.log(purities,"purities")
   <select
     value={row.purity}
     onChange={(e) => handleChange(index, "purity", e.target.value)}
-    className="border border-gray-300 rounded-md px-2 py-1 w-[100px] focus:outline-none focus:ring-1 focus:ring-blue-500"
+    className="border border-gray-300 rounded-md px-2 py-1 w-[120px] focus:outline-none focus:ring-1 focus:ring-blue-500"
   >
     <option value="">Select Purity</option>
     {purities.map((p) => (
@@ -272,7 +272,7 @@ console.log(purities,"purities")
   <select
     value={row.Calculated_Purity}
     onChange={(e) => handleChange(index, "Calculated_Purity", e.target.value)}
-    className="border border-gray-300 rounded-md px-2 py-1 w-[100px]  focus:outline-none focus:ring-1 focus:ring-blue-500"
+    className="border border-gray-300 rounded-md px-2 py-1 w-[120px]  focus:outline-none focus:ring-1 focus:ring-blue-500"
   >
     <option value="">Select Calculated Purity</option>
     {purities.map((p) => (

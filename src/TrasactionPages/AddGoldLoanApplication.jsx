@@ -704,9 +704,10 @@ const AddGoldLoanApplication = () => {
       </div>
 
       <div className=" mt-7">
-        {/* ===== FORM SECTIONS ===== */}
-        <div className="flex gap-2  pl-[110px] ">
+
+        <div className="flex pl-[110px]  gap-5">
           <div>
+<div>
             <div className="flex  gap-2">
               <div className="flex flex-col">
                 <label className="text-[14px] font-medium">
@@ -762,7 +763,7 @@ const AddGoldLoanApplication = () => {
                 </div>
               </div>
 
-              <div className="mb-6">
+              <div className="mb-6 mt-[-2px]">
                 <label className="text-[14px] font-medium block mb-1">
                   Scheme<span className="text-red-500">*</span>
                 </label>
@@ -834,12 +835,12 @@ const AddGoldLoanApplication = () => {
 
               <div></div>
             </div>
-            <div className="flex mt-1 gap-2">
+            <div className="flex gap-2">
               <div className="flex flex-col">
                 <label className="text-[14px] font-medium">
                   Co-Borrower<span className="text-red-500">*</span>
                 </label>
-                <div className="flex items-center mt-1 w-[280px]">
+                <div className="flex items-center w-[280px] mt-1">
                   <div className="relative flex-1">
                     <input
                       type="text"
@@ -850,7 +851,7 @@ const AddGoldLoanApplication = () => {
                         setSearchTermForCoBorrower(e.target.value);
                         setSelectedCoBorrower(null);
                       }}
-                      className="border border-gray-300 rounded-l px-3 py-2 w-full focus:outline-none focus:ring-1 focus:ring-blue-500 bg-white"
+                      className="border border-gray-300 rounded-l px-3 py-2 w-full focus:outline-none focus:ring-1 focus:ring-blue-500 bg-white h-[38px] "
                     />
 
                     {loading && (
@@ -880,7 +881,7 @@ const AddGoldLoanApplication = () => {
                   </div>
 
                   <button
-                    className="bg-[#0A2478] text-white px-4 py-3 rounded-r border border-gray-300 border-l-0 hover:bg-[#081c5b]"
+                    className="bg-[#0A2478] text-white px-4 py-3 rounded-r border border-gray-300 border-l-0 hover:bg-[#081c5b] h-[40px]"
                     type="button"
                     onClick={() => OpenCustomerModel(selectedCoBorrower.id)} // <--- ADD
                   >
@@ -901,12 +902,25 @@ const AddGoldLoanApplication = () => {
                     name="CoBorrowerRelation"
                     value={formData.CoBorrowerRelation}
                     onChange={handleInputChange}
-                    className="border border-gray-300 px-3 py-2 mt-1 w-[120px] rounded-[8px] bg-white h-[38px]"
+                    className="border border-gray-300 px-3 py-2  w-[120px] rounded-[8px] bg-white h-[40px]"
                   />
                 </div>
               </div>
+<div className="">
+          <p>Address</p>
+          <textarea
+         
+                name="borrowerAddress"
+                value={formData.borrowerAddress}
+                onChange={handleInputChange}
+                className="border w-[500px] h-[40px] rounded-[8px] p-2 focus:outline-none focus:ring-1 focus:ring-blue-400"
+              /></div>
+             
+             
+              </div>
+                
 
-              <div>
+               <div className="flex gap-2  mt-2 ">
                 <div className="">
                   <div>
                     <label className="text-[14px] font-medium">
@@ -923,9 +937,7 @@ const AddGoldLoanApplication = () => {
                     className="border border-gray-300 px-3 py-2 mt-1 w-[200px] rounded-[8px] bg-white h-[38px]"
                   />
                 </div>
-              </div>
-
-              <div>
+                 <div>
                 <div className="">
                   <div>
                     <label className="text-[14px] font-medium">
@@ -943,13 +955,18 @@ const AddGoldLoanApplication = () => {
                   />
                 </div>
               </div>
-             
-            </div>
-          </div>
+              </div>
 
-          <div className="flex ">
+             
+
+              
+          </div>
+          </div>
+          
+          <div>
+ <div className="flex  gap-2">
             
-            <div className="  h-[130px] ">
+            <div className=" h-[130px]  ">
               {/* Profile Image */}
               <p>Customer</p>
 
@@ -975,7 +992,7 @@ const AddGoldLoanApplication = () => {
                 )}
               </div>
             </div>
-            <div className="w-[139px] h-auto flex flex-col items-center">
+            <div className="w-[100px] h-auto flex flex-col ">
               <p className="font-medium ">Co-Borrower</p>
 
               <img
@@ -1001,44 +1018,7 @@ const AddGoldLoanApplication = () => {
               </div>
             </div>
 
-            {/* <div className="">
-              <p>Ornament Photo</p>
-
-              <img
-                src={
-                  formData.OrnamentPhoto ? formData.OrnamentPhoto : profileempty
-                }
-                alt="Ornament"
-                className="w-[81px]  object-cover rounded-[8px] border border-gray-300"
-              />
-
-              <div className="mt-1">
-                <label
-                  htmlFor="ornamentFile"
-                  className="w-[90px] h-[25px]  border rounded-[8px] bg-[#0A2478] text-[12px] text-white flex justify-center items-center gap-2 cursor-pointer"
-                >
-                  <p className="text-xs">Choose File</p>
-                  <MdOutlineFileUpload />
-                </label>
-
-                <input
-                  type="file"
-                  id="ornamentFile"
-                  name="OrnamentFile"
-                  onChange={(e) => handleOrnamentUpload(e)}
-                  className="hidden"
-                />
-                {formData.OrnamentFile && (
-                  <p className="text-[13px] text-gray-700">
-                    Selected File:{" "}
-                    <span className="font-medium text-[#0A2478]">
-                      {formData.OrnamentFile.name}
-                    </span>
-                  </p>
-                )}
-              </div>
-            </div> */}
-
+         
             <div className="">
               <p >Ornament Photo</p>
 
@@ -1047,7 +1027,7 @@ const AddGoldLoanApplication = () => {
                   formData.OrnamentPhoto ? formData.OrnamentPhoto : profileempty
                 }
                 alt="Ornament"
-                className="w-[110px] h-[100px] object-cover rounded-[8px] border border-gray-300 cursor-pointer"
+                className="w-[100px] h-[80px] object-cover rounded-[8px] border border-gray-300 cursor-pointer"
                 onClick={() => fileInputRef.current.click()}
               />
 
@@ -1060,30 +1040,19 @@ const AddGoldLoanApplication = () => {
                 className="hidden"
               />
 
-              {/* {formData.OrnamentFile && (
-                <p className="text-[13px] text-gray-700 mt-1">
-                  Selected File:{" "}
-                  <span className="font-medium text-[#0A2478]">
-                    {formData.OrnamentFile.name}
-                  </span>
-                </p>
-              )} */}
+            
             </div>
           </div>
+          </div>
         </div>
-         <div className=" gap-2 mt-2 pl-[110px] ">
-          <p>Address</p>
-          <textarea
-         
-                name="borrowerAddress"
-                value={formData.borrowerAddress}
-                onChange={handleInputChange}
-                className="border w-[400px] h-[62px] rounded-[8px] p-2 focus:outline-none focus:ring-1 focus:ring-blue-400"
-              /></div>
-         
-        {selectedScheme?.product === "Gold" && (
+       
+       
+       
+        <div className=" gap-10  mb-10 pl-[110px] mt-5 ">
+          
+{selectedScheme?.product === "Gold" && (
           <>
-            <div className="flex gap-2  pl-[110px] ">
+            <div className="flex gap-2  mt-2 ">
               <PledgeItemList
                 rows={PledgeItem}
                 setRows={setPledgeItem}
@@ -1094,7 +1063,7 @@ const AddGoldLoanApplication = () => {
         )}
         {selectedScheme?.product === "Silver" && (
           <>
-            <div className="flex gap-2 pl-[110px] ">
+            <div className="flex gap-2 mt-2 ">
               <PledgeItemListSilver
                 rows={PledgeItem}
                 setRows={setPledgeItem}
@@ -1104,7 +1073,7 @@ const AddGoldLoanApplication = () => {
           </>
         )}
 
-        <div className="flex  gap-2 pl-[110px] mt-2 ">
+        <div className="flex  gap-2 ">
           <div className="">
             <div>
               <label className="text-[14px] font-medium">
@@ -1158,7 +1127,7 @@ const AddGoldLoanApplication = () => {
                   Net_Payable: netPayable.toFixed(2),
                 }));
               }}
-              className="border border-gray-300 px-3 py-2 w-[129px] rounded-[8px] bg-white h-[38px]"
+              className="border border-gray-300 px-3 py-2 w-[129px] rounded-[8px] bg-white h-[38px] mt-1"
             />
           </div>
 
@@ -1169,7 +1138,7 @@ const AddGoldLoanApplication = () => {
 
             <div className="flex w-[129px]">
               {/* Percentage Button first */}
-              <button className="bg-[#0A2478] text-white px-4 py-2 text-sm font-medium rounded-l-md border border-[#0A2478] hover:bg-[#081c5b] transition-all duration-200">
+              <button className="bg-[#0A2478] text-white px-4 py-2 text-sm font-medium rounded-l-md border border-[#0A2478] hover:bg-[#081c5b] transition-all duration-200 mt-1">
                 {selectedScheme?.docChargePercent || 0}
               </button>
 
@@ -1180,7 +1149,7 @@ const AddGoldLoanApplication = () => {
                 value={formData.Doc_Charges}
                 onChange={handleInputChange}
                 placeholder="Enter rate"
-                className="flex-1 border border-gray-300 rounded-r-md px-3 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-[#0A2478] w-[50px]"
+                className="flex-1 border border-gray-300 rounded-r-md px-3 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-[#0A2478] w-[50px] mt-1"
               />
             </div>
           </div>
@@ -1196,7 +1165,7 @@ const AddGoldLoanApplication = () => {
               name="Net_Payable"
               value={formData.Net_Payable}
               onChange={handleInputChange}
-              className="border border-gray-300 px-3 py-2  w-[129px] rounded-[8px] bg-white h-[38px]"
+              className="border border-gray-300 px-3 py-2 mt-1  w-[129px] rounded-[8px] bg-white h-[38px]"
             />
           </div>
 
@@ -1208,7 +1177,7 @@ const AddGoldLoanApplication = () => {
               name="value1"
               value={formData.value1}
               onChange={handleInputChange}
-              className="border border-gray-300 rounded px-3 py-2 mt-1 "
+              className="border border-gray-300 rounded-[8px] px-3 py-2 mt-1 "
             >
               <option value="">Select valuer 1</option>
               {activeEmployees.map((emp) => (
@@ -1227,7 +1196,7 @@ const AddGoldLoanApplication = () => {
               name="value2"
               value={formData.value2}
               onChange={handleInputChange}
-              className="border border-gray-300 rounded px-3 py-2 mt-1 w-full"
+              className="border border-gray-300 rounded-[8px] px-3 py-2 mt-1 w-full"
             >
               <option value="">Select valuer 2</option>
               {activeEmployees.map((emp) => (
@@ -1261,6 +1230,8 @@ const AddGoldLoanApplication = () => {
             {numberToWords(Number(formData.Loan_amount) || 0)}
           </p>
         </div>
+         </div>
+        
 
         <div className="flex gap-10  mb-10 pl-[110px] ">
           <div className="flex ">

@@ -17,7 +17,10 @@ const PushGoldRateList = () => {
   }, []);
   const [data, setData] = useState([]);
   const [Silverdata, setSilverData] = useState([]);
-  const [pushDate, setPushDate] = useState("");
+ const [pushDate, setPushDate] = useState(
+  new Date().toISOString().split("T")[0]
+);
+
   const [goldRate, setGoldRate] = useState("");
 
   // Pagination states
