@@ -5,6 +5,7 @@ import { API } from "../api";
 import { useAuth } from "../API/Context/AuthContext";
 import GroupData from "../assets/Group 124.svg";
 import { useNavigate } from "react-router-dom";
+import { FiEdit } from "react-icons/fi";
 const AccountGroupList = () => {
   useEffect(() => {
     document.title = "SLF | Account Group List";
@@ -28,7 +29,7 @@ const AccountGroupList = () => {
       [name]: value,
     }));
   };
-const navigate = useNavigate();
+  const navigate = useNavigate();
 
   const [searchHeaders, setSearchHeaders] = useState([]); // Array of active headers
   const [searchQuery, setSearchQuery] = useState("");
@@ -273,7 +274,7 @@ const navigate = useNavigate();
 
 
                 </div>
-               
+
               </div>
 
               {/* Clear Button */}
@@ -302,12 +303,12 @@ const navigate = useNavigate();
                 Add
               </button>
 
-             <button
-  onClick={() => navigate("/")}
-  className="text-white px-[6.25px] py-[6.25px] rounded-[3.75px] bg-[#C1121F] w-[74px] h-[24px] opacity-100 text-[10px]"
->
-  Exit
-</button>
+              <button
+                onClick={() => navigate("/")}
+                className="text-white px-[6.25px] py-[6.25px] rounded-[3.75px] bg-[#C1121F] w-[74px] h-[24px] opacity-100 text-[10px]"
+              >
+                Exit
+              </button>
 
             </div>
           </div>
@@ -513,7 +514,7 @@ const navigate = useNavigate();
               {data.map((row, index) => (
                 <tr
                   key={index}
-                  className={index % 2 === 0 ? "bg-gray-50" : "bg-white"}
+                  className={index % 2 === 0 ? "bg-gray-100" : "bg-white"}
                 >
                   <td className="px-4 py-2">{row.group_name}</td>
                   <td className="px-4 py-2">{row.account_type}</td>
@@ -529,19 +530,13 @@ const navigate = useNavigate();
                     {new Date(row.updated_at).toLocaleDateString("en-GB")}
                   </td>
                   <td className="px-4 py-2">{row.comments}</td>
-                  <td className="px-4 py-2 text-[#1883EF] cursor-pointer">
-                    <td className="px-4 py-2 text-[#1883EF] cursor-pointer">
-                      <div
-                        onClick={() => handleEdit(row)}
-                        className="w-[17px] h-[17px] bg-[#56A869] rounded-[2.31px] flex items-center p-0.5 justify-center cursor-pointer"
-                      >
-                        <img
-                          src={GroupData}
-                          alt="edit"
-                          className="w-[18px] h-[18px]"
-                        />
-                      </div>
-                    </td>
+                  <td className="px-4 py-2 flex gap-2 justify-center">
+                    <div
+                      className="bg-[#3dbd5a] cursor-pointer p-1.5 text-white rounded-sm"
+                      onClick={() => handleEdit(row)}
+                    >
+                      <FiEdit />
+                    </div>
                   </td>
                 </tr>
               ))}

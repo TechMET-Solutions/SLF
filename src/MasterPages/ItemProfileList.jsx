@@ -427,7 +427,7 @@ const [formData, setFormData] = useState({
                         ? new Date(row.modified_on).toLocaleDateString()
                         : "-"}
                     </td>
-                    <td className="px-4 py-2 text-[#1883EF] cursor-pointer">
+                    <td className="px-4 py-2 text-[#1883EF] text-center cursor-pointer">
                       <button
                         className="bg-green-500 p-1.5 text-white rounded cursor-pointer"
                         onClick={() => handleOpenModal(row)}

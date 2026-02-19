@@ -2,6 +2,7 @@ import axios from "axios";
 import { useEffect, useState } from "react";
 import { FiEdit } from "react-icons/fi";
 import { useNavigate } from "react-router-dom";
+import GroupData from "../assets/Group 124.svg";
 import { API } from "../api";
 import {
   updateBranchApi,
@@ -481,13 +482,13 @@ const BranchProfileList = () => {
                   lineHeight: "24px",
                 }}
               >
-               {
-  isViewMode
-    ? "View Branch Details"
-    : isEditMode
-    ? "Edit Branch Details"
-    : "Add Branch Details"
-}
+                {
+                  isViewMode
+                    ? "View Branch Details"
+                    : isEditMode
+                      ? "Edit Branch Details"
+                      : "Add Branch Details"
+                }
 
               </h2>
 
@@ -753,11 +754,13 @@ const BranchProfileList = () => {
                       <div className="flex gap-2 justify-center">
                         <button
                           disabled={isViewMode}
-                          className="bg-green-500 p-1.5 text-white rounded cursor-pointer"
+                          className="bg-[#3dbd5a] cursor-pointer p-1.5 text-white rounded-sm"
                           onClick={() => handleEdit(row)}
                           title="Edit"
                         >
                           <FiEdit className="text-white text-sm" />
+
+                          {/* <FiEdit /> */}
                         </button>
                         {/* <button
                           className="bg-[#646AD9] p-1.5 text-white rounded cursor-pointer"
@@ -770,16 +773,14 @@ const BranchProfileList = () => {
                     <td className="px-4 py-2 text-[#1883EF] cursor-pointer">
                       <button
                         onClick={() => handleToggleStatus(row.id, row.status)}
-                        className={`w-12 h-6 flex items-center rounded-full p-1 transition-colors ${
-                          row.status === "1" ? "bg-[#0A2478]" : "bg-gray-300"
-                        }`}
+                        className={`w-12 h-6 flex items-center rounded-full p-1 transition-colors ${row.status === "1" ? "bg-[#0A2478]" : "bg-gray-300"
+                          }`}
                       >
                         <div
-                          className={`bg-white w-4 h-4 rounded-full shadow-md transform transition-transform ${
-                            row.status === "1"
+                          className={`bg-white w-4 h-4 rounded-full shadow-md transform transition-transform ${row.status === "1"
                               ? "translate-x-6"
                               : "translate-x-0"
-                          }`}
+                            }`}
                         />
                       </button>
                     </td>

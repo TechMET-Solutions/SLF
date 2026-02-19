@@ -7,6 +7,7 @@ import { useAuth } from "../API/Context/AuthContext";
 import GroupData from "../assets/Group 124.svg";
 import { decryptData, encryptData } from "../utils/cryptoHelper";
 import { formatIndianDate } from "../utils/Helpers";
+import { FiEdit, FiTrash2 } from "react-icons/fi";
 
 const DocumentProof = () => {
   useEffect(() => {
@@ -740,44 +741,25 @@ const handleUpdateSubmit = async () => {
                     {formatIndianDate(row.modified_on)}
                   </td>
 
-                  {/* Action icons */}
-                  {/* <td className="px-4 py-2 text-[#1883EF] cursor-pointer">
-                    <div className="flex gap-2 justify-center">
-                      <div
-                        className="w-[17px] h-[17px] bg-[#56A869] rounded-[2.31px] flex items-center justify-center p-0.5"
-                        onClick={() => handleEditClick(row)}
-                      >
-                        <img
-                          src={GroupData}
-                          alt="view"
-                          className="w-[18px] h-[18px] "
-                          title="Edit"
-                        />
-                      </div>
-                    </div>
-                  </td> */}
+                  
                   <td className="px-4 py-2 text-[#1883EF]">
                     <div className="flex gap-2 justify-center">
                       {/* Edit */}
                       <div
-                        className="w-[20px] h-[20px] bg-[#56A869] rounded-[3px] flex items-center justify-center cursor-pointer hover:opacity-80"
+                        className="bg-[#3dbd5a] cursor-pointer p-1.5 text-white rounded-sm"
                         onClick={() => handleEditClick(row)}
                         title="Edit"
                       >
-                        <img
-                          src={GroupData}
-                          alt="edit"
-                          className="w-[14px] h-[14px]"
-                        />
+                       <FiEdit className="text-white text-[11px]" />
                       </div>
 
                       {/* Delete */}
                       <div
-                        className="w-[20px] h-[20px] bg-[#C1121F] rounded-[3px] flex items-center justify-center cursor-pointer hover:bg-red-700 transition"
+                        className="bg-[#f51111ec] cursor-pointer p-1.5 text-white rounded-sm"
                         onClick={() => handleDelete(row.id)}
                         title="Delete"
                       >
-                        <FaTrash className="text-white text-[11px]" />
+                        <FiTrash2 className="text-white text-[11px]" />
                       </div>
                     </div>
                   </td>

@@ -1,6 +1,9 @@
 import React, { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 
 const EmployeePayRoll = () => {
+  const navigate = useNavigate();
+
   const [selectedEmpId, setSelectedEmpId] = useState(2);
   
   // Navbar Colors from your screenshot
@@ -36,6 +39,22 @@ const EmployeePayRoll = () => {
       <div className="max-w-6xl mx-auto space-y-6">
         
         {/* Header Section */}
+        <div className="flex items-center px-6 py-4 w-[1290px] h-[62px] rounded-[11px] border border-gray-200 justify-between shadow-sm bg-white">
+          {/* Left Side: Title */}
+          <h2 className="text-red-600 font-bold text-[20px] leading-[148%] whitespace-nowrap">
+            Payroll & Attendance
+          </h2>
+
+          <div className="flex items-center gap-3  pl-6 border-gray-200">
+            <button
+              onClick={() => navigate("/")}
+              className="w-[70px] h-[26px] rounded-[4px] bg-[#C1121F] text-white text-[11px] font-medium transition-colors hover:bg-[#a40f1a]"
+            >
+              Exit
+            </button>
+          </div>
+        </div>
+
         <div className={`${navBlue} text-white p-6 rounded-xl shadow-lg flex flex-col md:flex-row justify-between items-center`}>
           <div>
             <h1 className="text-2xl font-bold tracking-tight">Payroll & Attendance</h1>

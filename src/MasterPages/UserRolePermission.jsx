@@ -333,7 +333,7 @@ const UserRolePermission = () => {
                       <div className="flex gap-2 justify-center">
                         <button
                           title="Edit"
-                          className="bg-green-500 p-1.5 rounded text-white hover:bg-green-600"
+                          className="bg-[#3dbd5a] cursor-pointer p-1.5 text-white rounded-sm"
                           onClick={() => handleEdit(row)}
                           
                         >

@@ -1,8 +1,11 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
 import { API } from "../api";
+import { useNavigate } from "react-router-dom";
 
 const Accounts_Opening_Balance = () => {
+
+  const navigate = useNavigate();
 
   const [balances, setBalances] = useState([]);
   const [loading, setLoading] = useState(false);
@@ -56,6 +59,15 @@ const Accounts_Opening_Balance = () => {
             <h2 className="text-red-600 font-bold text-[20px] leading-[148%] whitespace-nowrap">
               Opening Account Balance
             </h2>
+
+            <div className="flex items-center gap-3  pl-6 border-gray-200">
+              <button
+                onClick={() => navigate("/")}
+                className="w-[70px] h-[26px] rounded-[4px] bg-[#C1121F] text-white text-[11px] font-medium transition-colors hover:bg-[#a40f1a]"
+              >
+                Exit
+              </button>
+            </div>
           </div>
         </div>
       </div>

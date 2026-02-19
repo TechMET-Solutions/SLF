@@ -144,6 +144,9 @@ import { useNavigate } from "react-router-dom";
 import { API } from "../api"; // Ensure this path is correct
 
 const Bank_Branch_Mapping = () => {
+
+    const navigate = useNavigate();
+  
   const [page, setPage] = useState(1);
   const [limit, setLimit] = useState(10);
   const [total, setTotal] = useState(0);
@@ -239,7 +242,16 @@ const Bank_Branch_Mapping = () => {
             <h2 className="text-red-600 font-bold text-[20px] leading-[148%] whitespace-nowrap">
               Branch List
             </h2>
+            <div className="flex items-center gap-3  pl-6 border-gray-200">
+              <button
+                onClick={() => navigate("/")}
+                className="w-[70px] h-[26px] rounded-[4px] bg-[#C1121F] text-white text-[11px] font-medium transition-colors hover:bg-[#a40f1a]"
+              >
+                Exit
+              </button>
+            </div>
           </div>
+         
         </div>
       </div>
 
@@ -276,15 +288,15 @@ const Bank_Branch_Mapping = () => {
                   className={index % 2 === 0 ? "bg-gray-100" : "bg-white"}
                 >
                   {/* Branch Id */}
-                  <td className="px-4 py-2 text-center">{branch.id}</td>
+                  <td className="px-4 py-2 text-left">{branch.id}</td>
 
                   {/* Code */}
-                  <td className="px-4 py-2 text-center">
+                  <td className="px-4 py-2 text-left">
                     {branch.branch_code}
                   </td>
 
                   {/* Name */}
-                  <td className="px-4 py-2 text-center">
+                  <td className="px-4 py-2 text-left">
                     {branch.branch_name}
                   </td>
 

@@ -6,6 +6,7 @@ import { API } from "../api";
 import GroupData from "../assets/Group 124.svg";
 import DeleteData from "../assets/deletimg.png";
 import { decryptData, encryptData } from "../utils/cryptoHelper";
+import { FiEdit, FiTrash2 } from "react-icons/fi";
 
 const ChargesProfileList = () => {
   const navigate = useNavigate();
@@ -525,29 +526,16 @@ const ChargesProfileList = () => {
                   <td className="px-4 py-2 text-[#1883EF] cursor-pointer">
                     <div className="flex gap-2">
                       <div
-                        className="w-[20px] h-[20px] bg-[#56A869] rounded flex items-center justify-center p-1"
+                        className="bg-[#3dbd5a] cursor-pointer p-1.5 text-white rounded-sm"
                         onClick={() => handleEdit(row)}
                       >
-                        <img
-                          src={GroupData}
-                          alt="edit"
-                          className="w-[18px] h-[18px]"
-                          title="Edit"
-                        />
+                        <FiEdit className="text-white text-[11px]" />
                       </div>
-                      {/* <div className="w-[20px] h-[20px] bg-[#646AD9] rounded flex items-center justify-center p-1" onClick={() => handleView(row)}>
-                        <img src={EyeData} alt="view" className="w-[18px] h-[18px]" title="view" />
-                      </div> */}
                       <div
-                        className="w-[20px] h-[20px] bg-red-400 rounded flex items-center justify-center p-1"
+                        className="bg-[#f51111ec] cursor-pointer p-1.5 text-white rounded-sm"
                         onClick={() => handleDelete(row)}
                       >
-                        <img
-                          src={DeleteData}
-                          alt="delete"
-                          className="w-[12px] h-[14px]"
-                          title="Delete"
-                        />
+                        <FiTrash2 className="text-white text-[11px]" />
                       </div>
                     </div>
                   </td>

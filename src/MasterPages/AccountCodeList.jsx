@@ -5,6 +5,7 @@ import GroupData from "../assets/Group 124.svg";
 import { formatIndianDate } from "../utils/Helpers";
 import { useAuth } from "../API/Context/AuthContext";
 import { useNavigate } from "react-router-dom";
+import { FiEdit } from "react-icons/fi";
 
 const AccountCodeList = () => {
   useEffect(() => {
@@ -27,7 +28,7 @@ const AccountCodeList = () => {
   const [accountGroups, setAccountGroups] = useState([]);
 
   const [searchHeaders, setSearchHeaders] = useState([]); // Array of active headers
-const navigate = useNavigate();
+  const navigate = useNavigate();
   console.log(searchHeaders, "searchHeaders");
   const [searchQuery, setSearchQuery] = useState("");
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
@@ -108,88 +109,88 @@ const navigate = useNavigate();
     }
   };
 
-const { loginUser } = useAuth(); // Ensure this is available
+  const { loginUser } = useAuth(); // Ensure this is available
 
-// const handleSave = async () => {
-//   if (
-//     !formData.name ||
-//     !formData.financialDate ||
-//     !formData.accountGroup ||
-//     !formData.type
-//   ) {
-//     alert("Please fill all required fields");
-//     return;
-//   }
+  // const handleSave = async () => {
+  //   if (
+  //     !formData.name ||
+  //     !formData.financialDate ||
+  //     !formData.accountGroup ||
+  //     !formData.type
+  //   ) {
+  //     alert("Please fill all required fields");
+  //     return;
+  //   }
 
-//   // Create a payload that includes the user info
-//   const payload = {
-//     ...formData,
-//     addedBy: editMode ? formData.addedBy : loginUser, // Use loginUser for new records
-//   };
+  //   // Create a payload that includes the user info
+  //   const payload = {
+  //     ...formData,
+  //     addedBy: editMode ? formData.addedBy : loginUser, // Use loginUser for new records
+  //   };
 
-//   try {
-//     if (editMode) {
-//       await axios.put(`${API}/account-code/update/${selectedId}`, payload);
-//       alert("Sub Ledger Updated ✅");
-//     } else {
-//       await axios.post(`${API}/account-code/create`, payload);
-//       alert("Sub Ledger Created ✅");
-//     }
+  //   try {
+  //     if (editMode) {
+  //       await axios.put(`${API}/account-code/update/${selectedId}`, payload);
+  //       alert("Sub Ledger Updated ✅");
+  //     } else {
+  //       await axios.post(`${API}/account-code/create`, payload);
+  //       alert("Sub Ledger Created ✅");
+  //     }
 
-//     // Resetting state
-//     setIsModalOpen(false);
-//     setEditMode(false);
-//     fetchData(); // Refresh table
-//     setFormData({
-//       name: "",
-//       accountGroup: "",
-//       financialDate: "",
-//       type: "",
-//       addedBy: loginUser, // Reset with current user for next entry
-//     });
-//   } catch (err) {
-//     console.error("Error saving account:", err);
-//     alert(err.response?.data?.message || "Error saving account");
-//   }
-// };
-const handleSave = async () => {
-  if (!formData.name || !formData.financialDate || !formData.accountGroup || !formData.type) {
-    alert("Please fill all required fields");
-    return;
-  }
-
-  // Basic payload for both Create and Update
-  const payload = { ...formData };
-
-  try {
-    if (editMode) {
-      // ONLY pass modifiedBy during update
-      payload.modifiedBy = loginUser; 
-      
-      await axios.put(`${API}/account-code/update/${selectedId}`, payload);
-      alert("Sub Ledger Updated ✅");
-    } else {
-      // Pass addedBy during creation
-      payload.addedBy = loginUser;
-      
-      await axios.post(`${API}/account-code/create`, payload);
-      alert("Sub Ledger Created ✅");
+  //     // Resetting state
+  //     setIsModalOpen(false);
+  //     setEditMode(false);
+  //     fetchData(); // Refresh table
+  //     setFormData({
+  //       name: "",
+  //       accountGroup: "",
+  //       financialDate: "",
+  //       type: "",
+  //       addedBy: loginUser, // Reset with current user for next entry
+  //     });
+  //   } catch (err) {
+  //     console.error("Error saving account:", err);
+  //     alert(err.response?.data?.message || "Error saving account");
+  //   }
+  // };
+  const handleSave = async () => {
+    if (!formData.name || !formData.financialDate || !formData.accountGroup || !formData.type) {
+      alert("Please fill all required fields");
+      return;
     }
 
-    setIsModalOpen(false);
-    setEditMode(false);
-    fetchData(); 
-    setFormData({
-      name: "",
-      accountGroup: "",
-      financialDate: "",
-      type: "",
-      addedBy: "",
-    });
-  } catch (err) {
-    console.error("Error saving account:", err);
-  }
-};
+    // Basic payload for both Create and Update
+    const payload = { ...formData };
+
+    try {
+      if (editMode) {
+        // ONLY pass modifiedBy during update
+        payload.modifiedBy = loginUser;
+
+        await axios.put(`${API}/account-code/update/${selectedId}`, payload);
+        alert("Sub Ledger Updated ✅");
+      } else {
+        // Pass addedBy during creation
+        payload.addedBy = loginUser;
+
+        await axios.post(`${API}/account-code/create`, payload);
+        alert("Sub Ledger Created ✅");
+      }
+
+      setIsModalOpen(false);
+      setEditMode(false);
+      fetchData();
+      setFormData({
+        name: "",
+        accountGroup: "",
+        financialDate: "",
+        type: "",
+        addedBy: "",
+      });
+    } catch (err) {
+      console.error("Error saving account:", err);
+    }
+  };
   const handleEdit = (row) => {
     setFormData({
       name: row.name,
@@ -310,12 +311,12 @@ const handleSave = async () => {
                   Add
                 </button>
 
-                 <button
-      onClick={() => navigate("/")}
-      className="w-[70px] h-[26px] rounded-[4px] bg-[#C1121F] text-white text-[11px] font-medium transition-colors hover:bg-[#a40f1a]"
-    >
-      Exit
-    </button>
+                <button
+                  onClick={() => navigate("/")}
+                  className="w-[70px] h-[26px] rounded-[4px] bg-[#C1121F] text-white text-[11px] font-medium transition-colors hover:bg-[#a40f1a]"
+                >
+                  Exit
+                </button>
               </div>
             </div>
           </div>
@@ -376,7 +377,7 @@ const handleSave = async () => {
                 </select>
               </div> */}
 
-              
+
               {/* <div>
                 <label className="text-sm font-medium text-gray-700 mb-2 block">
                   Financial <span className="text-red-500">*</span>
@@ -395,59 +396,59 @@ const handleSave = async () => {
                   <option value="Profit & Loss">Profit & Loss</option>
                 </select>
               </div> */}
-<div>
-  <label className="text-sm font-medium text-gray-700 mb-2 block">
-    Ledger <span className="text-red-500">*</span>
-  </label>
+              <div>
+                <label className="text-sm font-medium text-gray-700 mb-2 block">
+                  Ledger <span className="text-red-500">*</span>
+                </label>
 
-  <select
-    value={formData.accountGroup}
-    onChange={(e) => {
-      const selectedGroupName = e.target.value;
-      
-      // 1. Find the full object for the selected ledger
-      const selectedLedger = accountGroups.find(
-        (group) => group.group_name === selectedGroupName
-      );
+                <select
+                  value={formData.accountGroup}
+                  onChange={(e) => {
+                    const selectedGroupName = e.target.value;
 
-      // 2. Update both fields: the ledger name and the auto-detected financial type
-      setFormData({ 
-        ...formData, 
-        accountGroup: selectedGroupName,
-        // Set financialDate to the under_type of the ledger (Balance Sheet / Profit & Loss)
-        financialDate: selectedLedger ? selectedLedger.under_type : "" 
-      });
-    }}
-    className="w-full h-10 px-3 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm bg-white"
-    required
-  >
-    <option value="">Select Ledger</option>
-    {accountGroups.map((group) => (
-      <option key={group.id} value={group.group_name}>
-        {group.group_name}
-      </option>
-    ))}
-  </select>
-</div>
+                    // 1. Find the full object for the selected ledger
+                    const selectedLedger = accountGroups.find(
+                      (group) => group.group_name === selectedGroupName
+                    );
 
-<div>
-  <label className="text-sm font-medium text-gray-700 mb-2 block">
-    Financial <span className="text-red-500">*</span>
-  </label>
+                    // 2. Update both fields: the ledger name and the auto-detected financial type
+                    setFormData({
+                      ...formData,
+                      accountGroup: selectedGroupName,
+                      // Set financialDate to the under_type of the ledger (Balance Sheet / Profit & Loss)
+                      financialDate: selectedLedger ? selectedLedger.under_type : ""
+                    });
+                  }}
+                  className="w-full h-10 px-3 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm bg-white"
+                  required
+                >
+                  <option value="">Select Ledger</option>
+                  {accountGroups.map((group) => (
+                    <option key={group.id} value={group.group_name}>
+                      {group.group_name}
+                    </option>
+                  ))}
+                </select>
+              </div>
 
-  <select
-    value={formData.financialDate}
-    onChange={(e) =>
-      setFormData({ ...formData, financialDate: e.target.value })
-    }
-    className="w-full h-10 px-3 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm bg-white"
-    required
-  >
-    <option value="">Select Financial Type</option>
-    <option value="Balance Sheet">Balance Sheet</option>
-    <option value="Profit & Loss">Profit & Loss</option>
-  </select>
-</div>
+              <div>
+                <label className="text-sm font-medium text-gray-700 mb-2 block">
+                  Financial <span className="text-red-500">*</span>
+                </label>
+
+                <select
+                  value={formData.financialDate}
+                  onChange={(e) =>
+                    setFormData({ ...formData, financialDate: e.target.value })
+                  }
+                  className="w-full h-10 px-3 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm bg-white"
+                  required
+                >
+                  <option value="">Select Financial Type</option>
+                  <option value="Balance Sheet">Balance Sheet</option>
+                  <option value="Profit & Loss">Profit & Loss</option>
+                </select>
+              </div>
               <div>
                 <label className="text-sm font-medium text-gray-700 mb-2 block">
                   Type
@@ -546,16 +547,12 @@ const handleSave = async () => {
                     {formatIndianDate(row.created_at)}
                   </td>
                   <td className="px-4 py-2">{row.modifiedBy || "-"}</td>
-                  <td className="px-4 py-2 text-[#1883EF] cursor-pointer">
+                  <td className="px-4 py-2 flex gap-2 justify-center">
                     <div
-                      className="w-[17px] h-[17px] bg-[#56A869] rounded-[2.31px] flex items-center justify-center p-0.5"
+                      className="bg-[#3dbd5a] cursor-pointer p-1.5 text-white rounded-sm"
                       onClick={() => handleEdit(row)}
                     >
-                      <img
-                        src={GroupData}
-                        alt="action-icon"
-                        className="w-[18px] h-[18px]"
-                      />
+                      <FiEdit />
                     </div>
                   </td>
                 </tr>
