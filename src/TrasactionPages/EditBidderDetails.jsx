@@ -123,7 +123,7 @@ const EditBidderDetails = () => {
 
 
     return (
-        <div className="flex flex-col items-center mt-5 px-4">
+        <div className="flex flex-col items-center mt-5 ">
             {/* Header Section */}
             <div className="w-full max-w-[1290px] bg-white border border-gray-200 rounded-[11px] shadow-sm mb-6 sticky top-[80px] z-40">
                 <div className="flex flex-col sm:flex-row items-center justify-between px-6 py-4">
@@ -142,238 +142,288 @@ const EditBidderDetails = () => {
             </div>
 
             {/* Main Content Container */}
-            <div className="w-full max-w-[1290px] space-y-6">
-                {/* Bidder Information Section */}
-                <div className="bg-white">
+            <div className="ml-[110px] mr-[110px]">
+          <div className="bg-[#FFE6E6] p-5">
                     <h1 className="text-blue-900 font-semibold text-xl pb-4 mb-2">
                         Bidder Information
                     </h1>
                     <div className="flex flex-col lg:flex-row gap-4">
                         {/* Left Section - Form Fields */}
-                        <div className="flex-1">
-                            {/* Flex container with wrap */}
-                            <div className="flex flex-wrap -mx-3">
-                                {/* Bidder Name */}
-                                <div className="px-3 mb-2  w-[280px]">
-                                    <label className="text-gray-900 font-medium">Bidder Name <span className='text-red-600'>*</span></label>
-                                    <input
-                                        name="bidder_name"
-                                        type="text"
-                                        value={formData.bidder_name}
-                                        onChange={handleChange}
-                                        placeholder="Bidder Name"
-                                        className="border border-gray-300 rounded-md px-3 py-1.5 w-full"
-                                    />
-                                </div>
+                       <div className="flex-1">
+                <div className="flex flex-wrap -mx-3">
+                  <div className="px-3 mb-2 w-[340px]">
+                    <label className="text-gray-900 font-medium">
+                      Bidder Name <span className="text-red-600">*</span>
+                    </label>
+                    <input
+                      name="bidder_name"
+                      type="text"
+                      value={formData.bidder_name}
+                      onChange={handleChange}
+                      placeholder="Bidder Name"
+                      className="border border-gray-300 rounded-md px-3 py-1.5 w-full bg-white"
+                    />
+                  </div>
 
-                                {/* Mobile Number */}
-                                <div className="px-3 mb-6 w-[220px]">
-                                    <label className="text-gray-900 font-medium">Mobile Number <span className='text-red-600'>*</span></label>
-                                    <input
-                                        type="tel"
-                                        name="mobile_no"
-                                        value={formData.mobile_no}
-                                        onChange={handleChange}
-                                        placeholder="Mobile Number"
-                                        className="border border-gray-300 rounded-md px-3 py-1.5 w-full"
-                                    />
-                                </div>
+                  {/* Repeat for all other fields with name/value/onChange */}
+                  {/* Mobile Number */}
+                  <div className="px-3 mb-6 w-[150px]">
+                    <label className="text-gray-900 font-medium">
+                      Mobile Number <span className="text-red-600">*</span>
+                    </label>
+                    <input
+                      type="number"
+                      name="mobile_no"
+                      value={formData.mobile_no}
+                      onChange={handleChange}
+                      placeholder="Mobile Number"
+                      className="border border-gray-300 rounded-md px-3 py-1.5 w-full bg-white"
+                      style={{
+                        MozAppearance: "textfield",
+                      }}
+                      onWheel={(e) => e.target.blur()}
+                    />
+                  </div>
 
-                                {/* Alternate Mobile Number */}
-                                <div className="px-3 mb-6 w-[220px]">
-                                    <label className="text-gray-900 font-medium">Alternate Mobile Number</label>
-                                    <input
-                                        type="tel"
-                                        name="alt_mob_no"
-                                        value={formData.alt_mob_no}
-                                        onChange={handleChange}
+                  <div className="px-3 mb-6 w-[190px]">
+                    <label className="text-gray-900 font-medium">
+                      Alt Mobile Number
+                    </label>
+                    <input
+                      type="number"
+                      name="alt_mob_no"
+                      value={formData.alt_mob_no}
+                      onChange={handleChange}
+                      placeholder="Alternate Mobile Number"
+                      className="border border-gray-300 rounded-md px-3 py-1.5 w-full bg-white"
+                      style={{
+                        MozAppearance: "textfield",
+                      }}
+                      onWheel={(e) => e.target.blur()}
+                    />
+                  </div>
 
-                                        placeholder="Alternate Mobile Number"
-                                        className="border border-gray-300 rounded-md px-3 py-1.5 w-full"
-                                    />
-                                </div>
+                  {/* Email ID */}
+                  <div className="px-3 mb-6 w-[350px]">
+                    <label className="text-gray-900 font-medium">
+                      Email ID <span className="text-red-600">*</span>
+                    </label>
+                    <input
+                      type="email"
+                      name="email"
+                      value={formData.email}
+                      onChange={handleChange}
+                      placeholder="Email ID"
+                      className="border border-gray-300 rounded-md px-3 py-1.5 w-full bg-white"
+                    />
+                  </div>
 
-                                {/* Email ID */}
-                                <div className="px-3 mb-6 w-[280px]">
-                                    <label className="text-gray-900 font-medium">Email ID <span className='text-red-600'>*</span></label>
-                                    <input
-                                        type="email"
-                                        name="email"
-                                        value={formData.email}
-                                        onChange={handleChange}
-                                        placeholder="Email ID"
-                                        className="border border-gray-300 rounded-md px-3 py-1.5 w-full"
-                                    />
-                                </div>
+                  {/* Personal Address */}
+                  <div className="px-3 mb-6 w-[340px]">
+                    <label className="text-gray-900 font-medium">
+                      Personal Address <span className="text-red-600">*</span>
+                    </label>
+                    <input
+                      type="text"
+                      name="personal_address"
+                      value={formData.personal_address}
+                      onChange={handleChange}
+                      placeholder="Personal Address"
+                      className="border border-gray-300 rounded-md px-3 py-1.5 w-full bg-white"
+                    />
+                  </div>
 
-                                {/* Personal Address */}
-                                <div className="px-3 mb-6 w-[340px]">
-                                    <label className="text-gray-900 font-medium">Personal Address <span className='text-red-600'>*</span></label>
-                                    <input
-                                        type="text"
-                                        name="personal_address"
-                                        value={formData.personal_address}
-                                        onChange={handleChange}
-                                        placeholder="Personal Address"
-                                        className="border border-gray-300 rounded-md px-3 py-1.5 w-full"
-                                    />
-                                </div>
+                  {/* Shop Address */}
+                  <div className="px-3 mb-6 w-[330px]">
+                    <label className="text-gray-900 font-medium">
+                      Shop Address <span className="text-red-600">*</span>
+                    </label>
+                    <input
+                      type="text"
+                      name="shop_address"
+                      value={formData.shop_address}
+                      onChange={handleChange}
+                      placeholder="Shop Address"
+                      className="border border-gray-300 rounded-md px-3 py-1.5 w-full bg-white"
+                    />
+                  </div>
 
-                                {/* Shop Address */}
-                                <div className="px-3 mb-6 w-[340px]">
-                                    <label className="text-gray-900 font-medium">Shop Address <span className='text-red-600'>*</span></label>
-                                    <input
-                                        type="text"
-                                        name="shop_address"
-                                        value={formData.shop_address}
-                                        onChange={handleChange}
-                                        placeholder="Shop Address"
-                                        className="border border-gray-300 rounded-md px-3 py-1.5 w-full"
-                                    />
-                                </div>
+                  {/* Landline No 1 */}
+                  <div className="px-3 mb-6 w-[180px]">
+                    <label className="text-gray-900 font-medium">
+                      Landline No 1 <span className="text-red-600">*</span>
+                    </label>
+                    <input
+                      type="number"
+                      name="landline_no"
+                      value={formData.landline_no}
+                      onChange={handleChange}
+                      placeholder="203-53363"
+                      className="border border-gray-300 rounded-md px-3 py-1.5 w-full bg-white"
+                      style={{
+                        MozAppearance: "textfield",
+                      }}
+                      onWheel={(e) => e.target.blur()}
+                    />
+                  </div>
 
-                                {/* Landline No 1 */}
-                                <div className="px-3 mb-6 w-[180px]">
-                                    <label className="text-gray-900 font-medium">Landline No 1 <span className='text-red-600'>*</span></label>
-                                    <input
-                                        type="tel"
-                                        name="landline_no"
-                                        value={formData.landline_no}
-                                        onChange={handleChange}
-                                        placeholder="203-53363"
-                                        className="border border-gray-300 rounded-md px-3 py-1.5 w-full"
-                                    />
-                                </div>
+                  {/* Landline No 2 */}
+                  <div className="px-3 mb-6 w-[180px]">
+                    <label className="text-gray-900 font-medium">
+                      Landline No 2
+                    </label>
+                    <input
+                      type="number"
+                      name="landline_no2"
+                      value={formData.landline_no2}
+                      onChange={handleChange}
+                      placeholder="203-53363"
+                      className="border border-gray-300 rounded-md px-3 py-1.5 w-full bg-white"
+                      style={{
+                        MozAppearance: "textfield",
+                      }}
+                      onWheel={(e) => e.target.blur()}
+                    />
+                  </div>
 
-                                {/* Landline No 2 */}
-                                <div className="px-3 mb-6 w-[180px]">
-                                    <label className="text-gray-900 font-medium">Landline No 2</label>
-                                    <input
-                                        type="tel"
-                                        name="landline_no2"
-                                        value={formData.landline_no2}
-                                        onChange={handleChange}
-                                        placeholder="203-53363"
-                                        className="border border-gray-300 rounded-md px-3 py-1.5 w-full"
-                                    />
-                                </div>
+                  {/* Firm Name */}
+                  <div className="px-3 mb-6 w-[340px]">
+                    <label className="text-gray-900 font-medium">
+                      Firm Name <span className="text-red-600">*</span>
+                    </label>
+                    <input
+                      type="text"
+                      name="firm_name"
+                      value={formData.firm_name}
+                      onChange={handleChange}
+                      placeholder="Firm Name"
+                      className="border border-gray-300 rounded-md px-3 py-1.5 w-full bg-white"
+                    />
+                  </div>
 
-                                {/* Firm Name */}
-                                <div className="px-3 mb-6 w-[280px]">
-                                    <label className="text-gray-900 font-medium">Firm Name <span className='text-red-600'>*</span></label>
-                                    <input
-                                        type="text"
-                                        name="firm_name"
-                                        value={formData.firm_name}
-                                        onChange={handleChange}
-                                        placeholder="Firm Name"
-                                        className="border border-gray-300 rounded-md px-3 py-1.5 w-full"
-                                    />
-                                </div>
+                  {/* GST No */}
+                  <div className="px-3 mb-6 w-[200px]">
+                    <label className="text-gray-900 font-medium">
+                      GST No <span className="text-red-600">*</span>
+                    </label>
+                    <input
+                      type="text"
+                      name="gst_no"
+                      value={formData.gst_no}
+                      onChange={handleChange}
+                      placeholder="GST No"
+                      className="border border-gray-300 rounded-md px-3 py-1.5 w-full bg-white"
+                    />
+                  </div>
 
-                                {/* GST No */}
-                                <div className="px-3 mb-6 w-[280px]">
-                                    <label className="text-gray-900 font-medium">GST No <span className='text-red-600'>*</span></label>
-                                    <input
-                                        type="text"
-                                        name="gst_no"
-                                        value={formData.gst_no}
-                                        onChange={handleChange}
-                                        placeholder="GST No"
-                                        className="border border-gray-300 rounded-md px-3 py-1.5 w-full"
-                                    />
-                                </div>
+                  {/* Aadhar No */}
+                  <div className="px-3 mb-6 w-[200px]">
+                    <label className="text-gray-900 font-medium">
+                      Aadhar No <span className="text-red-600">*</span>
+                    </label>
+                    <input
+                      type="number"
+                      name="aadhar_no"
+                      value={formData.aadhar_no}
+                      onChange={handleChange}
+                      placeholder="Aadhar no"
+                      className="border border-gray-300 rounded-md px-3 py-1.5 w-full bg-white"
+                      style={{
+                        MozAppearance: "textfield",
+                      }}
+                      onWheel={(e) => e.target.blur()}
+                    />
+                  </div>
 
-                                {/* Aadhar No */}
-                                <div className="px-3 mb-6 w-[220px]">
-                                    <label className="text-gray-900 font-medium">Aadhar No <span className='text-red-600'>*</span></label>
-                                    <input
-                                        type="text"
-                                        name="aadhar_no"
-                                        value={formData.aadhar_no}
-                                        onChange={handleChange}
-                                        placeholder="Aadhar no"
-                                        className="border border-gray-300 rounded-md px-3 py-1.5 w-full"
-                                    />
-                                </div>
+                  {/* Aadhar Document */}
+                  <div className="px-3 mb-6 w-[290px]">
+                    <label className="text-gray-900 font-medium">
+                      Aadhar Document
+                    </label>
+                    <div className="flex items-center border border-gray-300 rounded-md px-3 py-1.5 bg-white">
+                      <IoMdImage className="text-gray-600 mr-2" size={20} />
+                      <input
+                        ref={aadharRef}
+                        type="file"
+                        accept=".png,.jpg,.jpeg,.pdf"
+                        onChange={(e) => handleFileChange(e, "aadhar")}
+                        className="hidden"
+                        id="aadhar-file"
+                      />
+                      <span className="flex-1 text-gray-700 text-sm">
+                        {aadharFile ? aadharFile.name : "Aadhar.png"}
+                      </span>
+                      {aadharFile ? (
+                        <button
+                          type="button"
+                          onClick={() => handleDeleteFile("aadhar")}
+                          className="ml-2 text-red-500 hover:text-red-700"
+                        >
+                          <MdDelete size={20} />
+                        </button>
+                      ) : (
+                        <label
+                          htmlFor="aadhar-file"
+                          className="ml-2 cursor-pointer text-blue-600 hover:text-blue-800"
+                        >
+                          <MdOutlineFileUpload size={22} />
+                        </label>
+                      )}
+                    </div>
+                  </div>
+                  {/* Pan No */}
+                  <div className="px-3 mb-6 w-[220px]">
+                    <label className="text-gray-900 font-medium">
+                      Pan No <span className="text-red-600">*</span>
+                    </label>
+                    <input
+                      type="text"
+                      name="pan_no"
+                      value={formData.pan_no}
+                      onChange={handleChange}
+                      placeholder="Pan no"
+                      className="border border-gray-300 rounded-md px-3 py-1.5 w-full bg-white"
+                    />
+                  </div>
 
-                                {/* Aadhar Document */}
-                                <div className="px-3 mb-6 w-[280px]">
-                                    <label className="text-gray-900 font-medium">Aadhar Document</label>
-                                    <div className="flex items-center border border-gray-300 rounded-md px-3 py-1.5">
-                                        <IoMdImage className="text-gray-600 mr-2" size={20} />
-                                        <input
-                                            ref={aadharRef}
-                                            type="file"
-                                            accept=".png,.jpg,.jpeg,.pdf"
-                                            onChange={(e) => handleFileChange(e, "aadhar")}
-                                            className="hidden"
-                                            id="aadhar-file"
-                                        />
-                                        <span className="flex-1 text-gray-700 text-sm">
-                                            {aadharFile ? aadharFile.name : "Aadhar.png"}
-                                        </span>
-                                        {aadharFile ? (
-                                            <button
-                                                type="button"
-                                                onClick={() => handleDeleteFile("aadhar")}
-                                                className="ml-2 text-red-500 hover:text-red-700"
-                                            >
-                                                <MdDelete size={20} />
-                                            </button>
-                                        ) : (
-                                            <label htmlFor="aadhar-file" className="ml-2 cursor-pointer text-blue-600 hover:text-blue-800">
-                                                <MdOutlineFileUpload size={22} />
-                                            </label>
-                                        )}
-                                    </div>
-                                </div>
-                                {/* Pan No */}
-                                <div className="px-3 mb-6 w-[220px]">
-                                    <label className="text-gray-900 font-medium">Pan No <span className='text-red-600'>*</span></label>
-                                    <input
-                                        type="text"
-                                        name="pan_no"
-                                        value={formData.pan_no}
-                                        onChange={handleChange}
-                                        placeholder="Pan no"
-                                        className="border border-gray-300 rounded-md px-3 py-1.5 w-full"
-                                    />
-                                </div>
-
-                                {/* Pan Document */}
-                                <div className="px-3 mb-6 w-[280px]">
-                                    <label className="text-gray-900 font-medium">Pan Document</label>
-                                    <div className="flex items-center border border-gray-300 rounded-md px-3 py-1.5">
-                                        <IoMdImage className="text-gray-600 mr-2" size={20} />
-                                        <input
-                                            ref={panRef}
-                                            type="file"
-                                            accept=".png,.jpg,.jpeg,.pdf"
-                                            onChange={(e) => handleFileChange(e, "pan")}
-                                            className="hidden"
-                                            id="pan-file"
-                                        />
-                                        <span className="flex-1 text-gray-700 text-sm">
-                                            {panFile ? panFile.name : "pan.png"}
-                                        </span>
-                                        {panFile ? (
-                                            <button
-                                                type="button"
-                                                onClick={() => handleDeleteFile("pan")}
-                                                className="ml-2 text-red-500 hover:text-red-700"
-                                            >
-                                                <MdDelete size={20} />
-                                            </button>
-                                        ) : (
-                                            <label htmlFor="pan-file" className="ml-2 cursor-pointer text-blue-600 hover:text-blue-800">
-                                                <MdOutlineFileUpload size={22} />
-                                            </label>
-                                        )}
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
+                  {/* Pan Document */}
+                  <div className="px-3 mb-6 w-[280px]">
+                    <label className="text-gray-900 font-medium">
+                      Pan Document
+                    </label>
+                    <div className="flex items-center border border-gray-300 rounded-md px-3 py-1.5 bg-white">
+                      <IoMdImage className="text-gray-600 mr-2" size={20} />
+                      <input
+                        ref={panRef}
+                        type="file"
+                        accept=".png,.jpg,.jpeg,.pdf"
+                        onChange={(e) => handleFileChange(e, "pan")}
+                        className="hidden"
+                        id="pan-file"
+                      />
+                      <span className="flex-1 text-gray-700 text-sm">
+                        {panFile ? panFile.name : "pan.png"}
+                      </span>
+                      {panFile ? (
+                        <button
+                          type="button"
+                          onClick={() => handleDeleteFile("pan")}
+                          className="ml-2 text-red-500 hover:text-red-700"
+                        >
+                          <MdDelete size={20} />
+                        </button>
+                      ) : (
+                        <label
+                          htmlFor="pan-file"
+                          className="ml-2 cursor-pointer text-blue-600 hover:text-blue-800"
+                        >
+                          <MdOutlineFileUpload size={22} />
+                        </label>
+                      )}
+                    </div>
+                  </div>
+                </div>
+              </div>
 
 
                         {/* Right Section - Profile Picture */}
@@ -422,7 +472,7 @@ const EditBidderDetails = () => {
                 </div>
 
                 {/* Bank Details Section */}
-                <div className="bg-white">
+                <div className="bg-[#F7F7FF]  p-5">
                     <h1 className="text-blue-900 font-semibold text-xl pb-4 mb-2">
                         Add Bank Details
                     </h1>
@@ -435,7 +485,7 @@ const EditBidderDetails = () => {
                                 onChange={handleChange}
                                 type="text"
                                 placeholder="521753215"
-                                className="border border-gray-300 rounded-md px-3 py-2 w-full"
+                                className="border border-gray-300 rounded-md px-3 py-2 w-full bg-white"
                             />
                         </div>
                         {/* IFSC Number */}
@@ -447,7 +497,7 @@ const EditBidderDetails = () => {
                                 onChange={handleChange}
                                 type="text"
                                 placeholder="IFSC Number"
-                                className="border border-gray-300 rounded-md px-3 py-2 w-full"
+                                className="border border-gray-300 rounded-md px-3 py-2 w-full bg-white"
                             />
                         </div>
 
@@ -460,12 +510,12 @@ const EditBidderDetails = () => {
                                 onChange={handleChange}
                                 type="text"
                                 placeholder="Account Holder Name"
-                                className="border border-gray-300 rounded-md px-3 py-2 w-full"
+                                className="border border-gray-300 rounded-md px-3 py-2 w-full bg-white"
                             />
                         </div>
 
                         {/* Bank Name */}
-                        <div className="flex flex-col gap-2 px-3 mb-6 w-[250px]">
+                        <div className="flex flex-col gap-2 px-3 mb-6 w-[220px]">
                             <label className="text-gray-900 font-medium">Bank Name <span className='text-red-600'>*</span></label>
                             <input
                                 name="bank_name"
@@ -473,12 +523,12 @@ const EditBidderDetails = () => {
                                 onChange={handleChange}
                                 type="text"
                                 placeholder="Bank Name"
-                                className="border border-gray-300 rounded-md px-3 py-2 w-full"
+                                className="border border-gray-300 rounded-md px-3 py-2 w-full bg-white"
                             />
                         </div>
 
                         {/* Bank Address (full width on large screens) */}
-                        <div className="flex flex-col gap-2 px-3 mb-6 w-[320px]">
+                        <div className="flex flex-col gap-2 px-3 mb-6 w-[300px]">
                             <label className="text-gray-900 font-medium">Bank Address <span className='text-red-600'>*</span></label>
                             <input
                                 name="bank_address"
@@ -486,7 +536,7 @@ const EditBidderDetails = () => {
                                 onChange={handleChange}
                                 type="text"
                                 placeholder="Bank Address"
-                                className="border border-gray-300 rounded-md px-3 py-2 w-full"
+                                className="border border-gray-300 rounded-md px-3 py-2 w-full bg-white"
                             />
                         </div>
                     </div>

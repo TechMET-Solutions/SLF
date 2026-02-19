@@ -226,14 +226,14 @@ const handleStatusClick = (row) => {
 
 
 
-      <h2 className="text-lg font-semibold text-white bg-[#0A2478] p-3 rounded">
+      <h2 className="text-lg font-semibold text-white bg-[#0A2478] p-5 rounded">
         Credit Note - Bidder Registration Deposit
       </h2>
                       <div className="p-5">
                            <h3 className="text-[18px] font-bold mt-2 ">Bidder Details</h3>
 
       <div className="flex gap-5 mt-2">
-<div><p>Bidder ID:</p> <p> {popupData.bidderId}</p></div>
+      <div><p>Bidder ID:</p> <p> {popupData.bidderId}</p></div>
        
        <div> <p>Bidder Name:</p><p> {popupData.bidderName}</p></div>
 

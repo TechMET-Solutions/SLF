@@ -258,7 +258,7 @@ const ChargesProfileList = () => {
         const decrypted = decryptData(response.data.data);
         const parsed =
           typeof decrypted === "string" ? JSON.parse(decrypted) : decrypted;
-        alert(`✅ ${parsed.message}`);
+        // alert(`✅ ${parsed.message}`);
         fetchChargeProfiles();
       }
     } catch (error) {

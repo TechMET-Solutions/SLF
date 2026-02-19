@@ -60,7 +60,7 @@ const AddCreditNotePage = () => {
       );
 
       if (response.data.status) {
-        alert("Bill Generated Successfully!");
+      alert(`Credit Note of ₹${formData.credit_amount} has been successfully generated.`);
         navigate("/Auction-Creation");
       } else {
         alert("Failed to generate bill");
@@ -287,7 +287,7 @@ const AddCreditNotePage = () => {
                   value={formData.email_id}
                   placeholder="Enter Email ID"
                   onChange={handleChange}
-                  className="w-[200px] border bg-white rounded-[8px] border-gray-300 px-2 py-1 h-[40px]"
+                  className="w-[300px] border bg-white rounded-[8px] border-gray-300 px-2 py-1 h-[40px]"
                 />
               </div>
             </div>

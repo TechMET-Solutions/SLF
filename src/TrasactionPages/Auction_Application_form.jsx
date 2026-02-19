@@ -208,7 +208,7 @@ function Auction_Application_form() {
                   name="auction"
                   value={formData.auction}
                   onChange={(e) => handleAuctionSelect(e.target.value)}
-                  className="border rounded-[8px] px-2 py-2 w-full mt-1 bg-white"
+                  className="border rounded-[8px] border-gray-300 px-2 py-2 w-full mt-1 bg-white"
                 >
                   <option value="">Select Auction</option>
 
@@ -235,7 +235,7 @@ function Auction_Application_form() {
                   value={formData.auctionDate}
                   onChange={onChange}
                   disabled
-                  className="border rounded rounded-[8px] px-2 py-2 w-[120px] mt-1 bg-white disabled:bg-gray-50 "
+                  className="border border-gray-300 rounded-[8px] px-2 py-2 w-[120px] mt-1 bg-white disabled:bg-gray-50 "
                 />
               </div>
 
@@ -247,7 +247,7 @@ function Auction_Application_form() {
                   value={formData.auctionTime}
                   onChange={onChange}
                   disabled
-                  className="border rounded-[8px] px-2 py-2 w-[100px] mt-1 disabled:bg-gray-50 bg-white"
+                  className="border border-gray-300 rounded-[8px] px-2 py-2 w-[100px] mt-1 disabled:bg-gray-50 bg-white"
                 />
               </div>
 
@@ -260,7 +260,7 @@ function Auction_Application_form() {
                   onChange={onChange}
                   placeholder="Venue"
                   disabled
-                  className="border rounded-[8px] px-2 py-2 w-[510px] mt-1 disabled:bg-gray-50"
+                  className="border border-gray-300 rounded-[8px] px-2 py-2 w-[510px] mt-1 disabled:bg-gray-50"
                 />
               </div>
             </div>
@@ -279,7 +279,7 @@ function Auction_Application_form() {
                   name="bidderName"
                   value={formData.bidderName}
                   onChange={onChangeForbidders}
-                  className="border rounded-[8px] px-2 py-2 w-[250px] mt-1  bg-white"
+                  className="border rounded-[8px] border-gray-300 px-2 py-2 w-[250px] mt-1  bg-white"
                   autoComplete="off"
                 />
 
@@ -320,7 +320,7 @@ function Auction_Application_form() {
                   value={formData.bidderId}
                   onChange={onChange}
                   disabled
-                  className="border rounded-[8px] px-2 py-2 w-[130px] mt-1 disabled:bg-gray-50"
+                  className="border rounded-[8px] border-gray-300 px-2 py-2 w-[130px] mt-1 disabled:bg-gray-50"
                 />
               </div>
 
@@ -332,7 +332,7 @@ function Auction_Application_form() {
                   value={formData.mobile}
                   onChange={onChange}
                   disabled
-                  className="border rounded-[8px] px-2 py-2 w-[120px] mt-1 disabled:bg-gray-50"
+                  className="border rounded-[8px] border-gray-300 px-2 py-2 w-[120px] mt-1 disabled:bg-gray-50"
                 />
               </div>
 
@@ -344,7 +344,7 @@ function Auction_Application_form() {
                   value={formData.landline}
                   onChange={onChange}
                   disabled
-                  className="border rounded-[8px] px-2 py-2 w-[150px] mt-1 disabled:bg-gray-50"
+                  className="border rounded-[8px]  border-gray-300 px-2 py-2 w-[150px] mt-1 disabled:bg-gray-50"
                 />
               </div>
 
@@ -357,7 +357,7 @@ function Auction_Application_form() {
                   value={formData.firmName}
                   onChange={onChange}
                   disabled
-                  className="border rounded-[8px] px-2 py-2 w-[250px] mt-1 disabled:bg-gray-50"
+                  className="border rounded-[8px] border-gray-300 px-2 py-2 w-[250px] mt-1 disabled:bg-gray-50"
                 />
               </div>
 
@@ -369,7 +369,7 @@ function Auction_Application_form() {
                   value={formData.pan}
                   onChange={onChange}
                   disabled
-                  className="border rounded-[8px] px-2 py-2 w-[140px] mt-1 disabled:bg-gray-50"
+                  className="border rounded-[8px] border-gray-300 px-2 py-2 w-[140px] mt-1 disabled:bg-gray-50"
                 />
               </div>
 
@@ -384,7 +384,7 @@ function Auction_Application_form() {
                   value={formData.aadhaar}
                   onChange={onChange}
                   disabled
-                  className="border rounded-[8px] px-2 py-2 w-[150px] mt-1 disabled:bg-gray-50"
+                  className="border rounded-[8px] border-gray-300 px-2 py-2 w-[150px] mt-1 disabled:bg-gray-50"
                 />
               </div>
 
@@ -396,7 +396,7 @@ function Auction_Application_form() {
                   value={formData.gst}
                   onChange={onChange}
                   disabled
-                  className="border rounded-[8px] px-2 py-2 w-[200px]  mt-1 disabled:bg-gray-50"
+                  className="border rounded-[8px] border-gray-300 px-2 py-2 w-[200px]  mt-1 disabled:bg-gray-50"
                 />
               </div>
             </div>
@@ -453,7 +453,7 @@ function Auction_Application_form() {
                   value={formData.fees}
                   disabled
                   onChange={onChange}
-                  className="border rounded-[8px] px-2 py-2 w-[150px] mt-1 disabled:bg-gray-50"
+                  className="border rounded-[8px] border-gray-300 px-2 py-2 w-[150px] mt-1 disabled:bg-gray-50"
                 />
               </div>
 
@@ -465,7 +465,7 @@ function Auction_Application_form() {
                   name="paymentMethod"
                   value={formData.paymentMethod}
                   onChange={onChangeForaddpaymentata}
-                  className="border rounded-[8px] px-2 py-2 w-[150px] mt-1 bg-white"
+                  className="border rounded-[8px] border-gray-300 px-2 py-2 w-[150px] mt-1 bg-white"
                 >
                   <option value="">Select Method</option>
                   <option value="UPI">UPI</option>

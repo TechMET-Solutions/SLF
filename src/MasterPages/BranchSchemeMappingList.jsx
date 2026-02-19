@@ -412,6 +412,19 @@ const BranchSchemeMappingList = () => {
 
             {/* Footer */}
             <div className="p-4  flex justify-center items-center gap-3 bg-white rounded-b-xl">
+               <button
+                onClick={handleSaveMapping}
+                style={{
+                  width: "92.66px",
+                  height: "30.57px",
+                  borderRadius: "4.67px",
+
+                  opacity: 1,
+                }}
+                className="bg-[#0A2478] text-white"
+              >
+                Save
+              </button>
               <button
                 onClick={() => {
                   setIsModalOpen(false);
@@ -429,19 +442,7 @@ const BranchSchemeMappingList = () => {
                 Exit
               </button>
 
-              <button
-                onClick={handleSaveMapping}
-                style={{
-                  width: "92.66px",
-                  height: "30.57px",
-                  borderRadius: "4.67px",
-
-                  opacity: 1,
-                }}
-                className="bg-[#0A2478] text-white"
-              >
-                Save
-              </button>
+             
             </div>
           </div>
         </div>

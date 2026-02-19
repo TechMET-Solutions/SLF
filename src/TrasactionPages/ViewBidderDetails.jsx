@@ -76,140 +76,158 @@ const ViewBidderDetails = () => {
         </div>
       </div>
 
-      <div className="w-full max-w-[1290px] space-y-6">
+      <div className="w-full px-[110px]">
         {/* Bidder Information Section */}
-        <div className="bg-white">
-          <h1 className="text-blue-900 font-semibold text-xl my-6">
-            Bidder Information
-          </h1>
-          <div className="flex flex-col lg:flex-row gap-8">
-            {/* Left Section - Form Fields */}
-            <div className="flex-1 ">
-              {/* Flex container with wrap */}
-              <div className="flex flex-wrap -mx-3">
-                {/* Bidder Name */}
-                <div className="px-3 mb-4  w-[200px]">
-                  <label className="text-gray-900 font-medium">Bidder Name </label>
-                  <p className="text-gray-700 font-normal">
-                    {formData.bidder_name}
-                  </p>
-                </div>
-                <div className="px-3 mb-4  w-[150px]">
-                  <label className="text-gray-900 font-medium">Mobile Number </label>
-                  <p className="text-gray-700 font-normal">
-                    {formData.mobile_no}
-                  </p>
-                </div>
-                <div className="px-3 mb-4  w-[200px]">
-                  <label className="text-gray-900 font-medium">Alternate Mobile Number </label>
-                  <p className="text-gray-700 font-normal">
-                    {formData.alt_mob_no || "N/A"}
-                  </p>
-                </div>
-                <div className="px-3 mb-4  w-[230px]">
-                  <label className="text-gray-900 font-medium">Email </label>
-                  <p className="text-gray-700 font-normal">
-                    {formData.email || "N/A"}
-                  </p>
-                </div>
-                <div className="px-3 mb-4  w-[350px]">
-                  <label className="text-gray-900 font-medium">Personal Address </label>
-                  <p className="text-gray-700 font-normal">
-                    {formData.personal_address || "N/A"}
-                  </p>
-                </div>
-                <div className="px-3 mb-4  w-[350px]">
-                  <label className="text-gray-900 font-medium">Shop Address</label>
-                  <p className="text-gray-700 font-normal">
-                    {formData.shop_address || "N/A"}
-                  </p>
-                </div>
-                <div className="px-3 mb-4  w-[130px]">
-                  <label className="text-gray-900 font-medium">Landline No </label>
-                  <p className="text-gray-700 font-normal">
-                    {formData.landline_no || "N/A"}
-                  </p>
-                </div>
-                <div className="px-3 mb-4  w-[130px]">
-                  <label className="text-gray-900 font-medium">Landline No 2 </label>
-                  <p className="text-gray-700 font-normal">
-                    {formData.landline_no2 || "N/A"}
-                  </p>
-                </div>
-                <div className="px-3 mb-4  w-[180px]">
-                  <label className="text-gray-900 font-medium">Firm Name </label>
-                  <p className="text-gray-700 font-normal">
-                    {formData.firm_name || "N/A"}
-                  </p>
-                </div>
-                <div className="px-3 mb-4  w-[280px]">
-                  <label className="text-gray-900 font-medium">GST No </label>
-                  <p className="text-gray-700 font-normal">
-                    {formData.gst_no || "N/A"}
-                  </p>
-                </div>
-                <div className="px-3 mb-4  w-[180px]">
-                  <label className="text-gray-900 font-medium">Aadhar No</label>
-                  <p className="text-gray-700 font-normal">
-                    {formData.aadhar_no || "N/A"}
-                  </p>
-                </div>
-                <div className="px-3 mb-4  w-[200px]">
-                  <label className="text-gray-900 font-medium">View Aadhar </label>
-                  {formData.aadharFile && (
-                    <a
-                      href={formData.aadharFile}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="flex items-center gap-1 text-blue-600 hover:underline"
-                    >
-                      <IoMdImage className="text-black text-lg" />
-                      <span>View Aadhaar File</span>
-                    </a>
-                  )}
-                </div>
-                <div className="px-3 mb-4  w-[150px]">
-                  <label className="text-gray-900 font-medium">Pan No</label>
-                  <p className="text-gray-700 font-normal">
-                    {formData.pan_no || "N/A"}
-                  </p>
-                </div>
-                <div className="px-3 mb-4  w-[200px]">
-                  <label className="text-gray-900 font-medium">View Pan </label>
-                  {formData.panFile && (
-                    <a
-                      href={formData.panFile}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="flex items-center gap-1 text-blue-600 hover:underline"
-                    >
-                      <IoMdImage className="text-black text-lg" />
-                      <span>View Aadhaar File</span>
-                    </a>
-                  )}
-                </div>
+        <div className="w-full  ">
+  <div className="bg-[#FFE6E6] mt-2 p-6">
 
-              </div>
-            </div>
+    <h1 className="text-blue-900 font-semibold text-xl mb-6">
+      Bidder Information
+    </h1>
 
+    <div className="flex flex-col lg:flex-row ">
 
-            {/* Right Section - Profile Picture */}
-            <div className="lg:w-36 flex flex-col items-center lg:items-start gap-4">
-              <h3 className="font-semibold text-gray-900 text-center lg:text-left">
-                Bidder Profile
-              </h3>
-              <div className="relative">
-                <img
-                  src={formData.bidder_photo || profileempty}
-                  alt="profile"
-                  className="h-[150px] w-[130px] border border-gray-300 object-cover rounded"
-                />
-              </div>
-            </div>
+      {/* ================= LEFT SECTION ================= */}
+      <div className="flex-1">
+
+        {/* Row 1 */}
+        <div className="flex flex-wrap gap-4 mb-4">
+
+          <div className="w-[180px]">
+            <label className="text-gray-900 font-medium">Bidder Name</label>
+            <p className="text-gray-700">{formData.bidder_name}</p>
           </div>
+
+          <div className="w-[130px]">
+            <label className="text-gray-900 font-medium">Mobile Number</label>
+            <p className="text-gray-700">{formData.mobile_no}</p>
+          </div>
+
+          <div className="w-[130px]">
+            <label className="text-gray-900 font-medium">Alt Mobile Number</label>
+            <p className="text-gray-700">{formData.alt_mob_no || "N/A"}</p>
+          </div>
+
+          <div className="w-[150px]">
+            <label className="text-gray-900 font-medium">Email</label>
+            <p className="text-gray-700">{formData.email || "N/A"}</p>
+          </div>
+
+          <div className="w-[200px]">
+            <label className="text-gray-900 font-medium">Personal Address</label>
+            <p className="text-gray-700">{formData.personal_address || "N/A"}</p>
+          </div>
+
+          <div className="w-[200px]">
+            <label className="text-gray-900 font-medium">Shop Address</label>
+            <p className="text-gray-700">{formData.shop_address || "N/A"}</p>
+          </div>
+
+          <div className="w-[130px]">
+            <label className="text-gray-900 font-medium">Landline No</label>
+            <p className="text-gray-700">{formData.landline_no || "N/A"}</p>
+          </div>
+
+          <div className="w-[130px]">
+            <label className="text-gray-900 font-medium">Landline No 2</label>
+            <p className="text-gray-700">{formData.landline_no2 || "N/A"}</p>
+                  </div>
+                    <div className="w-[120px]">
+            <label className="text-gray-900 font-medium">Firm Name</label>
+            <p className="text-gray-700">{formData.firm_name || "N/A"}</p>
+                  </div>
+                  <div className="w-[150px]">
+            <label className="text-gray-900 font-medium">GST No</label>
+            <p className="text-gray-700">{formData.gst_no || "N/A"}</p>
+          </div>
+
+                  <div className="w-[100px]">
+            <label className="text-gray-900 font-medium">Aadhar No</label>
+            <p className="text-gray-700">{formData.aadhar_no || "N/A"}</p>
+          </div>
+
+                   
+
+                   <div className="w-[100px]">
+            <label className="text-gray-900 font-medium">Pan No</label>
+            <p className="text-gray-700">{formData.pan_no || "N/A"}</p>
+          </div>
+
         </div>
 
-        <div className="bg-white">
+        {/* Row 2 */}
+        <div className="flex flex-wrap gap-4">
+
+        
+
+          
+
+          
+
+        
+
+         
+
+          <div className="w-[200px]">
+            <label className="text-gray-900 font-medium">View Pan</label>
+            {formData.panFile ? (
+              <a
+                href={formData.panFile}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="flex items-center gap-1 text-blue-600 hover:underline"
+              >
+                <IoMdImage className="text-black text-lg" />
+                <span>View Pan File</span>
+              </a>
+            ) : (
+              <p className="text-gray-700">N/A</p>
+            )}
+          </div>
+
+                   <div className="w-[200px]">
+            <label className="text-gray-900 font-medium">View Aadhar</label>
+            {formData.aadharFile ? (
+              <a
+                href={formData.aadharFile}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="flex items-center gap-1 text-blue-600 hover:underline"
+              >
+                <IoMdImage className="text-black text-lg" />
+                <span>View Aadhaar File</span>
+              </a>
+            ) : (
+              <p className="text-gray-700">N/A</p>
+            )}
+          </div>
+
+        </div>
+
+      </div>
+
+      {/* ================= RIGHT SECTION ================= */}
+      <div className="w-[150px] rounded-md  flex flex-col items-center">
+
+        <h3 className="font-semibold text-gray-900 mb-4">
+          Bidder Profile
+        </h3>
+
+        <img
+          src={formData.bidder_photo || profileempty}
+          alt="profile"
+          className="h-[120px] w-[120px] border border-gray-300 object-cover rounded"
+        />
+
+      </div>
+
+    </div>
+
+  </div>
+</div>
+
+
+        <div className="bg-[#F7F7FF] p-5 mb-5 ">
           <h1 className="text-blue-900 font-semibold text-xl mb-6">
             Add Bank Details
           </h1>
@@ -222,7 +240,7 @@ const ViewBidderDetails = () => {
               </p>
             </div>
 
-            <div className="flex flex-col gap-1 w-[200px]">
+            <div className="flex flex-col gap-1 w-[150px]">
               <label className="text-gray-900 font-semibold">IFSC Code</label>
               <p className="text-gray-700 font-normal">
                 {formData.ifsc_code || "N/A"}

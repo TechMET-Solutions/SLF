@@ -865,7 +865,7 @@ function AddLoanRepaymentEmi() {
                     disabled
                     value={data?.loanApplication?.Print_Name}
                     onChange={handleChange}
-                    className="border border-gray-300 disabled:bg-gray-100 rounded-md px-3 py-2 focus:ring-1 focus:outline-none w-[200px]"
+                    className="border border-gray-300 disabled:bg-gray-100 rounded-md px-3 py-2 focus:ring-1 focus:outline-none w-[210px]"
                   />
                 </div>
 
@@ -974,7 +974,7 @@ function AddLoanRepaymentEmi() {
                     disabled
                     value={data?.loanApplication?.LoanPendingAmount}
                     onChange={handleChange}
-                    className="border border-gray-300 disabled:bg-gray-100 rounded-md px-3 py-2 focus:ring-1 focus:ring-blue-500 focus:outline-none w-[120px]"
+                    className="border border-gray-300 disabled:bg-gray-100 rounded-md px-3 py-2 focus:ring-1 focus:ring-blue-500 focus:outline-none w-[140px]"
                   />
                 </div>
 
@@ -1380,7 +1380,7 @@ function AddLoanRepaymentEmi() {
               />
             </div>
           </div>
-          <div className="flex flex-col gap-1 w-[160px] mt-2">
+          <div className="flex flex-col gap-1 w-[160px] mt-2 text-sm">
             <label className="text-gray-900 font-medium">Round Off</label>
             <input
               type="text"

@@ -69,9 +69,9 @@ const ViewCreditNote = () => {
 
       {/* MAIN CONTENT */}
       <div className="flex justify-center">
-        <div className="w-[1290px] bg-white mt-2">
+        <div className="w-[1290px] bg-white mt-5">
           {/* CREDIT NOTE DETAILS */}
-          <section className="bg-[#ECECF6] p-4 px-18 border-gray-300 mt-10">
+          <section className="bg-[#ECECF6] p-4  border-gray-300 ">
             <h3 className="font-semibold text-[20px] text-[#0A2478] mb-3">
               Credit Note Details
             </h3>
@@ -135,7 +135,7 @@ const ViewCreditNote = () => {
           </section>
 
           {/* CUSTOMER DETAILS */}
-          <section className="bg-[#FFE6E6] p-4 px-18 border-gray-300">
+          <section className="bg-[#FFE6E6] p-4  border-gray-300">
             <h3 className="font-semibold text-[20px] text-[#0A2478] mb-3">
               Customer Details
             </h3>
@@ -183,7 +183,7 @@ const ViewCreditNote = () => {
           {/* PAYMENT DETAILS */}
 
           {/* AUTHORIZATION */}
-          <section className="bg-[#EEF2FF] p-4 px-18">
+          <section className="bg-[#EEF2FF] p-4 ">
             <h3 className="font-semibold text-[20px] text-[#0A2478] mb-3">
               Authorization & Verification
             </h3>

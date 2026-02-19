@@ -261,27 +261,27 @@ const handleChange = (e) => {
 
       {/* Table */}
       <div className="flex justify-center">
-        <div className="overflow-x-auto mt-6 w-[1300px]">
-          <table className="w-full border-collapse">
+        <div className="overflow-x-auto mt-6 ">
+          <table className="border-collapse">
             <thead className="bg-[#0A2478] text-white text-sm">
               <tr className="[&>th]:px-4 [&>th]:py-3 [&>th]:border-r">
-                <th>Loan No.</th>
-                <th>Item Name</th>
-                <th>Gross Weight</th>
-                <th>Net Weight</th>
-                <th>Amount</th>
-                <th>Outstanding Amt</th>
-                <th>Valuation Gold Rate</th>
-                <th>Bid Closing Amt</th>
-                <th>Assign Bidder</th>
-                <th>Invoice</th>
+                <th className='w-[20px]'>Loan No.</th>
+                <th className='w-[200px]' >Item Name</th>
+                <th  className='w-[80px]'>Gross Weight</th>
+                <th  className='w-[80px]'>Net Weight</th>
+                <th  className='w-[100px]' >Amount</th>
+                <th className='w-[80px]'>Outstanding Amt</th>
+                <th className='w-[120px]'>Valuation Gold Rate</th>
+                <th className='w-[100px]'>Bid Closing Amt</th>
+                <th className='w-[150px]'>Assign Bidder</th>
+                <th  className='w-[100px]'>Invoice</th>
                 <th>Payment</th>
                 <th>Remark</th>
               </tr>
             </thead>
 
             <tbody className="text-[13px] divide-y">
-              {dataWithBidderCost?.map((item) => {
+              {dataWithBidderCost?.map((item,index) => {
                 let list = [];
 
                 // 🟢 Safe JSON Parsing
@@ -306,17 +306,23 @@ const handleChange = (e) => {
                 );
 
                 return (
-                  <tr key={item.id} className="[&>td]:px-4 [&>td]:py-3">
-                    <td>{item.id}</td>
-                    <td>{itemName}</td>
-                    <td>{gross}</td>
-                    <td>{net}</td>
-                    <td>{item.Loan_amount}</td>
-                    <td>{item.LoanPendingAmount}</td>
-                    <td>{valuation}</td>
+                  <tr key={item.id} className={index % 2 === 0 ? "bg-gray-50" : "bg-white"}>
+                    <td className="px-4 py-2">{item.id}</td>
+                    <td className="px-4 py-2">{itemName}</td>
+                    <td className="px-4 py-2">{gross}</td>
+                    <td className="px-4 py-2">{net}</td>
+                   <td className="px-4 py-2">
+  {Number(item.Loan_amount || 0).toFixed(2)}
+</td>
+
+                    <td className="px-4 py-2">{item.LoanPendingAmount}</td>
+                    <td className="px-4 py-2">
+  {Number(valuation || 0).toFixed(2)}
+</td>
+
 
                     {/* ⭐ Bidding Close Amount Input */}
-                   <td className=" ">
+                   <td className="px-4 py-2">
   {item.BidderCloseAmt ? (
     <span className="font-medium">{item.BidderCloseAmt}</span>
   ) : (
@@ -327,9 +333,9 @@ const handleChange = (e) => {
 
 
                     {/* You can fill these later */}
-                        <td>{item.AssignBidderName ? item.AssignBidderName : "---"}</td>
+                        <td  className="px-4 py-2">{item.AssignBidderName ? item.AssignBidderName : "---"}</td>
 
-                 <td>
+                 <td className="px-4 py-2">
   {item.AuctionStatus === 0 ? (
     // Show Pending Invoice (Auction not closed yet)
     <img
@@ -368,7 +374,7 @@ const handleChange = (e) => {
   )}
 </td>
 
-  <td>
+  <td className="px-4 py-2">
   {item.AuctionStatus === 0 ? (
     // Show Pending Invoice (Auction not closed yet)
    <p>---</p>
@@ -389,7 +395,7 @@ const handleChange = (e) => {
   )}
 </td>
 
-<td>--</td>
+<td className="px-4 py-2">--</td>
                      
                   </tr>
                 );

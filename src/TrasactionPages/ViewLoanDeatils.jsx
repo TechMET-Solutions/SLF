@@ -329,8 +329,8 @@ const ViewLoanDetails = () => {
       {/* ===== FORM SECTIONS ===== */}
       <div className="p-9 py-6 min-h-screen space-y-8 px-4">
         {/* ===== Loan Details Section ===== */}
-        <div className="flex justify-center mb-6">
-          <div className="w-[950px] pt-3 pl-14">
+        <div className="flex justify-center mb-6 bg-[#FFE6E6] ml-[110px] mr-[110px]">
+          <div className="w-[950px] pt-3 pl-14 ">
             {/* First Row */}
             <div className="flex gap-7 text-sm mb-8 flex-wrap">
               <div>
@@ -341,9 +341,7 @@ const ViewLoanDetails = () => {
                 <p className="font-semibold">Loan Date</p>
                 <p>
                   {formatDate(loanData.created_at)}
-                  <span className="ml-2">
-                    {formatTime(loanData.created_at)}
-                  </span>
+                  
                 </p>
               </div>
               <div>
@@ -362,10 +360,7 @@ const ViewLoanDetails = () => {
                 <p className="font-semibold">Mobile Number</p>
                 <p>+91 {loanData.Mobile_Number || "N/A"}</p>
               </div>
-            </div>
 
-            {/* Second Row */}
-            <div className="flex gap-13 text-sm flex-wrap">
               <div>
                 <p className="font-semibold">Co-Borrower</p>
                 <p>{loanData.Co_Borrower || "N/A"}</p>
@@ -382,10 +377,17 @@ const ViewLoanDetails = () => {
                 <p className="font-semibold">Relation</p>
                 <p>{loanData.Nominee_Relation || "N/A"}</p>
               </div>
+
               <div>
                 <p className="font-semibold">Address</p>
                 <p>{loanData.Address || "N/A"}</p>
               </div>
+            </div>
+
+            {/* Second Row */}
+            <div className="flex gap-13 text-sm flex-wrap">
+              
+              
             </div>
           </div>
 
@@ -397,7 +399,7 @@ const ViewLoanDetails = () => {
               <img
                 src={loanData.borrower_profileImage || profileempty}
                 alt="Borrower Profile"
-                className="w-[100px] h-[115px] rounded-[5px] object-cover border border-gray-300"
+                className="w-[100px] h-[100px] rounded-[5px] object-cover border border-gray-300"
                 onError={(e) => {
                   e.target.src = profileempty;
                 }}
@@ -425,7 +427,7 @@ const ViewLoanDetails = () => {
               <img
                 src={loanData.coborrower_profileImage || profileempty}
                 alt="Co-Borrower Profile"
-                className="w-[100px] h-[115px] rounded-[5px] object-cover border border-gray-300"
+                className="w-[100px] h-[100px] rounded-[5px] object-cover border border-gray-300"
                 onError={(e) => {
                   e.target.src = profileempty;
                 }}
@@ -457,7 +459,7 @@ const ViewLoanDetails = () => {
                     : profileempty
                 }
                 alt="Ornament"
-                className="w-[130px] h-[115px] object-cover rounded-[5px] border border-gray-300"
+                className="w-[100px] h-[100px] object-cover rounded-[5px] border border-gray-300"
                 onError={(e) => {
                   e.target.src = profileempty;
                 }}

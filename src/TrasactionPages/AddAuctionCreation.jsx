@@ -1,5 +1,4 @@
 import { useEffect, useState } from "react";
-import { HiMagnifyingGlass } from "react-icons/hi2";
 import { useNavigate } from "react-router-dom";
 import { API } from "../api";
 
@@ -25,6 +24,19 @@ function AddAuctionCreation() {
   const [loading, setLoading] = useState(false);
   const [search, setSearch] = useState("");
 
+  const [searchHeaders, setSearchHeaders] = useState([]); // Array of active headers
+  const [searchQuery, setSearchQuery] = useState("");
+  const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+const [selectedDate, setSelectedDate] = useState("");
+
+  const toggleHeader = (headerId) => {
+    setSearchHeaders((prev) =>
+      prev.includes(headerId)
+        ? prev.filter((id) => id !== headerId)
+        : [...prev, headerId],
+    );
+  };
+
   const handleInputChange = (e) => {
     const { name, value } = e.target;
     setFormData((prev) => ({ ...prev, [name]: value }));
@@ -39,102 +51,66 @@ function AddAuctionCreation() {
     );
   };
 
-  // ✅ Dummy loan data
-  // const [data] = useState([
-  //   {
-  //     id: 1,
-  //     loanScheme: "Gold Loan",
-  //     loanNo: "LN00123",
-  //     loanDate: "2025-03-10",
-  //     extendedDate: "2025-09-10",
-  //     customerName: "Rohan Sharma",
-  //     valuation: "₹1,50,000",
-  //     mobileNo: "9876543210",
-  //     totalAmt: "₹1,80,000",
-  //     loanAmtPaid: "₹1,20,000",
-  //     outstandingAmt: "₹60,000",
-  //     branch: "Nashik Main",
-  //   },
-  //   {
-  //     id: 2,
-  //     loanScheme: "Silver Loan",
-  //     loanNo: "LN00124",
-  //     loanDate: "2025-04-15",
-  //     extendedDate: "2025-09-15",
-  //     customerName: "Vikas Kohli",
-  //     valuation: "₹2,00,000",
-  //     mobileNo: "9988776655",
-  //     totalAmt: "₹2,40,000",
-  //     loanAmtPaid: "₹1,50,000",
-  //     outstandingAmt: "₹90,000",
-  //     branch: "Pune East",
-  //   },
-  //   {
-  //     id: 3,
-  //     loanScheme: "Diamond Loan",
-  //     loanNo: "LN00125",
-  //     loanDate: "2025-05-05",
-  //     extendedDate: "2025-09-25",
-  //     customerName: "Harsh Pandya",
-  //     valuation: "₹3,00,000",
-  //     mobileNo: "9123456780",
-  //     totalAmt: "₹3,50,000",
-  //     loanAmtPaid: "₹2,80,000",
-  //     outstandingAmt: "₹70,000",
-  //     branch: "Mumbai West",
-  //   },
-  //   {
-  //     id: 4,
-  //     loanScheme: "Diamond Loan",
-  //     loanNo: "LN00125",
-  //     loanDate: "2025-05-05",
-  //     extendedDate: "2025-09-25",
-  //     customerName: "Raj Panta",
-  //     valuation: "₹3,00,000",
-  //     mobileNo: "9123456780",
-  //     totalAmt: "₹3,50,000",
-  //     loanAmtPaid: "₹2,80,000",
-  //     outstandingAmt: "₹70,000",
-  //     branch: "Mumbai West",
-  //   },
-  //   {
-  //     id: 4,
-  //     loanScheme: "Diamond Loan",
-  //     loanNo: "LN00125",
-  //     loanDate: "2025-05-05",
-  //     extendedDate: "2025-09-25",
-  //     customerName: "Poonam Soni",
-  //     valuation: "₹3,00,000",
-  //     mobileNo: "9123456780",
-  //     totalAmt: "₹3,50,000",
-  //     loanAmtPaid: "₹2,80,000",
-  //     outstandingAmt: "₹70,000",
-  //     branch: "Mumbai West",
-  //   },
-  // ]);
-  const fetchLoans = async () => {
-    try {
-      setLoading(true);
+  // const fetchLoans = async () => {
+  //   try {
+  //     setLoading(true);
 
-      const url = `${API}/Transactions/getApprovedLoanApplications/all?page=${page}&limit=${limit}&search=${search}`;
+  //     const url = `${API}/Transactions/getApprovedLoanApplications/all?page=${page}&limit=${limit}&search=${search}`;
 
-      const res = await fetch(url);
-      const json = await res.json();
+  //     const res = await fetch(url);
+  //     const json = await res.json();
 
-      if (json.success) {
-        setLoanData(json.data);
-        setTotalPages(json.totalPages || 1);
-      }
-    } catch (err) {
-      console.log("Error fetching loans", err);
+  //     if (json.success) {
+  //       setLoanData(json.data);
+  //       setTotalPages(json.totalPages || 1);
+  //     }
+  //   } catch (err) {
+  //     console.log("Error fetching loans", err);
+  //   }
+
+  //   setLoading(false);
+  // };
+const fetchLoans = async () => {
+  try {
+    setLoading(true);
+
+    const params = new URLSearchParams();
+    params.append("page", page);
+    params.append("limit", limit);
+
+    if (searchQuery.trim()) {
+      params.append("search", searchQuery);
     }
 
-    setLoading(false);
-  };
+    if (searchHeaders.length > 0) {
+      params.append("headers", searchHeaders.join(","));
+    }
+
+    if (selectedDate) {
+      params.append("loan_date", selectedDate);
+    }
+
+    const url = `${API}/Transactions/getApprovedLoanApplications/all?${params.toString()}`;
+
+    const res = await fetch(url);
+    const json = await res.json();
+
+    if (json.success) {
+      setLoanData(json.data);
+      setTotalPages(json.totalPages || 1);
+    }
+
+  } catch (err) {
+    console.log("Error fetching loans", err);
+  }
+
+  setLoading(false);
+};
+
 
   useEffect(() => {
     fetchLoans();
-  }, [page]); // Fetch loans when page changes
+  }, [page]); 
   const parsePledgeItems = (value) => {
     try {
       if (!value) return [];
@@ -230,38 +206,117 @@ function AddAuctionCreation() {
           <h2 className="text-red-600 font-bold text-[20px]">
             Auction Creation
           </h2>
-          {/* 🔹 Search Box */}
-          {/* <div className="flex items-right gap-3 ml-130">
-            <input
-              type="text"
-              placeholder="Loan No"
-              className="border border-gray-300 rounded-l-md px-3 py-2 text-sm w-56  focus:outline-none focus:ring-2 focus:ring-[#0A2478] placeholder-gray-500"
-            />
-            <button className="bg-[#0A2478] px-3 py-2 rounded-r-md flex items-center justify-center">
-              <HiMagnifyingGlass className="text-white w-5 h-5" />
-            </button>
-          </div> */}
-          <div className="flex gap-3">
-            <button
-              className="bg-[#0A2478] text-white text-sm rounded px-4 py-2 cursor-pointer"
-              onClick={handleSubmitAuction}
-            >
-              Submit
-            </button>
-            <button
-              className="bg-[#C1121F] text-white text-sm rounded px-4 py-1 cursor-pointer"
-              onClick={() => navigate("/Auction-Creation")}
-            >
-              Cancel
-            </button>
+          <div className="flex gap-2">
+            <div className="flex items-center gap-3">
+              <div className="flex items-center bg-white border border-gray-400 rounded-[5px] h-[32px] px-2 relative w-[500px]">
+                {/* Multi-Select Header Dropdown */}
+                <div className="relative border-r border-gray-300 pr-2 mr-2">
+                  <button
+                    onClick={() => setIsDropdownOpen(!isDropdownOpen)}
+                    className="text-[11px] font-source font-bold text-[#0A2478] flex items-center gap-1 outline-none "
+                  >
+                    Headers ({searchHeaders.length}){" "}
+                    <span className="text-[8px]">▼</span>
+                  </button>
+
+                  {isDropdownOpen && (
+                    <div className="absolute top-[35px] left-[-8px] bg-white border border-gray-300 shadow-xl rounded-md z-[100] w-[160px] p-2">
+                      {[
+                        { id: "id", label: "Loan No" },
+                        { id: "Scheme", label: "Loan Scheme" },
+                        { id: "Borrower", label: "Customer Name" },
+                         { id: "Mobile_Number", label: "Mobile No" },
+                      ].map((col) => (
+                        <label
+                          key={col.id}
+                          className="flex items-center gap-2 p-2 hover:bg-gray-50 cursor-pointer rounded"
+                        >
+                          <input
+                            type="checkbox"
+                            checked={searchHeaders.includes(col.id)}
+                            onChange={() => toggleHeader(col.id)}
+                            className="w-3 h-3 accent-[#0A2478]"
+                          />
+                          <span className="text-[11px] font-source text-gray-700">
+                            {col.label}
+                          </span>
+                        </label>
+                      ))}
+                      <div className="border-t mt-1 pt-1 text-center">
+                        <button
+                          onClick={() => setIsDropdownOpen(false)}
+                          className="text-[10px] text-[#0A2478] font-bold"
+                        >
+                          Apply
+                        </button>
+                      </div>
+                    </div>
+                  )}
+                </div>
+
+                {/* Text Input Field */}
+                <input
+                  type="text"
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                  placeholder="Type multiple items (e.g. Cash, Asset)..."
+                  className="flex-grow text-[11px] font-source outline-none h-full"
+                />
+
+                {/* Search Button */}
+               
+              </div>
+            </div>
+<input
+  type="date"
+  value={selectedDate}
+  onChange={(e) => setSelectedDate(e.target.value)}
+  className="border border-gray-300 rounded-[5px] h-[32px] px-2 text-[11px] outline-none"
+/>
+
+            <div className="flex gap-3">
+
+               <button
+                  onClick={() => {
+                    setIsDropdownOpen(false);
+                     fetchLoans();
+                  }}
+                  className="ml-2 bg-[#0b2c69] text-white text-[11px] px-4 h-[32px] rounded-[3px] font-source hover:bg-[#071d45] "
+                >
+                  Search
+                </button>
+              <button
+                onClick={() => {
+                  setSearchQuery("");
+                  setSearchHeaders([]);
+                  setSelectedDate("")
+                  fetchLoans();
+                }}
+                className="text-[10px] text-gray-500 hover:text-red-500 underline"
+              >
+                Clear
+              </button>
+              <button
+                className="bg-[#0A2478] text-white text-sm rounded px-4 py-2 cursor-pointer h-[32px]"
+                onClick={handleSubmitAuction}
+              >
+                Submit
+              </button>
+              <button
+                className="bg-[#C1121F] text-white text-sm rounded px-4 py-1 cursor-pointer h-[32px]"
+                onClick={() => navigate("/Auction-Creation")}
+              >
+                Exit
+              </button>
+            </div>
           </div>
         </div>
       </div>
 
       {/* 🔹 Form Section */}
       <div className="mr-[110px] ml-[110px] mt-5 p-4 bg-[#F7F7FF] rounded-md">
-        <div className="flex  mt-2   p-4  ">
-          <div className="flex flex-col pr-10">
+        <div className="flex  mt-2    gap-2 ">
+          <div className="flex flex-col ">
             <label className="text-xs font-medium mb-1">
               Venue <span className="text-red-600">*</span>
             </label>
@@ -270,12 +325,12 @@ function AddAuctionCreation() {
               name="venue"
               value={formData.venue}
               onChange={handleInputChange}
-              className="border border-gray-300 rounded px-2  py-2 text-xs focus:outline-none focus:ring-2 focus:ring-blue-500 w-[300px]"
+              className="border border-gray-300 rounded px-2  py-2 text-xs focus:outline-none focus:ring-2 focus:ring-blue-500 w-[300px] bg-white"
               placeholder="Location"
             />
           </div>
 
-          <div className="flex flex-col pr-10">
+          <div className="flex flex-col ">
             <label className="text-xs font-medium mb-1">
               Date <span className="text-red-600">*</span>
             </label>
@@ -284,11 +339,11 @@ function AddAuctionCreation() {
               name="date"
               value={formData.date}
               onChange={handleInputChange}
-              className="border border-gray-300 rounded px-3  py-2 text-xs focus:outline-none focus:ring-2 focus:ring-blue-500 w-[120px]"
+              className="border border-gray-300 rounded px-2  py-2 text-xs focus:outline-none focus:ring-2 focus:ring-blue-500  bg-white"
             />
           </div>
 
-          <div className="flex flex-col pr-10">
+          <div className="flex flex-col ">
             <label className="text-xs font-medium mb-1">
               Time <span className="text-red-600">*</span>
             </label>
@@ -297,11 +352,11 @@ function AddAuctionCreation() {
               name="time"
               value={formData.time}
               onChange={handleInputChange}
-              className="border border-gray-300 rounded px-3  py-2 text-xs focus:outline-none focus:ring-2 focus:ring-blue-500 w-[80px]"
+              className="border border-gray-300 rounded px-2 py-2 text-xs focus:outline-none focus:ring-2 focus:ring-blue-500  bg-white"
             />
           </div>
 
-          <div className="flex flex-col pr-10">
+          <div className="flex flex-col ">
             <label className="text-xs font-medium mb-1">
               Fees <span className="text-red-600">*</span>
             </label>
@@ -314,7 +369,7 @@ function AddAuctionCreation() {
                 MozAppearance: "textfield",
               }}
               onWheel={(e) => e.target.blur()}
-              className=" no-spinner border border-gray-300 rounded px-3 w-30 py-2 text-xs focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className=" no-spinner border border-gray-300 rounded px-2 w-30 py-2 text-xs focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white"
               placeholder="Enter fees"
             />
           </div>
@@ -330,7 +385,7 @@ function AddAuctionCreation() {
                 MozAppearance: "textfield",
               }}
               onWheel={(e) => e.target.blur()}
-              className="  no-spinner border border-gray-300 rounded px-3 w-30 py-2 text-xs focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className="  no-spinner border border-gray-300 rounded px-2 w-30 py-2 text-xs focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white"
             />
           </div>
         </div>
@@ -347,9 +402,9 @@ function AddAuctionCreation() {
               <thead className="bg-[#0A2478] text-white text-sm">
                 <tr>
                   <th className="px-4 py-2 text-left border-r">Select</th>
-                   <th className="px-4 py-2 text-left border-r">Loan No</th>
+                  <th className="px-4 py-2 text-left border-r">Loan No</th>
                   <th className="px-4 py-2 text-left border-r">Loan Scheme</th>
-                 
+
                   <th className="px-4 py-2 text-left border-r">Loan Date</th>
                   <th className="px-4 py-2 text-left border-r">
                     Extended Date
@@ -380,9 +435,7 @@ function AddAuctionCreation() {
                 {loanData?.map((row, index) => (
                   <tr
                     key={row.id}
-                    className={`border-b ${
-                      index % 2 === 0 ? "bg-gray-50" : "bg-white"
-                    }`}
+                    className={index % 2 === 0 ? "bg-gray-50" : "bg-white"}
                   >
                     <td className="px-4 py-2 flex items-center justify-center">
                       <input
@@ -393,7 +446,7 @@ function AddAuctionCreation() {
                     </td>
                     <td className="px-4 py-2">{row.id}</td>
                     <td className="px-4 py-2">{row.Scheme}</td>
-                    
+
                     <td className="px-4 py-2">
                       {row.approval_date
                         ? new Date(row.approval_date).toLocaleDateString(
