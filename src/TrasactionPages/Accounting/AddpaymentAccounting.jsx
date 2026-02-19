@@ -55,6 +55,8 @@ const AddpaymentAccounting = () => {
     account: "",
     accountName:""
   });
+
+
   const [existingBillImage, setExistingBillImage] = useState(null); // 👈 URL
   console.log(formData, "formData");
   const [dueAmount, setDueAmount] = useState(0);
@@ -423,7 +425,7 @@ const fetchBanks = async () => {
       }
 
       alert(editData ? "✅ Voucher Updated" : "✅ Voucher Saved");
-      navigate("/PaymentVoucher");
+      navigate("/Expences_list");
     } catch (error) {
       console.error("Save Voucher Error:", error);
       alert(error.message || "Something went wrong");
@@ -437,7 +439,7 @@ const fetchBanks = async () => {
         <div className="bg-white border border-gray-200 rounded-t-lg shadow-sm">
           <div className="p-4 border-b border-gray-100">
             <h1 className="text-[#D32F2F] text-xl font-bold uppercase tracking-tight">
-              Tools / Utilities
+            Expences
             </h1>
           </div>
 
@@ -456,14 +458,7 @@ const fetchBanks = async () => {
                 />
               </div>
             </div>
-            {/* <div className="flex flex-col">
-              <label className="font-bold text-gray-600 mb-1">Party Type</label>
-              <select className="border border-gray-300 rounded px-2 py-1.5 outline-none">
-                <option>All</option>
-              </select>
-            </div> */}
-
-            {/* Party Field with Add Icon */}
+           
             <div className="flex flex-col relative">
               <label className="font-bold text-gray-600 mb-1">Party</label>
 
@@ -607,21 +602,7 @@ const fetchBanks = async () => {
                 className="border border-gray-300 rounded px-2 py-1.5 outline-none bg-gray-100"
               />
             </div>
-            {/* <div className="flex flex-col">
-              <label className="font-bold text-gray-600 mb-1">Bill Image</label>
-
-              <input
-                type="file"
-                accept="image/*"
-                onChange={(e) =>
-                  setFormData({
-                    ...formData,
-                    billImage: e.target.files[0], // ✅ store File object
-                  })
-                }
-                className="border border-gray-300 rounded px-2 py-1.5 outline-none"
-              />
-            </div> */}
+          
             <div className="flex flex-col">
               <label className="font-bold text-gray-600 mb-1">Bill Image</label>
 
@@ -905,48 +886,14 @@ const fetchBanks = async () => {
 
           {/* Exit - always show */}
           <button
-            onClick={() => navigate("/PaymentVoucher")}
+            onClick={() => navigate("/Expences_list")}
             className="bg-[#555] text-white px-8 py-1.5 rounded flex items-center text-xs font-bold shadow-sm hover:opacity-90"
           >
             <XCircle size={14} className="mr-2" /> Exit
           </button>
         </div>
       </div>
-      {/* {isRepayment && transactions.length > 0 && (
-        <div className='flex justify-center '>
-           <div className="mt-6 border border-gray-300 rounded">
-          <div className="bg-gray-100 px-3 py-2 font-bold text-sm">
-            Previous Transactions
-          </div>
-
-          <table className="w-full text-[12px]">
-            <thead className="bg-gray-200">
-              <tr>
-                <th className="p-2 border">Ledger</th>
-                <th className="p-2 border">Date</th>
-                <th className="p-2 border">Amount</th>
-                <th className="p-2 border">Remark</th>
-              </tr>
-            </thead>
-            <tbody>
-              {transactions.map((t, i) => (
-                <tr key={i}>
-                  <td className="p-2 border">{t.ledgerName}</td>
-                  <td className="p-2 border">
-                    {new Date(t.date).toLocaleDateString("en-GB")}
-                  </td>
-                  <td className="p-2 border text-right">₹ {t.amount}</td>
-                  <td className="p-2 border">{t.remark}</td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
-          </div>
-       
-      )} */}
-
-      {/* --- ADD PARTY MODAL --- */}
+      
       {isModalOpen && (
         <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50 p-4">
           <div className="bg-white rounded-xl shadow-2xl w-full max-w-2xl flex flex-col max-h-[90vh] overflow-hidden border border-gray-200">

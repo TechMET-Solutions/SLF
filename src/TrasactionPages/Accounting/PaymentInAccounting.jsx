@@ -57,12 +57,12 @@ const PaymentInAccounting = () => {
         {/* HEADER */}
         <div className="flex justify-between items-center mb-6 bg-white p-4 rounded-lg shadow border">
           <h1 className="text-[#D32F2F] text-xl font-bold">
-            Payment Voucher List
+            Expences list
           </h1>
 
           <div className="flex space-x-2">
             <button
-              onClick={() => navigate("/PaymentVoucher/create")}
+              onClick={() => navigate("/Expences/create")}
               className="bg-[#0D3082] text-white px-5 py-1.5 rounded text-xs font-bold"
             >
               Add
@@ -175,7 +175,7 @@ const PaymentInAccounting = () => {
                         {/* View */}
                         <button
                           onClick={() =>
-                            navigate("/PaymentVoucher/create", {
+                            navigate("/Expences/create", {
                               state: { voucher: row, view: true },
                             })
                           }
@@ -188,7 +188,7 @@ const PaymentInAccounting = () => {
                         {/* Edit */}
                         <button
                           onClick={() =>
-                            navigate("/PaymentVoucher/create", {
+                            navigate("/Expences/create", {
                               state: { voucher: row },
                             })
                           }

@@ -1521,7 +1521,7 @@ const Navbar = () => {
   ];
 
   const AccountingItems = [
-    { name: "Expences", path: "/PaymentVoucher" },
+    { name: "Expences", path: "/Expences_list" },
     { name: "Receipt", path: "/ReceiptVoucher/List" },
     { name: "Journal", path: "/JournalVoucher/List" },
     { name: "FT Issue", path: "/FundTransfer/issue" },

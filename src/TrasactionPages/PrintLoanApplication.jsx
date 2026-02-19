@@ -65,26 +65,34 @@ const interestRates = safeParse(loanData.Effective_Interest_Rates);
   return (
     <div>
       {/* 🔹 Header */}
-      <div className="flex justify-center">
-        <div className="flex justify-end px-6 py-4 border-b mt-5 w-[1290px] h-[62px] border rounded-[11px] border-gray-200 ">
-          <div className="flex gap-3">
+     <div className="flex justify-center sticky top-[80px] z-40 ">
+        <div className="flex items-center px-6 py-4 border-b mt-5 w-[1260px] h-[62px] border rounded-[11px] border-gray-200 justify-between shadow bg-white ">
+          <h2
+            style={{
+              fontFamily: "Source Sans 3, sans-serif",
+              fontWeight: 700,
+              fontSize: "20px",
+              lineHeight: "148%",
+              letterSpacing: "0em",
+            }}
+            className="text-red-600"
+          >
+            Print-Loan-Application
+          </h2>
+
+          <div className="flex gap-2 mr-6">
             <button
-              onClick={() => window.print()}
-              className="bg-green-600 text-white text-sm rounded px-6 cursor-pointer"
+              onClick={() => navigate("/Loan-Application")}
+              className="bg-[#C1121F] text-white px-6 py-1 text-sm rounded hover:bg-[#a50d18] shadow-lg"
             >
-              Print
-            </button>
-            <button
-              onClick={() => navigate(-1)}
-              className="bg-red-600 text-white text-sm rounded px-6 cursor-pointer"
-            >
-              Exit
+              Close
             </button>
           </div>
         </div>
       </div>
-
-      <div className="p-4 px-25">
+      <div className='mr-[110px] ml-[110px] 
+' >
+        <div className="p-5 ">
         {/* 🔹 Top Section - Images */}
         <div className="grid grid-cols-2 gap-6">
           {[1, 2].map((_, idx) => (
@@ -362,6 +370,8 @@ const interestRates = safeParse(loanData.Effective_Interest_Rates);
           </div>
         </div>
       </div>
+</div>
+      
     </div>
   );
 }

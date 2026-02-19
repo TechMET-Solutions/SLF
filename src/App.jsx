@@ -364,6 +364,8 @@ import ViewBidderDetails from "./TrasactionPages/ViewBidderDetails";
 import ViewCreditNote from "./TrasactionPages/ViewCreditNote";
 import ViewLoanCharges from "./TrasactionPages/ViewLoanCharges";
 import ViewLoanDetails from "./TrasactionPages/ViewLoanDeatils";
+import ExpenceCreate from "./TrasactionPages/Accounting/ExpenceCreate.jsx";
+import AddRecipt from "./TrasactionPages/Accounting/AddRecipt.jsx";
 // ---------------- LAYOUT WRAPPER ----------------
 function LayoutWithNavbar({ children }) {
   const location = useLocation();
@@ -682,7 +684,7 @@ function App() {
                     element={<AuctionCreation />}
                   />
                   <Route
-                    path="/PaymentVoucher"
+                    path="/Expences_list"
                     element={<PaymentInAccounting />}
                   />
                   <Route
@@ -690,9 +692,13 @@ function App() {
                     element={<RecieptAccounting />}
                   />
 
-                  <Route
+                  {/* <Route
                     path="/ReceiptVoucher/create"
                     element={<ReceiptCreate />}
+                  /> */}
+                   <Route
+                    path="/Receipt/create"
+                    element={<AddRecipt />}
                   />
                   <Route
                     path="/JournalVoucher/List"
@@ -708,9 +714,14 @@ function App() {
                     element={<JournalVoucherCreate />}
                   />
 
-                  <Route
-                    path="/PaymentVoucher/create"
+                  {/* <Route
+                    path="/Expences/create"
                     element={<AddpaymentAccounting />}
+                  /> */}
+
+                  <Route
+                    path="/Expences/create"
+                    element={<ExpenceCreate />}
                   />
                   <Route
                     path="/Print_Cash_Balance"

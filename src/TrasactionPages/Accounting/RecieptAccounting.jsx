@@ -32,7 +32,7 @@ const RecieptAccounting = () => {
     "w-full border border-gray-300 rounded-sm px-1.5 py-1 text-[12px] outline-none focus:border-blue-500 focus:bg-[#ffffcc]";
   const labelClass = "text-[12px] font-bold text-gray-700 mb-1";
 const handleView = (item) => {
-  navigate("/ReceiptVoucher/create", {
+  navigate("/Receipt/create", {
     state: {
       receipt: item,
       mode: "view",
@@ -41,7 +41,7 @@ const handleView = (item) => {
 };
 
 const handleEdit = (item) => {
-  navigate("/ReceiptVoucher/create", {
+  navigate("/Receipt/create", {
     state: {
       receipt: item,
       mode: "edit",
@@ -72,7 +72,7 @@ const handleDelete = async (id) => {
             Receipt Voucher List
           </h1>
           <button
-            onClick={() => navigate("/ReceiptVoucher/create")} // Add the click handler
+            onClick={() => navigate("/Receipt/create")} // Add the click handler
             className="bg-[#0D3082] hover:bg-blue-800 text-white text-[11px] font-bold py-1 px-3 rounded flex items-center border border-white/20 transition-colors"
           >
             <Plus size={14} className="mr-1" /> ADD

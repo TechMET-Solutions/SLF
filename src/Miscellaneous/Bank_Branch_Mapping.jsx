@@ -261,9 +261,9 @@ const Bank_Branch_Mapping = () => {
           <table className="w-full border-collapse text-[12px]">
             <thead className="bg-[#0A2478] text-white text-sm">
               <tr>
-                <th className="px-2 py-2 text-center border-r border-gray-300 text-[13px] w-[100px]">
+                {/* <th className="px-2 py-2 text-center border-r border-gray-300 text-[13px] w-[100px]">
                   Branch Id
-                </th>
+                </th> */}
                 <th className="px-2 py-2 text-center border-r border-gray-300 text-[13px] w-[80px]">
                   Code
                 </th>
@@ -273,9 +273,9 @@ const Bank_Branch_Mapping = () => {
                 <th className="px-2 py-2 text-center border-r border-gray-300 text-[13px] w-[280px]">
                   Address 1
                 </th>
-                <th className="px-2 py-2 text-center border-r border-gray-300 text-[13px] w-[280px]">
+                {/* <th className="px-2 py-2 text-center border-r border-gray-300 text-[13px] w-[280px]">
                   Address 2
-                </th>
+                </th> */}
                 <th className="px-2 py-2 text-center border-r border-gray-300 text-[13px] w-[180px]">
                   Branch Mapping
                 </th>
@@ -288,7 +288,7 @@ const Bank_Branch_Mapping = () => {
                   className={index % 2 === 0 ? "bg-gray-100" : "bg-white"}
                 >
                   {/* Branch Id */}
-                  <td className="px-4 py-2 text-left">{branch.id}</td>
+                  {/* <td className="px-4 py-2 text-left">{branch.id}</td> */}
 
                   {/* Code */}
                   <td className="px-4 py-2 text-left">
@@ -306,12 +306,12 @@ const Bank_Branch_Mapping = () => {
                   </td>
 
                   {/* Address 2 (we don’t have, so show print_name / lead_person nicely) */}
-                  <td className="px-4 py-2 text-left text-gray-600">
+                  {/* <td className="px-4 py-2 text-left text-gray-600">
                     <div>{branch.print_name}</div>
                     <div className="text-[11px] text-gray-400">
                       {branch.lead_person}
                     </div>
-                  </td>
+                  </td> */}
 
                   {/* Branch Mapping */}
                   <td className="p-2 text-center">

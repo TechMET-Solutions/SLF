@@ -654,31 +654,7 @@ const AddGoldLoanApplication = () => {
 
   return (
     <div className="min-h-screen  ">
-      {/* ===== Top Bar ===== */}
-      {/* <div className="sticky top-0 z-40 flex justify-center w-full bg-gray-50/50 backdrop-blur-sm py-2">
-        <div className="flex items-center justify-between w-full max-w-[1290px] h-12 px-4 bg-white border border-gray-200 rounded-lg shadow-sm mx-4">
-        
-          <h2 className="text-red-600 font-bold text-base tracking-tight leading-tight">
-            Add Gold Loan Application
-          </h2>
-
-        
-          <div className="flex gap-2">
-            <button
-              onClick={handleSaveLoan}
-              className="bg-[#0A2478] text-white text-xs font-medium px-4 py-1.5 rounded hover:bg-blue-900 transition-colors"
-            >
-              Submit
-            </button>
-            <button
-              onClick={() => navigate("/Loan-Application")}
-              className="bg-[#C1121F] text-white text-xs font-medium px-4 py-1.5 rounded hover:bg-red-800 transition-colors"
-            >
-              Close
-            </button>
-          </div>
-        </div>
-      </div> */}
+      
 
       <div className="flex justify-center sticky top-[80px] z-40">
         <div className="flex items-center px-6 py-4 border-b mt-2 w-[1290px] h-[62px] border rounded-[11px] border-gray-200 justify-between shadow bg-white">
@@ -704,7 +680,7 @@ const AddGoldLoanApplication = () => {
       </div>
 
       <div className=" mt-5">
-        <div className="flex ml-[110px] p-2  gap-5 bg-[#FFF5F5] mr-[110px]">
+        <div className="flex ml-[110px] p-3  gap-5 bg-[#FFF5F5] mr-[110px]">
           <div>
             <div>
               <div className="flex  gap-2">
@@ -767,7 +743,7 @@ const AddGoldLoanApplication = () => {
                     Scheme<span className="text-red-500">*</span>
                   </label>
                   <select
-                    className="border border-gray-300 px-3 py-2 w-[130px] bg-white rounded-[8px] h-[40px] mt-1"
+                    className="border border-gray-300 px-3 py-2 w-[140px] bg-white rounded-[8px] h-[40px] mt-1"
                     onChange={handleSchemeChange}
                     defaultValue=""
                   >
@@ -913,7 +889,7 @@ const AddGoldLoanApplication = () => {
                     name="borrowerAddress"
                     value={formData.borrowerAddress}
                     onChange={handleInputChange}
-                    className="border w-[500px] h-[40px] rounded-[8px] p-2 focus:outline-none focus:ring-1 focus:ring-blue-400 bg-white"
+                    className="border w-[510px] h-[40px] rounded-[8px] p-2 focus:outline-none focus:ring-1 focus:ring-blue-400 bg-white border-gray-300"
                   />
                 </div>
               </div>
@@ -1299,7 +1275,7 @@ bg-[#FFE6E6] p-2">
                     <tr>
                       <td
                         colSpan="2"
-                        className="text-center py-3 text-gray-500 border border-[#4A4A4A38]"
+                        className="text-center py-3 text-gray-500 border border-[#4A4A4A38] bg-white"
                       >
                         No interest data available
                       </td>
@@ -1351,7 +1327,7 @@ bg-[#FFE6E6] p-2">
                     <img
                       src={selectedCustomer.Additional_UploadDocumentFile1}
                       alt="Address Proof"
-                      className="w-[112px] h-[112px] border rounded-md object-cover shadow-sm"
+                      className="w-[112px] h-[112px] border rounded-md object-cover shadow-sm "
                     />
                   ) : (
                     <p className="text-red-600 text-sm font-semibold">

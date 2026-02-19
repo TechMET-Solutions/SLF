@@ -55,7 +55,7 @@ const PrintCreditNote = () => {
   return (
     <div>
       <div className="flex justify-center no-print sticky top-[80px] z-40">
-        <div className="flex items-center justify-between border border-gray-300 rounded-[10px] px-4 py-2 mt-4 w-[1290px] h-[62px] shadow-lg">
+        <div className="flex items-center justify-between border border-gray-300 rounded-[10px] px-4 py-2 mt-4 w-[1290px] h-[62px] shadow-lg bg-white">
 
           <h2 className="text-[#C1121F] font-bold text-[20px] whitespace-nowrap mr-4">
             Credit Note
@@ -79,12 +79,12 @@ const PrintCreditNote = () => {
 
         </div>
       </div>
-      <div className="p-2 w-[1290px] flex justify-center ml-[100px]">
+      <div className="p-2  flex justify-center  mt-2 ml-[110px] mr-[110px]">
         <div>
- <div className=" bg-white py-5">
+ <div className=" bg-white ">
 
         {/* Credit Note Details */}
-        <section className="bg-[#ECECF6] p-4 px-18 border-gray-300">
+        <section className="bg-[#ECECF6] p-4  border-gray-300">
           <h3 className="font-semibold text-[20px] text-[#0A2478] mb-3">
             Credit Note Details
           </h3>
@@ -115,7 +115,7 @@ const PrintCreditNote = () => {
         </section>
 
         {/* Customer Details */}
-        <section className="bg-[#FFE6E6] p-4 px-18 border-gray-300">
+        <section className="bg-[#FFE6E6] p-4  border-gray-300">
           <h3 className="font-semibold text-[20px] text-[#0A2478] mb-3">
             Customer Details
           </h3>
@@ -166,77 +166,10 @@ const PrintCreditNote = () => {
         </section>
 
        
-        {/* PAYMENT DETAILS */}
-        {/* <section className="bg-[#ECECF6] p-4 px-18 border-gray-300">
-          <h3 className="font-semibold text-[20px] text-[#0A2478] mb-3">
-            Payment / Adjustment Details
-          </h3>
-
-          <div className="flex flex-wrap gap-4 text-sm">
-            <div>
-              <div className="text-xs font-semibold mb-1">Reason</div>
-              <p className="w-[220px] py-1">{data.reason}</p>
-            </div>
-
-            <div>
-              <div className="text-xs font-semibold mb-1">Description</div>
-              <p className="w-[300px] py-1">{data.description}</p>
-            </div>
-
-            <div>
-              <div className="text-xs font-semibold mb-1">Original Amount</div>
-              <p className="w-[200px] py-1">₹{data.original_amount}</p>
-            </div>
-
-            <div>
-              <div className="text-xs font-semibold mb-1">
-                Adjusted Amount
-              </div>
-              <p className="w-[200px] py-1">₹{data.adjustment_amount}</p>
-            </div>
-
-            <div>
-              <div className="text-xs font-semibold mb-1">
-                Net Amount
-              </div>
-              <p className="w-[200px] py-1">₹{data.net_amount}</p>
-            </div>
-
-            <div>
-              <div className="text-xs font-semibold mb-1">Mode of Payment</div>
-              <p className="w-[200px] py-1">{data.mode_of_payment}</p>
-            </div>
-
-            <div>
-              <div className="text-xs font-semibold mb-1">Bank Name</div>
-              <p className="w-[200px] py-1">{data.bank_name}</p>
-            </div>
-
-            <div>
-              <div className="text-xs font-semibold mb-1">
-                Account No.
-              </div>
-              <p className="w-[200px] py-1">{data.account_no}</p>
-            </div>
-
-            <div>
-              <div className="text-xs font-semibold mb-1">
-                Transaction No.
-              </div>
-              <p className="w-[200px] py-1">{data.transaction_no}</p>
-            </div>
-
-            <div>
-              <div className="text-xs font-semibold mb-1">
-                Transaction Date
-              </div>
-              <p className="w-[200px] py-1">{data.transaction_date}</p>
-            </div>
-          </div>
-        </section> */}
+       
 
         {/* Authorization */}
-        <section className="bg-[#eef2ff] p-4 px-18">
+        <section className="bg-[#eef2ff] p-4 ">
           <h3 className="font-semibold text-[20px] text-[#0A2478] mb-3">
             Authorization & Verification
           </h3>
@@ -261,7 +194,7 @@ const PrintCreditNote = () => {
       </div>
 
       {/* Declaration + Notes */}
-      <div className="bg-white p-6 px-18 pr-25 text-[14px] text-gray-800 mt-[-1px]">
+      <div className="bg-[#F7F7FF] p-6  text-[14px] text-gray-800 ">
 
         <div className="flex justify-between mb-6">
           <p>Date of Approval:</p>
