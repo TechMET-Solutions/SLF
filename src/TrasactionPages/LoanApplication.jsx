@@ -80,7 +80,7 @@ const LoanApplication = () => {
   const [schemesLoading, setSchemesLoading] = useState(false);
   const [schemesError, setSchemesError] = useState("");
 
-  const [searchHeaders, setSearchHeaders] = useState(["group_name"]); // Array of active headers
+  const [searchHeaders, setSearchHeaders] = useState([]); // Array of active headers
   const [searchQuery, setSearchQuery] = useState("");
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
 
@@ -247,80 +247,77 @@ const LoanApplication = () => {
 
   // Initial fetch
   const fetchLoanApplications = async (
-  page = 1,
-  immediateFilters = null,
-  immediateDate = undefined,
-  immediateScheme = undefined,
-) => {
-  setLoading(true);
-  setError("");
+    page = 1,
+    immediateFilters = null,
+    immediateDate = undefined,
+    immediateScheme = undefined,
+  ) => {
+    setLoading(true);
+    setError("");
 
-  try {
-    const activeFilters =
-      immediateFilters !== null ? immediateFilters : filters;
+    try {
+      const activeFilters =
+        immediateFilters !== null ? immediateFilters : filters;
 
-    const activeDate =
-      immediateDate !== undefined ? immediateDate : selectedDate;
+      const activeDate =
+        immediateDate !== undefined ? immediateDate : selectedDate;
 
-    const activeScheme =
-      immediateScheme !== undefined ? immediateScheme : selectedScheme;
+      const activeScheme =
+        immediateScheme !== undefined ? immediateScheme : selectedScheme;
 
-    const params = new URLSearchParams({
-      page: page.toString(),
-      limit: pagination.limit.toString(),
-    });
-
-    // ----------------------------
-    // ✅ NORMAL FILTERS
-    // ----------------------------
-    Object.entries(activeFilters).forEach(([key, value]) => {
-      if (value && key !== "field" && key !== "search") {
-        params.append(key, value);
-      }
-    });
-
-    // ----------------------------
-    // ✅ MULTI HEADER SEARCH
-    // ----------------------------
-    if (searchQuery && searchHeaders.length > 0) {
-      params.append("search", searchQuery);
-      params.append("fields", searchHeaders.join(",")); 
-    }
-
-    // ----------------------------
-    // DATE FILTER
-    // ----------------------------
-    if (activeDate) {
-      params.append("loan_date", activeDate.toISOString().split("T")[0]);
-    }
-
-    const response = await apiClient.get(
-      `/Transactions/goldloan/all?${params.toString()}`
-    );
-
-    if (response.data.success) {
-      setLoanApplication(response.data.data);
-      setPagination({
-        page: response.data.page,
-        totalPages: response.data.totalPages,
-        total: response.data.total,
-        limit: pagination.limit,
+      const params = new URLSearchParams({
+        page: page.toString(),
+        limit: pagination.limit.toString(),
       });
-    } else {
-      throw new Error(response.data.message || "No loan applications");
-    }
-  } catch (err) {
-    console.error("Error fetching loan applications:", err);
-    setError("No loan applications");
-    setLoanApplication([]);
-  } finally {
-    setLoading(false);
-  }
-};
 
-  
-  
-  
+      // ----------------------------
+      // ✅ NORMAL FILTERS
+      // ----------------------------
+      Object.entries(activeFilters).forEach(([key, value]) => {
+        if (value && key !== "field" && key !== "search") {
+          params.append(key, value);
+        }
+      });
+
+      // ----------------------------
+      // ✅ MULTI HEADER SEARCH
+      // ----------------------------
+      if (searchQuery && searchHeaders.length > 0) {
+        params.append("search", searchQuery);
+        params.append("fields", searchHeaders.join(","));
+      }
+
+      // ----------------------------
+      // DATE FILTER
+      // ----------------------------
+      if (activeDate) {
+        params.append("loan_date", activeDate.toISOString().split("T")[0]);
+      }
+
+      const response = await apiClient.get(
+        `/Transactions/goldloan/all?${params.toString()}`,
+      );
+
+      if (response.data.success) {
+        setLoanApplication(response.data.data);
+        setPagination({
+          page: response.data.page,
+          totalPages: response.data.totalPages,
+          total: response.data.total,
+          limit: pagination.limit,
+        });
+      } else {
+        throw new Error(response.data.message || "No loan applications");
+      }
+    } catch (err) {
+      console.error("Error fetching loan applications:", err);
+      setError("No loan applications");
+      setLoanApplication([]);
+    } finally {
+      setLoading(false);
+    }
+  };
+
   useEffect(() => {
     fetchLoanApplications();
   }, []);
@@ -956,7 +953,12 @@ const LoanApplication = () => {
                   <button
                     onClick={() => {
                       setIsDropdownOpen(false);
-                      fetchLoanApplications(1, filters, selectedDate, selectedScheme);
+                      fetchLoanApplications(
+                        1,
+                        filters,
+                        selectedDate,
+                        selectedScheme,
+                      );
                     }}
                     className="ml-2 bg-[#0b2c69] text-white text-[11px] px-4 h-[24px] rounded-[3px] font-source hover:bg-[#071d45]"
                   >
@@ -964,7 +966,16 @@ const LoanApplication = () => {
                   </button>
                 </div>
               </div>
-
+              <button
+                onClick={() => {
+                  setSearchQuery("");
+                  setSearchHeaders([]);
+                  fetchLoanApplications();
+                }}
+                className="text-[10px] text-gray-500 hover:text-red-500 underline"
+              >
+                Clear
+              </button>
               {/* Scheme Filter */}
               {/* <div className="relative w-[111px]">
                 <button

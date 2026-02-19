@@ -26,25 +26,57 @@ const CustProfile = () => {
   const [page, setPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
 
+  const [searchHeaders, setSearchHeaders] = useState([]); // Array of active headers
+  const [searchQuery, setSearchQuery] = useState("");
+  const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+
+  const toggleHeader = (headerId) => {
+    setSearchHeaders((prev) =>
+      prev.includes(headerId)
+        ? prev.filter((id) => id !== headerId)
+        : [...prev, headerId],
+    );
+  };
+
   // Fetch function with search
-  const fetchCustomers = async (
-    pageNumber = 1,
-    search = searchValue,
-    field = searchField
-  ) => {
+  // const fetchCustomers = async (
+  //   pageNumber = 1,
+  //   search = searchValue,
+  //   field = searchField,
+  // ) => {
+  //   try {
+  //     const params = {
+  //       page: pageNumber,
+  //       limit: 10,
+  //       searchField: field,
+  //     };
+
+  //     // Add search if provided
+  //     if (search) params.searchValue = search;
+
+  //     const response = await axios.get(`${API}/Master/doc/searchCustomers`, {
+  //       params,
+  //     });
+  //     setData(response.data.data);
+  //     setTotalPages(response.data.totalPages);
+  //     setPage(response.data.currentPage);
+  //   } catch (error) {
+  //     console.error("❌ Error fetching customers:", error);
+  //   }
+  // };
+  const fetchCustomers = async (pageNumber = 1) => {
     try {
       const params = {
         page: pageNumber,
         limit: 10,
-        searchField: field,
+        headers: searchHeaders.join(","), // 👈 multiple headers
+        search: searchQuery, // 👈 search value
       };
-
-      // Add search if provided
-      if (search) params.searchValue = search;
 
       const response = await axios.get(`${API}/Master/doc/searchCustomers`, {
         params,
       });
+
       setData(response.data.data);
       setTotalPages(response.data.totalPages);
       setPage(response.data.currentPage);
@@ -203,7 +235,7 @@ const CustProfile = () => {
           {/* Right section (search + buttons) */}
           <div className="flex items-center gap-6">
             {/* Search section */}
-            <div className="flex gap-5">
+            {/* <div className="flex gap-5">
               <div className="flex gap-3 items-center">
                 <p className="text-[11.25px] font-source">Search By</p>
                 <select
@@ -266,8 +298,100 @@ const CustProfile = () => {
                   Clear
                 </button>
               </div>
-            </div>
+            </div> */}
 
+            <div className="flex items-center gap-3">
+              <div className="flex items-center bg-white border border-gray-400 rounded-[5px] h-[32px] px-2 relative w-[500px]">
+                {/* Multi-Select Header Dropdown */}
+                <div className="relative border-r border-gray-300 pr-2 mr-2">
+                  <button
+                    onClick={() => setIsDropdownOpen(!isDropdownOpen)}
+                    className="text-[11px] font-source font-bold text-[#0A2478] flex items-center gap-1 outline-none h-full"
+                  >
+                    Headers ({searchHeaders.length}){" "}
+                    <span className="text-[8px]">▼</span>
+                  </button>
+
+                  {isDropdownOpen && (
+                    <div className="absolute top-[35px] left-[-8px] bg-white border border-gray-300 shadow-xl rounded-md z-[100] w-[160px] p-2">
+                      {[
+                        { id: "id", label: "Party UID" },
+                        { id: "firstName", label: "F Name" },
+                        { id: "middleName", label: "M Name" },
+                        { id: "lastName", label: "L Name" },
+                        { id: "Corresponding_City", label: "City" },
+                        { id: "mobile", label: "Mobile Number" },
+                        { id: "panNo", label: "Pan Card" },
+                        { id: "aadhar", label: "Aadhar Card" },
+                      ].map((col) => (
+                        <label
+                          key={col.id}
+                          className="flex items-center gap-2 p-2 hover:bg-gray-50 cursor-pointer rounded"
+                        >
+                          <input
+                            type="checkbox"
+                            checked={searchHeaders.includes(col.id)}
+                            onChange={() => toggleHeader(col.id)}
+                            className="w-3 h-3 accent-[#0A2478]"
+                          />
+                          <span className="text-[11px] font-source text-gray-700">
+                            {col.label}
+                          </span>
+                        </label>
+                      ))}
+                      <div className="border-t mt-1 pt-1 text-center">
+                        <button
+                          onClick={() => setIsDropdownOpen(false)}
+                          className="text-[10px] text-[#0A2478] font-bold"
+                        >
+                          Apply
+                        </button>
+                      </div>
+                    </div>
+                  )}
+                </div>
+
+                {/* Text Input Field */}
+                <input
+                  type="text"
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                  placeholder="Type multiple items (e.g. Cash, Asset)..."
+                  className="flex-grow text-[11px] font-source outline-none h-full"
+                />
+
+                {/* Search Button */}
+                {/* <button
+                  onClick={() => {
+                    setIsDropdownOpen(false);
+                    // getAccountGroups();
+                  }}
+                  className="ml-2 bg-[#0b2c69] text-white text-[11px] px-4 h-[24px] rounded-[3px] font-source hover:bg-[#071d45]"
+                >
+                  Search
+                </button> */}
+
+                <button
+                  className="ml-2 bg-[#0b2c69] text-white text-[11px] px-4 h-[24px] rounded-[3px] font-source hover:bg-[#071d45]"
+                  onClick={() => {
+                    setIsDropdownOpen(false);
+                    fetchCustomers(1);
+                  }}
+                >
+                  Search
+                </button>
+              </div>
+            </div>
+            <button
+              onClick={() => {
+                setSearchQuery("");
+                setSearchHeaders([]);
+                fetchCustomers();
+              }}
+              className="text-[10px] text-gray-500 hover:text-red-500 underline"
+            >
+              Clear
+            </button>
             {/* Buttons stuck to right */}
             <div className="flex gap-3">
               <button
@@ -604,9 +728,15 @@ const CustProfile = () => {
                   Mobile Number
                 </th>
                 {/* <th className="px-4 py-2 text-left border-r border-gray-300 text-[13px]">Bad Debtor</th> */}
-                <th className="px-4 py-2 text-left text-[13px]">Added On</th>
-                <th className="px-4 py-2 text-left text-[13px]">Added By</th>
-                <th className="px-4 py-2 text-left text-[13px]">Block</th>
+                <th className="px-4 py-2 text-left border-r text-[13px]">
+                  Added On
+                </th>
+                <th className="px-4 py-2 text-left border-r text-[13px]">
+                  Added By
+                </th>
+                <th className="px-4 py-2 text-left border-r text-[13px]">
+                  Block
+                </th>
                 <th className="px-4 py-2 text-center text-[13px]">Action</th>
               </tr>
             </thead>

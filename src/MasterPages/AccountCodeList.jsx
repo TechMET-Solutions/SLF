@@ -4,6 +4,7 @@ import { API } from "../api";
 import GroupData from "../assets/Group 124.svg";
 import { formatIndianDate } from "../utils/Helpers";
 import { useAuth } from "../API/Context/AuthContext";
+import { useNavigate } from "react-router-dom";
 
 const AccountCodeList = () => {
   useEffect(() => {
@@ -26,7 +27,7 @@ const AccountCodeList = () => {
   const [accountGroups, setAccountGroups] = useState([]);
 
   const [searchHeaders, setSearchHeaders] = useState([]); // Array of active headers
-
+const navigate = useNavigate();
   console.log(searchHeaders, "searchHeaders");
   const [searchQuery, setSearchQuery] = useState("");
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
@@ -309,9 +310,12 @@ const handleSave = async () => {
                   Add
                 </button>
 
-                <button className="w-[70px] h-[26px] rounded-[4px] bg-[#C1121F] text-white text-[11px] font-medium transition-colors hover:bg-[#a40f1a]">
-                  Exit
-                </button>
+                 <button
+      onClick={() => navigate("/")}
+      className="w-[70px] h-[26px] rounded-[4px] bg-[#C1121F] text-white text-[11px] font-medium transition-colors hover:bg-[#a40f1a]"
+    >
+      Exit
+    </button>
               </div>
             </div>
           </div>

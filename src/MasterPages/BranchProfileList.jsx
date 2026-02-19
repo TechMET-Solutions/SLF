@@ -253,11 +253,18 @@ const BranchProfileList = () => {
       branch_name: branch.branch_name || "",
       print_name: branch.print_name || "",
       address_line1: branch.address_line1 || "",
-      // address_line3: branch.address_line3 || "",
+      pin_code: branch.pin_code || "",
+      city: branch.city || "",
+      district: branch.district || "",
+      state: branch.state || "",
       mobile_no: branch.mobile_no || "",
       lead_person: branch.lead_person || "",
-      is_main: branch.is_main === "1" || branch.is_main === true,
-      status: branch.status === "1" || branch.status === true,
+      is_main:
+        branch.is_main === 1 ||
+        branch.is_main === "1" ||
+        branch.is_main === true,
+      status:
+        branch.status === 1 || branch.status === "1" || branch.status === true,
     });
     setIsViewMode(true);
     setIsModalOpen(true);
@@ -474,7 +481,14 @@ const BranchProfileList = () => {
                   lineHeight: "24px",
                 }}
               >
-                {isEditMode ? "Edit Branch Details" : "Add Branch Details"}
+               {
+  isViewMode
+    ? "View Branch Details"
+    : isEditMode
+    ? "Edit Branch Details"
+    : "Add Branch Details"
+}
+
               </h2>
 
               {/* Modal Body */}

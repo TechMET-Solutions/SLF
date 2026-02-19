@@ -30,7 +30,7 @@ const EmployeeProfile = () => {
   const [deleteModalOpen, setDeleteModalOpen] = useState(false);
   const [deleteId, setDeleteId] = useState(null);
   const [searchTerm, setSearchTerm] = useState({ empId: "", empName: "" });
-console.log(searchTerm,"searchTerm")
+  console.log(searchTerm, "searchTerm");
   const [errors, setErrors] = useState({});
 
   const [formData, setFormData] = useState({
@@ -222,7 +222,6 @@ console.log(searchTerm,"searchTerm")
   //     keys: searchHeaders,      // selected headers
   //   };
 
-
   //   try {
   //     const result = await fetchEmployeeProfileApi(page, itemsPerPage, filters, filltersData);
   //     if (result?.items) {
@@ -243,40 +242,35 @@ console.log(searchTerm,"searchTerm")
   //   }
   // };
 
-  const fetchEmployee = async (page = 1) => {
-  setIsLoading(true);
+  const fetchEmployee = async (page = 1 ,searchQuery, searchHeaders) => {
+    setIsLoading(true);
 
-  const filters = {
-    search: searchQuery,
-    keys: searchHeaders,
+    const filters = {
+      search: searchQuery,
+      keys: searchHeaders,
+    };
+
+    try {
+      const result = await fetchEmployeeProfileApi(page, itemsPerPage, filters);
+
+      if (result?.items) {
+        setEmployeeList(result.items);
+        setTotalItems(result.total || 0);
+        setCurrentPage(result.page);
+        setShowPagination(result.showPagination || false);
+      } else {
+        setEmployeeList([]);
+        setShowPagination(false);
+      }
+    } catch (error) {
+      console.error("❌ Error fetching employees:", error);
+    } finally {
+      setIsLoading(false);
+    }
   };
 
-  try {
-    const result = await fetchEmployeeProfileApi(
-      page,
-      itemsPerPage,
-      filters
-    );
-
-    if (result?.items) {
-      setEmployeeList(result.items);
-      setTotalItems(result.total || 0);
-      setCurrentPage(result.page);
-      setShowPagination(result.showPagination || false);
-    } else {
-      setEmployeeList([]);
-      setShowPagination(false);
-    }
-  } catch (error) {
-    console.error("❌ Error fetching employees:", error);
-  } finally {
-    setIsLoading(false);
-  }
-};
-
-
   useEffect(() => {
-    fetchEmployee();
+    fetchEmployee(searchQuery,searchHeaders);
   }, []);
 
   const updateEmployeeStatus = async (id, status) => {
@@ -320,7 +314,7 @@ console.log(searchTerm,"searchTerm")
       await deleteEmployeeApi(deleteId);
       setDeleteModalOpen(false);
       setDeleteId(null);
-      fetchEmployee(currentPage, searchTerm);
+      fetchEmployee(currentPage, searchQuery,searchHeaders);
     } catch (error) {
       console.error("❌ Error deleting employee:", error);
       alert("Error deleting employee");
@@ -384,132 +378,132 @@ console.log(searchTerm,"searchTerm")
 
     return `${year}-${month}-${day}`;
   }
-const validateForm = () => {
-  const {
-    pan_card,
-    aadhar_card,
-    emp_name,
-    mobile_no,
-    email,
-    date_of_birth,
-    joining_date,
-    permanent_address,
-    corresponding_address,
-    branch_id,
-    designation,
-    assign_role_id,
-    password,
-  } = formData;
+  const validateForm = () => {
+    const {
+      pan_card,
+      aadhar_card,
+      emp_name,
+      mobile_no,
+      email,
+      date_of_birth,
+      joining_date,
+      permanent_address,
+      corresponding_address,
+      branch_id,
+      designation,
+      assign_role_id,
+      password,
+    } = formData;
 
-  const panRegex = /^[A-Z]{5}[0-9]{4}[A-Z]{1}$/;
-  const aadharRegex = /^[0-9]{12}$/;
-  const mobileRegex = /^[6-9][0-9]{9}$/;
-  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-  const nameRegex = /^[A-Za-z ]{3,}$/;
+    const panRegex = /^[A-Z]{5}[0-9]{4}[A-Z]{1}$/;
+    const aadharRegex = /^[0-9]{12}$/;
+    const mobileRegex = /^[6-9][0-9]{9}$/;
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    const nameRegex = /^[A-Za-z ]{3,}$/;
 
-  // PAN
-  if (!panRegex.test(pan_card?.toUpperCase())) {
-    alert("PAN must be valid (Example: ABCDE1234F)");
-    return false;
-  }
+    // PAN
+    if (!panRegex.test(pan_card?.toUpperCase())) {
+      alert("PAN must be valid (Example: ABCDE1234F)");
+      return false;
+    }
 
-  // Aadhaar
-  if (!aadharRegex.test(aadhar_card)) {
-    alert("Aadhaar must be 12 digits");
-    return false;
-  }
+    // Aadhaar
+    if (!aadharRegex.test(aadhar_card)) {
+      alert("Aadhaar must be 12 digits");
+      return false;
+    }
 
-  // Name
-  if (!nameRegex.test(emp_name)) {
-    alert("Name must contain only letters and minimum 3 characters");
-    return false;
-  }
+    // Name
+    if (!nameRegex.test(emp_name)) {
+      alert("Name must contain only letters and minimum 3 characters");
+      return false;
+    }
 
-  // Mobile
-  if (!mobileRegex.test(mobile_no)) {
-    alert("Mobile must be valid 10-digit Indian number");
-    return false;
-  }
+    // Mobile
+    if (!mobileRegex.test(mobile_no)) {
+      alert("Mobile must be valid 10-digit Indian number");
+      return false;
+    }
 
-  // Email
-  if (!emailRegex.test(email)) {
-    alert("Enter valid Email ID");
-    return false;
-  }
+    // Email
+    if (!emailRegex.test(email)) {
+      alert("Enter valid Email ID");
+      return false;
+    }
 
-  // Date of Birth
-  if (!date_of_birth) {
-    alert("Date of Birth is required");
-    return false;
-  }
+    // Date of Birth
+    if (!date_of_birth) {
+      alert("Date of Birth is required");
+      return false;
+    }
 
-  const dob = new Date(date_of_birth);
-  const today = new Date();
-  const age = today.getFullYear() - dob.getFullYear();
+    const dob = new Date(date_of_birth);
+    const today = new Date();
+    const age = today.getFullYear() - dob.getFullYear();
 
-  if (age < 18) {
-    alert("Employee must be at least 18 years old");
-    return false;
-  }
+    if (age < 18) {
+      alert("Employee must be at least 18 years old");
+      return false;
+    }
 
-  // Joining Date
-  if (!joining_date) {
-    alert("Date of Joining is required");
-    return false;
-  }
+    // Joining Date
+    if (!joining_date) {
+      alert("Date of Joining is required");
+      return false;
+    }
 
-  if (new Date(joining_date) < dob) {
-    alert("Joining Date cannot be before Date of Birth");
-    return false;
-  }
+    if (new Date(joining_date) < dob) {
+      alert("Joining Date cannot be before Date of Birth");
+      return false;
+    }
 
-  // Addresses
-  if (!permanent_address || permanent_address.length < 10) {
-    alert("Permanent Address must be minimum 10 characters");
-    return false;
-  }
+    // Addresses
+    if (!permanent_address || permanent_address.length < 10) {
+      alert("Permanent Address must be minimum 10 characters");
+      return false;
+    }
 
-  if (!corresponding_address || corresponding_address.length < 10) {
-    alert("Current Address must be minimum 10 characters");
-    return false;
-  }
+    if (!corresponding_address || corresponding_address.length < 10) {
+      alert("Current Address must be minimum 10 characters");
+      return false;
+    }
 
-  // Branch
-  if (!branch_id) {
-    alert("Please select Branch");
-    return false;
-  }
+    // Branch
+    if (!branch_id) {
+      alert("Please select Branch");
+      return false;
+    }
 
-  // Designation
-  if (!designation) {
-    alert("Please enter Designation");
-    return false;
-  }
+    // Designation
+    if (!designation) {
+      alert("Please enter Designation");
+      return false;
+    }
 
-  // Role
-  if (!assign_role_id) {
-    alert("Please select Assign Role");
-    return false;
-  }
+    // Role
+    if (!assign_role_id) {
+      alert("Please select Assign Role");
+      return false;
+    }
 
-  // Password
-  const passwordRegex =
-    /^(?=.*[A-Z])(?=.*[a-z])(?=.*[0-9])(?=.*[@$!%*?&]).{8,}$/;
+    // Password
+    const passwordRegex =
+      /^(?=.*[A-Z])(?=.*[a-z])(?=.*[0-9])(?=.*[@$!%*?&]).{8,}$/;
 
-  if (!passwordRegex.test(password)) {
-    alert(
-      "Password must be minimum 8 characters with uppercase, lowercase, number and special character"
-    );
-    return false;
-  }
+    if (!passwordRegex.test(password)) {
+      alert(
+        "Password must be minimum 8 characters with uppercase, lowercase, number and special character",
+      );
+      return false;
+    }
 
-  return true;
-};
+    return true;
+  };
 
   const handleSave = async () => {
     debugger;
     try {
-       if (!validateForm()) return;
+      if (!validateForm()) return;
       setIsLoading(true);
 
       const mobileRegex = /^[0-9]{10}$/;
@@ -566,7 +560,7 @@ const validateForm = () => {
 
       alert("✅ Employee created successfully!");
       setIsModalOpen(false);
-      fetchEmployee(currentPage, searchTerm);
+      fetchEmployee(currentPage, searchQuery,searchHeaders);
     } catch (error) {
       console.error("❌ Error saving employee:", error);
       alert(error.response?.data?.message || "Error saving employee");
@@ -578,7 +572,7 @@ const validateForm = () => {
   const handleUpdate = async () => {
     debugger;
     try {
-       if (!validateForm()) return;
+      if (!validateForm()) return;
       const payload = {
         id: formData.id,
         pan_card: formData.pan_card,
@@ -618,7 +612,7 @@ const validateForm = () => {
 
       alert("✅ Employee updated successfully!");
       setIsModalOpen(false);
-      fetchEmployee(currentPage, searchTerm);
+      fetchEmployee(currentPage, searchQuery,searchHeaders);
     } catch (err) {
       console.error("❌ Error updating employee:", err);
       alert(err.response?.data?.message || "Error updating employee");
@@ -633,19 +627,24 @@ const validateForm = () => {
     if (searchTerm.empId) filters.id = searchTerm.empId;
     if (searchTerm.empName) filters.name = searchTerm.empName;
 
-    fetchEmployee(1, filters);
+   fetchEmployee(currentPage, searchQuery,searchHeaders);
   };
 
   // 🔄 Handle Clear Search
-const handleClearSearch = () => {
-  debugger
-  setSearchTerm({ empId: "", empName: "" });
-  setCurrentPage(1);
-};
-;
+  const handleClearSearch = () => {
+    setSearchTerm({ empId: "", empName: "" });
+    setSearchHeaders([]); // ✅ Clear selected headers
+    setSearchQuery(""); // ✅ Clear search input
+    setCurrentPage(1);
+
+    fetchEmployee(currentPage, searchQuery,searchHeaders);
+  };
 // useEffect(() => {
 //   fetchEmployee(currentPage);
-// }, [searchTerm, currentPage]);
+// }, [currentPage, searchTerm, searchHeaders, searchQuery]);
+  // useEffect(() => {
+  //   fetchEmployee(currentPage);
+  // }, [searchTerm, currentPage]);
 
   const handleInputChange = (e) => {
     const { name, value, type, checked } = e.target;
@@ -739,7 +738,6 @@ const handleClearSearch = () => {
       alert("Failed to download file.");
     }
   };
-  
 
   const sendAadhaarOTP = async () => {
     debugger;
@@ -835,7 +833,7 @@ const handleClearSearch = () => {
 
     // Call your API:
     await axios.post(`${API}/Master/updateEmployeeValuation`, payload);
-    fetchEmployee(currentPage, searchTerm);
+    fetchEmployee(currentPage, searchQuery,searchHeaders);
     setIsValuationModalOpen(false);
     setSelectedEmployees([]);
     setValuationAmount(""); // reset
@@ -1021,7 +1019,7 @@ const handleClearSearch = () => {
                       keys: searchHeaders, // selected columns
                     };
 
-                    fetchEmployee(1, filters);
+                   fetchEmployee(currentPage, searchQuery,searchHeaders);
                   }}
                   className="ml-2 bg-[#0b2c69] text-white text-[11px] px-4 h-[24px] rounded-[3px] font-source hover:bg-[#071d45]"
                 >
@@ -1031,9 +1029,8 @@ const handleClearSearch = () => {
             </div>
 
             <div className="flex gap-3">
-             
               <button
-                onClick={()=>handleClearSearch()}
+                onClick={() => handleClearSearch()}
                 className="bg-gray-500 text-white text-[11.25px] w-[74px] h-[24px] rounded flex items-center justify-center"
               >
                 Clear
@@ -1044,7 +1041,6 @@ const handleClearSearch = () => {
               >
                 Valuation
               </button>
-             
             </div>
 
             <div className="flex gap-3">
@@ -1082,7 +1078,6 @@ const handleClearSearch = () => {
               <div className=" space-y-4 text-sm">
                 {/* PAN + Aadhaar + Name */}
                 <div className="flex gap-4 w-full">
-                  
                   {/* <div className="flex flex-col flex-1">
                     <label className="text-[14px] font-medium">
                       PAN No. <span className="text-red-500">*</span>
@@ -1127,44 +1122,46 @@ const handleClearSearch = () => {
                   </div> */}
 
                   <div className="flex flex-col">
-    <label className="text-[14px] font-medium">
-      PAN No. <span className="text-red-500">*</span>
-    </label>
-    <div className="flex items-center mt-1">
-      <div className="relative">
-        <input
-          type="text"
-          placeholder="Enter PAN"
-          name="pan_card"
-          disabled={mode === "view"}
-          value={formData.pan_card}
-          onChange={handleInputChange}
-          // Set to 140px to match Aadhaar
-          className="border border-[#C4C4C4] rounded-l-[8px] px-3 py-2 pr-9 w-[150px] bg-white h-[38px] text-[13px] outline-none focus:border-[#0A2478]"
-        />
-        <input
-          type="file"
-          accept="image/*,.pdf"
-          ref={panFileInputRef}
-          disabled={mode === "view"}
-          onChange={handlePanFileChange}
-          className="hidden"
-        />
-        <FaPaperclip
-          className={`absolute right-2 top-1/2 -translate-y-1/2 text-gray-500 ${mode !== "view" ? "cursor-pointer" : ""}`}
-          size={14}
-          onClick={() => mode !== "view" && panFileInputRef.current.click()}
-        />
-      </div>
-      <button
-        className="bg-[#0A2478] text-white px-3 py-2 rounded-r-[8px] hover:bg-[#081c5b] whitespace-nowrap h-[38px] text-[13px] border border-[#0A2478]"
-        type="button"
-        onClick={verifyPan}
-      >
-        Verify
-      </button>
-    </div>
-  </div>
+                    <label className="text-[14px] font-medium">
+                      PAN No. <span className="text-red-500">*</span>
+                    </label>
+                    <div className="flex items-center mt-1">
+                      <div className="relative">
+                        <input
+                          type="text"
+                          placeholder="Enter PAN"
+                          name="pan_card"
+                          disabled={mode === "view"}
+                          value={formData.pan_card}
+                          onChange={handleInputChange}
+                          // Set to 140px to match Aadhaar
+                          className="border border-[#C4C4C4] rounded-l-[8px] px-3 py-2 pr-9 w-[150px] bg-white h-[38px] text-[13px] outline-none focus:border-[#0A2478]"
+                        />
+                        <input
+                          type="file"
+                          accept="image/*,.pdf"
+                          ref={panFileInputRef}
+                          disabled={mode === "view"}
+                          onChange={handlePanFileChange}
+                          className="hidden"
+                        />
+                        <FaPaperclip
+                          className={`absolute right-2 top-1/2 -translate-y-1/2 text-gray-500 ${mode !== "view" ? "cursor-pointer" : ""}`}
+                          size={14}
+                          onClick={() =>
+                            mode !== "view" && panFileInputRef.current.click()
+                          }
+                        />
+                      </div>
+                      <button
+                        className="bg-[#0A2478] text-white px-3 py-2 rounded-r-[8px] hover:bg-[#081c5b] whitespace-nowrap h-[38px] text-[13px] border border-[#0A2478]"
+                        type="button"
+                        onClick={verifyPan}
+                      >
+                        Verify
+                      </button>
+                    </div>
+                  </div>
 
                   {/* Aadhaar */}
                   {/* <div className="flex flex-col flex-1">
@@ -1216,54 +1213,61 @@ const handleClearSearch = () => {
                     </div>
                   </div> */}
                   <div className="flex flex-col">
-  <label className="text-[14px] font-medium">
-    Aadhar Card Number <span className="text-red-500">*</span>
-  </label>
+                    <label className="text-[14px] font-medium">
+                      Aadhar Card Number <span className="text-red-500">*</span>
+                    </label>
 
-  <div className="flex items-center mt-1">
-    {/* Input Container */}
-    <div className="relative">
-      <input
-        type="number"
-        placeholder={formData.aadhar ? `${formData.aadhar}` : "Enter Aadhar"}
-        name="aadhar_card"
-        disabled={mode === "view"}
-        value={formData.aadhar_card}
-        onChange={handleInputChange}
-        // Reduced width to 140px and removed right border/rounding
-        className="border border-[#C4C4C4] rounded-l-[8px] px-3 py-2 pr-9 w-[150px] bg-white h-[38px] text-[13px] outline-none focus:border-[#0A2478]"
-        style={{ MozAppearance: "textfield" }}
-        onWheel={(e) => e.target.blur()}
-      />
+                    <div className="flex items-center mt-1">
+                      {/* Input Container */}
+                      <div className="relative">
+                        <input
+                          type="number"
+                          placeholder={
+                            formData.aadhar
+                              ? `${formData.aadhar}`
+                              : "Enter Aadhar"
+                          }
+                          name="aadhar_card"
+                          disabled={mode === "view"}
+                          value={formData.aadhar_card}
+                          onChange={handleInputChange}
+                          // Reduced width to 140px and removed right border/rounding
+                          className="border border-[#C4C4C4] rounded-l-[8px] px-3 py-2 pr-9 w-[150px] bg-white h-[38px] text-[13px] outline-none focus:border-[#0A2478]"
+                          style={{ MozAppearance: "textfield" }}
+                          onWheel={(e) => e.target.blur()}
+                        />
 
-      {/* Hidden File Input */}
-      <input
-        type="file"
-        accept="image/*,.pdf"
-        ref={aadharFileInputRef}
-        disabled={mode === "view"}
-        onChange={handleAadharFileChange}
-        className="hidden"
-      />
+                        {/* Hidden File Input */}
+                        <input
+                          type="file"
+                          accept="image/*,.pdf"
+                          ref={aadharFileInputRef}
+                          disabled={mode === "view"}
+                          onChange={handleAadharFileChange}
+                          className="hidden"
+                        />
 
-      {/* Paperclip Icon - Adjusted position */}
-      <FaPaperclip
-        className={`absolute right-2 top-1/2 -translate-y-1/2 text-gray-500 ${mode !== "view" ? "cursor-pointer hover:text-[#0A2478]" : ""}`}
-        size={14}
-        onClick={() => mode !== "view" && aadharFileInputRef.current.click()}
-      />
-    </div>
+                        {/* Paperclip Icon - Adjusted position */}
+                        <FaPaperclip
+                          className={`absolute right-2 top-1/2 -translate-y-1/2 text-gray-500 ${mode !== "view" ? "cursor-pointer hover:text-[#0A2478]" : ""}`}
+                          size={14}
+                          onClick={() =>
+                            mode !== "view" &&
+                            aadharFileInputRef.current.click()
+                          }
+                        />
+                      </div>
 
-    {/* Verify Button - Attached directly */}
-    <button
-      className="bg-[#0A2478] text-white px-3 py-2 rounded-r-[8px] hover:bg-[#081c5b] whitespace-nowrap h-[38px] text-[13px] border border-[#0A2478]"
-      type="button"
-      onClick={sendAadhaarOTP}
-    >
-      verify
-    </button>
-  </div>
-</div>
+                      {/* Verify Button - Attached directly */}
+                      <button
+                        className="bg-[#0A2478] text-white px-3 py-2 rounded-r-[8px] hover:bg-[#081c5b] whitespace-nowrap h-[38px] text-[13px] border border-[#0A2478]"
+                        type="button"
+                        onClick={sendAadhaarOTP}
+                      >
+                        verify
+                      </button>
+                    </div>
+                  </div>
 
                   {/* OTP */}
                   {/* <div className="flex flex-col w-[140px]">
@@ -1292,7 +1296,9 @@ const handleClearSearch = () => {
 
                   {/* Name */}
                   <div className="flex flex-col flex-1">
-                    <label className="text-gray-700 font-medium">Name<span className="text-red-500">*</span></label>
+                    <label className="text-gray-700 font-medium">
+                      Name<span className="text-red-500">*</span>
+                    </label>
 
                     <input
                       type="text"
@@ -1608,15 +1614,12 @@ const handleClearSearch = () => {
                   </div>
                 </div>
 
-                
                 <div className="flex gap-2"></div>
               </div>
 
-            
               <div className="p-4">
                 <div>
                   <div className="flex flex-col items-center">
-                   
                     <div className="flex justify-center">
                       <label
                         htmlFor="profileImage"
@@ -1628,7 +1631,6 @@ const handleClearSearch = () => {
                           className="w-[110px] h-[110px] rounded-lg object-cover border border-gray-300 transition-opacity group-hover:opacity-80"
                         />
 
-                     
                         {mode !== "view" && (
                           <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity bg-black/10 rounded-lg">
                             <span className="text-[10px] text-white font-bold bg-black/50 px-1 rounded">
@@ -1640,14 +1642,12 @@ const handleClearSearch = () => {
                     </div>
 
                     <div className="flex flex-col items-center">
-                    
                       <div className="flex justify-center mt-2 mb-2 w-full">
                         <label className="font-roboto font-bold text-[16px] leading-[100%] tracking-[0.03em]">
                           {mode === "view" ? "Profile Picture" : ""}
                         </label>
                       </div>
 
-                  
                       <input
                         id="profileImage"
                         type="file"
@@ -1656,7 +1656,6 @@ const handleClearSearch = () => {
                         onChange={(e) => handleFileChange(e, setProfileImage)}
                       />
 
-                      
                       {mode !== "view" && (
                         <span className="text-gray-500 text-xs mt-1 truncate max-w-[200px]">
                           {profileImage ? profileImage.name : "No file chosen"}
@@ -1838,96 +1837,123 @@ const handleClearSearch = () => {
                       </div> */}
 
                       {/* --- Address Proof Section --- */}
-<div className="flex items-center gap-4 mt-4">
-  <div className="flex flex-col">
-    <h1 className="text-[14px] font-medium mb-1">Address Proof</h1>
-    <select
-      name="Additional_AddressProof"
-      value={formData.addressProfiletype}
-      disabled={mode === "view"}
-      onChange={(e) => {
-        const val = e.target.value;
-        setFormData({ ...formData, addressProfiletype: val });
-        // Trigger file input if a selection is made
-        if (val && mode !== "view") document.getElementById("addressProofInput").click();
-      }}
-      className="border border-gray-300 px-3 py-2 w-[180px] bg-white rounded-[8px] cursor-pointer outline-none focus:border-blue-400"
-    >
-      <option value="">Select & Upload</option>
-      {addrProofList.map((item) => (
-        <option key={item.id} value={item.proof_type}>{item.proof_type}</option>
-      ))}
-    </select>
-  </div>
+                      <div className="flex items-center gap-4 mt-4">
+                        <div className="flex flex-col">
+                          <h1 className="text-[14px] font-medium mb-1">
+                            Address Proof
+                          </h1>
+                          <select
+                            name="Additional_AddressProof"
+                            value={formData.addressProfiletype}
+                            disabled={mode === "view"}
+                            onChange={(e) => {
+                              const val = e.target.value;
+                              setFormData({
+                                ...formData,
+                                addressProfiletype: val,
+                              });
+                              // Trigger file input if a selection is made
+                              if (val && mode !== "view")
+                                document
+                                  .getElementById("addressProofInput")
+                                  .click();
+                            }}
+                            className="border border-gray-300 px-3 py-2 w-[180px] bg-white rounded-[8px] cursor-pointer outline-none focus:border-blue-400"
+                          >
+                            <option value="">Select & Upload</option>
+                            {addrProofList.map((item) => (
+                              <option key={item.id} value={item.proof_type}>
+                                {item.proof_type}
+                              </option>
+                            ))}
+                          </select>
+                        </div>
 
-  {/* Hidden Input */}
-  <input
-    id="addressProofInput"
-    type="file"
-    className="hidden"
-    onChange={(e) => handleFileChangeForAddProof(e, setAddressProof)}
-  />
+                        {/* Hidden Input */}
+                        <input
+                          id="addressProofInput"
+                          type="file"
+                          className="hidden"
+                          onChange={(e) =>
+                            handleFileChangeForAddProof(e, setAddressProof)
+                          }
+                        />
 
-  {/* Preview (Shows only if file exists) */}
-  {(addressProof || formData.emp_add_prof) && (
-    <div className="mt-7 flex items-center gap-2 border border-dashed border-gray-400 p-1 rounded-md bg-gray-50 h-[40px] px-2">
-      <img
-        src={addressProof ? URL.createObjectURL(addressProof) : formData.emp_add_prof}
-        className="w-7 h-7 object-cover rounded"
-        alt="preview"
-      />
-      <span className="text-[10px] text-gray-500 max-w-[80px] truncate">
-        {addressProof ? addressProof.name : "Saved File"}
-      </span>
-    </div>
-  )}
-</div>
+                        {/* Preview (Shows only if file exists) */}
+                        {(addressProof || formData.emp_add_prof) && (
+                          <div className="mt-7 flex items-center gap-2 border border-dashed border-gray-400 p-1 rounded-md bg-gray-50 h-[40px] px-2">
+                            <img
+                              src={
+                                addressProof
+                                  ? URL.createObjectURL(addressProof)
+                                  : formData.emp_add_prof
+                              }
+                              className="w-7 h-7 object-cover rounded"
+                              alt="preview"
+                            />
+                            <span className="text-[10px] text-gray-500 max-w-[80px] truncate">
+                              {addressProof ? addressProof.name : "Saved File"}
+                            </span>
+                          </div>
+                        )}
+                      </div>
 
-{/* --- ID Proof Section --- */}
-<div className="flex items-center gap-4 mt-4">
-  <div className="flex flex-col">
-    <h1 className="text-[14px] font-medium mb-1">ID Proof</h1>
-    <select
-      name="Additional_IDProof"
-      value={formData.IdProoftype}
-      disabled={mode === "view"}
-      onChange={(e) => {
-        const val = e.target.value;
-        setFormData({ ...formData, IdProoftype: val });
-        // Trigger file input if a selection is made
-        if (val && mode !== "view") document.getElementById("idProofInput").click();
-      }}
-      className="border border-gray-300 px-3 py-2 w-[180px] bg-white rounded-[8px] cursor-pointer outline-none focus:border-blue-400"
-    >
-      <option value="">Select & Upload</option>
-      {idProofList.map((item) => (
-        <option key={item.id} value={item.proof_type}>{item.proof_type}</option>
-      ))}
-    </select>
-  </div>
+                      {/* --- ID Proof Section --- */}
+                      <div className="flex items-center gap-4 mt-4">
+                        <div className="flex flex-col">
+                          <h1 className="text-[14px] font-medium mb-1">
+                            ID Proof
+                          </h1>
+                          <select
+                            name="Additional_IDProof"
+                            value={formData.IdProoftype}
+                            disabled={mode === "view"}
+                            onChange={(e) => {
+                              const val = e.target.value;
+                              setFormData({ ...formData, IdProoftype: val });
+                              // Trigger file input if a selection is made
+                              if (val && mode !== "view")
+                                document.getElementById("idProofInput").click();
+                            }}
+                            className="border border-gray-300 px-3 py-2 w-[180px] bg-white rounded-[8px] cursor-pointer outline-none focus:border-blue-400"
+                          >
+                            <option value="">Select & Upload</option>
+                            {idProofList.map((item) => (
+                              <option key={item.id} value={item.proof_type}>
+                                {item.proof_type}
+                              </option>
+                            ))}
+                          </select>
+                        </div>
 
-  {/* Hidden Input */}
-  <input
-    id="idProofInput"
-    type="file"
-    className="hidden"
-    onChange={(e) => handleFileChangeForIdProof(e, setIdProof)}
-  />
+                        {/* Hidden Input */}
+                        <input
+                          id="idProofInput"
+                          type="file"
+                          className="hidden"
+                          onChange={(e) =>
+                            handleFileChangeForIdProof(e, setIdProof)
+                          }
+                        />
 
-  {/* Preview (Shows only if file exists) */}
-  {(idProof || formData.emp_id_prof) && (
-    <div className="mt-7 flex items-center gap-2 border border-dashed border-gray-400 p-1 rounded-md bg-gray-50 h-[40px] px-2">
-      <img
-        src={idProof ? URL.createObjectURL(idProof) : formData.emp_id_prof}
-        className="w-7 h-7 object-cover rounded"
-        alt="preview"
-      />
-      <span className="text-[10px] text-gray-500 max-w-[80px] truncate">
-        {idProof ? idProof.name : "Saved File"}
-      </span>
-    </div>
-  )}
-</div>
+                        {/* Preview (Shows only if file exists) */}
+                        {(idProof || formData.emp_id_prof) && (
+                          <div className="mt-7 flex items-center gap-2 border border-dashed border-gray-400 p-1 rounded-md bg-gray-50 h-[40px] px-2">
+                            <img
+                              src={
+                                idProof
+                                  ? URL.createObjectURL(idProof)
+                                  : formData.emp_id_prof
+                              }
+                              className="w-7 h-7 object-cover rounded"
+                              alt="preview"
+                            />
+                            <span className="text-[10px] text-gray-500 max-w-[80px] truncate">
+                              {idProof ? idProof.name : "Saved File"}
+                            </span>
+                          </div>
+                        )}
+                      </div>
                     </>
                   )}
 

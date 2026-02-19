@@ -63,7 +63,7 @@ const ChargesProfileList = () => {
     const fetchAccounts = async () => {
       try {
         const res = await axios.get(`${API}/account-code/get`);
-        setAccountList(res.data); // res.data = [ { id, name, ... } ]
+        setAccountList(res.data.data); // res.data = [ { id, name, ... } ]
       } catch (err) {
         console.log("Error fetching account list", err);
       }
@@ -366,7 +366,7 @@ const ChargesProfileList = () => {
       {/* Modal */}
       {isModalOpen && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-sm">
-          <div className="bg-white w-[500px] rounded-lg shadow-lg h-[400px] p-10">
+          <div className="bg-white w-[500px] rounded-lg shadow-lg h-[320px] p-10">
             <h2 className="text-[#0A2478] text-[20px] font-semibold font-source mb-4">
               {isview
                 ? "View Charges Profile"
@@ -375,7 +375,7 @@ const ChargesProfileList = () => {
                   : "Add Charges Profile"}
             </h2>
 
-            <div className="flex justify-center gap-4">
+            <div className="flex  gap-4">
               {/* Form Fields */}
               <div>
                 <p className="text-[14px]">
@@ -405,7 +405,7 @@ const ChargesProfileList = () => {
                 />
               </div>
             </div>
-            <div className="flex  gap-4 mt-5">
+            <div className="flex gap-4 mt-5">
               <div>
                 <p className="text-[12px] font-medium">
                   Amount <span className="text-red-500">*</span>
@@ -420,7 +420,7 @@ const ChargesProfileList = () => {
                     MozAppearance: "textfield",
                   }}
                   onWheel={(e) => e.target.blur()}
-                  className="border border-gray-300 rounded w-[120px] h-[38px] px-3"
+                  className="border border-gray-300 rounded w-[150px] h-[38px] px-3"
                 />
               </div>
               <div>
@@ -432,11 +432,11 @@ const ChargesProfileList = () => {
                   value={formData.account}
                   disabled={isview}
                   onChange={handleChange}
-                  className="border border-gray-300 rounded w-[250px] h-[38px] px-3"
+                  className="border border-gray-300 rounded w-[270px]  h-[38px] px-3"
                 >
                   <option value="">-- Select --</option>
 
-                  {accountList.map((acc) => (
+                  {accountList?.map((acc) => (
                     <option key={acc.id} value={acc.name}>
                       {acc.name}
                     </option>

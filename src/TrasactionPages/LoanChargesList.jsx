@@ -81,20 +81,38 @@ const toggleHeader = (headerId) => {
   }, []);
 
   // 🧠 Fetch data from API
-  const fetchData = async (loanNo = "") => {
-    setIsLoading(true);
-    try {
-      const response = await axios.get(`${BASE_URL}/get`, {
-        params: loanNo ? { loan_no: loanNo } : {},
-      });
-      const apiData = response.data?.data || [];
-      setData(apiData);
-    } catch (error) {
-      console.error("❌ Error fetching loan charges:", error);
-    } finally {
-      setIsLoading(false);
-    }
-  };
+  // const fetchData = async (loanNo = "") => {
+  //   setIsLoading(true);
+  //   try {
+  //     const response = await axios.get(`${BASE_URL}/get`, {
+  //       params: loanNo ? { loan_no: loanNo } : {},
+  //     });
+  //     const apiData = response.data?.data || [];
+  //     setData(apiData);
+  //   } catch (error) {
+  //     console.error("❌ Error fetching loan charges:", error);
+  //   } finally {
+  //     setIsLoading(false);
+  //   }
+  // };
+const fetchData = async () => {
+  setIsLoading(true);
+  try {
+    const response = await axios.get(`${BASE_URL}/get`, {
+      params: {
+        headers: searchHeaders.join(","), // convert array to string
+        search: searchQuery
+      },
+    });
+
+    const apiData = response.data?.data || [];
+    setData(apiData);
+  } catch (error) {
+    console.error("❌ Error fetching loan charges:", error);
+  } finally {
+    setIsLoading(false);
+  }
+};
 
   // 🗑️ Delete record
   const handleDeleteConfirm = async () => {
@@ -180,8 +198,8 @@ const toggleHeader = (headerId) => {
       {isDropdownOpen && (
         <div className="absolute top-[35px] left-[-8px] bg-white border border-gray-300 shadow-xl rounded-md z-[100] w-[160px] p-2">
           {[
-            { id: "group_name", label: "Loan No" },
-            { id: "account_type", label: "Party Name" },
+            { id: "loan_no", label: "Loan No" },
+            { id: "party_name", label: "Party Name" },
             { id: "Amount", label: "Amount" }
           ].map((col) => (
             <label key={col.id} className="flex items-center gap-2 p-2 hover:bg-gray-50 cursor-pointer rounded">
@@ -217,21 +235,22 @@ const toggleHeader = (headerId) => {
 
     {/* Search Button */}
     <button
-      onClick={() => {
-        setIsDropdownOpen(false);
-        // getAccountGroups();
-      }}
-      className="ml-2 bg-[#0b2c69] text-white text-[11px] px-4 h-[24px] rounded-[3px] font-source hover:bg-[#071d45]"
-    >
-      Search
-    </button>
+  onClick={() => {
+    setIsDropdownOpen(false);
+    fetchData();   // 🔥 call API here
+  }}
+  className="ml-2 bg-[#0b2c69] text-white text-[11px] px-4 h-[24px] rounded-[3px]"
+>
+  Search
+</button>
+
   </div>
             </div>
             <button
                 onClick={() => {
                   setSearchQuery("");
                   setSearchHeaders([]);
-                  // getAccountGroups();
+                   fetchData();
                 }}
                 className="text-[10px] text-gray-500 hover:text-red-500 underline"
               >
@@ -266,7 +285,7 @@ const toggleHeader = (headerId) => {
                   <th className="px-4 py-2 text-left border-r w-[130px]">Loan No</th>
                   <th className="px-10 py-2 text-left border-r w-[200px]">Party Name</th>
                   <th className="px-4 py-2 text-left border-r w-[150px]">Amount</th>
-                  <th className="px-4 py-2 text-left border-r w-[150px]">Added On</th>
+                  <th className="px-4 py-2 text-left border-r w-[100px]">Added On</th>
                   <th className="px-4 py-2 text-left border-r w-[200px]">Added By Email</th>
                   <th className="px-4 py-2 text-left border-r">Action</th>
                 </tr>

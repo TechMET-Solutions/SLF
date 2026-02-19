@@ -36,7 +36,7 @@ const MemberLoginDetails = () => {
 
       // ✅ Normal GET request (NO encryption)
       const response = await axios.get(
-        `${API_BASE}/getAll-employees?${queryParams.toString()}`,
+        `${API_BASE}/getAll-employees-withSearch?${queryParams.toString()}`,
       );
 
       return response.data; // direct return
@@ -207,14 +207,13 @@ const MemberLoginDetails = () => {
               >
                 Search
               </button>
-              {searchTerm && (
-                <button
-                  onClick={handleClearSearch}
-                  className="bg-gray-500 text-white text-[11.25px] w-[74px] h-[24px] rounded flex items-center justify-center hover:bg-gray-600 transition"
-                >
-                  Clear
-                </button>
-              )}
+
+              <button
+                onClick={handleClearSearch}
+                className="text-[10px] text-gray-500 hover:text-red-500 underline"
+              >
+                Clear
+              </button>
             </div>
 
             <button
@@ -228,120 +227,108 @@ const MemberLoginDetails = () => {
       </div>
 
       {/* Table */}
-     
+
       <div className="overflow-x-auto mt-5 h-[500px] border-gray-300 rounded pl-[110px]">
-       <table className="table-fixed border-collapse ">
-           
-            <thead className="bg-[#0A2478] text-white text-sm top-0">
-              <tr>
-                <th className="px-4 py-2 border-r text-center w-[50px]">#</th>
-                <th className="px-4 py-2 border-r text-left  w-[200px]">
-                  Name
-                </th>
-                <th className="px-4 py-2 border-r text-left  w-[200px]">
-                  User ID
-                </th>
-                <th className="px-4 py-2 border-r text-center w-[100px]">
-                  OTP Override
-                </th>
-                <th className="px-2 py-2 border-r text-center w-[100px] ">
-                  Manager Mobile No
-                </th>
-                <th className="px-2 py-2 border-r text-center w-[100px] ">
-                  Admin Mobile No
-                </th>
-              </tr>
-            </thead>
+        <table className="table-fixed border-collapse ">
+          <thead className="bg-[#0A2478] text-white text-sm top-0">
+            <tr>
+              <th className="px-4 py-2 border-r text-center w-[50px]">#</th>
+              <th className="px-4 py-2 border-r text-left  w-[200px]">Name</th>
+              <th className="px-4 py-2 border-r text-left  w-[200px]">
+                User ID
+              </th>
+              <th className="px-4 py-2 border-r text-center w-[100px]">
+                OTP Override
+              </th>
+              <th className="px-2 py-2 border-r text-center w-[100px] ">
+                Manager Mobile No
+              </th>
+              <th className="px-2 py-2 border-r text-center w-[100px] ">
+                Admin Mobile No
+              </th>
+            </tr>
+          </thead>
 
-          
-            <tbody className="text-[12px]">
-              {employeeList.length > 0 ? (
-                employeeList.map((row, index) => (
-                  <tr
-                    key={row.id || index}
-                    className={`${index % 2 === 0 ? "bg-gray-50" : "bg-white"} hover:bg-gray-100`}
-                  >
-                    {/* Serial Number */}
-                    <td className="px-4 py-2 text-center">
-                      {(currentPage - 1) * itemsPerPage + index + 1}
-                    </td>
+          <tbody className="text-[12px]">
+            {employeeList.length > 0 ? (
+              employeeList.map((row, index) => (
+                <tr
+                  key={row.id || index}
+                  className={`${index % 2 === 0 ? "bg-gray-50" : "bg-white"} hover:bg-gray-100`}
+                >
+                  {/* Serial Number */}
+                  <td className="px-4 py-2 text-center">
+                    {(currentPage - 1) * itemsPerPage + index + 1}
+                  </td>
 
-                  
-                    <td className="px-4 py-2 font-medium">{row.emp_name}</td>
+                  <td className="px-4 py-2 font-medium">{row.emp_name}</td>
 
-                  
-                    <td className="px-4 py-2">{row.email}</td>
+                  <td className="px-4 py-2">{row.email}</td>
 
-                 
-                    <td className="px-4 py-2 text-center">
+                  <td className="px-4 py-2 text-center">
+                    <input
+                      type="checkbox"
+                      checked={row.OTP_Override == 1} // if db stores 0/1
+                      onChange={(e) => updateOTP(row.id, e.target.checked)}
+                      className="w-5 h-5 accent-blue-900 cursor-pointer"
+                    />
+                  </td>
+
+                  {/* Sender Mobile 1 */}
+                  <td className="">
+                    <div className="flex items-center gap-2">
                       <input
-                        type="checkbox"
-                        checked={row.OTP_Override == 1} // if db stores 0/1
-                        onChange={(e) => updateOTP(row.id, e.target.checked)}
-                        className="w-5 h-5 accent-blue-900 cursor-pointer"
+                        type="text"
+                        maxLength="10"
+                        value={row.sender_mobile1 || ""}
+                        className="py-1 text-sm px-2 border rounded-sm flex-1 focus:outline-none focus:ring-1 focus:ring-blue-500"
+                        onChange={(e) =>
+                          handleMobileChange(
+                            row.id,
+                            "sender_mobile1",
+                            e.target.value,
+                            row,
+                          )
+                        }
                       />
-                    </td>
+                    </div>
+                  </td>
 
-                    {/* Sender Mobile 1 */}
-                    <td className="">
-                      <div className="flex items-center gap-2">
-                        <input
-                          type="text"
-                          maxLength="10"
-                          value={row.sender_mobile1 || ""}
-                          className="py-1 text-sm px-2 border rounded-sm flex-1 focus:outline-none focus:ring-1 focus:ring-blue-500"
-                          onChange={(e) =>
-                            handleMobileChange(
-                              row.id,
-                              "sender_mobile1",
-                              e.target.value,
-                              row,
-                            )
-                          }
-                        />
-
-                      </div>
-                    </td>
-
-                  
-                    <td className="">
-                      <div className="flex items-center gap-2">
-                        <input
-                          type="text"
-                          maxLength="10"
-                          value={row.sender_mobile2 || ""}
-                          className="py-1 text-sm px-2 border rounded-sm flex-1 focus:outline-none focus:ring-1 focus:ring-blue-500"
-                          onChange={(e) =>
-                            handleMobileChange(
-                              row.id,
-                              "sender_mobile2",
-                              e.target.value,
-                              row,
-                            )
-                          }
-                        />
-
-                     
-                      </div>
-                    </td>
-                  </tr>
-                ))
-              ) : (
-                <tr>
-                  <td
-                    colSpan="6"
-                    className="text-center text-gray-500 py-6 font-medium"
-                  >
-                    {searchTerm
-                      ? "No employees found matching your search."
-                      : "No records found."}
+                  <td className="">
+                    <div className="flex items-center gap-2">
+                      <input
+                        type="text"
+                        maxLength="10"
+                        value={row.sender_mobile2 || ""}
+                        className="py-1 text-sm px-2 border rounded-sm flex-1 focus:outline-none focus:ring-1 focus:ring-blue-500"
+                        onChange={(e) =>
+                          handleMobileChange(
+                            row.id,
+                            "sender_mobile2",
+                            e.target.value,
+                            row,
+                          )
+                        }
+                      />
+                    </div>
                   </td>
                 </tr>
-              )}
-            </tbody>
-          </table>
-        </div>
-     
+              ))
+            ) : (
+              <tr>
+                <td
+                  colSpan="6"
+                  className="text-center text-gray-500 py-6 font-medium"
+                >
+                  {searchTerm
+                    ? "No employees found matching your search."
+                    : "No records found."}
+                </td>
+              </tr>
+            )}
+          </tbody>
+        </table>
+      </div>
 
       {/* Pagination */}
       {showPagination && totalPages > 1 && (

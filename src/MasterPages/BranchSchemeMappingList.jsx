@@ -128,7 +128,7 @@ const BranchSchemeMappingList = () => {
   const [allSchemes, setAllSchemes] = useState([]);
   const [selectedSchemeIds, setSelectedSchemeIds] = useState([]);
   const [loadingSchemes, setLoadingSchemes] = useState(false);
-const [searchTerm, setSearchTerm] = useState("");
+  const [searchTerm, setSearchTerm] = useState("");
   useEffect(() => {
     document.title = "SLF | Branch Scheme Mapping List";
     fetchBranches(page);
@@ -197,6 +197,7 @@ const [searchTerm, setSearchTerm] = useState("");
       alert("Mapping updated successfully!");
       setIsModalOpen(false);
       fetchBranches(page); // Refresh list to show updated mappings
+      setSearchTerm("");
     } catch (error) {
       console.error("Save error:", error);
       alert("Failed to update mapping");
@@ -204,9 +205,9 @@ const [searchTerm, setSearchTerm] = useState("");
   };
 
   const totalPages = Math.ceil(total / limit);
-const filteredSchemes = allSchemes.filter((scheme) =>
-  scheme.schemeName.toLowerCase().includes(searchTerm.toLowerCase())
-);
+  const filteredSchemes = allSchemes.filter((scheme) =>
+    scheme.schemeName.toLowerCase().includes(searchTerm.toLowerCase()),
+  );
   return (
     <div className="min-h-screen w-full relative">
       {/* Topbar */}
@@ -230,7 +231,9 @@ const filteredSchemes = allSchemes.filter((scheme) =>
           <table className=" border-collapse shadow-sm">
             <thead className="bg-[#0A2478] text-white text-sm">
               <tr>
-                <th className="px-4 py-2 text-left border-r w-[100px]">Branch Code</th>
+                <th className="px-4 py-2 text-left border-r w-[100px]">
+                  Branch Code
+                </th>
                 <th className="px-4 py-2 text-left border-r w-[250px]">Name</th>
                 <th className="px-4 py-2 text-left border-r w-[350px]">
                   Address
@@ -337,107 +340,107 @@ const filteredSchemes = allSchemes.filter((scheme) =>
         <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/40 backdrop-blur-md transition-all duration-300">
           <div className="bg-white rounded-xl shadow-2xl w-[550px] flex flex-col max-h-[85vh] border border-white/20 animate-in fade-in zoom-in duration-200 p-2">
             {/* Header */}
-            <div className='p-2'>
- <h2
-                  className="text-[#0A2478] mb-4"
-                  style={{
-                    fontFamily: "Source Sans 3, sans-serif",
-                    fontWeight: 600,
-                    fontSize: "20px",
-                    lineHeight: "24px",
-                    letterSpacing: "0%",
-                  }}
-                >
+            <div className="p-2">
+              <h2
+                className="text-[#0A2478] mb-4"
+                style={{
+                  fontFamily: "Source Sans 3, sans-serif",
+                  fontWeight: 600,
+                  fontSize: "20px",
+                  lineHeight: "24px",
+                  letterSpacing: "0%",
+                }}
+              >
                 Branch Mapping for {selectedBranch?.branch_name}
-                </h2>
+              </h2>
+            </div>
 
-              </div>
-           
             {/* Search & Select All Bar */}
-           <div className="px-6 py-3  ">
-  <input 
-    type="text"
-    placeholder="Search schemes..."
-    value={searchTerm}
-    onChange={(e) => setSearchTerm(e.target.value)}
-    className="w-full px-3 py-2 border border-gray-300 rounded-md text-sm outline-none focus:ring-2 focus:ring-[#0A2478]/20 focus:border-[#0A2478]"
-  />
-</div>
-
-{/* Body */}
-<div className="p-6 overflow-y-auto flex-1 max-h-[400px]">
-  {loadingSchemes ? (
-    <p className="text-center text-gray-500">Loading Schemes...</p>
-  ) : filteredSchemes.length > 0 ? (
-    <div className="flex flex-wrap gap-3">
-      {filteredSchemes.map((scheme) => {
-        const isChecked = selectedSchemeIds.includes(scheme.id);
-        return (
-          <label
-            key={scheme.id}
-            className={`flex items-center p-3 border border-gray-300 rounded-lg cursor-pointer transition-all duration-200 w-[200px] `}
-          >
-            <div className="relative flex items-center">
+            <div className="px-6 py-3  ">
               <input
-                type="checkbox"
-                className="w-5 h-5 mr-3 accent-[#0A2478] cursor-pointer"
-                checked={isChecked}
-                onChange={() => toggleScheme(scheme.id)}
+                type="text"
+                placeholder="Search schemes..."
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+                className="w-full px-3 py-2 border border-gray-300 rounded-md text-sm outline-none focus:ring-2 focus:ring-[#0A2478]/20 focus:border-[#0A2478]"
               />
             </div>
-            <span className="text-sm font-medium text-gray-700 truncate">
-              {scheme.schemeName}
-            </span>
-          </label>
-        );
-      })}
-    </div>
-  ) : (
-    /* IF NO RECORDS MATCH */
-    <div className="flex flex-col items-center justify-center py-10">
-      <p className="text-gray-400 font-medium">No schemes match your search.</p>
-      <button 
-        onClick={() => setSearchTerm("")}
-        className="text-[#0A2478] text-xs underline mt-2"
-      >
-        Clear Search
-      </button>
-    </div>
-  )}
-</div>
 
-          
+            {/* Body */}
+            <div className="p-6 overflow-y-auto flex-1 max-h-[400px]">
+              {loadingSchemes ? (
+                <p className="text-center text-gray-500">Loading Schemes...</p>
+              ) : filteredSchemes.length > 0 ? (
+                <div className="flex flex-wrap gap-3">
+                  {filteredSchemes.map((scheme) => {
+                    const isChecked = selectedSchemeIds.includes(scheme.id);
+                    return (
+                      <label
+                        key={scheme.id}
+                        className={`flex items-center p-3 border border-gray-300 rounded-lg cursor-pointer transition-all duration-200 w-[200px] `}
+                      >
+                        <div className="relative flex items-center">
+                          <input
+                            type="checkbox"
+                            className="w-5 h-5 mr-3 accent-[#0A2478] cursor-pointer"
+                            checked={isChecked}
+                            onChange={() => toggleScheme(scheme.id)}
+                          />
+                        </div>
+                        <span className="text-sm font-medium text-gray-700 truncate">
+                          {scheme.schemeName}
+                        </span>
+                      </label>
+                    );
+                  })}
+                </div>
+              ) : (
+                /* IF NO RECORDS MATCH */
+                <div className="flex flex-col items-center justify-center py-10">
+                  <p className="text-gray-400 font-medium">
+                    No schemes match your search.
+                  </p>
+                  <button
+                    onClick={() => setSearchTerm("")}
+                    className="text-[#0A2478] text-xs underline mt-2"
+                  >
+                    Clear Search
+                  </button>
+                </div>
+              )}
+            </div>
 
             {/* Footer */}
             <div className="p-4  flex justify-center items-center gap-3 bg-white rounded-b-xl">
-              
               <button
-                onClick={() => setIsModalOpen(false)}
-
+                onClick={() => {
+                  setIsModalOpen(false);
+                  setSearchTerm(""); // ✅ Reset search here
+                }}
                 style={{
-                    backgroundColor: "#C1121F",
-                    width: "92.66px",
-                    height: "30.57px",
-                    borderRadius: "4.67px",
-
-                    opacity: 1,
-                  }}
-                className=" text-sm font-bold text-white transition-colors"
+                  backgroundColor: "#C1121F",
+                  width: "92.66px",
+                  height: "30.57px",
+                  borderRadius: "4.67px",
+                  opacity: 1,
+                }}
+                className="text-sm font-bold text-white transition-colors"
               >
                 Exit
               </button>
+
               <button
                 onClick={handleSaveMapping}
-                  style={{
-                    width: "92.66px",
-                    height: "30.57px",
-                    borderRadius: "4.67px",
+                style={{
+                  width: "92.66px",
+                  height: "30.57px",
+                  borderRadius: "4.67px",
 
-                    opacity: 1,
+                  opacity: 1,
                 }}
                 className="bg-[#0A2478] text-white"
               >
-                Save 
+                Save
               </button>
             </div>
           </div>

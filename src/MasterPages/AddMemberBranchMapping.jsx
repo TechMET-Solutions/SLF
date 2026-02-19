@@ -1,7 +1,11 @@
+import axios from "axios";
 import { useEffect, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
-import { getAssignBranchApi, updateAssignBranchApi, } from "../API/Master/User_Management/BranchMapping";
-import {  fetchBranchesApi } from "../API/Master/Master_Profile/Branch_Details";
+import { API } from "../api";
+import {
+  getAssignBranchApi,
+  updateAssignBranchApi,
+} from "../API/Master/User_Management/BranchMapping";
 
 const AddMemberBranchMapping = () => {
   const navigate = useNavigate();
@@ -9,6 +13,8 @@ const AddMemberBranchMapping = () => {
   const id = new URLSearchParams(location.search).get("id");
 
   const [branches, setBranches] = useState([]);
+
+  console.log(branches, "branches");
   const [employee, setEmployee] = useState(null);
   const [selectedBranches, setSelectedBranches] = useState([]);
 
@@ -30,12 +36,28 @@ const AddMemberBranchMapping = () => {
     }
   };
 
-  const loadBranches = async () => {
+  // const loadBranches = async () => {
+  //   try {
+  //     const res = await fetchBranchesApi();
+  //     setBranches(res.branches);
+  //   } catch (err) {
+  //     console.error("❌ Error fetching branches:", err);
+  //   }
+  // };
+
+  const loadBranches = async (page = 1, search = "") => {
     try {
-      const res = await fetchBranchesApi();
-      setBranches(res.branches);
-    } catch (err) {
-      console.error("❌ Error fetching branches:", err);
+      const res = await axios.get(`${API}/Master/Master_Profile/get_Branches`);
+
+      if (res.data.success) {
+        setBranches(res.data.branches || []);
+        // setTotal(res.data.total || 0);
+      } else {
+        setBranches([]);
+        // setTotal(0);
+      }
+    } catch (error) {
+      console.error("Error fetching branches:", error);
     }
   };
 
@@ -43,7 +65,7 @@ const AddMemberBranchMapping = () => {
     setSelectedBranches((prev) =>
       prev.includes(branch_id)
         ? prev.filter((id) => id !== branch_id)
-        : [...prev, branch_id]
+        : [...prev, branch_id],
     );
   };
 
@@ -70,7 +92,9 @@ const AddMemberBranchMapping = () => {
     <div className="min-h-screen w-full">
       <div className="flex justify-center sticky top-[80px] z-40">
         <div className="flex items-center px-6 py-4 border-b mt-5 w-[1290px] h-[62px] border rounded-[11px] border-gray-200 justify-between shadow">
-          <h2 className="text-red-600 font-bold text-[20px]">Member Branch Mapping</h2>
+          <h2 className="text-red-600 font-bold text-[20px]">
+            Member Branch Mapping
+          </h2>
 
           <div className="flex gap-3">
             <button
@@ -104,7 +128,7 @@ const AddMemberBranchMapping = () => {
           <label className="text-gray-700 font-medium">Select Branches</label>
           <div className="flex flex-wrap gap-12">
             {branches
-              .filter(branch => branch.status !== "0") // or branch.status === "1"
+              .filter((branch) => branch.status !== "0") // or branch.status === "1"
               .map((branch) => (
                 <label key={branch.id} className="flex items-center gap-2">
                   <input
@@ -113,11 +137,12 @@ const AddMemberBranchMapping = () => {
                     onChange={() => handleCheckboxChange(branch.id)}
                     className="w-5 h-5 accent-blue-900"
                   />
-                  <span>{branch.branch_code} - {branch.branch_name}</span>
+                  <span>
+                    {branch.branch_code} - {branch.branch_name}
+                  </span>
                 </label>
               ))}
           </div>
-
         </div>
       </div>
     </div>

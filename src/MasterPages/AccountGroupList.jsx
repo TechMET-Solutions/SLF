@@ -4,6 +4,7 @@ import axios from "axios";
 import { API } from "../api";
 import { useAuth } from "../API/Context/AuthContext";
 import GroupData from "../assets/Group 124.svg";
+import { useNavigate } from "react-router-dom";
 const AccountGroupList = () => {
   useEffect(() => {
     document.title = "SLF | Account Group List";
@@ -27,6 +28,7 @@ const AccountGroupList = () => {
       [name]: value,
     }));
   };
+const navigate = useNavigate();
 
   const [searchHeaders, setSearchHeaders] = useState([]); // Array of active headers
   const [searchQuery, setSearchQuery] = useState("");
@@ -268,7 +270,10 @@ const AccountGroupList = () => {
                   >
                     Search
                   </button>
+
+
                 </div>
+               
               </div>
 
               {/* Clear Button */}
@@ -297,9 +302,13 @@ const AccountGroupList = () => {
                 Add
               </button>
 
-              <button className="text-white px-[6.25px] py-[6.25px] rounded-[3.75px] bg-[#C1121F] w-[74px] h-[24px] opacity-100 text-[10px]">
-                Exit
-              </button>
+             <button
+  onClick={() => navigate("/")}
+  className="text-white px-[6.25px] py-[6.25px] rounded-[3.75px] bg-[#C1121F] w-[74px] h-[24px] opacity-100 text-[10px]"
+>
+  Exit
+</button>
+
             </div>
           </div>
         </div>
