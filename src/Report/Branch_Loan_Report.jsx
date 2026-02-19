@@ -51,49 +51,70 @@ const Branch_Loan_Report = () => {
 
   return (
     <div className="min-h-screen bg-white text-[12px] text-gray-800">
-      <div className="m-2 border border-[#1a8a81] shadow-sm">
-        <div className="bg-[#1a8a81] text-white px-3 py-1 font-semibold text-sm">
-          Branch Loan Summary
-        </div>
 
-        {/* Filter Section */}
-        <div className="p-4 border-b">
-          <div className="flex gap-12">
-            <div className="flex gap-2">
-              <label>From Date</label>
-              <input
-                type="date"
-                value={fromDate}
-                onChange={(e) => setFromDate(e.target.value)}
-                className="border px-2"
-              />
-            </div>
+      <div className="flex justify-center my-5 px-4">
+        <div className="flex items-center justify-between px-6 py-4 w-full max-w-[1290px] min-h-[70px] rounded-[11px] border border-gray-200 shadow-sm bg-white gap-6">
 
-            <div className="flex gap-2">
-              <label>As On Date</label>
-              <input
-                type="date"
-                value={toDate}
-                onChange={(e) => setToDate(e.target.value)}
-                className="border px-2"
-              />
-            </div>
+          {/* 🔴 Left — Title */}
+          <div className="flex-shrink-0">
+            <h2 className="text-red-600 font-bold text-[18px] whitespace-nowrap">
+              Branch Loan Summary
+            </h2>
           </div>
 
-          <div className="mt-4">
-            <button
-              onClick={HandleCallApi}
-              className="bg-[#005a9c] text-white px-6 py-1 rounded"
-            >
-              💾 View
-            </button>
+          {/* 🔵 Right — Controls & Buttons */}
+          <div className="flex flex-grow items-center justify-end gap-8">
+
+            {/* Inputs Group */}
+            <div className="flex items-center gap-8">
+              {/* From Date */}
+              <div className="flex items-center gap-2">
+                <label className="text-gray-600 text-sm font-medium whitespace-nowrap">From Date</label>
+                <input
+                  type="date"
+                  value={fromDate}
+                  onChange={(e) => setFromDate(e.target.value)}
+                  className="border border-gray-300 px-2 py-1 text-sm outline-none rounded-md focus:border-blue-500"
+                />
+              </div>
+
+              {/* As On Date */}
+              <div className="flex items-center gap-2">
+                <label className="text-gray-600 text-sm font-medium whitespace-nowrap">As On Date</label>
+                <input
+                  type="date"
+                  value={toDate}
+                  onChange={(e) => setToDate(e.target.value)}
+                  className="border border-gray-300 px-2 py-1 text-sm outline-none rounded-md focus:border-blue-500"
+                />
+              </div>
+            </div>
+
+            {/* Buttons Group */}
+            <div className="flex items-center gap-2 flex-shrink-0">
+              <button
+                onClick={HandleCallApi}
+                className="w-[75px] h-[32px] flex items-center justify-center rounded bg-[#0A2478] text-white text-[12px] font-bold hover:bg-[#071d45] transition-all shadow-sm"
+              >
+                VIEW
+              </button>
+              <button
+                className="w-[75px] h-[32px] flex items-center justify-center rounded bg-red-600 text-white text-[12px] font-bold hover:bg-red-700 transition-all shadow-sm"
+              >
+                PDF
+              </button>
+            </div>
+
           </div>
         </div>
+      </div>
 
+
+      <div className="m-2 mx-28">
         {/* Table */}
-        <div className="overflow-x-auto">
-          <table className="w-full border-collapse text-[11px]">
-            <thead className="bg-[#eeeae3] font-bold">
+        <div className="overflow-x-auto mt-2 max-w-4xl h-[500px]">
+          <table className="w-full border-collapse text-[12px]">
+            <thead className="bg-[#0A2478] text-white text-sm">
               <tr>
                 <th className="border p-1 text-left">Branch Name</th>
                 <th className="border p-1 text-left">New Customer</th>

@@ -82,247 +82,234 @@ const Customer_History = () => {
     console.log("Selected Charges for Loan", selectedLoan?.id, selectedCharges);
   return (
     <div className="min-h-screen bg-white font-sans text-[12px] text-gray-800 pb-10">
-      {/* 2. Main Content Container */}
-      <div className="m-2 border border-[#1a8a81] shadow-sm">
-        {/* Title Bar with Print Options */}
-        <div className="bg-[#1a8a81] text-white px-3 py-1 flex justify-between items-center font-semibold text-sm">
-          <span>Customer Profile History</span>
-          <div className="flex gap-1">
-            <button className="bg-[#005a9c] hover:bg-blue-700 px-2 py-0.5 rounded text-[11px] flex items-center gap-1 border border-blue-300">
-              🖨️ All Print
-            </button>
-            <button className="bg-[#005a9c] hover:bg-blue-700 px-2 py-0.5 rounded text-[11px] flex items-center gap-1 border border-blue-300">
-              🖨️ Open Print
-            </button>
-            <button className="bg-[#005a9c] hover:bg-blue-700 px-2 py-0.5 rounded text-[11px] flex items-center gap-1 border border-blue-300">
-              🖨️ Close Print
-            </button>
+      <div className="flex justify-center my-5 px-4">
+        <div className="flex items-center justify-between px-6 py-2 w-full max-w-[1290px] min-h-[70px] rounded-[11px] border border-gray-200 shadow-sm bg-white gap-4">
+
+          {/* 🔴 Left — Title */}
+          <div className="flex-shrink-0">
+            <h2 className="text-red-600 font-bold text-[18px] whitespace-nowrap">
+              Customer Profile History
+            </h2>
           </div>
-        </div>
 
-        {/* Search Header */}
-        <div className="p-4 bg-white border-b border-gray-100 flex items-center gap-4">
-          <div className="relative">
-            <input
-              type="text"
-              value={searchTerm}
-              onChange={(e) => {
-                setSearchTerm(e.target.value);
-                setSelectedCustomer(null);
-              }}
-              className="border border-gray-300 px-2 py-1 w-64 outline-none focus:border-blue-500 shadow-sm"
-              placeholder="Search customer..."
-            />
+          {/* 🔵 Right — Controls & Buttons */}
+          <div className="flex items-center justify-end flex-grow gap-4">
 
-            {/* Dropdown */}
-            {results.map((cust, index) => (
-              <div
-                key={index}
-                className="px-2 py-1 hover:bg-blue-100 cursor-pointer text-sm"
-                onClick={() => {
-                  setSelectedCustomer(cust);
-                  setSearchTerm(cust.printName);
-                  setResults([]);
-                }}
-              >
-                {cust.printName} ({cust.id})
+            {/* Search Section */}
+            <div className="flex items-center gap-4">
+              <div className="relative">
+                <input
+                  type="text"
+                  value={searchTerm}
+                  onChange={(e) => {
+                    setSearchTerm(e.target.value);
+                    setSelectedCustomer(null);
+                  }}
+                  className="border border-gray-300 px-3 py-1.5 w-64 outline-none focus:border-blue-500 rounded-md text-sm shadow-sm"
+                  placeholder="Search customer..."
+                />
+
+                {/* Dropdown - Absolute position is key here */}
+                {results.length > 0 && (
+                  <div className="absolute z-50 w-full bg-white border border-gray-200 mt-1 shadow-lg max-h-60 overflow-y-auto rounded-md">
+                    {results.map((cust, index) => (
+                      <div
+                        key={index}
+                        className="px-3 py-2 hover:bg-blue-50 cursor-pointer text-sm border-b last:border-none"
+                        onClick={() => {
+                          setSelectedCustomer(cust);
+                          setSearchTerm(cust.printName);
+                          setResults([]);
+                        }}
+                      >
+                        {cust.printName} <span className="text-gray-400 text-xs">({cust.id})</span>
+                      </div>
+                    ))}
+                  </div>
+                )}
               </div>
-            ))}
+
+              <div className="flex items-center gap-2">
+                <label className="text-gray-600 text-sm whitespace-nowrap">UID</label>
+                <input
+                  type="text"
+                  value={selectedCustomer?.id || ""}
+                  className="border border-gray-300 px-2 py-1.5 w-32 bg-gray-50 outline-none rounded-md text-sm text-gray-500 font-mono"
+                  disabled
+                />
+              </div>
+            </div>
+
+            {/* Buttons Group */}
+            <div className="flex items-center gap-2 flex-shrink-0">
+              <button
+                onClick={handleGetHistory}
+                className="w-[75px] h-[30px] rounded bg-[#0A2478] text-white text-[10px] font-semibold hover:bg-[#071d45] transition-colors"
+              >
+                {historyLoading ? "LOADING..." : "GET HISTORY"}
+              </button>
+
+              <div className="flex gap-1">
+                <button className="w-[75px] h-[30px] rounded bg-[#0A2478] text-white text-[10px] font-semibold hover:bg-[#071d45] transition-colors">
+                  ALL PRINT
+                </button>
+                <button className="w-[75px] h-[30px] rounded bg-[#0A2478] text-white text-[10px] font-semibold hover:bg-[#071d45] transition-colors">
+                  OPEN PRINT
+                </button>
+                <button className="w-[75px] h-[30px] rounded bg-[#0A2478] text-white text-[10px] font-semibold hover:bg-[#071d45] transition-colors">
+                  CLOSE PRINT
+                </button>
+              </div>
+            </div>
+
           </div>
-
-          <label className="text-gray-700 ml-4">Customer UID</label>
-          <input
-            type="text"
-            value={selectedCustomer?.id || ""}
-            className="border border-gray-300 px-2 py-1 w-48 bg-[#f2f2f2] outline-none"
-            disabled
-          />
-
-          <button
-            onClick={handleGetHistory}
-            className="bg-[#005a9c] text-white px-4 py-1 rounded shadow hover:bg-blue-700 font-bold transition-colors"
-          >
-            {historyLoading ? "Loading..." : "Get History"}
-          </button>
         </div>
+      </div>
 
-        <div className="p-3 space-y-6">
+
+      {/* 2. Main Content Container */}
+      <div className="shadow-sm">
+        {/* Title Bar with Print Options */}
+       
+
+       
+
+        <div className=" space-y-6">
           {/* 3. Customer Details Section */}
-          <fieldset className="border border-gray-300 p-4 rounded-sm">
-            <legend className="px-2 text-[#1a8a81] font-bold text-sm">
+          <div className="max-w-7xl mx-auto">
+            <legend className="px-2 text-red-600 mb-2 font-bold text-sm">
               Customer Details
             </legend>
-            <div className="flex justify-between gap-6">
-              <div className="text-[12px] space-y-3">
-                {/* ROW 1 */}
-                <div className="flex items-center gap-8">
-                  <div className="flex items-center gap-1">
-                    <span className="w-28 text-right">Customer Type :</span>
-                    <input
-                      type="text"
-                      value={historyData?.customer?.partyType || ""}
-                      disabled
-                      className="w-28 h-6 border border-gray-300 bg-gray-100 px-1"
-                    />
-                  </div>
 
-                  <div className="flex items-center gap-1">
-                    <span className="w-28 text-right">Risk Category :</span>
-                    <input
-                      type="text"
-                      value={historyData?.customer?.riskCategory || ""}
-                      disabled
-                      className="w-28 h-6 border border-gray-300 bg-gray-100 px-1"
-                    />
-                  </div>
+            <div className="flex gap-4">
+              {/* LEFT CONTENT */}
+              <div className="flex-1 text-[12px] space-y-3">
 
-                  <div className="flex items-center gap-1">
-                    <span className="w-20 text-right">Gender :</span>
-                    <input
-                      type="text"
-                      value={historyData?.customer?.gender || ""}
-                      disabled
-                      className="w-20 h-6 border border-gray-300 bg-gray-100 px-1"
-                    />
-                  </div>
-
-                  <div className="flex items-center gap-1">
-                    <span className="w-20 text-right">Marital :</span>
-                    <input
-                      type="text"
-                      value={historyData?.customer?.marital || ""}
-                      disabled
-                      className="w-20 h-6 border border-gray-300 bg-gray-100 px-1"
-                    />
-                  </div>
+                {/* Row 1 */}
+                <div className="grid grid-cols-6 gap-2">
+                  {[
+                    ["Customer Type", historyData?.customer?.partyType],
+                    ["Risk Category", historyData?.customer?.riskCategory],
+                    ["Gender", historyData?.customer?.gender],
+                    ["Marital", historyData?.customer?.marital],
+                    ["Mobile No.", historyData?.customer?.mobile],
+                    [
+                      "Date Of Birth",
+                      historyData?.customer?.dob
+                        ? historyData.customer.dob.split("T")[0]
+                        : "",
+                    ],
+                  ].map(([label, value]) => (
+                    <div key={label} className="flex flex-col">
+                      <span className="text-gray-600 text-[11px] font-semibold">
+                        {label}
+                      </span>
+                      <input
+                        type="text"
+                        value={value || ""}
+                        disabled
+                        className="h-7 border border-gray-300 bg-gray-100 px-1"
+                      />
+                    </div>
+                  ))}
                 </div>
 
-                {/* ROW 2 */}
-                <div className="flex items-center gap-8">
-                  <div className="flex items-center gap-1">
-                    <span className="w-20 text-right">First Name :</span>
-                    <input
-                      type="text"
-                      value={historyData?.customer?.firstName || ""}
-                      disabled
-                      className="w-28 h-6 border border-gray-300 bg-gray-100 px-1"
-                    />
-                  </div>
-
-                  <div className="flex items-center gap-1">
-                    <span className="w-24 text-right">Middle Name :</span>
-                    <input
-                      type="text"
-                      value={historyData?.customer?.middleName || ""}
-                      disabled
-                      className="w-28 h-6 border border-gray-300 bg-gray-100 px-1"
-                    />
-                  </div>
-
-                  <div className="flex items-center gap-1">
-                    <span className="w-20 text-right">Last Name :</span>
-                    <input
-                      type="text"
-                      value={historyData?.customer?.lastName || ""}
-                      disabled
-                      className="w-28 h-6 border border-gray-300 bg-gray-100 px-1"
-                    />
-                  </div>
-
-                  <div className="flex items-center gap-1">
-                    <span className="w-20 text-right">Date Of Birth :</span>
-                    <input
-                      type="text"
-                      value={
-                        historyData?.customer?.dob
-                          ? historyData.customer.dob.split("T")[0]
-                          : ""
-                      }
-                      disabled
-                      className="w-24 h-6 border border-gray-300 bg-gray-100 px-1"
-                    />
-                  </div>
+                {/* Row 2 */}
+                <div className="grid grid-cols-6 gap-2">
+                  {[
+                    ["First Name", historyData?.customer?.firstName],
+                    ["Middle Name", historyData?.customer?.middleName],
+                    ["Last Name", historyData?.customer?.lastName],    
+                    ["Father Name", historyData?.customer?.fatherFirstName],
+                    ["City", historyData?.customer?.Permanent_City],
+                    ["State", historyData?.customer?.Permanent_State],
+                  ].map(([label, value]) => (
+                    <div key={label} className="flex flex-col">
+                      <span className="text-gray-600 text-[11px] font-semibold">
+                        {label}
+                      </span>
+                      <input
+                        type="text"
+                        value={value || ""}
+                        disabled
+                        className="h-7 border border-gray-300 bg-gray-100 px-1"
+                      />
+                    </div>
+                  ))}
                 </div>
 
-                {/* ROW 3 */}
-                <div className="flex items-center gap-8">
-                  <div className="flex items-center gap-1">
-                    <span className="w-24 text-right">Father Name :</span>
-                    <input
-                      type="text"
-                      value={historyData?.customer?.fatherFirstName || ""}
+                {/* Address Row */}
+                <div className="flex gap-3 items-start">
+
+                  {/* Address */}
+                  <div className="flex flex-col flex-1">
+                    <span className="text-gray-600 text-[11px] font-semibold">
+                      Address
+                    </span>
+                    <textarea
+                      value={historyData?.customer?.Permanent_Address || ""}
                       disabled
-                      className="w-40 h-6 border border-gray-300 bg-gray-100 px-1"
+                      className="h-14 border border-gray-300 bg-gray-100 px-2 py-1 resize-none w-full"
                     />
                   </div>
 
-                  <div className="flex items-center gap-1">
-                    <span className="w-20 text-right">Mobile No. :</span>
+                  {/* Country */}
+                  <div className="flex flex-col w-44">
+                    <span className="text-gray-600 text-[11px] font-semibold">
+                      Country
+                    </span>
                     <input
                       type="text"
-                      value={historyData?.customer?.mobile || ""}
+                      value={historyData?.customer?.Permanent_Country || ""}
                       disabled
-                      className="w-32 h-6 border border-gray-300 bg-gray-100 px-1"
+                      className="h-7 border border-gray-300 bg-gray-100 px-1"
                     />
                   </div>
+
+                  {/* Pincode */}
+                  <div className="flex flex-col w-44">
+                    <span className="text-gray-600 text-[11px] font-semibold">
+                      Pincode
+                    </span>
+                    <input
+                      type="text"
+                      value={historyData?.customer?.Permanent_Pincode || ""}
+                      disabled
+                      className="h-7 border border-gray-300 bg-gray-100 px-1"
+                    />
+                  </div>
+
                 </div>
 
-                {/* ADDRESS ROW */}
-                <div className="flex items-start gap-4">
-                  <span className="w-24 text-right mt-1">Address :</span>
-
-                  <textarea
-                    value={historyData?.customer?.Permanent_Address || ""}
-                    disabled
-                    className="w-[500px] h-14 border border-gray-300 bg-gray-100 px-2 py-1 resize-none"
-                  />
-                </div>
-
-                {/* CITY STATE COUNTRY PIN */}
-                <div className="flex items-center gap-10 pl-24">
-                  <span>
-                    City <b>{historyData?.customer?.Permanent_City || ""}</b>
-                  </span>
-
-                  <span>
-                    State <b>{historyData?.customer?.Permanent_State || ""}</b>
-                  </span>
-
-                  <span>
-                    Country{" "}
-                    <b>{historyData?.customer?.Permanent_Country || ""}</b>
-                  </span>
-
-                  <span>
-                    Pincode{" "}
-                    <b>{historyData?.customer?.Permanent_Pincode || ""}</b>
-                  </span>
-                </div>
               </div>
-              <div className="w-32 flex flex-col items-center">
+
+              {/* RIGHT IMAGE */}
+              <div className="w-38 flex flex-col items-center justify-start my-4">
                 {historyData?.customer?.profileImage ? (
                   <img
                     src={historyData.customer.profileImage}
                     alt="Profile"
-                    className="w-28 h-28 object-cover border border-gray-300 rounded-md shadow-sm"
+                    className="w-20 h-28 object-cover border border-gray-300 rounded shadow-sm"
                   />
                 ) : (
-                  <div className="w-28 h-28 flex items-center justify-center border border-gray-300 bg-gray-100 text-gray-400 text-xs">
+                  <div className="w-26 h-28 flex items-center justify-center border border-gray-300 bg-gray-100 text-gray-400 text-xs">
                     No Image
                   </div>
                 )}
               </div>
             </div>
-          </fieldset>
+          </div>
+
+
 
           {/* 4. Loans Details Table */}
-          <fieldset className="border border-gray-200 p-2 rounded-sm">
-            <legend className="px-2 text-[#1a8a81] font-bold text-sm">
+          <div className=" mx-28 rounded-sm">
+            <div className="px-2 text-red-600 font-bold text-sm">
               Loans Details
-            </legend>
-            <div className="overflow-x-auto max-h-40 border border-gray-300">
-              <table className="w-full text-[11px] border-collapse">
-                <thead className="bg-[#eeeae3] sticky top-0 border-b border-gray-300">
+            </div>
+            <div className="overflow-x-auto mt-2  max-w-8xl ">
+              <table className="w-full text-[12px] border-collapse">
+                <thead className="bg-[#0A2478] text-white text-sm">
                   <tr>
                     {[
                       "Loan Check",
@@ -445,10 +432,10 @@ const Customer_History = () => {
                           {/* ACTION BUTTONS COLUMN */}
                           <td className="p-1 whitespace-nowrap">
                             <div className="flex gap-1 justify-center">
-                              <button className="bg-[#005a9c] text-white px-2 py-0.5 rounded-sm hover:bg-blue-800 transition-colors border border-blue-900 text-[10px]">
+                              <button className="bg-[#0A2478] text-white px-2 py-0.5 rounded-sm transition-colors border border-blue-900 text-[10px]">
                                 With Interest
                               </button>
-                              <button className="bg-[#005a9c] text-white px-2 py-0.5 rounded-sm hover:bg-blue-800 transition-colors border border-blue-900 text-[10px]">
+                              <button className="bg-[#0A2478] text-white px-2 py-0.5 rounded-sm transition-colors border border-blue-900 text-[10px]">
                                 Without Interest
                               </button>
                             </div>
@@ -469,17 +456,18 @@ const Customer_History = () => {
                 </tbody>
               </table>
             </div>
-          </fieldset>
+          </div>
+
           {/* 5. Bottom History Grids (Ornament, Payment, Notice, Charges) */}
-          <div className="grid grid-cols-2 gap-4">
+          <div className="grid grid-cols-2 mx-28 gap-4">
             {/* Ornament Details */}
-            <fieldset className="border border-gray-200 p-2 h-48 overflow-hidden flex flex-col">
-              <legend className="px-2 text-[#1a8a81] font-bold text-sm">
+            <div className="h-48 overflow-hidden flex flex-col">
+              <div className="px-2 text-red-600 mb-2 font-bold text-sm">
                 Ornament Details
-              </legend>
+              </div>
               <div className="overflow-y-auto flex-1 border border-gray-300">
                 <table className="w-full text-[11px]">
-                  <thead className="bg-[#eeeae3] border-b border-gray-300">
+                  <thead className="bg-[#0A2478] text-gray-50 border-b border-gray-300">
                     <tr>
                       {[
                         "Items",
@@ -603,16 +591,16 @@ const Customer_History = () => {
                   </tbody>
                 </table>
               </div>
-            </fieldset>
+            </div>
 
             {/* Payment History */}
-            <fieldset className="border border-gray-200 p-2 h-48 overflow-hidden flex flex-col">
-              <legend className="px-2 text-[#1a8a81] font-bold text-sm">
+            <div className="h-48 overflow-hidden flex flex-col">
+              <div className="px-2 mb-2 text-red-600 font-bold text-sm">
                 Payment History
-              </legend>
+              </div>
               <div className="overflow-y-auto flex-1 border border-gray-300">
                 <table className="w-full text-[11px]">
-                  <thead className="bg-[#eeeae3] border-b border-gray-300">
+                  <thead className="bg-[#0A2478] text-gray-50 border-b border-gray-300">
                     <tr>
                       {[
                         "Date",
@@ -710,16 +698,16 @@ const Customer_History = () => {
                   </tbody>
                 </table>
               </div>
-            </fieldset>
+            </div>
 
             {/* Notice History */}
-            <fieldset className="border border-gray-200 p-2 h-48 overflow-hidden flex flex-col">
-              <legend className="px-2 text-[#1a8a81] font-bold text-sm">
+            <div className="h-48 overflow-hidden flex flex-col">
+              <div className="px-2 mb-2 text-red-600 font-bold text-sm">
                 Notice History
-              </legend>
+              </div>
               <div className="overflow-y-auto flex-1 border border-gray-300">
                 <table className="w-full text-[11px]">
-                  <thead className="bg-[#eeeae3] border-b border-gray-300">
+                  <thead className="bg-[#0A2478] text-gray-50 border-b border-gray-300">
                     <tr>
                       {[
                         "Notice Date",
@@ -744,16 +732,16 @@ const Customer_History = () => {
                   </tbody>
                 </table>
               </div>
-            </fieldset>
+            </div>
 
             {/* Charges Details */}
-            <fieldset className="border border-gray-200 p-2 h-48 overflow-hidden flex flex-col">
-              <legend className="px-2 text-[#1a8a81] font-bold text-sm">
+            <div className="h-48 overflow-hidden flex flex-col">
+              <div className="px-2 mb-2 text-red-600 font-bold text-sm">
                 Charges Details
-              </legend>
+              </div>
               <div className="overflow-y-auto flex-1 border border-gray-300">
                 <table className="w-full text-[11px]">
-                  <thead className="bg-[#eeeae3] border-b border-gray-300">
+                  <thead className="bg-[#0A2478] text-gray-50 border-b border-gray-300">
                     <tr>
                       {["Date", "No.", "Charge", "Account", "Amount"].map(
                         (h) => (
@@ -823,7 +811,7 @@ const Customer_History = () => {
                   </tbody>
                 </table>
               </div>
-            </fieldset>
+            </div>
           </div>
         </div>
       </div>

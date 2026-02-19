@@ -3,8 +3,8 @@ const PaymentGetWay_History = () => {
   return (
     // <div className="min-h-screen bg-white font-sans text-[12px] text-gray-800">
     //   {/* 2. Main Report Container */}
-    //   <div className="m-2 border border-[#1a8a81] shadow-sm">
-    //     <div className="bg-[#1a8a81] text-white px-3 py-1 font-semibold text-sm">
+    //   <div className="m-2 border border-[#0A2478] shadow-sm">
+    //     <div className="bg-[#0A2478] text-white px-3 py-1 font-semibold text-sm">
     //       Payment Log
     //     </div>
 
@@ -43,7 +43,7 @@ const PaymentGetWay_History = () => {
 
     //       {/* Branch Selection Box */}
     //       <fieldset className="border border-gray-200 p-2 relative max-w-2xl">
-    //         <legend className="px-2 text-[#1a8a81] font-bold">
+    //         <legend className="px-2 text-[#0A2478] font-bold">
     //           Select Branch
     //         </legend>
     //         <div className="flex items-center gap-2 mb-2 ml-2">
@@ -142,83 +142,90 @@ const PaymentGetWay_History = () => {
     <div className="min-h-screen bg-gray-50 p-4 font-sans text-gray-800">
       {/* 🟦 Top Header & Control Bar */}
       <div className="flex justify-center mt-2 mb-4">
-        <div className="flex flex-col w-full max-w-[1400px] rounded-[11px] border border-gray-200 shadow-sm bg-white overflow-hidden">
+        <div className="flex flex-col w-full max-w-[1400px] rounded-[11px] border border-gray-200 shadow-sm bg-white overflow-hidden mx-auto my-5">
 
-          {/* Upper Section: Title */}
-          <div className="flex items-center justify-between px-6 py-3 border-b border-gray-100 bg-white">
-            <h2 className="text-[#1a8a81] font-bold text-[18px] whitespace-nowrap uppercase tracking-tight">
-              Payment Log Report
-            </h2>
-            <div className="flex gap-2">
-              <button className="p-1.5 bg-gray-50 border rounded hover:bg-gray-100 transition-colors">🖨️</button>
-              <button className="p-1.5 bg-gray-50 border rounded hover:bg-gray-100 text-green-700 transition-colors">📊</button>
-              <button className="p-1.5 bg-gray-50 border rounded hover:bg-gray-100 text-red-600 transition-colors">📄</button>
+          {/* Header Section: Title + Date Filters + Buttons */}
+          <div className="flex items-center justify-between px-6 py-4 border-b border-gray-100 bg-white gap-4">
+
+            {/* Left: Title */}
+            <div className="flex-shrink-0">
+              <h2 className="text-red-600 font-bold text-[18px] whitespace-nowrap uppercase tracking-tight">
+                Payment Log Report
+              </h2>
+            </div>
+
+            {/* Right: Controls Cluster */}
+            <div className="flex items-center gap-6">
+              {/* Date & Status Group */}
+              <div className="flex items-center gap-4">
+                <div className="flex flex-col">
+                  <label className="text-[10px] font-bold text-gray-400 uppercase mb-1">From Date</label>
+                  <input type="date" className="border border-gray-300 rounded p-1.5 text-[11px] outline-none w-32 focus:border-[#0A2478]" />
+                </div>
+
+                <div className="flex flex-col">
+                  <label className="text-[10px] font-bold text-gray-400 uppercase mb-1">To Date</label>
+                  <input type="date" className="border border-gray-300 rounded p-1.5 text-[11px] outline-none w-32 focus:border-[#0A2478]" />
+                </div>
+
+                <div className="flex flex-col">
+                  <label className="text-[10px] font-bold text-gray-400 uppercase mb-1">Status</label>
+                  <select className="border border-gray-300 p-1.5 rounded text-[11px] w-32 bg-white outline-none focus:border-[#0A2478]">
+                    <option>ALL</option>
+                    <option>Success</option>
+                    <option>Pending</option>
+                    <option>Failed</option>
+                  </select>
+                </div>
+              </div>
+
+              {/* Action Buttons Group */}
+              <div className="flex items-center gap-2 pt-4"> {/* pt-4 aligns buttons with input bottom */}
+                <button className="h-[34px] px-6 rounded bg-[#0A2478] text-white text-[12px] font-bold hover:bg-[#071d45] transition-all shadow-sm uppercase">
+                  View Log
+                </button>
+                <div className="flex gap-1">
+                  <button className="w-8 h-[34px] flex items-center justify-center bg-gray-50 border rounded hover:bg-gray-100" title="Print">🖨️</button>
+                  <button className="w-8 h-[34px] flex items-center justify-center bg-gray-50 border rounded hover:bg-gray-100 text-green-700" title="Export Excel">📊</button>
+                  <button className="w-8 h-[34px] flex items-center justify-center bg-gray-50 border rounded hover:bg-gray-100 text-red-600" title="Export PDF">📄</button>
+                </div>
+              </div>
             </div>
           </div>
 
-          {/* Lower Section: Multi-Row Filters */}
-          <div className="p-6 bg-gray-50/50">
-            <div className="flex flex-wrap items-start gap-8">
-
-              {/* Date & Status Controls */}
-              <div className="space-y-4">
-                <div className="flex items-center gap-6">
-                  <div className="flex flex-col gap-1">
-                    <label className="text-[10px] font-bold text-gray-400 uppercase">From Date</label>
-                    <div className="flex border border-gray-300 rounded overflow-hidden bg-white">
-                      <input type="text" defaultValue="01/04/2025" className="p-1.5 text-[11px] outline-none w-28" />
-                      <button className="bg-[#8b4513] text-white px-2 text-[10px]">📅</button>
-                    </div>
-                  </div>
-
-                  <div className="flex flex-col gap-1">
-                    <label className="text-[10px] font-bold text-gray-400 uppercase">To Date</label>
-                    <div className="flex border border-gray-300 rounded overflow-hidden bg-white">
-                      <input type="text" defaultValue="27/01/2026" className="p-1.5 text-[11px] outline-none w-28" />
-                      <button className="bg-[#8b4513] text-white px-2 text-[10px]">📅</button>
-                    </div>
-                  </div>
-
-                  <div className="flex flex-col gap-1">
-                    <label className="text-[10px] font-bold text-gray-400 uppercase">Status</label>
-                    <select className="border border-gray-300 p-1.5 rounded text-[11px] w-32 bg-white outline-none focus:border-[#1a8a81]">
-                      <option>ALL</option>
-                      <option>Success</option>
-                      <option>Pending</option>
-                      <option>Failed</option>
-                    </select>
-                  </div>
-                </div>
-
-                <div className="flex gap-2 pt-2">
-                  <button className="h-[34px] px-8 rounded bg-[#005a9c] text-white text-[12px] font-bold hover:bg-[#004a80] transition-all shadow-sm active:scale-95 uppercase">
-                    View Log
-                  </button>
-                  <button className="h-[34px] px-8 rounded bg-white border border-red-200 text-red-600 text-[12px] font-bold hover:bg-red-50 transition-all uppercase">
-                    Exit
-                  </button>
-                </div>
-              </div>
-
-              {/* Branch Selection Box */}
-              <div className="flex-1 max-w-md">
-                <fieldset className="border border-gray-300 rounded-lg p-3 bg-white shadow-inner">
-                  <legend className="px-2 text-[11px] font-bold text-[#1a8a81] uppercase tracking-wider">Select Branch</legend>
-                  <div className="flex items-center gap-2 mb-2 pb-2 border-b border-gray-100">
-                    <input type="checkbox" id="selectAll" className="w-3 h-3 accent-[#1a8a81]" />
-                    <label htmlFor="selectAll" className="text-[11px] font-bold text-gray-600">Select All Branches</label>
-                  </div>
-                  <div className="h-24 overflow-y-auto space-y-1 pr-2 custom-scrollbar">
-                    {["Nashik B3", "Nasikroad B2", "Bhagur B1", "Ozar B4"].map((branch, i) => (
-                      <div key={i} className="flex items-center gap-2 hover:bg-gray-50 p-1 rounded transition-colors">
-                        <input type="checkbox" id={`b${i}`} className="w-3 h-3 accent-[#1a8a81]" />
-                        <label htmlFor={`b${i}`} className="text-[11px] text-gray-700 cursor-pointer">{branch}</label>
+          {/* Lower Section: Horizontal Branch Selection */}
+          <div className=" bg-gray-50/50">
+            <fieldset className=" p-4 bg-white shadow-inner">
+              <div className="flex flex-col gap-4">
+                {/* Select All Row */}
+                <div className="flex items-center gap-2 pb-2 border-b border-gray-100">
+                  <input type="checkbox" id="selectAll" className="w-4 h-4 accent-[#0A2478] cursor-pointer" />
+                  <label htmlFor="selectAll" className="text-[12px] font-bold text-gray-700 cursor-pointer">
+                    Select All Branches
+                  </label>
+                  <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-x-6 gap-y-4">
+                    {["Nashik B3", "Nasikroad B2", "Bhagur B1", "Ozar B4", "Sinnar B5", "Nandgaon B6"].map((branch, i) => (
+                      <div key={i} className="flex items-center gap-2 group">
+                        <input
+                          type="checkbox"
+                          id={`branch-${i}`}
+                          className="w-3.5 h-3.5 accent-[#0A2478] cursor-pointer"
+                        />
+                        <label
+                          htmlFor={`branch-${i}`}
+                          className="text-[11px] text-gray-600 cursor-pointer group-hover:text-[#0A2478] transition-colors whitespace-nowrap"
+                        >
+                          {branch}
+                        </label>
                       </div>
                     ))}
                   </div>
-                </fieldset>
+                </div>
+
+                {/* Branch Checkboxes: Displayed in a line-wise grid */}
+                
               </div>
-            </div>
+            </fieldset>
           </div>
         </div>
       </div>
@@ -229,7 +236,7 @@ const PaymentGetWay_History = () => {
           <div className="overflow-x-auto min-h-[400px]">
             <table className="w-full text-left border-collapse min-w-[1200px]">
               <thead>
-                <tr className="bg-[#e9e4db] text-gray-800 text-[10px] font-bold uppercase tracking-wider">
+                <tr className="bg-[#0A2478] text-gray-100 text-[10px] font-bold uppercase tracking-wider">
                   <th className="border border-gray-300 p-3">Branch Name</th>
                   <th className="border border-gray-300 p-3">Customer Name</th>
                   <th className="border border-gray-300 p-3">Date</th>

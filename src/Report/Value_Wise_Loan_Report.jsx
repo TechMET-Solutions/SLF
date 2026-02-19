@@ -82,110 +82,102 @@ console.log(payload, "payload");
   return (
     <div className="min-h-screen bg-white font-sans text-[12px] text-gray-800">
       {/* 2. Main Content Container */}
-      <div className="m-2 border border-[#1a8a81] shadow-sm">
-        {/* Title Bar matching image_4d297a.png */}
-        <div className="bg-[#1a8a81] text-white px-3 py-1 font-semibold text-sm">
-          Valuer Wise Loan Report
-        </div>
+      <div className="m-2 ">
 
-        {/* Filter Section */}
-        <div className="p-4 bg-white border-b border-gray-200">
-          <div className="flex flex-wrap items-center gap-x-12 gap-y-4">
-            {/* From Date */}
-            <div className="flex items-center gap-2">
-              <label className="text-gray-600 min-w-[60px]">From Date</label>
-              <div className="flex border border-gray-300">
-                <input
-                  type="date"
-                  value={fromDate}
-                  onChange={(e) => setFromDate(e.target.value)}
-                  className="w-32 px-2 py-0.5 outline-none bg-white"
-                />
+        <div className="flex justify-center my-5 px-4">
+          <div className="flex items-center justify-between px-6 py-2 w-full max-w-[1290px] min-h-[70px] rounded-[11px] border border-gray-200 shadow-sm bg-white gap-4">
+
+            {/* 🔴 Left — Title */}
+            <div className="flex-shrink-0">
+              <h2 className="text-red-600 font-bold text-[18px] whitespace-nowrap">
+                Valuer Wise Loan Report
+              </h2>
+            </div>
+
+            {/* 🔵 Right — Controls & Buttons (All in one line) */}
+            <div className="flex items-center gap-4 flex-grow justify-end">
+
+              {/* Inputs Group */}
+              <div className="flex items-center gap-4 flex-wrap justify-end">
+                {/* From Date */}
+                <div className="flex items-center gap-2">
+                  <label className="text-gray-600 text-sm whitespace-nowrap">From</label>
+                  <input
+                    type="date"
+                    value={fromDate}
+                    onChange={(e) => setFromDate(e.target.value)}
+                    className="border border-gray-300 px-2 py-1 text-sm outline-none rounded-md w-32"
+                  />
+                </div>
+
+                {/* To Date */}
+                <div className="flex items-center gap-2">
+                  <label className="text-gray-600 text-sm whitespace-nowrap">To</label>
+                  <input
+                    type="date"
+                    value={toDate}
+                    onChange={(e) => setToDate(e.target.value)}
+                    className="border border-gray-300 px-2 py-1 text-sm outline-none rounded-md w-32"
+                  />
+                </div>
+
+                {/* Valuer Dropdown */}
+                <div className="flex items-center gap-2">
+                  <label className="text-gray-600 text-sm whitespace-nowrap">Valuer</label>
+                  <select
+                    value={selectedValuer}
+                    onChange={(e) => setSelectedValuer(e.target.value)}
+                    className="border border-gray-300 px-2 py-1 text-sm outline-none rounded-md w-60 bg-white"
+                  >
+                    {valuers.map((val) => (
+                      <option key={val.id} value={val.id}>{val.emp_name}</option>
+                    ))}
+                  </select>
+                </div>
+
+                {/* Branch Dropdown */}
+                <div className="flex items-center gap-2">
+                  <label className="text-gray-800 text-sm whitespace-nowrap">Branch</label>
+                  <select
+                    value={selectedBranch}
+                    onChange={(e) => setSelectedBranch(e.target.value)}
+                    className="border border-gray-300 px-2 py-1 text-sm outline-none rounded-md w-30 bg-white"
+                  >
+                    {branches.map((branch) => (
+                      <option key={branch.id} value={branch.id}>{branch.branch_name}</option>
+                    ))}
+                  </select>
+                </div>
               </div>
-            </div>
 
-            {/* To Date */}
-            <div className="flex items-center gap-2">
-              <label className="text-gray-600 min-w-[50px]">To Date</label>
-              <div className="flex border border-gray-300">
-                <input
-                  type="date"
-                  value={toDate}
-                  onChange={(e) => setToDate(e.target.value)}
-                  className="w-32 px-2 py-0.5 outline-none bg-white"
-                />
+              {/* Buttons Group */}
+              <div className="flex items-center gap-2 flex-shrink-0 ml-2">
+                <button
+                  onClick={handleView}
+                  className="px-3 py-2 rounded bg-[#0A2478] text-white text-[10px] font-bold hover:bg-[#071d45] transition-all"
+                >
+                  VIEW
+                </button>
+                <button
+                  className="px-3 py-2 rounded bg-green-600 text-white text-[10px] font-bold hover:bg-green-700 transition-all"
+                >
+                  EXCEL
+                </button>
+                <button
+                  className="px-3 py-2 rounded bg-red-600 text-white text-[10px] font-bold hover:bg-red-700 transition-all"
+                >
+                  PDF
+                </button>
               </div>
-            </div>
 
-            {/* Valuer Dropdown */}
-            <div className="flex items-center gap-2">
-              <label className="text-gray-600">Valuer</label>
-              <select
-                value={selectedValuer}
-                onChange={(e) => setSelectedValuer(e.target.value)}
-                className="border border-gray-300 px-2 py-0.5 w-48 outline-none focus:border-blue-500 bg-white"
-              >
-                {valuers.map((val) => (
-                  <option key={val.id} value={val.id}>
-                    {val.emp_name}
-                  </option>
-                ))}
-              </select>
-            </div>
-
-            {/* Branch Dropdown */}
-            <div className="flex items-center gap-2">
-              <label className="text-gray-600">Branch</label>
-              <select
-                value={selectedBranch}
-                onChange={(e) => setSelectedBranch(e.target.value)}
-                className="border border-gray-300 px-2 py-0.5 w-48 outline-none focus:border-blue-500 bg-white"
-              >
-                {branches.map((branch) => (
-                  <option key={branch.id} value={branch.id}>
-                    {branch.branch_name}
-                  </option>
-                ))}
-              </select>
-            </div>
-          </div>
-
-          {/* Action Row */}
-          <div className="flex justify-between items-center mt-6 pt-2 border-t border-gray-100">
-            <div className="flex gap-0.5">
-              <button
-  className="bg-[#005a9c] text-white px-10 py-1 flex items-center gap-2 border border-blue-800 hover:bg-blue-700 shadow-sm rounded-sm font-semibold"
-  onClick={handleView}
->
-  💾 View
-</button>
-
-              <button className="bg-[#005a9c] text-white px-10 py-1 flex items-center gap-2 border border-blue-800 hover:bg-red-700 shadow-sm rounded-sm font-semibold">
-                ✖ Exit
-              </button>
-            </div>
-
-            <div className="flex gap-1">
-              <button
-                title="Print"
-                className="p-1 px-2 border border-[#005a9c] bg-[#005a9c] text-white rounded hover:opacity-90"
-              >
-                🖨️
-              </button>
-              <button
-                title="Excel"
-                className="p-1 px-2 border border-[#005a9c] bg-[#005a9c] text-white rounded hover:opacity-90"
-              >
-                📊
-              </button>
             </div>
           </div>
         </div>
-
+      
         {/* 3. Result Table Section */}
-        <div className="bg-white overflow-x-auto">
+        <div className="bg-white overflow-x-auto mx-28">
           <table className="w-full border-collapse text-[10px]">
-            <thead className="bg-[#eeeae3] text-gray-700 font-bold border-b border-gray-300">
+            <thead className="bg-[#0A2478] text-gray-100 font-bold border-b border-gray-300">
               <tr>
                 {[
                   "Sr. No.",
