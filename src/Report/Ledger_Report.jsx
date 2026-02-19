@@ -389,7 +389,7 @@ const Ledger_Report = () => {
           {/* 🟡 Middle — Inline Filters */}
           <div className="flex items-center gap-6 flex-1 justify-center">
             {/* Date Range */}
-            <div className="flex items-center gap-2">
+            {/* <div className="flex items-center gap-2">
               <label className="text-[10px] font-bold text-gray-400 uppercase">Period</label>
               <div className="flex border border-gray-300 rounded overflow-hidden bg-white">
                 <input
@@ -405,22 +405,54 @@ const Ledger_Report = () => {
                   onChange={(e) => setToDate(e.target.value)}
                 />
               </div>
+            </div> */}
+
+            <div className="flex gap-4">
+              <div className="flex flex-col gap-1">
+                <label className="text-[10px] font-bold text-gray-400 uppercase">
+                  Period From
+                </label>
+                <input
+                  type="date"
+                  className="p-1.5 text-[11px] border border-gray-300 rounded bg-white shadow-sm w-[135px]"
+                  value={fromDate}
+                  onChange={(e) => setFromDate(e.target.value)}
+                />
+              </div>
+
+              <div className="flex flex-col gap-1">
+                <label className="text-[10px] font-bold text-gray-400 uppercase">
+                  Period To
+                </label>
+                <input
+                  type="date"
+                  className="p-1.5 text-[11px] border border-gray-300 rounded bg-white shadow-sm w-[135px]"
+                  value={toDate}
+                  onChange={(e) => setToDate(e.target.value)}
+                />
+              </div>
             </div>
+
 
             {/* Ledger Selection */}
             <div className="flex items-center gap-2">
-              <label className="text-[10px] font-bold text-gray-400 uppercase">Ledger</label>
-              <select
-                className="border border-gray-300 p-1.5 rounded text-[11px] min-w-[200px] bg-white outline-none focus:border-[#1a8a81]"
-                value={selectedLedger}
-                onChange={(e) => setSelectedLedger(e.target.value)}
-              >
-                {ledgerList.map((ledger) => (
-                  <option key={ledger.id} value={ledger.id}>
-                    {ledger.name}
-                  </option>
-                ))}
-              </select>
+
+              <div className="flex flex-col gap-1">
+                <label className="text-[10px] font-bold text-gray-400 uppercase">
+                  Ledger
+                </label>
+                <select
+                  className="border border-gray-300 p-1.5 rounded text-[11px] min-w-[200px] bg-white outline-none focus:border-[#1a8a81]"
+                  value={selectedLedger}
+                  onChange={(e) => setSelectedLedger(e.target.value)}
+                >
+                  {ledgerList.map((ledger) => (
+                    <option key={ledger.id} value={ledger.id}>
+                      {ledger.name}
+                    </option>
+                  ))}
+                </select>
+              </div>
             </div>
           </div>
 
@@ -432,8 +464,11 @@ const Ledger_Report = () => {
             >
               View
             </button>
-            <button className="p-2 bg-gray-50 border border-gray-200 rounded hover:bg-gray-100 text-gray-600 transition-all">
-              🖨️
+            <button className="w-[100px] h-[34px] rounded bg-green-600 text-white text-[12px] font-bold hover:bg-green-700 transition-all shadow-sm active:scale-95 uppercase tracking-wider">
+              Excel
+            </button>
+            <button className="w-[100px] h-[34px] rounded bg-red-600 text-white text-[12px] font-bold hover:bg-red-700 transition-all shadow-sm active:scale-95 uppercase tracking-wider">
+              PDF
             </button>
           </div>
         </div>

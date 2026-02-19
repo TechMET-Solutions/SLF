@@ -183,74 +183,89 @@ const [loading, setLoading] = useState(false);
   // ];
 
   return (
+
     <div className="min-h-screen bg-white font-sans text-[12px] text-gray-800 p-2">
-      <div className="border border-[#1a8a81] shadow-sm">
-        {/* Header Title */}
-        <div className="bg-[#1a8a81] text-white px-3 py-1.5 font-semibold text-[13px]">
-          Loan Risk Report [Margin]
-        </div>
+      <div className="">
 
-        {/* Filters Area */}
-        <div className="p-4 bg-white border-b border-gray-200">
-          <div className="flex flex-wrap items-center gap-x-10 gap-y-4">
-            <div className="flex items-center gap-2">
-              <label>As On</label>
-              <input
-                type="date"
-                value={asOnDate}
-                onChange={(e) => setAsOnDate(e.target.value)}
-                className="border border-gray-300 px-2 py-1 outline-none rounded-sm"
-              />
+        <div className="flex justify-center my-5 px-4">
+          <div className="flex items-center justify-between px-6 py-4 w-full max-w-[1290px] min-h-[70px] rounded-[11px] border border-gray-200 shadow-sm bg-white gap-6">
+
+            {/* 🔴 Left — Title */}
+            <div className="flex-shrink-0">
+              <h2 className="text-red-600 font-bold text-[18px] whitespace-nowrap">
+                Loan Risk Report [Margin]
+              </h2>
             </div>
 
-            <div className="flex items-center gap-2">
-              <label>Schemes</label>
-              <select
-                value={selectedScheme}
-                onChange={(e) => setSelectedScheme(e.target.value)}
-                className="border border-gray-300 px-2 py-1 min-w-[180px] outline-none rounded-sm"
-              >
-                {loadingSchemes ? (
-                  <option>Loading...</option>
-                ) : (
-                  schemes.map((scheme) => (
-                    <option key={scheme.id} value={scheme.id}>
-                      {scheme.schemeName}
-                    </option>
-                  ))
-                )}
-              </select>
-            </div>
+            {/* 🔵 Right — Controls & Buttons */}
+            <div className="flex flex-grow items-center justify-end gap-6">
 
-            <div className="flex items-center gap-2">
-              <label>Margin ( % )</label>
-              <input
-                type="text"
-                value={margin}
-                onChange={(e) => setMargin(e.target.value)}
-                className="border border-gray-300 px-2 py-1 w-16 outline-none rounded-sm"
-              />
-            </div>
-          </div>
+              {/* Inputs Group */}
+              <div className="flex items-center gap-6 text-[14px] font-medium text-gray-700">
+                <div className="flex items-center gap-2">
+                  <label className="whitespace-nowrap">As On</label>
+                  <input
+                    type="date"
+                    value={asOnDate}
+                    onChange={(e) => setAsOnDate(e.target.value)}
+                    className="border border-gray-300 px-2 py-1 outline-none rounded-md focus:ring-1 focus:ring-blue-500"
+                  />
+                </div>
 
-          <div className="flex gap-1 mt-6">
-            <button
-              className="bg-[#005a9c] text-white px-10 py-1 border border-blue-900 hover:bg-blue-700"
-              onClick={handleView}
-            >
-              View
-            </button>
-            <button className="bg-[#005a9c] text-white px-10 py-1 border border-blue-900 hover:bg-blue-700">
-              Exit
-            </button>
+                <div className="flex items-center gap-2">
+                  <label className="whitespace-nowrap">Schemes</label>
+                  <select
+                    value={selectedScheme}
+                    onChange={(e) => setSelectedScheme(e.target.value)}
+                    className="border border-gray-300 px-2 py-1 min-w-[160px] outline-none rounded-md focus:ring-1 focus:ring-blue-500 bg-transparent"
+                  >
+                    {loadingSchemes ? (
+                      <option>Loading...</option>
+                    ) : (
+                      schemes.map((scheme) => (
+                        <option key={scheme.id} value={scheme.id}>
+                          {scheme.schemeName}
+                        </option>
+                      ))
+                    )}
+                  </select>
+                </div>
+
+                <div className="flex items-center gap-2">
+                  <label className="whitespace-nowrap">Margin (%)</label>
+                  <input
+                    type="text"
+                    value={margin}
+                    onChange={(e) => setMargin(e.target.value)}
+                    className="border border-gray-300 px-2 py-1 w-16 outline-none rounded-md focus:ring-1 focus:ring-blue-500"
+                  />
+                </div>
+              </div>
+
+              {/* Buttons Group */}
+              <div className="flex items-center gap-2 flex-shrink-0">
+                <button
+                  onClick={handleView}
+                  className="w-[75px] h-[32px] rounded bg-[#0A2478] text-white text-[12px] font-bold hover:bg-[#071d45] transition-all shadow-sm"
+                >
+                  VIEW
+                </button>
+                <button
+                  className="w-[75px] h-[32px] rounded bg-red-600 text-white text-[12px] font-bold hover:bg-red-700 transition-all shadow-sm"
+                >
+                  PDF
+                </button>
+              </div>
+
+            </div>
           </div>
         </div>
 
         {/* Table Section */}
-        <div className="overflow-x-auto">
+        <div className="overflow-x-auto mx-28">
           <table className="w-full border-collapse border border-gray-300">
             <thead>
-              <tr className="bg-[#e8ded1] text-gray-700">
+              <tr className="bg-[#0A2478] text-white">
                 <th className="border border-gray-400 p-1 font-bold whitespace-nowrap">
                   S.No.
                 </th>

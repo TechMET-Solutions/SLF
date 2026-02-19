@@ -157,7 +157,7 @@ const Day_Book = () => {
 
   return (
     <div className="min-h-screen bg-white font-sans text-[12px] p-2">
-      <div className="border border-teal-600 shadow-sm relative">
+      <div className="relative">
         {loading && (
           <div className="absolute inset-0 bg-white/50 flex items-center justify-center z-10">
             <span className="bg-white px-4 py-2 border shadow-sm font-bold animate-pulse">
@@ -166,7 +166,7 @@ const Day_Book = () => {
           </div>
         )}
 
-        <div className="bg-[#1a8a81] text-white px-3 py-1 font-semibold flex justify-between items-center">
+        {/* <div className="bg-[#1a8a81] text-white px-3 py-1 font-semibold flex justify-between items-center">
           <span>Day Book</span>
           <span className="text-[10px] font-normal">
             Financial Year : 2025-2026
@@ -202,7 +202,6 @@ const Day_Book = () => {
           </div>
 
           <div className="flex gap-1 pt-2 border-t">
-            {/* 🔹 View Button calls fetchDayBook */}
             <button
               onClick={fetchDayBook}
               disabled={loading}
@@ -214,19 +213,87 @@ const Day_Book = () => {
               Exit
             </button>
           </div>
+        </div> */}
+
+        <div className="flex justify-center mt-5 px-4">
+          <div className="flex flex-col w-full max-w-[1320px] rounded-[11px] border border-gray-200 shadow-sm bg-white overflow-hidden">
+
+            {/* top Teal Bar (Title & FY) */}
+            {/* <div className="bg-[#1a8a81] text-white px-6 py-2 font-semibold flex justify-between items-center">
+              <span className="text-red-600 font-bold text-[18px] whitespace-nowrap">Day Book</span>
+              <span className="text-[12px] font-normal opacity-90">
+                Financial Year : 2025-2026
+              </span>
+            </div> */}
+
+            {/* Main Header Row */}
+            <div className="flex items-center justify-between px-6 py-4 gap-6">
+
+              <div className="flex-shrink-0">
+                <h2 className="text-red-600 font-bold text-[18px] whitespace-nowrap">
+                  Day Book
+                </h2>
+              </div>
+
+              {/* 1. For Date Input */}
+              <div className="flex items-center gap-2 flex-shrink-0">
+                <label className="font-bold text-gray-700 whitespace-nowrap">For Date</label>
+                <input
+                  type="date"
+                  value={selectedDate}
+                  onChange={(e) => setSelectedDate(e.target.value)}
+                  className="border border-gray-300 rounded px-2 py-1 text-sm outline-none focus:ring-1 focus:ring-teal-500 w-40"
+                />
+              </div>
+
+              {/* 2. Checkboxes (Horizontal Grid) */}
+              <div className="flex flex-wrap items-center gap-x-6 gap-y-2 flex-1 justify-center">
+                {checkboxList.map(({ label, key }) => (
+                  <label
+                    key={key}
+                    className="flex items-center gap-2 cursor-pointer select-none group"
+                  >
+                    <input
+                      type="checkbox"
+                      checked={options[key]}
+                      onChange={() => handleCheckboxChange(key)}
+                      className="accent-[#005a9c] w-4 h-4 cursor-pointer"
+                    />
+                    <span className="text-sm text-gray-700 group-hover:text-black transition-colors">
+                      {label}
+                    </span>
+                  </label>
+                ))}
+              </div>
+
+              {/* 3. Action Buttons */}
+              <div className="flex items-center gap-2 flex-shrink-0">
+                <button
+                  onClick={fetchDayBook}
+                  disabled={loading}
+                  className="bg-[#005a9c] text-white px-6 py-2 rounded text-sm font-semibold hover:bg-blue-800 active:bg-blue-900 disabled:opacity-50 transition-all min-w-[100px]"
+                >
+                  {loading ? "..." : "View"}
+                </button>
+              </div>
+
+            </div>
+          </div>
         </div>
 
         {options.loanApprove && (
-          <div className="p-2 overflow-x-auto border-b border-gray-100">
-            <div className="text-[11px] font-bold mb-0.5 text-gray-700">
-              Bhagur B1 [ 01 ]
-            </div>
-            <div className="text-[#8b4513] font-bold border-b border-gray-300 mb-1 text-[12px]">
-              Loan Approve
+          <div className="overflow-x-auto mt-4  mx-24">
+           
+            <div className="flex items-center gap-2 mb-2 text-[14px] font-bold text-red-600 pb-1">
+              <span>Loan Approve</span>
+              <span className="text-[11px] font-semibold text-gray-700">
+                Bhagur B1 [01]
+              </span>
             </div>
 
-            <table className="w-full border-collapse border border-gray-300 text-[11px]">
-              <thead className="bg-[#f2f2f2] text-left text-gray-700">
+
+            <table className="w-full text-left bt-2 rounded-lg border-collapse min-w-[1500px]">
+              <thead className="bg-[#0A2478] text-white text-xs">
                 <tr>
                   <th className="border border-gray-300 p-1">SNo</th>
                   <th className="border border-gray-300 p-1">Loan No</th>
@@ -255,16 +322,16 @@ const Day_Book = () => {
                       <td className="border border-gray-300 p-1">
                         {item.created_at
                           ? new Date(item.created_at).toLocaleDateString(
-                              "en-GB",
-                            )
+                            "en-GB",
+                          )
                           : "-"}
                       </td>
 
                       <td className="border border-gray-300 p-1">
                         {item.payments_Details?.length
                           ? item.payments_Details
-                              .map((p) => p.paidBy)
-                              .join(", ")
+                            .map((p) => p.paidBy)
+                            .join(", ")
                           : "-"}
                       </td>
 
@@ -303,8 +370,8 @@ const Day_Book = () => {
                       <td className="border border-gray-300 p-1">
                         {item.approval_date
                           ? new Date(item.approval_date).toLocaleDateString(
-                              "en-GB",
-                            )
+                            "en-GB",
+                          )
                           : "-"}
                       </td>
                     </tr>
@@ -367,23 +434,23 @@ const Day_Book = () => {
           />
         )} */}
         {options.loanRepayment && (
-          <div className="mb-6 border border-gray-300 rounded">
-            {/* 🔹 Title */}
+          <div className="mb-6">
 
             {/* 🔹 Table */}
             {options.loanRepayment && (
-              <div className="p-2 overflow-x-auto border-b border-gray-100">
+              <div className="overflow-x-auto mt-4  mx-24">
                 {/* Branch & Section Header */}
-                <div className="text-[10px] font-bold text-gray-600 uppercase tracking-tight">
-                  Bhagur B1 [ 01 ]
-                </div>
-                <div className="text-[#8b4513] font-bold border-b border-gray-300 mb-1 text-[12px] pb-0.5">
-                  Loan Repayment
+                 <div className="flex items-center gap-2 mb-2 text-[14px] font-bold text-red-600  pb-1">
+                  <span> Loan Repayment</span>
+                  <span className="text-[11px] font-semibold text-gray-700">
+                    Bhagur B1 [01]
+                  </span>
                 </div>
 
-                <table className="w-full border-collapse border border-gray-400 text-[11px]">
-                  <thead>
-                    <tr className="bg-[#f2f2f2] text-gray-800">
+
+                <table className="w-full text-left bt-2 rounded-lg border-collapse min-w-[1500px]">
+                  <thead className="bg-[#0A2478] text-white text-xs">
+                    <tr >
                       <th className="border border-gray-400 p-1 font-bold text-center w-8">
                         SNo
                       </th>
@@ -587,166 +654,165 @@ const Day_Book = () => {
           </div>
         )}
 
-       {options.receiptPayment && (
-  <div className="p-2 overflow-x-auto border-b border-gray-100">
-   
-    <div className="text-[10px] font-bold text-gray-600 uppercase">
-      Bhagur B1 [ 01 ]
-    </div>
-    <div className="text-[#8b4513] font-bold border-b border-gray-300 mb-1 text-[12px] pb-0.5">
-      Receipt/Payment
-    </div>
+        {options.receiptPayment && (
+          <div className="overflow-x-auto mt-4  mx-24">
 
-    <table className="w-full border-collapse border border-gray-400 text-[11px]">
-      <thead>
-        <tr className="bg-[#f2f2f2] text-gray-800">
-          <th className="border border-gray-400 p-1 font-bold text-center w-8">SNo</th>
-          {/* <th className="border border-gray-400 p-1 font-bold text-left">Type</th> */}
-          <th className="border border-gray-400 p-1 font-bold text-left">Doc No</th>
-          <th className="border border-gray-400 p-1 font-bold text-center">Doc Date</th>
-          <th className="border border-gray-400 p-1 font-bold text-left">Name</th>
-       
-          <th className="border border-gray-400 p-1 font-bold text-left">Drawn On</th>
-          <th className="border border-gray-400 p-1 font-bold text-left">Drawn Branch</th>
-          <th className="border border-gray-400 p-1 font-bold text-right">Amount</th>
-          <th className="border border-gray-400 p-1 font-bold text-left">Narration</th>
-          <th className="border border-gray-400 p-1 font-bold text-left">Branch At</th>
-          <th className="border border-gray-400 p-1 font-bold text-left">Created By</th>
-        </tr>
-      </thead>
-
-      <tbody className="bg-white">
-        {apiData.receiptPayment?.length === 0 ? (
-          <tr>
-            <td colSpan={13} className="border border-gray-300 text-center py-6 text-gray-400 italic bg-gray-50">
-              No receipt or payment records found for this date.
-            </td>
-          </tr>
-        ) : (
-          apiData.receiptPayment?.map((row, index) => (
-            <tr key={index} className="hover:bg-blue-50 transition-colors">
-              <td className="border border-gray-300 p-1 text-center text-gray-600">{index + 1}</td>
-              {/* <td className="border border-gray-300 p-1 font-medium">{row.trans_Type || row.type || "N/A"}</td> */}
-              <td className="border border-gray-300 p-1 text-blue-900">{row.docNo || row.id}</td>
-           <td className="border border-gray-300 p-1 text-center whitespace-nowrap">
-  {new Date(row.docDate).toLocaleDateString("en-GB")}
-</td>
-
-              <td className="border border-gray-300 p-1 uppercase">{row.partyName || row.name}</td>
             
-              <td className="border border-gray-300 p-1">{row.bankName || "-"}</td>
-              <td className="border border-gray-300 p-1">{row.bankBranch || "-"}</td>
-              <td className="border border-gray-300 p-1 text-right font-bold text-gray-900">
-                {parseFloat(row.totalAmount || row.amount || 0).toFixed(2)}
-              </td>
-              <td className="border border-gray-300 p-1 italic text-gray-600 max-w-[150px] truncate" title={row.remarks || row.narration}>
-                {row.remarks || row.narration || "-"}
-              </td>
-              <td className="border border-gray-300 p-1">Main Branch</td>
-              <td className="border border-gray-300 p-1 text-[10px] text-gray-500">{row.createdBy || "Admin"}</td>
-            </tr>
-          ))
+
+            <div className="flex items-center gap-2 mb-2 text-[14px] font-bold text-red-600 pb-1">
+              <span> Receipt/Payment</span>
+              <span className="text-[11px] font-semibold text-gray-700">
+                Bhagur B1 [01]
+              </span>
+            </div>
+
+            <table className="w-full border-collapse border border-gray-400 text-[11px]">
+              <thead>
+                <tr className="bg-[#0A2478] text-white text-xs">
+                  <th className="border border-gray-400 p-1 font-bold text-center w-8">SNo</th>
+                  {/* <th className="border border-gray-400 p-1 font-bold text-left">Type</th> */}
+                  <th className="border border-gray-400 p-1 font-bold text-left">Doc No</th>
+                  <th className="border border-gray-400 p-1 font-bold text-center">Doc Date</th>
+                  <th className="border border-gray-400 p-1 font-bold text-left">Name</th>
+
+                  <th className="border border-gray-400 p-1 font-bold text-left">Drawn On</th>
+                  <th className="border border-gray-400 p-1 font-bold text-left">Drawn Branch</th>
+                  <th className="border border-gray-400 p-1 font-bold text-right">Amount</th>
+                  <th className="border border-gray-400 p-1 font-bold text-left">Narration</th>
+                  <th className="border border-gray-400 p-1 font-bold text-left">Branch At</th>
+                  <th className="border border-gray-400 p-1 font-bold text-left">Created By</th>
+                </tr>
+              </thead>
+
+              <tbody className="bg-white">
+                {apiData.receiptPayment?.length === 0 ? (
+                  <tr>
+                    <td colSpan={13} className="border border-gray-300 text-center py-6 text-gray-400 italic bg-gray-50">
+                      No receipt or payment records found for this date.
+                    </td>
+                  </tr>
+                ) : (
+                  apiData.receiptPayment?.map((row, index) => (
+                    <tr key={index} className="hover:bg-blue-50 transition-colors">
+                      <td className="border border-gray-300 p-1 text-center text-gray-600">{index + 1}</td>
+                      {/* <td className="border border-gray-300 p-1 font-medium">{row.trans_Type || row.type || "N/A"}</td> */}
+                      <td className="border border-gray-300 p-1 text-blue-900">{row.docNo || row.id}</td>
+                      <td className="border border-gray-300 p-1 text-center whitespace-nowrap">
+                        {new Date(row.docDate).toLocaleDateString("en-GB")}
+                      </td>
+
+                      <td className="border border-gray-300 p-1 uppercase">{row.partyName || row.name}</td>
+
+                      <td className="border border-gray-300 p-1">{row.bankName || "-"}</td>
+                      <td className="border border-gray-300 p-1">{row.bankBranch || "-"}</td>
+                      <td className="border border-gray-300 p-1 text-right font-bold text-gray-900">
+                        {parseFloat(row.totalAmount || row.amount || 0).toFixed(2)}
+                      </td>
+                      <td className="border border-gray-300 p-1 italic text-gray-600 max-w-[150px] truncate" title={row.remarks || row.narration}>
+                        {row.remarks || row.narration || "-"}
+                      </td>
+                      <td className="border border-gray-300 p-1">Main Branch</td>
+                      <td className="border border-gray-300 p-1 text-[10px] text-gray-500">{row.createdBy || "Admin"}</td>
+                    </tr>
+                  ))
+                )}
+              </tbody>
+
+              {/* 🔹 Financial Style Total Footer */}
+              <tfoot>
+                <tr className="bg-[#fff9e6] font-bold text-gray-900">
+                  <td colSpan={9} className="border border-gray-400 px-2 py-1 text-right text-[12px]">
+                    TOTAL:
+                  </td>
+                  <td className="border border-gray-400 px-2 py-1 text-right text-blue-900 underline decoration-double">
+                    {calculateTotal(apiData.receiptPayment, "totalAmount")}
+                  </td>
+                  <td colSpan={3} className="border border-gray-400 bg-gray-100"></td>
+                </tr>
+              </tfoot>
+            </table>
+          </div>
         )}
-      </tbody>
 
-      {/* 🔹 Financial Style Total Footer */}
-      <tfoot>
-        <tr className="bg-[#fff9e6] font-bold text-gray-900">
-          <td colSpan={9} className="border border-gray-400 px-2 py-1 text-right text-[12px]">
-            TOTAL:
-          </td>
-          <td className="border border-gray-400 px-2 py-1 text-right text-blue-900 underline decoration-double">
-            {calculateTotal(apiData.receiptPayment, "totalAmount")}
-          </td>
-          <td colSpan={3} className="border border-gray-400 bg-gray-100"></td>
-        </tr>
-      </tfoot>
-    </table>
-  </div>
-)}
+        {options.journalVoucher && (
+          <div className="overflow-x-auto mt-4  mx-24">
+            {/* Section Header */}
+            <div className="flex items-center gap-2 mb-2 text-[14px] font-bold text-red-600 pb-1">
+              <span> Journal Voucher</span>
+              <span className="text-[11px] font-semibold text-gray-700">
+                Bhagur B1 [01]
+              </span>
+            </div>
 
-       {options.journalVoucher && (
-  <div className="p-2 overflow-x-auto border-b border-gray-100">
-    {/* Section Header */}
-    <div className="text-[10px] font-bold text-gray-600 uppercase tracking-tight">
-      Bhagur B1 [ 01 ]
-    </div>
-    <div className="text-[#8b4513] font-bold border-b border-gray-300 mb-1 text-[12px] pb-0.5">
-      Journal Voucher
-    </div>
+            <table className="w-full text-left bt-2">
+              <thead>
+                <tr className="bg-[#0A2478] text-white text-xs">
+                  <th className="border border-gray-400 p-1 font-bold text-center w-8">SNo</th>
+                  <th className="border border-gray-400 p-1 font-bold text-left">Doc No</th>
+                  <th className="border border-gray-400 p-1 font-bold text-center">Date</th>
+                  {/* <th className="border border-gray-400 p-1 font-bold text-left">Name</th> */}
+                  <th className="border border-gray-400 p-1 font-bold text-right ">Dr Amount</th>
+                  <th className="border border-gray-400 p-1 font-bold text-right ">Cr Amount</th>
+                  <th className="border border-gray-400 p-1 font-bold text-left">Narration</th>
+                  <th className="border border-gray-400 p-1 font-bold text-center">Sign</th>
+                  <th className="border border-gray-400 p-1 font-bold text-left">Branch</th>
+                  <th className="border border-gray-400 p-1 font-bold text-left">Created By</th>
+                </tr>
+              </thead>
 
-    <table className="w-full border-collapse border border-gray-400 text-[11px]">
-      <thead>
-        <tr className="bg-[#f2f2f2] text-gray-800">
-          <th className="border border-gray-400 p-1 font-bold text-center w-8">SNo</th>
-          <th className="border border-gray-400 p-1 font-bold text-left">Doc No</th>
-          <th className="border border-gray-400 p-1 font-bold text-center">Date</th>
-          {/* <th className="border border-gray-400 p-1 font-bold text-left">Name</th> */}
-          <th className="border border-gray-400 p-1 font-bold text-right text-red-800">Dr Amount</th>
-          <th className="border border-gray-400 p-1 font-bold text-right text-green-800">Cr Amount</th>
-          <th className="border border-gray-400 p-1 font-bold text-left">Narration</th>
-          <th className="border border-gray-400 p-1 font-bold text-center">Sign</th>
-          <th className="border border-gray-400 p-1 font-bold text-left">Branch</th>
-          <th className="border border-gray-400 p-1 font-bold text-left">Created By</th>
-        </tr>
-      </thead>
+              <tbody className="bg-white">
+                {apiData.journalVoucher?.length === 0 ? (
+                  <tr>
+                    <td colSpan={10} className="border border-gray-300 text-center py-6 text-gray-400 italic bg-gray-50">
+                      No journal vouchers found for this date.
+                    </td>
+                  </tr>
+                ) : (
+                  apiData.journalVoucher?.map((row, index) => (
+                    <tr key={index} className="hover:bg-blue-50 transition-colors">
+                      <td className="border border-gray-300 p-1 text-center text-gray-600">{index + 1}</td>
+                      <td className="border border-gray-300 p-1 text-blue-900 font-medium">{row.doc_No || row.id}</td>
+                      <td className="border border-gray-300 p-1 text-center whitespace-nowrap">
+                        {new Date(row.doc_Date || row.voucherDate).toLocaleDateString("en-GB")}
+                      </td>
 
-      <tbody className="bg-white">
-        {apiData.journalVoucher?.length === 0 ? (
-          <tr>
-            <td colSpan={10} className="border border-gray-300 text-center py-6 text-gray-400 italic bg-gray-50">
-              No journal vouchers found for this date.
-            </td>
-          </tr>
-        ) : (
-          apiData.journalVoucher?.map((row, index) => (
-            <tr key={index} className="hover:bg-blue-50 transition-colors">
-              <td className="border border-gray-300 p-1 text-center text-gray-600">{index + 1}</td>
-              <td className="border border-gray-300 p-1 text-blue-900 font-medium">{row.doc_No || row.id}</td>
-             <td className="border border-gray-300 p-1 text-center whitespace-nowrap">
-  {new Date(row.doc_Date || row.voucherDate).toLocaleDateString("en-GB")}
-</td>
+                      {/* <td className="border border-gray-300 p-1 uppercase font-medium">{row.party_Name || row.name || "-"}</td> */}
+                      <td className="border border-gray-300 p-1 text-right font-semibold">
+                        {parseFloat(row.dr_Amount || row.debitAmount || 0).toFixed(2)}
+                      </td>
+                      <td className="border border-gray-300 p-1 text-right font-semibold">
+                        {parseFloat(row.cr_Amount || row.creditAmount || 0).toFixed(2)}
+                      </td>
+                      <td className="border border-gray-300 p-1 italic text-gray-600 max-w-[200px] truncate" title={row.narration}>
+                        {row.narration || "-"}
+                      </td>
+                      <td className="border border-gray-300 p-1 text-center text-gray-300 italic">______</td>
+                      <td className="border border-gray-300 p-1">{row.branch_Name || row.branch || "Main"}</td>
+                      <td className="border border-gray-300 p-1 text-[10px] text-gray-500 uppercase">{row.created_By || row.createdBy}</td>
+                    </tr>
+                  ))
+                )}
+              </tbody>
 
-              {/* <td className="border border-gray-300 p-1 uppercase font-medium">{row.party_Name || row.name || "-"}</td> */}
-              <td className="border border-gray-300 p-1 text-right font-semibold">
-                {parseFloat(row.dr_Amount || row.debitAmount || 0).toFixed(2)}
-              </td>
-              <td className="border border-gray-300 p-1 text-right font-semibold">
-                {parseFloat(row.cr_Amount || row.creditAmount || 0).toFixed(2)}
-              </td>
-              <td className="border border-gray-300 p-1 italic text-gray-600 max-w-[200px] truncate" title={row.narration}>
-                {row.narration || "-"}
-              </td>
-              <td className="border border-gray-300 p-1 text-center text-gray-300 italic">______</td>
-              <td className="border border-gray-300 p-1">{row.branch_Name || row.branch || "Main"}</td>
-              <td className="border border-gray-300 p-1 text-[10px] text-gray-500 uppercase">{row.created_By || row.createdBy}</td>
-            </tr>
-          ))
+              {/* 🔹 Accounting Total Footer */}
+              <tfoot>
+                <tr className="bg-[#fff9e6] font-bold text-gray-900">
+                  <td colSpan={4} className="border border-gray-400 px-2 py-1 text-right text-[12px]">
+                    VOUCHER TOTAL:
+                  </td>
+                  <td className="border border-gray-400 px-2 py-1 text-right text-red-900">
+                    {calculateTotal(apiData.journalVoucher, "dr_Amount")}
+                  </td>
+                  <td className="border border-gray-400 px-2 py-1 text-right text-green-900">
+                    {calculateTotal(apiData.journalVoucher, "cr_Amount")}
+                  </td>
+                  <td colSpan={4} className="border border-gray-400 bg-gray-100"></td>
+                </tr>
+              </tfoot>
+            </table>
+          </div>
         )}
-      </tbody>
-
-      {/* 🔹 Accounting Total Footer */}
-      <tfoot>
-        <tr className="bg-[#fff9e6] font-bold text-gray-900">
-          <td colSpan={4} className="border border-gray-400 px-2 py-1 text-right text-[12px]">
-            VOUCHER TOTAL:
-          </td>
-          <td className="border border-gray-400 px-2 py-1 text-right text-red-900">
-            {calculateTotal(apiData.journalVoucher, "dr_Amount")}
-          </td>
-          <td className="border border-gray-400 px-2 py-1 text-right text-green-900">
-            {calculateTotal(apiData.journalVoucher, "cr_Amount")}
-          </td>
-          <td colSpan={4} className="border border-gray-400 bg-gray-100"></td>
-        </tr>
-      </tfoot>
-    </table>
-  </div>
-)}
       </div>
-      <footer className="text-center text-[10px] text-gray-400 mt-4">
-        © Copyright Maraekat Infotech Ltd, 2015. All rights reserved.
-      </footer>
     </div>
   );
 };

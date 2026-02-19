@@ -135,222 +135,204 @@ const BankBookReport = () => {
     }
   };
 
+  useEffect(() => {
+    const closeAllDropdowns = () => {
+      setIsBankDropdownOpen(false);
+      setIsPaymentDropdownOpen(false);
+      setIsPaymentModeDropdownOpen(false);
+    };
+
+    document.addEventListener("click", (e) => {
+      // Agar click dropdown button ya list par nahi hai, toh band kar do
+      if (!e.target.closest(".relative")) {
+        closeAllDropdowns();
+      }
+    });
+
+    return () => document.removeEventListener("click", closeAllDropdowns);
+  }, []);
+
   return (
-    <div className="min-h-screen bg-gray-100 text-sm">
-      <div className="m-4 border border-teal-600 bg-white">
-        <div className="bg-teal-700 text-white p-2 font-semibold">
-          Bank Book
-        </div>
+    <div className="min-h-screen text-sm">
 
-        <div className="p-4">
-          {/* Date Inputs */}
-          <div className="flex gap-8 mb-4 items-center">
-            <div className="flex items-center gap-2">
-              <label>From Date</label>
-              <input
-                type="date"
-                value={fromDate}
-                onChange={(e) => setFromDate(e.target.value)}
-                className="border p-1 w-40"
-              />
-            </div>
+      <div className="flex justify-center mt-5 px-4">
+        <div className="flex items-center justify-between px-6 py-4 w-full max-w-[1290px] min-h-[80px] rounded-[11px] border border-gray-200 shadow-sm bg-white gap-4">
 
-            <div className="flex items-center gap-2">
-              <label>To Date</label>
-              <input
-                type="date"
-                value={toDate}
-                onChange={(e) => setToDate(e.target.value)}
-                className="border p-1 w-40"
-              />
-            </div>
+          {/* 1. Title */}
+          <div className="flex-shrink-0">
+            <h2 className="text-red-600 font-bold text-[18px] whitespace-nowrap">
+              Bank Book
+            </h2>
           </div>
 
-          {/* Bank Selection */}
+          {/* 2. Content Area (Dates + Dropdowns + Button) */}
+          <div className="flex flex-1 items-center justify-between gap-4">
 
-          {/* Bank Multi Select Dropdown */}
-          <div className="relative mb-4">
-            <label className="block font-bold text-teal-700 mb-1">
-              Select Bank
-            </label>
+            {/* Date Range Group */}
+            <div className="flex items-center gap-3">
+              <div className="flex items-center gap-2">
+                <label className="text-sm font-semibold whitespace-nowrap">From</label>
+                <input
+                  type="date"
+                  value={fromDate}
+                  onChange={(e) => setFromDate(e.target.value)}
+                  className="border rounded p-1 text-sm w-36 focus:ring-1 focus:ring-blue-400 outline-none"
+                />
+              </div>
+              <div className="flex items-center gap-2">
+                <label className="text-sm font-semibold whitespace-nowrap">To</label>
+                <input
+                  type="date"
+                  value={toDate}
+                  onChange={(e) => setToDate(e.target.value)}
+                  className="border rounded p-1 text-sm w-36 focus:ring-1 focus:ring-blue-400 outline-none"
+                />
+              </div>
+            </div>
 
-            {/* Dropdown Button */}
-            <div
-              onClick={() => {
-                if (!isCashSelected) {
-                  setIsBankDropdownOpen(!isBankDropdownOpen);
-                }
-              }}
-              className={`border rounded px-3 py-2 min-h-[40px] flex flex-wrap gap-2
-    ${
-      isCashSelected
-        ? "bg-gray-100 cursor-not-allowed opacity-60"
-        : "cursor-pointer bg-white"
-    }`}
-            >
-              {isCashSelected ? (
-                <span className="text-gray-400">
-                  Bank not applicable for Cash
-                </span>
-              ) : selectedBanks.length === 0 ? (
-                <span className="text-gray-400">Select Banks</span>
-              ) : (
-                selectedBanks.map((bank) => (
-                  <span
-                    key={bank}
-                    className="bg-teal-600 text-white text-xs px-2 py-1 rounded"
-                  >
-                    {bank}
-                  </span>
-                ))
+            {/* Select Bank */}
+            <div className="relative flex-1 max-w-[200px]">
+              <div
+                // onClick={() => !isCashSelected && setIsBankDropdownOpen(!isBankDropdownOpen)}
+                onClick={() => {
+                  if (!isCashSelected) {
+                    // Bank kholte waqt Payment aur Mode ko band karo
+                    setIsBankDropdownOpen(!isBankDropdownOpen);
+                    setIsPaymentDropdownOpen(false);
+                    setIsPaymentModeDropdownOpen(false);
+                  }
+                }}
+                className={`border rounded px-3 py-1.5 text-sm min-h-[38px] flex items-center flex-wrap gap-1 ${isCashSelected ? "bg-gray-100 cursor-not-allowed" : "cursor-pointer bg-white"
+                  }`}
+              >
+                {isCashSelected ? (
+                  <span className="text-gray-400 text-xs">N/A (Cash)</span>
+                ) : selectedBanks.length === 0 ? (
+                  <span className="text-gray-400">Select Bank</span>
+                ) : (
+                  selectedBanks.map((bank) => (
+                    <span key={bank} className="bg-teal-600 text-white text-[10px] px-2 py-0.5 rounded">
+                      {bank}
+                    </span>
+                  ))
+                )}
+              </div>
+              {/* Bank Dropdown List */}
+              {isBankDropdownOpen && (
+                <div className="absolute z-30 bg-white border w-full max-h-48 overflow-y-auto mt-1 rounded shadow-lg">
+                  {banks.map((bank) => (
+                    <label key={bank.id} className="flex items-center gap-2 px-3 py-1.5 hover:bg-gray-100 cursor-pointer text-sm">
+                      <input
+                        type="checkbox"
+                        checked={selectedBanks.includes(bank.bank_name)}
+                        onChange={() => handleBankSelect(bank.bank_name)}
+                      />
+                      {bank.bank_name}
+                    </label>
+                  ))}
+                </div>
               )}
             </div>
 
-            {/* Dropdown List */}
-            {isBankDropdownOpen && (
-              <div className="absolute z-10 bg-white border w-full max-h-60 overflow-y-auto mt-1 rounded shadow">
-                {banks.map((bank) => (
-                  <label
-                    key={bank.id}
-                    className="flex items-center gap-2 px-3 py-2 hover:bg-gray-100 cursor-pointer"
-                  >
-                    <input
-                      type="checkbox"
-                      checked={selectedBanks.includes(bank.bank_name)}
-                      onChange={() => handleBankSelect(bank.bank_name)}
-                    />
-                    <span>{bank.bank_name}</span>
-                  </label>
-                ))}
-              </div>
-            )}
-          </div>
-
-          {/* Buttons */}
-
-          <div className="flex gap-4 mb-6">
-            {/* <div className="flex gap-2 mb-6">
-              <button
-                onClick={handleViewReport}
-                className="bg-[#005a9c] text-white px-6 py-1 rounded"
+            {/* Payment Type */}
+            <div className="relative flex-1 max-w-[180px]">
+              <div
+                // onClick={() => setIsPaymentDropdownOpen(!isPaymentDropdownOpen)}
+                onClick={() => {
+                  // Payment kholte waqt Bank aur Mode ko band karo
+                  setIsPaymentDropdownOpen(!isPaymentDropdownOpen);
+                  setIsBankDropdownOpen(false);
+                  setIsPaymentModeDropdownOpen(false);
+                }}
+                className="border rounded px-3 py-1.5 text-sm cursor-pointer bg-white flex items-center flex-wrap gap-1 min-h-[38px]"
               >
-                View
-              </button>
-            </div> */}
-            {/* Payment Type Multi Select */}
-            <div className="flex items-end gap-6 mb-6">
-              {/* View Button */}
-              <button
-                onClick={handleViewReport}
-                className="bg-[#005a9c] text-white px-6 py-2 rounded h-[40px]"
-              >
-                View
-              </button>
-
-              {/* Payment Type Multi Select */}
-              <div className="relative w-64">
-                <label className="block font-bold text-teal-700 mb-1">
-                  Payment Type
-                </label>
-
-                {/* Dropdown Button */}
-                <div
-                  onClick={() =>
-                    setIsPaymentDropdownOpen(!isPaymentDropdownOpen)
-                  }
-                  className="border rounded px-3 py-2 cursor-pointer bg-white flex flex-wrap gap-2 min-h-[40px]"
-                >
-                  {paymentTypes.length === 0 ? (
-                    <span className="text-gray-400">Select Payment Type</span>
-                  ) : (
-                    paymentTypes.map((type) => (
-                      <span
-                        key={type}
-                        className="bg-purple-600 text-white text-xs px-2 py-1 rounded"
-                      >
-                        {type}
-                      </span>
-                    ))
-                  )}
-                </div>
-
-                {/* Dropdown List */}
-                {isPaymentDropdownOpen && (
-                  <div className="absolute z-20 bg-white border w-full mt-1 rounded shadow">
-                    {PAYMENT_OPTIONS.map((type) => (
-                      <label
-                        key={type}
-                        className="flex items-center gap-2 px-3 py-2 hover:bg-gray-100 cursor-pointer"
-                      >
-                        <input
-                          type="checkbox"
-                          checked={paymentTypes.includes(type)}
-                          onChange={() => handlePaymentTypeSelect(type)}
-                        />
-                        <span>{type}</span>
-                      </label>
-                    ))}
-                  </div>
+                {paymentTypes.length === 0 ? (
+                  <span className="text-gray-400">Payment Type</span>
+                ) : (
+                  paymentTypes.map((type) => (
+                    <span key={type} className="bg-purple-600 text-white text-[10px] px-2 py-0.5 rounded">
+                      {type}
+                    </span>
+                  ))
                 )}
               </div>
-
-              <div className="relative w-64">
-                <label className="block font-bold text-teal-700 mb-1">
-                  Payment Mode
-                </label>
-
-                {/* Dropdown Button */}
-                <div
-                  onClick={() =>
-                    setIsPaymentModeDropdownOpen(!isPaymentModeDropdownOpen)
-                  }
-                  className="border rounded px-3 py-2 cursor-pointer bg-white flex flex-wrap gap-2 min-h-[40px]"
-                >
-                  {paymentModeTypes.length === 0 ? (
-                    <span className="text-gray-400">Select Payment Mode</span>
-                  ) : (
-                    paymentModeTypes.map((type) => (
-                      <span
-                        key={type}
-                        className="bg-purple-600 text-white text-xs px-2 py-1 rounded"
-                      >
-                        {type}
-                      </span>
-                    ))
-                  )}
+              {isPaymentDropdownOpen && (
+                <div className="absolute z-30 bg-white border w-full mt-1 rounded shadow-lg">
+                  {PAYMENT_OPTIONS.map((type) => (
+                    <label key={type} className="flex items-center gap-2 px-3 py-1.5 hover:bg-gray-100 cursor-pointer text-sm">
+                      <input
+                        type="checkbox"
+                        checked={paymentTypes.includes(type)}
+                        onChange={() => handlePaymentTypeSelect(type)}
+                      />
+                      {type}
+                    </label>
+                  ))}
                 </div>
-
-                {/* Dropdown List */}
-                {isPaymentModeDropdownOpen && (
-                  <div className="absolute z-20 bg-white border w-full mt-1 rounded shadow">
-                    {PAYMENT_TYPE.map((type) => (
-                      <label
-                        key={type}
-                        className="flex items-center gap-2 px-3 py-2 hover:bg-gray-100 cursor-pointer"
-                      >
-                        <input
-                          type="checkbox"
-                          checked={paymentModeTypes.includes(type)}
-                          onChange={() => handlePaymentModeTypeSelect(type)}
-                        />
-                        <span>{type}</span>
-                      </label>
-                    ))}
-                  </div>
-                )}
-              </div>
+              )}
             </div>
-          </div>
 
+            {/* Payment Mode */}
+            <div className="relative flex-1 max-w-[180px]">
+              <div
+                // onClick={() => setIsPaymentModeDropdownOpen(!isPaymentModeDropdownOpen)}
+                onClick={() => {
+                  // Mode kholte waqt Bank aur Payment ko band karo
+                  setIsPaymentModeDropdownOpen(!isPaymentModeDropdownOpen);
+                  setIsBankDropdownOpen(false);
+                  setIsPaymentDropdownOpen(false);
+                }}
+                className="border rounded px-3 py-1.5 text-sm cursor-pointer bg-white flex items-center flex-wrap gap-1 min-h-[38px]"
+              >
+                {paymentModeTypes.length === 0 ? (
+                  <span className="text-gray-400">Payment Mode</span>
+                ) : (
+                  paymentModeTypes.map((type) => (
+                    <span key={type} className="bg-purple-600 text-white text-[10px] px-2 py-0.5 rounded">
+                      {type}
+                    </span>
+                  ))
+                )}
+              </div>
+              {isPaymentModeDropdownOpen && (
+                <div className="absolute z-30 bg-white border w-full mt-1 rounded shadow-lg">
+                  {PAYMENT_TYPE.map((type) => (
+                    <label key={type} className="flex items-center gap-2 px-3 py-1.5 hover:bg-gray-100 cursor-pointer text-sm">
+                      <input
+                        type="checkbox"
+                        checked={paymentModeTypes.includes(type)}
+                        onChange={() => handlePaymentModeTypeSelect(type)}
+                      />
+                      {type}
+                    </label>
+                  ))}
+                </div>
+              )}
+            </div>
+
+            {/* View Button */}
+            <button
+              onClick={handleViewReport}
+              className="bg-[#005a9c] hover:bg-[#004a80] text-white px-5 py-2 rounded text-sm font-semibold transition-colors flex-shrink-0"
+            >
+              View
+            </button>
+
+          </div>
+        </div>
+      </div>
+
+      <div className="overflow-x-auto mt-6 mx-28">
+        
           {/* Table */}
-          <table className="w-full border-collapse border border-gray-300">
-            <thead>
-              <tr className="bg-gray-100 text-left">
-                <th className="border p-2">Date</th>
+        <table className="w-full text-left  rounded-lg border-collapse max-w-3xl">
+          <thead className="bg-[#0A2478] text-white text-xs">
+              <tr >
+                <th className="border p-2 w-[120px]">Date</th>
                 <th className="border p-2">Particulars</th>
                 <th className="border p-2">Deposite</th>
                 <th className="border p-2">Withdrawal</th>
-                <th className="border p-2">Running Total</th>
+              <th className="border p-2 w-[120px]">Running Total</th>
               </tr>
             </thead>
             <tbody>
@@ -380,7 +362,6 @@ const BankBookReport = () => {
           </table>
         </div>
       </div>
-    </div>
   );
 };
 

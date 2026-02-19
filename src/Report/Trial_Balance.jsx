@@ -615,23 +615,34 @@ useEffect(() => {
           {/* 🟡 Middle — Inline Filters & Configuration */}
           <div className="flex items-center gap-6 flex-1 justify-center">
             {/* Date Range */}
-            <div className="flex items-center gap-2">
-              <label className="text-[10px] font-bold text-gray-400 uppercase">Period</label>
-              <div className="flex border border-gray-300 rounded overflow-hidden bg-white shadow-sm">
+            <div className="flex items-center gap-3">
+              {/* Period From */}
+              <div className="flex items-center gap-2">
+                <label className="text-[10px] font-bold text-gray-400 uppercase">
+                  Period From
+                </label>
                 <input
                   type="date"
-                  className="p-1.5 text-[11px] outline-none border-r border-gray-200 w-[135px]"
+                  className="p-1.5 text-[11px] outline-none border border-gray-300 rounded bg-white shadow-sm w-[135px]"
                   value={fromDate}
                   onChange={(e) => setFromDate(e.target.value)}
                 />
+              </div>
+
+              {/* Period To */}
+              <div className="flex items-center gap-2">
+                <label className="text-[10px] font-bold text-gray-400 uppercase">
+                  Period To
+                </label>
                 <input
                   type="date"
-                  className="p-1.5 text-[11px] outline-none w-[135px]"
+                  className="p-1.5 text-[11px] outline-none border border-gray-300 rounded bg-white shadow-sm w-[135px]"
                   value={toDate}
                   onChange={(e) => setToDate(e.target.value)}
                 />
               </div>
             </div>
+
 
             {/* Vertical Divider */}
             <div className="h-10 border-l border-gray-200"></div>

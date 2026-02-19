@@ -105,48 +105,71 @@ const Payment_Receipt_Report = () => {
   };
   return (
     <div className="min-h-screen bg-white font-sans text-[11px] text-gray-800 p-2">
-      <div className="border border-teal-600 shadow-sm">
-        <div className="bg-[#1a8a81] text-white px-3 py-1 font-semibold text-sm">
-          Payment/Receipt Report
+      <div className="overflow-hidden">
+
+        <div className="flex justify-center mb-4">
+          <div className="flex justify-center mt-5">
+            <div className="flex items-center px-6 py-4 w-[1290px] h-[62px] rounded-[11px] border border-gray-200 justify-between shadow-sm bg-white">
+              {/* Left Side: Title */}
+              <h2 className="text-red-600 font-bold text-[20px] leading-[148%] whitespace-nowrap">
+                Payment/Receipt Report
+              </h2>
+
+              {/* Right Side: Filters and Buttons Container */}
+              <div className="flex items-center gap-6">
+
+                {/* 2. Action Buttons (Clear, Add, Exit) */}
+                <div className="flex items-center gap-3 border-l pl-6 border-gray-200">
+                  <button
+                    // onClick={() => handleAdd()}
+                    className="w-[70px] h-[26px] rounded-[4px] bg-[#0A2478] text-white text-[11px] font-medium transition-colors hover:bg-[#071d45]"
+                  >
+                    Print
+                  </button>
+
+                  <button className="w-[70px] h-[26px] rounded-[4px] bg-[#C1121F] text-white text-[11px] font-medium transition-colors hover:bg-[#a40f1a]">
+                  PDF
+                </button>
+                </div>
+              </div>
+            </div>
+          </div>
         </div>
+        
 
         {/* Filter Section */}
-        <div className="p-4 bg-white border-b border-gray-200">
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-y-3 gap-x-12 max-w-5xl">
-            <div className="flex items-center gap-8">
-              {/* From Date */}
-              <div className="flex items-center gap-2">
-                <label className="w-24">From Date</label>
+        {/* <div className="p-5 bg-white border-b border-gray-200">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-y-4 gap-x-12 max-w-6xl">
+
+            <div className="flex flex-col sm:flex-row gap-4">
+              <div className="flex items-center gap-2 flex-1">
+                <label className="text-sm font-medium text-gray-700 min-w-[90px]">From Date</label>
                 <input
                   type="date"
                   value={fromDate}
                   onChange={(e) => setFromDate(e.target.value)}
-                  className="border border-gray-300 px-2 py-0.5"
+                  className="border border-gray-300 px-2 py-1 text-sm focus:outline-none focus:ring-1 focus:ring-[#0A2478] w-full"
                 />
               </div>
-
-              {/* To Date */}
-              <div className="flex items-center gap-2">
-                <label className="w-20">To Date</label>
+              <div className="flex items-center gap-2 flex-1">
+                <label className="text-sm font-medium text-gray-700 min-w-[70px]">To Date</label>
                 <input
                   type="date"
                   value={toDate}
                   onChange={(e) => setToDate(e.target.value)}
-                  className="border border-gray-300 px-2 py-0.5"
+                  className="border border-gray-300 px-2 py-1 text-sm focus:outline-none focus:ring-1 focus:ring-[#0A2478] w-full"
                 />
               </div>
             </div>
 
             <div className="flex items-center gap-2">
-              <label className="w-24">Branch</label>
-
+              <label className="text-sm font-medium text-gray-700 min-w-[90px]">Branch</label>
               <select
                 value={selectedBranch}
                 onChange={(e) => setSelectedBranch(e.target.value)}
-                className="border border-gray-300 px-2 py-0.5 w-48"
+                className="border border-gray-300 px-2 py-1 text-sm focus:outline-none focus:ring-1 focus:ring-[#0A2478] w-full"
               >
                 <option value="">Select Branch</option>
-
                 {branches.map((branch) => (
                   <option key={branch.id} value={branch.id}>
                     {branch.branch_name} ({branch.branch_code})
@@ -155,55 +178,40 @@ const Payment_Receipt_Report = () => {
               </select>
             </div>
 
-            <div className="flex items-center gap-6">
-              {/* Payment Mode */}
-              <div className="flex items-center gap-2">
-                <label className="w-32">Payment/Receipt Mode</label>
+            <div className="flex flex-col sm:flex-row gap-4">
+              <div className="flex items-center gap-2 flex-1">
+                <label className="text-sm font-medium text-gray-700 min-w-[90px]">Mode</label>
                 <select
                   value={mode}
                   onChange={(e) => {
                     setMode(e.target.value);
-                    setSelectedAccount(""); // reset account when mode changes
+                    setSelectedAccount("");
                   }}
-                  className="border border-gray-300 px-2 py-0.5 w-32"
+                  className="border border-gray-300 px-2 py-1 text-sm focus:outline-none focus:ring-1 focus:ring-[#0A2478] w-full"
                 >
                   <option value="">--Select--</option>
                   <option value="Cash">Cash</option>
                   <option value="Bank">Bank</option>
                 </select>
               </div>
-
-              {/* Account Dropdown */}
-              <div className="flex items-center gap-2">
-                {/* <label className="w-24">
-          Account <span className="text-red-500">*</span>
-        </label> */}
-
+              <div className="flex items-center gap-2 flex-1">
+                <label className="text-sm font-medium text-gray-700 min-w-[70px]">Account</label>
                 <select
                   value={selectedAccount?.id || ""}
                   onChange={(e) => {
                     const value = e.target.value;
-
                     if (mode === "Cash") {
-                      setSelectedAccount({
-                        id: "Cash",
-                        bank_name: "Cash",
-                      });
+                      setSelectedAccount({ id: "Cash", bank_name: "Cash" });
                     } else {
-                      const selectedBank = banks.find(
-                        (bank) => bank.id.toString() === value,
-                      );
-
-                      setSelectedAccount(selectedBank); // 🔥 full bank object store hota
+                      const selectedBank = banks.find((bank) => bank.id.toString() === value);
+                      setSelectedAccount(selectedBank);
                     }
                   }}
-                  className="border border-gray-300 px-2 py-0.5 w-48"
+                  className="border border-gray-300 px-2 py-1 text-sm focus:outline-none focus:ring-1 focus:ring-[#0A2478] w-full disabled:bg-gray-50"
                   disabled={!mode}
                 >
                   <option value="">--Select--</option>
-
                   {mode === "Cash" && <option value="Cash">Cash</option>}
-
                   {mode === "Bank" &&
                     banks
                       .filter((bank) => bank.status === "Active")
@@ -216,78 +224,189 @@ const Payment_Receipt_Report = () => {
               </div>
             </div>
 
-            {/* View Mode Selection */}
-            {/* <div className="flex items-center gap-6">
-              <div className="flex items-center gap-4">
-                <label className="flex items-center gap-1 cursor-pointer">
+            <div className="flex items-center gap-6">
+              <label className="text-sm font-medium text-gray-700 min-w-[90px]">Report Type</label>
+              <div className="flex items-center gap-6">
+                <label className="flex items-center gap-2 cursor-pointer text-sm">
                   <input
                     type="radio"
-                    checked={viewMode === "Summary"}
-                    onChange={() => setViewMode("Summary")}
+                    className="accent-teal-600 w-4 h-4"
+                    checked={reportType === "Payment"}
+                    onChange={() => setReportType("Payment")}
                   />
-                  Summary
+                  Payment
                 </label>
-                <label className="flex items-center gap-1 cursor-pointer">
+                <label className="flex items-center gap-2 cursor-pointer text-sm">
                   <input
                     type="radio"
-                    checked={viewMode === "Detail"}
-                    onChange={() => setViewMode("Detail")}
+                    className="accent-teal-600 w-4 h-4"
+                    checked={reportType === "Receipt"}
+                    onChange={() => setReportType("Receipt")}
                   />
-                  Detail
+                  Receipt
                 </label>
               </div>
-            </div> */}
+            </div>
+          </div>
 
-            <div className="flex items-center gap-4">
-              <label className="flex items-center gap-1 cursor-pointer">
+          <div className="flex flex-wrap justify-between items-center mt-8 pt-4 border-t border-gray-200">
+            <div className="flex gap-2">
+              <button
+                className="bg-[#005a9c] hover:bg-[#004a80] text-white px-8 py-1.5 text-sm font-medium transition-colors"
+                onClick={handleView}
+              >
+                View
+              </button>
+              <button className="bg-gray-100 hover:bg-gray-200 text-gray-700 border border-gray-300 px-8 py-1.5 text-sm font-medium transition-colors">
+                Exit
+              </button>
+            </div>
+
+            <div className="flex gap-1.5">
+              {["🖨️", "📊", "📄"].map((icon, idx) => (
+                <button
+                  key={idx}
+                  className="p-1.5 px-3 border border-[#005a9c] text-[#005a9c] hover:bg-[#005a9c] hover:text-white rounded transition-all"
+                >
+                  {icon}
+                </button>
+              ))}
+            </div>
+          </div>
+        </div> */}
+        {/* </div> */}
+        
+        <div className="px-28 mb-6 bg-white">
+
+          {/* Filters Row */}
+          <div className="flex flex-wrap items-end gap-4">
+
+            {/* From Date */}
+            <div className="flex items-center gap-2">
+              <label className="text-sm font-medium text-gray-700">From</label>
+              <input
+                type="date"
+                value={fromDate}
+                onChange={(e) => setFromDate(e.target.value)}
+                className="border border-gray-300 px-2 py-1 text-sm focus:outline-none focus:ring-1 focus:ring-[#0A2478]"
+              />
+            </div>
+
+            {/* To Date */}
+            <div className="flex items-center gap-2">
+              <label className="text-sm font-medium text-gray-700">To</label>
+              <input
+                type="date"
+                value={toDate}
+                onChange={(e) => setToDate(e.target.value)}
+                className="border border-gray-300 px-2 py-1 text-sm focus:outline-none focus:ring-1 focus:ring-[#0A2478]"
+              />
+            </div>
+
+            {/* Branch */}
+            <div className="flex items-center gap-2">
+              <label className="text-sm font-medium text-gray-700">Branch</label>
+              <select
+                value={selectedBranch}
+                onChange={(e) => setSelectedBranch(e.target.value)}
+                className="border border-gray-300 px-2 py-1 text-sm focus:outline-none focus:ring-1 focus:ring-[#0A2478]"
+              >
+                <option value="">Select</option>
+                {branches.map((branch) => (
+                  <option key={branch.id} value={branch.id}>
+                    {branch.branch_name} ({branch.branch_code})
+                  </option>
+                ))}
+              </select>
+            </div>
+
+            {/* Mode */}
+            <div className="flex items-center gap-2">
+              <label className="text-sm font-medium text-gray-700">Mode</label>
+              <select
+                value={mode}
+                onChange={(e) => {
+                  setMode(e.target.value);
+                  setSelectedAccount("");
+                }}
+                className="border border-gray-300 px-2 py-1 text-sm focus:outline-none focus:ring-1 focus:ring-[#0A2478]"
+              >
+                <option value="">--Select--</option>
+                <option value="Cash">Cash</option>
+                <option value="Bank">Bank</option>
+              </select>
+            </div>
+
+            {/* Account */}
+            <div className="flex items-center gap-2">
+              {/* <label className="text-sm font-medium text-gray-700">Account</label> */}
+              <select
+                value={selectedAccount?.id || ""}
+                onChange={(e) => {
+                  const value = e.target.value;
+                  if (mode === "Cash") {
+                    setSelectedAccount({ id: "Cash", bank_name: "Cash" });
+                  } else {
+                    const selectedBank = banks.find((b) => b.id.toString() === value);
+                    setSelectedAccount(selectedBank);
+                  }
+                }}
+                disabled={!mode}
+                className="border border-gray-300 px-2 py-1 text-sm focus:outline-none focus:ring-1 focus:ring-[#0A2478] disabled:bg-gray-50"
+              >
+                <option value="">--Select--</option>
+                {mode === "Cash" && <option value="Cash">Cash</option>}
+                {mode === "Bank" &&
+                  banks
+                    .filter((b) => b.status === "Active")
+                    .map((b) => (
+                      <option key={b.id} value={b.id}>
+                        {b.bank_name}
+                      </option>
+                    ))}
+              </select>
+            </div>
+
+            {/* Report Type */}
+            <div className="flex items-center gap-4 ml-2">
+              <label className="text-sm font-medium text-gray-700">Type</label>
+              <label className="flex items-center gap-1 text-sm cursor-pointer">
                 <input
                   type="radio"
+                  className="accent-[#0A2478]"
                   checked={reportType === "Payment"}
                   onChange={() => setReportType("Payment")}
                 />
                 Payment
               </label>
-              <label className="flex items-center gap-1 cursor-pointer">
+              <label className="flex items-center gap-1 text-sm cursor-pointer">
                 <input
                   type="radio"
+                  className="accent-[#0A2478]"
                   checked={reportType === "Receipt"}
                   onChange={() => setReportType("Receipt")}
                 />
                 Receipt
               </label>
             </div>
-          </div>
 
-          <div className="flex justify-between items-center mt-6 pt-2 border-t border-gray-100">
-            <div className="flex gap-1">
+            {/* View + Icons */}
+            <div className="flex items-center gap-2 ml-auto">
               <button
-                className="bg-[#005a9c] text-white px-8 py-1 border border-blue-900"
                 onClick={handleView}
+                className="w-[70px] h-[26px] rounded-[4px] bg-[#0A2478] text-white text-[11px] font-medium transition-colors hover:bg-[#071d45]"
               >
                 View
-              </button>
-              <button className="bg-[#005a9c] text-white px-8 py-1 border border-blue-900">
-                Exit
-              </button>
-            </div>
-            <div className="flex gap-1">
-              <button className="p-1 px-2 border border-[#005a9c] bg-[#005a9c] text-white rounded">
-                🖨️
-              </button>
-              <button className="p-1 px-2 border border-[#005a9c] bg-[#005a9c] text-white rounded">
-                📊
-              </button>
-              <button className="p-1 px-2 border border-[#005a9c] bg-[#005a9c] text-white rounded">
-                📄
               </button>
             </div>
           </div>
         </div>
 
+
         {/* Table Section - Switching based on Summary/Detail */}
-        <div className="p-1 overflow-x-auto overflow-y-auto max-h-[400px]">
+        <div className="p-1 overflow-x-auto overflow-y-auto mx-26 max-h-[400px]">
           <table className="w-full border-collapse border border-gray-300">
-            <thead className="bg-[#eeeae3] text-gray-700 sticky top-0">
+            <thead className="bg-[#0A2478] text-gray-100 sticky top-0">
               <tr className="text-left whitespace-nowrap">
                 <th className="border border-gray-300 p-1">Payment No</th>
                 <th className="border border-gray-300 p-1">Payment Date</th>

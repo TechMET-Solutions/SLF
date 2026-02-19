@@ -81,16 +81,116 @@ const Fund_Transfer_Report = () => {
   // ==============================
   return (
     <div className="min-h-screen bg-white text-[12px] text-gray-800">
-      <div className="m-2 border border-[#1a8a81] shadow-sm">
+      <div className="m-2 ">
         {/* HEADER */}
-        <div className="bg-[#1a8a81] text-white px-3 py-2 font-semibold text-sm">
-          Fund Transfer Report
+        <div className="flex justify-center mt-5 px-4">
+          <div className="flex flex-col w-full max-w-[1290px] rounded-[11px] border border-gray-200 shadow-sm bg-white overflow-hidden">
+
+            {/* 2. Filter Bar - Inline Sequence */}
+            <div className="flex items-center justify-between px-4 py-4 gap-4">
+
+              {/* 1. Title */}
+              <div className="flex-shrink-0">
+                <h2 className="text-red-600 font-bold text-[18px] whitespace-nowrap">
+                  Fund Transfer Report
+                </h2>
+              </div>
+
+              {/* Date Section */}
+              <div className="flex items-center gap-3 flex-shrink-0 border-r pr-4">
+                <div className="flex items-center gap-2">
+                  <label className="text-sm font-semibold text-gray-700 whitespace-nowrap">From</label>
+                  <input
+                    type="date"
+                    value={fromDate}
+                    onChange={(e) => setFromDate(e.target.value)}
+                    className="border border-gray-300 rounded px-2 py-1 text-sm outline-none focus:ring-1 focus:ring-[#0A2478] w-32"
+                  />
+                </div>
+                <div className="flex items-center gap-2">
+                  <label className="text-sm font-semibold text-gray-700 whitespace-nowrap">To</label>
+                  <input
+                    type="date"
+                    value={toDate}
+                    onChange={(e) => setToDate(e.target.value)}
+                    className="border border-gray-300 rounded px-2 py-1 text-sm outline-none focus:ring-1 focus:ring-[#0A2478] w-32"
+                  />
+                </div>
+              </div>
+
+              {/* Branch Selection */}
+              <div className="flex items-center gap-2 flex-shrink-0">
+                <label className="text-sm font-semibold text-gray-700 whitespace-nowrap">Branch</label>
+                <select
+                  value={selectedBranch}
+                  onChange={(e) => setSelectedBranch(e.target.value)}
+                  className="border border-gray-300 rounded px-2 py-1 text-sm outline-none focus:ring-1 focus:ring-[#0A2478] w-44 bg-white"
+                >
+                  <option value="">Select Branch</option>
+                  {branches.map((branch) => (
+                    <option key={branch.id} value={branch.id}>
+                      {branch.branch_name}
+                    </option>
+                  ))}
+                </select>
+              </div>
+
+              {/* Radio Buttons Group */}
+              <div className="flex items-center gap-6 flex-1 justify-center bg-gray-50 py-1 rounded-md">
+                {/* Summary/Detail */}
+                <div className="flex gap-3">
+                  {["Summary", "Detail"].map((mode) => (
+                    <label key={mode} className="flex items-center gap-1.5 text-sm cursor-pointer select-none">
+                      <input
+                        type="radio"
+                        name="viewMode"
+                        value={mode}
+                        checked={viewMode === mode}
+                        onChange={(e) => setViewMode(e.target.value)}
+                        className="accent-[#0A2478] w-4 h-4"
+                      />
+                      {mode}
+                    </label>
+                  ))}
+                </div>
+
+                <div className="w-[1px] h-6 bg-gray-300"></div>
+
+                {/* Issue/Receipt */}
+                <div className="flex gap-3">
+                  {["Issue", "Receipt"].map((type) => (
+                    <label key={type} className="flex items-center gap-1.5 text-sm cursor-pointer select-none">
+                      <input
+                        type="radio"
+                        name="transferType"
+                        value={type}
+                        checked={transferType === type}
+                        onChange={(e) => setTransferType(e.target.value)}
+                        className="accent-[#0A2478] w-4 h-4"
+                      />
+                      {type}
+                    </label>
+                  ))}
+                </div>
+              </div>
+
+              {/* View Button */}
+              <div className="flex-shrink-0 pl-4">
+                <button
+                  onClick={handleView}
+                  className="bg-[#0A2478] hover:bg-blue-800 text-white px-8 py-2 rounded text-sm font-bold transition-all shadow-sm"
+                >
+                  View
+                </button>
+              </div>
+
+            </div>
+          </div>
         </div>
 
         <div className="p-4">
           {/* DATE + BRANCH */}
-          <div className="flex flex-wrap items-center gap-10">
-            {/* From Date */}
+          {/* <div className="flex flex-wrap items-center gap-10">
             <div className="flex items-center gap-2">
               <label>From Date</label>
               <input
@@ -101,7 +201,6 @@ const Fund_Transfer_Report = () => {
               />
             </div>
 
-            {/* To Date */}
             <div className="flex items-center gap-2">
               <label>To Date</label>
               <input
@@ -112,7 +211,6 @@ const Fund_Transfer_Report = () => {
               />
             </div>
 
-            {/* Branch */}
             <div className="flex items-center gap-2">
               <label>Beneficiary Branch</label>
 
@@ -130,11 +228,10 @@ const Fund_Transfer_Report = () => {
                 ))}
               </select>
             </div>
-          </div>
+          </div> */}
 
           {/* RADIO BUTTONS */}
-          <div className="flex gap-16 mt-6">
-            {/* Summary / Detail */}
+          {/* <div className="flex gap-16 mt-6">
             <div className="flex gap-4">
               <label className="flex items-center gap-1">
                 <input
@@ -159,7 +256,6 @@ const Fund_Transfer_Report = () => {
               </label>
             </div>
 
-            {/* Issue / Receipt */}
             <div className="flex gap-4">
               <label className="flex items-center gap-1">
                 <input
@@ -183,17 +279,17 @@ const Fund_Transfer_Report = () => {
                 Receipt
               </label>
             </div>
-          </div>
+          </div> */}
 
           {/* VIEW BUTTON */}
-          <div className="mt-6">
+          {/* <div className="mt-6">
             <button
               onClick={handleView}
               className="bg-blue-600 text-white px-6 py-1 rounded"
             >
               View
             </button>
-          </div>
+          </div> */}
 
           {/* TABLE */}
           <div className="mt-6 overflow-x-auto">
