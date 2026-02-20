@@ -1338,20 +1338,22 @@ const Navbar = () => {
   useEffect(() => {
     const handleClickOutside = (event) => {
       if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
-        setIsMasterOpen(false);
-        setIsMasterProfileOpen(false);
-        setIsMasterSchemeMaster(false);
-        setIsMasterSchemeEmployeeProfile(false);
-        setIsMasterSchemeUserManagement(false);
-        setIsTransactionsOpen(false);
-        setIsGoldLoanOpen(false);
-        setIsToolsOpen(false);
-        setIsSettingsOpen(false);
+
+        // 🔥 Close ALL menus
+        setOpenMenu(null);
+        setOpenSubMenu(null);
+        setOpenMasterSubMenu(null);
+        setOpenTransactionSubMenu(null);
+        setOpenReportSubMenu(null);
+
       }
     };
 
     document.addEventListener("mousedown", handleClickOutside);
-    return () => document.removeEventListener("mousedown", handleClickOutside);
+
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
   }, []);
 
   const handleLogout = () => {

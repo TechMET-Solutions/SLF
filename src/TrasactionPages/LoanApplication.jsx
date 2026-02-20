@@ -291,7 +291,14 @@ const LoanApplication = () => {
       // DATE FILTER
       // ----------------------------
       if (activeDate) {
-        params.append("loan_date", activeDate.toISOString().split("T")[0]);
+        // params.append("loan_date", activeDate.toISOString().split("T")[0]);
+        const year = activeDate.getFullYear();
+        const month = String(activeDate.getMonth() + 1).padStart(2, "0");
+        const day = String(activeDate.getDate()).padStart(2, "0");
+
+        const formattedDate = `${year}-${month}-${day}`;
+
+        params.append("loan_date", formattedDate);
       }
 
       const response = await apiClient.get(

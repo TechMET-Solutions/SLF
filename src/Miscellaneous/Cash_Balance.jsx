@@ -259,14 +259,14 @@ const Cash_Balance = () => {
                   onClick={handleSaveCash}
                   className="bg-blue-900 hover:bg-blue-900 text-white px-6 py-2.5 rounded font-bold text-sm flex items-center gap-2 transition-all shadow-md"
                 >
-                  <span>💾</span> Save Cash
+                  Save Cash
                 </button>
-                <button
+                {/* <button
                   onClick={() => navigate("/")}
                   className="bg-gray-600 hover:bg-gray-700 text-white px-6 py-2.5 rounded font-bold text-sm flex items-center gap-2 transition-all shadow-md"
                 >
                   <span>✖</span> Exit
-                </button>
+                </button> */}
               </div>
             </div>
           </div>

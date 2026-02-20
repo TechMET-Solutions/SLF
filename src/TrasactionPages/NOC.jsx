@@ -8,9 +8,9 @@ function NOC() {
     const { loanId } = location.state || {};
     const [loading, setLoading] = useState(false);
     const [loanData, setLoanData] = useState({});
-    console.log(loanData,"loanData")
+    console.log(loanData, "loanData")
     const [error, setError] = useState(null);
-const navigate = useNavigate();
+    const navigate = useNavigate();
     useEffect(() => {
         document.title = "SLF | NOC";
         if (loanId) {
@@ -25,7 +25,7 @@ const navigate = useNavigate();
                 `${API}/Transactions/goldloan/getLoan/${loanId}`
             );
 
-            
+
             // ✅ Set and log loan data
             const data = response.data.loanApplication || {};
             setLoanData(data);
@@ -43,45 +43,52 @@ const navigate = useNavigate();
     if (loading) return <div>Loading...</div>;
     if (error) return <div>{error}</div>;
     const safeParse = (value) => {
-    try {
-        if (!value) return [];
+        try {
+            if (!value) return [];
 
-        // Already array
-        if (Array.isArray(value)) return value;
+            // Already array
+            if (Array.isArray(value)) return value;
 
-        // Already object → not a valid JSON string → return []
-        if (typeof value === "object") return [];
+            // Already object → not a valid JSON string → return []
+            if (typeof value === "object") return [];
 
-        // "[object Object]" case
-        if (value === "[object Object]") return [];
+            // "[object Object]" case
+            if (value === "[object Object]") return [];
 
-        return JSON.parse(value);
-    } catch {
-        return [];
-    }
-};
+            return JSON.parse(value);
+        } catch {
+            return [];
+        }
+    };
 
-const payments = safeParse(loanData?.payments_Details);
+    const payments = safeParse(loanData?.payments_Details);
 
     console.log(payments, "payments")
-    
-    const totalCash = payments
-  .filter(p => p.paidBy?.toLowerCase() === "cash")
-  .reduce((sum, p) => sum + Number(p.customerAmount || 0), 0);
 
-const totalBank = payments
-  .filter(p => p.paidBy?.toLowerCase() !== "cash")
-  .reduce((sum, p) => sum + Number(p.customerAmount || 0), 0);
+    const totalCash = payments
+        .filter(p => p.paidBy?.toLowerCase() === "cash")
+        .reduce((sum, p) => sum + Number(p.customerAmount || 0), 0);
+
+    const totalBank = payments
+        .filter(p => p.paidBy?.toLowerCase() !== "cash")
+        .reduce((sum, p) => sum + Number(p.customerAmount || 0), 0);
     return (
-        <div className="flex flex-col items-center mt-5">
+        <div className="flex flex-col items-center mb-10 mt-5">
             {/* Header Section */}
             <div className="flex items-center justify-between px-6 py-4 w-[1290px] h-[62px] border border-gray-200 rounded-[11px] shadow-sm">
-                <h2 className="text-black font-bold text-[20px] font-['Source_Sans_3']">
+                <h2 className="text-red-600 font-bold text-[20px] font-['Source_Sans_3']">
                     S. Lunawat Finance Pvt. Ltd.
                 </h2>
-<button className="w-[74px] h-[24px] rounded-[3.75px] bg-[#C1121F] text-white text-[10px]" onClick={() => navigate("/")}>
-                Exit
-              </button>
+                <div className="flex gap-2">
+                <button className="w-[74px] h-[24px] rounded-[3.75px] bg-[#0A2478] text-white text-[10px]"
+                    // onClick={() => navigate(-1)}
+                >
+                    Print
+                </button>
+                <button className="w-[74px] h-[24px] rounded-[3.75px] bg-[#C1121F] text-white text-[10px]" onClick={() => navigate(-1)}>
+                    Exit
+                    </button>
+                </div>
             </div>
 
             {/* Table Section */}
@@ -116,8 +123,8 @@ const totalBank = payments
                             <td colSpan="4" className="border px-2 py-1">{loanData.id}</td>
                             <td className="border px-2 py-1 font-semibold">कर्ज दिनांक -</td>
                             <td colSpan="4" className="border px-2 py-1">
-                              
-                              <p>{new Date(loanData.approval_date).toLocaleDateString("en-GB")}</p>
+
+                                <p>{new Date(loanData.approval_date).toLocaleDateString("en-GB")}</p>
 
                             </td>
                         </tr>
@@ -160,21 +167,21 @@ const totalBank = payments
 
                         </tr>
 
-                      
-                        {payments.map((p, i) => (
-  <tr key={i} className="border text-left">
-    <td className="border px-2 py-1 font-semibold">
-      Bank {String(i + 1).padStart(2, "0")} Details
-    </td>
-  <td colSpan="6" className="border px-2 py-1">
-  {loanData.Print_Name} &nbsp; | &nbsp;
-  {p.paidBy === "Cash" ? "Cash" : p.bank} &nbsp; | &nbsp;
-  UTR : {p.utrNumber} &nbsp; | &nbsp;
-  Amount : ₹{p.customerAmount}
-</td>
 
-  </tr>
-))}
+                        {payments.map((p, i) => (
+                            <tr key={i} className="border text-left">
+                                <td className="border px-2 py-1 font-semibold">
+                                    Bank {String(i + 1).padStart(2, "0")} Details
+                                </td>
+                                <td colSpan="6" className="border px-2 py-1">
+                                    {loanData.Print_Name} &nbsp; | &nbsp;
+                                    {p.paidBy === "Cash" ? "Cash" : p.bank} &nbsp; | &nbsp;
+                                    UTR : {p.utrNumber} &nbsp; | &nbsp;
+                                    Amount : ₹{p.customerAmount}
+                                </td>
+
+                            </tr>
+                        ))}
 
                         {/* Marathi Declaration */}
                         <tr>

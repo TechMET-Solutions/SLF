@@ -250,7 +250,7 @@ const BidderRegistration = () => {
                       name="landline_no"
                       value={formData.landline_no}
                       onChange={handleChange}
-                      placeholder="203-53363"
+                      placeholder="Landline No 1"
                       className="border border-gray-300 rounded-md px-3 py-1.5 w-full bg-white"
                       style={{
                         MozAppearance: "textfield",
@@ -269,7 +269,7 @@ const BidderRegistration = () => {
                       name="landline_no2"
                       value={formData.landline_no2}
                       onChange={handleChange}
-                      placeholder="203-53363"
+                      placeholder="Landline No 2"
                       className="border border-gray-300 rounded-md px-3 py-1.5 w-full bg-white"
                       style={{
                         MozAppearance: "textfield",

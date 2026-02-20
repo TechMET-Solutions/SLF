@@ -77,10 +77,16 @@ const interestRates = safeParse(loanData.Effective_Interest_Rates);
             }}
             className="text-red-600"
           >
-            Print-Loan-Application
+            Print Loan Application
           </h2>
 
           <div className="flex gap-2 mr-6">
+            <button
+              // onClick={() => navigate("/Loan-Application")}
+              className="bg-[#0A2478] text-white px-6 py-1 text-sm rounded hover:bg-[#081c5f] shadow-lg"
+            >
+              Print 
+            </button>
             <button
               onClick={() => navigate("/Loan-Application")}
               className="bg-[#C1121F] text-white px-6 py-1 text-sm rounded hover:bg-[#a50d18] shadow-lg"
