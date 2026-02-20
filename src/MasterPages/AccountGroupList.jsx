@@ -6,6 +6,7 @@ import { useAuth } from "../API/Context/AuthContext";
 import GroupData from "../assets/Group 124.svg";
 import { useNavigate } from "react-router-dom";
 import { FiEdit } from "react-icons/fi";
+import Pagination from "../Component/Pagination";
 const AccountGroupList = () => {
   useEffect(() => {
     document.title = "SLF | Account Group List";
@@ -31,6 +32,22 @@ const AccountGroupList = () => {
   };
   const navigate = useNavigate();
 
+  // Pagination states
+  const [currentPage, setCurrentPage] = useState(1);
+  const [totalItems, setTotalItems] = useState(0);
+  const [showPagination, setShowPagination] = useState(false);
+  const itemsPerPage = 10;
+
+  // Compute total pages based on backend 'total' count
+  const totalPages = Math.ceil(totalItems / itemsPerPage);
+
+  // 🔹 UPDATED: Pagination Control
+  const handlePageChange = (page) => {
+    if (page < 1 || page > totalPages) return;
+    setCurrentPage(page); // Update local state
+    getAccountGroups(page); // Fetch specific page
+  };
+
   const [searchHeaders, setSearchHeaders] = useState([]); // Array of active headers
   const [searchQuery, setSearchQuery] = useState("");
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
@@ -43,52 +60,44 @@ const AccountGroupList = () => {
     );
   };
 
-  const getAccountGroups = async () => {
+  // const getAccountGroups = async () => {
+  //   try {
+  //     const response = await axios.get(`${API}/api/account-group/list`, {
+  //       params: {
+  //         headers: searchHeaders.join(","), // group_name,account_type
+  //         search: searchQuery,
+  //       },
+  //     });
+
+  //     setData(response.data.data);
+  //   } catch (error) {
+  //     console.error(error);
+  //   }
+  // };
+
+  const getAccountGroups = async (page = 1) => {
     try {
       const response = await axios.get(`${API}/api/account-group/list`, {
         params: {
-          headers: searchHeaders.join(","), // group_name,account_type
+          headers: searchHeaders.join(","),
           search: searchQuery,
+          page: page,         // Send page to backend
+          limit: itemsPerPage // Send limit to backend
         },
       });
 
+      // Map backend response to frontend state
       setData(response.data.data);
+      setTotalItems(response.data.pagination.total);
+      setShowPagination(response.data.pagination.showPagination);
+      setCurrentPage(response.data.pagination.page);
     } catch (error) {
-      console.error(error);
+      console.error("Error fetching account groups:", error);
     }
   };
 
   const { loginUser } = useAuth();
 
-  // const handleSave = async () => {
-  //   try {
-  //     if (isEditMode) {
-  //       await axios.put(
-  //         `${API}/api/account-group/update/${selectedId}`,
-  //         formData,
-  //       );
-  //       alert("Account Group Updated Successfully");
-  //     } else {
-  //       await axios.post(`${API}/api/account-group/create`, formData);
-  //       alert("Account Group Created Successfully");
-  //     }
-
-  //     setIsModalOpen(false);
-  //     setIsEditMode(false);
-  //     setSelectedId(null);
-  //     setFormData({
-  //       groupName: "",
-  //       accountType: "",
-  //       under: "",
-  //       comments: "",
-  //     });
-
-  //     getAccountGroups();
-  //   } catch (error) {
-  //     console.error(error);
-  //     alert("Error saving account group");
-  //   }
-  // };
   const handleSave = async () => {
     try {
       // Prepare the payload with user tracking
@@ -128,10 +137,29 @@ const AccountGroupList = () => {
       alert("Error saving account group");
     }
   };
+
+  
+  // 🔹 UPDATED: Handle Search (Reset to page 1)
+  const handleSearch = () => {
+    setIsDropdownOpen(false);
+    setCurrentPage(1);
+    getAccountGroups(1);
+  };
+
+  // 🔹 UPDATED: Handle Clear
+  const handleClear = () => {
+    setSearchQuery("");
+    setSearchHeaders([]);
+    setCurrentPage(1);
+    getAccountGroups(1);
+  };
+
+  // Initial Load
   useEffect(() => {
     document.title = "SLF | Account Group List";
-    getAccountGroups();
+    getAccountGroups(1);
   }, []);
+
   const handleEdit = (row) => {
     setFormData({
       groupName: row.group_name,
@@ -262,11 +290,18 @@ const AccountGroupList = () => {
                   />
 
                   {/* Search Button */}
-                  <button
+                  {/* <button
                     onClick={() => {
                       setIsDropdownOpen(false);
                       getAccountGroups();
                     }}
+                    className="ml-2 bg-[#0b2c69] text-white text-[11px] px-4 h-[24px] rounded-[3px] font-source hover:bg-[#071d45]"
+                  >
+                    Search
+                  </button> */}
+
+                  <button
+                    onClick={handleSearch} // Use the new search handler
                     className="ml-2 bg-[#0b2c69] text-white text-[11px] px-4 h-[24px] rounded-[3px] font-source hover:bg-[#071d45]"
                   >
                     Search
@@ -278,12 +313,19 @@ const AccountGroupList = () => {
               </div>
 
               {/* Clear Button */}
-              <button
+              {/* <button
                 onClick={() => {
                   setSearchQuery("");
                   setSearchHeaders([]);
                   getAccountGroups();
                 }}
+                className="text-[10px] text-gray-500 hover:text-red-500 underline"
+              >
+                Clear
+              </button> */}
+
+              <button
+                onClick={handleClear} // Use the new clear handler
                 className="text-[10px] text-gray-500 hover:text-red-500 underline"
               >
                 Clear
@@ -545,20 +587,18 @@ const AccountGroupList = () => {
         </div>
       </div>
 
-      {/* Pagination */}
-      <div className="flex justify-center items-center px-6 py-3 border-t gap-2">
-        <button className="px-3 py-1 border rounded-md">Previous</button>
-        <div className="flex gap-2">
-          <button className="px-3 py-1 border bg-[#0b2c69] text-white rounded-md">
-            1
-          </button>
-          <button className="px-3 py-1 border rounded-md">2</button>
-          <button className="px-3 py-1 border rounded-md">3</button>
-          <button className="px-3 py-1 border rounded-md">...</button>
-          <button className="px-3 py-1 border rounded-md">10</button>
+      {/* 🔹 UPDATED: Conditional Pagination Rendering */}
+      {showPagination && (
+        <div className="mt-4 mb-8">
+          <Pagination
+            currentPage={currentPage}
+            totalPages={totalPages}
+            onPageChange={handlePageChange}
+          />
         </div>
-        <button className="px-3 py-1 border rounded-md">Next</button>
-      </div>
+      )}
+
+     
     </div>
   );
 };

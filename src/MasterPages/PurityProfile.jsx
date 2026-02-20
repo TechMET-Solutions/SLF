@@ -59,6 +59,7 @@ const PurityProfile = () => {
     setIsLoading(true);
     try {
       const result = await fetchPuritiesApi(page, itemsPerPage);
+      // console.log("Fetched purities:", result);
       if (result?.items) {
         setData(result.items);
         setTotalItems(result.total);
@@ -336,11 +337,10 @@ const PurityProfile = () => {
               <button
                 disabled={isLoading}
                 onClick={handleSave}
-                className={`bg-[#0A2478] cursor-pointer text-white px-5 py-2 rounded ${
-                  isLoading
+                className={`bg-[#0A2478] cursor-pointer text-white px-5 py-2 rounded ${isLoading
                     ? "opacity-50 cursor-not-allowed"
                     : "hover:bg-[#081b5c]"
-                }`}
+                  }`}
               >
                 {isLoading ? "Saving..." : isEditMode ? "Update" : "Save"}
               </button>
@@ -496,69 +496,67 @@ const PurityProfile = () => {
           </div> */}
 
           <div className="overflow-x-auto mt-5 w-[620px] h-[500px]">
-  <table className="w-full border-collapse">
-    <thead className="bg-[#0A2478] text-white text-sm sticky top-0">
-      <tr>
-        <th className="px-4 py-2 text-left border-r border-gray-300 text-[13px] w-[80px]">Purity Name</th>
-        <th className="px-4 py-2 text-left border-r border-gray-300 text-[13px] w-[80px]">Purity %</th>
-        <th className="px-4 py-2 text-left border-r border-gray-300 text-[13px] w-[80px]">Product Name</th>
-        <th className="px-4 py-2 text-left border-r border-gray-300 text-[13px] w-[200px]">Added By</th>
-        <th className="px-4 py-2 text-left border-r border-gray-300 text-[13px]">Action</th>
-        <th className="px-4 py-2 text-left border-r border-gray-300 text-[13px]">Active</th>
-      </tr>
-    </thead>
-    <tbody className="text-[12px]">
-      {data.length === 0 && !isLoading ? (
-        <tr>
-          <td colSpan="6" className="text-center py-10">
-            <p className="text-lg text-gray-500">No Data Found</p>
-          </td>
-        </tr>
-      ) : (
-        data.map((row, index) => (
-          <tr key={index} className={index % 2 === 0 ? "bg-gray-50" : "bg-white"}>
-            <td className="px-4 py-2">{row.purity_name}</td>
-            <td className="px-4 py-2">{row.purity_percent}</td>
-            <td className="px-4 py-2">{row.loan_type}</td>
-            <td className="px-4 py-2">{row.added_by}</td>
-            <td className="px-4 py-2 text-center">
-              <div className="flex gap-2 justify-center">
-                <button
-                  className="bg-[#3dbd5a] cursor-pointer p-1.5 text-white rounded-sm"
-                  onClick={() => handleOpenModal(row)}
-                  title="Edit"
-                >
-                  <FiEdit />
-                </button>
-                <button
-                  className="bg-[#f51111ec] cursor-pointer p-1.5 text-white rounded-sm"
-                  onClick={() => handleDeleteClick(row.id, row.loan_type)}
-                  title="Delete"
-                >
-                  <FiTrash2 />
-                </button>
-              </div>
-            </td>
-            <td className="px-4 py-2">
-              <button
-                onClick={() => handleToggleStatus(row)}
-                className={`w-12 h-6 flex items-center rounded-full p-1 transition-colors duration-300 ease-in-out ${
-                  row.status === 1 ? "bg-[#0A2478]" : "bg-gray-400"
-                }`}
-              >
-                <div
-                  className={`bg-white w-4 h-4 rounded-full shadow-md transform transition-transform duration-300 ease-in-out ${
-                    row.status === 1 ? "translate-x-6" : "translate-x-0"
-                  }`}
-                />
-              </button>
-            </td>
-          </tr>
-        ))
-      )}
-    </tbody>
-  </table>
-</div>
+            <table className="w-full border-collapse">
+              <thead className="bg-[#0A2478] text-white text-sm sticky top-0">
+                <tr>
+                  <th className="px-4 py-2 text-left border-r border-gray-300 text-[13px] w-[80px]">Purity Name</th>
+                  <th className="px-4 py-2 text-left border-r border-gray-300 text-[13px] w-[80px]">Purity %</th>
+                  <th className="px-4 py-2 text-left border-r border-gray-300 text-[13px] w-[80px]">Product Name</th>
+                  <th className="px-4 py-2 text-left border-r border-gray-300 text-[13px] w-[200px]">Added By</th>
+                  <th className="px-4 py-2 text-left border-r border-gray-300 text-[13px]">Action</th>
+                  <th className="px-4 py-2 text-left border-r border-gray-300 text-[13px]">Active</th>
+                </tr>
+              </thead>
+              <tbody className="text-[12px]">
+                {data.length === 0 && !isLoading ? (
+                  <tr>
+                    <td colSpan="6" className="text-center py-10">
+                      <p className="text-lg text-gray-500">No Data Found</p>
+                    </td>
+                  </tr>
+                ) : (
+                  data.map((row, index) => (
+                    <tr key={index} className={index % 2 === 0 ? "bg-gray-50" : "bg-white"}>
+                      <td className="px-4 py-2">{row.purity_name}</td>
+                      <td className="px-4 py-2">{row.purity_percent}</td>
+                      <td className="px-4 py-2">{row.loan_type}</td>
+                      <td className="px-4 py-2">{row.added_by}</td>
+                      <td className="px-4 py-2 text-center">
+                        <div className="flex gap-2 justify-center">
+                          <button
+                            className="bg-[#3dbd5a] cursor-pointer p-1.5 text-white rounded-sm"
+                            onClick={() => handleOpenModal(row)}
+                            title="Edit"
+                          >
+                            <FiEdit />
+                          </button>
+                          <button
+                            className="bg-[#f51111ec] cursor-pointer p-1.5 text-white rounded-sm"
+                            onClick={() => handleDeleteClick(row.id, row.loan_type)}
+                            title="Delete"
+                          >
+                            <FiTrash2 />
+                          </button>
+                        </div>
+                      </td>
+                      <td className="px-4 py-2">
+                        <button
+                          onClick={() => handleToggleStatus(row)}
+                          className={`w-12 h-6 flex items-center rounded-full p-1 transition-colors duration-300 ease-in-out ${row.status === 1 ? "bg-[#0A2478]" : "bg-gray-400"
+                            }`}
+                        >
+                          <div
+                            className={`bg-white w-4 h-4 rounded-full shadow-md transform transition-transform duration-300 ease-in-out ${row.status === 1 ? "translate-x-6" : "translate-x-0"
+                              }`}
+                          />
+                        </button>
+                      </td>
+                    </tr>
+                  ))
+                )}
+              </tbody>
+            </table>
+          </div>
           <Pagination
             currentPage={currentPage}
             totalPages={totalPages}
@@ -578,70 +576,68 @@ const PurityProfile = () => {
           >
             Silver Purity
           </p>
-         <div className="overflow-x-auto mt-5 w-[620px] h-[500px]">
-  <table className="w-full border-collapse">
-    <thead className="bg-[#0A2478] text-white text-sm sticky top-0">
-      <tr>
-        <th className="px-4 py-2 text-left border-r border-gray-300 text-[13px] w-[80px]">Purity Name</th>
-        <th className="px-4 py-2 text-left border-r border-gray-300 text-[13px] w-[80px]">Purity %</th>
-        <th className="px-4 py-2 text-left border-r border-gray-300 text-[13px] w-[80px]">Product Name</th>
-        <th className="px-4 py-2 text-left border-r border-gray-300 text-[13px] w-[200px]">Added By</th>
-        <th className="px-4 py-2 text-left border-r border-gray-300 text-[13px]">Action</th>
-        <th className="px-4 py-2 text-left border-r border-gray-300 text-[13px]">Active</th>
-      </tr>
-    </thead>
-    <tbody className="text-[12px]">
-      {Silverdata.length === 0 && !isLoading ? (
-        <tr>
-          <td colSpan="6" className="py-20 text-center">
-            <p className="text-lg text-gray-500">No Data Found</p>
-          </td>
-        </tr>
-      ) : (
-        Silverdata.map((row, index) => (
-          <tr key={index} className={index % 2 === 0 ? "bg-gray-50" : "bg-white"}>
-            <td className="px-4 py-2">{row.purity_name}</td>
-            <td className="px-4 py-2">{row.purity_percent}</td>
-            <td className="px-4 py-2">{row.loan_type}</td>
-            <td className="px-4 py-2">{row.added_by}</td>
-            <td className="px-4 py-2 text-center">
-              <div className="flex gap-2 justify-center">
-                <button
-                  className="bg-[#3dbd5a] cursor-pointer p-1.5 text-white rounded-sm"
-                  onClick={() => handleOpenModal(row)}
-                  title="Edit"
-                >
-                  <FiEdit />
-                </button>
-                <button
-                  className="bg-[#f51111ec] cursor-pointer p-1.5 text-white rounded-sm"
-                  onClick={() => handleDeleteClick(row.id, row.loan_type)}
-                  title="Delete"
-                >
-                  <FiTrash2 />
-                </button>
-              </div>
-            </td>
-            <td className="px-4 py-2">
-              <button
-                onClick={() => handleToggleStatusForSilver(row)}
-                className={`w-12 h-6 flex items-center rounded-full p-1 transition-colors duration-300 ease-in-out ${
-                  row.status === 1 ? "bg-[#0A2478]" : "bg-gray-400"
-                }`}
-              >
-                <div
-                  className={`bg-white w-4 h-4 rounded-full shadow-md transform transition-transform duration-300 ease-in-out ${
-                    row.status === 1 ? "translate-x-6" : "translate-x-0"
-                  }`}
-                />
-              </button>
-            </td>
-          </tr>
-        ))
-      )}
-    </tbody>
-  </table>
-</div>
+          <div className="overflow-x-auto mt-5 w-[620px] h-[500px]">
+            <table className="w-full border-collapse">
+              <thead className="bg-[#0A2478] text-white text-sm sticky top-0">
+                <tr>
+                  <th className="px-4 py-2 text-left border-r border-gray-300 text-[13px] w-[80px]">Purity Name</th>
+                  <th className="px-4 py-2 text-left border-r border-gray-300 text-[13px] w-[80px]">Purity %</th>
+                  <th className="px-4 py-2 text-left border-r border-gray-300 text-[13px] w-[80px]">Product Name</th>
+                  <th className="px-4 py-2 text-left border-r border-gray-300 text-[13px] w-[200px]">Added By</th>
+                  <th className="px-4 py-2 text-left border-r border-gray-300 text-[13px]">Action</th>
+                  <th className="px-4 py-2 text-left border-r border-gray-300 text-[13px]">Active</th>
+                </tr>
+              </thead>
+              <tbody className="text-[12px]">
+                {Silverdata.length === 0 && !isLoading ? (
+                  <tr>
+                    <td colSpan="6" className="py-20 text-center">
+                      <p className="text-lg text-gray-500">No Data Found</p>
+                    </td>
+                  </tr>
+                ) : (
+                  Silverdata.map((row, index) => (
+                    <tr key={index} className={index % 2 === 0 ? "bg-gray-50" : "bg-white"}>
+                      <td className="px-4 py-2">{row.purity_name}</td>
+                      <td className="px-4 py-2">{row.purity_percent}</td>
+                      <td className="px-4 py-2">{row.loan_type}</td>
+                      <td className="px-4 py-2">{row.added_by}</td>
+                      <td className="px-4 py-2 text-center">
+                        <div className="flex gap-2 justify-center">
+                          <button
+                            className="bg-[#3dbd5a] cursor-pointer p-1.5 text-white rounded-sm"
+                            onClick={() => handleOpenModal(row)}
+                            title="Edit"
+                          >
+                            <FiEdit />
+                          </button>
+                          <button
+                            className="bg-[#f51111ec] cursor-pointer p-1.5 text-white rounded-sm"
+                            onClick={() => handleDeleteClick(row.id, row.loan_type)}
+                            title="Delete"
+                          >
+                            <FiTrash2 />
+                          </button>
+                        </div>
+                      </td>
+                      <td className="px-4 py-2">
+                        <button
+                          onClick={() => handleToggleStatusForSilver(row)}
+                          className={`w-12 h-6 flex items-center rounded-full p-1 transition-colors duration-300 ease-in-out ${row.status === 1 ? "bg-[#0A2478]" : "bg-gray-400"
+                            }`}
+                        >
+                          <div
+                            className={`bg-white w-4 h-4 rounded-full shadow-md transform transition-transform duration-300 ease-in-out ${row.status === 1 ? "translate-x-6" : "translate-x-0"
+                              }`}
+                          />
+                        </button>
+                      </td>
+                    </tr>
+                  ))
+                )}
+              </tbody>
+            </table>
+          </div>
           <Pagination
             currentPage={currentPageForSilver}
             totalPages={totalPagesForSilver}

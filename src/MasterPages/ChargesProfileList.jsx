@@ -7,6 +7,7 @@ import GroupData from "../assets/Group 124.svg";
 import DeleteData from "../assets/deletimg.png";
 import { decryptData, encryptData } from "../utils/cryptoHelper";
 import { FiEdit, FiTrash2 } from "react-icons/fi";
+import Pagination from "../Component/Pagination";
 
 const ChargesProfileList = () => {
   const navigate = useNavigate();
@@ -57,9 +58,9 @@ const ChargesProfileList = () => {
   // };
 
   console.log("Logged in user:", loginUser);
-  useEffect(() => {
-    fetchChargeProfiles();
-  }, []);
+
+ 
+
   useEffect(() => {
     const fetchAccounts = async () => {
       try {
@@ -72,38 +73,51 @@ const ChargesProfileList = () => {
 
     fetchAccounts();
   }, []);
-  // ✅ Fetch data
-  // const fetchChargeProfiles = async () => {
-  //   try {
-  //     const response = await axios.get(`${API}/Master/GetChargesProfile/get`);
-  //     if (response.status === 200 && response.data?.data) {
-  //       const decrypted = decryptData(response.data.data);
-  //       const parsedData =
-  //         typeof decrypted === "string" ? JSON.parse(decrypted) : decrypted;
-  //       setData(parsedData.data || []);
-  //     }
-  //   } catch (error) {
-  //     console.error("❌ Error fetching charge profiles:", error);
-  //     alert("❌ Failed to fetch charge profiles");
-  //   }
-  // };
-  const fetchChargeProfiles = async () => {
+  
+
+  const [currentPage, setCurrentPage] = useState(1);
+  const [totalItems, setTotalItems] = useState(0);
+  const [totalPages, setTotalPages] = useState(0);
+  const [showPagination, setShowPagination] = useState(false);
+
+  const itemsPerPage = 10;
+
+  const fetchChargeProfiles = async (page = 1) => {
     try {
-      const response = await axios.get(`${API}/Master/GetChargesProfile/get`, {
-        params: {
-          code: searchFilters.code,
-          description: searchFilters.Description,
-        },
-      });
+      const response = await axios.get(
+        `${API}/Master/GetChargesProfile/get`,
+        {
+          params: {
+            code: searchFilters.code,
+            description: searchFilters.Description,
+            page: page,
+            limit: itemsPerPage,
+          },
+        }
+      );
 
       if (response.status === 200) {
         setData(response.data.data || []);
-        // setTotal(response.data.total || 0);
+
+        // 🔥 Pagination from backend
+        const pagination = response.data.pagination;
+
+        if (pagination) {
+          setTotalItems(pagination.total);
+          setTotalPages(pagination.totalPages);
+          setShowPagination(pagination.showPagination);
+          setCurrentPage(pagination.page);
+        }
       }
     } catch (error) {
       console.error("❌ Error fetching charge profiles:", error);
       alert("❌ Failed to fetch charge profiles");
     }
+  };
+
+  const handlePageChange = (page) => {
+    if (page < 1 || page > totalPages) return;
+    setCurrentPage(page);
   };
 
   // Handle input changes
@@ -173,6 +187,10 @@ const ChargesProfileList = () => {
       alert("❌ Failed to save/update. Please try again.");
     }
   };
+
+  useEffect(() => {
+    fetchChargeProfiles(currentPage);
+  }, [currentPage]);
 
   // ✅ Edit a profile
   const handleEdit = (profile) => {
@@ -275,7 +293,8 @@ const ChargesProfileList = () => {
     });
 
     // 2️⃣ Call API again (fetch all data)
-    fetchChargeProfiles("", "");
+    setCurrentPage(1);
+    fetchChargeProfiles(1);
   };
 
   return (
@@ -322,7 +341,10 @@ const ChargesProfileList = () => {
 
               {/* Buttons */}
               <button
-                onClick={fetchChargeProfiles}
+                onClick={() => {
+                  setCurrentPage(1);
+                  fetchChargeProfiles(1);
+                }}
                 className="bg-[#0b2c69] text-white text-[11px] px-4 py-1 rounded"
               >
                 Search
@@ -542,14 +564,12 @@ const ChargesProfileList = () => {
                   <td className="px-4 py-2">
                     <button
                       onClick={() => handleToggle(row.id, row.isActive)}
-                      className={`w-12 h-6 flex cursor-pointer items-center rounded-full p-1 transition-colors ${
-                        row.isActive ? "bg-[#0A2478]" : "bg-gray-300"
-                      }`}
+                      className={`w-12 h-6 flex cursor-pointer items-center rounded-full p-1 transition-colors ${row.isActive ? "bg-[#0A2478]" : "bg-gray-300"
+                        }`}
                     >
                       <div
-                        className={`bg-white w-4 h-4 rounded-full shadow-md transform transition-transform ${
-                          row.isActive ? "translate-x-6" : "translate-x-0"
-                        }`}
+                        className={`bg-white w-4 h-4 rounded-full shadow-md transform transition-transform ${row.isActive ? "translate-x-6" : "translate-x-0"
+                          }`}
                       />
                     </button>
                   </td>
@@ -559,6 +579,16 @@ const ChargesProfileList = () => {
           </table>
         </div>
       </div>
+      {/* Pagination Component Hooked up to State */}
+      {showPagination && (
+        <div className="mt-4 mb-8 flex justify-center">
+          <Pagination
+            currentPage={currentPage}
+            totalPages={totalPages}
+            onPageChange={handlePageChange}
+          />
+        </div>
+      )}
     </div>
   );
 };
