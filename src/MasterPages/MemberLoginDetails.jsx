@@ -210,7 +210,7 @@ const MemberLoginDetails = () => {
 
               <button
                 onClick={handleClearSearch}
-                className="text-[10px] text-gray-500 hover:text-red-500 underline"
+                className="bg-[#0A2478] text-white text-[11.25px] w-[74px] h-[24px] rounded flex items-center justify-center hover:bg-[#071b5e] transition"
               >
                 Clear
               </button>

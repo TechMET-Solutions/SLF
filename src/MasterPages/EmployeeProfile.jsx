@@ -1025,16 +1025,18 @@ const EmployeeProfile = () => {
                 >
                   Search
                 </button>
+
+                <button
+                  onClick={() => handleClearSearch()}
+                  className="ml-2 bg-[#0b2c69] text-white text-[11px] px-4 h-[24px] rounded-[3px] font-source hover:bg-[#071d45]"
+                >
+                  Clear
+                </button>
               </div>
             </div>
 
             <div className="flex gap-3">
-              <button
-                onClick={() => handleClearSearch()}
-                className="bg-gray-500 text-white text-[11.25px] w-[74px] h-[24px] rounded flex items-center justify-center"
-              >
-                Clear
-              </button>
+              
               <button
                 onClick={handleValuationClick}
                 className="bg-[#129121] text-white text-[11.25px] w-[74px] h-[24px] rounded flex items-center justify-center"

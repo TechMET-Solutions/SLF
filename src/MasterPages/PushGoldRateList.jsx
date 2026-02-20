@@ -17,9 +17,9 @@ const PushGoldRateList = () => {
   }, []);
   const [data, setData] = useState([]);
   const [Silverdata, setSilverData] = useState([]);
- const [pushDate, setPushDate] = useState(
-  new Date().toISOString().split("T")[0]
-);
+  const [pushDate, setPushDate] = useState(
+    new Date().toISOString().split("T")[0]
+  );
 
   const [goldRate, setGoldRate] = useState("");
 
@@ -263,7 +263,7 @@ const PushGoldRateList = () => {
       <div className="flex justify-center">
         <div className="overflow-x-auto mt-5  flex gap-10 h-auto">
           <div className="mt-5">
-            <div className="flex items-center gap-2 mb-2">
+            {/* <div className="flex items-center gap-2 mb-2">
               <p
                 className="font-semibold text-[#0A2478]"
                 style={{
@@ -294,43 +294,83 @@ const PushGoldRateList = () => {
               >
                 Reset
               </button>
+            </div> */}
+
+            <div className="flex items-center gap-4 mb-2 w-full">
+              {/* Left Side: Title */}
+              <p
+                className="font-semibold text-[#0A2478]"
+                style={{
+                  fontFamily: "Playfair Display",
+                  fontSize: "23.23px",
+                  lineHeight: "148%",
+                }}
+              >
+                Gold rate
+              </p>
+
+              {/* Right Side: Merged Input and Blue Button */}
+              <div className="flex items-center">
+                <div className="flex items-center border border-gray-300 rounded-[4px] overflow-hidden h-[32px]">
+                  <input
+                    type="date"
+                    value={filterDateGold}
+                    onChange={(e) => {
+                      const newDate = e.target.value;
+                      setFilterDateGold(newDate);
+                      // fetchGoldRates(1, newDate); 
+                    }}
+                    className="px-2 py-1 text-[11px] outline-none border-none h-full bg-white"
+                  />
+
+                  <button
+                    onClick={() => {
+                      setFilterDateGold("");
+                      fetchGoldRates(1, "");
+                    }}
+                    className="bg-[#0A2478] text-white text-[10px] px-3 h-full font-medium hover:bg-[#071d45] transition-colors border-l border-gray-300"
+                  >
+                    Reset
+                  </button>
+                </div>
+              </div>
             </div>
 
-           <div className="overflow-x-auto mt-5 w-[620px] h-[500px]">
-  <table className="w-[620px] border-collapse mt-2">
-    <thead className="bg-[#0A2478] text-white text-sm">
-      <tr>
-        <th className="px-4 py-2 text-left border-r w-[100px]">Date</th>
-        <th className="px-4 py-2 text-left border-r">Type</th>
-        <th className="px-4 py-2 text-left border-r w-[100px]">Rate</th>
-        <th className="px-4 py-2 text-left border-r w-[100px]">Actual Rate</th>
-        <th className="px-4 py-2 text-left border-r w-[200px]">Added By</th>
-      </tr>
-    </thead>
-    <tbody className="text-[12px]">
-      {data.length === 0 && !isLoading ? (
-        <tr>
-          <td colSpan="5" className="py-10 text-center">
-            <p className="text-lg text-gray-500">No Data Found</p>
-          </td>
-        </tr>
-      ) : (
-        data.map((row, index) => (
-          <tr
-            key={row.id}
-            className={index % 2 === 0 ? "bg-gray-50" : "bg-white"}
-          >
-            <td className="px-4 py-2">{formatIndianDate(row.push_date)}</td>
-            <td className="px-4 py-2">{row.metalType}</td>
-            <td className="px-4 py-2">{row.gold_rate}</td>
-            <td className="px-4 py-2">{row.actual_rate}</td>
-            <td className="px-4 py-2">{row.added_by}</td>
-          </tr>
-        ))
-      )}
-    </tbody>
-  </table>
-</div>
+            <div className="overflow-x-auto mt-5 w-[620px] h-[500px]">
+              <table className="w-[620px] border-collapse mt-2">
+                <thead className="bg-[#0A2478] text-white text-sm">
+                  <tr>
+                    <th className="px-4 py-2 text-left border-r w-[100px]">Date</th>
+                    <th className="px-4 py-2 text-left border-r">Type</th>
+                    <th className="px-4 py-2 text-left border-r w-[100px]">Rate</th>
+                    <th className="px-4 py-2 text-left border-r w-[100px]">Actual Rate</th>
+                    <th className="px-4 py-2 text-left border-r w-[200px]">Added By</th>
+                  </tr>
+                </thead>
+                <tbody className="text-[12px]">
+                  {data.length === 0 && !isLoading ? (
+                    <tr>
+                      <td colSpan="5" className="py-10 text-center">
+                        <p className="text-lg text-gray-500">No Data Found</p>
+                      </td>
+                    </tr>
+                  ) : (
+                    data.map((row, index) => (
+                      <tr
+                        key={row.id}
+                        className={index % 2 === 0 ? "bg-gray-50" : "bg-white"}
+                      >
+                        <td className="px-4 py-2">{formatIndianDate(row.push_date)}</td>
+                        <td className="px-4 py-2">{row.metalType}</td>
+                        <td className="px-4 py-2">{row.gold_rate}</td>
+                        <td className="px-4 py-2">{row.actual_rate}</td>
+                        <td className="px-4 py-2">{row.added_by}</td>
+                      </tr>
+                    ))
+                  )}
+                </tbody>
+              </table>
+            </div>
 
             <Pagination
               currentPage={currentPage}
@@ -339,7 +379,7 @@ const PushGoldRateList = () => {
             />
           </div>
           <div className="mt-5">
-            <div className="flex items-center gap-2 mb-2">
+            {/* <div className="flex items-center gap-2 mb-2">
               <p
                 className="font-semibold text-[#0A2478]"
                 style={{
@@ -368,43 +408,83 @@ const PushGoldRateList = () => {
               >
                 Reset
               </button>
+            </div> */}
+
+            <div className="flex items-center gap-4 mb-2 w-full">
+              {/* Left Side: Title */}
+              <p
+                className="font-semibold text-[#0A2478]"
+                style={{
+                  fontFamily: "Playfair Display",
+                  fontSize: "23.23px",
+                  lineHeight: "148%",
+                }}
+              >
+                Silver rate
+              </p>
+
+              {/* Right Side: Merged Input and Blue Button */}
+              <div className="flex items-center">
+                <div className="flex items-center border border-gray-300 rounded-[4px] overflow-hidden h-[32px]">
+                  <input
+                    type="date"
+                    value={filterDateSilver}
+                    onChange={(e) => {
+                      const newDate = e.target.value;
+                      setFilterDateSilver(newDate);
+                      fetchSilverRates(1, newDate);
+                    }}
+                    className="px-2 py-1 text-[11px] outline-none border-none h-full bg-white"
+                  />
+
+                  <button
+                    onClick={() => {
+                      setFilterDateSilver("");
+                      fetchSilverRates(1, "");
+                    }}
+                    className="bg-[#0A2478] text-white text-[10px] px-3 h-full font-medium hover:bg-[#071d45] transition-colors border-l border-gray-300"
+                  >
+                    Reset
+                  </button>
+                </div>
+              </div>
             </div>
 
-           <div className="overflow-x-auto mt-5 w-[620px] h-[500px]">
-  <table className="w-[620px] border-collapse mt-2">
-    <thead className="bg-[#0A2478] text-white text-sm">
-      <tr>
-        <th className="px-4 py-2 text-left border-r w-[100px]">Date</th>
-        <th className="px-4 py-2 text-left border-r">Type</th>
-        <th className="px-4 py-2 text-left border-r w-[100px]">Rate</th>
-        <th className="px-4 py-2 text-left border-r w-[100px]">Actual Rate</th>
-        <th className="px-4 py-2 text-left border-r w-[200px]">Added By</th>
-      </tr>
-    </thead>
-    <tbody className="text-[12px]">
-      {Silverdata.length === 0 && !isLoading ? (
-        <tr>
-          <td colSpan="5" className="py-20 text-center">
-            <p className="text-lg text-gray-500">No Data Found</p>
-          </td>
-        </tr>
-      ) : (
-        Silverdata.map((row, index) => (
-          <tr
-            key={row.id}
-            className={index % 2 === 0 ? "bg-gray-50" : "bg-white"}
-          >
-            <td className="px-4 py-2">{formatIndianDate(row.push_date)}</td>
-            <td className="px-4 py-2">{row.metalType}</td>
-            <td className="px-4 py-2">{row.Silver_rate}</td>
-            <td className="px-4 py-2">{row.actual_rate}</td>
-            <td className="px-4 py-2">{row.added_by}</td>
-          </tr>
-        ))
-      )}
-    </tbody>
-  </table>
-</div>
+            <div className="overflow-x-auto mt-5 w-[620px] h-[500px]">
+              <table className="w-[620px] border-collapse mt-2">
+                <thead className="bg-[#0A2478] text-white text-sm">
+                  <tr>
+                    <th className="px-4 py-2 text-left border-r w-[100px]">Date</th>
+                    <th className="px-4 py-2 text-left border-r">Type</th>
+                    <th className="px-4 py-2 text-left border-r w-[100px]">Rate</th>
+                    <th className="px-4 py-2 text-left border-r w-[100px]">Actual Rate</th>
+                    <th className="px-4 py-2 text-left border-r w-[200px]">Added By</th>
+                  </tr>
+                </thead>
+                <tbody className="text-[12px]">
+                  {Silverdata.length === 0 && !isLoading ? (
+                    <tr>
+                      <td colSpan="5" className="py-20 text-center">
+                        <p className="text-lg text-gray-500">No Data Found</p>
+                      </td>
+                    </tr>
+                  ) : (
+                    Silverdata.map((row, index) => (
+                      <tr
+                        key={row.id}
+                        className={index % 2 === 0 ? "bg-gray-50" : "bg-white"}
+                      >
+                        <td className="px-4 py-2">{formatIndianDate(row.push_date)}</td>
+                        <td className="px-4 py-2">{row.metalType}</td>
+                        <td className="px-4 py-2">{row.Silver_rate}</td>
+                        <td className="px-4 py-2">{row.actual_rate}</td>
+                        <td className="px-4 py-2">{row.added_by}</td>
+                      </tr>
+                    ))
+                  )}
+                </tbody>
+              </table>
+            </div>
             <Pagination
               currentPage={currentPageForSilver}
               totalPages={totalPagesForSilver}

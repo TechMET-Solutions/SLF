@@ -352,7 +352,7 @@ const ChargesProfileList = () => {
 
               <button
                 onClick={handleClearSearch}
-                className="bg-gray-500 text-white text-[11px] px-4 py-1 rounded"
+                className="bg-[#0b2c69] text-white text-[11px] px-4 py-1 rounded"
               >
                 Clear
               </button>

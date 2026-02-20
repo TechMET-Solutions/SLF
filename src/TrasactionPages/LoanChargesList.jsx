@@ -14,11 +14,10 @@ function Pagination({ currentPage, totalPages, onPageChange }) {
       <button
         onClick={() => onPageChange(currentPage - 1)}
         disabled={currentPage === 1}
-        className={`px-3 py-1 border rounded-md ${
-          currentPage === 1
+        className={`px-3 py-1 border rounded-md ${currentPage === 1
             ? "bg-gray-200 text-gray-500 cursor-not-allowed"
             : "bg-[#0A2478] text-white"
-        }`}
+          }`}
       >
         Previous
       </button>
@@ -28,11 +27,10 @@ function Pagination({ currentPage, totalPages, onPageChange }) {
           <button
             key={i + 1}
             onClick={() => onPageChange(i + 1)}
-            className={`px-3 py-1 border rounded-md ${
-              currentPage === i + 1
+            className={`px-3 py-1 border rounded-md ${currentPage === i + 1
                 ? "bg-[#0A2478] text-white"
                 : "bg-white text-gray-700"
-            }`}
+              }`}
           >
             {i + 1}
           </button>
@@ -42,11 +40,10 @@ function Pagination({ currentPage, totalPages, onPageChange }) {
       <button
         onClick={() => onPageChange(currentPage + 1)}
         disabled={currentPage === totalPages}
-        className={`px-3 py-1 border rounded-md ${
-          currentPage === totalPages
+        className={`px-3 py-1 border rounded-md ${currentPage === totalPages
             ? "bg-gray-200 text-gray-500 cursor-not-allowed"
             : "bg-[#0A2478] text-white"
-        }`}
+          }`}
       >
         Next
       </button>
@@ -64,15 +61,15 @@ function LoanChargesList() {
   const [currentPage, setCurrentPage] = useState(1);
   const rowsPerPage = 5;
   const [searchHeaders, setSearchHeaders] = useState([]); // Array of active headers
-const [searchQuery, setSearchQuery] = useState("");
-const [isDropdownOpen, setIsDropdownOpen] = useState(false);
-const toggleHeader = (headerId) => {
-  setSearchHeaders(prev => 
-    prev.includes(headerId) 
-      ? prev.filter(id => id !== headerId) 
-      : [...prev, headerId]
-  );
-};
+  const [searchQuery, setSearchQuery] = useState("");
+  const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+  const toggleHeader = (headerId) => {
+    setSearchHeaders(prev =>
+      prev.includes(headerId)
+        ? prev.filter(id => id !== headerId)
+        : [...prev, headerId]
+    );
+  };
 
 
   useEffect(() => {
@@ -95,24 +92,24 @@ const toggleHeader = (headerId) => {
   //     setIsLoading(false);
   //   }
   // };
-const fetchData = async () => {
-  setIsLoading(true);
-  try {
-    const response = await axios.get(`${BASE_URL}/get`, {
-      params: {
-        headers: searchHeaders.join(","), // convert array to string
-        search: searchQuery
-      },
-    });
+  const fetchData = async () => {
+    setIsLoading(true);
+    try {
+      const response = await axios.get(`${BASE_URL}/get`, {
+        params: {
+          headers: searchHeaders.join(","), // convert array to string
+          search: searchQuery
+        },
+      });
 
-    const apiData = response.data?.data || [];
-    setData(apiData);
-  } catch (error) {
-    console.error("❌ Error fetching loan charges:", error);
-  } finally {
-    setIsLoading(false);
-  }
-};
+      const apiData = response.data?.data || [];
+      setData(apiData);
+    } catch (error) {
+      console.error("❌ Error fetching loan charges:", error);
+    } finally {
+      setIsLoading(false);
+    }
+  };
 
   // 🗑️ Delete record
   const handleDeleteConfirm = async () => {
@@ -184,78 +181,78 @@ const fetchData = async () => {
           </div> */}
 
             <div className="flex items-center gap-3">
-  <div className="flex items-center bg-white border border-gray-400 rounded-[5px] h-[32px] px-2 relative w-[500px]">
-    
-    {/* Multi-Select Header Dropdown */}
-    <div className="relative border-r border-gray-300 pr-2 mr-2">
-      <button 
-        onClick={() => setIsDropdownOpen(!isDropdownOpen)}
-        className="text-[11px] font-source font-bold text-[#0A2478] flex items-center gap-1 outline-none h-full"
-      >
-        Headers ({searchHeaders.length}) <span className="text-[8px]">▼</span>
-      </button>
+              <div className="flex items-center bg-white border border-gray-400 rounded-[5px] h-[32px] px-2 relative w-[500px]">
 
-      {isDropdownOpen && (
-        <div className="absolute top-[35px] left-[-8px] bg-white border border-gray-300 shadow-xl rounded-md z-[100] w-[160px] p-2">
-          {[
-            { id: "loan_no", label: "Loan No" },
-            { id: "party_name", label: "Party Name" },
-            { id: "Amount", label: "Amount" }
-          ].map((col) => (
-            <label key={col.id} className="flex items-center gap-2 p-2 hover:bg-gray-50 cursor-pointer rounded">
-              <input
-                type="checkbox"
-                checked={searchHeaders.includes(col.id)}
-                onChange={() => toggleHeader(col.id)}
-                className="w-3 h-3 accent-[#0A2478]"
-              />
-              <span className="text-[11px] font-source text-gray-700">{col.label}</span>
-            </label>
-          ))}
-          <div className="border-t mt-1 pt-1 text-center">
-             <button 
-               onClick={() => setIsDropdownOpen(false)}
-               className="text-[10px] text-[#0A2478] font-bold"
-             >
-               Apply
-             </button>
-          </div>
-        </div>
-      )}
-    </div>
+                {/* Multi-Select Header Dropdown */}
+                <div className="relative border-r border-gray-300 pr-2 mr-2">
+                  <button
+                    onClick={() => setIsDropdownOpen(!isDropdownOpen)}
+                    className="text-[11px] font-source font-bold text-[#0A2478] flex items-center gap-1 outline-none h-full"
+                  >
+                    Headers ({searchHeaders.length}) <span className="text-[8px]">▼</span>
+                  </button>
 
-    {/* Text Input Field */}
-    <input
-      type="text"
-      value={searchQuery}
-      onChange={(e) => setSearchQuery(e.target.value)}
-      placeholder="Type multiple items (e.g. Cash, Asset)..."
-      className="flex-grow text-[11px] font-source outline-none h-full"
-    />
+                  {isDropdownOpen && (
+                    <div className="absolute top-[35px] left-[-8px] bg-white border border-gray-300 shadow-xl rounded-md z-[100] w-[160px] p-2">
+                      {[
+                        { id: "loan_no", label: "Loan No" },
+                        { id: "party_name", label: "Party Name" },
+                        { id: "Amount", label: "Amount" }
+                      ].map((col) => (
+                        <label key={col.id} className="flex items-center gap-2 p-2 hover:bg-gray-50 cursor-pointer rounded">
+                          <input
+                            type="checkbox"
+                            checked={searchHeaders.includes(col.id)}
+                            onChange={() => toggleHeader(col.id)}
+                            className="w-3 h-3 accent-[#0A2478]"
+                          />
+                          <span className="text-[11px] font-source text-gray-700">{col.label}</span>
+                        </label>
+                      ))}
+                      <div className="border-t mt-1 pt-1 text-center">
+                        <button
+                          onClick={() => setIsDropdownOpen(false)}
+                          className="text-[10px] text-[#0A2478] font-bold"
+                        >
+                          Apply
+                        </button>
+                      </div>
+                    </div>
+                  )}
+                </div>
 
-    {/* Search Button */}
-    <button
-  onClick={() => {
-    setIsDropdownOpen(false);
-    fetchData();   // 🔥 call API here
-  }}
-  className="ml-2 bg-[#0b2c69] text-white text-[11px] px-4 h-[24px] rounded-[3px]"
->
-  Search
-</button>
+                {/* Text Input Field */}
+                <input
+                  type="text"
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                  placeholder="Type multiple items (e.g. Cash, Asset)..."
+                  className="flex-grow text-[11px] font-source outline-none h-full"
+                />
 
-  </div>
+                {/* Search Button */}
+                <button
+                  onClick={() => {
+                    setIsDropdownOpen(false);
+                    fetchData();   // 🔥 call API here
+                  }}
+                  className="ml-2 bg-[#0b2c69] text-white text-[11px] px-4 h-[24px] rounded-[3px]"
+                >
+                  Search
+                </button>
+                <button
+                  onClick={() => {
+                    setSearchQuery("");
+                    setSearchHeaders([]);
+                    fetchData();
+                  }}
+                  className="ml-2 bg-[#0b2c69] text-white text-[11px] px-4 h-[24px] rounded-[3px]"
+                >
+                  Clear
+                </button>
+              </div>
             </div>
-            <button
-                onClick={() => {
-                  setSearchQuery("");
-                  setSearchHeaders([]);
-                   fetchData();
-                }}
-                className="text-[10px] text-gray-500 hover:text-red-500 underline"
-              >
-                Clear
-              </button>
+           
             <button
               onClick={() => navigate("/add-loan-charge")}
               className="bg-[#0A2478] text-white text-sm rounded px-3 py-1 cursor-pointer"
@@ -263,95 +260,94 @@ const fetchData = async () => {
               Add
             </button>
             <button
-                onClick={() => navigate("/")}
-                className="bg-[#C1121F] text-white text-[10px] px-4 py-1 rounded cursor-pointer">
-                Exit
-              </button>
+              onClick={() => navigate("/")}
+              className="bg-[#C1121F] text-white text-[10px] px-4 py-1 rounded cursor-pointer">
+              Exit
+            </button>
           </div>
         </div>
       </div>
 
       {/* 🔹 Table Section */}
       <div className='pr-[110px] pl-[110px]'>
-<div className="flex ">
-        <div className="overflow-x-auto mt-6  h-[500px]">
-          {isLoading ? (
-            <p className="text-center text-gray-500 mt-10">Loading...</p>
-          ) : (
-            <table className="w-full border-collapse">
-              {/* ✅ Table Header */}
-              <thead className="bg-[#0A2478] text-white text-sm">
-                <tr>
-                  <th className="px-4 py-2 text-left border-r w-[130px]">Loan No</th>
-                  <th className="px-10 py-2 text-left border-r w-[200px]">Party Name</th>
-                  <th className="px-4 py-2 text-left border-r w-[150px]">Amount</th>
-                  <th className="px-4 py-2 text-left border-r w-[100px]">Added On</th>
-                  <th className="px-4 py-2 text-left border-r w-[200px]">Added By Email</th>
-                  <th className="px-4 py-2 text-left border-r">Action</th>
-                </tr>
-              </thead>
-
-              {/* ✅ Table Body */}
-              <tbody className="text-[13px]">
-                {data.length === 0 ? (
+        <div className="flex ">
+          <div className="overflow-x-auto mt-6  h-[500px]">
+            {isLoading ? (
+              <p className="text-center text-gray-500 mt-10">Loading...</p>
+            ) : (
+              <table className="w-full border-collapse">
+                {/* ✅ Table Header */}
+                <thead className="bg-[#0A2478] text-white text-sm">
                   <tr>
-                    <td
-                      colSpan="6"
-                      className="text-center py-10 text-gray-500 border-b"
-                    >
-                      No loan charges found.
-                    </td>
+                    <th className="px-4 py-2 text-left border-r w-[130px]">Loan No</th>
+                    <th className="px-10 py-2 text-left border-r w-[200px]">Party Name</th>
+                    <th className="px-4 py-2 text-left border-r w-[150px]">Amount</th>
+                    <th className="px-4 py-2 text-left border-r w-[100px]">Added On</th>
+                    <th className="px-4 py-2 text-left border-r w-[200px]">Added By Email</th>
+                    <th className="px-4 py-2 text-left border-r">Action</th>
                   </tr>
-                ) : (
-                  currentRows.map((row, index) => (
-                    <tr
-                      key={row.id}
-                      className={`${
-                        index % 2 === 0 ? "bg-gray-50" : "bg-white"
-                      }`}
-                    >
-                      <td className="px-4 py-2">{row.loan_no}</td>
-                      <td className="px-4 py-2">{row.party_name}</td>
-                      <td className="px-4 py-2">{row.total_charges}</td>
-                      <td className="px-4 py-2">{row.loan_date}</td>
-                      <td className="px-4 py-2">{row.added_by || "-"}</td>
+                </thead>
 
-                      <td className="px-4 py-2 flex items-center gap-2">
-                        <button
-                          onClick={() => handleViewClick(row)}
-                          className="bg-blue-500 hover:bg-blue-600 p-1.5 rounded text-white"
-                          title="View"
-                        >
-                          <FiEye className="text-sm" />
-                        </button>
-                        <button
-                          onClick={() => handleEditClick(row)}
-                          className="bg-green-500 hover:bg-green-600 p-1.5 rounded text-white"
-                          title="Edit"
-                        >
-                          <FiEdit className="text-sm" />
-                        </button>
-                        <button
-                          onClick={() => {
-                            setSelectedRow(row);
-                            setDeleteModalOpen(true);
-                          }}
-                          className="bg-red-500 hover:bg-red-600 p-1.5 rounded text-white"
-                          title="Delete"
-                        >
-                          <FiTrash2 className="text-sm" />
-                        </button>
+                {/* ✅ Table Body */}
+                <tbody className="text-[13px]">
+                  {data.length === 0 ? (
+                    <tr>
+                      <td
+                        colSpan="6"
+                        className="text-center py-10 text-gray-500 border-b"
+                      >
+                        No loan charges found.
                       </td>
                     </tr>
-                  ))
-                )}
-              </tbody>
-            </table>
-          )}
+                  ) : (
+                    currentRows.map((row, index) => (
+                      <tr
+                        key={row.id}
+                        className={`${index % 2 === 0 ? "bg-gray-50" : "bg-white"
+                          }`}
+                      >
+                        <td className="px-4 py-2">{row.loan_no}</td>
+                        <td className="px-4 py-2">{row.party_name}</td>
+                        <td className="px-4 py-2">{row.total_charges}</td>
+                        <td className="px-4 py-2">{row.loan_date}</td>
+                        <td className="px-4 py-2">{row.added_by || "-"}</td>
+
+                        <td className="px-4 py-2 flex items-center gap-2">
+                          <button
+                            onClick={() => handleViewClick(row)}
+                            className="bg-blue-500 hover:bg-blue-600 p-1.5 rounded text-white"
+                            title="View"
+                          >
+                            <FiEye className="text-sm" />
+                          </button>
+                          <button
+                            onClick={() => handleEditClick(row)}
+                            className="bg-green-500 hover:bg-green-600 p-1.5 rounded text-white"
+                            title="Edit"
+                          >
+                            <FiEdit className="text-sm" />
+                          </button>
+                          <button
+                            onClick={() => {
+                              setSelectedRow(row);
+                              setDeleteModalOpen(true);
+                            }}
+                            className="bg-red-500 hover:bg-red-600 p-1.5 rounded text-white"
+                            title="Delete"
+                          >
+                            <FiTrash2 className="text-sm" />
+                          </button>
+                        </td>
+                      </tr>
+                    ))
+                  )}
+                </tbody>
+              </table>
+            )}
+          </div>
         </div>
       </div>
-      </div>
-      
+
 
       {/* 🔹 Pagination */}
       {totalPages > 1 && (

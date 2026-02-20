@@ -195,43 +195,6 @@ const AccountGroupList = () => {
           <div className="flex items-center gap-6">
             {/* Search section */}
             <div className="flex gap-5 ">
-              {/* <div className="flex gap-3 items-center">
-                <p className="text-[11.25px] font-source">Account Type</p>
-                <input
-                  type="text"
-                  style={{
-                    width: "168.64px",
-                    height: "27.49px",
-                    borderRadius: "5px",
-                    borderWidth: "0.62px",
-                  }}
-                  className="border border-gray-400 px-3 py-1 text-[11.25px] font-source"
-                />
-              </div> */}
-
-              {/* <div className="flex gap-3 items-center">
-                <p className="text-[11.25px] font-source">Ledger Group</p>
-                <input
-                  type="text"
-                  style={{
-                    width: "168.64px",
-                    height: "27.49px",
-                    borderRadius: "5px",
-                    borderWidth: "0.62px",
-                  }}
-                  className="border border-gray-400 px-3 py-1 text-[11.25px] font-source"
-                />
-                <button
-                  style={{
-                    width: "84.36px",
-                    height: "26.87px",
-                    borderRadius: "5px",
-                  }}
-                  className="bg-[#0b2c69] text-white text-[11.25px] font-source font-normal flex items-center justify-center"
-                >
-                  Search
-                </button>
-              </div> */}
             </div>
             <div className="flex items-center gap-4">
               <div className="flex items-center gap-3">
@@ -306,30 +269,15 @@ const AccountGroupList = () => {
                   >
                     Search
                   </button>
-
-
+                  <button
+                    onClick={handleClear}
+                    className="ml-2 bg-[#0b2c69] text-white text-[11px] px-4 h-[24px] rounded-[3px] font-source hover:bg-[#071d45]"
+                  >
+                    Clear
+                  </button>
                 </div>
-
               </div>
-
-              {/* Clear Button */}
-              {/* <button
-                onClick={() => {
-                  setSearchQuery("");
-                  setSearchHeaders([]);
-                  getAccountGroups();
-                }}
-                className="text-[10px] text-gray-500 hover:text-red-500 underline"
-              >
-                Clear
-              </button> */}
-
-              <button
-                onClick={handleClear} // Use the new clear handler
-                className="text-[10px] text-gray-500 hover:text-red-500 underline"
-              >
-                Clear
-              </button>
+              
             </div>
             {/* Buttons stuck to right */}
             <div className="flex gap-3">

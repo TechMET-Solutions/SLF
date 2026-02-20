@@ -901,7 +901,7 @@ const LoanApplication = () => {
               </div> */}
 
               <div className="flex items-center gap-3">
-                <div className="flex items-center bg-white border border-gray-400 rounded-[5px] h-[32px] px-2 relative w-[300px]">
+                <div className="flex items-center bg-white border border-gray-400 rounded-[5px] h-[32px] px-2 relative w-[380px]">
                   {/* Multi-Select Header Dropdown */}
                   <div className="relative border-r border-gray-300 pr-2 mr-2">
                     <button
@@ -971,18 +971,19 @@ const LoanApplication = () => {
                   >
                     Search
                   </button>
+                  <button
+                    onClick={() => {
+                      setSearchQuery("");
+                      setSearchHeaders([]);
+                      fetchLoanApplications();
+                    }}
+                    className="ml-2 bg-[#0b2c69] text-white text-[11px] px-4 h-[24px] rounded-[3px] font-source hover:bg-[#071d45]"
+                  >
+                    Clear
+                  </button>
                 </div>
               </div>
-              <button
-                onClick={() => {
-                  setSearchQuery("");
-                  setSearchHeaders([]);
-                  fetchLoanApplications();
-                }}
-                className="text-[10px] text-gray-500 hover:text-red-500 underline"
-              >
-                Clear
-              </button>
+              
               {/* Scheme Filter */}
               {/* <div className="relative w-[111px]">
                 <button
@@ -1109,7 +1110,7 @@ const LoanApplication = () => {
                 )) && (
                 <button
                   onClick={clearAllFilters}
-                  className="bg-gray-500 text-white px-3 py-1 rounded text-[12px] hover:bg-gray-600"
+                  className="ml-2 bg-[#0b2c69] text-white text-[11px] px-4 h-[24px] rounded-[3px] font-source hover:bg-[#071d45]"
                 >
                   Clear All
                 </button>

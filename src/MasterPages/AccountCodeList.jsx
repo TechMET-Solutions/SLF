@@ -548,12 +548,11 @@
 
 import axios from "axios";
 import { useEffect, useMemo, useState } from "react";
-import { API } from "../api";
-import GroupData from "../assets/Group 124.svg";
-import { formatIndianDate } from "../utils/Helpers";
-import { useAuth } from "../API/Context/AuthContext";
-import { useNavigate } from "react-router-dom";
 import { FiEdit } from "react-icons/fi";
+import { useNavigate } from "react-router-dom";
+import { API } from "../api";
+import { useAuth } from "../API/Context/AuthContext";
+import { formatIndianDate } from "../utils/Helpers";
 // Ensure this import exists
 import Pagination from "../Component/Pagination";
 
@@ -602,6 +601,24 @@ const AccountCodeList = () => {
   };
 
   // 🔹 FIXED: Search logic now correctly uses filteredData in the table
+  // const filteredData = useMemo(() => {
+  //   if (!searchQuery.trim() || searchHeaders.length === 0) return data;
+
+  //   const keywords = searchQuery
+  //     .toLowerCase()
+  //     .split(",")
+  //     .map((k) => k.trim())
+  //     .filter((k) => k);
+
+  //   return data.filter((row) => {
+  //     return keywords.some((keyword) =>
+  //       searchHeaders.some((header) =>
+  //         row[header]?.toString().toLowerCase().includes(keyword)
+  //       )
+  //     );
+  //   });
+  // }, [data, searchQuery, searchHeaders]);
+
   const filteredData = useMemo(() => {
     if (!searchQuery.trim() || searchHeaders.length === 0) return data;
 
@@ -764,7 +781,7 @@ const AccountCodeList = () => {
                   className="flex-grow text-[11px] outline-none h-full bg-transparent"
                 />
 
-                <button
+                {/* <button
                   onClick={() => {
                     setIsDropdownOpen(false);
                     setCurrentPage(1); // Reset to page 1 on search
@@ -773,21 +790,35 @@ const AccountCodeList = () => {
                   className="ml-2 bg-[#0b2c69] text-white text-[10px] px-3 h-[22px] rounded-[3px] hover:opacity-90"
                 >
                   Search
-                </button>
-              </div>
+                </button> */}
 
-              <div className="flex items-center gap-3 border-l pl-6 border-gray-200">
                 <button
+                  onClick={() => {
+                    setIsDropdownOpen(false);
+                    setCurrentPage(1);
+                    fetchData(1);   // 🔥 API CALL
+                  }}
+                  className="ml-2 bg-[#0b2c69] text-white text-[11px] px-4 h-[24px] rounded-[3px] font-source hover:bg-[#071d45]"
+                >
+                  Search
+                </button>
+
+                <button
+                  
                   onClick={() => {
                     setSearchQuery("");
                     setSearchHeaders([]);
                     setCurrentPage(1);
                     fetchData(1);
                   }}
-                  className="text-[10px] text-gray-400 hover:text-red-500 underline"
+                  className="ml-2 bg-[#0b2c69] text-white text-[11px] px-4 h-[24px] rounded-[3px] font-source hover:bg-[#071d45]"
                 >
                   Clear
                 </button>
+              </div>
+
+              <div className="flex items-center gap-3 pl-4 border-gray-200">
+                
                 <button onClick={() => setIsModalOpen(true)} className="w-[70px] h-[26px] rounded-[4px] bg-[#0A2478] text-white text-[11px]">Add</button>
                 <button onClick={() => navigate("/")} className="w-[70px] h-[26px] rounded-[4px] bg-[#C1121F] text-white text-[11px]">Exit</button>
               </div>
@@ -893,7 +924,7 @@ const AccountCodeList = () => {
               </tr>
             </thead>
             <tbody className="text-[12px]">
-              {filteredData?.map((row, index) => (
+              {data?.map((row, index) => (
                 <tr key={index} className={index % 2 === 0 ? "bg-gray-50" : "bg-white"}>
                   <td className="px-4 py-2">{row.name}</td>
                   <td className="px-4 py-2">{row.financialDate}</td>

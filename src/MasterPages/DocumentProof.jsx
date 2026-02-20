@@ -564,7 +564,8 @@ const handleUpdateSubmit = async () => {
 
                   fetchDocuments(); // reload all data
                 }}
-                className="text-[10px] text-gray-500 hover:text-red-500 underline"
+                className="bg-[#0A2478] text-white text-[11.25px] rounded cursor-pointer hover:bg-[#071d45] transition-colors"
+                style={{ width: "60px", height: "27.49px" }}
               >
                 Clear
               </button>

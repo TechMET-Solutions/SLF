@@ -420,24 +420,26 @@ const BranchProfileList = () => {
                       setIsDropdownOpen(false);
                       fetchBranches(); // call API
                     }}
-                    className="ml-2 bg-[#0b2c69] text-white text-[10px] px-3 h-[22px] rounded-[3px] font-source hover:opacity-90"
+                    className="ml-2 bg-[#0b2c69] text-white text-[11px] px-4 h-[24px] rounded-[3px] font-source hover:bg-[#071d45]"
                   >
                     Search
                   </button>
-                </div>
 
-                {/* Action Buttons Group */}
-                <div className="flex items-center gap-4">
                   <button
                     onClick={() => {
                       setSearchQuery(""); // Clears the search text
                       setSearchHeaders([]); // Resets checkboxes to 0
                       fetchBranches();
                     }}
-                    className="text-[10px] text-gray-400 hover:text-red-500 underline whitespace-nowrap"
+                    className="ml-2 bg-[#0b2c69] text-white text-[11px] px-4 h-[24px] rounded-[3px] font-source hover:bg-[#071d45]"
                   >
                     Clear
                   </button>
+                </div>
+
+                {/* Action Buttons Group */}
+                <div className="flex items-center gap-4">
+                 
                   <button
                     style={{
                       width: "74px",

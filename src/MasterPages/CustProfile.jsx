@@ -380,18 +380,19 @@ const CustProfile = () => {
                 >
                   Search
                 </button>
+                <button
+                  onClick={() => {
+                    setSearchQuery("");
+                    setSearchHeaders([]);
+                    fetchCustomers();
+                  }}
+                  className="ml-2 bg-[#0b2c69] text-white text-[11px] px-4 h-[24px] rounded-[3px] font-source hover:bg-[#071d45]"
+                >
+                  Clear
+                </button>
               </div>
             </div>
-            <button
-              onClick={() => {
-                setSearchQuery("");
-                setSearchHeaders([]);
-                fetchCustomers();
-              }}
-              className="text-[10px] text-gray-500 hover:text-red-500 underline"
-            >
-              Clear
-            </button>
+            
             {/* Buttons stuck to right */}
             <div className="flex gap-3">
               <button

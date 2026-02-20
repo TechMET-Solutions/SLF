@@ -37,21 +37,7 @@ function AuctionCreation() {
     fetchAuctions();
   }, []);
 
-  // const fetchAuctions = async () => {
-  //   try {
-  //     const res = await fetch(`${API}/Transactions/GetAuction`, {
-  //       method: "GET",
-  //       headers: { "Content-Type": "application/json" },
-  //     });
-
-  //     const json = await res.json();
-  //     if (json.success) {
-  //       setData(json.data);
-  //     }
-  //   } catch (error) {
-  //     console.log("Error fetching auctions:", error);
-  //   }
-  // };
+ 
   const fetchAuctions = async () => {
     try {
       const params = new URLSearchParams();
@@ -166,7 +152,20 @@ function AuctionCreation() {
                   }}
                 >
                   Search
-                </button>
+            </button>
+            
+            <button
+              className="ml-2 bg-[#0b2c69] text-white text-[11px] px-4 h-[30px] rounded-[3px] font-source hover:bg-[#071d45]"
+              onClick={() => {
+                setSearchQuery("");
+                setSearchHeaders([]);
+                setSelectedDate("");
+                setIsDropdownOpen(false);
+                fetchAuctions();
+              }}
+            >
+              Clear
+            </button>
             <div className="flex gap-3">
               <button
                 onClick={() => navigate("/Add-Auction-Creation")}
