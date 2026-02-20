@@ -688,7 +688,7 @@ function App() {
                     element={<PaymentInAccounting />}
                   />
                   <Route
-                    path="/ReceiptVoucher/List"
+                    path="/Receipt_List"
                     element={<RecieptAccounting />}
                   />
 

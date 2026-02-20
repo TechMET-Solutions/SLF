@@ -31,201 +31,7 @@ function LoginPage() {
     }
   }, [showExtra]);
 
-  // const handleLogin = async (e) => {
-  //   e.preventDefault();
-
-  //   const email = e.target.email?.value;
-  //   const password = e.target.password?.value;
-  //   const branch = e.target.branch?.value;
-  //   const year = e.target.year?.value;
-
-  //   // -----------------------------
-  //   // STEP 1 → Admin Login (NO API)
-  //   // -----------------------------
-  //   if (!showExtra && email === "admin@gmail.com" && password === "123") {
-  //     setTempLogin({
-  //       id: 0,
-  //       email: "admin@gmail.com",
-  //       role: "Admin",
-  //       isAdmin: true, // IMPORTANT FLAG
-  //       permissions: "all", // full access
-  //     });
-
-  //     setShowExtra(true); // show Branch + Year
-  //     setEmailCorrect(true); // allow Step 2
-  //     return; // stop here
-  //   }
-
-  //   // -----------------------------------
-  //   // STEP 1 → Non-admin Login (Call API)
-  //   // -----------------------------------
-  //   if (!showExtra) {
-  //     try {
-  //       const res = await fetch(`${API}/Master/Emp-login`, {
-  //         method: "POST",
-  //         headers: { "Content-Type": "application/json" },
-  //         body: JSON.stringify({ email, password }),
-  //       });
-
-  //       const data = await res.json();
-
-  //       if (!data.status) {
-  //         alert(data.message);
-  //         return;
-  //       }
-
-  //       // Save user info for Step 2
-  //       setTempLogin(data.user);
-  //       setShowExtra(true);
-  //       setEmailCorrect(true);
-  //     } catch (err) {
-  //       alert("Server Problem");
-  //     }
-
-  //     return;
-  //   }
-
-  //   // -------------------------------
-  //   // STEP 2 → Validate Branch + Year
-  //   // -------------------------------
-  //   if (!branch || !year) {
-  //     alert("Please select branch & financial year");
-  //     return;
-  //   }
-
-  //   // -------------------------------
-  //   // STEP 2 → Save final user session
-  //   // -------------------------------
-  //   const selectedBranchData = branches.find(
-  //     (branch) => branch.id.toString() === selectedBranch.toString(),
-  //   );
-
-  //   const finalUserData = {
-  //     ...tempLogin,
-  //     branchId: selectedBranch,
-  //     branchName: selectedBranchData?.branchName || "",
-  //     financialYear: selectedYear,
-  //     loginTime: new Date().toISOString(),
-  //   };
-
-  //   sessionStorage.setItem("isLoggedIn", "true");
-  //   sessionStorage.setItem("userData", JSON.stringify(finalUserData));
-
-  //   // Redirect to dashboard
-  //   window.location.href = "/";
-  // };
-
-  //   const staticUsers = [
-  //   {
-  //     id: 0,
-  //     email: "admin@gmail.com",
-  //     password: "123",
-  //     role: "Admin",
-  //     permissions: "all",
-  //   },
-  //   {
-  //     id: 1,
-  //     email: "tester1@gmail.com",
-  //     password: "123",
-  //     role: "Tester",
-  //     permissions: "limited",
-  //   },
-  //   {
-  //     id: 2,
-  //     email: "tester2@gmail.com",
-  //     password: "123",
-  //     role: "Tester",
-  //     permissions: "limited",
-  //   },
-  //   {
-  //     id: 3,
-  //     email: "sumittest@gmail.com",
-  //     password: "123",
-  //     role: "Manager",
-  //     permissions: "custom",
-  //   },
-  // ];
-
-  //   const handleLogin = async (e) => {
-  //     e.preventDefault();
-
-  //     const email = e.target.email?.value;
-  //     const password = e.target.password?.value;
-
-  //     // -----------------------------
-  //     // STEP 1 → Admin Login (NO API)
-  //     // -----------------------------
-  //     if (!showExtra && email === "admin@gmail.com" && password === "123") {
-  //       setTempLogin({
-  //         id: 0,
-  //         email: "admin@gmail.com",
-  //         role: "Admin",
-  //         isAdmin: true,
-  //         permissions: "all",
-  //       });
-
-  //       setShowExtra(true);
-  //       return;
-  //     }
-
-  //     // -----------------------------------
-  //     // STEP 1 → Employee Login (API)
-  //     // -----------------------------------
-  //     if (!showExtra) {
-  //       try {
-  //         const res = await fetch(`${API}/Master/Emp-login`, {
-  //           method: "POST",
-  //           headers: { "Content-Type": "application/json" },
-  //           body: JSON.stringify({ email, password }),
-  //         });
-
-  //         const data = await res.json();
-
-  //         if (!data.status) {
-  //           alert(data.message);
-  //           return;
-  //         }
-
-  //         setTempLogin(data.user);
-  //         setShowExtra(true);
-  //       } catch (err) {
-  //         alert("Server Problem");
-  //       }
-
-  //       return;
-  //     }
-
-  //     // -------------------------------
-  //     // STEP 2 → Validate Branch + Year
-  //     // -------------------------------
-  //     if (!selectedBranch || !selectedYear) {
-  //       alert("Please select branch & financial year");
-  //       return;
-  //     }
-
-  //     // Get selected branch object
-  //     const selectedBranchData = branches.find(
-  //       (b) => b.id.toString() === selectedBranch.toString(),
-  //     );
-
-  //     // -------------------------------
-  //     // FINAL USER SESSION OBJECT
-  //     // -------------------------------
-  //     const finalUserData = {
-  //       ...tempLogin,
-  //       branchId: selectedBranch,
-  //       branchName: selectedBranchData?.branchName || "",
-  //       financialYear: selectedYear,
-  //       loginTime: new Date().toISOString(),
-  //     };
-
-  //     sessionStorage.setItem("isLoggedIn", "true");
-  //     sessionStorage.setItem("userData", JSON.stringify(finalUserData));
-
-  //     window.location.href = "/";
-  //   };
-
-  // ✅ Static Users (Development Only)
+ 
   const staticUsers = [
     {
       id: 0,
@@ -263,9 +69,6 @@ function LoginPage() {
     const email = e.target.email?.value?.trim();
     const password = e.target.password?.value?.trim();
 
-    // ==========================================
-    // STEP 1 → LOGIN (STATIC USERS + API LOGIN)
-    // ==========================================
     if (!showExtra) {
       // 🔎 Check Static Users First
       const matchedUser = staticUsers.find(
@@ -414,7 +217,7 @@ function LoginPage() {
                         );
                         setSelectedBranch(branchObj); // ✅ store full object
                       }}
-                      className="w-full border border-gray-300 px-3 py-2 rounded-md"
+                      className="w-full border border-gray-300 px-3 py-2 rounded-md bg-white"
                     >
                       <option value="">Select Branch</option>
                       {branches.map((branch) => (

@@ -7,6 +7,8 @@ import { API } from "../../api";
 const FundTransferList = () => {
   const navigate = useNavigate();
   const [list, setList] = useState([]);
+
+  console.log(list,"list")
   const [payMode, setPayMode] = useState("");
   useEffect(() => {
     fetchFundTransfers();
@@ -14,7 +16,9 @@ const FundTransferList = () => {
 
   const fetchFundTransfers = async () => {
     try {
-      const res = await axios.get(`${API}/FundTransfer/FundTransfer/list`);
+      const res = await axios.get(
+        `http://localhost:5000/api/FundTransfer/list`,
+      );
       setList(res.data.data);
     } catch (error) {
       console.error("Error fetching list:", error);

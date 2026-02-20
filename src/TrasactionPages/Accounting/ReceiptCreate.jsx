@@ -201,7 +201,7 @@ const ReceiptCreate = () => {
       }
 
       alert("Receipt Saved Successfully");
-      navigate("/ReceiptVoucher/List");
+      navigate("/Receipt_List");
     } catch (error) {
       console.error(error);
       alert("Error saving receipt");
@@ -664,7 +664,7 @@ const ReceiptCreate = () => {
   {/* Exit Button */}
   <button
     type="button"
-    onClick={() => navigate("/ReceiptVoucher/List")}
+    onClick={() => navigate("/Receipt_List")}
     className="
       bg-red-600 
       text-white 

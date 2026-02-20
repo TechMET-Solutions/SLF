@@ -1,5 +1,4 @@
 import axios from "axios";
-import { Plus, Search } from "lucide-react";
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { API } from "../../api";
@@ -16,6 +15,8 @@ const JournalVoucherlist = () => {
 
   // ================= STATES =================
   const [voucherList, setVoucherList] = useState([]);
+
+  console.log(voucherList, "voucherList");
   const [loading, setLoading] = useState(false);
 
   const [page, setPage] = useState(1);
@@ -29,19 +30,15 @@ const JournalVoucherlist = () => {
     try {
       setLoading(true);
 
-      const res = await axios.get(`${API}/api/journalVoucher/list`, {
-        params: {
-          page,
-          limit: 10,
-          payMode,
-          account,
-        },
-      });
+      const res = await axios.get(
+        `${API}/api/journalVoucher/list`,
+      );
 
-      setVoucherList(res.data.data);
-      setTotalPages(res.data.pagination.totalPages);
+      if (res.data.success) {
+        setVoucherList(res.data.data);
+      }
     } catch (err) {
-      console.error(err);
+      console.error("Fetch Error:", err);
     } finally {
       setLoading(false);
     }
@@ -68,124 +65,181 @@ const JournalVoucherlist = () => {
     return `${day}-${month}-${year}`;
   };
 
+  const handleView = (item) => {
+    navigate("/JournalVoucher/create", {
+      state: { id: item.id, mode: "view" },
+    });
+  };
+
+  const handleEdit = (item) => {
+    navigate("/JournalVoucher/create", {
+      state: { id: item.id, mode: "edit" },
+    });
+  };
+  const handleDelete = async (id) => {
+    const confirmDelete = window.confirm(
+      "Are you sure you want to delete this Journal Voucher?",
+    );
+
+    if (!confirmDelete) return;
+
+    try {
+      const response = await axios.delete(
+        `${API}/api/journalVoucher/delete/${id}`,
+      );
+
+      if (response.data.success) {
+        alert("Journal Voucher Deleted Successfully ✅");
+
+        // 🔥 Refresh List After Delete
+        fetchVouchers();
+      }
+    } catch (error) {
+      console.error("Delete Error:", error);
+      alert(
+        error.response?.data?.message || "Failed to delete Journal Voucher ❌",
+      );
+    }
+  };
+
   return (
     <div className="min-h-screen bg-[#f1f5f9]">
-      <div className="p-4 max-w-[1500px] mx-auto">
-        {/* Header */}
-        <div
-          className={`${tealHeader} text-white px-4 py-1.5 flex justify-between items-center`}
-        >
-          <h1 className="text-sm font-bold uppercase">Journal Voucher List</h1>
-          <button
-            onClick={() => navigate("/JournalVoucher/create")}
-            className="bg-[#0A2478] text-white text-[11px] font-bold py-1 px-3 rounded flex items-center"
-          >
-            <Plus size={14} className="mr-1" /> ADD
-          </button>
+      <div className="p-4 ml-[110px] mr-[110px] mx-auto">
+        <div className="flex justify-center sticky top-[80px] z-40">
+          <div className="flex justify-center mt-5">
+            <div className="flex items-center justify-between px-6 py-4 border-b w-[1290px] h-[61px] border rounded-[11px] border-gray-200 bg-white">
+              <h2 className="text-red-600 font-bold text-[20px] leading-[148%]">
+                Journal Voucher List
+              </h2>
+
+              <div className="flex gap-5">
+                <div className="   flex items-end gap-5">
+                  <div>
+                    <label className="text-[11px] font-bold p-1">
+                      Pay Mode
+                    </label>
+                    <select
+                      value={payMode}
+                      onChange={(e) => setPayMode(e.target.value)}
+                      className={`${inputClass} w-48`}
+                    >
+                      <option value="All">--Select All--</option>
+                      <option value="Cash">Cash</option>
+                      <option value="UPI">Net Banking</option>
+                      {/* <option value="Bank">Bank</option> */}
+                    </select>
+                  </div>
+
+                  <div>
+                    <label className="text-[11px] font-bold p-1">Account</label>
+                    <select
+                      value={account}
+                      onChange={(e) => setAccount(e.target.value)}
+                      className={`${inputClass} w-48`}
+                    >
+                      <option value="All">--Select All--</option>
+                      <option value="Cash Account">Cash Account</option>
+                      <option value="Bank Account">Bank Account</option>
+                    </select>
+                  </div>
+
+                  <button
+                    onClick={handleSearch}
+                    className={`${systemBlue} text-white px-6 py-1 rounded text-xs font-bold flex items-center gap-2`}
+                  >
+                    Search
+                  </button>
+                </div>
+                <button
+                  onClick={() => navigate("/JournalVoucher/create")}
+                  className="w-[74px] h-[24px]  cursor-pointer rounded bg-[#0A2478] text-white text-[11.25px] flex items-center justify-center mt-2"
+                >
+                  Add
+                </button>
+                <button
+                  onClick={() => navigate("/")}
+                  className="w-[74px] h-[24px] cursor-pointer  rounded bg-[#C1121F] text-white text-[10px] mt-2"
+                >
+                  Exit
+                </button>
+              </div>
+            </div>
+          </div>
         </div>
 
-        {/* Filters */}
-        <div className="bg-white p-4 border flex items-end gap-4 mb-4">
+        <div className="mt-5">
           <div>
-            <label className="text-[11px] font-bold p-1">Pay Mode</label>
-            <select
-              value={payMode}
-              onChange={(e) => setPayMode(e.target.value)}
-              className={`${inputClass} w-48`}
-            >
-              <option value="All">--Select All--</option>
-              <option value="Cash">Cash</option>
-              <option value="UPI">Net Banking</option>
-              {/* <option value="Bank">Bank</option> */}
-            </select>
-          </div>
-
-          <div>
-            <label className="text-[11px] font-bold p-1">Account</label>
-            <select
-              value={account}
-              onChange={(e) => setAccount(e.target.value)}
-              className={`${inputClass} w-48`}
-            >
-              <option value="All">--Select All--</option>
-              <option value="Cash Account">Cash Account</option>
-              <option value="Bank Account">Bank Account</option>
-            </select>
-          </div>
-
-          <button
-            onClick={handleSearch}
-            className={`${systemBlue} text-white px-6 py-1 rounded text-xs font-bold flex items-center gap-2`}
-          >
-            <Search size={14} /> Search
-          </button>
-        </div>
-
-        {/* Table */}
-        <div className="bg-white border overflow-hidden">
-          <table className="w-full text-left border-collapse">
-            <thead>
-              <tr className={`${tableHeaderBg} text-[11px] font-bold border-b`}>
-                <th className="p-2">Voucher No</th>
-                <th className="p-2">Voucher Date</th>
-                <th className="p-2">Narration</th>
-                <th className="p-2">Debit</th>
-                <th className="p-2">Credit</th>
-                <th className="p-2">Created At</th>
-              </tr>
-            </thead>
-
-            <tbody className="text-[12px]">
-              {loading ? (
-                <tr>
-                  <td colSpan="6" className="text-center p-4">
-                    Loading...
-                  </td>
+            <table className="text-left border-collapse ">
+              <thead className="bg-[#0A2478] text-white text-sm">
+                <tr className="font-bold border-b">
+                  <th className="p-2 border border-r w-[160px]">Voucher No</th>
+                  <th className="p-2 border border-r w-[100px]">
+                    Voucher Date
+                  </th>
+                  <th className="p-2 border border-r w-[100px]">Deposit</th>
+                  <th className="p-2 border border-r w-[100px]">Withdrawal</th>
+                  <th className="p-2 border border-r w-[120px]">Date</th>
+                  {/* Added Action Header */}
+                  <th className="p-2 border w-[150px] text-center">Action</th>
                 </tr>
-              ) : voucherList?.length === 0 ? (
-                <tr>
-                  <td colSpan="6" className="text-center p-4">
-                    No Data Found
-                  </td>
-                </tr>
-              ) : (
-                voucherList?.map((item) => (
-                  <tr key={item.id} className="border-b">
-                    <td className="p-2 font-bold text-[#0A2478]">
-                      JV-{item.id}
+              </thead>
+
+              <tbody className="text-[12px]">
+                {loading ? (
+                  <tr>
+                    <td colSpan="6" className="text-center p-4">
+                      Loading...
                     </td>
-                    <td className="p-2">{formatDate(item.voucherDate)}</td>
-                    <td className="p-2">{item.narration}</td>
-                    <td className="p-2">{item.debitAmount}</td>
-                    <td className="p-2">{item.creditAmount}</td>
-                    <td className="p-2">{formatDate(item.createdAt)}</td>
                   </tr>
-                ))
-              )}
-            </tbody>
-          </table>
+                ) : voucherList?.length === 0 ? (
+                  <tr>
+                    <td colSpan="6" className="text-center p-4">
+                      No Data Found
+                    </td>
+                  </tr>
+                ) : (
+                  voucherList?.map((item, index) => (
+                    <tr
+                      key={item.id}
+                      className={index % 2 === 0 ? "bg-gray-50" : "bg-white"}
+                    >
+                      <td className="p-2 font-bold text-[#0A2478]">
+                        JV-{item.voucher_no}
+                      </td>
+                      <td className="p-2">{formatDate(item.voucher_date)}</td>
+                      <td className="p-2">{item.deposit_amount}</td>
+                      <td className="p-2">{item.withdrawal_amount}</td>
+                      <td className="p-2">{formatDate(item.created_at)}</td>
 
-          {/* Pagination */}
-          <div className="p-4 flex justify-center gap-2">
-            <button
-              disabled={page === 1}
-              onClick={() => setPage(page - 1)}
-              className="px-3 py-1 border"
-            >
-              Previous
-            </button>
-
-            <span className="px-3 py-1">
-              Page {page} of {totalPages}
-            </span>
-
-            <button
-              disabled={page === totalPages}
-              onClick={() => setPage(page + 1)}
-              className="px-3 py-1 border"
-            >
-              Next
-            </button>
+                      {/* --- Action Buttons Column --- */}
+                      <td className="p-2  flex items-center justify-center gap-3">
+                        <button
+                          onClick={() => handleView(item)}
+                          className="text-blue-500 hover:text-blue-700 transition-colors"
+                          title="View"
+                        >
+                          View
+                        </button>
+                        <button
+                          onClick={() => handleEdit(item)}
+                          className="text-green-600 hover:text-green-800 transition-colors"
+                          title="Edit"
+                        >
+                          Edit
+                        </button>
+                        <button
+                          onClick={() => handleDelete(item.id)}
+                          className="text-red-500 hover:text-red-700 transition-colors"
+                          title="Delete"
+                        >
+                          Delete
+                        </button>
+                      </td>
+                    </tr>
+                  ))
+                )}
+              </tbody>
+            </table>
           </div>
         </div>
       </div>

@@ -741,8 +741,6 @@
 //             {isMiscellaneous && (
 //               <>
 //                 <div  className="absolute top-full left-0 mt-2 bg-white text-black rounded shadow-lg w-[200px] z-50">
-                 
-                   
 
 //                     {isMiscellaneous && (
 //                       <div className="absolute top-0 left-full ml-1 w-[200px] bg-white text-black rounded shadow-lg flex flex-col text-sm">
@@ -758,7 +756,6 @@
 //                         ))}
 //                       </div>
 //                     )}
-                  
 
 //                 </div>
 //               </>
@@ -1204,8 +1201,6 @@
 
 // export default Navbar;
 
-
-
 // src/components/Navbar.jsx
 import { useEffect, useRef, useState } from "react";
 import {
@@ -1218,14 +1213,12 @@ import { TfiReload } from "react-icons/tfi";
 import { Link, useNavigate } from "react-router-dom";
 
 const Navbar = () => {
-
   const [openMenu, setOpenMenu] = useState(null);
   const [openSubMenu, setOpenSubMenu] = useState(null);
 
   const [openMasterSubMenu, setOpenMasterSubMenu] = useState(null);
   const [openTransactionSubMenu, setOpenTransactionSubMenu] = useState(null);
   const [openReportSubMenu, setOpenReportSubMenu] = useState(null);
-
 
   const toggleMenu = (menu) => {
     setOpenMenu((prev) => (prev === menu ? null : menu));
@@ -1243,20 +1236,31 @@ const Navbar = () => {
     setOpenSubMenu((prev) => (prev === menu ? null : menu));
   };
 
-
   const toggleReportSubMenu = (menu) => {
     setOpenReportSubMenu((prev) => (prev === menu ? null : menu));
   };
 
-
-
   const [isBranchModelOpen, setIsBranchModelOpen] = useState(false);
-  const [selectedBranch, setSelectedBranch] = useState("Nashik Road"); // default branch
+
   const [selectedYear, setSelectedYear] = useState("2025");
 
   // Temporary states for modal selection before confirming
   const [tempBranch, setTempBranch] = useState("");
   const [tempYear, setTempYear] = useState("");
+
+  const [selectedBranch, setSelectedBranch] = useState("");
+
+  useEffect(() => {
+    debugger;
+    const userData = JSON.parse(sessionStorage.getItem("userData"));
+
+    if (userData && userData.branchId) {
+      console.log("Branch ID:", userData.branchId.branch_code);
+      console.log("Branch Name:", userData.branchId.branch_name);
+      setSelectedYear(userData.financialYear);
+      setSelectedBranch(userData.branchId.branch_name);
+    }
+  }, []);
 
   const handleOk = () => {
     if (tempBranch) setSelectedBranch(tempBranch);
@@ -1338,14 +1342,12 @@ const Navbar = () => {
   useEffect(() => {
     const handleClickOutside = (event) => {
       if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
-
         // 🔥 Close ALL menus
         setOpenMenu(null);
         setOpenSubMenu(null);
         setOpenMasterSubMenu(null);
         setOpenTransactionSubMenu(null);
         setOpenReportSubMenu(null);
-
       }
     };
 
@@ -1431,18 +1433,18 @@ const Navbar = () => {
   const filteredMasterProfile = isAdmin
     ? masterProfileList
     : masterProfileList.filter(
-      (item) => masterPermissions[item.name]?.view === true,
-    );
+        (item) => masterPermissions[item.name]?.view === true,
+      );
   const filteredReporttrasaction = isAdmin
     ? ReportTrasaction
     : ReportTrasaction.filter(
-      (item) => masterPermissions[item.name]?.view === true,
-    );
+        (item) => masterPermissions[item.name]?.view === true,
+      );
   const filteredMiscellaneousrasaction = isAdmin
     ? masterMiscellaneousList
     : masterMiscellaneousList.filter(
-      (item) => masterPermissions[item.name]?.view === true,
-    );
+        (item) => masterPermissions[item.name]?.view === true,
+      );
   const schemeMasterItems = [
     { name: "Scheme Details", path: "/Scheme-Details-List" },
     { name: "Scheme Branch Mapping", path: "/Branch-Scheme-Mapping-List" },
@@ -1471,19 +1473,19 @@ const Navbar = () => {
   const filteredSchemeMaster = isAdmin
     ? schemeMasterItems
     : schemeMasterItems.filter(
-      (item) => masterPermissions[item.name]?.view === true,
-    );
+        (item) => masterPermissions[item.name]?.view === true,
+      );
   const cashfinancialreport = isAdmin
     ? cashBankFinancialReport
     : cashBankFinancialReport.filter(
-      (item) => masterPermissions[item.name]?.view === true,
-    );
+        (item) => masterPermissions[item.name]?.view === true,
+      );
 
   const misreportsection = isAdmin
     ? misreporttab
     : misreporttab.filter(
-      (item) => masterPermissions[item.name]?.view === true,
-    );
+        (item) => masterPermissions[item.name]?.view === true,
+      );
 
   const canSeeSchemeMaster = filteredSchemeMaster.length > 0;
 
@@ -1499,8 +1501,8 @@ const Navbar = () => {
   const filteredEmployeeProfile = isAdmin
     ? employeeProfileItems
     : employeeProfileItems.filter(
-      (item) => masterPermissions[item.name]?.view === true,
-    );
+        (item) => masterPermissions[item.name]?.view === true,
+      );
 
   const canSeeEmployeeProfile = filteredEmployeeProfile.length > 0;
 
@@ -1512,8 +1514,8 @@ const Navbar = () => {
   const filteredUserManagement = isAdmin
     ? userManagementItems
     : userManagementItems.filter(
-      (item) => masterPermissions[item.name]?.view === true,
-    );
+        (item) => masterPermissions[item.name]?.view === true,
+      );
 
   const canSeeUserManagement = filteredUserManagement.length > 0;
 
@@ -1524,7 +1526,7 @@ const Navbar = () => {
 
   const AccountingItems = [
     { name: "Expences", path: "/Expences_list" },
-    { name: "Receipt", path: "/ReceiptVoucher/List" },
+    { name: "Receipt", path: "/Receipt_List" },
     { name: "Journal", path: "/JournalVoucher/List" },
     { name: "FT Issue", path: "/FundTransfer/issue" },
     { name: "FT Receipt", path: "/FundTransfer/receipt" },
@@ -1545,13 +1547,13 @@ const Navbar = () => {
   const filteredLoan = isAdmin
     ? loanItems
     : loanItems.filter(
-      (item) => TrasactionPermissions[item.name]?.view === true,
-    );
+        (item) => TrasactionPermissions[item.name]?.view === true,
+      );
   const filteredAccounting = isAdmin
     ? AccountingItems
     : AccountingItems.filter(
-      (item) => TrasactionPermissions[item.name]?.view === true,
-    );
+        (item) => TrasactionPermissions[item.name]?.view === true,
+      );
   const canSeeLoan = filteredLoan.length > 0;
 
   const canSeeCustomerProfile = isAdmin
@@ -1561,8 +1563,8 @@ const Navbar = () => {
   const filteredAuction = isAdmin
     ? auctionItems
     : auctionItems.filter(
-      (item) => TrasactionPermissions[item.name]?.view === true,
-    );
+        (item) => TrasactionPermissions[item.name]?.view === true,
+      );
 
   const canSeeAuction = filteredAuction.length > 0;
 
@@ -1605,7 +1607,6 @@ const Navbar = () => {
 
             {openMenu === "masters" && (
               <div className="absolute top-full left-0 mt-2 bg-white text-black rounded shadow-lg w-[200px] z-50">
-
                 {/* Master Profile */}
                 {canSeeMasterProfile && (
                   <div className="relative">
@@ -1614,7 +1615,11 @@ const Navbar = () => {
                       onClick={() => toggleMasterSubMenu("profile")}
                     >
                       Master Profile
-                      {openMasterSubMenu === "profile" ? <FiChevronDown /> : <FiChevronRight />}
+                      {openMasterSubMenu === "profile" ? (
+                        <FiChevronDown />
+                      ) : (
+                        <FiChevronRight />
+                      )}
                     </button>
 
                     {openMasterSubMenu === "profile" && (
@@ -1645,7 +1650,11 @@ const Navbar = () => {
                       onClick={() => toggleMasterSubMenu("scheme")}
                     >
                       Scheme Master
-                      {openMasterSubMenu === "scheme" ? <FiChevronDown /> : <FiChevronRight />}
+                      {openMasterSubMenu === "scheme" ? (
+                        <FiChevronDown />
+                      ) : (
+                        <FiChevronRight />
+                      )}
                     </button>
 
                     {openMasterSubMenu === "scheme" && (
@@ -1676,7 +1685,11 @@ const Navbar = () => {
                       onClick={() => toggleMasterSubMenu("employee")}
                     >
                       Employee Profile
-                      {openMasterSubMenu === "employee" ? <FiChevronDown /> : <FiChevronRight />}
+                      {openMasterSubMenu === "employee" ? (
+                        <FiChevronDown />
+                      ) : (
+                        <FiChevronRight />
+                      )}
                     </button>
 
                     {openMasterSubMenu === "employee" && (
@@ -1707,7 +1720,11 @@ const Navbar = () => {
                       onClick={() => toggleMasterSubMenu("user")}
                     >
                       User Management
-                      {openMasterSubMenu === "user" ? <FiChevronDown /> : <FiChevronRight />}
+                      {openMasterSubMenu === "user" ? (
+                        <FiChevronDown />
+                      ) : (
+                        <FiChevronRight />
+                      )}
                     </button>
 
                     {openMasterSubMenu === "user" && (
@@ -1733,7 +1750,6 @@ const Navbar = () => {
             )}
           </div>
 
-
           {/* ================== TRANSACTIONS ================== */}
           <div className="relative">
             {canSeeScheme && (
@@ -1745,13 +1761,16 @@ const Navbar = () => {
                 }}
               >
                 Transactions
-                {openMenu === "transactions" ? <FiChevronUp /> : <FiChevronDown />}
+                {openMenu === "transactions" ? (
+                  <FiChevronUp />
+                ) : (
+                  <FiChevronDown />
+                )}
               </button>
             )}
 
             {openMenu === "transactions" && canSeeTransactions && (
               <div className="absolute top-full left-0 mt-2 bg-white text-black rounded shadow-lg w-[200px] z-50">
-
                 {/* Loan */}
                 {canSeeLoan && (
                   <div className="relative">
@@ -1760,7 +1779,11 @@ const Navbar = () => {
                       onClick={() => toggleTransactionSubMenu("loan")}
                     >
                       Loan
-                      {openTransactionSubMenu === "loan" ? <FiChevronDown /> : <FiChevronRight />}
+                      {openTransactionSubMenu === "loan" ? (
+                        <FiChevronDown />
+                      ) : (
+                        <FiChevronRight />
+                      )}
                     </button>
 
                     {openTransactionSubMenu === "loan" && (
@@ -1805,7 +1828,11 @@ const Navbar = () => {
                       onClick={() => toggleTransactionSubMenu("accounting")}
                     >
                       Accounting
-                      {openTransactionSubMenu === "accounting" ? <FiChevronDown /> : <FiChevronRight />}
+                      {openTransactionSubMenu === "accounting" ? (
+                        <FiChevronDown />
+                      ) : (
+                        <FiChevronRight />
+                      )}
                     </button>
 
                     {openTransactionSubMenu === "accounting" && (
@@ -1836,7 +1863,11 @@ const Navbar = () => {
                       onClick={() => toggleTransactionSubMenu("auction")}
                     >
                       Auction
-                      {openTransactionSubMenu === "auction" ? <FiChevronDown /> : <FiChevronRight />}
+                      {openTransactionSubMenu === "auction" ? (
+                        <FiChevronDown />
+                      ) : (
+                        <FiChevronRight />
+                      )}
                     </button>
 
                     {openTransactionSubMenu === "auction" && (
@@ -1873,7 +1904,6 @@ const Navbar = () => {
               </div>
             )}
           </div>
-
 
           {/* ================== OTHER BUTTONS ================== */}
 
@@ -1917,7 +1947,6 @@ const Navbar = () => {
 
             {openMenu === "reports" && (
               <div className="absolute top-full left-0 mt-2 bg-white text-black rounded shadow-lg w-[200px] z-50">
-
                 {/* Transaction Reports */}
                 {canSeeMasterProfile && (
                   <div className="relative">
@@ -1926,7 +1955,11 @@ const Navbar = () => {
                       onClick={() => toggleReportSubMenu("transaction")}
                     >
                       Transaction Reports
-                      {openReportSubMenu === "transaction" ? <FiChevronDown /> : <FiChevronRight />}
+                      {openReportSubMenu === "transaction" ? (
+                        <FiChevronDown />
+                      ) : (
+                        <FiChevronRight />
+                      )}
                     </button>
 
                     {openReportSubMenu === "transaction" && (
@@ -1957,7 +1990,11 @@ const Navbar = () => {
                       onClick={() => toggleReportSubMenu("financial")}
                     >
                       Cash/Bank/Financial Report
-                      {openReportSubMenu === "financial" ? <FiChevronDown /> : <FiChevronRight />}
+                      {openReportSubMenu === "financial" ? (
+                        <FiChevronDown />
+                      ) : (
+                        <FiChevronRight />
+                      )}
                     </button>
 
                     {openReportSubMenu === "financial" && (
@@ -1988,7 +2025,11 @@ const Navbar = () => {
                       onClick={() => toggleReportSubMenu("mis")}
                     >
                       MIS Report
-                      {openReportSubMenu === "mis" ? <FiChevronDown /> : <FiChevronRight />}
+                      {openReportSubMenu === "mis" ? (
+                        <FiChevronDown />
+                      ) : (
+                        <FiChevronRight />
+                      )}
                     </button>
 
                     {openReportSubMenu === "mis" && (
@@ -2015,8 +2056,14 @@ const Navbar = () => {
                 {[
                   { name: "Loan Follow Up", path: "/loan_follow_up" },
                   { name: "Customer History", path: "/Customer_history" },
-                  { name: "PaymentGetWay History", path: "/paymentgetway_history" },
-                  { name: "Employee PayRoll Report", path: "/Employee-payroll" },
+                  {
+                    name: "PaymentGetWay History",
+                    path: "/paymentgetway_history",
+                  },
+                  {
+                    name: "Employee PayRoll Report",
+                    path: "/Employee-payroll",
+                  },
                 ].map((item) => (
                   <button
                     key={item.path}
@@ -2034,7 +2081,6 @@ const Navbar = () => {
             )}
           </div>
 
-
           {/* ================== TOOLS/UTILITIES ================== */}
           <div className="relative">
             <button
@@ -2050,7 +2096,6 @@ const Navbar = () => {
 
             {openMenu === "tools" && (
               <div className="absolute top-full left-0 mt-2 bg-white text-black rounded shadow-lg w-[220px] z-50">
-
                 {/* SETTINGS */}
                 <div className="relative">
                   <button
@@ -2058,7 +2103,11 @@ const Navbar = () => {
                     onClick={() => toggleSubMenu("settings")}
                   >
                     <span>Settings</span>
-                    {openSubMenu === "settings" ? <FiChevronDown /> : <FiChevronRight />}
+                    {openSubMenu === "settings" ? (
+                      <FiChevronDown />
+                    ) : (
+                      <FiChevronRight />
+                    )}
                   </button>
 
                   {openSubMenu === "settings" && (
@@ -2084,14 +2133,21 @@ const Navbar = () => {
                     onClick={() => toggleSubMenu("system")}
                   >
                     <span>System tools</span>
-                    {openSubMenu === "system" ? <FiChevronDown /> : <FiChevronRight />}
+                    {openSubMenu === "system" ? (
+                      <FiChevronDown />
+                    ) : (
+                      <FiChevronRight />
+                    )}
                   </button>
 
                   {openSubMenu === "system" && (
                     <div className="absolute top-0 left-full ml-1 w-[200px] bg-white text-black rounded shadow-lg flex flex-col z-50">
                       {[
                         { name: "SMS Config", path: "/SmsConfig/Create" },
-                        { name: "WhatsApp Config", path: "/WhatsApp-Configuration" },
+                        {
+                          name: "WhatsApp Config",
+                          path: "/WhatsApp-Configuration",
+                        },
                         { name: "Backup utility", path: "/DBBackup" },
                       ].map((item) => (
                         <Link
@@ -2124,7 +2180,6 @@ const Navbar = () => {
               </div>
             )}
           </div>
-
         </div>
 
         {/* ===== Logout Button ===== */}
@@ -2224,5 +2279,3 @@ const Navbar = () => {
 };
 
 export default Navbar;
-
-
