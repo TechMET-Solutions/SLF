@@ -789,13 +789,13 @@ bg-[#FFE6E6] p-5">
             </h2>
             <div className="border border-gray-300">
               <div className="flex bg-[#0A2478] text-white font-semibold">
-                <div className="flex-1 p-2 py-4 border-r border-white text-center">
+                <div className="flex-1 p-2 border-r border-white text-center">
                   Loan Tenure (Days)
                 </div>
-                <div className="w-40 p-2 py-4 border-r border-white text-center">
+                <div className="w-40 p-2  border-r border-white text-center">
                   Min Loan
                 </div>
-                <div className="w-40 p-2 py-4 text-center">Max Loan</div>
+                <div className="w-40 p-2  text-center">Max Loan</div>
               </div>
               <div className="flex border-t border-gray-300 bg-white">
                 <div className="flex-1 p-2 py-4 border-r border-gray-300 text-center ">

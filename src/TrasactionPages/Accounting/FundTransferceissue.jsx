@@ -2,6 +2,7 @@ import axios from "axios";
 import { Plus, Search } from "lucide-react";
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { API } from "../../api";
 
 const FundTransferList = () => {
   const navigate = useNavigate();
@@ -32,7 +33,7 @@ const FundTransferList = () => {
       if (!selectedBranchid) return; // wait until branchId is set
 
       const res = await axios.get(
-        `http://localhost:5000/api/FundTransfer/listIssue`,
+        `${API}/api/FundTransfer/listIssue`,
         {
           params: {
             branchId: selectedBranchid,
@@ -58,7 +59,7 @@ const FundTransferList = () => {
     if (!window.confirm("Are you sure you want to delete this record?")) return;
 
     try {
-      await axios.delete(`http://localhost:5000/api/FundTransfer/Delete/${id}`);
+      await axios.delete(`${API}/api/FundTransfer/Delete/${id}`);
 
       alert("Deleted Successfully ✅");
       fetchFundTransfers(); // refresh list

@@ -519,6 +519,7 @@ function AddLoanRepayment() {
   };
 
   useEffect(() => {
+    debugger;
     if (
       !data?.loanApplication?.LoanPendingAmount ||
       !data?.loanApplication?.approval_date

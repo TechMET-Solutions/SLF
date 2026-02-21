@@ -188,6 +188,7 @@ import axios from "axios";
 import { Plus, Search } from "lucide-react";
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { API } from "../../api";
 
 const FundTransferReceipt = () => {
   const navigate = useNavigate();
@@ -226,7 +227,7 @@ const FundTransferReceipt = () => {
       if (!selectedBranchid) return; // wait until branchId is set
 
       const res = await axios.get(
-        `http://localhost:5000/api/FundTransfer/listReceipt`,
+        `${API}/api/FundTransfer/listReceipt`,
         {
           params: {
             branchId: selectedBranchid,
@@ -252,7 +253,7 @@ const FundTransferReceipt = () => {
     if (!window.confirm("Are you sure you want to delete this record?")) return;
 
     try {
-      await axios.delete(`http://localhost:5000/api/FundTransfer/Delete/${id}`);
+      await axios.delete(`${API}/api/FundTransfer/Delete/${id}`);
 
       alert("Deleted Successfully ✅");
       fetchFundTransfers(); // refresh list
@@ -263,7 +264,7 @@ const FundTransferReceipt = () => {
   const handleApprove = async () => {
     try {
       const response = await fetch(
-        `http://localhost:5000/api/FundTransfer/status/${selectedItem.id}`,
+        `${API}/api/FundTransfer/status/${selectedItem.id}`,
         {
           method: "PUT",
           headers: {
@@ -289,7 +290,7 @@ const FundTransferReceipt = () => {
   const handleReject = async () => {
     try {
       const response = await fetch(
-        `http://localhost:5000/api/FundTransfer/status/${selectedItem.id}`,
+        `${API}/api/FundTransfer/status/${selectedItem.id}`,
         {
           method: "PUT",
           headers: {

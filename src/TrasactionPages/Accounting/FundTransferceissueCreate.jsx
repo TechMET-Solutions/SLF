@@ -131,7 +131,7 @@ const isViewMode = editData;
     const finalData = { ...formData, transferDetails: rows };
     try {
       const res = await axios.post(
-        `http://localhost:5000/api/FundTransfer/create`,
+        `${API}/api/FundTransfer/create`,
         finalData,
       );
       if (res.data.success) {
