@@ -788,7 +788,7 @@ const handleUpdateSubmit = async () => {
       </div>
 
       {/* Pagination */}
-      <div className="flex justify-center items-center px-6 py-3 border-t gap-2">
+      {/* <div className="flex justify-center items-center px-6 py-3 border-t gap-2">
         <button className="px-3 py-1 border rounded-md">Previous</button>
         <div className="flex gap-2">
           <button className="px-3 py-1 border bg-[#0b2c69] text-white rounded-md">
@@ -800,7 +800,7 @@ const handleUpdateSubmit = async () => {
           <button className="px-3 py-1 border rounded-md">10</button>
         </div>
         <button className="px-3 py-1 border rounded-md">Next</button>
-      </div>
+      </div> */}
     </div>
   );
 };

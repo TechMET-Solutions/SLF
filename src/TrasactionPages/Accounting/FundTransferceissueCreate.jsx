@@ -12,7 +12,7 @@ const isViewMode = editData;
   // Constants
   const navyBlue = "bg-[#0D3082]";
   const inputClass =
-    "border border-gray-300 rounded-sm px-2 py-1 text-[11px] w-full outline-none focus:border-blue-500 focus:bg-[#ffffcc] bg-white";
+    "border border-gray-300 rounded-sm px-2 py-1 text-[11px] w-full outline-none focus:border-blue-500  bg-white";
   const labelClass = "text-[11px] font-bold text-gray-700 uppercase";
   // States
   const [banks, setBanks] = useState([]);
@@ -162,7 +162,7 @@ const isViewMode = editData;
               onClick={handleSave}
               className={`${navyBlue} text-white px-6 py-1.5 rounded text-[11px] font-bold flex items-center gap-2 hover:opacity-90`}
             >
-              <Save size={14} /> SAVE
+               SAVE
             </button>
               )
             }
