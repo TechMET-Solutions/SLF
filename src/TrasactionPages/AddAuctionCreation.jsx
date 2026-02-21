@@ -27,7 +27,7 @@ function AddAuctionCreation() {
   const [searchHeaders, setSearchHeaders] = useState([]); // Array of active headers
   const [searchQuery, setSearchQuery] = useState("");
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
-const [selectedDate, setSelectedDate] = useState("");
+  const [selectedDate, setSelectedDate] = useState("");
 
   const toggleHeader = (headerId) => {
     setSearchHeaders((prev) =>
@@ -70,47 +70,47 @@ const [selectedDate, setSelectedDate] = useState("");
 
   //   setLoading(false);
   // };
-const fetchLoans = async () => {
-  try {
-    setLoading(true);
+  const fetchLoans = async () => {
+    try {
+      setLoading(true);
 
-    const params = new URLSearchParams();
-    params.append("page", page);
-    params.append("limit", limit);
+      const params = new URLSearchParams();
+      params.append("page", page);
+      params.append("limit", limit);
 
-    if (searchQuery.trim()) {
-      params.append("search", searchQuery);
+      if (searchQuery.trim()) {
+        params.append("search", searchQuery);
+      }
+
+      if (searchHeaders.length > 0) {
+        params.append("headers", searchHeaders.join(","));
+      }
+
+      if (selectedDate) {
+        params.append("loan_date", selectedDate);
+      }
+
+      const url = `${API}/Transactions/getApprovedLoanApplications/all?${params.toString()}`;
+
+      const res = await fetch(url);
+      const json = await res.json();
+
+      if (json.success) {
+        setLoanData(json.data);
+        setTotalPages(json.totalPages || 1);
+      }
+
+    } catch (err) {
+      console.log("Error fetching loans", err);
     }
 
-    if (searchHeaders.length > 0) {
-      params.append("headers", searchHeaders.join(","));
-    }
-
-    if (selectedDate) {
-      params.append("loan_date", selectedDate);
-    }
-
-    const url = `${API}/Transactions/getApprovedLoanApplications/all?${params.toString()}`;
-
-    const res = await fetch(url);
-    const json = await res.json();
-
-    if (json.success) {
-      setLoanData(json.data);
-      setTotalPages(json.totalPages || 1);
-    }
-
-  } catch (err) {
-    console.log("Error fetching loans", err);
-  }
-
-  setLoading(false);
-};
+    setLoading(false);
+  };
 
 
   useEffect(() => {
     fetchLoans();
-  }, [page]); 
+  }, [page]);
   const parsePledgeItems = (value) => {
     try {
       if (!value) return [];
@@ -225,7 +225,7 @@ const fetchLoans = async () => {
                         { id: "id", label: "Loan No" },
                         { id: "Scheme", label: "Loan Scheme" },
                         { id: "Borrower", label: "Customer Name" },
-                         { id: "Mobile_Number", label: "Mobile No" },
+                        { id: "Mobile_Number", label: "Mobile No" },
                       ].map((col) => (
                         <label
                           key={col.id}
@@ -264,27 +264,26 @@ const fetchLoans = async () => {
                 />
 
                 {/* Search Button */}
-               
+
               </div>
             </div>
-<input
-  type="date"
-  value={selectedDate}
-  onChange={(e) => setSelectedDate(e.target.value)}
-  className="border border-gray-300 rounded-[5px] h-[32px] px-2 text-[11px] outline-none"
-/>
+            <input
+              type="date"
+              value={selectedDate}
+              onChange={(e) => setSelectedDate(e.target.value)}
+              className="border border-gray-300 rounded-[5px] h-[32px] px-2 text-[11px] outline-none"
+            />
 
             <div className="flex gap-3">
-
-               <button
-                  onClick={() => {
-                    setIsDropdownOpen(false);
-                     fetchLoans();
-                  }}
-                  className="ml-2 bg-[#0b2c69] text-white text-[11px] px-4 h-[32px] rounded-[3px] font-source hover:bg-[#071d45] "
-                >
-                  Search
-                </button>
+              <button
+                onClick={() => {
+                  setIsDropdownOpen(false);
+                  fetchLoans();
+                }}
+                className="ml-2 bg-[#0b2c69] text-white text-[11px] px-4 h-[30px] rounded-[3px] font-source hover:bg-[#071d45] "
+              >
+                Search
+              </button>
               <button
                 onClick={() => {
                   setSearchQuery("");
@@ -292,18 +291,21 @@ const fetchLoans = async () => {
                   setSelectedDate("")
                   fetchLoans();
                 }}
-                className="text-[10px] text-gray-500 hover:text-red-500 underline"
+                className="ml-2 bg-[#0b2c69] text-white text-[11px] px-4 h-[30px] rounded-[3px] font-source hover:bg-[#071d45] "
               >
                 Clear
               </button>
+            </div>
+            <div className="flex gap-3">
+              
               <button
-                className="bg-[#0A2478] text-white text-sm rounded px-4 py-2 cursor-pointer h-[32px]"
+                className="ml-2 bg-[#0b2c69] text-white text-[11px] px-4 h-[30px] rounded-[3px] font-source hover:bg-[#071d45]"
                 onClick={handleSubmitAuction}
               >
                 Submit
               </button>
               <button
-                className="bg-[#C1121F] text-white text-sm rounded px-4 py-1 cursor-pointer h-[32px]"
+                className="bg-[#C1121F] text-white text-[11px] px-4 h-[30px] rounded-[3px] font-source hover:bg-[#071d45]"
                 onClick={() => navigate("/Auction-Creation")}
               >
                 Exit
@@ -450,13 +452,13 @@ const fetchLoans = async () => {
                     <td className="px-4 py-2">
                       {row.approval_date
                         ? new Date(row.approval_date).toLocaleDateString(
-                            "en-GB",
-                          )
+                          "en-GB",
+                        )
                         : "-"}
                     </td>
 
                     <td className="px-4 py-2">-</td>
-                    <td className="px-4 py-2">{row.Borrower}</td>
+                    <td className="px-4 py-2">{row.Print_Name}</td>
                     <td className="px-4 py-2">
                       {(() => {
                         try {

@@ -38,11 +38,47 @@ const BidderRegistration = () => {
   const [panFile, setPanFile] = useState(null);
   const [bidderPhoto, setBidderPhoto] = useState(null);
 
+  // const handleChange = (e) => {
+
+  //   if (name === "Alternate_Mobile" || name === "mobile_no") {
+  //     const numericValue = value.replace(/\D/g, "");
+
+  //     if (numericValue.length > 10) {
+  //       alert("Mobile number must be 10 digits only.");
+  //       return;
+  //     }
+
+  //     updatedValue = numericValue;
+  //   }
+
+  //   setFormData({
+  //     ...formData,
+  //     [e.target.name]: e.target.value,
+  //   });
+  // };
+
   const handleChange = (e) => {
-    setFormData({
-      ...formData,
-      [e.target.name]: e.target.value,
-    });
+    const { name, value } = e.target;
+
+    let updatedValue = value;
+
+    // 🔹 Mobile validation
+    if (name === "alt_mob_no" || name === "mobile_no") {
+      // Remove non-numeric characters
+      const numericValue = value.replace(/\D/g, "");
+
+      if (numericValue.length > 10) {
+        alert("Mobile number must be 10 digits only.");
+        return;
+      }
+
+      updatedValue = numericValue;
+    }
+
+    setFormData((prev) => ({
+      ...prev,
+      [name]: updatedValue,
+    }));
   };
 
   // File change handler
@@ -116,13 +152,13 @@ const BidderRegistration = () => {
           <div className="flex items-center gap-3">
             <button
               onClick={handleSubmit}
-              className="bg-[#0A2478] text-white text-[12px] w-[80px] h-[32px] rounded-[3.75px] hover:bg-blue-700 transition"
+              className="bg-[#0A2478] text-white text-[12px] w-[80px] h-[32px] rounded-[3.75px] hover:bg-blue-700 transition cursor-pointer"
             >
-              Sumbit
+              Submit
             </button>
             <button
               onClick={() => navigate(-1)}
-              className="bg-[#C1121F] text-white text-[12px] w-[80px] h-[32px] rounded-[3.75px] hover:bg-red-700 transition"
+              className="bg-[#C1121F] text-white text-[12px] w-[80px] h-[32px] rounded-[3.75px] hover:bg-red-700 transition cursor-pointer"
             >
               Cancel
             </button>
@@ -170,6 +206,7 @@ const BidderRegistration = () => {
                       onChange={handleChange}
                       placeholder="Mobile Number"
                       className="border border-gray-300 rounded-md px-3 py-1.5 w-full bg-white"
+                      maxLength={10}
                       style={{
                         MozAppearance: "textfield",
                       }}

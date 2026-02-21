@@ -35,7 +35,7 @@ const BidderRegistrationList = () => {
 
         <button
           onClick={() => navigate("/Bidder-Registration")}
-          className="bg-[#0A2478] hover:bg-[#0c2b94] text-white rounded-[8px] px-6 py-2 transition-all duration-200"
+          className="bg-[#0A2478] text-white text-[12px] w-[80px] h-[32px] rounded-[3.75px] hover:bg-blue-700 transition cursor-pointer"
         >
           Add Bidder
         </button>

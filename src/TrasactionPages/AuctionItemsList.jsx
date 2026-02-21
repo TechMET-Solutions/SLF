@@ -244,14 +244,14 @@ function AuctionItemsList() {
                   }
                 })
               }
-              className="bg-[#0A2478] text-white text-sm rounded px-4 py-2 cursor-pointer"
+              className="bg-[#0A2478] cursor-pointer text-white text-[11px] px-4 h-[24px] rounded-[3px]"
             >
               Bidder List
             </button>
 
             <button
               onClick={() => navigate("/Auction-Creation")}
-              className="bg-[#C1121F] text-white text-sm rounded px-4 py-2 cursor-pointer"
+              className="bg-[#C1121F] text-white text-[11px] px-4 h-[24px] rounded-[3px] cursor-pointer"
             >
               Exit
             </button>
