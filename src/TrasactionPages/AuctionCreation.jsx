@@ -37,7 +37,7 @@ function AuctionCreation() {
     fetchAuctions();
   }, []);
 
- 
+
   const fetchAuctions = async () => {
     try {
       const params = new URLSearchParams();
@@ -135,27 +135,28 @@ function AuctionCreation() {
                 />
 
                 {/* Search Button */}
-                
+
               </div>
             </div>
             <input
               type="date"
               value={selectedDate}
               onChange={(e) => setSelectedDate(e.target.value)}
-              className="ml-2 border border-gray-300 text-[11px] px-2 h-[30px] rounded-[3px] outline-none"
+              className="ml-2 border border-gray-300 text-[11px] px-2 h-[px] rounded-[3px] outline-none"
             />
-<button
-                  className="ml-2 bg-[#0b2c69] text-white text-[11px] px-4 h-[30px] rounded-[3px] font-source hover:bg-[#071d45]"
-                  onClick={() => {
-                    setIsDropdownOpen(false);
-                    fetchAuctions();
-                  }}
-                >
-                  Search
-            </button>
-            
+<div className="flex gap-2 mt-0.5">
             <button
-              className="ml-2 bg-[#0b2c69] text-white text-[11px] px-4 h-[30px] rounded-[3px] font-source hover:bg-[#071d45]"
+              className="ml-2 bg-[#0b2c69] cursor-pointer text-white text-[11px] px-4 h-[28px] rounded-[3px] font-source hover:bg-[#071d45]"
+              onClick={() => {
+                setIsDropdownOpen(false);
+                fetchAuctions();
+              }}
+            >
+              Search
+            </button>
+
+            <button
+              className="bg-[#0b2c69] cursor-pointer text-white text-[11px] px-4 h-[28px] rounded-[3px]  hover:bg-[#071d45]"
               onClick={() => {
                 setSearchQuery("");
                 setSearchHeaders([]);
@@ -165,17 +166,19 @@ function AuctionCreation() {
               }}
             >
               Clear
-            </button>
-            <div className="flex gap-3">
+              </button>
+            </div>
+
+            <div className="flex gap-2 mt-0.5">
               <button
                 onClick={() => navigate("/Add-Auction-Creation")}
-                className="bg-[#0A2478] text-white text-sm rounded px-4 cursor-pointer"
+                className="bg-[#0A2478] text-white text-[11px] px-4  h-[28px] rounded-[3px] cursor-pointer"
               >
                 Add
               </button>
               <button
                 onClick={() => navigate("/")}
-                className="bg-[#C1121F] text-white text-sm rounded px-4 cursor-pointer"
+                className="bg-[#C1121F] text-white text-[11px] px-4 h-[28px] rounded-[3px] cursor-pointer"
               >
                 Exit
               </button>
@@ -247,11 +250,10 @@ function AuctionCreation() {
 
                     {/* Status */}
                     <td
-                      className={`px-4 py-2 ${
-                        row.status === "OPEN"
+                      className={`px-4 py-2 ${row.status === "OPEN"
                           ? "text-green-600"
                           : "text-red-600"
-                      }`}
+                        }`}
                     >
                       {row.status}
                     </td>

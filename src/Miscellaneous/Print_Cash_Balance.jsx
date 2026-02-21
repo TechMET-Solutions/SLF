@@ -113,10 +113,10 @@ const Print_Cash_Balance = () => {
 
           <div className="flex gap-3">
             <button
-              onClick={() => window.print()}
+              // onClick={() => window.print()}
               className="bg-[#0A2478] text-white px-4  rounded h-[30px] "
             >
-              🖨 Print
+              Print
             </button>
             <button
               onClick={() => navigate("/Cash_Balance")}

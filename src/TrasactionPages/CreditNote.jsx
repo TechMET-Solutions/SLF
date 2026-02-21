@@ -156,7 +156,7 @@ function CreditNote() {
                   setIsDropdownOpen(false);
                   fetchCreditNotes();
                 }}
-                className="ml-2 bg-[#0b2c69] text-white text-[11px] px-4 h-[24px] rounded-[3px] font-source hover:bg-[#071d45]"
+                className="ml-2 bg-[#0b2c69] text-white text-[11px] px-4 h-[28px] rounded-[3px] font-source hover:bg-[#071d45]"
               >
                 Search
               </button>
@@ -167,14 +167,14 @@ function CreditNote() {
                   setSelectedDate("");
                   fetchCreditNotes();
                 }}
-                className="text-[10px] text-gray-500 hover:text-red-500 underline"
+                className=" bg-[#0b2c69] text-white text-[11px] px-4 h-[28px] rounded-[3px] font-source hover:bg-[#071d45]"
               >
                 Clear
               </button>
 
               <button
                 onClick={() => navigate("/add-credit-note-page")}
-                className="bg-[#0A2478] hover:bg-[#091d5f] text-white text-sm rounded-md px-4 py-[6px]"
+                className="bg-[#0b2c69] text-white text-[11px] px-2 h-[28px] rounded-[3px] font-source hover:bg-[#071d45]"
               >
                 Add Credit Note
               </button>
@@ -260,7 +260,7 @@ function CreditNote() {
                             state: { id: row.id },
                           })
                         }
-                        className="bg-[#6D5300] text-white p-2 rounded-md hover:bg-[#8b6c00]"
+                        className="bg-[#0A2478] text-white p-2 rounded-md hover:bg-[#8b6c00]"
                       >
                         <LuPrinter size={12} />
                       </button>

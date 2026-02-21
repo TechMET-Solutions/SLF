@@ -64,14 +64,14 @@ const AppraisalNote = () => {
       {/* Header Section */}
       <div className="flex justify-center sticky top-[80px] z-40">
         <div className="flex items-center justify-between border border-gray-300 rounded-[10px] px-4 py-2 mt-4 w-full max-w-[1290px] h-[62px] shadow-lg bg-white">
-          <h2 className="text-[#0A2478] font-bold text-[20px] whitespace-nowrap mr-4">
+          <h2 className="text-red-600 font-bold text-[20px] whitespace-nowrap mr-4">
             APPRAISAL NOTE
           </h2>
 
           <div className="flex gap-2">
             <button
               onClick={handlePrint}
-              className="bg-[#129121] text-white px-7 py-1 text-sm rounded hover:bg-[#0A2478] shadow-lg transition-colors"
+              className="bg-[#0A2478] text-white px-7 py-1 text-sm rounded hover:bg-[#0A2478] shadow-lg transition-colors"
             >
               Print
             </button>

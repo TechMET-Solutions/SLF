@@ -78,20 +78,28 @@ const InvoicePrint = () => {
         <div className="flex items-center px-6 py-4 border-b mt-5 w-[1290px] h-[62px] border rounded-[11px] border-gray-200 justify-between bg-white">
           <h2 className="text-red-600 font-bold text-[20px]">Gold Purchase Bill</h2>
 
-          <button
-            onClick={() => navigate(-1)}
-            // onClick={() => navigate("/Auction-Items-List")}
-            // onClick={() =>
-            //   navigate("/Auction-Items-List", {
-            //     state: {
-            //       loanIds: loanIds,
-            //     },
-            //   })
-            // }
-            className="bg-[#C1121F] text-white text-sm rounded px-4 py-2"
-          >
-            Exit
-          </button>
+          <div className="flex gap-2">
+            <button
+
+              className="bg-[#0A2478] text-white text-[11px] px-4 h-[24px] rounded-[3px]"
+            >
+              Print
+            </button>
+            <button
+              onClick={() => navigate(-1)}
+              // onClick={() => navigate("/Auction-Items-List")}
+              // onClick={() =>
+              //   navigate("/Auction-Items-List", {
+              //     state: {
+              //       loanIds: loanIds,
+              //     },
+              //   })
+              // }
+              className="bg-[#C1121F] text-white text-[11px] px-4 h-[24px] rounded-[3px]"
+            >
+              Exit
+            </button>
+         </div>
         </div>
       </div>
 

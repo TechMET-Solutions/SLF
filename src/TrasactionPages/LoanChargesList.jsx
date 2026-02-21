@@ -236,7 +236,7 @@ function LoanChargesList() {
                     setIsDropdownOpen(false);
                     fetchData();   // 🔥 call API here
                   }}
-                  className="ml-2 bg-[#0b2c69] text-white text-[11px] px-4 h-[24px] rounded-[3px]"
+                  className="ml-2 bg-[#0A2478] text-white text-[11px] px-4 h-[24px] rounded-[3px]"
                 >
                   Search
                 </button>
@@ -246,7 +246,7 @@ function LoanChargesList() {
                     setSearchHeaders([]);
                     fetchData();
                   }}
-                  className="ml-2 bg-[#0b2c69] text-white text-[11px] px-4 h-[24px] rounded-[3px]"
+                  className="ml-2 bg-[#0A2478] text-white text-[11px] px-4 h-[24px] rounded-[3px]"
                 >
                   Clear
                 </button>
@@ -255,13 +255,14 @@ function LoanChargesList() {
            
             <button
               onClick={() => navigate("/add-loan-charge")}
-              className="bg-[#0A2478] text-white text-sm rounded px-3 py-1 cursor-pointer"
+              className="ml-2 mt-1 bg-[#0A2478] text-white text-[11px] px-4 h-[24px] rounded-[3px]"
             >
               Add
             </button>
             <button
               onClick={() => navigate("/")}
-              className="bg-[#C1121F] text-white text-[10px] px-4 py-1 rounded cursor-pointer">
+              className=" bg-[#C1121F] mt-1 text-white text-[11px] px-4 h-[24px] rounded-[3px]"
+            >
               Exit
             </button>
           </div>

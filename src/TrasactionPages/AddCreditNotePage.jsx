@@ -1,5 +1,5 @@
 import axios from "axios";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import { API } from "../api";
 
@@ -70,6 +70,76 @@ const AddCreditNotePage = () => {
       alert("Something went wrong");
     }
   };
+
+  // CUSTOMER AUTOCOMPLETE
+
+  const [customerSuggestions, setCustomerSuggestions] = useState([]);
+  const [showSuggestions, setShowSuggestions] = useState(false);
+  const [customerLoading, setCustomerLoading] = useState(false);
+
+  const searchCustomers = async (searchValue) => {
+    if (!searchValue) {
+      setCustomerSuggestions([]);
+      return;
+    }
+
+    try {
+      setCustomerLoading(true);
+
+      const response = await axios.get(
+        // `https://slunawat.co.in/Master/doc/searchCustomers&search=${searchValue}`
+        `https://slunawat.co.in/Master/doc/Customer_list?search=${searchValue}`
+      );
+
+      if (response.data && Array.isArray(response.data)) {
+        setCustomerSuggestions(response.data);
+        setShowSuggestions(true);
+      }
+    } catch (error) {
+      console.log("Customer search error:", error);
+    } finally {
+      setCustomerLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    const delayDebounce = setTimeout(() => {
+      if (formData.customer_name) {
+        searchCustomers(formData.customer_name);
+      }
+    }, 500); // 500ms delay
+
+    return () => clearTimeout(delayDebounce);
+  }, [formData.customer_name]);
+
+  const handleSelectCustomer = (customer) => {
+    setFormData((prev) => ({
+      ...prev,
+      customer_id: customer.id || "",
+      customer_name: customer.printName || "",
+      address: customer.Permanent_Address || "",
+      city: customer.Permanent_City || "",
+      state: customer.Permanent_State || "",
+      pin_code: customer.Permanent_Pincode || "",
+      mobile_number: customer.mobile || "",
+      email_id: customer.email || "",
+    }));
+
+    setShowSuggestions(false);
+    setCustomerSuggestions([]);
+  };
+
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (!event.target.closest(".relative")) {
+        setShowSuggestions(false);
+      }
+    };
+
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, []);
+
 
   return (
     <div>
@@ -214,7 +284,7 @@ const AddCreditNotePage = () => {
                 />
               </div>
 
-              <div>
+              {/* <div>
                 <div className=" font-semibold mb-1">Customer Name</div>
                 <input
                   name="customer_name"
@@ -223,6 +293,44 @@ const AddCreditNotePage = () => {
                   placeholder="Enter Name"
                   className="w-[250px] border bg-white border-gray-300 px-2 py-1 rounded-[8px] h-[40px]"
                 />
+              </div> */}
+
+
+              <div className="relative">
+                <div className="font-semibold mb-1">Customer Name</div>
+
+                <input
+                  name="customer_name"
+                  value={formData.customer_name}
+                  onChange={handleChange}
+                  onFocus={() => setShowSuggestions(true)}
+                  placeholder="Search customer..."
+                  className="w-[250px] border bg-white border-gray-300 px-2 py-1 rounded-[8px] h-[40px]"
+                />
+
+                {/* 🔽 Suggestion Dropdown */}
+                {showSuggestions && customerSuggestions.length > 0 && (
+                  <div className="absolute z-50 bg-white border border-gray-300 w-full rounded shadow-md max-h-60 overflow-y-auto">
+                    {customerSuggestions.map((customer) => (
+                      <div
+                        key={customer.id}
+                        onClick={() => handleSelectCustomer(customer)}
+                        className="px-3 py-2 cursor-pointer hover:bg-gray-100 text-sm"
+                      >
+                        <div className="font-medium">{customer.printName}</div>
+                        <div className="text-xs text-gray-500">
+                          {customer.mobile} • {customer.Permanent_City}
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                )}
+
+                {customerLoading && (
+                  <div className="absolute bg-white px-2 text-xs text-gray-500">
+                    Searching...
+                  </div>
+                )}
               </div>
 
               <div>
