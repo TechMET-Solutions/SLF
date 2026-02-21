@@ -475,10 +475,10 @@ const GoldLoanApproval = () => {
       </div>
 
       {/* ===== FORM SECTIONS ===== */}
-      <div className="p-9 py-6 min-h-screen space-y-8 px-4">
-        {/* ===== Loan Details Section ===== */}
-        <div className="flex justify-center ">
-          <div className="w-[950px] pt-3 pl-14">
+      <div className=" min-h-screen space-y-8 mt-5">
+        <div className='bg-[#FFE6E6] ml-[110px] mr-[110px] '>
+           <div className="flex justify-center p-5">
+          <div className="w-[950px] ">
             {/* First Row */}
             <div className="flex gap-7 text-sm mb-8 flex-wrap">
               <div>
@@ -537,7 +537,7 @@ const GoldLoanApproval = () => {
           </div>
 
           {/* ===== Ornament & Profile Photos ===== */}
-          <div className="flex mr-17 space-x-[1px]">
+          <div className="flex  space-x-[1px]">
             {/* Borrower */}
             <div className="w-[120px] h-auto flex flex-col items-center">
               <p className="font-medium mb-1 text-xs">Customer</p>
@@ -613,10 +613,10 @@ const GoldLoanApproval = () => {
           </div>
         </div>
 
-        {/* ===== Pledge Item List ===== */}
-        <div className="flex justify-center  gap-2 m-2">
-          <div className="">
-            <div className="w-full   gap-4 text-xs">
+       
+        <div className="flex  gap-2 ">
+          <div className="p-5">
+            <div className="w-full gap-4 text-xs">
               <div className=" flex gap-2">
                 <div className="flex flex-col w-30">
                   <label className="text-[13px] font-semibold">
@@ -692,7 +692,7 @@ const GoldLoanApproval = () => {
             <h3 className="font-semibold  text-[#0A2478] text-lg">
               Pledge Item List
             </h3>
-            <div className="w-full text-xs border border-gray-300 mt-2">
+            <div className="w-full text-xs border border-gray-300 mt-2 ">
               <div className="flex bg-[#0A2478] text-white font-semibold">
                 <div className="flex-1 p-2 py-3 border-r-2 border-white">
                   Particulars
@@ -808,14 +808,16 @@ const GoldLoanApproval = () => {
             </div>
           </div>
         </div>
+       </div>
+       
 
         {/* Loan Amount Section */}
 
-        <div className="px-[100px] ">
+        <div className="ml-[110px] mr-[110px] bg-[#F7F7FF] p-5 ">
           <h1 className="font-semibold text-[20px] text-[#0A2478] ">
             Payment Details
           </h1>
-          <div className=" border-gray-300 rounded-md overflow-hidden  mt-2">
+          <div className=" border-gray-300 rounded-md overflow-hidden">
             <table className=" border-collapse text-sm">
               <thead>
                 <tr className="bg-[#0A2478] text-white text-center">
@@ -832,7 +834,7 @@ const GoldLoanApproval = () => {
                 {rows.map((row, index) => (
                   <tr
                     key={index}
-                    className={index % 2 === 0 ? "bg-gray-50" : "bg-white"}
+                    className={index % 2 === 0 ? "bg-white" : "bg-white"}
                   >
                     <td className="py-1 p-1">{index + 1}</td>
                     <td className="py-1">
@@ -983,10 +985,10 @@ const GoldLoanApproval = () => {
             </table>
           </div>
         </div>
-        <div className="px-[100px] mt-6">
+        <div className="ml-[110px] mr-[110px] mt-6 p-5 bg-[#FFE6E6] ">
           {loanSchemeData.calcBasisOn === "Monthly" && (
             <>
-              <h3 className="font-semibold mb-4 text-[#0A2478] text-lg mt-5">
+              <h3 className="font-semibold  text-[#0A2478] text-lg ">
                 Loan Details table
               </h3>
 
@@ -1009,7 +1011,7 @@ const GoldLoanApproval = () => {
                       Number(loanData?.EMIPaidCount || 0) >= row.month;
 
                     return (
-                      <tr key={row.month} className="text-center">
+                      <tr key={row.month} className="text-center bg-white">
                         <td className="p-2 border">{row.month}</td>
                         <td className="p-2 border">₹{row.opening}</td>
                         <td className="p-2 border">₹{row.emi}</td>
@@ -1033,7 +1035,7 @@ const GoldLoanApproval = () => {
         </div>
 
         {/* ===== Scheme Details & Effective Interest Rates ===== */}
-        <div className="flex gap-8 text-xs mx-14 justify-center">
+        <div className="flex gap-8 text-xs mx-14 justify-center mb-5">
           {/* Scheme Details Table */}
           <div className="w-[550px]">
             <h2 className="font-semibold text-[20px] mb-1 text-[#0A2478]">
@@ -1083,9 +1085,7 @@ const GoldLoanApproval = () => {
                 interestRates.map((rate, index) => (
                   <div
                     key={index}
-                    className={`flex ${
-                      index % 2 === 0 ? "bg-[#FFCDCD]" : "bg-[#E5E5FF]"
-                    }`}
+                    className={`flex ${index % 2 === 0 ? "bg-gray-50" : "bg-white"}`}
                   >
                     <div className="flex-1 p-2 border-r border-white text-center">
                       {rate.from} To {rate.to}{" "}

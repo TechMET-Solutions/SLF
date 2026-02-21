@@ -299,22 +299,19 @@ const RecieptAccounting = () => {
   /* ================= DELETE ================= */
   const handleDeleteExpense = async (id) => {
     const confirmDelete = window.confirm(
-      "Are you sure you want to delete this expense?",
+      "Are you sure you want to delete this Receipt?",
     );
     if (!confirmDelete) return;
 
     try {
-      const res = await fetch(
-        `${API}/api/Receipt/delete/${id}`,
-        {
-          method: "DELETE",
-        },
-      );
+      const res = await fetch(`${API}/api/Receipt/delete-Receipt/${id}`, {
+        method: "DELETE",
+      });
 
       const result = await res.json();
 
       if (result.success) {
-        alert("Expense Deleted Successfully ✅");
+        alert("Receipt Deleted Successfully ✅");
         fetchExpenses(); // refresh
       }
     } catch (error) {
@@ -326,7 +323,6 @@ const RecieptAccounting = () => {
     <div className="min-h-screen bg-white font-sans text-[#333]">
       <div className="ml-[110px] mr-[110px] mx-auto ">
         {/* HEADER */}
-        
 
         <div className="flex justify-center sticky top-[80px] z-40">
           <div className="flex justify-center p-6 ">
@@ -336,12 +332,11 @@ const RecieptAccounting = () => {
               </h2>
 
               <div className="flex gap-5">
-               
                 <button
                   onClick={() => navigate("/Receipt/create")}
                   className="w-[100px] h-[30px]  cursor-pointer rounded bg-[#0A2478] text-white text-[11.25px] flex items-center justify-center mt-2"
                 >
-                   Add Receipt
+                  Add Receipt
                 </button>
                 <button
                   onClick={() => navigate("/")}

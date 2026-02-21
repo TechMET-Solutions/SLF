@@ -801,9 +801,9 @@ function AddLoanRepaymentEmi() {
   const dueEmiCount = getDueEMI(); // your earlier function
 
   return (
-    <div className="flex flex-col items-center mt-5">
+    <div className="flex flex-col items-center mt-5 ml-[110px] mr-[110px]">
       {/* Header Section */}
-      <div className="flex items-center justify-between px-6 py-4 w-[1290px] h-[62px] border border-gray-200 rounded-[11px] shadow-sm sticky top-[80px] z-40 bg-white">
+      <div className="flex items-center justify-between px-6  w-full h-[62px] border border-gray-200 rounded-[11px] shadow-sm sticky top-[80px] z-40 bg-white">
         <h2 className="text-red-600 font-bold text-[20px] leading-[1.48] font-['Source_Sans_3']">
           Add Loan Repayment
         </h2>
@@ -826,16 +826,16 @@ function AddLoanRepaymentEmi() {
       </div>
 
       {/* Loan Information Section */}
-      <div className="flex flex-col items-center ">
+      <div className="flex flex-col justify-center ">
         {/* Header Section */}
 
         {/* Loan Information Section */}
-        <div className=" max-w-[1290px] bg-white mt-5 rounded-md">
+        <div className="  bg-[#FFE6E6] mt-5 rounded-md p-5 ml-[110px] mr-[110px]">
           <h1 className="text-blue-900 font-semibold text-xl pb-3">
             Loan Information
           </h1>
 
-          <div className="flex justify-between items-start gap-[100px]">
+          <div className="flex w-full items-start gap-5">
             {/* Left Section - Loan Info */}
             <div className="flex flex-col gap-3 flex-1 text-sm">
               {/* Row 1 */}
@@ -1165,10 +1165,10 @@ function AddLoanRepaymentEmi() {
         </div>
 
         {/* Payment Section */}
-        <div className="flex  justify-between max-w-[1290px]  gap-2">
+        <div className="flex  justify-between ml-[110px] mr-[110px] gap-2 bg-[#F7F7FF] p-5 ">
 
 
-          <div className="  bg-white rounded-md mt-5">
+          <div className="   rounded-md mt-5">
           <h1 className="text-blue-900 font-semibold text-xl pb-2">Payment</h1>
 
           {/* Row 1: Individual Fields */}
@@ -1515,7 +1515,7 @@ function AddLoanRepaymentEmi() {
        
 
         {/* Installments Table */}
-        <div className=" w-[1290px] bg-white">
+        <div className=" ml-[110px] mr-[110px] bg-[#FFE6E6] p-5">
           <h1 className="text-blue-900 font-semibold text-xl py-2">
             Installments
           </h1>
@@ -1551,7 +1551,7 @@ function AddLoanRepaymentEmi() {
               </thead>
               <tbody>
                 {installments.map((row, i) => (
-                  <tr key={i} className="text-center text-sm hover:bg-gray-50">
+                  <tr key={i} className={i % 2 === 0 ? "bg-gray-50" : "bg-white"}>
                     <td className="p-2 border border-gray-300">{row.srNo}</td>
                     <td className="p-2 border border-gray-300">
                       {row.receiptNo}

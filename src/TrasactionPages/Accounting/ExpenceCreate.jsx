@@ -1,13 +1,5 @@
 import axios from "axios";
-import {
-  CheckCircle2,
-  FileText,
-  Plus,
-  Save,
-  Trash2,
-  UserPlus,
-  X,
-} from "lucide-react";
+import { CheckCircle2, Plus, Trash2, UserPlus, X } from "lucide-react";
 import { useEffect, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import { API } from "../../api";
@@ -605,9 +597,7 @@ const ExpenceCreate = () => {
           <table className=" text-left border-collapse bg-white">
             <thead>
               <tr className="bg-[#0A2478] text-white text-[11px] uppercase">
-                <th className="p-2 border-r font-bold w-18 text-center">
-                  No
-                </th>
+                <th className="p-2 border-r font-bold w-18 text-center">No</th>
                 <th className="p-2 border-r font-bold">Sub Ledger Name</th>
                 <th className="p-2 border-r font-bold w-28 text-center">
                   Date
@@ -695,12 +685,14 @@ const ExpenceCreate = () => {
 
                       <button
                         onClick={addNewRow}
+                        disabled={isViewMode}
                         className="bg-[#0A2478] text-white p-1.5 rounded-sm hover:bg-[#0a2669]"
                       >
                         <Plus size={12} />
                       </button>
                       <button
                         onClick={() => removeRow(index)}
+                        disabled={isViewMode}
                         className="bg-red-600  text-white p-1.5 rounded-sm hover:bg-red-700"
                       >
                         <Trash2 size={12} />
@@ -711,7 +703,7 @@ const ExpenceCreate = () => {
                         className={`px-2 py-1 rounded-sm flex items-center font-bold uppercase text-[10px] transition-colors shadow-sm ${
                           rowDetails[index]
                             ? "bg-green-600 text-white"
-                          : "bg-[#0A2478] text-white"
+                            : "bg-[#0A2478] text-white"
                         }`}
                       >
                         {rowDetails[index] ? (
@@ -719,9 +711,13 @@ const ExpenceCreate = () => {
                         ) : (
                           <Plus size={10} className="mr-1" />
                         )}
-                        {rowDetails[index]?.length > 0
-                          ? `Details Added (${rowDetails[index].length})`
-                          : "Add Details"}
+                        {isViewMode
+                          ? rowDetails[index]?.length > 0
+                            ? `View Details (${rowDetails[index].length})`
+                            : "View Details"
+                          : rowDetails[index]?.length > 0
+                            ? `Details Added (${rowDetails[index].length})`
+                            : "Add Details"}
                       </button>
                     </div>
                   </td>
@@ -774,6 +770,7 @@ const ExpenceCreate = () => {
                   </label>
                   <input
                     type="number"
+                    disabled={isViewMode}
                     className="border border-gray-300 p-2 rounded outline-none focus:border-[#008080]"
                     value={detailForm.billAmount}
                     onChange={(e) =>
@@ -792,6 +789,7 @@ const ExpenceCreate = () => {
                   </label>
                   <input
                     type="number"
+                    disabled={isViewMode}
                     min="0"
                     className="border border-gray-300 p-2 rounded outline-none focus:border-[#008080]"
                     value={detailForm.billPaidAmount}
@@ -827,6 +825,7 @@ const ExpenceCreate = () => {
                   <select
                     className="border border-gray-300 p-2 rounded outline-none"
                     value={detailForm.payMode}
+                    disabled={isViewMode}
                     onChange={(e) =>
                       setDetailForm({ ...detailForm, payMode: e.target.value })
                     }
@@ -842,6 +841,7 @@ const ExpenceCreate = () => {
                   <select
                     className="border border-gray-300 p-2 rounded outline-none focus:border-[#008080] bg-white"
                     value={detailForm.bankId}
+                    disabled={isViewMode}
                     onChange={(e) =>
                       setDetailForm({ ...detailForm, bankId: e.target.value })
                     }
@@ -878,6 +878,7 @@ const ExpenceCreate = () => {
                   <input
                     className="border border-gray-300 p-2 rounded outline-none focus:border-[#008080]"
                     value={detailForm.partyName}
+                    disabled={isViewMode}
                     onChange={handleInputChange}
                     onFocus={() =>
                       detailForm.partyName && setShowDropdown(true)
@@ -906,21 +907,6 @@ const ExpenceCreate = () => {
                     </div>
                   )}
                 </div>
-                {/* <div className="flex flex-col">
-                  <label className="font-bold text-gray-700 mb-1">
-                    Employee Name
-                  </label>
-                  <input
-                    className="border border-gray-300 p-2 rounded outline-none focus:border-[#008080]"
-                    value={detailForm.employeeName}
-                    onChange={(e) =>
-                      setDetailForm({
-                        ...detailForm,
-                        employeeName: e.target.value,
-                      })
-                    }
-                  />
-                </div> */}
 
                 <div className="flex flex-col relative">
                   <label className="font-bold text-gray-700 mb-1">
@@ -930,6 +916,7 @@ const ExpenceCreate = () => {
                     className="border border-gray-300 p-2 rounded outline-none focus:border-[#008080]"
                     placeholder="Search employee..."
                     value={detailForm.employeeName}
+                    disabled={isViewMode}
                     onChange={handleInputChangeFortheSelectEmployee}
                     onFocus={() =>
                       employeeList.length > 0 &&
@@ -975,6 +962,7 @@ const ExpenceCreate = () => {
                 </label>
                 <input
                   type="file"
+                  disabled={isViewMode}
                   className="text-[11px] file:mr-4 file:py-1 file:px-4 file:rounded-full file:border-0 file:text-xs file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100"
                   onChange={(e) =>
                     setDetailForm({
@@ -1005,13 +993,14 @@ const ExpenceCreate = () => {
             </div>
 
             <div className=" p-4 flex gap-2 justify-center">
-              
-              <button
-                onClick={handleSaveDetails}
-                className="px-6 py-2 text-white rounded font-bold uppercase text-[10px]  shadow-md transition-all active:scale-95 bg-[#0A2478]"
-              >
-                Save Details
-              </button>
+              {!isViewMode && (
+                <button
+                  onClick={handleSaveDetails}
+                  className="px-6 py-2 text-white rounded font-bold uppercase text-[10px] shadow-md transition-all active:scale-95 bg-[#0A2478]"
+                >
+                  Save Details
+                </button>
+              )}
               <button
                 onClick={() => setIsDetailsModalOpen(false)}
                 className="px-4 py-2 border border-gray-300 rounded font-bold uppercase text-[10px] bg-red-600 text-white transition-colors"
@@ -1282,20 +1271,20 @@ const ExpenceCreate = () => {
 
             {/* Footer - Fixed */}
             <div className="bg-white p-4 flex justify-center gap-3 border-t shadow-[0_-4px_6px_-1px_rgba(0,0,0,0.05)] shrink-0">
-              <button
-                onClick={() => setIsModalOpen(false)}
-                className="px-5 py-2 border border-gray-300 rounded-lg text-gray-600 font-bold text-[11px] hover:bg-gray-50 transition-colors uppercase tracking-wider"
-              >
-                Cancel
-              </button>
               {!isViewMode && (
                 <button
                   onClick={handlePartySave}
                   className="px-8 py-2 bg-[#0A2478] text-white rounded-lg font-bold text-[11px] flex items-center gap-2 hover:bg-[#0a2669] shadow-lg shadow-blue-900/20 transition-all active:scale-95 uppercase tracking-wider"
                 >
-                  <Save size={14} /> Save Party
+                  Save Party
                 </button>
               )}
+              <button
+                onClick={() => setIsModalOpen(false)}
+                className="px-5 py-2 border border-gray-300 rounded-lg text-gray-600 font-bold text-[11px] transition-colors uppercase tracking-wider bg-red-600"
+              >
+                Exit
+              </button>
             </div>
           </div>
         </div>

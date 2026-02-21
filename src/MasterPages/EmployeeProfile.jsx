@@ -1882,7 +1882,7 @@ const EmployeeProfile = () => {
                         />
 
                         {/* Preview (Shows only if file exists) */}
-                        {(addressProof || formData.emp_add_prof) && (
+                        {/* {(addressProof || formData.emp_add_prof) && (
                           <div className="mt-7 flex items-center gap-2 border border-dashed border-gray-400 p-1 rounded-md bg-gray-50 h-[40px] px-2">
                             <img
                               src={
@@ -1897,7 +1897,7 @@ const EmployeeProfile = () => {
                               {addressProof ? addressProof.name : "Saved File"}
                             </span>
                           </div>
-                        )}
+                        )} */}
                       </div>
 
                       {/* --- ID Proof Section --- */}
@@ -1939,7 +1939,7 @@ const EmployeeProfile = () => {
                         />
 
                         {/* Preview (Shows only if file exists) */}
-                        {(idProof || formData.emp_id_prof) && (
+                        {/* {(idProof || formData.emp_id_prof) && (
                           <div className="mt-7 flex items-center gap-2 border border-dashed border-gray-400 p-1 rounded-md bg-gray-50 h-[40px] px-2">
                             <img
                               src={
@@ -1954,7 +1954,7 @@ const EmployeeProfile = () => {
                               {idProof ? idProof.name : "Saved File"}
                             </span>
                           </div>
-                        )}
+                        )} */}
                       </div>
                     </>
                   )}

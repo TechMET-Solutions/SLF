@@ -654,8 +654,6 @@ const AddGoldLoanApplication = () => {
 
   return (
     <div className="min-h-screen  ">
-      
-
       <div className="flex justify-center sticky top-[80px] z-40">
         <div className="flex items-center px-6 py-4 border-b mt-2 w-[1290px] h-[62px] border rounded-[11px] border-gray-200 justify-between shadow bg-white">
           <h2 className="text-red-600 text-[20px] font-semibold">
@@ -680,7 +678,10 @@ const AddGoldLoanApplication = () => {
       </div>
 
       <div className=" mt-5">
-        <div className="flex ml-[110px] p-3  gap-5 bg-[#FFF5F5] mr-[110px]">
+        <div
+          className="flex ml-[110px] p-3  gap-5 
+bg-[#FFE6E6]  mr-[110px]"
+        >
           <div>
             <div>
               <div className="flex  gap-2">
@@ -1197,97 +1198,99 @@ const AddGoldLoanApplication = () => {
           </div>
         </div>
         <div className="flex mb-10 ml-[110px]    mr-[110px]">
-          <div className="flex gap-18   
-bg-[#FFE6E6] p-2">
-          <div className="flex ">
-            <div className="">
-              <h3 className="font-semibold  text-blue-900 text-lg">
-                Scheme Details
-              </h3>
+          <div
+            className="flex gap-18   
+bg-[#FFE6E6] p-2"
+          >
+            <div className="flex ">
+              <div className="">
+                <h3 className="font-semibold  text-blue-900 text-lg">
+                  Scheme Details
+                </h3>
 
-              <table className="border border-gray-300 text-sm mt-2">
-                <thead className="bg-[#0A2478] text-white">
-                  <tr>
-                    <th className="px-4 py-2 border-r border-gray-200 w-[224px]">
-                      Loan Tenure (Days)
-                    </th>
-                    <th className="px-4 py-2 border-r border-gray-200 w-[173px]">
-                      Min Loan
-                    </th>
-                    <th className="px-4 py-2 border-r border-gray-200 w-[195px]">
-                      Max Loan
-                    </th>
-                  </tr>
-                </thead>
-                <tbody className="text-gray-700">
-                  <tr className={"bg-gray-50"}>
-                    <td className="px-4 py-2 border border-[#4A4A4A38]">
-                      {selectedScheme?.loanPeriod}
-                    </td>
-                    <td className="px-4 py-2 border border-[#4A4A4A38]">
-                      {selectedScheme?.minLoanAmount}
-                    </td>
-                    <td className="px-4 py-2 border border-[#4A4A4A38]">
-                      {selectedScheme?.maxLoanAmount}
-                    </td>
-                  </tr>
-                </tbody>
-              </table>
-            </div>
-          </div>
-          <div className="flex justify-center">
-            <div className="">
-              <h3 className="font-semibold  text-blue-900 text-lg">
-                Effective Interest Rates
-              </h3>
-
-              <table className="border border-gray-300 text-sm mt-2">
-                <thead className="bg-[#0A2478] text-white">
-                  <tr>
-                    <th className="px-4 py-2 border-r border-gray-200 w-[307px]">
-                      Terms
-                    </th>
-                    <th className="px-4 py-2 border-r border-gray-200 w-[307px]">
-                      Effective Interest Rates
-                    </th>
-                  </tr>
-                </thead>
-                <tbody className="text-gray-700">
-                  {selectedScheme?.interestRates &&
-                  selectedScheme?.interestRates.length > 0 ? (
-                    selectedScheme?.interestRates.map((rate, idx) => (
-                      <tr
-                        key={idx}
-                        className={idx % 2 === 0 ? "bg-gray-50" : "bg-white"}
-                      >
-                        <td className="px-4 py-2 border border-[#4A4A4A38]">
-                          {rate.from} To {rate.to}{" "}
-                          {selectedScheme?.calcBasisOn === "Monthly"
-                            ? "MONTHS"
-                            : "DAYS"}
-                        </td>
-                        <td className="px-4 py-2 border border-[#4A4A4A38]">
-                          {rate.addInt}%
-                        </td>
-                      </tr>
-                    ))
-                  ) : (
+                <table className="border border-gray-300 text-sm mt-2">
+                  <thead className="bg-[#0A2478] text-white">
                     <tr>
-                      <td
-                        colSpan="2"
-                        className="text-center py-3 text-gray-500 border border-[#4A4A4A38] bg-white"
-                      >
-                        No interest data available
+                      <th className="px-4 py-2 border-r border-gray-200 w-[224px]">
+                        Loan Tenure (Days)
+                      </th>
+                      <th className="px-4 py-2 border-r border-gray-200 w-[173px]">
+                        Min Loan
+                      </th>
+                      <th className="px-4 py-2 border-r border-gray-200 w-[195px]">
+                        Max Loan
+                      </th>
+                    </tr>
+                  </thead>
+                  <tbody className="text-gray-700">
+                    <tr className={"bg-gray-50"}>
+                      <td className="px-4 py-2 border border-[#4A4A4A38]">
+                        {selectedScheme?.loanPeriod}
+                      </td>
+                      <td className="px-4 py-2 border border-[#4A4A4A38]">
+                        {selectedScheme?.minLoanAmount}
+                      </td>
+                      <td className="px-4 py-2 border border-[#4A4A4A38]">
+                        {selectedScheme?.maxLoanAmount}
                       </td>
                     </tr>
-                  )}
-                </tbody>
-              </table>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+            <div className="flex justify-center">
+              <div className="">
+                <h3 className="font-semibold  text-blue-900 text-lg">
+                  Effective Interest Rates
+                </h3>
+
+                <table className="border border-gray-300 text-sm mt-2">
+                  <thead className="bg-[#0A2478] text-white">
+                    <tr>
+                      <th className="px-4 py-2 border-r border-gray-200 w-[307px]">
+                        Terms
+                      </th>
+                      <th className="px-4 py-2 border-r border-gray-200 w-[307px]">
+                        Effective Interest Rates
+                      </th>
+                    </tr>
+                  </thead>
+                  <tbody className="text-gray-700">
+                    {selectedScheme?.interestRates &&
+                    selectedScheme?.interestRates.length > 0 ? (
+                      selectedScheme?.interestRates.map((rate, idx) => (
+                        <tr
+                          key={idx}
+                          className={idx % 2 === 0 ? "bg-gray-50" : "bg-white"}
+                        >
+                          <td className="px-4 py-2 border border-[#4A4A4A38]">
+                            {rate.from} To {rate.to}{" "}
+                            {selectedScheme?.calcBasisOn === "Monthly"
+                              ? "MONTHS"
+                              : "DAYS"}
+                          </td>
+                          <td className="px-4 py-2 border border-[#4A4A4A38]">
+                            {rate.addInt}%
+                          </td>
+                        </tr>
+                      ))
+                    ) : (
+                      <tr>
+                        <td
+                          colSpan="2"
+                          className="text-center py-3 text-gray-500 border border-[#4A4A4A38] bg-white"
+                        >
+                          No interest data available
+                        </td>
+                      </tr>
+                    )}
+                  </tbody>
+                </table>
+              </div>
             </div>
           </div>
         </div>
- </div>
-        
+
         {showCustomerModal && selectedCustomer && (
           <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-[999]">
             <div className="bg-white rounded-lg p-6 shadow-2xl relative w-[1080px] max-h-[96vh] overflow-auto">

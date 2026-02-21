@@ -826,7 +826,6 @@ import {
   CheckCircle2,
   FileText,
   Plus,
-  Save,
   Trash2,
   UserPlus,
   X,
@@ -849,51 +848,122 @@ const AddRecipt = () => {
   const [employeeList, setEmployeeList] = useState([]);
   const [showDropdownForEmployee, setShowDropdownForemployee] = useState(false);
 
+  // const fetchExpenseById = async (id) => {
+  //   try {
+  //     const res = await axios.get(
+  //       `${API}/api/Receipt/Receipt-details/${id}`,
+  //     );
+
+  //     if (res.data.success) {
+  //       const { master, details } = res.data;
+
+  //       // 🔹 Set Main Voucher Row
+  //       setVoucherRows([
+  //         {
+  //           subLedgerCode: details[0]?.sub_ledger_code || "",
+  //           ledgerName: details[0]?.ledger_name || "",
+  //           date: master.expense_date,
+  //           sign: details[0]?.sign || "C",
+  //           remark: details[0]?.remark || "",
+  //           amount: details.reduce(
+  //             (sum, d) => sum + Number(d.bill_amount || 0),
+  //             0,
+  //           ),
+  //         },
+  //       ]);
+
+  //       // 🔹 Convert details into rowDetails format
+  //       setRowDetails({
+  //         0: details.map((d) => ({
+  //           billNumber: d.bill_number,
+  //           billAmount: d.bill_amount,
+  //           billPaidAmount: d.bill_paid_amount,
+  //           payMode: d.pay_mode,
+  //           bankId: d.bank_id,
+  //           billImage: d.bill_image, // URL string
+  //           partyName: d.party_name,
+  //           employeeName: d.employee_name,
+  //           partyId: d.party_id,
+  //           employeeId: d.employee_id,
+  //         })),
+  //       });
+  //     }
+  //   } catch (error) {
+  //     console.error("Fetch Expense Error:", error);
+  //   }
+  // };
   const fetchExpenseById = async (id) => {
     try {
-      const res = await axios.get(
-        `${API}/api/Receipt/Receipt-details/${id}`,
-      );
+      const res = await axios.get(`${API}/api/Receipt/Receipt-details/${id}`);
 
-      if (res.data.success) {
-        const { master, details } = res.data;
+      if (!res?.data?.success) {
+        console.error("Invalid response:", res.data);
+        return;
+      }
 
-        // 🔹 Set Main Voucher Row
+      const { master, details } = res.data;
+
+      // ✅ Format date for input[type="date"]
+      const formattedDate = master?.expense_date
+        ? new Date(master.expense_date).toISOString().split("T")[0]
+        : "";
+
+      // ✅ If no details found
+      if (!details || details.length === 0) {
         setVoucherRows([
           {
-            subLedgerCode: details[0]?.sub_ledger_code || "",
-            ledgerName: details[0]?.ledger_name || "",
-            date: master.expense_date,
-            sign: details[0]?.sign || "C",
-            remark: details[0]?.remark || "",
-            amount: details.reduce(
-              (sum, d) => sum + Number(d.bill_amount || 0),
-              0,
-            ),
+            subLedgerCode: "",
+            ledgerName: "",
+            date: formattedDate,
+            sign: "C",
+            remark: "",
+            amount: 0,
           },
         ]);
-
-        // 🔹 Convert details into rowDetails format
-        setRowDetails({
-          0: details.map((d) => ({
-            billNumber: d.bill_number,
-            billAmount: d.bill_amount,
-            billPaidAmount: d.bill_paid_amount,
-            payMode: d.pay_mode,
-            bankId: d.bank_id,
-            billImage: d.bill_image, // URL string
-            partyName: d.party_name,
-            employeeName: d.employee_name,
-            partyId: d.party_id,
-            employeeId: d.employee_id,
-          })),
-        });
+        setRowDetails({ 0: [] });
+        return;
       }
+
+      // ✅ Calculate total amount safely
+      const totalAmount = details.reduce(
+        (sum, d) => sum + Number(d?.bill_amount || 0),
+        0,
+      );
+
+      // ✅ Set Main Voucher Row
+      setVoucherRows([
+        {
+          subLedgerCode: details[0]?.sub_ledger_code || "",
+          ledgerName: details[0]?.ledger_name || "",
+          date: formattedDate,
+          sign: details[0]?.sign || "C",
+          remark: details[0]?.remark || "",
+          amount: totalAmount,
+        },
+      ]);
+
+      // ✅ Convert details into rowDetails format
+      setRowDetails({
+        0: details.map((d) => ({
+          billNumber: d?.bill_number || "",
+          billAmount: d?.bill_amount || "",
+          billPaidAmount: d?.bill_paid_amount || "",
+          payMode: d?.pay_mode || "",
+          bankId: d?.bank_id || "",
+          billImage: d?.bill_image || null,
+          partyName: d?.party_name || "",
+          employeeName: d?.employee_name || "",
+          partyId: d?.party_id || "",
+          employeeId: d?.employee_id || "",
+        })),
+      });
     } catch (error) {
-      console.error("Fetch Expense Error:", error);
+      console.error(
+        "Fetch Expense Error:",
+        error?.response?.data || error.message,
+      );
     }
   };
-
   useEffect(() => {
     if (expenseId) {
       fetchExpenseById(expenseId);
@@ -1157,6 +1227,7 @@ const AddRecipt = () => {
             amount: "",
           },
         ]);
+        navigate("/Receipt_List");
       }
     } catch (error) {
       console.error("Save Error:", error);
@@ -1347,9 +1418,7 @@ const AddRecipt = () => {
           <table className=" text-left border-collapse bg-white">
             <thead>
               <tr className="bg-[#0A2478] text-white text-[11px] uppercase">
-                <th className="p-2 border-r font-bold w-18 text-center">
-                  No
-                </th>
+                <th className="p-2 border-r font-bold w-18 text-center">No</th>
                 <th className="p-2 border-r font-bold">Sub Ledger Name</th>
                 <th className="p-2 border-r font-bold w-28 text-center">
                   Date
@@ -1437,32 +1506,39 @@ const AddRecipt = () => {
 
                       <button
                         onClick={addNewRow}
+                        disabled={isViewMode}
                         className="bg-[#0A2478] text-white p-1.5 rounded-sm hover:bg-[#0a2669]"
                       >
-                        <Plus size={12} />
+                        <Plus size={12}    />
                       </button>
                       <button
                         onClick={() => removeRow(index)}
+                         disabled={isViewMode}
                         className="bg-red-600  text-white p-1.5 rounded-sm hover:bg-red-700"
                       >
-                        <Trash2 size={12} />
+                        <Trash2 size={12}   />
                       </button>
 
                       <button
                         onClick={() => openDetailsModal(index)}
-                        className={`px-2 py-1 rounded-sm flex items-center font-bold uppercase text-[10px] transition-colors shadow-sm ${rowDetails[index]
+                        className={`px-2 py-1 rounded-sm flex items-center font-bold uppercase text-[10px] transition-colors shadow-sm ${
+                          rowDetails[index]
                             ? "bg-green-600 text-white"
                             : "bg-[#0A2478] text-white"
-                          }`}
+                        }`}
                       >
                         {rowDetails[index] ? (
                           <CheckCircle2 size={10} className="mr-1" />
                         ) : (
                           <Plus size={10} className="mr-1" />
                         )}
-                        {rowDetails[index]?.length > 0
-                          ? `Details Added (${rowDetails[index].length})`
-                          : "Add Details"}
+                        {isViewMode
+                          ? rowDetails[index]?.length > 0
+                            ? `View Details (${rowDetails[index].length})`
+                            : "View Details"
+                          : rowDetails[index]?.length > 0
+                            ? `Details Added (${rowDetails[index].length})`
+                            : "Add Details"}
                       </button>
                     </div>
                   </td>
@@ -1501,6 +1577,7 @@ const AddRecipt = () => {
                   <input
                     className="border border-gray-300 p-2 rounded outline-none focus:border-[#008080]"
                     value={detailForm.billNumber}
+                    disabled={isViewMode}
                     onChange={(e) =>
                       setDetailForm({
                         ...detailForm,
@@ -1518,6 +1595,7 @@ const AddRecipt = () => {
                     type="number"
                     className="border border-gray-300 p-2 rounded outline-none focus:border-[#008080]"
                     value={detailForm.billAmount}
+                    disabled={isViewMode}
                     onChange={(e) =>
                       setDetailForm({
                         ...detailForm,
@@ -1527,38 +1605,6 @@ const AddRecipt = () => {
                     placeholder="0.00"
                   />
                 </div>
-
-                {/* <div className="flex flex-col">
-                  <label className="font-bold text-gray-700 mb-1">
-                    Bill Paid Amount
-                  </label>
-                  <input
-                    type="number"
-                    min="0"
-                    className="border border-gray-300 p-2 rounded outline-none focus:border-[#008080]"
-                    value={detailForm.billPaidAmount}
-                    onChange={(e) => {
-                      const paid = Number(e.target.value);
-                      const total = Number(detailForm.billAmount || 0);
-
-                      if (paid < 0) {
-                        alert("Paid amount cannot be negative");
-                        return;
-                      }
-
-                      if (paid > total) {
-                        alert("Paid amount cannot be greater than Bill Amount");
-                        return;
-                      }
-
-                      setDetailForm({
-                        ...detailForm,
-                        billPaidAmount: e.target.value,
-                      });
-                    }}
-                    placeholder="0.00"
-                  />
-                </div> */}
               </div>
 
               <div className="grid grid-cols-2 gap-4">
@@ -1569,6 +1615,7 @@ const AddRecipt = () => {
                   <select
                     className="border border-gray-300 p-2 rounded outline-none"
                     value={detailForm.payMode}
+                    disabled={isViewMode}
                     onChange={(e) =>
                       setDetailForm({ ...detailForm, payMode: e.target.value })
                     }
@@ -1584,6 +1631,7 @@ const AddRecipt = () => {
                   <select
                     className="border border-gray-300 p-2 rounded outline-none focus:border-[#008080] bg-white"
                     value={detailForm.bankId}
+                    disabled={isViewMode}
                     onChange={(e) =>
                       setDetailForm({ ...detailForm, bankId: e.target.value })
                     }
@@ -1620,6 +1668,7 @@ const AddRecipt = () => {
                   <input
                     className="border border-gray-300 p-2 rounded outline-none focus:border-[#008080]"
                     value={detailForm.partyName}
+                    disabled={isViewMode}
                     onChange={handleInputChange}
                     onFocus={() =>
                       detailForm.partyName && setShowDropdown(true)
@@ -1648,21 +1697,6 @@ const AddRecipt = () => {
                     </div>
                   )}
                 </div>
-                {/* <div className="flex flex-col">
-                  <label className="font-bold text-gray-700 mb-1">
-                    Employee Name
-                  </label>
-                  <input
-                    className="border border-gray-300 p-2 rounded outline-none focus:border-[#008080]"
-                    value={detailForm.employeeName}
-                    onChange={(e) =>
-                      setDetailForm({
-                        ...detailForm,
-                        employeeName: e.target.value,
-                      })
-                    }
-                  />
-                </div> */}
 
                 <div className="flex flex-col relative">
                   <label className="font-bold text-gray-700 mb-1">
@@ -1672,6 +1706,7 @@ const AddRecipt = () => {
                     className="border border-gray-300 p-2 rounded outline-none focus:border-[#008080]"
                     placeholder="Search employee..."
                     value={detailForm.employeeName}
+                    disabled={isViewMode}
                     onChange={handleInputChangeFortheSelectEmployee}
                     onFocus={() =>
                       employeeList.length > 0 &&
@@ -1717,6 +1752,7 @@ const AddRecipt = () => {
                 </label>
                 <input
                   type="file"
+                  disabled={isViewMode}
                   className="text-[11px] file:mr-4 file:py-1 file:px-4 file:rounded-full file:border-0 file:text-xs file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100"
                   onChange={(e) =>
                     setDetailForm({
@@ -1747,13 +1783,20 @@ const AddRecipt = () => {
             </div>
 
             <div className=" p-4 flex gap-2 justify-center">
-              
-              <button
+              {/* <button
                 onClick={handleSaveDetails}
                 className="px-6 py-2 text-white rounded font-bold uppercase text-[10px] shadow-md transition-all active:scale-95 bg-[#0A2478]"
               >
                 Save Details
-              </button>
+              </button> */}
+              {!isViewMode && (
+                <button
+                  onClick={handleSaveDetails}
+                  className="px-6 py-2 text-white rounded font-bold uppercase text-[10px] shadow-md transition-all active:scale-95 bg-[#0A2478]"
+                >
+                  Save Details
+                </button>
+              )}
               <button
                 onClick={() => setIsDetailsModalOpen(false)}
                 className="px-4 py-2 border border-gray-300 rounded font-bold uppercase text-[10px] bg-red-600 text-white transition-colors"
@@ -2024,20 +2067,21 @@ const AddRecipt = () => {
 
             {/* Footer - Fixed */}
             <div className="bg-white p-4 flex justify-center gap-3 border-t shadow-[0_-4px_6px_-1px_rgba(0,0,0,0.05)] shrink-0">
-              <button
-                onClick={() => setIsModalOpen(false)}
-                className="px-5 py-2 border border-gray-300 rounded-lg text-gray-600 font-bold text-[11px] hover:bg-gray-50 transition-colors uppercase tracking-wider"
-              >
-                Cancel
-              </button>
               {!isViewMode && (
                 <button
                   onClick={handlePartySave}
                   className="px-8 py-2 bg-[#0A2478] text-white rounded-lg font-bold text-[11px] flex items-center gap-2 hover:bg-[#0a2669] shadow-lg shadow-blue-900/20 transition-all active:scale-95 uppercase tracking-wider"
                 >
-                  <Save size={14} /> Save Party
+                  Save Party
                 </button>
               )}
+
+              <button
+                onClick={() => setIsModalOpen(false)}
+                className="px-5 py-2 border border-gray-300 rounded-lg text-gray-600 font-bold text-[11px] bg-red-600 transition-colors uppercase tracking-wider text-white"
+              >
+                Exit
+              </button>
             </div>
           </div>
         </div>

@@ -1585,9 +1585,9 @@ const Navbar = () => {
   ];
 
   const AccountingItems = [
-    { name: "Expences", path: "/Expences_list" },
+    { name: "Expense ", path: "/Expences_list" },
     { name: "Receipt", path: "/Receipt_List" },
-    { name: "Journal", path: "/JournalVoucher/List" },
+    { name: "Journal Voucher", path: "/JournalVoucher/List" },
     { name: "FT Issue", path: "/FundTransfer/issue" },
     { name: "FT Receipt", path: "/FundTransfer/receipt" },
   ];
@@ -2120,10 +2120,10 @@ const Navbar = () => {
                     name: "PaymentGetWay History",
                     path: "/paymentgetway_history",
                   },
-                  {
-                    name: "Employee PayRoll Report",
-                    path: "/Employee-payroll",
-                  },
+                  // {
+                  //   name: "Employee PayRoll Report",
+                  //   path: "/Employee-payroll",
+                  // },
                 ].map((item) => (
                   <button
                     key={item.path}
@@ -2180,7 +2180,7 @@ const Navbar = () => {
                           setOpenSubMenu(null);
                         }}
                       >
-                        GressPeriod
+                        Grace Period
                       </Link>
                     </div>
                   )}

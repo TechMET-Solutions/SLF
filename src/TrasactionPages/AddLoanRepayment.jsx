@@ -518,6 +518,151 @@ function AddLoanRepayment() {
     return words.trim() + " only";
   };
 
+  // useEffect(() => {
+  //   debugger;
+  //   if (
+  //     !data?.loanApplication?.LoanPendingAmount ||
+  //     !data?.loanApplication?.approval_date
+  //   )
+  //     return;
+
+  //   const approvalDate = new Date(data.loanApplication.Pay_Date);
+  //   const today = new Date();
+  //   today.setHours(0, 0, 0, 0);
+
+  //   const interestPaidUpto = new Date(
+  //     data.loanApplication.InterestPaidUpto || today,
+  //   );
+  //   interestPaidUpto.setHours(0, 0, 0, 0);
+
+  //   const pendingLoanAmount = Number(data.loanApplication.LoanPendingAmount);
+  //   const totalUnpaidCharges = Number(
+  //     data.loanApplication.total_unpaid_charges || 0,
+  //   );
+  //   const preCloseMinDays = Number(data.schemeData?.preCloserMinDays || 0);
+  //   const parseArray = (value) => {
+  //     try {
+  //       if (!value) return [];
+
+  //       // If it's already an array
+  //       if (Array.isArray(value)) return value;
+
+  //       // If it's already an object -> NOT valid array
+  //       if (typeof value === "object") return [];
+
+  //       // If it's "[object Object]"
+  //       if (value === "[object Object]") return [];
+
+  //       return JSON.parse(value);
+  //     } catch {
+  //       return [];
+  //     }
+  //   };
+
+  //   const slabs = parseArray(data.schemeData.interestRates);
+
+  //   // ✅ CASE 1: Already paid future interest
+  //   if (interestPaidUpto > today) {
+  //     const currentSlab = slabs.find(
+  //       (s) => Number(s.from) <= 0 && Number(s.to) >= 0,
+  //     );
+  //     const interestPercent = currentSlab ? Number(currentSlab.addInt) : 0;
+  //     setintrestPercentage(interestPercent);
+
+  //     setLoanInfo({
+  //       pendingDays: 0,
+  //       pendingDaysUptoToday: 0,
+  //       pendingInt: "0.00",
+  //       preCloseInt: "0.00",
+  //       interestPaidDaysPreClose: 0,
+  //       interestPaidUptoPreClose: interestPaidUpto.toISOString().slice(0, 10),
+  //       interestPercent,
+  //       loanAmountPaid: pendingLoanAmount.toFixed(2),
+  //       payAmount: (pendingLoanAmount + totalUnpaidCharges).toFixed(2),
+  //       balanceLoanAmt: 0,
+  //       chargesAdjusted: totalUnpaidCharges.toFixed(2),
+  //       intPaidUpto: interestPaidUpto.toISOString().slice(0, 10),
+  //       interestUptoToday: today.toISOString().slice(0, 10),
+  //     });
+  //     return;
+  //   }
+
+  //   // ✅ CASE 2: Normal case (interest due till today)
+  //   const diffMs = today - interestPaidUpto;
+  //   const pendingDays = Math.max(Math.round(diffMs / (1000 * 60 * 60 * 24)), 0);
+
+  //   // 🧮 For reference: total days from approval to today
+  //   const diffFromApprovalMs = today - approvalDate;
+  //   const pendingDaysUptoToday = Math.max(
+  //     Math.round(diffFromApprovalMs / (1000 * 60 * 60 * 24)),
+  //     0,
+  //   );
+
+  //   // ✅ Find normal interest slab
+  //   const currentSlab = slabs.find(
+  //     (s) => pendingDays >= Number(s.from) && pendingDays <= Number(s.to),
+  //   );
+  //   const interestPercent = currentSlab ? Number(currentSlab.addInt) : 0;
+  //   setintrestPercentage(interestPercent);
+
+  //   // ✅ Normal interest calculation
+  //   const dailyIntAmt = (pendingLoanAmount * interestPercent) / 100 / 365;
+  //   const pendingInt = dailyIntAmt * pendingDays;
+
+  //   // ✅ Pre-closure logic
+  //   const minInterestDate = new Date(approvalDate);
+  //   minInterestDate.setDate(minInterestDate.getDate() + preCloseMinDays);
+
+  //   let preCloseInt = 0;
+  //   let preCloseDays = 0;
+  //   let intPaidUptoDate = data.loanApplication.InterestPaidUpto ;
+  //   let interestPaidDaysPreClose = 0;
+  //   let interestPaidUptoPreClose = today;
+
+  //   if (today < minInterestDate) {
+  //     // Before minimum closure period → charge for minimum preCloseMinDays
+  //     preCloseDays = preCloseMinDays;
+  //     const preCloseDailyInt =
+  //       (pendingLoanAmount * interestPercent) / 100 / 365;
+  //     preCloseInt = preCloseDailyInt * preCloseMinDays;
+
+  //     intPaidUptoDate = minInterestDate;
+  //     interestPaidDaysPreClose = preCloseMinDays;
+  //     interestPaidUptoPreClose = minInterestDate;
+  //   } else {
+  //     // Normal case after pre-close window
+  //     preCloseDays = pendingDays;
+  //     preCloseInt = pendingInt;
+  //     intPaidUptoDate = today;
+  //     interestPaidDaysPreClose = pendingDays;
+  //     interestPaidUptoPreClose = today;
+  //   }
+
+  //   // ✅ Decide which interest to apply in payAmount
+  //   const finalInterest =
+  //     Number(preCloseInt) > Number(pendingInt) ? preCloseInt : pendingInt;
+
+  //   const payAmount = pendingLoanAmount + finalInterest + totalUnpaidCharges;
+
+  //   // ✅ Store all data together
+  //   setLoanInfo({
+  //     pendingDays,
+  //     pendingDaysUptoToday,
+  //     pendingInt: pendingInt.toFixed(2),
+  //     preCloseInt: preCloseInt.toFixed(2),
+  //     interestPaidDaysPreClose,
+  //     interestPaidUptoPreClose: interestPaidUptoPreClose
+  //       .toISOString()
+  //       .slice(0, 10),
+  //     interestPercent,
+  //     loanAmountPaid: pendingLoanAmount.toFixed(2),
+  //     payAmount: payAmount.toFixed(2),
+  //     balanceLoanAmt: 0,
+  //     chargesAdjusted: totalUnpaidCharges.toFixed(2),
+  //     intPaidUpto: intPaidUptoDate.toISOString().slice(0, 10),
+  //     interestUptoToday: today.toISOString().slice(0, 10),
+  //   });
+  // }, [data]);
   useEffect(() => {
     debugger;
     if (
@@ -526,47 +671,51 @@ function AddLoanRepayment() {
     )
       return;
 
-    const approvalDate = new Date(data.loanApplication.Pay_Date);
+    const approvalDate = new Date(data.loanApplication.approval_date);
+    approvalDate.setHours(0, 0, 0, 0);
+
     const today = new Date();
     today.setHours(0, 0, 0, 0);
 
     const interestPaidUpto = new Date(
-      data.loanApplication.InterestPaidUpto || today,
+      data.loanApplication.InterestPaidUpto || approvalDate,
     );
     interestPaidUpto.setHours(0, 0, 0, 0);
 
-    const pendingLoanAmount = Number(data.loanApplication.LoanPendingAmount);
+    const pendingLoanAmount = Number(
+      data.loanApplication.LoanPendingAmount || 0,
+    );
+
     const totalUnpaidCharges = Number(
       data.loanApplication.total_unpaid_charges || 0,
     );
+
     const preCloseMinDays = Number(data.schemeData?.preCloserMinDays || 0);
+
+    const addOneDay = data.schemeData?.addOneDay === "Yes";
+
+    // ✅ Safe parser
     const parseArray = (value) => {
       try {
         if (!value) return [];
-
-        // If it's already an array
         if (Array.isArray(value)) return value;
-
-        // If it's already an object -> NOT valid array
         if (typeof value === "object") return [];
-
-        // If it's "[object Object]"
         if (value === "[object Object]") return [];
-
         return JSON.parse(value);
       } catch {
         return [];
       }
     };
 
-    const slabs = parseArray(data.schemeData.interestRates);
+    const slabs = parseArray(data.schemeData?.interestRates);
 
-    // ✅ CASE 1: Already paid future interest
     if (interestPaidUpto > today) {
       const currentSlab = slabs.find(
         (s) => Number(s.from) <= 0 && Number(s.to) >= 0,
       );
+
       const interestPercent = currentSlab ? Number(currentSlab.addInt) : 0;
+
       setintrestPercentage(interestPercent);
 
       setLoanInfo({
@@ -584,67 +733,86 @@ function AddLoanRepayment() {
         intPaidUpto: interestPaidUpto.toISOString().slice(0, 10),
         interestUptoToday: today.toISOString().slice(0, 10),
       });
+
       return;
     }
+    const diffMs = today.getTime() - interestPaidUpto.getTime();
 
-    // ✅ CASE 2: Normal case (interest due till today)
-    const diffMs = today - interestPaidUpto;
-    const pendingDays = Math.max(Math.round(diffMs / (1000 * 60 * 60 * 24)), 0);
+    let pendingDays = Math.floor(diffMs / (1000 * 60 * 60 * 24));
 
-    // 🧮 For reference: total days from approval to today
-    const diffFromApprovalMs = today - approvalDate;
+    if (pendingDays < 0) pendingDays = 0;
+
+    // ✅ Include InterestPaidUpto date if addOneDay = Yes
+    if (addOneDay && pendingDays >= 0) {
+      pendingDays += 1;
+    }
+
+    // 🧮 Total days from approval to today
+    const diffFromApprovalMs = today.getTime() - approvalDate.getTime();
+
     const pendingDaysUptoToday = Math.max(
-      Math.round(diffFromApprovalMs / (1000 * 60 * 60 * 24)),
+      Math.floor(diffFromApprovalMs / (1000 * 60 * 60 * 24)),
       0,
     );
 
-    // ✅ Find normal interest slab
+    // ✅ Find slab
     const currentSlab = slabs.find(
       (s) => pendingDays >= Number(s.from) && pendingDays <= Number(s.to),
     );
+
     const interestPercent = currentSlab ? Number(currentSlab.addInt) : 0;
+
     setintrestPercentage(interestPercent);
 
-    // ✅ Normal interest calculation
+    // ✅ Daily Interest
     const dailyIntAmt = (pendingLoanAmount * interestPercent) / 100 / 365;
+
     const pendingInt = dailyIntAmt * pendingDays;
 
-    // ✅ Pre-closure logic
+    // ---------------------------------------------------
+    // ✅ Pre-Closure Logic
+    // ---------------------------------------------------
+
     const minInterestDate = new Date(approvalDate);
     minInterestDate.setDate(minInterestDate.getDate() + preCloseMinDays);
 
     let preCloseInt = 0;
     let preCloseDays = 0;
-    let intPaidUptoDate = data.loanApplication.InterestPaidUpto ;
+    let intPaidUptoDate;
     let interestPaidDaysPreClose = 0;
-    let interestPaidUptoPreClose = today;
+    let interestPaidUptoPreClose;
 
     if (today < minInterestDate) {
-      // Before minimum closure period → charge for minimum preCloseMinDays
+      // Before minimum closure period
       preCloseDays = preCloseMinDays;
+
       const preCloseDailyInt =
         (pendingLoanAmount * interestPercent) / 100 / 365;
+
       preCloseInt = preCloseDailyInt * preCloseMinDays;
 
       intPaidUptoDate = minInterestDate;
       interestPaidDaysPreClose = preCloseMinDays;
       interestPaidUptoPreClose = minInterestDate;
     } else {
-      // Normal case after pre-close window
+      // Normal case
       preCloseDays = pendingDays;
       preCloseInt = pendingInt;
+
       intPaidUptoDate = today;
       interestPaidDaysPreClose = pendingDays;
       interestPaidUptoPreClose = today;
     }
 
-    // ✅ Decide which interest to apply in payAmount
-    const finalInterest =
-      Number(preCloseInt) > Number(pendingInt) ? preCloseInt : pendingInt;
+    // ✅ Final interest applied
+    const finalInterest = preCloseInt > pendingInt ? preCloseInt : pendingInt;
 
     const payAmount = pendingLoanAmount + finalInterest + totalUnpaidCharges;
 
-    // ✅ Store all data together
+    // ---------------------------------------------------
+    // ✅ Set Final State
+    // ---------------------------------------------------
+
     setLoanInfo({
       pendingDays,
       pendingDaysUptoToday,
@@ -1841,12 +2009,12 @@ function AddLoanRepayment() {
               {pledgeItems?.length > 0 ? (
                 <>
                   {pledgeItems.map((item, index) => (
-                   <div
-  key={index}
-  className={`flex border-t border-gray-300 ${
-    index % 2 === 0 ? "bg-gray-50" : "bg-white"
-  }`}
->
+                    <div
+                      key={index}
+                      className={`flex border-t border-gray-300 ${
+                        index % 2 === 0 ? "bg-gray-50" : "bg-white"
+                      }`}
+                    >
                       <div className="flex-1 p-2 border-r border-gray-300">
                         {item.particular || "Gold"}
                       </div>
@@ -1929,7 +2097,7 @@ function AddLoanRepayment() {
         </div>
 
         {/* Installments Table */}
-        <div className=" w-[1290px] bg-white">
+        <div className=" w-[1290px] bg-[#F7F7FF]">
           <h1 className="text-blue-900 font-semibold text-xl py-2">
             Installments
           </h1>
@@ -1965,7 +2133,10 @@ function AddLoanRepayment() {
               </thead>
               <tbody>
                 {installments.map((row, i) => (
-                  <tr key={i} className={i % 2 === 0 ? "bg-gray-50" : "bg-white"}>
+                  <tr
+                    key={i}
+                    className={i % 2 === 0 ? "bg-gray-50" : "bg-white"}
+                  >
                     <td className="p-2 border border-gray-300">{row.srNo}</td>
                     <td className="p-2 border border-gray-300">
                       {row.receiptNo}

@@ -114,7 +114,7 @@ const JournalVoucherlist = () => {
               </h2>
 
               <div className="flex gap-5">
-                <div className="   flex items-end gap-5">
+                {/* <div className="   flex items-end gap-5">
                   <div>
                     <label className="text-[11px] font-bold p-1">
                       Pay Mode
@@ -127,7 +127,7 @@ const JournalVoucherlist = () => {
                       <option value="All">--Select All--</option>
                       <option value="Cash">Cash</option>
                       <option value="UPI">Net Banking</option>
-                      {/* <option value="Bank">Bank</option> */}
+                      
                     </select>
                   </div>
 
@@ -150,7 +150,7 @@ const JournalVoucherlist = () => {
                   >
                     Search
                   </button>
-                </div>
+                </div> */}
                 <button
                   onClick={() => navigate("/JournalVoucher/create")}
                   className="w-[74px] h-[24px]  cursor-pointer rounded bg-[#0A2478] text-white text-[11.25px] flex items-center justify-center mt-2"
