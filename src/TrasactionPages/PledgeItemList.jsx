@@ -100,6 +100,7 @@ console.log(purities,"purities")
 // Assuming you have goldRate, purities, selectedScheme, and rows
 
   const calculateRate = (purityName) => {
+    debugger
   
   // Check if any data is missing
   if (!goldRate || !goldRate.gold_rate || !selectedScheme || !purityName) return 0;
@@ -195,6 +196,7 @@ console.log(purities,"purities")
               <th className="px-4 py-2 border-r border-gray-200 w-[120px]">Purity</th>
                <th className="px-4 py-2 border-r border-gray-200 w-[120px]">Calculated Purity</th>
               <th className="px-4 py-2 border-r border-gray-200">Rate</th>
+               <th className="px-4 py-2 border-r border-gray-200">Rate</th>
               <th className="px-4 py-2 border-r border-gray-200">Valuation</th>
               <th className="px-4 py-2">Remark</th>
             </tr>

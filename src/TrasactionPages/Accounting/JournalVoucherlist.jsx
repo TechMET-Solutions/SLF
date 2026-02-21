@@ -103,10 +103,10 @@ const JournalVoucherlist = () => {
   };
 
   return (
-    <div className="min-h-screen bg-[#f1f5f9]">
-      <div className="p-4 ml-[110px] mr-[110px] mx-auto">
+    <div className="min-h-screen ">
+      <div className=" ml-[110px] mr-[110px] mx-auto">
         <div className="flex justify-center sticky top-[80px] z-40">
-          <div className="flex justify-center mt-5">
+          <div className="flex justify-center p-6">
             <div className="flex items-center justify-between px-6 py-4 border-b w-[1290px] h-[61px] border rounded-[11px] border-gray-200 bg-white">
               <h2 className="text-red-600 font-bold text-[20px] leading-[148%]">
                 Journal Voucher List

@@ -1202,6 +1202,7 @@
 // export default Navbar;
 
 // src/components/Navbar.jsx
+import axios from "axios";
 import { useEffect, useRef, useState } from "react";
 import {
   FiChevronDown,
@@ -1211,6 +1212,7 @@ import {
 } from "react-icons/fi";
 import { TfiReload } from "react-icons/tfi";
 import { Link, useNavigate } from "react-router-dom";
+import { API } from "../api";
 
 const Navbar = () => {
   const [openMenu, setOpenMenu] = useState(null);
@@ -1244,7 +1246,7 @@ const Navbar = () => {
 
   const [selectedYear, setSelectedYear] = useState("2025");
 
-  // Temporary states for modal selection before confirming
+ 
   const [tempBranch, setTempBranch] = useState("");
   const [tempYear, setTempYear] = useState("");
 
@@ -1259,13 +1261,55 @@ const Navbar = () => {
       console.log("Branch Name:", userData.branchId.branch_name);
       setSelectedYear(userData.financialYear);
       setSelectedBranch(userData.branchId.branch_name);
+       setTempBranch(userData.branchId.id);  
+    setSelectedYear(userData.financialYear);
     }
   }, []);
+  
+
+  // const handleOk = () => {
+  //   if (tempBranch) setSelectedBranch(tempBranch);
+  //   if (tempYear) setSelectedYear(tempYear);
+  //   setIsBranchModelOpen(false);
+  // };
 
   const handleOk = () => {
-    if (tempBranch) setSelectedBranch(tempBranch);
-    if (tempYear) setSelectedYear(tempYear);
+    debugger;
+    // 🔹 Get existing userData
+    const storedUser = JSON.parse(sessionStorage.getItem("userData"));
+
+    if (!storedUser) return;
+
+    // 🔹 Find selected branch object from API list
+    const selectedBranchObj = branches.find((b) => b.id === Number(tempBranch));
+
+    if (!selectedBranchObj) return;
+
+    // 🔹 Update userData object
+    const updatedUser = {
+      ...storedUser,
+      branchId: selectedBranchObj.id,
+      branchName: selectedBranchObj.branch_name,
+     branchId:{                     
+    id: selectedBranchObj.id,
+    branch_code: selectedBranchObj.branch_code,
+    branch_name: selectedBranchObj.branch_name,
+  },
+      financialYear: tempYear,
+    };
+
+    // 🔹 Save back to sessionStorage
+    sessionStorage.setItem("userData", JSON.stringify(updatedUser));
+
+    // 🔹 Update local state (if needed)
+    setSelectedBranch(selectedBranchObj.branch_name);
+    setSelectedYear(tempYear);
+
+    // 🔹 Close modal
     setIsBranchModelOpen(false);
+
+    // 🔹 Optional: Reload page to refresh data everywhere
+    window.location.reload();
   };
   // Masters
   const [isMasterOpen, setIsMasterOpen] = useState(false);
@@ -1292,7 +1336,23 @@ const Navbar = () => {
   const [isToolsOpen, setIsToolsOpen] = useState(false);
   const [isSettingsOpen, setIsSettingsOpen] = useState(false);
   const [isSystemTools, setIsSystemTools] = useState(false);
+  const [branches, setBranches] = useState([]);
 
+  const fetchBranches = async () => {
+    try {
+      const res = await axios.get(`${API}/Master/Master_Profile/Branchess`);
+
+      if (res.data.success) {
+        setBranches(res.data.data); // store branches
+      }
+    } catch (error) {
+      console.error("Error fetching branches:", error);
+    }
+  };
+
+  useEffect(() => {
+    fetchBranches();
+  }, []);
   const dropdownRef = useRef(null);
   const navigate = useNavigate();
   function convertPermissions(permissions) {
@@ -2220,15 +2280,18 @@ const Navbar = () => {
                   id="branch"
                   name="branch"
                   className="w-full border border-gray-300 text-black rounded px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#0A2478]"
-                  defaultValue=""
+                  value={tempBranch}
                   onChange={(e) => setTempBranch(e.target.value)}
                 >
                   <option value="" disabled>
                     Choose a branch
                   </option>
-                  <option value="Nashik Road">Nashik Road</option>
-                  <option value="Bhagur">Bhagur</option>
-                  <option value="Nashik">Nashik</option>
+
+                  {branches.map((branch) => (
+                    <option key={branch.id} value={branch.id}>
+                      {branch.branch_name}
+                    </option>
+                  ))}
                 </select>
               </div>
 
@@ -2240,34 +2303,32 @@ const Navbar = () => {
                 >
                   Select Year
                 </label>
+
                 <select
-                  id="year"
                   name="year"
+                  value={selectedYear} // ✅ bind state
+                  onChange={(e) => setSelectedYear(e.target.value)} // ✅ update state
                   className="w-full border border-gray-300 text-black rounded px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#0A2478]"
-                  defaultValue=""
-                  onChange={(e) => setTempYear(e.target.value)}
                 >
-                  <option value="" disabled>
-                    Choose a year
-                  </option>
-                  <option value="2025">2025</option>
-                  <option value="2024">2024</option>
+                  <option value="">Select</option>
+                  <option value="2023-2024">01/04/2023 - 31/03/2024</option>
+                  <option value="2025-2026">01/01/2025 - 31/12/2026</option>
                 </select>
               </div>
 
               {/* Buttons */}
               <div className="flex justify-center gap-4">
                 <button
-                  className="bg-[#F11717] hover:bg-red-700 text-white px-5 py-2 rounded text-base font-medium"
+                  className=" bg-[#0A2478]  text-white px-5 py-2 rounded text-base font-medium"
                   onClick={handleOk}
                 >
                   OK
                 </button>
                 <button
-                  className="bg-[#0A2478] hover:bg-[#081a5e] text-white px-5 py-2 rounded text-base font-medium"
+                  className="bg-[#F11717] text-white px-5 py-2 rounded text-base font-medium"
                   onClick={() => setIsBranchModelOpen(false)}
                 >
-                  Cancel
+                  Exit
                 </button>
               </div>
             </div>

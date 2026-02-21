@@ -50,24 +50,38 @@ const ExpenseList = () => {
 
   return (
     <div className="min-h-screen bg-white font-sans text-[#333]">
-      <div className="ml-[110px] mr-[110px] mx-auto p-6">
+      <div className="ml-[110px] mr-[110px] mx-auto ">
 
-        {/* HEADER */}
-        <div className="flex justify-between items-center mb-6 bg-white p-4 rounded-lg shadow border">
-          <h1 className="text-[#D32F2F] text-xl font-bold">
-            Expense List
-          </h1>
+      
 
-          <button
-            onClick={() => navigate("/Expences/create")}
-            className="bg-[#0D3082] text-white px-5 py-1.5 rounded text-xs font-bold"
-          >
-            Add Expense
-          </button>
+        <div className="flex justify-center sticky top-[80px] z-40">
+          <div className="flex justify-center p-6 ">
+            <div className="flex items-center justify-between px-6 py-4 border-b w-[1290px] h-[61px] border rounded-[11px] border-gray-200 bg-white">
+              <h2 className="text-red-600 font-bold text-[20px] leading-[148%]">
+                Expense List
+              </h2>
+
+              <div className="flex gap-5">
+               
+                <button
+                 onClick={() => navigate("/Expences/create")}
+                  className="w-[100px] h-[30px]  cursor-pointer rounded bg-[#0A2478] text-white text-[11.25px] flex items-center justify-center mt-2 py-2"
+                >
+                  Add Expense
+                </button>
+                <button
+                  onClick={() => navigate("/")}
+                  className="w-[74px] h-[30px] cursor-pointer  rounded bg-[#C1121F] text-white text-[10px] mt-2"
+                >
+                  Exit
+                </button>
+              </div>
+            </div>
+          </div>
         </div>
 
         {/* TABLE */}
-        <div className="overflow-hidden ">
+        <div className="overflow-hidden mt-5">
           <table className=" text-left border-collapse w-[500px]" >
             <thead>
               <tr className="bg-[#0D3082] text-white text-[12px] uppercase">

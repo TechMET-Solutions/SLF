@@ -920,7 +920,6 @@ const AddRecipt = () => {
       ledgerName: "",
       date: todayDate,
       sign: "D",
-      // amount: "0",
       remark: "",
     },
   ]);
@@ -1292,8 +1291,8 @@ const AddRecipt = () => {
 
   return (
     <div className="min-h-screen bg-white font-sans text-[#333] ml-[110px] mr-[110px]">
-      <div className="mx-auto p-6">
-        <div className="flex justify-between items-center bg-white p-4 rounded-lg shadow border">
+      <div className="mx-auto p-2 mt-5">
+        <div className="flex justify-between items-center bg-white p-4 rounded-lg  border border-gray-300 w-[1290px]">
           <h1 className="text-[#D32F2F] text-xl font-bold">Add Receipt</h1>
           <div className="flex space-x-2">
             {!expenseId && !isViewMode && (
@@ -1348,8 +1347,8 @@ const AddRecipt = () => {
           <table className=" text-left border-collapse bg-white">
             <thead>
               <tr className="bg-[#0D3082] text-white text-[11px] uppercase">
-                <th className="p-2 border-r font-bold w-12 text-center">
-                  Sl No
+                <th className="p-2 border-r font-bold w-18 text-center">
+                   No
                 </th>
                 <th className="p-2 border-r font-bold">Sub Ledger Name</th>
                 <th className="p-2 border-r font-bold w-28 text-center">

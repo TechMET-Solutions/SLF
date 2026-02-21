@@ -8,7 +8,7 @@ const FundTransferIssueCreate = () => {
   const navigate = useNavigate();
   const location = useLocation();
   const editData = location.state?.fundData;
-
+const isViewMode = editData;
   // Constants
   const navyBlue = "bg-[#0D3082]";
   const inputClass =
@@ -40,6 +40,7 @@ const FundTransferIssueCreate = () => {
     },
   ]);
   console.log(rows, "FromBrachId");
+
   useEffect(() => {
     debugger;
     const userData = JSON.parse(sessionStorage.getItem("userData"));
@@ -50,18 +51,43 @@ const FundTransferIssueCreate = () => {
 
       setSelectedBranch(userData.branchId.branch_name);
       // setRows(userData.branchId.id);
-      setRows([
-        {
-          FromBrachId: userData.branchId.id,
-          FromBranch: userData.branchId.branch_name,
-          ToBrachId: "",
-          toBranch: "",
-          amount: "",
-          remark: "",
-        },
-      ]);
+      if (editData) {
+        if (editData) {
+
+          const formattedDate = editData.doc_date
+      ? editData.doc_date.split("T")[0]
+      : "";
+          setFormData({
+            docDate: formattedDate,
+            payMode: editData.pay_mode,
+            bankId: editData.bank_id || "",
+          });
+
+          setRows([
+            {
+              FromBrachId: editData.from_branch_id,
+              FromBranch: editData.from_branch_name,
+              ToBrachId: editData.to_branch_id,
+              toBranch: editData.to_branch_name,
+              amount: editData.amount,
+              remark: editData.remark,
+            },
+          ]);
+        }
+      } else {
+        setRows([
+          {
+            FromBrachId: userData.branchId.id,
+            FromBranch: userData.branchId.branch_name,
+            ToBrachId: "",
+            toBranch: "",
+            amount: "",
+            remark: "",
+          },
+        ]);
+      }
     }
-  }, []);
+  }, [!editData]);
   console.log(selectedBranch, selectedBranchId, "id and selectedbranch");
   // Fetching Data
   useEffect(() => {
@@ -119,7 +145,7 @@ const FundTransferIssueCreate = () => {
 
   return (
     <div className="min-h-screen  flex justify-center p-2">
-      <div className="max-w-[1300px] w-full space-y-2">
+      <div className="max-w-[1300px] w-full space-y-2 p-6">
         {/* STICKY HEADER ACTIONS */}
         <div className="sticky top-0 z-10 bg-white border rounded-lg shadow-sm p-3 flex justify-between items-center">
           <div className="flex items-center gap-2">
@@ -130,17 +156,22 @@ const FundTransferIssueCreate = () => {
             {/* <p className="text-[12px] font-bold text-blue-900">TOTAL: ₹{totalAmount.toLocaleString()}</p> */}
           </div>
           <div className="flex gap-2">
-            <button
+            {
+              !editData && (
+                 <button
               onClick={handleSave}
               className={`${navyBlue} text-white px-6 py-1.5 rounded text-[11px] font-bold flex items-center gap-2 hover:opacity-90`}
             >
               <Save size={14} /> SAVE
             </button>
+              )
+            }
+           
             <button
               onClick={() => navigate(-1)}
-              className="bg-red-600 text-white px-6 py-1.5 rounded text-[11px] font-bold flex items-center gap-2 hover:bg-red-700"
+              className="bg-red-700 text-white px-6 py-1.5 rounded text-[11px] font-bold flex items-center gap-2 hover:bg-red-700"
             >
-              <XCircle size={14} /> EXIT
+              EXIT
             </button>
           </div>
         </div>
@@ -157,6 +188,7 @@ const FundTransferIssueCreate = () => {
               <label className={labelClass}>Doc Date</label>
               <input
                 type="date"
+                disabled={isViewMode}
                 value={formData.docDate}
                 onChange={(e) =>
                   setFormData({ ...formData, docDate: e.target.value })
@@ -168,6 +200,7 @@ const FundTransferIssueCreate = () => {
               <label className={labelClass}>Pay Mode</label>
               <select
                 className={inputClass}
+                disabled={isViewMode}
                 value={formData.payMode}
                 onChange={(e) =>
                   setFormData({ ...formData, payMode: e.target.value })
@@ -181,7 +214,8 @@ const FundTransferIssueCreate = () => {
               <label className={labelClass}>Bank Account (If Banking)</label>
               <select
                 className={inputClass}
-                disabled={formData.payMode === "Cash"}
+                
+                disabled={formData.payMode === "Cash" || isViewMode}
                 value={formData.bankId}
                 onChange={(e) =>
                   setFormData({ ...formData, bankId: e.target.value })
@@ -227,7 +261,7 @@ const FundTransferIssueCreate = () => {
                     {index + 1}
                   </td>
                   <td className="p-2 ">
-                    <select
+                    {/* <select
                       className={inputClass}
                       value={row.brachId}
                       onChange={(e) => {
@@ -248,7 +282,31 @@ const FundTransferIssueCreate = () => {
                           {b.branch_name}
                         </option>
                       ))}
-                    </select>
+                    </select> */}
+                    <select
+                      className={inputClass}
+                      disabled={isViewMode}
+  value={row.ToBrachId || ""}
+  onChange={(e) => {
+    const branch = branches.find(
+      (b) => b.id.toString() === e.target.value
+    );
+
+    if (branch) {
+      const updated = [...rows];
+      updated[index].ToBrachId = branch.id;
+      updated[index].toBranch = branch.branch_name;
+      setRows(updated);
+    }
+  }}
+>
+  <option value="">--Select Branch--</option>
+  {branches.map((b) => (
+    <option key={b.id} value={b.id}>
+      {b.branch_name}
+    </option>
+  ))}
+</select>
                   </td>
                   {/* <td className="p-2 border-r">
                     <input className={inputClass} value={row.onBehalf} onChange={(e) => handleRowChange(index, "onBehalf", e.target.value)} />
@@ -258,6 +316,7 @@ const FundTransferIssueCreate = () => {
                       type="number"
                       className={`${inputClass} text-right font-bold text-blue-800`}
                       value={row.amount}
+                      disabled={isViewMode}
                       onChange={(e) =>
                         handleRowChange(index, "amount", e.target.value)
                       }
@@ -266,6 +325,7 @@ const FundTransferIssueCreate = () => {
                   <td className="p-2 ">
                     <input
                       className={inputClass}
+                      disabled={isViewMode}
                       value={row.remark}
                       onChange={(e) =>
                         handleRowChange(index, "remark", e.target.value)

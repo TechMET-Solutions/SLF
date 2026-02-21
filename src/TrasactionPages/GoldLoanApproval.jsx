@@ -5,11 +5,7 @@ import { useLocation, useNavigate } from "react-router-dom";
 import { API } from "../api";
 import profileempty from "../assets/profileempty.png";
 const GoldLoanApproval = () => {
-  // const dummyBanks = [
-  //   { id: 1, name: "HDFC Bank" },
-  //   { id: 2, name: "SBI Bank" },
-  //   { id: 3, name: "ICICI Bank" },
-  // ];
+  
   const branches = [
     { id: 1, name: "Bhagur" },
     { id: 2, name: "Nashik Road" },
@@ -481,7 +477,7 @@ const GoldLoanApproval = () => {
       {/* ===== FORM SECTIONS ===== */}
       <div className="p-9 py-6 min-h-screen space-y-8 px-4">
         {/* ===== Loan Details Section ===== */}
-        <div className="flex justify-center mb-6">
+        <div className="flex justify-center ">
           <div className="w-[950px] pt-3 pl-14">
             {/* First Row */}
             <div className="flex gap-7 text-sm mb-8 flex-wrap">
@@ -493,9 +489,9 @@ const GoldLoanApproval = () => {
                 <p className="font-semibold">Loan Date</p>
                 <p>
                   {formatDate(loanData.created_at)}
-                  <span className="ml-2">
+                  {/* <span className="ml-2">
                     {formatTime(loanData.created_at)}
-                  </span>
+                  </span> */}
                 </p>
               </div>
               <div>
@@ -514,11 +510,7 @@ const GoldLoanApproval = () => {
                 <p className="font-semibold">Mobile Number</p>
                 <p>+91 {loanData.Mobile_Number || "N/A"}</p>
               </div>
-            </div>
-
-            {/* Second Row */}
-            <div className="flex gap-13 text-sm flex-wrap">
-              <div>
+               <div>
                 <p className="font-semibold">Co-Borrower</p>
                 <p>{loanData.Co_Borrower || "N/A"}</p>
               </div>
@@ -534,10 +526,16 @@ const GoldLoanApproval = () => {
                 <p className="font-semibold">Relation</p>
                 <p>{loanData.Nominee_Relation || "N/A"}</p>
               </div>
-              <div>
+                <div>
                 <p className="font-semibold">Address</p>
                 <p>{loanData.Address || "N/A"}</p>
               </div>
+            </div>
+
+            {/* Second Row */}
+            <div className="flex gap-13 text-sm flex-wrap">
+             
+            
             </div>
           </div>
 
@@ -619,12 +617,88 @@ const GoldLoanApproval = () => {
         </div>
 
         {/* ===== Pledge Item List ===== */}
-        <div className="flex justify-center mb-6">
-          <div className="w-[1290px]">
-            <h3 className="font-semibold mb-4 text-[#0A2478] text-lg">
+        <div className="flex justify-center  gap-2 m-2">
+          <div className="">
+            <div className="w-full   gap-4 text-xs">
+              <div className=' flex gap-2'>
+ <div className="flex flex-col w-30">
+              <label className="text-[13px] font-semibold">
+                Loan amount <span className="text-red-500">*</span>
+              </label>
+              <input
+                type="text"
+                value={formatCurrency(loanData.Loan_amount)}
+                readOnly
+                className="border border-gray-300 rounded-md px-2 py-1 mt-1 text-sm focus:outline-none bg-gray-50"
+                  />
+                   {/* <div className="text-[12px] mt-2  font-semibold">
+            {numberToWords(loanData.Loan_amount)}
+          </div> */}
+            </div>
+
+            {/* Doc Charges */}
+            <div className="flex flex-col">
+              <label className="text-[13px] font-semibold">Doc Charges</label>
+              <div className="flex mt-1">
+                <div className="bg-[#0B2B68] text-white px-2 py-1 rounded-l-md text-sm flex items-center justify-center">
+                  {loanSchemeData.docChargePercent}
+                </div>
+                <input
+                  type="text"
+                  value={`₹${formatCurrency(loanData.Doc_Charges)}`}
+                  readOnly
+                  className="border border-gray-300 rounded-r-md px-2 py-1 text-sm focus:outline-none w-24 bg-gray-50"
+                />
+                  </div>
+                  
+
+                </div>
+                 <div className="flex flex-col w-25">
+              <label className="text-[13px] font-semibold">Net Payable</label>
+              <input
+                type="text"
+                value={formatCurrency(loanData.Net_Payable)}
+                readOnly
+                className="border border-gray-300 rounded-md px-2 py-1 mt-1 text-sm focus:outline-none bg-gray-50"
+              />
+            </div>
+              </div>
+           
+              <div className='flex gap-2 mt-2'>
+ {/* Net Payable */}
+           
+
+            {/* Valuer 1 */}
+            <div className="flex flex-col w-44">
+              <label className="text-[13px] font-semibold">
+                Valuer 1 <span className="text-red-500">*</span>
+              </label>
+              <div className="border border-gray-300 rounded-md px-2 py-1 mt-1 text-sm bg-gray-50">
+                {loanData.Valuer_1 || "Not Assigned"}
+              </div>
+                </div>
+                 <div className="flex flex-col w-44 ">
+              <label className="text-[13px] font-semibold">
+                Valuer 2 <span className="text-red-500">*</span>
+              </label>
+              <div className="border border-gray-300 rounded-md px-2 py-1 mt-1 text-sm bg-gray-50">
+                {loanData.Valuer_2 || "Not Assigned"}
+              </div>
+            </div>
+              </div>
+
+           
+
+            {/* Valuer 2 */}
+           
+          </div>
+         
+        </div>
+          <div className="">
+            <h3 className="font-semibold  text-[#0A2478] text-lg">
               Pledge Item List
             </h3>
-            <div className="w-full text-xs border border-gray-300">
+            <div className="w-full text-xs border border-gray-300 mt-2">
               <div className="flex bg-[#0A2478] text-white font-semibold">
                 <div className="flex-1 p-2 py-3 border-r-2 border-white">
                   Particulars
@@ -742,99 +816,35 @@ const GoldLoanApproval = () => {
         </div>
 
         {/* Loan Amount Section */}
-        <div className="pl-[45px]">
-          <div className="w-full px-14 flex items-center gap-4 text-xs ">
-            <div className="flex flex-col w-40">
-              <label className="text-[13px] font-semibold">
-                Loan amount <span className="text-red-500">*</span>
-              </label>
-              <input
-                type="text"
-                value={formatCurrency(loanData.Loan_amount)}
-                readOnly
-                className="border border-gray-300 rounded-md px-2 py-1 mt-1 text-sm focus:outline-none bg-gray-50"
-              />
-            </div>
-
-            {/* Doc Charges */}
-            <div className="flex flex-col">
-              <label className="text-[13px] font-semibold">Doc Charges</label>
-              <div className="flex mt-1">
-                <div className="bg-[#0B2B68] text-white px-2 py-1 rounded-l-md text-sm flex items-center justify-center">
-                  {loanSchemeData.docChargePercent}
-                </div>
-                <input
-                  type="text"
-                  value={`₹${formatCurrency(loanData.Doc_Charges)}`}
-                  readOnly
-                  className="border border-gray-300 rounded-r-md px-2 py-1 text-sm focus:outline-none w-24 bg-gray-50"
-                />
-              </div>
-            </div>
-
-            {/* Net Payable */}
-            <div className="flex flex-col w-40">
-              <label className="text-[13px] font-semibold">Net Payable</label>
-              <input
-                type="text"
-                value={formatCurrency(loanData.Net_Payable)}
-                readOnly
-                className="border border-gray-300 rounded-md px-2 py-1 mt-1 text-sm focus:outline-none bg-gray-50"
-              />
-            </div>
-
-            {/* Valuer 1 */}
-            <div className="flex flex-col w-44">
-              <label className="text-[13px] font-semibold">
-                Valuer 1 <span className="text-red-500">*</span>
-              </label>
-              <div className="border border-gray-300 rounded-md px-2 py-1 mt-1 text-sm bg-gray-50">
-                {loanData.Valuer_1 || "Not Assigned"}
-              </div>
-            </div>
-
-            {/* Valuer 2 */}
-            <div className="flex flex-col w-44">
-              <label className="text-[13px] font-semibold">
-                Valuer 2 <span className="text-red-500">*</span>
-              </label>
-              <div className="border border-gray-300 rounded-md px-2 py-1 mt-1 text-sm bg-gray-50">
-                {loanData.Valuer_2 || "Not Assigned"}
-              </div>
-            </div>
-          </div>
-          <div className="text-[11px] mt-2 ml-14 font-semibold">
-            {numberToWords(loanData.Loan_amount)}
-          </div>
-        </div>
-        <div className="px-[100px] mt-6">
-          <h1 className="font-bold text-[24px] text-[#0A2478] mb-4">
+        
+        <div className="px-[100px] ">
+          <h1 className="font-semibold text-[20px] text-[#0A2478] ">
             Payment Details
           </h1>
-          <div className="border border-gray-300 rounded-md overflow-hidden shadow-sm">
-            <table className="w-full border-collapse text-sm">
+          <div className=" border-gray-300 rounded-md overflow-hidden  mt-2">
+            <table className=" border-collapse text-sm">
               <thead>
                 <tr className="bg-[#0A2478] text-white text-center">
-                  <th className="py-2 border">Sr No</th>
-                  <th className="py-2 border">Paid By</th>
+                  <th className="py-1 border w-[80px]">Sr No</th>
+                  <th className="py-1 border w-[120px]">Paid By</th>
                   {/* <th className="py-2 border">UTR Number</th> */}
-                  <th className="py-2 border">Bank</th>
-                  <th className="py-2 border">Customer Bank</th>
-                  <th className="py-2 border">Customer Amount</th>
-                  <th className="py-2 border">Action</th>
+                  <th className="py-1 border w-[180px]">Bank</th>
+                  <th className="py-1 border w-[180px]">Customer Bank</th>
+                  <th className="py-1 border w-[120px]">Customer Amount</th>
+                  <th className="py-1 border w-[100px]">Action</th>
                 </tr>
               </thead>
               <tbody>
                 {rows.map((row, index) => (
-                  <tr key={index} className="text-center bg-white">
-                    <td className="py-2">{index + 1}</td>
-                    <td className="py-2">
+                  <tr key={index} className={index % 2 === 0 ? "bg-gray-50" : "bg-white"}>
+                    <td className="py-1 p-1">{index + 1}</td>
+                    <td className="py-1">
                       <select
                         value={row.paidBy}
                         onChange={(e) =>
                           handleRowChange(index, "paidBy", e.target.value)
                         }
-                        className="border border-gray-300 rounded-md px-2 py-1 w-[120px]"
+                        className="border border-gray-300 rounded-md px-2 py-1 w-[120px] bg-white"
                       >
                         <option value="">Select</option>
                         {paidByOptions.map((option, i) => (
@@ -845,7 +855,7 @@ const GoldLoanApproval = () => {
                       </select>
                     </td>
 
-                    <td className="py-2">
+                    <td className="py-2 p-2">
                       {row.paidBy === "Cash" ? (
                         <td className="py-2">
                           <select
@@ -864,7 +874,7 @@ const GoldLoanApproval = () => {
 
                               setRows(updatedRows);
                             }}
-                            className="border border-gray-300 rounded-md px-2 py-1 w-[140px]"
+                            className="border border-gray-300 rounded-md px-2 py-1 w-[140px] bg-white"
                           >
                             <option value="">Select Bank</option>
                             {dummyBanks.map((b) => (
@@ -875,7 +885,7 @@ const GoldLoanApproval = () => {
                           </select>
                         </td>
                       ) : (
-                        <td className="py-2">
+                        <td className="py-2 p-2">
                           <select
                             value={row.bankId}
                             onChange={(e) => {
@@ -892,7 +902,7 @@ const GoldLoanApproval = () => {
 
                               setRows(updatedRows);
                             }}
-                            className="border border-gray-300 rounded-md px-2 py-1 w-[140px]"
+                            className="border border-gray-300 rounded-md px-2 py-1 w-[140px] bg-white"
                           >
                             <option value="">Select Bank</option>
                             {dummyBanks.map((b) => (
@@ -905,7 +915,7 @@ const GoldLoanApproval = () => {
                       )}
                     </td>
 
-                    <td className="py-2">
+                    <td className="py-2 p-2">
                       {row.paidBy === "Cash" ? (
                         <p>--</p>
                       ) : (
@@ -918,7 +928,7 @@ const GoldLoanApproval = () => {
                               e.target.value,
                             )
                           }
-                          className="border border-gray-300 rounded-md px-2 py-1 w-[240px]"
+                          className="border border-gray-300 rounded-md px-2 py-1 w-[240px] bg-white"
                         >
                           <option value="">Select Customer Bank</option>
 
@@ -946,7 +956,7 @@ const GoldLoanApproval = () => {
                           MozAppearance: "textfield",
                         }}
                         onWheel={(e) => e.target.blur()}
-                        className="border border-gray-300 rounded-md px-2 py-1 w-[120px]"
+                        className="border border-gray-300 rounded-md px-2 py-1 w-[120px] bg-white"
                       />
                     </td>
                     <td className="py-2 flex justify-center items-center gap-2">
@@ -977,7 +987,7 @@ const GoldLoanApproval = () => {
           </div>
         </div>
          <div className="px-[100px] mt-6">
-  <h3 className="font-semibold mb-4 text-[#0A2478] text-lg mt-5">
+  {/* <h3 className="font-semibold mb-4 text-[#0A2478] text-lg mt-5">
           Loan Details table
         </h3>
         <table className="w-full border text-sm">
@@ -1015,7 +1025,7 @@ const GoldLoanApproval = () => {
               );
             })}
           </tbody>
-        </table>
+        </table> */}
 
          </div>
       

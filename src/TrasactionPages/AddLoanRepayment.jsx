@@ -50,6 +50,7 @@ function AddLoanRepayment() {
   console.log(installments, "installments");
   const location = useLocation();
   const { loanId, loanData } = location.state || {}; // <-- here you get it from navigate
+  console.log();
   const navigate = useNavigate();
   const [data, setData] = useState(null);
   console.log(loanData, "loanData");
@@ -63,16 +64,7 @@ function AddLoanRepayment() {
       fetchLoanData();
     }
   }, [loanId]);
-  //  const [loanInfo, setLoanInfo] = useState({
-  //     pendingDays: 0,
-  //     pendingInt: 0,
-  //     interestPercent: 0,
-  //     loanAmountPaid: 0,
-  //     payAmount: 0,
-  //     balanceLoanAmt: 0,
-  //     chargesAdjusted: 0,
-  //     intPaidUpto: new Date(),
-  //  });
+
   const [loanInfo, setLoanInfo] = useState({
     pendingDays: 0,
     pendingDaysUptoToday: 0,
@@ -138,18 +130,18 @@ function AddLoanRepayment() {
       console.error("Error fetching credit notes:", error);
     }
   };
-const fetchBanks = async () => {
-  try {
-    const res = await axios.get(`${API}/api/banks/list`);
-    setBankList(res.data);
-  } catch (err) {
-    console.error(err);
-  }
-};
+  const fetchBanks = async () => {
+    try {
+      const res = await axios.get(`${API}/api/banks/list`);
+      setBankList(res.data);
+    } catch (err) {
+      console.error(err);
+    }
+  };
 
-useEffect(() => {
-  fetchBanks();
-}, []);
+  useEffect(() => {
+    fetchBanks();
+  }, []);
 
   const handleAdvIntCheck = (e) => {
     const checked = e.target.checked;
@@ -192,7 +184,7 @@ useEffect(() => {
     if (!data?.loanApplication?.LoanPendingAmount) return;
 
     const today = new Date();
-    const interestPaidUpto = new Date(data?.loanApplication?.InterestPaidUpto);
+    const interestPaidUpto = new Date(data?.loanApplication?.Pay_Date);
 
     // use InterestPaidUpto for days calculation
     const diffMs = today - interestPaidUpto;
@@ -351,16 +343,16 @@ useEffect(() => {
     //   // Calculate exact days of interest paid (fractional)
     //   daysPaidFor = Math.floor(interestAdjusted / dailyIntAmt);
     // }
-if (remainingPay > 0) {
-  interestAdjusted = Math.min(remainingPay, pendingInt);
-  remainingPay -= interestAdjusted;
+    if (remainingPay > 0) {
+      interestAdjusted = Math.min(remainingPay, pendingInt);
+      remainingPay -= interestAdjusted;
 
-  if (dailyIntAmt && dailyIntAmt > 0 && interestAdjusted > 0) {
-    daysPaidFor = Math.floor(interestAdjusted / dailyIntAmt);
-  } else {
-    daysPaidFor = 0;
-  }
-}
+      if (dailyIntAmt && dailyIntAmt > 0 && interestAdjusted > 0) {
+        daysPaidFor = Math.floor(interestAdjusted / dailyIntAmt);
+      } else {
+        daysPaidFor = 0;
+      }
+    }
 
     // Step 3: Loan principal adjusted
     let loanAmtAdjusted = remainingPay;
@@ -1415,8 +1407,14 @@ if (remainingPay > 0) {
             <div className="flex items-center gap-2 mt-5 mb-5">
               <input
                 type="checkbox"
+                disabled={data?.schemeData?.interestInAdvance !== "Yes"}
                 checked={isAdvIntCheck}
                 onChange={handleAdvIntCheck}
+                title={
+                  data?.schemeData?.interestInAdvance !== "Yes"
+                    ? "In this scheme advance interest is not accepted"
+                    : ""
+                }
               />
 
               <label className="text-gray-900 font-medium">
@@ -1674,42 +1672,40 @@ if (remainingPay > 0) {
               </div>
             )} */}
 
-           {(paymentInfo.mode === "Net Banking" ||
-  paymentInfo.mode === "Cash") && (
-  <div className="flex flex-col gap-1 w-[200px]">
-    <label className="text-gray-900 font-medium">
-      Bank Details
-    </label>
+            {(paymentInfo.mode === "Net Banking" ||
+              paymentInfo.mode === "Cash") && (
+              <div className="flex flex-col gap-1 w-[200px]">
+                <label className="text-gray-900 font-medium">
+                  Bank Details
+                </label>
 
-    <select
-      className="border border-gray-300 rounded-md px-3 py-2 focus:ring-1 focus:ring-blue-500 focus:outline-none"
-      value={paymentInfo.bankId}
-      onChange={(e) => {
-        const selectedId = e.target.value;
+                <select
+                  className="border border-gray-300 rounded-md px-3 py-2 focus:ring-1 focus:ring-blue-500 focus:outline-none"
+                  value={paymentInfo.bankId}
+                  onChange={(e) => {
+                    const selectedId = e.target.value;
 
-        const selectedBank = bankList.find(
-          (bank) => String(bank.id) === String(selectedId)
-        );
+                    const selectedBank = bankList.find(
+                      (bank) => String(bank.id) === String(selectedId),
+                    );
 
-        setPaymentInfo({
-          ...paymentInfo,
-          bankId: selectedId,
-          bankName: selectedBank?.bank_name || "",
-        });
-      }}
-    >
-      <option value="">--Select Bank--</option>
+                    setPaymentInfo({
+                      ...paymentInfo,
+                      bankId: selectedId,
+                      bankName: selectedBank?.bank_name || "",
+                    });
+                  }}
+                >
+                  <option value="">--Select Bank--</option>
 
-      {bankList.map((bank) => (
-        <option key={bank.id} value={bank.id}>
-          {bank.bank_name}
-        </option>
-      ))}
-    </select>
-  </div>
-)}
-
-
+                  {bankList.map((bank) => (
+                    <option key={bank.id} value={bank.id}>
+                      {bank.bank_name}
+                    </option>
+                  ))}
+                </select>
+              </div>
+            )}
 
             {paymentInfo.mode === "Credit Note" && (
               <div className="flex flex-col gap-1 w-[200px]">
