@@ -2,6 +2,7 @@ import axios from "axios";
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { API } from "../../api";
+import { Eye, Trash2 } from "lucide-react";
 
 const FundTransferList = () => {
   const navigate = useNavigate();
@@ -159,30 +160,30 @@ const FundTransferList = () => {
                     key={i}
                     className={i % 2 === 0 ? "bg-gray-50" : "bg-white"}
                   >
-                    <td className="p-1.5 border-r text-blue-800">{item.id}</td>
+                    <td className="p-1.5 text-blue-800">{item.id}</td>
 
-                    <td className="p-1.5 border-r">
+                    <td className="p-1.5">
                       {new Date(item.doc_date).toLocaleDateString("en-GB")}
                     </td>
 
-                    {/* <td className="p-1.5 border-r">{item.pay_mode}</td> */}
-                    <td className="p-1.5 border-r">{item.from_branch_name}</td>
-                    <td className="p-1.5 border-r">{item.to_branch_name}</td>
+                    {/* <td className="p-1.5">{item.pay_mode}</td> */}
+                    <td className="p-1.5">{item.from_branch_name}</td>
+                    <td className="p-1.5">{item.to_branch_name}</td>
 
-                    <td className="p-1.5 border-r font-bold">
+                    <td className="p-1.5 font-bold">
                       {item.amount || "-"}
                     </td>
 
-                    <td className="p-1.5 border-r">{item.pay_mode}</td>
+                    <td className="p-1.5">{item.pay_mode}</td>
 
-                    <td className="p-1.5 border-r text-gray-500">Admin</td>
+                    <td className="p-1.5 text-gray-500">Admin</td>
 
-                    <td className="p-1.5 border-r">
+                    <td className="p-1.5">
                       {item.created_at?.split("T")[0]}
                     </td>
 
                     <td
-                      className={`p-1.5 border-r font-bold ${
+                      className={`p-1.5 font-bold ${
                         item.status === "Pending"
                           ? "text-yellow-600"
                           : item.status === "Accepted"
@@ -194,23 +195,33 @@ const FundTransferList = () => {
                     </td>
 
                     <td className="p-1.5 text-center whitespace-nowrap">
-                      <span
-                        className="text-blue-600 cursor-pointer font-bold mr-2"
-                        onClick={() =>
-                          navigate("/FundTransfer/create", {
-                            state: { fundData: item },
-                          })
-                        }
-                      >
-                        View
-                      </span>
+                      <div className="flex justify-center gap-2">
 
-                      <span
-                        className="text-red-600 cursor-pointer font-bold"
-                        onClick={() => handleDelete(item.id)}
-                      >
-                        Delete
-                      </span>
+                        {/* View Button */}
+                        <button
+                          type="button"
+                          className="bg-blue-500 hover:bg-blue-600 text-white p-1.5 rounded cursor-pointer transition"
+                          onClick={() =>
+                            navigate("/FundTransfer/create", {
+                              state: { fundData: item },
+                            })
+                          }
+                          title="View"
+                        >
+                          <Eye size={14} />
+                        </button>
+
+                        {/* Delete Button */}
+                        <button
+                          type="button"
+                          className="bg-red-600 hover:bg-red-700 text-white p-1.5 rounded cursor-pointer transition"
+                          onClick={() => handleDelete(item.id)}
+                          title="Delete"
+                        >
+                          <Trash2 size={14} />
+                        </button>
+
+                      </div>
                     </td>
                   </tr>
                 ))}

@@ -201,7 +201,7 @@ const isViewMode = mode === "view";
     }
   };
 
-  const navyBlue = "bg-[#0D3082]";
+  const navyBlue = "bg-[#0A2478] ";
   const tealHeader = "bg-[#008b8b]";
   const inputClass =
     "border border-gray-300 rounded-sm px-2 py-1 text-[11px] w-full outline-none focus:border-blue-500 bg-white";
@@ -297,8 +297,8 @@ const isViewMode = mode === "view";
         {/* MAIN TABLE */}
         <div className="bg-white  rounded  overflow-hidden">
           <table className=" text-[15px] border-collapse">
-            <thead className={`${navyBlue} text-white`}>
-              <tr>
+            <thead className={`${navyBlue} text-white `}>
+              <tr >
                 <th className="p-2 border-r border-blue-800 w-10 text-center">
                   SI
                 </th>
@@ -406,7 +406,7 @@ const isViewMode = mode === "view";
                     <div className="flex justify-center gap-3">
                       <button
                         onClick={() => handleAddRow(i)}
-                        className="text-blue-600 hover:scale-125 transition-transform"
+                        className="bg-[#0A2478]  text-white p-1 rounded"
                         title="Copy & Add Row"
                         disabled={isViewMode} 
                       >
@@ -414,7 +414,7 @@ const isViewMode = mode === "view";
                       </button>
                       <button
                         onClick={() => removeRow(i)}
-                        className="text-red-500 hover:scale-125 transition-transform"
+                        className="bg-red-600 text-white p-1 rounded"
                         title="Delete Row"
                         disabled={isViewMode} 
                       >

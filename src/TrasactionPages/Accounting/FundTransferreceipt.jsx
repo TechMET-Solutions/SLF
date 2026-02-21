@@ -185,7 +185,7 @@
 
 // export default FundTransferReceipt;
 import axios from "axios";
-import { Plus, Search } from "lucide-react";
+import { Eye, Plus, Search, Trash2 } from "lucide-react";
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { API } from "../../api";
@@ -372,19 +372,19 @@ const FundTransferReceipt = () => {
           <table className=" text-left border-collapse table-auto">
             <thead className="bg-[#0A2478] text-white text-sm">
               <tr className=" text-white text-[12px] font-bold border-b border-gray-300">
-                <th className="p-1.5 border-r border-gray-300 w-[100px]">Doc No</th>
-                <th className="p-1.5 border-r border-gray-300 w-[100px]">Doc Date</th>
-                {/* <th className="p-1.5 border-r border-gray-300">Paymode</th> */}
-                <th className="p-1.5 border-r border-gray-300 w-[150px]">From Branch</th>
-                <th className="p-1.5 border-r border-gray-300 w-[100px]">To Branch</th>
-                {/* <th className="p-1.5 border-r border-gray-300">
-                  Account Ledger Name
-                </th> */}
-                <th className="p-1.5 border-r border-gray-300 w-[100px]">Amount</th>
-                <th className="p-1.5 border-r border-gray-300 w-[100px]">MOP</th>
-                <th className="p-1.5 border-r border-gray-300 w-[120px]">Add By</th>
-                <th className="p-1.5 border-r border-gray-300 w-[120px]">Add On</th>
-                <th className="p-1.5 border-r border-gray-300 w-[120px]" >
+                <th className="p-1.5 border-r  border-gray-300 w-[100px]">Doc No</th>
+                <th className="p-1.5 border-r  border-gray-300 w-[100px]">Doc Date</th>
+                {/* <th className="p-1.5 bord er-r border-gray-300">Paymode</th> */}
+                <th className="p-1.5 border-r  border-gray-300 w-[150px]">From Branch</th>
+                <th className="p-1.5 border-r  border-gray-300 w-[100px]">To Branch</th>
+                {/* <th className="p-1.5 bord er-r border-gray-300">
+                  Account Ledger Name 
+                </th> */} 
+                <th className="p-1.5 border-r  border-gray-300 w-[100px]">Amount</th>
+                <th className="p-1.5 border-r  border-gray-300 w-[100px]">MOP</th>
+                <th className="p-1.5 border-r  border-gray-300 w-[120px]">Add By</th>
+                <th className="p-1.5 border-r  border-gray-300 w-[120px]">Add On</th>
+                <th className="p-1.5 border-r  border-gray-300 w-[120px]" >
                   Receipt Status
                 </th>
                 <th className="p-1.5 text-center w-[100px]">Action</th>
@@ -403,25 +403,25 @@ const FundTransferReceipt = () => {
   ) : (
     list.map((item, i) => (
       <tr key={i} className={i % 2 === 0 ? "bg-gray-50" : "bg-white"}>
-        <td className="p-1.5 border-r text-blue-800">{item.id}</td>
+        <td className="p-1.5 text-blue-800">{item.id}</td>
 
-        <td className="p-1.5 border-r">
+        <td className="p-1.5">
           {new Date(item.doc_date).toLocaleDateString("en-GB")}
         </td>
 
-        <td className="p-1.5 border-r">{item.from_branch_name}</td>
+        <td className="p-1.5">{item.from_branch_name}</td>
 
-        <td className="p-1.5 border-r">{item.to_branch_name}</td>
+        <td className="p-1.5">{item.to_branch_name}</td>
 
-        <td className="p-1.5 border-r font-bold">
+        <td className="p-1.5 font-bold">
           {item.amount || "-"}
         </td>
 
-        <td className="p-1.5 border-r">{item.pay_mode}</td>
+        <td className="p-1.5">{item.pay_mode}</td>
 
-        <td className="p-1.5 border-r text-gray-500">Admin</td>
+        <td className="p-1.5 text-gray-500">Admin</td>
 
-        <td className="p-1.5 border-r">
+        <td className="p-1.5">
           {item.created_at?.split("T")[0]}
         </td>
 
@@ -432,7 +432,7 @@ const FundTransferReceipt = () => {
               setIsModalOpen(true);
             }
           }}
-          className={`p-1.5 border-r font-bold cursor-pointer ${
+          className={`p-1.5 font-bold cursor-pointer ${
             item.status === "Pending"
               ? "text-yellow-600 underline"
               : item.status === "Accepted"
@@ -444,23 +444,26 @@ const FundTransferReceipt = () => {
         </td>
 
         <td className="p-1.5 text-center whitespace-nowrap">
+          <div className="flex justify-center gap-2">
           <span
-            className="text-blue-600 cursor-pointer font-bold mr-2"
+            className="bg-blue-500 hover:bg-blue-600 text-white p-1.5 rounded cursor-pointer transition"
             onClick={() =>
               navigate("/FundTransfer/create", {
                 state: { fundData: item },
               })
             }
           >
-            View
+
+            <Eye size={14} />
           </span>
 
           <span
-            className="text-red-600 cursor-pointer font-bold"
+            className="bg-red-600 hover:bg-red-700 text-white p-1.5 rounded cursor-pointer transition"
             onClick={() => handleDelete(item.id)}
           >
-            Delete
-          </span>
+            <Trash2 size={14} />
+            </span>
+          </div>
         </td>
       </tr>
     ))

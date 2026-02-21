@@ -2,6 +2,7 @@ import axios from "axios";
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { API } from "../../api";
+import { Edit, Eye, Trash2 } from "lucide-react";
 // import { BASEURL } from "../../url"; // your existing url.jsx
 
 const JournalVoucherlist = () => {
@@ -215,24 +216,25 @@ const JournalVoucherlist = () => {
                       <td className="p-2  flex items-center justify-center gap-3">
                         <button
                           onClick={() => handleView(item)}
-                          className="text-blue-500 hover:text-blue-700 transition-colors"
+
+                          className="bg-blue-500 text-white p-1 rounded"
                           title="View"
                         >
-                          View
+                          <Eye size={14} />
                         </button>
                         <button
                           onClick={() => handleEdit(item)}
-                          className="text-green-600 hover:text-green-800 transition-colors"
+                          className="bg-green-600 text-white p-1 rounded"
                           title="Edit"
                         >
-                          Edit
+                          <Edit size={14} />
                         </button>
                         <button
                           onClick={() => handleDelete(item.id)}
-                          className="text-red-500 hover:text-red-700 transition-colors"
+                          className="bg-red-600 text-white p-1 rounded"
                           title="Delete"
                         >
-                          Delete
+                          <Trash2 size={14} />
                         </button>
                       </td>
                     </tr>
