@@ -129,7 +129,50 @@ debugger
   return isNaN(rate) ? 0 : rate;
 };
 
+  const calculateActualRate = (purityName) => {
+debugger
+  if (!silverRateData || !silverRateData.actual_rate) {
+    console.log("❌ Silver Rate Missing!");
+    return 0;
+  }
 
+  if (!selectedScheme || !selectedScheme.goldApprovePercent) {
+    console.log("❌ Approve Percent Missing!");
+    return 0;
+  }
+
+  if (!purityName) {
+    console.log("❌ Purity Missing!");
+    return 0;
+  }
+
+  const baseSilverRate = Number(silverRateData.actual_rate); // FIXED
+  const approvePercent = Number(selectedScheme.goldApprovePercent);
+
+  const approvedSilverRate = baseSilverRate * (approvePercent / 100);
+
+  // Find selected purity row
+  const purityObj = purities.find(
+    (p) => String(p.purity_name) === String(purityName)
+  );
+
+  if (!purityObj) {
+    console.log("❌ Purity Not Found!");
+    return 0;
+  }
+
+  const purityPercent = Number(purityObj.purity_percent);
+
+  if (isNaN(purityPercent)) {
+    console.log("❌ Purity Percent Invalid!");
+    return 0;
+  }
+
+  // Final rate formula
+  const rate = (approvedSilverRate * purityPercent) / 100;
+
+  return isNaN(rate) ? 0 : rate;
+};
 
 
   // ╔══════════════════════════════════╗
@@ -200,9 +243,10 @@ debugger
               <th className="px-4 py-2 border-r border-gray-200 w-[50px]">Nos.</th>
               <th className="px-4 py-2 border-r border-gray-200  w-[80px]">Gross</th>
               <th className="px-4 py-2 border-r border-gray-200   w-[80px]">Net Weight</th>
-              <th className="px-4 py-2 border-r border-gray-200 w-[120px]">Purity</th>
+              <th className="px-4 py-2 border-r border-gray-200 w-[80px]">Purity</th>
                <th className="px-4 py-2 border-r border-gray-200 w-[120px]">Calculated Purity</th>
-              <th className="px-4 py-2 border-r border-gray-200">Rate</th>
+              <th className="px-4 py-2 border-r border-gray-200">System Rate</th>
+               <th className="px-4 py-2 border-r border-gray-200">Actual Rate</th>
               <th className="px-4 py-2 border-r border-gray-200">Valuation</th>
               <th className="px-4 py-2">Remark</th>
             </tr>
@@ -215,7 +259,7 @@ debugger
                   <select
                     value={row.particular}
                     onChange={(e) => handleChange(index, "particular", e.target.value)}
-                    className="border border-gray-300 px-2 py-1 rounded-md w-[200px] bg-white"
+                    className="border border-gray-300 px-2 py-1 rounded-md w-[180px] bg-white"
                   >
                     <option value="">Select Particular</option>
                     {pledgeItems.map((item, idx) => (
@@ -233,7 +277,7 @@ debugger
                     type="number"
                     value={row.gross}
                     onChange={(e) => handleChange(index, "gross", e.target.value)}
-                    className="border border-gray-300 rounded-md px-2 py-1  w-[80px] bg-white "
+                    className="border border-gray-300 rounded-md px-2 py-1  w-[50px] bg-white "
                   />
                 </td>
 
@@ -242,7 +286,7 @@ debugger
                     type="number"
                     value={row.netWeight}
                     onChange={(e) => handleChange(index, "netWeight", e.target.value)}
-                    className="border border-gray-300 rounded-md px-2 py-1  w-[80px] bg-white"
+                    className="border border-gray-300 rounded-md px-2 py-1  w-[50px] bg-white"
                   />
                 </td>
 
@@ -250,7 +294,7 @@ debugger
                   <select
                     value={row.purity}
                     onChange={(e) => handleChange(index, "purity", e.target.value)}
-                    className="border border-gray-300 px-2 py-1 rounded-md w-[130px] bg-white"
+                    className="border border-gray-300 px-2 py-1 rounded-md w-[120px] bg-white"
                   >
                     <option value="">Select Purity</option>
                     {purities.map((p) => (
@@ -277,6 +321,10 @@ debugger
 
                 <td className="text-center">
                   {row.purity ? calculateRate(row.purity).toFixed(2) : "—"}
+                </td>
+
+                <td className="text-center">
+                  {row.purity ? calculateActualRate(row.purity).toFixed(2) : "—"}
                 </td>
 
                 <td className="text-center">
@@ -314,6 +362,7 @@ debugger
               <td className="text-center">{totalGross.toFixed(2)}</td>
               <td className="text-center">{totalNetWeight.toFixed(2)}</td>
               <td></td>
+                          <td></td>
                           <td></td>
                           <td></td>
               <td className="text-center">

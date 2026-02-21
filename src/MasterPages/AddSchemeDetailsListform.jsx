@@ -648,7 +648,7 @@ const addRow = () => {
               {isDailyBasis && (
                 <div className="flex flex-col ">
                   <label className="text-[14px] font-medium">
-                    Pre Closer Min Days <span className="text-red-600">*</span>
+                     Fore Closure Min Days <span className="text-red-600">*</span>
                   </label>
                   <input
                     type="number"

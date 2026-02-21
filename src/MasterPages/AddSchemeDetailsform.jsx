@@ -215,7 +215,7 @@ const AddSchemeDetailsform = () => {
           </div>
           <div className="flex flex-col">
             <label className="text-xs font-medium mb-1">
-              Pre Closer Min Days <span className="text-red-600">*</span>
+               Fore Closure Min Days <span className="text-red-600">*</span>
             </label>
             <input
               type="number"

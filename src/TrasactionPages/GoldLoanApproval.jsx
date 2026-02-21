@@ -5,7 +5,6 @@ import { useLocation, useNavigate } from "react-router-dom";
 import { API } from "../api";
 import profileempty from "../assets/profileempty.png";
 const GoldLoanApproval = () => {
-  
   const branches = [
     { id: 1, name: "Bhagur" },
     { id: 2, name: "Nashik Road" },
@@ -65,6 +64,7 @@ const GoldLoanApproval = () => {
   const [loanData, setLoanData] = useState(null);
   console.log(loanData, "loandata");
   const [loanSchemeData, setLoanSchemeData] = useState(null);
+  console.log();
   const [coBorrowerBankDetails, setcoBorrowerBankDetails] = useState(null);
   const [BorrowerBankDetails, setBorrowerBankDetails] = useState(null);
   console.log(BorrowerBankDetails, "");
@@ -510,7 +510,7 @@ const GoldLoanApproval = () => {
                 <p className="font-semibold">Mobile Number</p>
                 <p>+91 {loanData.Mobile_Number || "N/A"}</p>
               </div>
-               <div>
+              <div>
                 <p className="font-semibold">Co-Borrower</p>
                 <p>{loanData.Co_Borrower || "N/A"}</p>
               </div>
@@ -526,17 +526,14 @@ const GoldLoanApproval = () => {
                 <p className="font-semibold">Relation</p>
                 <p>{loanData.Nominee_Relation || "N/A"}</p>
               </div>
-                <div>
+              <div>
                 <p className="font-semibold">Address</p>
                 <p>{loanData.Address || "N/A"}</p>
               </div>
             </div>
 
             {/* Second Row */}
-            <div className="flex gap-13 text-sm flex-wrap">
-             
-            
-            </div>
+            <div className="flex gap-13 text-sm flex-wrap"></div>
           </div>
 
           {/* ===== Ornament & Profile Photos ===== */}
@@ -620,80 +617,77 @@ const GoldLoanApproval = () => {
         <div className="flex justify-center  gap-2 m-2">
           <div className="">
             <div className="w-full   gap-4 text-xs">
-              <div className=' flex gap-2'>
- <div className="flex flex-col w-30">
-              <label className="text-[13px] font-semibold">
-                Loan amount <span className="text-red-500">*</span>
-              </label>
-              <input
-                type="text"
-                value={formatCurrency(loanData.Loan_amount)}
-                readOnly
-                className="border border-gray-300 rounded-md px-2 py-1 mt-1 text-sm focus:outline-none bg-gray-50"
+              <div className=" flex gap-2">
+                <div className="flex flex-col w-30">
+                  <label className="text-[13px] font-semibold">
+                    Loan amount <span className="text-red-500">*</span>
+                  </label>
+                  <input
+                    type="text"
+                    value={formatCurrency(loanData.Loan_amount)}
+                    readOnly
+                    className="border border-gray-300 rounded-md px-2 py-1 mt-1 text-sm focus:outline-none bg-gray-50"
                   />
-                   {/* <div className="text-[12px] mt-2  font-semibold">
+                  {/* <div className="text-[12px] mt-2  font-semibold">
             {numberToWords(loanData.Loan_amount)}
           </div> */}
-            </div>
-
-            {/* Doc Charges */}
-            <div className="flex flex-col">
-              <label className="text-[13px] font-semibold">Doc Charges</label>
-              <div className="flex mt-1">
-                <div className="bg-[#0B2B68] text-white px-2 py-1 rounded-l-md text-sm flex items-center justify-center">
-                  {loanSchemeData.docChargePercent}
                 </div>
-                <input
-                  type="text"
-                  value={`₹${formatCurrency(loanData.Doc_Charges)}`}
-                  readOnly
-                  className="border border-gray-300 rounded-r-md px-2 py-1 text-sm focus:outline-none w-24 bg-gray-50"
-                />
+
+                {/* Doc Charges */}
+                <div className="flex flex-col">
+                  <label className="text-[13px] font-semibold">
+                    Doc Charges
+                  </label>
+                  <div className="flex mt-1">
+                    <div className="bg-[#0B2B68] text-white px-2 py-1 rounded-l-md text-sm flex items-center justify-center">
+                      {loanSchemeData.docChargePercent}
+                    </div>
+                    <input
+                      type="text"
+                      value={`₹${formatCurrency(loanData.Doc_Charges)}`}
+                      readOnly
+                      className="border border-gray-300 rounded-r-md px-2 py-1 text-sm focus:outline-none w-24 bg-gray-50"
+                    />
                   </div>
-                  
-
                 </div>
-                 <div className="flex flex-col w-25">
-              <label className="text-[13px] font-semibold">Net Payable</label>
-              <input
-                type="text"
-                value={formatCurrency(loanData.Net_Payable)}
-                readOnly
-                className="border border-gray-300 rounded-md px-2 py-1 mt-1 text-sm focus:outline-none bg-gray-50"
-              />
-            </div>
-              </div>
-           
-              <div className='flex gap-2 mt-2'>
- {/* Net Payable */}
-           
-
-            {/* Valuer 1 */}
-            <div className="flex flex-col w-44">
-              <label className="text-[13px] font-semibold">
-                Valuer 1 <span className="text-red-500">*</span>
-              </label>
-              <div className="border border-gray-300 rounded-md px-2 py-1 mt-1 text-sm bg-gray-50">
-                {loanData.Valuer_1 || "Not Assigned"}
-              </div>
+                <div className="flex flex-col w-25">
+                  <label className="text-[13px] font-semibold">
+                    Net Payable
+                  </label>
+                  <input
+                    type="text"
+                    value={formatCurrency(loanData.Net_Payable)}
+                    readOnly
+                    className="border border-gray-300 rounded-md px-2 py-1 mt-1 text-sm focus:outline-none bg-gray-50"
+                  />
                 </div>
-                 <div className="flex flex-col w-44 ">
-              <label className="text-[13px] font-semibold">
-                Valuer 2 <span className="text-red-500">*</span>
-              </label>
-              <div className="border border-gray-300 rounded-md px-2 py-1 mt-1 text-sm bg-gray-50">
-                {loanData.Valuer_2 || "Not Assigned"}
               </div>
+
+              <div className="flex gap-2 mt-2">
+                {/* Net Payable */}
+
+                {/* Valuer 1 */}
+                <div className="flex flex-col w-44">
+                  <label className="text-[13px] font-semibold">
+                    Valuer 1 <span className="text-red-500">*</span>
+                  </label>
+                  <div className="border border-gray-300 rounded-md px-2 py-1 mt-1 text-sm bg-gray-50">
+                    {loanData.Valuer_1 || "Not Assigned"}
+                  </div>
+                </div>
+                <div className="flex flex-col w-44 ">
+                  <label className="text-[13px] font-semibold">
+                    Valuer 2 <span className="text-red-500">*</span>
+                  </label>
+                  <div className="border border-gray-300 rounded-md px-2 py-1 mt-1 text-sm bg-gray-50">
+                    {loanData.Valuer_2 || "Not Assigned"}
+                  </div>
+                </div>
+              </div>
+
+              {/* Valuer 2 */}
             </div>
-              </div>
-
-           
-
-            {/* Valuer 2 */}
-           
           </div>
-         
-        </div>
           <div className="">
             <h3 className="font-semibold  text-[#0A2478] text-lg">
               Pledge Item List
@@ -816,7 +810,7 @@ const GoldLoanApproval = () => {
         </div>
 
         {/* Loan Amount Section */}
-        
+
         <div className="px-[100px] ">
           <h1 className="font-semibold text-[20px] text-[#0A2478] ">
             Payment Details
@@ -836,7 +830,10 @@ const GoldLoanApproval = () => {
               </thead>
               <tbody>
                 {rows.map((row, index) => (
-                  <tr key={index} className={index % 2 === 0 ? "bg-gray-50" : "bg-white"}>
+                  <tr
+                    key={index}
+                    className={index % 2 === 0 ? "bg-gray-50" : "bg-white"}
+                  >
                     <td className="py-1 p-1">{index + 1}</td>
                     <td className="py-1">
                       <select
@@ -986,49 +983,55 @@ const GoldLoanApproval = () => {
             </table>
           </div>
         </div>
-         <div className="px-[100px] mt-6">
-  {/* <h3 className="font-semibold mb-4 text-[#0A2478] text-lg mt-5">
-          Loan Details table
-        </h3>
-        <table className="w-full border text-sm">
-          <thead className="bg-[#0A2478] text-white">
-            <tr>
-              <th className="p-2 border">Month</th>
-              <th className="p-2 border">Opening Balance</th>
-              <th className="p-2 border">EMI</th>
-              <th className="p-2 border">Interest</th>
-              <th className="p-2 border">Principal</th>
-              <th className="p-2 border">Closing Balance</th>
-              <th className="p-2 border">Status</th>
-            </tr>
-          </thead>
-          <tbody>
-            {emiTable.map((row) => {
-              const isPaid = Number(loanData?.EMIPaidCount || 0) >= row.month;
+        <div className="px-[100px] mt-6">
+          {loanSchemeData.calcBasisOn === "Monthly" && (
+            <>
+              <h3 className="font-semibold mb-4 text-[#0A2478] text-lg mt-5">
+                Loan Details table
+              </h3>
 
-              return (
-                <tr key={row.month} className="text-center">
-                  <td className="p-2 border">{row.month}</td>
-                  <td className="p-2 border">₹{row.opening}</td>
-                  <td className="p-2 border">₹{row.emi}</td>
-                  <td className="p-2 border">₹{row.interest}</td>
-                  <td className="p-2 border">₹{row.principal}</td>
-                  <td className="p-2 border">₹{row.closing}</td>
-                  <td
-                    className={`p-2 border font-medium ${
-                      isPaid ? "text-green-600" : "text-gray-400"
-                    }`}
-                  >
-                    {isPaid ? "Paid" : "---"}
-                  </td>
-                </tr>
-              );
-            })}
-          </tbody>
-        </table> */}
+              <table className="w-full border text-sm">
+                <thead className="bg-[#0A2478] text-white">
+                  <tr>
+                    <th className="p-2 border">Month</th>
+                    <th className="p-2 border">Opening Balance</th>
+                    <th className="p-2 border">EMI</th>
+                    <th className="p-2 border">Interest</th>
+                    <th className="p-2 border">Principal</th>
+                    <th className="p-2 border">Closing Balance</th>
+                    <th className="p-2 border">Status</th>
+                  </tr>
+                </thead>
 
-         </div>
-      
+                <tbody>
+                  {emiTable.map((row) => {
+                    const isPaid =
+                      Number(loanData?.EMIPaidCount || 0) >= row.month;
+
+                    return (
+                      <tr key={row.month} className="text-center">
+                        <td className="p-2 border">{row.month}</td>
+                        <td className="p-2 border">₹{row.opening}</td>
+                        <td className="p-2 border">₹{row.emi}</td>
+                        <td className="p-2 border">₹{row.interest}</td>
+                        <td className="p-2 border">₹{row.principal}</td>
+                        <td className="p-2 border">₹{row.closing}</td>
+                        <td
+                          className={`p-2 border font-medium ${
+                            isPaid ? "text-green-600" : "text-gray-400"
+                          }`}
+                        >
+                          {isPaid ? "Paid" : "---"}
+                        </td>
+                      </tr>
+                    );
+                  })}
+                </tbody>
+              </table>
+            </>
+          )}
+        </div>
+
         {/* ===== Scheme Details & Effective Interest Rates ===== */}
         <div className="flex gap-8 text-xs mx-14 justify-center">
           {/* Scheme Details Table */}

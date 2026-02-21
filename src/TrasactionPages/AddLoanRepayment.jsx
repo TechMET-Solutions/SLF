@@ -526,7 +526,7 @@ function AddLoanRepayment() {
     )
       return;
 
-    const approvalDate = new Date(data.loanApplication.approval_date);
+    const approvalDate = new Date(data.loanApplication.Pay_Date);
     const today = new Date();
     today.setHours(0, 0, 0, 0);
 
@@ -615,7 +615,7 @@ function AddLoanRepayment() {
 
     let preCloseInt = 0;
     let preCloseDays = 0;
-    let intPaidUptoDate = today;
+    let intPaidUptoDate = data.loanApplication.InterestPaidUpto ;
     let interestPaidDaysPreClose = 0;
     let interestPaidUptoPreClose = today;
 
@@ -907,12 +907,12 @@ function AddLoanRepayment() {
         {/* Header Section */}
 
         {/* Loan Information Section */}
-        <div className=" max-w-[1290px] bg-white mt-5 rounded-md">
-          <h1 className="text-blue-900 font-semibold text-xl pb-3">
+        <div className=" max-w-[1290px] bg-[#FFE6E6]  rounded-md p-5 mt-2">
+          <h1 className="text-blue-900 font-semibold text-xl ">
             Loan Information
           </h1>
 
-          <div className="flex justify-between items-start gap-6">
+          <div className="flex justify-between items-start gap-6 ">
             {/* Left Section - Loan Info */}
             <div className="flex flex-col gap-3 flex-1 text-sm">
               {/* Row 1 */}
@@ -1248,7 +1248,7 @@ function AddLoanRepayment() {
         </div>
 
         {/* Payment Section */}
-        <div className=" w-[1290px] bg-white rounded-md mt-5">
+        <div className=" w-[1290px] bg-[#F7F7FF] rounded-md p-5">
           <h1 className="text-blue-900 font-semibold text-xl pb-2">Payment</h1>
 
           {/* Top Checkboxes */}
@@ -1408,7 +1408,7 @@ function AddLoanRepayment() {
             <div className="flex items-center gap-2 mt-5 mb-5">
               <input
                 type="checkbox"
-                disabled={data?.schemeData?.interestInAdvance !== "Yes"}
+                // disabled={data?.schemeData?.interestInAdvance !== "Yes"}
                 checked={isAdvIntCheck}
                 onChange={handleAdvIntCheck}
                 title={
@@ -1435,9 +1435,10 @@ function AddLoanRepayment() {
                   <input
                     type="text"
                     value={loanInfoForAdj.payAmount}
+                    // disabled={data?.schemeData?.interestInAdvance !== "Yes"}
                     onChange={(e) => handlePayAmountChange(e.target.value)}
                     onBlur={validatePayAmount}
-                    className="border border-gray-300 disabled:bg-gray-100 rounded-md px-3 py-2 focus:ring-1 focus:ring-blue-500 focus:outline-none"
+                    className="border border-gray-300 disabled:bg-gray-100 rounded-md px-3 py-2 focus:ring-1 focus:ring-blue-500 focus:outline-none bg-white"
                   />
                 </div>
 
@@ -1448,6 +1449,8 @@ function AddLoanRepayment() {
                   </label>
                   <input
                     type="text"
+                    disabled
+                    // disabled={data?.schemeData?.interestInAdvance !== "Yes"}
                     value={loanInfoForAdj.pendingInt}
                     onChange={(e) =>
                       setloanInfoForAdj((prev) => ({
@@ -1537,7 +1540,7 @@ function AddLoanRepayment() {
                   onChange={(e) =>
                     handlePayAmountChangeForNotAdvance(e.target.value)
                   }
-                  className="border border-gray-300 rounded-md px-3 py-2 focus:ring-1 focus:ring-blue-500 focus:outline-none"
+                  className="border border-gray-300 rounded-md px-3 py-2 focus:ring-1 focus:ring-blue-500 focus:outline-none bg-white"
                 />
               </div>
 
@@ -1548,6 +1551,7 @@ function AddLoanRepayment() {
                 </label>
                 <input
                   type="text"
+                  disabled
                   value={loanInfoForAdj.pendingInt}
                   onChange={(e) =>
                     setloanInfoForAdj((prev) => ({
@@ -1555,7 +1559,7 @@ function AddLoanRepayment() {
                       pendingInt: e.target.value,
                     }))
                   }
-                  className="border border-gray-300 rounded-md px-3 py-2 focus:ring-1 focus:ring-blue-500 focus:outline-none"
+                  className="border border-gray-300 rounded-md px-3 py-2 focus:ring-1 focus:ring-blue-500 focus:outline-none "
                 />
               </div>
 
@@ -1566,6 +1570,7 @@ function AddLoanRepayment() {
                 </label>
                 <input
                   type="text"
+                  disabled
                   value={loanInfoForAdj.loanAmountPaid}
                   className="border border-gray-300 rounded-md px-3 py-2 focus:ring-1 focus:ring-blue-500 focus:outline-none"
                 />
@@ -1578,6 +1583,7 @@ function AddLoanRepayment() {
                 </label>
                 <input
                   type="text"
+                  disabled
                   value={loanInfoForAdj.balanceLoanAmt}
                   className="border border-gray-300 rounded-md px-3 py-2 focus:ring-1 focus:ring-blue-500 focus:outline-none"
                 />
@@ -1640,7 +1646,7 @@ function AddLoanRepayment() {
                 Mode of Payment
               </label>
               <select
-                className="border border-gray-300 rounded-md px-3 py-2 focus:ring-1 focus:ring-blue-500 focus:outline-none"
+                className="border border-gray-300 rounded-md px-3 py-2 focus:ring-1 focus:ring-blue-500 focus:outline-none bg-white"
                 value={paymentInfo.mode}
                 onChange={(e) =>
                   setPaymentInfo({ ...paymentInfo, mode: e.target.value })
@@ -1681,7 +1687,7 @@ function AddLoanRepayment() {
                 </label>
 
                 <select
-                  className="border border-gray-300 rounded-md px-3 py-2 focus:ring-1 focus:ring-blue-500 focus:outline-none"
+                  className="border border-gray-300 rounded-md px-3 py-2 focus:ring-1 focus:ring-blue-500 focus:outline-none bg-white"
                   value={paymentInfo.bankId}
                   onChange={(e) => {
                     const selectedId = e.target.value;
@@ -1715,7 +1721,7 @@ function AddLoanRepayment() {
                 </label>
 
                 <select
-                  className="border border-gray-300 rounded-md px-3 py-2 focus:ring-1 focus:ring-blue-500 focus:outline-none"
+                  className="border border-gray-300 rounded-md px-3 py-2 focus:ring-1 focus:ring-blue-500 focus:outline-none bg-white"
                   value={paymentInfo.creditNote}
                   onChange={(e) => handleCreditNoteSelect(e.target.value)}
                 >
@@ -1768,7 +1774,7 @@ function AddLoanRepayment() {
               <input
                 type="text"
                 placeholder="Reference Number"
-                className="border border-gray-300 rounded-md px-3 py-2 focus:ring-1 focus:ring-blue-500 focus:outline-none"
+                className="border border-gray-300 rounded-md px-3 py-2 focus:ring-1 focus:ring-blue-500 focus:outline-none bg-white"
                 value={paymentInfo.refNo}
                 onChange={(e) =>
                   setPaymentInfo({ ...paymentInfo, refNo: e.target.value })
@@ -1784,7 +1790,7 @@ function AddLoanRepayment() {
               <input
                 type="text"
                 placeholder="Name"
-                className="border border-gray-300 rounded-md px-3 py-2 focus:ring-1 focus:ring-blue-500 focus:outline-none"
+                className="border border-gray-300 rounded-md px-3 py-2 focus:ring-1 focus:ring-blue-500 focus:outline-none bg-white"
                 value={paymentInfo.madeBy}
                 onChange={(e) =>
                   setPaymentInfo({ ...paymentInfo, madeBy: e.target.value })
@@ -1795,8 +1801,8 @@ function AddLoanRepayment() {
         </div>
 
         {/* Pledge Item List */}
-        <div className="flex justify-center mb-6 mt-5">
-          <div className="w-[1290px]">
+        <div className="flex justify-center  bg-[#FFE6E6] p-5">
+          <div className="w-[1250px]">
             <h3 className="font-semibold mb-4 text-[#0A2478] text-lg">
               Pledge Item List
             </h3>
@@ -1835,7 +1841,12 @@ function AddLoanRepayment() {
               {pledgeItems?.length > 0 ? (
                 <>
                   {pledgeItems.map((item, index) => (
-                    <div key={index} className="flex border-t border-gray-300">
+                   <div
+  key={index}
+  className={`flex border-t border-gray-300 ${
+    index % 2 === 0 ? "bg-gray-50" : "bg-white"
+  }`}
+>
                       <div className="flex-1 p-2 border-r border-gray-300">
                         {item.particular || "Gold"}
                       </div>
@@ -1954,7 +1965,7 @@ function AddLoanRepayment() {
               </thead>
               <tbody>
                 {installments.map((row, i) => (
-                  <tr key={i} className="text-center text-sm hover:bg-gray-50">
+                  <tr key={i} className={i % 2 === 0 ? "bg-gray-50" : "bg-white"}>
                     <td className="p-2 border border-gray-300">{row.srNo}</td>
                     <td className="p-2 border border-gray-300">
                       {row.receiptNo}

@@ -8,7 +8,8 @@ import { decryptData } from "../utils/cryptoHelper"; // adjust the import path a
 const PledgeItemList = ({ rows, setRows, selectedScheme }) => {
   console.log(selectedScheme,"selectedScheme ")
   const [pledgeItems, setPledgeItems] = useState([]); // dynamic list of item names
-const [goldRate, setGoldRate] = useState(null);
+  const [goldRate, setGoldRate] = useState(null);
+  console.log(goldRate,"goldRate")
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
@@ -99,30 +100,65 @@ console.log(purities,"purities")
   };
 // Assuming you have goldRate, purities, selectedScheme, and rows
 
-  const calculateRate = (purityName) => {
-    debugger
+//   const calculateRate = (purityName) => {
+//     debugger
   
+//   // Check if any data is missing
+//   if (!goldRate || !goldRate.gold_rate || !selectedScheme || !purityName) return 0;
+
+//   // Convert gold_rate string to number
+//   const rateValue = parseFloat(goldRate.gold_rate);
+//    const actualRate = parseFloat(goldRate.actual_rate);
+//   // Approved gold price per gram
+//   const approvedGoldPrice =
+//     rateValue * (parseFloat(selectedScheme.goldApprovePercent) / 100);
+
+
+//      const approvedGoldPriceforActualRate =
+//     actualRate * (parseFloat(selectedScheme.goldApprovePercent) / 100);
+
+//   // Convert purity name like "22k" to number
+//   const purityValue = parseInt(purityName.replace("k", "").trim());
+//   if (isNaN(purityValue)) return 0;
+
+//   // Calculate rate based on purity
+//   const rate = (purityValue / 24) * approvedGoldPrice;
+// const Actualrate = (purityValue / 24) * approvedGoldPriceforActualRate;
+//   return rate;
+// };
+
+const calculateRate = (purityName) => {
+  debugger;
+
   // Check if any data is missing
-  if (!goldRate || !goldRate.gold_rate || !selectedScheme || !purityName) return 0;
+  if (!goldRate || !goldRate.gold_rate || !selectedScheme || !purityName) {
+    return { rate: 0, actualRate: 0 };
+  }
 
   // Convert gold_rate string to number
   const rateValue = parseFloat(goldRate.gold_rate);
+  const actualRateValue = parseFloat(goldRate.actual_rate);
 
   // Approved gold price per gram
   const approvedGoldPrice =
     rateValue * (parseFloat(selectedScheme.goldApprovePercent) / 100);
 
+  const approvedGoldPriceForActualRate =
+    actualRateValue * (parseFloat(selectedScheme.goldApprovePercent) / 100);
+
   // Convert purity name like "22k" to number
   const purityValue = parseInt(purityName.replace("k", "").trim());
-  if (isNaN(purityValue)) return 0;
+  if (isNaN(purityValue)) {
+    return { rate: 0, actualRate: 0 };
+  }
 
-  // Calculate rate based on purity
+  // Calculate rates
   const rate = (purityValue / 24) * approvedGoldPrice;
+  const actualRate = (purityValue / 24) * approvedGoldPriceForActualRate;
 
-  return rate;
+  return {  rate: Math.round(rate),          // no decimal
+    actualRate: Math.round(actualRate) };
 };
-
-
 
   const handleChange = (index, field, value) => {
     debugger
@@ -140,19 +176,44 @@ console.log(purities,"purities")
   }
 
   // Update the value
+  // updatedRows[index][field] = numericValue;
+
+  // // If purity changes, recalculate rate & valuation
+  // if (field === "purity" || field === "netWeight") {
+  //   const rate = updatedRows[index].purity ? calculateRate(updatedRows[index].purity) : 0;
+  //   updatedRows[index].rate = rate;
+  //   updatedRows[index].valuation = updatedRows[index].netWeight
+  // ? Math.round(updatedRows[index].netWeight * rate)
+  // : 0;
+
+  // }
+
+  // setRows(updatedRows);
+
   updatedRows[index][field] = numericValue;
 
-  // If purity changes, recalculate rate & valuation
-  if (field === "purity" || field === "netWeight") {
-    const rate = updatedRows[index].purity ? calculateRate(updatedRows[index].purity) : 0;
-    updatedRows[index].rate = rate;
-    updatedRows[index].valuation = updatedRows[index].netWeight
-  ? Math.round(updatedRows[index].netWeight * rate)
-  : 0;
+// If purity or netWeight changes, recalculate rate & valuation
+if (field === "purity" || field === "netWeight") {
+  const { rate, actualRate } = updatedRows[index].purity
+    ? calculateRate(updatedRows[index].purity)
+    : { rate: 0, actualRate: 0 };
 
-  }
+  // Store both rates
+  updatedRows[index].rate = rate;
+  updatedRows[index].actualRate = actualRate;
 
-  setRows(updatedRows);
+  // Valuation based on approved rate
+  updatedRows[index].valuation = updatedRows[index].netWeight
+    ? Math.round(updatedRows[index].netWeight * rate)
+    : 0;
+
+  // (Optional) If you also want valuation using actual rate
+  updatedRows[index].actualValuation = updatedRows[index].netWeight
+    ? Math.round(updatedRows[index].netWeight * actualRate)
+    : 0;
+}
+
+setRows(updatedRows);
 };
 
 
@@ -195,8 +256,8 @@ console.log(purities,"purities")
               <th className="px-4 py-2 border-r border-gray-200   w-[80px]">Net Weight</th>
               <th className="px-4 py-2 border-r border-gray-200 w-[120px]">Purity</th>
                <th className="px-4 py-2 border-r border-gray-200 w-[120px]">Calculated Purity</th>
-              <th className="px-4 py-2 border-r border-gray-200">Rate</th>
-               <th className="px-4 py-2 border-r border-gray-200">Rate</th>
+              <th className="px-4 py-2 border-r border-gray-200">system Rate</th>
+               <th className="px-4 py-2 border-r border-gray-200"> Actual Rate</th>
               <th className="px-4 py-2 border-r border-gray-200">Valuation</th>
               <th className="px-4 py-2">Remark</th>
             </tr>
@@ -235,7 +296,7 @@ console.log(purities,"purities")
                         MozAppearance: "textfield",
                       }}
                       onWheel={(e) => e.target.blur()}
-                    className="border border-gray-300 rounded-md px-2 py-1  w-[80px] focus:outline-none focus:ring-1 focus:ring-blue-500 bg-white"
+                    className="border border-gray-300 rounded-md px-2 py-1  w-[50px] focus:outline-none focus:ring-1 focus:ring-blue-500 bg-white"
                   />
                 </td>
 
@@ -250,7 +311,7 @@ console.log(purities,"purities")
                         MozAppearance: "textfield",
                       }}
                       onWheel={(e) => e.target.blur()}
-                    className="border border-gray-300 rounded-md px-2 py-1   w-[80px] focus:outline-none focus:ring-1 focus:ring-blue-500 bg-white"
+                    className="border border-gray-300 rounded-md px-2 py-1   w-[50px] focus:outline-none focus:ring-1 focus:ring-blue-500 bg-white"
                   />
                 </td>
 
@@ -258,7 +319,7 @@ console.log(purities,"purities")
   <select
     value={row.purity}
     onChange={(e) => handleChange(index, "purity", e.target.value)}
-    className="border border-gray-300 rounded-md px-2 py-1 w-[120px] focus:outline-none focus:ring-1 focus:ring-blue-500 bg-white"
+    className="border border-gray-300 rounded-md px-2 py-1 w-[80px] focus:outline-none focus:ring-1 focus:ring-blue-500 bg-white"
   >
     <option value="">Select Purity</option>
     {purities.map((p) => (
@@ -285,7 +346,11 @@ console.log(purities,"purities")
   </select>
 </td>
               <td className="px-4 py-2 text-center">
-  {row.purity ? calculateRate(row.purity).toFixed(2) : "—"}
+  {row.purity ? calculateRate(row.purity).rate.toFixed(2) : "—"}
+</td>
+
+                <td className="px-4 py-2 text-center">
+  {row.purity ? calculateRate(row.purity).actualRate.toFixed(2) : "—"}
 </td>
                 <td className="px-4 py-2 text-center">
                   {row.valuation ? row.valuation.toLocaleString() : "—"}
