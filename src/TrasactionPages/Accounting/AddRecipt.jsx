@@ -215,14 +215,14 @@
 //           <div className="flex space-x-2">
 //             <button
 //               onClick={() => setIsModalOpen(true)}
-//               className="bg-[#0D3082] text-white p-1.5 rounded hover:bg-blue-800"
+//               className="bg-[#0A2478] text-white p-1.5 rounded hover:bg-blue-800"
 //               title="Add New Party"
 //             >
 //               <UserPlus size={16} />
 //             </button>
 //             <button
 //               onClick={handleMainSave}
-//               className="bg-[#0D3082] text-white px-5 py-1.5 rounded text-xs font-bold"
+//               className="bg-[#0A2478] text-white px-5 py-1.5 rounded text-xs font-bold"
 //             >
 //               Save Expense
 //             </button>
@@ -245,7 +245,7 @@
 
 //           <table className=" text-left border-collapse bg-white">
 //             <thead>
-//               <tr className="bg-[#0D3082] text-white text-[11px] uppercase">
+//               <tr className="bg-[#0A2478] text-white text-[11px] uppercase">
 //                 <th className="p-2 border-r font-bold w-12 text-center">
 //                   Sl No
 //                 </th>
@@ -333,7 +333,7 @@
 
 //                       <button
 //                         onClick={addNewRow}
-//                         className="bg-[#0D3082] text-white p-1.5 rounded-sm hover:bg-[#0a2669]"
+//                         className="bg-[#0A2478] text-white p-1.5 rounded-sm hover:bg-[#0a2669]"
 //                       >
 //                         <Plus size={12} />
 //                       </button>
@@ -529,7 +529,7 @@
 //               </button>
 //               <button
 //                 onClick={handleSaveDetails}
-//                 className="px-6 py-2 text-white rounded font-bold uppercase text-[10px] hover:bg-[#006666] shadow-md transition-all active:scale-95 bg-[#0D3082]"
+//                 className="px-6 py-2 text-white rounded font-bold uppercase text-[10px] hover:bg-[#006666] shadow-md transition-all active:scale-95 bg-[#0A2478]"
 //               >
 //                 Save Details
 //               </button>
@@ -807,7 +807,7 @@
 //               {!isViewMode && (
 //                 <button
 //                   onClick={handlePartySave}
-//                   className="px-8 py-2 bg-[#0D3082] text-white rounded-lg font-bold text-[11px] flex items-center gap-2 hover:bg-[#0a2669] shadow-lg shadow-blue-900/20 transition-all active:scale-95 uppercase tracking-wider"
+//                   className="px-8 py-2 bg-[#0A2478] text-white rounded-lg font-bold text-[11px] flex items-center gap-2 hover:bg-[#0a2669] shadow-lg shadow-blue-900/20 transition-all active:scale-95 uppercase tracking-wider"
 //                 >
 //                   <Save size={14} /> Save Party
 //                 </button>
@@ -1194,7 +1194,7 @@ const AddRecipt = () => {
       );
 
       if (response.data.success) {
-        alert("Expense Updated Successfully ✅");
+        alert("Receipt Updated Successfully ✅");
 
         // Optional: reset form after update
         setCurrentRowIndex(null);
@@ -1209,11 +1209,11 @@ const AddRecipt = () => {
           partyName: "",
           employeeName: "",
         });
-        navigate("/Expences_list");
+        navigate("/Receipt_List");
       }
     } catch (error) {
       console.error("Update Error:", error);
-      alert("Failed to update expense ❌");
+      alert("Recepit to update expense ❌");
     }
   };
 
@@ -1298,7 +1298,7 @@ const AddRecipt = () => {
             {!expenseId && !isViewMode && (
               <button
                 onClick={() => setIsModalOpen(true)}
-                className="bg-[#0D3082] text-white p-1.5 rounded hover:bg-blue-800"
+                className="bg-[#0A2478] text-white p-1.5 rounded hover:bg-blue-800"
                 title="Add New Party"
               >
                 <UserPlus size={16} />
@@ -1309,7 +1309,7 @@ const AddRecipt = () => {
             {!expenseId && !isViewMode && (
               <button
                 onClick={handleMainSave}
-                className="bg-[#0D3082] text-white px-5 py-1.5 rounded text-xs font-bold"
+                className="bg-[#0A2478] text-white px-5 py-1.5 rounded text-xs font-bold"
               >
                 Save Receipt
               </button>
@@ -1319,7 +1319,7 @@ const AddRecipt = () => {
             {expenseId && !isViewMode && (
               <button
                 onClick={() => handleUpdate(expenseId)}
-                className="bg-[#0D3082] text-white px-5 py-1.5 rounded text-xs font-bold"
+                className="bg-[#0A2478] text-white px-5 py-1.5 rounded text-xs font-bold"
               >
                 Update Receipt
               </button>
@@ -1346,9 +1346,9 @@ const AddRecipt = () => {
 
           <table className=" text-left border-collapse bg-white">
             <thead>
-              <tr className="bg-[#0D3082] text-white text-[11px] uppercase">
+              <tr className="bg-[#0A2478] text-white text-[11px] uppercase">
                 <th className="p-2 border-r font-bold w-18 text-center">
-                   No
+                  No
                 </th>
                 <th className="p-2 border-r font-bold">Sub Ledger Name</th>
                 <th className="p-2 border-r font-bold w-28 text-center">
@@ -1385,7 +1385,7 @@ const AddRecipt = () => {
                           bank?.name || "",
                         );
                       }}
-                      className="w-full border border-gray-300 rounded-sm px-1 py-1 outline-none focus:bg-[#ffffcc] bg-white"
+                      className="w-full border border-gray-300 rounded-sm px-1 py-1 outline-none bg-white"
                     >
                       <option value="">Select Account</option>
                       {bankAccounts?.map((bank) => (
@@ -1437,7 +1437,7 @@ const AddRecipt = () => {
 
                       <button
                         onClick={addNewRow}
-                        className="bg-[#0D3082] text-white p-1.5 rounded-sm hover:bg-[#0a2669]"
+                        className="bg-[#0A2478] text-white p-1.5 rounded-sm hover:bg-[#0a2669]"
                       >
                         <Plus size={12} />
                       </button>
@@ -1450,11 +1450,10 @@ const AddRecipt = () => {
 
                       <button
                         onClick={() => openDetailsModal(index)}
-                        className={`px-2 py-1 rounded-sm flex items-center font-bold uppercase text-[10px] transition-colors shadow-sm ${
-                          rowDetails[index]
+                        className={`px-2 py-1 rounded-sm flex items-center font-bold uppercase text-[10px] transition-colors shadow-sm ${rowDetails[index]
                             ? "bg-green-600 text-white"
-                            : "bg-[#008080] text-white"
-                        }`}
+                            : "bg-[#0A2478] text-white"
+                          }`}
                       >
                         {rowDetails[index] ? (
                           <CheckCircle2 size={10} className="mr-1" />
@@ -1748,17 +1747,18 @@ const AddRecipt = () => {
             </div>
 
             <div className=" p-4 flex gap-2 justify-center">
+              
+              <button
+                onClick={handleSaveDetails}
+                className="px-6 py-2 text-white rounded font-bold uppercase text-[10px] shadow-md transition-all active:scale-95 bg-[#0A2478]"
+              >
+                Save Details
+              </button>
               <button
                 onClick={() => setIsDetailsModalOpen(false)}
                 className="px-4 py-2 border border-gray-300 rounded font-bold uppercase text-[10px] bg-red-600 text-white transition-colors"
               >
                 Exit
-              </button>
-              <button
-                onClick={handleSaveDetails}
-                className="px-6 py-2 text-white rounded font-bold uppercase text-[10px] hover:bg-[#006666] shadow-md transition-all active:scale-95 bg-[#0D3082]"
-              >
-                Save Details
               </button>
             </div>
           </div>
@@ -2033,7 +2033,7 @@ const AddRecipt = () => {
               {!isViewMode && (
                 <button
                   onClick={handlePartySave}
-                  className="px-8 py-2 bg-[#0D3082] text-white rounded-lg font-bold text-[11px] flex items-center gap-2 hover:bg-[#0a2669] shadow-lg shadow-blue-900/20 transition-all active:scale-95 uppercase tracking-wider"
+                  className="px-8 py-2 bg-[#0A2478] text-white rounded-lg font-bold text-[11px] flex items-center gap-2 hover:bg-[#0a2669] shadow-lg shadow-blue-900/20 transition-all active:scale-95 uppercase tracking-wider"
                 >
                   <Save size={14} /> Save Party
                 </button>

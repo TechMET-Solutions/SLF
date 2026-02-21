@@ -556,7 +556,7 @@ const ExpenceCreate = () => {
             {!expenseId && !isViewMode && (
               <button
                 onClick={() => setIsModalOpen(true)}
-                className="bg-[#0D3082] text-white p-1.5 rounded hover:bg-blue-800"
+                className="bg-[#0A2478] text-white p-1.5 rounded hover:bg-blue-800"
                 title="Add New Party"
               >
                 <UserPlus size={16} />
@@ -567,7 +567,7 @@ const ExpenceCreate = () => {
             {!expenseId && !isViewMode && (
               <button
                 onClick={handleMainSave}
-                className="bg-[#0D3082] text-white px-5 py-1.5 rounded text-xs font-bold"
+                className="bg-[#0A2478] text-white px-5 py-1.5 rounded text-xs font-bold"
               >
                 Save Expense
               </button>
@@ -577,7 +577,7 @@ const ExpenceCreate = () => {
             {expenseId && !isViewMode && (
               <button
                 onClick={() => handleUpdate(expenseId)}
-                className="bg-[#0D3082] text-white px-5 py-1.5 rounded text-xs font-bold"
+                className="bg-[#0A2478] text-white px-5 py-1.5 rounded text-xs font-bold"
               >
                 Update Expense
               </button>
@@ -604,7 +604,7 @@ const ExpenceCreate = () => {
 
           <table className=" text-left border-collapse bg-white">
             <thead>
-              <tr className="bg-[#0D3082] text-white text-[11px] uppercase">
+              <tr className="bg-[#0A2478] text-white text-[11px] uppercase">
                 <th className="p-2 border-r font-bold w-18 text-center">
                   No
                 </th>
@@ -643,7 +643,7 @@ const ExpenceCreate = () => {
                           bank?.name || "",
                         );
                       }}
-                      className="w-full border border-gray-300 rounded-sm px-1 py-1 outline-none focus:bg-[#ffffcc] bg-white"
+                      className="w-full border border-gray-300 rounded-sm px-1 py-1 outline-none bg-white"
                     >
                       <option value="">Select Account</option>
                       {bankAccounts?.map((bank) => (
@@ -695,7 +695,7 @@ const ExpenceCreate = () => {
 
                       <button
                         onClick={addNewRow}
-                        className="bg-[#0D3082] text-white p-1.5 rounded-sm hover:bg-[#0a2669]"
+                        className="bg-[#0A2478] text-white p-1.5 rounded-sm hover:bg-[#0a2669]"
                       >
                         <Plus size={12} />
                       </button>
@@ -711,7 +711,7 @@ const ExpenceCreate = () => {
                         className={`px-2 py-1 rounded-sm flex items-center font-bold uppercase text-[10px] transition-colors shadow-sm ${
                           rowDetails[index]
                             ? "bg-green-600 text-white"
-                            : "bg-[#008080] text-white"
+                          : "bg-[#0A2478] text-white"
                         }`}
                       >
                         {rowDetails[index] ? (
@@ -738,8 +738,7 @@ const ExpenceCreate = () => {
           <div className="bg-white rounded-xl shadow-2xl w-full max-w-[700px] overflow-hidden border">
             <div className=" px-6 py-4 flex justify-between items-center">
               <div className="flex items-center gap-2">
-                <FileText size={18} />
-                <h2 className="text-sm font-bold uppercase tracking-wider">
+                <h2 className="text-sm text-[#0A2478] font-bold uppercase tracking-wider">
                   Bill Details (Row {currentRowIndex + 1})
                 </h2>
               </div>
@@ -1006,17 +1005,18 @@ const ExpenceCreate = () => {
             </div>
 
             <div className=" p-4 flex gap-2 justify-center">
+              
+              <button
+                onClick={handleSaveDetails}
+                className="px-6 py-2 text-white rounded font-bold uppercase text-[10px]  shadow-md transition-all active:scale-95 bg-[#0A2478]"
+              >
+                Save Details
+              </button>
               <button
                 onClick={() => setIsDetailsModalOpen(false)}
                 className="px-4 py-2 border border-gray-300 rounded font-bold uppercase text-[10px] bg-red-600 text-white transition-colors"
               >
                 Exit
-              </button>
-              <button
-                onClick={handleSaveDetails}
-                className="px-6 py-2 text-white rounded font-bold uppercase text-[10px] hover:bg-[#006666] shadow-md transition-all active:scale-95 bg-[#0D3082]"
-              >
-                Save Details
               </button>
             </div>
           </div>
@@ -1291,7 +1291,7 @@ const ExpenceCreate = () => {
               {!isViewMode && (
                 <button
                   onClick={handlePartySave}
-                  className="px-8 py-2 bg-[#0D3082] text-white rounded-lg font-bold text-[11px] flex items-center gap-2 hover:bg-[#0a2669] shadow-lg shadow-blue-900/20 transition-all active:scale-95 uppercase tracking-wider"
+                  className="px-8 py-2 bg-[#0A2478] text-white rounded-lg font-bold text-[11px] flex items-center gap-2 hover:bg-[#0a2669] shadow-lg shadow-blue-900/20 transition-all active:scale-95 uppercase tracking-wider"
                 >
                   <Save size={14} /> Save Party
                 </button>
