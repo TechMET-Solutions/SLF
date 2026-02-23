@@ -357,6 +357,9 @@ const ExpenceCreate = () => {
 
       const cleanedExpenses = voucherRows.map((row, index) => ({
         ...row,
+        date: row.date ? (typeof row.date === 'string' && row.date.includes('T')
+          ? row.date.split('T')[0]
+          : row.date) : '',
         details:
           rowDetails[index]?.map((detail) => ({
             ...detail,
@@ -420,6 +423,9 @@ const ExpenceCreate = () => {
       const cleanedExpenses = [
         {
           ...voucherRows[0],
+          date: voucherRows[0].date ? (typeof voucherRows[0].date === 'string' && voucherRows[0].date.includes('T')
+            ? voucherRows[0].date.split('T')[0]
+            : voucherRows[0].date) : '',
           details:
             rowDetails[0]?.map((detail) => ({
               ...detail,
@@ -618,30 +624,37 @@ const ExpenceCreate = () => {
                     {index + 1}
                   </td>
                   <td className="p-1 border-r border-gray-300">
-                    <select
-                      value={row.subLedgerCode}
-                      disabled={isViewMode}
-                      onChange={(e) => {
-                        const selectedId = e.target.value;
-                        const bank = bankAccounts.find(
-                          (b) => b.id.toString() === selectedId,
-                        );
-                        handleVoucherChange(index, "subLedgerCode", selectedId);
-                        handleVoucherChange(
-                          index,
-                          "ledgerName",
-                          bank?.name || "",
-                        );
-                      }}
-                      className="w-full border border-gray-300 rounded-sm px-1 py-1 outline-none bg-white"
-                    >
-                      <option value="">Select Account</option>
-                      {bankAccounts?.map((bank) => (
-                        <option key={bank.id} value={bank.id}>
-                          {bank.name}
-                        </option>
-                      ))}
-                    </select>
+                    <div className="flex flex-col gap-1">
+                      <select
+                        value={row.subLedgerCode}
+                        disabled={isViewMode}
+                        onChange={(e) => {
+                          const selectedId = e.target.value;
+                          const bank = bankAccounts.find(
+                            (b) => b.id.toString() === selectedId,
+                          );
+                          handleVoucherChange(index, "subLedgerCode", selectedId);
+                          handleVoucherChange(
+                            index,
+                            "ledgerName",
+                            bank?.name || "",
+                          );
+                        }}
+                        className="w-full border border-gray-300 rounded-sm px-1 py-1 outline-none bg-white text-[12px]"
+                      >
+                        <option value="">Select Account</option>
+                        {bankAccounts?.map((bank) => (
+                          <option key={bank.id} value={bank.id}>
+                            {bank.name}
+                          </option>
+                        ))}
+                      </select>
+                      {row.ledgerName && (
+                        <div className="text-[11px] font-semibold text-[#0A2478] px-1 py-0.5 bg-blue-50 rounded">
+                          {row.ledgerName}
+                        </div>
+                      )}
+                    </div>
                   </td>
                   <td className="p-1 border-r border-gray-300">
                     <input
@@ -700,11 +713,10 @@ const ExpenceCreate = () => {
 
                       <button
                         onClick={() => openDetailsModal(index)}
-                        className={`px-2 py-1 rounded-sm flex items-center font-bold uppercase text-[10px] transition-colors shadow-sm ${
-                          rowDetails[index]
-                            ? "bg-green-600 text-white"
-                            : "bg-[#0A2478] text-white"
-                        }`}
+                        className={`px-2 py-1 rounded-sm flex items-center font-bold uppercase text-[10px] transition-colors shadow-sm ${rowDetails[index]
+                          ? "bg-green-600 text-white"
+                          : "bg-[#0A2478] text-white"
+                          }`}
                       >
                         {rowDetails[index] ? (
                           <CheckCircle2 size={10} className="mr-1" />
