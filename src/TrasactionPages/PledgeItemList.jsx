@@ -394,6 +394,7 @@ setRows(updatedRows);
               <td className="px-4 py-2"></td>
               <td className="px-4 py-2"></td>
                <td className="px-4 py-2"></td>
+               <td className="px-4 py-2"></td>
               <td className="px-4 py-2 text-center">
                 {totalValuation.toLocaleString(undefined, {
                   minimumFractionDigits: 2,

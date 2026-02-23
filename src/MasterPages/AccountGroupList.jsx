@@ -1,11 +1,10 @@
 import { useEffect, useState } from "react";
 
 import axios from "axios";
+import { FiEdit } from "react-icons/fi";
+import { useNavigate } from "react-router-dom";
 import { API } from "../api";
 import { useAuth } from "../API/Context/AuthContext";
-import GroupData from "../assets/Group 124.svg";
-import { useNavigate } from "react-router-dom";
-import { FiEdit } from "react-icons/fi";
 import Pagination from "../Component/Pagination";
 const AccountGroupList = () => {
   useEffect(() => {
@@ -81,8 +80,8 @@ const AccountGroupList = () => {
         params: {
           headers: searchHeaders.join(","),
           search: searchQuery,
-          page: page,         // Send page to backend
-          limit: itemsPerPage // Send limit to backend
+          page: page, // Send page to backend
+          limit: itemsPerPage, // Send limit to backend
         },
       });
 
@@ -100,13 +99,18 @@ const AccountGroupList = () => {
 
   const handleSave = async () => {
     try {
-      // Prepare the payload with user tracking
       const payload = {
-        ...formData,
-        // Pass the user info to the backend keys
-        addedBy: isEditMode ? formData.addedBy : loginUser,
-        // modifiedBy: loginUser
+        groupName: formData.groupName,
+        accountType: formData.accountType,
+        under: formData.under,
+        comments: formData.comments,
       };
+
+      if (isEditMode) {
+        payload.modifiedBy = loginUser; // ✅ Only on update
+      } else {
+        payload.addedBy = loginUser; // ✅ Only on create
+      }
 
       if (isEditMode) {
         await axios.put(
@@ -119,7 +123,6 @@ const AccountGroupList = () => {
         alert("Account Group Created Successfully");
       }
 
-      // Resetting state
       setIsModalOpen(false);
       setIsEditMode(false);
       setSelectedId(null);
@@ -128,7 +131,7 @@ const AccountGroupList = () => {
         accountType: "",
         under: "",
         comments: "",
-        addedBy: "", // Reset these as well
+        addedBy: "",
       });
 
       getAccountGroups();
@@ -138,7 +141,6 @@ const AccountGroupList = () => {
     }
   };
 
-  
   // 🔹 UPDATED: Handle Search (Reset to page 1)
   const handleSearch = () => {
     setIsDropdownOpen(false);
@@ -194,8 +196,7 @@ const AccountGroupList = () => {
           {/* Right section (search + buttons) */}
           <div className="flex items-center gap-6">
             {/* Search section */}
-            <div className="flex gap-5 ">
-            </div>
+            <div className="flex gap-5 "></div>
             <div className="flex items-center gap-4">
               <div className="flex items-center gap-3">
                 <div className="flex items-center bg-white border border-gray-400 rounded-[5px] h-[32px] px-2 relative w-[500px]">
@@ -277,7 +278,6 @@ const AccountGroupList = () => {
                   </button>
                 </div>
               </div>
-              
             </div>
             {/* Buttons stuck to right */}
             <div className="flex gap-3">
@@ -299,7 +299,6 @@ const AccountGroupList = () => {
               >
                 Exit
               </button>
-
             </div>
           </div>
         </div>
@@ -484,20 +483,25 @@ const AccountGroupList = () => {
                   Under
                 </th>
                 <th className="px-4 py-2 text-left border-r border-gray-300 text-[13px]">
-                  Added by Email
+                  Added By
                 </th>
 
                 <th className="px-4 py-2 text-left border-r border-gray-300 text-[13px] w-[100px]">
                   Added On
                 </th>
                 <th className="px-4 py-2 text-left border-r border-gray-300 text-[13px]  w-[110px]">
+                  Modified By
+                </th>
+                <th className="px-4 py-2 text-left border-r border-gray-300 text-[13px]  w-[130px]">
                   Modified On
                 </th>
 
                 <th className="px-4 py-2 text-left border-r border-gray-300 text-[13px] w-[250px]">
                   Comments
                 </th>
-                <th className="px-4 py-2 text-left text-[13px] w-[80px]">Action</th>
+                <th className="px-4 py-2 text-left text-[13px] w-[80px]">
+                  Action
+                </th>
               </tr>
             </thead>
             <tbody className="text-[12px]">
@@ -515,10 +519,9 @@ const AccountGroupList = () => {
                   <td className="px-4 py-2">
                     {new Date(row.created_at).toLocaleDateString("en-GB")}
                   </td>
+                  <td className="px-4 py-2">{row.modified_by_email}</td>
 
-                  <td className="px-4 py-2">
-                    {new Date(row.updated_at).toLocaleDateString("en-GB")}
-                  </td>
+                  <td className="px-4 py-2">{row.modified_on}</td>
                   <td className="px-4 py-2">{row.comments}</td>
                   <td className="px-4 py-2 flex gap-2 justify-center">
                     <div
@@ -545,8 +548,6 @@ const AccountGroupList = () => {
           />
         </div>
       )}
-
-     
     </div>
   );
 };

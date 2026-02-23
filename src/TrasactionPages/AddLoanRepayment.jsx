@@ -58,7 +58,7 @@ function AddLoanRepayment() {
   const [error, setError] = useState(null);
   const [isClose, setIsClose] = useState(false);
   const [isAdvInt, setIsAdvInt] = useState(false);
-  const [isAdvIntCheck, setIsAdvIntCheck] = useState(false);
+  const [isAdvIntCheck, setIsAdvIntCheck] = useState(true);
   useEffect(() => {
     if (loanId) {
       fetchLoanData();
@@ -1576,7 +1576,7 @@ function AddLoanRepayment() {
             <div className="flex items-center gap-2 mt-5 mb-5">
               <input
                 type="checkbox"
-                // disabled={data?.schemeData?.interestInAdvance !== "Yes"}
+                 disabled={data?.schemeData?.interestInAdvance !== "Yes"}
                 checked={isAdvIntCheck}
                 onChange={handleAdvIntCheck}
                 title={
