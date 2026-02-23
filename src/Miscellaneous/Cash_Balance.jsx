@@ -190,7 +190,7 @@ const Cash_Balance = () => {
       </div>
 
       {/* Main Content Card */}
-      <div className="ml-[110px] mr-[110px] mx-auto mt-6 px-4">
+      <div className="ml-[110px] mr-[110px] mx-auto mt-6 ">
         <div className="bg-white border border-blue-900 shadow-md">
           {/* Internal Header */}
           <div className="bg-blue-900 text-white px-4 py-1.5 text-sm font-bold">

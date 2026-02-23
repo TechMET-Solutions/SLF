@@ -169,7 +169,8 @@ const AddCreditNotePage = () => {
       <div className="flex justify-center ">
         <div className=" py-5 ml-[110px] mr-[110px]">
           {/* Credit Note Details */}
-          <section className="bg-[#ECECF6] p-5 border-gray-300">
+          <section className="
+bg-[#FFE6E6]  p-5 border-gray-300">
             <h3 className="font-semibold font-weight-600 text-[20px] text-[#0A2478] mb-3">
               Credit Note Details
             </h3>
@@ -256,7 +257,7 @@ const AddCreditNotePage = () => {
                   Description / Remarks*
                 </div>
                 <input
-                  name="city"
+                  name="description"
                   value={formData.description}
                   placeholder="Enter description"
                   onChange={handleChange}
@@ -267,7 +268,7 @@ const AddCreditNotePage = () => {
           </section>
 
           {/* CUSTOMER DETAILS */}
-          <section className="bg-[#FFE6E6] p-5 border-gray-300">
+          <section className="bg-[#F7F7FF]  p-5 border-gray-300">
             <h3 className="font-semibold text-[20px] text-[#0A2478] mb-3">
               Customer Details
             </h3>
@@ -402,7 +403,7 @@ const AddCreditNotePage = () => {
           </section>
 
           {/* AUTHORIZATION */}
-          <section className="bg-[#FFE6E6] p-5 ">
+          <section className="bg-[#FFE6E6]  p-5 ">
             <h3 className="font-semibold text-[20px] text-[#0A2478] mb-3">
               Authorization & Verification
             </h3>

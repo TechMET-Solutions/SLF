@@ -512,7 +512,7 @@ function AuctionItemsList() {
 
             {/* Table */}
             <div className="mt-10">
-              <table className="w-full border">
+              <table className="w-full ">
                 <thead>
                   <tr className="bg-[#0A2478] text-white">
                     <th className="p-2">Sr No.</th>
@@ -534,7 +534,7 @@ function AuctionItemsList() {
                     </tr>
                   ) : (
                     paymentHistory.map((item, index) => (
-                      <tr key={item.id} className="text-center border">
+                      <tr key={item.id} className={index % 2 === 0 ? "bg-gray-50" : "bg-white"}>
                         <td className="p-2">{index + 1}</td>
                         <td className="p-2">{item.payment_date}</td>
                         <td className="p-2">₹ {item.paid_amount}</td>

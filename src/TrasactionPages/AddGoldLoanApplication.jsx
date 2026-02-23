@@ -17,25 +17,9 @@ const AddGoldLoanApplication = () => {
   const [activeEmployees, setActiveEmployees] = useState([]);
   console.log(activeEmployees, "activeEmployees");
   const fileInputRef = useRef(null);
-  useEffect(() => {
-    const fetchSchemes = async () => {
-      try {
-        const response = await axios.get(`${API}/Scheme/getAllSchemes`);
-        const fetchedSchemes = response.data.items.map((item) => ({
-          ...item,
-          intCompound: item.calcMethod === "Compound",
-        }));
-        setSchemes(fetchedSchemes);
-      } catch (err) {
-        console.error("❌ Error fetching schemes:", err);
-      }
-    };
-
-    fetchSchemes();
-  }, []);
 
   const handleSchemeChange = (e) => {
-    debugger;
+
     const selectedId = parseInt(e.target.value);
     const scheme = schemes.find((s) => s.id === selectedId);
 
@@ -57,7 +41,7 @@ const AddGoldLoanApplication = () => {
   console.log("Logged in user:", loginUser);
 
   const handleSaveLoan = async () => {
-    debugger;
+    
     try {
       const formDataToSend = new FormData();
 
@@ -169,6 +153,10 @@ const AddGoldLoanApplication = () => {
   console.log(CustomerData, "CustomerData");
   console.log(selectedCustomer, "selectedCustomer");
   const [selectedCoBorrower, setSelectedCoBorrower] = useState(null);
+  const [branchId, setBranchId] = useState("");
+  const [branchName, setBranchName] = useState("");
+
+  console.log(branchId, branchName);
   const [formData, setFormData] = useState({
     borrowerName: "",
     borrowerAddress: "",
@@ -200,9 +188,27 @@ const AddGoldLoanApplication = () => {
     financialYear: "",
   });
   console.log(formData, "formData");
-
   useEffect(() => {
-    debugger;
+    const userData = JSON.parse(sessionStorage.getItem("userData"));
+
+    if (userData?.branchId) {
+      const branch = userData.branchId;
+
+      // ✅ Store separately
+      setBranchId(branch.id);
+      setBranchName(branch.branch_name);
+
+      // ✅ Also store inside formData (if needed)
+      setFormData((prev) => ({
+        ...prev,
+        branchId: branch.id,
+        branchName: branch.branch_name,
+        financialYear: userData.financialYear || "",
+      }));
+    }
+  }, []);
+  useEffect(() => {
+
     const userData = JSON.parse(sessionStorage.getItem("userData"));
 
     if (userData) {
@@ -262,7 +268,7 @@ const AddGoldLoanApplication = () => {
   }, [formData.Loan_amount]);
 
   useEffect(() => {
-    debugger;
+   
     let totalGross = 0;
     let totalNet = 0;
     let totalValuation = 0;
@@ -321,7 +327,7 @@ const AddGoldLoanApplication = () => {
   }, [PledgeItem, selectedScheme]);
 
   useEffect(() => {
-    debugger;
+   
     let totalValuation = 0;
 
     PledgeItem.forEach((item) => {
@@ -375,7 +381,48 @@ const AddGoldLoanApplication = () => {
       Net_Payable: netPayable.toFixed(2),
     }));
   }, [PledgeItem, selectedScheme]);
+  //  useEffect(() => {
+  //     const fetchSchemes = async () => {
+  //       try {
+  //         const response = await axios.get(`${API}/Scheme/getAllSchemes`);
+  //         const fetchedSchemes = response.data.items.map((item) => ({
+  //           ...item,
+  //           intCompound: item.calcMethod === "Compound",
+  //         }));
+  //         setSchemes(fetchedSchemes);
+  //       } catch (err) {
+  //         console.error("❌ Error fetching schemes:", err);
+  //       }
+  //     };
 
+  //     fetchSchemes();
+  //   }, []);
+
+  useEffect(() => {
+    if (!branchId) return; // 🔒 wait until branchId is set
+
+    const fetchSchemes = async () => {
+      try {
+        const response = await axios.get(
+          `${API}/Scheme/getSchemesAccordingToBranch`,
+          {
+            params: { branchId }, // ✅ pass branchId
+          },
+        );
+
+        const fetchedSchemes = response.data.items.map((item) => ({
+          ...item,
+          intCompound: item.calcMethod === "Compound",
+        }));
+
+        setSchemes(fetchedSchemes);
+      } catch (err) {
+        console.error("❌ Error fetching schemes:", err);
+      }
+    };
+
+    fetchSchemes();
+  }, [branchId]); // ✅ dependency added
   console.log(formData, "formData");
 
   useEffect(() => {
@@ -453,7 +500,7 @@ const AddGoldLoanApplication = () => {
   };
 
   const handleSelectCustomer = (customer, type) => {
-    debugger;
+  
     // 1️⃣ Close dropdown immediately
     setResults([]);
     setLoading(false);
@@ -1147,7 +1194,7 @@ bg-[#FFE6E6]  mr-[110px]"
               >
                 <option value="">Select valuer 1</option>
                 {activeEmployees.map((emp) => (
-                  <option key={emp.id} value={emp.id}>
+                  <option key={emp.id} value={emp.emp_name}>
                     {emp.emp_name}
                   </option>
                 ))}
@@ -1166,7 +1213,7 @@ bg-[#FFE6E6]  mr-[110px]"
               >
                 <option value="">Select valuer 2</option>
                 {activeEmployees.map((emp) => (
-                  <option key={emp.id} value={emp.id}>
+                  <option key={emp.id} value={emp.emp_name}>
                     {emp.emp_name}
                   </option>
                 ))}

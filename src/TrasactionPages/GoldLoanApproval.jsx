@@ -3,6 +3,7 @@ import { useEffect, useState } from "react";
 import { IoIosAddCircleOutline, IoIosCloseCircleOutline } from "react-icons/io";
 import { useLocation, useNavigate } from "react-router-dom";
 import { API } from "../api";
+import { useAuth } from "../API/Context/AuthContext";
 import profileempty from "../assets/profileempty.png";
 const GoldLoanApproval = () => {
   const branches = [
@@ -89,28 +90,130 @@ const GoldLoanApproval = () => {
     }
   }, [loanId]);
 
-  const generateEMISchedule = (P, annualRate, months, type) => {
+  // const generateEMISchedule = (P, annualRate, months, type) => {
+  //   const r = annualRate / 12 / 100;
+  //   const rows = [];
+
+  //   let emi = 0;
+  //   let balance = P;
+
+  //   // ================= FLAT =================
+  //   if (type === "Flat") {
+  //     const totalInterest = P * r * months;
+  //     const rawEmi = (P + totalInterest) / months;
+
+  //     // 👉 Rounded EMI
+  //     emi = roundToNext10(rawEmi);
+
+  //     const monthlyInterest = totalInterest / months;
+
+  //     for (let i = 1; i <= months; i++) {
+  //       const opening = balance;
+  //       const interest = monthlyInterest;
+
+  //       // last month adjustment
+  //       let principal = emi - interest;
+  //       if (i === months) {
+  //         principal = balance;
+  //         emi = principal + interest;
+  //       }
+
+  //       const closing = opening - principal;
+
+  //       rows.push({
+  //         month: i,
+  //         opening: opening.toFixed(2),
+  //         emi: emi.toFixed(2),
+  //         interest: interest.toFixed(2),
+  //         principal: principal.toFixed(2),
+  //         closing: Math.max(closing, 0).toFixed(2),
+  //       });
+
+  //       balance = closing;
+  //     }
+
+  //     return rows;
+  //   }
+
+  //   // ================= REDUCING =================
+  //   const rawEmi =
+  //     (P * r * Math.pow(1 + r, months)) / (Math.pow(1 + r, months) - 1);
+
+  //   // 👉 Rounded EMI
+  //   emi = roundToNext10(rawEmi);
+
+  //   for (let i = 1; i <= months; i++) {
+  //     const opening = balance;
+  //     const interest = opening * r;
+
+  //     let principal = emi - interest;
+
+  //     // last month adjustment
+  //     if (i === months) {
+  //       principal = balance;
+  //       emi = principal + interest;
+  //     }
+
+  //     const closing = opening - principal;
+
+  //     rows.push({
+  //       month: i,
+  //       opening: opening.toFixed(2),
+  //       emi: emi.toFixed(2),
+  //       interest: interest.toFixed(2),
+  //       principal: principal.toFixed(2),
+  //       closing: Math.max(closing, 0).toFixed(2),
+  //     });
+
+  //     balance = closing;
+  //   }
+
+  //   return rows;
+  // };
+
+  // useEffect(() => {
+  //   debugger;
+  //   if (!loanData || !loanData) return;
+  //   console.log(loanData, "loanData");
+  //   const P = Number(loanData.Loan_amount);
+  //   const tenure = Number(loanData.Loan_Tenure);
+  //   const type = loanData.interestType; // "Flat" or "Reducing"
+
+  //   const slabs = loanData.Effective_Interest_Rates || [];
+  //   const annualRate = slabs.length ? Number(slabs[0].addInt) : 0; // first slab
+
+  //   const rows = generateEMISchedule(P, annualRate, tenure, type);
+  //   setEmiTable(rows);
+  // }, [loanData]);
+
+  const generateEMISchedule = (P, annualRate, months, type, firstEmiDate) => {
     const r = annualRate / 12 / 100;
     const rows = [];
 
     let emi = 0;
     let balance = P;
 
+    // 👉 Convert first EMI date
+    const baseDate = new Date(firstEmiDate);
+
+    const getEmiDate = (monthIndex) => {
+      const d = new Date(baseDate);
+      d.setMonth(d.getMonth() + (monthIndex - 1));
+      return d.toISOString().split("T")[0]; // yyyy-mm-dd
+    };
+
     // ================= FLAT =================
     if (type === "Flat") {
       const totalInterest = P * r * months;
       const rawEmi = (P + totalInterest) / months;
 
-      // 👉 Rounded EMI
       emi = roundToNext10(rawEmi);
-
       const monthlyInterest = totalInterest / months;
 
       for (let i = 1; i <= months; i++) {
         const opening = balance;
         const interest = monthlyInterest;
 
-        // last month adjustment
         let principal = emi - interest;
         if (i === months) {
           principal = balance;
@@ -121,6 +224,7 @@ const GoldLoanApproval = () => {
 
         rows.push({
           month: i,
+          emiDate: getEmiDate(i), // ✅ EMI DATE ADDED
           opening: opening.toFixed(2),
           emi: emi.toFixed(2),
           interest: interest.toFixed(2),
@@ -138,7 +242,6 @@ const GoldLoanApproval = () => {
     const rawEmi =
       (P * r * Math.pow(1 + r, months)) / (Math.pow(1 + r, months) - 1);
 
-    // 👉 Rounded EMI
     emi = roundToNext10(rawEmi);
 
     for (let i = 1; i <= months; i++) {
@@ -146,8 +249,6 @@ const GoldLoanApproval = () => {
       const interest = opening * r;
 
       let principal = emi - interest;
-
-      // last month adjustment
       if (i === months) {
         principal = balance;
         emi = principal + interest;
@@ -157,6 +258,7 @@ const GoldLoanApproval = () => {
 
       rows.push({
         month: i,
+        emiDate: getEmiDate(i), // ✅ EMI DATE ADDED
         opening: opening.toFixed(2),
         emi: emi.toFixed(2),
         interest: interest.toFixed(2),
@@ -171,17 +273,17 @@ const GoldLoanApproval = () => {
   };
 
   useEffect(() => {
-    debugger;
-    if (!loanData || !loanData) return;
+    if (!loanData) return;
 
     const P = Number(loanData.Loan_amount);
     const tenure = Number(loanData.Loan_Tenure);
-    const type = loanData.interestType; // "Flat" or "Reducing"
+    const type = loanData.interestType;
+    const payDate = loanData.Pay_Date; // ✅ first EMI date
 
     const slabs = loanData.Effective_Interest_Rates || [];
-    const annualRate = slabs.length ? Number(slabs[0].addInt) : 0; // first slab
+    const annualRate = slabs.length ? Number(slabs[0].addInt) : 0;
 
-    const rows = generateEMISchedule(P, annualRate, tenure, type);
+    const rows = generateEMISchedule(P, annualRate, tenure, type, payDate);
     setEmiTable(rows);
   }, [loanData]);
 
@@ -224,18 +326,6 @@ const GoldLoanApproval = () => {
     return date.toLocaleDateString("en-GB");
   };
 
-  // Format time
-  const formatTime = (dateString) => {
-    if (!dateString) return "12:00:00 AM";
-    const date = new Date(dateString);
-    return date.toLocaleTimeString("en-US", {
-      hour12: true,
-      hour: "2-digit",
-      minute: "2-digit",
-      second: "2-digit",
-    });
-  };
-
   // Format currency
   const formatCurrency = (amount) => {
     if (!amount || isNaN(amount)) return "0.00";
@@ -246,116 +336,58 @@ const GoldLoanApproval = () => {
     }).format(numAmount);
   };
 
-  // Convert number to words
-  const numberToWords = (num) => {
-    if (!num || isNaN(num)) return "";
-
-    const numValue =
-      typeof num === "string" ? parseFloat(num.replace(/,/g, "")) : num;
-    if (numValue === 0) return "Zero";
-
-    const ones = [
-      "",
-      "One",
-      "Two",
-      "Three",
-      "Four",
-      "Five",
-      "Six",
-      "Seven",
-      "Eight",
-      "Nine",
-    ];
-    const tens = [
-      "",
-      "",
-      "Twenty",
-      "Thirty",
-      "Forty",
-      "Fifty",
-      "Sixty",
-      "Seventy",
-      "Eighty",
-      "Ninety",
-    ];
-    const teens = [
-      "Ten",
-      "Eleven",
-      "Twelve",
-      "Thirteen",
-      "Fourteen",
-      "Fifteen",
-      "Sixteen",
-      "Seventeen",
-      "Eighteen",
-      "Nineteen",
-    ];
-
-    const convertMillions = (n) => {
-      if (n >= 10000000) {
-        return (
-          convertMillions(Math.floor(n / 10000000)) +
-          " Crore " +
-          convertLakhs(n % 10000000)
-        );
-      } else {
-        return convertLakhs(n);
-      }
-    };
-
-    const convertLakhs = (n) => {
-      if (n >= 100000) {
-        return (
-          convertLakhs(Math.floor(n / 100000)) +
-          " Lakh " +
-          convertThousands(n % 100000)
-        );
-      } else {
-        return convertThousands(n);
-      }
-    };
-
-    const convertThousands = (n) => {
-      if (n >= 1000) {
-        return (
-          convertHundreds(Math.floor(n / 1000)) +
-          " Thousand " +
-          convertHundreds(n % 1000)
-        );
-      } else {
-        return convertHundreds(n);
-      }
-    };
-
-    const convertHundreds = (n) => {
-      if (n > 99) {
-        return ones[Math.floor(n / 100)] + " Hundred " + convertTens(n % 100);
-      } else {
-        return convertTens(n);
-      }
-    };
-
-    const convertTens = (n) => {
-      if (n < 10) return ones[n];
-      else if (n >= 10 && n < 20) return teens[n - 10];
-      else {
-        return tens[Math.floor(n / 10)] + " " + ones[n % 10];
-      }
-    };
-
-    let words = convertMillions(numValue);
-    return words.trim() + " only";
-  };
-
   // Approve loan handler
   const [approving, setApproving] = useState(false);
+
+  const { loginUser } = useAuth();
+
+  // const approveLoan = async () => {
+  //   if (!loanData || !loanData.id) return setError("Loan ID missing");
+
+  //   const loanAmount = Number(loanData.Loan_amount || 0);
+
+  //   // ✅ check here
+  //   if (totalAmount !== loanAmount) {
+  //     alert(
+  //       `Total Payment Details amount (${totalAmount}) must be equal to Loan Amount (${loanAmount})`,
+  //     );
+  //     return;
+  //   }
+
+  //   const confirmApprove = window.confirm("Approve this loan application?");
+  //   if (!confirmApprove) return;
+
+  //   try {
+  //     setApproving(true);
+  //     const approved_by = loginUser;
+  //     const payload = { id: loanData.id, approved_by, rows };
+
+  //     const res = await axios.put(
+  //       `${API}/Transactions/goldloan/approve-loan`,
+  //       payload,
+  //     );
+
+  //     if (res.data && res.data.success) {
+  //       alert("Loan approved successfully.");
+  //       // optional: navigate back to list or refresh
+  //       navigate("/Loan-Application");
+  //     } else {
+  //       const msg = (res.data && res.data.message) || "Failed to approve loan";
+  //       setError(msg);
+  //     }
+  //   } catch (err) {
+  //     console.error("❌ Error approving loan:", err);
+  //     setError("Server error while approving loan", err);
+  //   } finally {
+  //     setApproving(false);
+  //   }
+  // };
 
   const approveLoan = async () => {
     if (!loanData || !loanData.id) return setError("Loan ID missing");
 
     const loanAmount = Number(loanData.Loan_amount || 0);
 
-    // ✅ check here
     if (totalAmount !== loanAmount) {
       alert(
         `Total Payment Details amount (${totalAmount}) must be equal to Loan Amount (${loanAmount})`,
@@ -368,8 +400,15 @@ const GoldLoanApproval = () => {
 
     try {
       setApproving(true);
-      const approved_by = "Admin - test ";
-      const payload = { id: loanData.id, approved_by, rows };
+      const approved_by = loginUser;
+
+      const payload = {
+        id: loanData.id,
+        approved_by,
+        rows,
+        // ✅ send EMI only if Monthly
+        emi: loanSchemeData?.calcBasisOn === "Monthly" ? emiTable : null,
+      };
 
       const res = await axios.put(
         `${API}/Transactions/goldloan/approve-loan`,
@@ -378,7 +417,6 @@ const GoldLoanApproval = () => {
 
       if (res.data && res.data.success) {
         alert("Loan approved successfully.");
-        // optional: navigate back to list or refresh
         navigate("/Loan-Application");
       } else {
         const msg = (res.data && res.data.message) || "Failed to approve loan";
@@ -386,7 +424,7 @@ const GoldLoanApproval = () => {
       }
     } catch (err) {
       console.error("❌ Error approving loan:", err);
-      setError("Server error while approving loan", err);
+      setError("Server error while approving loan");
     } finally {
       setApproving(false);
     }
@@ -476,340 +514,342 @@ const GoldLoanApproval = () => {
 
       {/* ===== FORM SECTIONS ===== */}
       <div className=" min-h-screen space-y-8 mt-5">
-        <div className='bg-[#FFE6E6] ml-[110px] mr-[110px] '>
-           <div className="flex justify-center p-5">
-          <div className="w-[950px] ">
-            {/* First Row */}
-            <div className="flex gap-7 text-sm mb-8 flex-wrap">
-              <div>
-                <p className="font-semibold">Loan No</p>
-                <p>{loanData.id || "N/A"}</p>
-              </div>
-              <div>
-                <p className="font-semibold">Loan Date</p>
-                <p>
-                  {formatDate(loanData.created_at)}
-                  {/* <span className="ml-2">
+        <div className="bg-[#FFE6E6] ml-[110px] mr-[110px] ">
+          <div className="flex justify-center p-5">
+            <div className="w-[950px] ">
+              {/* First Row */}
+              <div className="flex gap-7 text-sm mb-8 flex-wrap">
+                <div>
+                  <p className="font-semibold">Loan No</p>
+                  <p>{loanData.id || "N/A"}</p>
+                </div>
+                <div>
+                  <p className="font-semibold">Loan Date</p>
+                  <p>
+                    {formatDate(loanData.created_at)}
+                    {/* <span className="ml-2">
                     {formatTime(loanData.created_at)}
                   </span> */}
-                </p>
-              </div>
-              <div>
-                <p className="font-semibold">Party Name</p>
-                <p>{loanData.Borrower || "N/A"}</p>
-              </div>
-              <div>
-                <p className="font-semibold">Scheme</p>
-                <p>{loanData.Scheme || "N/A"}</p>
-              </div>
-              <div>
-                <p className="font-semibold">Print Name</p>
-                <p>{loanData.Print_Name || "N/A"}</p>
-              </div>
-              <div>
-                <p className="font-semibold">Mobile Number</p>
-                <p>+91 {loanData.Mobile_Number || "N/A"}</p>
-              </div>
-              <div>
-                <p className="font-semibold">Co-Borrower</p>
-                <p>{loanData.Co_Borrower || "N/A"}</p>
-              </div>
-              <div>
-                <p className="font-semibold">Relation</p>
-                <p>{loanData.Relation || "N/A"}</p>
-              </div>
-              <div>
-                <p className="font-semibold">Nominee</p>
-                <p>{loanData.Nominee || "N/A"}</p>
-              </div>
-              <div>
-                <p className="font-semibold">Relation</p>
-                <p>{loanData.Nominee_Relation || "N/A"}</p>
-              </div>
-              <div>
-                <p className="font-semibold">Address</p>
-                <p>{loanData.Address || "N/A"}</p>
-              </div>
-            </div>
-
-            {/* Second Row */}
-            <div className="flex gap-13 text-sm flex-wrap"></div>
-          </div>
-
-          {/* ===== Ornament & Profile Photos ===== */}
-          <div className="flex  space-x-[1px]">
-            {/* Borrower */}
-            <div className="w-[120px] h-auto flex flex-col items-center">
-              <p className="font-medium mb-1 text-xs">Customer</p>
-              <img
-                src={loanData.borrower_profileImage || profileempty}
-                alt="Borrower Profile"
-                className="w-[100px] h-[115px] rounded-[5px] object-cover border border-gray-300"
-                onError={(e) => {
-                  e.target.src = profileempty;
-                }}
-              />
-              <div className="mt-1 border w-[100px] h-[26px] flex items-center justify-center bg-white rounded-[4px]">
-                {loanData.borrower_signature ? (
-                  <img
-                    src={loanData.borrower_signature}
-                    alt="Borrower Signature"
-                    className="w-full h-full object-contain"
-                    onError={(e) => {
-                      e.target.style.display = "none";
-                      e.target.nextSibling.style.display = "block";
-                    }}
-                  />
-                ) : (
-                  <span className="text-gray-400 text-[9px]">No Signature</span>
-                )}
-              </div>
-            </div>
-
-            {/* Co-Borrower */}
-            <div className="w-[120px] h-auto flex flex-col items-center">
-              <p className="font-medium mb-1 text-xs">Co-Borrower</p>
-              <img
-                src={loanData.coborrower_profileImage || profileempty}
-                alt="Co-Borrower Profile"
-                className="w-[100px] h-[115px] rounded-[5px] object-cover border border-gray-300"
-                onError={(e) => {
-                  e.target.src = profileempty;
-                }}
-              />
-              <div className="mt-1 w-[100px] h-[26px] border flex items-center justify-center bg-white rounded-[4px]">
-                {loanData.coborrower_signature ? (
-                  <img
-                    src={loanData.coborrower_signature}
-                    alt="Co-Borrower Signature"
-                    className="max-h-[24px] object-contain"
-                    onError={(e) => {
-                      e.target.style.display = "none";
-                      e.target.nextSibling.style.display = "block";
-                    }}
-                  />
-                ) : (
-                  <p className="text-gray-400 text-[9px]">No signature</p>
-                )}
-              </div>
-            </div>
-
-            {/* Ornament */}
-            <div className="w-[120px] h-auto flex flex-col items-center">
-              <p className="font-medium mb-1 text-xs">Ornament Photo</p>
-              <img
-                src={
-                  loanData.Ornament_Photo
-                    ? `${loanData.Ornament_Photo}`
-                    : profileempty
-                }
-                alt="Ornament"
-                className="w-[130px] h-[115px] object-cover rounded-[5px] border border-gray-300"
-                onError={(e) => {
-                  e.target.src = profileempty;
-                }}
-              />
-            </div>
-          </div>
-        </div>
-
-       
-        <div className="flex  gap-2 ">
-          <div className="p-5">
-            <div className="w-full gap-4 text-xs">
-              <div className=" flex gap-2">
-                <div className="flex flex-col w-30">
-                  <label className="text-[13px] font-semibold">
-                    Loan amount <span className="text-red-500">*</span>
-                  </label>
-                  <input
-                    type="text"
-                    value={formatCurrency(loanData.Loan_amount)}
-                    readOnly
-                    className="border border-gray-300 rounded-md px-2 py-1 mt-1 text-sm focus:outline-none bg-gray-50"
-                  />
-                  {/* <div className="text-[12px] mt-2  font-semibold">
-            {numberToWords(loanData.Loan_amount)}
-          </div> */}
+                  </p>
                 </div>
+                <div>
+                  <p className="font-semibold">Party Name</p>
+                  <p>{loanData.Borrower || "N/A"}</p>
+                </div>
+                <div>
+                  <p className="font-semibold">Scheme</p>
+                  <p>{loanData.Scheme || "N/A"}</p>
+                </div>
+                <div>
+                  <p className="font-semibold">Print Name</p>
+                  <p>{loanData.Print_Name || "N/A"}</p>
+                </div>
+                <div>
+                  <p className="font-semibold">Mobile Number</p>
+                  <p>+91 {loanData.Mobile_Number || "N/A"}</p>
+                </div>
+                <div>
+                  <p className="font-semibold">Co-Borrower</p>
+                  <p>{loanData.Co_Borrower || "N/A"}</p>
+                </div>
+                <div>
+                  <p className="font-semibold">Relation</p>
+                  <p>{loanData.Relation || "N/A"}</p>
+                </div>
+                <div>
+                  <p className="font-semibold">Nominee</p>
+                  <p>{loanData.Nominee || "N/A"}</p>
+                </div>
+                <div>
+                  <p className="font-semibold">Relation</p>
+                  <p>{loanData.Nominee_Relation || "N/A"}</p>
+                </div>
+                <div>
+                  <p className="font-semibold">Address</p>
+                  <p>{loanData.Address || "N/A"}</p>
+                </div>
+              </div>
 
-                {/* Doc Charges */}
-                <div className="flex flex-col">
-                  <label className="text-[13px] font-semibold">
-                    Doc Charges
-                  </label>
-                  <div className="flex mt-1">
-                    <div className="bg-[#0B2B68] text-white px-2 py-1 rounded-l-md text-sm flex items-center justify-center">
-                      {loanSchemeData.docChargePercent}
-                    </div>
+              {/* Second Row */}
+              <div className="flex gap-13 text-sm flex-wrap"></div>
+            </div>
+
+            {/* ===== Ornament & Profile Photos ===== */}
+            <div className="flex  space-x-[1px]">
+              {/* Borrower */}
+              <div className="w-[120px] h-auto flex flex-col items-center">
+                <p className="font-medium mb-1 text-xs">Customer</p>
+                <img
+                  src={loanData.borrower_profileImage || profileempty}
+                  alt="Borrower Profile"
+                  className="w-[100px] h-[115px] rounded-[5px] object-cover border border-gray-300"
+                  onError={(e) => {
+                    e.target.src = profileempty;
+                  }}
+                />
+                <div className="mt-1 border w-[100px] h-[26px] flex items-center justify-center bg-white rounded-[4px]">
+                  {loanData.borrower_signature ? (
+                    <img
+                      src={loanData.borrower_signature}
+                      alt="Borrower Signature"
+                      className="w-full h-full object-contain"
+                      onError={(e) => {
+                        e.target.style.display = "none";
+                        e.target.nextSibling.style.display = "block";
+                      }}
+                    />
+                  ) : (
+                    <span className="text-gray-400 text-[9px]">
+                      No Signature
+                    </span>
+                  )}
+                </div>
+              </div>
+
+              {/* Co-Borrower */}
+              <div className="w-[120px] h-auto flex flex-col items-center">
+                <p className="font-medium mb-1 text-xs">Co-Borrower</p>
+                <img
+                  src={loanData.coborrower_profileImage || profileempty}
+                  alt="Co-Borrower Profile"
+                  className="w-[100px] h-[115px] rounded-[5px] object-cover border border-gray-300"
+                  onError={(e) => {
+                    e.target.src = profileempty;
+                  }}
+                />
+                <div className="mt-1 w-[100px] h-[26px] border flex items-center justify-center bg-white rounded-[4px]">
+                  {loanData.coborrower_signature ? (
+                    <img
+                      src={loanData.coborrower_signature}
+                      alt="Co-Borrower Signature"
+                      className="max-h-[24px] object-contain"
+                      onError={(e) => {
+                        e.target.style.display = "none";
+                        e.target.nextSibling.style.display = "block";
+                      }}
+                    />
+                  ) : (
+                    <p className="text-gray-400 text-[9px]">No signature</p>
+                  )}
+                </div>
+              </div>
+
+              {/* Ornament */}
+              <div className="w-[120px] h-auto flex flex-col items-center">
+                <p className="font-medium mb-1 text-xs">Ornament Photo</p>
+                <img
+                  src={
+                    loanData.Ornament_Photo
+                      ? `${loanData.Ornament_Photo}`
+                      : profileempty
+                  }
+                  alt="Ornament"
+                  className="w-[130px] h-[115px] object-cover rounded-[5px] border border-gray-300"
+                  onError={(e) => {
+                    e.target.src = profileempty;
+                  }}
+                />
+              </div>
+            </div>
+          </div>
+
+          <div className="flex  gap-2 ">
+            <div className="p-5">
+              <div className="w-full gap-4 text-xs">
+                <div className=" flex gap-2">
+                  <div className="flex flex-col w-30">
+                    <label className="text-[13px] font-semibold">
+                      Loan amount <span className="text-red-500">*</span>
+                    </label>
                     <input
                       type="text"
-                      value={`₹${formatCurrency(loanData.Doc_Charges)}`}
+                      value={formatCurrency(loanData.Loan_amount)}
                       readOnly
-                      className="border border-gray-300 rounded-r-md px-2 py-1 text-sm focus:outline-none w-24 bg-gray-50"
+                      className="border border-gray-300 rounded-md px-2 py-1 mt-1 text-sm focus:outline-none bg-gray-50"
+                    />
+                    {/* <div className="text-[12px] mt-2  font-semibold">
+            {numberToWords(loanData.Loan_amount)}
+          </div> */}
+                  </div>
+
+                  {/* Doc Charges */}
+                  <div className="flex flex-col">
+                    <label className="text-[13px] font-semibold">
+                      Doc Charges
+                    </label>
+                    <div className="flex mt-1">
+                      <div className="bg-[#0B2B68] text-white px-2 py-1 rounded-l-md text-sm flex items-center justify-center">
+                        {loanSchemeData.docChargePercent}
+                      </div>
+                      <input
+                        type="text"
+                        value={`₹${formatCurrency(loanData.Doc_Charges)}`}
+                        readOnly
+                        className="border border-gray-300 rounded-r-md px-2 py-1 text-sm focus:outline-none w-24 bg-gray-50"
+                      />
+                    </div>
+                  </div>
+                  <div className="flex flex-col w-25">
+                    <label className="text-[13px] font-semibold">
+                      Net Payable
+                    </label>
+                    <input
+                      type="text"
+                      value={formatCurrency(loanData.Net_Payable)}
+                      readOnly
+                      className="border border-gray-300 rounded-md px-2 py-1 mt-1 text-sm focus:outline-none bg-gray-50"
                     />
                   </div>
                 </div>
-                <div className="flex flex-col w-25">
-                  <label className="text-[13px] font-semibold">
-                    Net Payable
-                  </label>
-                  <input
-                    type="text"
-                    value={formatCurrency(loanData.Net_Payable)}
-                    readOnly
-                    className="border border-gray-300 rounded-md px-2 py-1 mt-1 text-sm focus:outline-none bg-gray-50"
-                  />
-                </div>
-              </div>
 
-              <div className="flex gap-2 mt-2">
-                {/* Net Payable */}
+                <div className="flex gap-2 flex-col mt-2">
+                  {/* Net Payable */}
 
-                {/* Valuer 1 */}
-                <div className="flex flex-col w-44">
-                  <label className="text-[13px] font-semibold">
-                    Valuer 1 <span className="text-red-500">*</span>
-                  </label>
-                  <div className="border border-gray-300 rounded-md px-2 py-1 mt-1 text-sm bg-gray-50">
-                    {loanData.Valuer_1 || "Not Assigned"}
+                  {/* Valuer 1 */}
+                  <div className="flex flex-col w-50">
+                    <label className="text-[13px] font-semibold">
+                      Valuer 1 <span className="text-red-500">*</span>
+                    </label>
+                    <div className="border border-gray-300 rounded-md px-2 py-1 mt-1 text-sm bg-gray-50">
+                      {loanData.Valuer_1 || "Not Assigned"}
+                    </div>
+                  </div>
+                  <div className="flex flex-col w-50 ">
+                    <label className="text-[13px] font-semibold">
+                      Valuer 2 <span className="text-red-500">*</span>
+                    </label>
+                    <div className="border border-gray-300 rounded-md px-2 py-1 mt-1 text-sm bg-gray-50">
+                      {loanData.Valuer_2 || "Not Assigned"}
+                    </div>
                   </div>
                 </div>
-                <div className="flex flex-col w-44 ">
-                  <label className="text-[13px] font-semibold">
-                    Valuer 2 <span className="text-red-500">*</span>
-                  </label>
-                  <div className="border border-gray-300 rounded-md px-2 py-1 mt-1 text-sm bg-gray-50">
-                    {loanData.Valuer_2 || "Not Assigned"}
-                  </div>
-                </div>
-              </div>
 
-              {/* Valuer 2 */}
+                {/* Valuer 2 */}
+              </div>
             </div>
-          </div>
-          <div className="">
-            <h3 className="font-semibold  text-[#0A2478] text-lg">
-              Pledge Item List
-            </h3>
-            <div className="w-full text-xs border border-gray-300 mt-2 ">
-              <div className="flex bg-[#0A2478] text-white font-semibold">
-                <div className="flex-1 p-2 py-3 border-r-2 border-white">
-                  Particulars
+            <div className="">
+              <h3 className="font-semibold  text-[#0A2478] text-lg">
+                Pledge Item List
+              </h3>
+              <div className="w-full text-xs border border-gray-300 mt-2 ">
+                <div className="flex bg-[#0A2478] text-white font-semibold">
+                  <div className="flex-1 p-2 py-3 border-r-2 border-white">
+                    Particulars
+                  </div>
+                  <div className="w-16 p-2 border-r-2 border-white text-center">
+                    Nos.
+                  </div>
+                  <div className="w-24 p-2 border-r-2 border-white text-center">
+                    Gross
+                  </div>
+                  <div className="w-24 p-2 border-r-2 border-white text-center">
+                    Net Weight
+                  </div>
+                  <div className="w-28 p-2 border-r-2 border-white text-center">
+                    Purity
+                  </div>
+                  <div className="w-28 p-2 border-r-2 border-white text-center">
+                    Calculated Purity
+                  </div>
+                  <div className="w-24 p-2 border-r-2 border-white text-center">
+                    Rate
+                  </div>
+                  <div className="w-28 p-2 border-r-2 border-white text-center">
+                    Valuation
+                  </div>
+                  <div className="w-28 p-2 text-center">Remark</div>
                 </div>
-                <div className="w-16 p-2 border-r-2 border-white text-center">
-                  Nos.
-                </div>
-                <div className="w-24 p-2 border-r-2 border-white text-center">
-                  Gross
-                </div>
-                <div className="w-24 p-2 border-r-2 border-white text-center">
-                  Net Weight
-                </div>
-                <div className="w-28 p-2 border-r-2 border-white text-center">
-                  Purity
-                </div>
-                <div className="w-28 p-2 border-r-2 border-white text-center">
-                  Calculated Purity
-                </div>
-                <div className="w-24 p-2 border-r-2 border-white text-center">
-                  Rate
-                </div>
-                <div className="w-28 p-2 border-r-2 border-white text-center">
-                  Valuation
-                </div>
-                <div className="w-28 p-2 text-center">Remark</div>
+
+                {/* Dynamic Rows */}
+                {pledgeItems.length > 0 ? (
+                  <>
+                    {pledgeItems.map((item, index) => (
+                      <div
+                        key={item.id || index}
+                        className={`flex border-t border-gray-300 ${
+                          index % 2 === 0 ? "bg-gray-50" : "bg-white"
+                        }`}
+                      >
+                        <div className="flex-1 p-2 border-r border-gray-300">
+                          {item.particular || "Gold"}
+                        </div>
+                        <div className="w-16 p-2 border-r border-gray-300 text-center">
+                          {item.nos || 1}
+                        </div>
+                        <div className="w-24 p-2 border-r border-gray-300 text-center">
+                          {formatCurrency(item.gross)}
+                        </div>
+                        <div className="w-24 p-2 border-r border-gray-300 text-center">
+                          {formatCurrency(item.netWeight)}
+                        </div>
+                        <div className="w-28 p-2 border-r border-gray-300 text-center">
+                          {item.purity || ""}
+                        </div>
+                        <div className="w-28 p-2 border-r border-gray-300 text-center">
+                          {item.Calculated_Purity || ""}
+                        </div>
+                        <div className="w-24 p-2 border-r border-gray-300 text-center">
+                          {formatCurrency(item.rate)}
+                        </div>
+                        <div className="w-28 p-2 border-r border-gray-300 text-center">
+                          {formatCurrency(item.valuation)}
+                        </div>
+                        <div className="w-28 p-2 text-center">
+                          {item.remark || "-"}
+                        </div>
+                      </div>
+                    ))}
+
+                    {/* Total Row */}
+                    {/* Total Row */}
+                    <div className="flex border-t bg-white bg-gray-50">
+                      <div className="flex-1 p-2 border-r border-gray-300 font-semibold">
+                        Total
+                      </div>
+
+                      <div className="w-16 p-2 border-r border-gray-300 text-center font-semibold">
+                        {totalNos}
+                      </div>
+
+                      <div className="w-24 p-2 border-r border-gray-300 text-center font-semibold">
+                        {formatCurrency(totalGross)}
+                      </div>
+
+                      <div className="w-24 p-2 border-r border-gray-300 text-center font-semibold">
+                        {formatCurrency(totalNetWeight)}
+                      </div>
+
+                      <div className="w-28 p-2 border-r border-gray-300 text-center">
+                        {/* purity empty */}
+                      </div>
+
+                      <div className="w-28 p-2 border-r border-gray-300 text-center">
+                        {/* calculated purity empty */}
+                      </div>
+
+                      <div className="w-24 p-2 border-r border-gray-300 text-center font-semibold">
+                        {/* Rate total (if needed) */}
+                        {/* Leave empty if not required */}
+                      </div>
+
+                      <div className="w-28 p-2 border-r border-gray-300 text-center font-semibold">
+                        {formatCurrency(totalValuation)}
+                      </div>
+
+                      <div className="w-28 p-2 text-center">{/* remark */}</div>
+                    </div>
+                  </>
+                ) : (
+                  <div className="flex border-t border-gray-300">
+                    <div className="flex-1 p-4 text-center text-gray-500">
+                      No pledge items found
+                    </div>
+                  </div>
+                )}
               </div>
-
-              {/* Dynamic Rows */}
-              {pledgeItems.length > 0 ? (
-                <>
-                  {pledgeItems.map((item, index) => (
-                    <div
-                      key={item.id || index}
-                      className="flex border-t border-gray-300"
-                    >
-                      <div className="flex-1 p-2 border-r border-gray-300">
-                        {item.particular || "Gold"}
-                      </div>
-                      <div className="w-16 p-2 border-r border-gray-300 text-center">
-                        {item.nos || 1}
-                      </div>
-                      <div className="w-24 p-2 border-r border-gray-300 text-center">
-                        {formatCurrency(item.gross)}
-                      </div>
-                      <div className="w-24 p-2 border-r border-gray-300 text-center">
-                        {formatCurrency(item.netWeight)}
-                      </div>
-                      <div className="w-28 p-2 border-r border-gray-300 text-center">
-                        {item.purity || ""}
-                      </div>
-                      <div className="w-28 p-2 border-r border-gray-300 text-center">
-                        {item.Calculated_Purity || ""}
-                      </div>
-                      <div className="w-24 p-2 border-r border-gray-300 text-center">
-                        {formatCurrency(item.rate)}
-                      </div>
-                      <div className="w-28 p-2 border-r border-gray-300 text-center">
-                        {formatCurrency(item.valuation)}
-                      </div>
-                      <div className="w-28 p-2 text-center">
-                        {item.remark || "-"}
-                      </div>
-                    </div>
-                  ))}
-
-                  {/* Total Row */}
-                  {/* Total Row */}
-                  <div className="flex border-t border-gray-300 bg-gray-50">
-                    <div className="flex-1 p-2 border-r border-gray-300 font-semibold">
-                      Total
-                    </div>
-
-                    <div className="w-16 p-2 border-r border-gray-300 text-center font-semibold">
-                      {totalNos}
-                    </div>
-
-                    <div className="w-24 p-2 border-r border-gray-300 text-center font-semibold">
-                      {formatCurrency(totalGross)}
-                    </div>
-
-                    <div className="w-24 p-2 border-r border-gray-300 text-center font-semibold">
-                      {formatCurrency(totalNetWeight)}
-                    </div>
-
-                    <div className="w-28 p-2 border-r border-gray-300 text-center">
-                      {/* purity empty */}
-                    </div>
-
-                    <div className="w-28 p-2 border-r border-gray-300 text-center">
-                      {/* calculated purity empty */}
-                    </div>
-
-                    <div className="w-24 p-2 border-r border-gray-300 text-center font-semibold">
-                      {/* Rate total (if needed) */}
-                      {/* Leave empty if not required */}
-                    </div>
-
-                    <div className="w-28 p-2 border-r border-gray-300 text-center font-semibold">
-                      {formatCurrency(totalValuation)}
-                    </div>
-
-                    <div className="w-28 p-2 text-center">{/* remark */}</div>
-                  </div>
-                </>
-              ) : (
-                <div className="flex border-t border-gray-300">
-                  <div className="flex-1 p-4 text-center text-gray-500">
-                    No pledge items found
-                  </div>
-                </div>
-              )}
             </div>
           </div>
         </div>
-       </div>
-       
 
         {/* Loan Amount Section */}
 
@@ -996,6 +1036,7 @@ const GoldLoanApproval = () => {
                 <thead className="bg-[#0A2478] text-white">
                   <tr>
                     <th className="p-2 border">Month</th>
+                    <th className="p-2 border">EMI Date</th> {/* ✅ NEW */}
                     <th className="p-2 border">Opening Balance</th>
                     <th className="p-2 border">EMI</th>
                     <th className="p-2 border">Interest</th>
@@ -1013,11 +1054,18 @@ const GoldLoanApproval = () => {
                     return (
                       <tr key={row.month} className="text-center bg-white">
                         <td className="p-2 border">{row.month}</td>
+
+                        {/* ✅ EMI DATE */}
+                        <td className="p-2 border">
+                          {new Date(row.emiDate).toLocaleDateString("en-IN")}
+                        </td>
+
                         <td className="p-2 border">₹{row.opening}</td>
                         <td className="p-2 border">₹{row.emi}</td>
                         <td className="p-2 border">₹{row.interest}</td>
                         <td className="p-2 border">₹{row.principal}</td>
                         <td className="p-2 border">₹{row.closing}</td>
+
                         <td
                           className={`p-2 border font-medium ${
                             isPaid ? "text-green-600" : "text-gray-400"
