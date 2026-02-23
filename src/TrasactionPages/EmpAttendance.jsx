@@ -17,6 +17,8 @@ const EmpAttendance = () => {
   const [month, setMonth] = useState(new Date().getMonth() + 1);
   const [year, setYear] = useState(new Date().getFullYear());
   const [attendanceData, setAttendanceData] = useState([]);
+  const [showPagination, setShowPagination] = useState(false);
+
   console.log(attendanceData, "attendanceData");
 
   const navigate = useNavigate();
@@ -32,9 +34,12 @@ const EmpAttendance = () => {
 
     const response = await res.json();
 
+    // console.log(response, "employee response");
+
     // 🔥 Direct use response
     setEmployees(response.items);
     setTotalPages(response.total);
+    setShowPagination(response.pagination.showPagination);
 
   } catch (error) {
     console.error("Error fetching employees:", error);
@@ -85,7 +90,7 @@ const EmpAttendance = () => {
             onClick={() => navigate("/")}
             className="text-white px-[6px] py-[6px] rounded bg-[#C1121F] w-[74px] h-[24px] text-[10px]"
           >
-            Close
+            Exit
           </button>
         </div>
       </div>
@@ -141,27 +146,29 @@ const EmpAttendance = () => {
       </div>
 
       {/* Pagination */}
-      <div className="flex justify-center gap-3 mt-4 text-sm">
-        <button
-          disabled={page === 1}
-          onClick={() => setPage(page - 1)}
-          className="px-4 py-2 bg-gray-200 rounded disabled:opacity-50"
-        >
-          Previous
-        </button>
+      {showPagination && (
+        <div className="flex justify-center gap-3 mt-4 text-sm">
+          <button
+            disabled={page === 1}
+            onClick={() => setPage(page - 1)}
+            className="px-4 py-2 bg-gray-200 rounded disabled:opacity-50"
+          >
+            Previous
+          </button>
 
-        <span className="px-4 py-2">
-          Page {page} of {totalPages}
-        </span>
+          <span className="px-4 py-2">
+            Page {page} of {totalPages}
+          </span>
 
-        <button
-          disabled={page === totalPages}
-          onClick={() => setPage(page + 1)}
-          className="px-4 py-2 bg-gray-200 rounded disabled:opacity-50"
-        >
-          Next
-        </button>
-      </div>
+          <button
+            disabled={page === totalPages}
+            onClick={() => setPage(page + 1)}
+            className="px-4 py-2 bg-gray-200 rounded disabled:opacity-50"
+          >
+            Next
+          </button>
+        </div>
+      )}
 
       {showModal && (
         <div

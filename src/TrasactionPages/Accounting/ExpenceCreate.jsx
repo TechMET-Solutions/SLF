@@ -1281,7 +1281,7 @@ const ExpenceCreate = () => {
               )}
               <button
                 onClick={() => setIsModalOpen(false)}
-                className="px-5 py-2 border border-gray-300 rounded-lg text-gray-600 font-bold text-[11px] transition-colors uppercase tracking-wider bg-red-600"
+                className="px-5 py-2 border border-gray-300 rounded-lg text-white font-bold text-[11px] transition-colors uppercase tracking-wider bg-red-600"
               >
                 Exit
               </button>

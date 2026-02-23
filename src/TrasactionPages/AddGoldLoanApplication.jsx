@@ -559,6 +559,21 @@ const AddGoldLoanApplication = () => {
   const handleInputChange = (e) => {
     const { name, value } = e.target;
 
+    let updatedValue = value;
+
+    // 🔹 Mobile validation
+    if (name === "altMobile" || name === "mobile") {
+      // Remove non-numeric characters
+      const numericValue = value.replace(/\D/g, "");
+
+      if (numericValue.length > 10) {
+        alert("Mobile number must be 10 digits only.");
+        return;
+      }
+
+      updatedValue = numericValue;
+    }
+
     setFormData((prev) => ({
       ...prev,
       [name]: value,
@@ -831,11 +846,16 @@ bg-[#FFE6E6]  mr-[110px]"
                   </div>
 
                   <input
-                    type="text"
+                    type="number"
                     name="mobile"
                     placeholder="Enter mobile Name"
                     value={formData.mobile}
                     onChange={handleInputChange}
+                    maxLength={10}
+                    style={{
+                      MozAppearance: "textfield",
+                    }}
+                    onWheel={(e) => e.target.blur()}
                     className="border border-gray-300 px-3 py-2 mt-1 w-[136px] rounded-[8px] bg-white h-[40px]"
                   />
                 </div>

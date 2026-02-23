@@ -32,13 +32,17 @@ const BidderRegistrationList = () => {
         <h2 className="text-red-600 font-semibold text-xl">
           Bidder Registration List
         </h2>
-
+<div className="flex gap-3">
         <button
           onClick={() => navigate("/Bidder-Registration")}
-          className="bg-[#0A2478] text-white text-[12px] w-[80px] h-[32px] rounded-[3.75px] hover:bg-blue-700 transition cursor-pointer"
+          className="bg-[#0A2478] text-white text-[12px] w-[80px] h-[32px] rounded-[3.75px] transition cursor-pointer"
         >
           Add Bidder
         </button>
+        <button onClick={() => navigate("/")} className="bg-[#C1121F] text-white text-[12px] w-[80px] h-[32px] rounded-[3.75px] hover:bg-red-700 transition">
+          Exit
+          </button>
+        </div>
       </div>
 
       {/* Loading and Error States */}

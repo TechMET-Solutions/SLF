@@ -152,7 +152,7 @@ const BidderRegistration = () => {
           <div className="flex items-center gap-3">
             <button
               onClick={handleSubmit}
-              className="bg-[#0A2478] text-white text-[12px] w-[80px] h-[32px] rounded-[3.75px] hover:bg-blue-700 transition cursor-pointer"
+              className="bg-[#0A2478] text-white text-[12px] w-[80px] h-[32px] rounded-[3.75px] transition cursor-pointer"
             >
               Submit
             </button>
@@ -160,7 +160,7 @@ const BidderRegistration = () => {
               onClick={() => navigate(-1)}
               className="bg-[#C1121F] text-white text-[12px] w-[80px] h-[32px] rounded-[3.75px] hover:bg-red-700 transition cursor-pointer"
             >
-              Cancel
+              Exit
             </button>
           </div>
         </div>

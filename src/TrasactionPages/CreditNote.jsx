@@ -178,6 +178,12 @@ function CreditNote() {
               >
                 Add Credit Note
               </button>
+              <button
+                onClick={() => navigate("/")}
+                className="bg-red-600 w-[46px] text-white text-[11px] px-2 h-[28px] rounded-[3px] font-source"
+              >
+                Exit
+              </button>
             </div>
           </div>
         </div>
@@ -260,7 +266,7 @@ function CreditNote() {
                             state: { id: row.id },
                           })
                         }
-                        className="bg-[#0A2478] text-white p-2 rounded-md hover:bg-[#8b6c00]"
+                        className="bg-[#0A2478] text-white p-2 rounded-md"
                       >
                         <LuPrinter size={12} />
                       </button>

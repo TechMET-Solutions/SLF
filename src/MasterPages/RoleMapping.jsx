@@ -166,12 +166,65 @@ const RoleMapping = () => {
   const [isLoading, setIsLoading] = useState(true);
 
   // 1. Fetch Roles and Map with Existing Data
+  // const getRolesFromApi = useCallback(async () => {
+  //   setIsLoading(true);
+  //   try {
+  //     // Fetch all roles from API
+  //     const response = await fetchRolesApi(1, 100); 
+  //     const apiItems = response.items || response.roles || [];
+
+  //     console.log("DATA", apiItems)
+
+  //     // Parse existing roles from navigation state (rowData)
+  //     let existingRoleNames = [];
+  //     if (rowData?.roles) {
+  //       try {
+  //         existingRoleNames = Array.isArray(rowData.roles)
+  //           ? rowData.roles
+  //           : JSON.parse(rowData.roles);
+  //       } catch (err) {
+  //         console.warn("Could not parse existing roles:", rowData.roles);
+  //         // If JSON parse fails, check if it's a comma-separated string
+  //         if (typeof rowData.roles === "string") {
+  //           existingRoleNames = rowData.roles.split(",").map(r => r.trim());
+  //         }
+  //       }
+  //     }
+
+  //     // Map API items to include 'selected' and normalize property names
+  //     const mappedRoles = apiItems.map((role) => {
+  //       const roleName = role.role_name || role.name;
+  //       return {
+  //         id: role.id,
+  //         role_name: roleName,
+  //         selected: existingRoleNames.includes(roleName),
+  //       };
+  //     });
+
+  //     setRoles(mappedRoles);
+  //   } catch (error) {
+  //     console.error("❌ Failed to load roles:", error);
+  //   } finally {
+  //     setIsLoading(false);
+  //   }
+  // }, [rowData]);
+  
+  
   const getRolesFromApi = useCallback(async () => {
     setIsLoading(true);
     try {
       // Fetch all roles from API
-      const response = await fetchRolesApi(1, 100); 
+      const response = await fetchRolesApi(1, 100);
       const apiItems = response.items || response.roles || [];
+
+      console.log("DATA BEFORE FILTER", apiItems);
+
+      // ✅ Filter only active roles
+      const activeRoles = Array.isArray(apiItems)
+        ? apiItems.filter(role => role.is_active === 1)
+        : [];
+
+      console.log("DATA AFTER FILTER", activeRoles);
 
       // Parse existing roles from navigation state (rowData)
       let existingRoleNames = [];
@@ -182,15 +235,14 @@ const RoleMapping = () => {
             : JSON.parse(rowData.roles);
         } catch (err) {
           console.warn("Could not parse existing roles:", rowData.roles);
-          // If JSON parse fails, check if it's a comma-separated string
           if (typeof rowData.roles === "string") {
             existingRoleNames = rowData.roles.split(",").map(r => r.trim());
           }
         }
       }
 
-      // Map API items to include 'selected' and normalize property names
-      const mappedRoles = apiItems.map((role) => {
+      // Map filtered roles
+      const mappedRoles = activeRoles.map((role) => {
         const roleName = role.role_name || role.name;
         return {
           id: role.id,
@@ -200,6 +252,7 @@ const RoleMapping = () => {
       });
 
       setRoles(mappedRoles);
+
     } catch (error) {
       console.error("❌ Failed to load roles:", error);
     } finally {

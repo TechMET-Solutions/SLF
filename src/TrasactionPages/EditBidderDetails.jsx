@@ -131,11 +131,11 @@ const EditBidderDetails = () => {
                         Edit Bidder Registration
                     </h2>
                     <div className="flex items-center gap-3">
-                        <button onClick={handleUpdate} className="bg-[#0A2478] text-white text-[12px] w-[80px] h-[32px] rounded-[3.75px] hover:bg-blue-700 transition">
+                        <button onClick={handleUpdate} className="bg-[#0A2478] text-white text-[12px] w-[80px] h-[32px] rounded-[3.75px] transition">
                             Update
                         </button>
                         <button onClick={() => navigate(-1)} className="bg-[#C1121F] text-white text-[12px] w-[80px] h-[32px] rounded-[3.75px] hover:bg-red-700 transition">
-                            Cancel
+                            Exit
                         </button>
                     </div>
                 </div>

@@ -188,6 +188,7 @@ useEffect(() => {
               Save
             </button>
             <button
+              style={{ width: "74px", height: "30px", borderRadius: "4px" }}
               className="bg-[#C1121F] text-white text-[12px] px-3 py-1 rounded"
               onClick={() => navigate(-1)}
             >
