@@ -521,7 +521,17 @@ const AccountGroupList = () => {
                   </td>
                   <td className="px-4 py-2">{row.modified_by_email}</td>
 
-                  <td className="px-4 py-2">{row.modified_on}</td>
+                <td className="px-4 py-2">
+  {row.modified_on
+    ? new Date(row.modified_on).toLocaleString("en-IN", {
+        day: "2-digit",
+        month: "2-digit",
+        year: "numeric",
+       
+       
+      })
+    : "-"}
+</td>
                   <td className="px-4 py-2">{row.comments}</td>
                   <td className="px-4 py-2 flex gap-2 justify-center">
                     <div

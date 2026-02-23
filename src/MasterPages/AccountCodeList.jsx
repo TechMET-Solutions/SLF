@@ -920,6 +920,7 @@ const AccountCodeList = () => {
                 <th className="px-4 py-2 text-left border-r border-gray-300 text-[13px] w-[300px]">Added by Email</th>
                 <th className="px-4 py-2 text-left border-r border-gray-300 text-[13px] w-[100px]">Added On</th>
                 <th className="px-4 py-2 text-left border-r border-gray-300 text-[13px] w-[100px]">Modified by</th>
+                 <th className="px-4 py-2 text-left border-r border-gray-300 text-[13px] w-[100px]">Modified On</th>
                 <th className="px-4 py-2 text-left text-[13px]">Action</th>
               </tr>
             </thead>
@@ -933,6 +934,7 @@ const AccountCodeList = () => {
                   <td className="px-4 py-2">{row.addedBy}</td>
                   <td className="px-4 py-2">{formatIndianDate(row.created_at)}</td>
                   <td className="px-4 py-2">{row.modifiedBy || "-"}</td>
+                   <td className="px-4 py-2">{formatIndianDate(row.updated_at)}</td>
                   <td className="px-4 py-2 flex gap-2 justify-center">
                     <div className="bg-[#3dbd5a] cursor-pointer p-1.5 text-white rounded-sm" onClick={() => handleEdit(row)}>
                       <FiEdit />
