@@ -23,29 +23,29 @@ const ItemProfileList = () => {
   const [isEditMode, setIsEditMode] = useState(false);
   const [searchCode, setSearchCode] = useState("");
   const [searchName, setSearchName] = useState("");
-const [formData, setFormData] = useState({
-  id: null,
-  code: "",
-  name: "",
-  printName: "",
-  remark: "",
-  addedBy: "",
-  status: 1,
-});
-//   const [loginUser, setLoginUser] = useState(""); 
-//   console.log(loginUser,"loginUser")
+  const [formData, setFormData] = useState({
+    id: null,
+    code: "",
+    name: "",
+    printName: "",
+    remark: "",
+    addedBy: "",
+    status: 1,
+  });
+  //   const [loginUser, setLoginUser] = useState(""); 
+  //   console.log(loginUser,"loginUser")
 
 
-//   useEffect(() => {
-//   const user = JSON.parse(sessionStorage.getItem("userData") || "{}");
+  //   useEffect(() => {
+  //   const user = JSON.parse(sessionStorage.getItem("userData") || "{}");
 
-//   const addedByValue = user.name || user.email || "";
+  //   const addedByValue = user.name || user.email || "";
 
-//   setLoginUser(addedByValue);  // <-- store separately
+  //   setLoginUser(addedByValue);  // <-- store separately
 
-//   console.log("LOGIN USER:", addedByValue);
-// }, []);
- const { loginUser } = useAuth();
+  //   console.log("LOGIN USER:", addedByValue);
+  // }, []);
+  const { loginUser } = useAuth();
 
   console.log("Logged in user:", loginUser);
 
@@ -64,12 +64,12 @@ const [formData, setFormData] = useState({
         page: page,
         limit: itemsPerPage
       };
-      
+
       if (code) params.searchCode = code;
       if (name) params.searchName = name;
-      
+
       const response = await axios.get(`${API}/Master/Master_Profile/searchItems`, { params });
-      
+
       if (response.data?.items) {
         setData(response.data.items);
         setTotalItems(response.data.total);
@@ -135,31 +135,39 @@ const [formData, setFormData] = useState({
   // 🔹 Save Item (Add / Edit)
   const handleSave = async () => {
     debugger
-     if (!formData.code?.trim()) {
-    alert("Please enter the Code.");
-    return;
-  }
-  if (!formData.name?.trim()) {
-    alert("Please enter the Name.");
-    return;
-  }
-  if (!formData.printName?.trim()) {
-    alert("Please enter the Print Name.");
-    return;
-  }
-  
+    if (!formData.code?.trim()) {
+      alert("Please enter the Code.");
+      return;
+    }
+    if (!formData.name?.trim()) {
+      alert("Please enter the Name.");
+      return;
+    }
+    if (!formData.printName?.trim()) {
+      alert("Please enter the Print Name.");
+      return;
+    }
+
 
     const payload = {
       code: formData.code,
       name: formData.name,
       print_name: formData.printName,
-      added_by: loginUser,
-      add_on: new Date().toISOString(),
       remark: formData.remark,
       status: formData.status,
-      modified_by: formData.id ? formData.addedBy : "",
-      modified_on: formData.id ? new Date().toISOString() : "",
     };
+
+    // For new records: set added_by and add_on
+    if (!isEditMode || !formData.id) {
+      payload.added_by = loginUser;
+      payload.add_on = new Date().toISOString();
+    }
+
+    // For edited records: set modified_by and modified_on
+    if (isEditMode && formData.id) {
+      payload.modified_by = loginUser;
+      payload.modified_on = new Date().toISOString();
+    }
 
     try {
       if (isEditMode && formData.id) {
@@ -205,91 +213,97 @@ const [formData, setFormData] = useState({
   return (
     <div className="min-h-screen w-full">
       {/* Top Bar */}
-     <div className="flex justify-center sticky top-[80px] z-40">
-  {/* Changed justify-around to justify-between to push content to the edges */}
-  <div className="flex items-center px-6 py-4 border mt-5 w-[1290px] h-[62px] rounded-[11px] border-gray-200 justify-between bg-white shadow-sm">
-    
-    {/* LEFT SIDE: Name */}
-    <h2
-      style={{
-        fontFamily: "Source Sans 3, sans-serif",
-        fontWeight: 700,
-        fontSize: "20px",
-        lineHeight: "148%",
-      }}
-      className="text-red-600 whitespace-nowrap"
-    >
-      Item Profile List
-    </h2>
+      <div className="flex justify-center sticky top-[80px] z-40">
+        {/* Changed justify-around to justify-between to push content to the edges */}
+        <div className="flex items-center px-6 py-4 border mt-5 w-[1290px] h-[62px] rounded-[11px] border-gray-200 justify-between bg-white shadow-sm">
 
-    {/* RIGHT SIDE: All Inputs and Buttons Grouped */}
-    <div className="flex items-center gap-4">
-      
-      {/* Search Input Fields */}
-      <div className="flex items-center gap-3">
-        <div className="flex items-center gap-2">
-          <p className="text-[11.25px] font-semibold whitespace-nowrap">Item Code</p>
-          <input
-            type="text"
-            value={searchCode}
-            onChange={(e) => setSearchCode(e.target.value)}
-            onKeyPress={handleKeyPress}
-            className="border border-gray-400 px-3 py-1 text-[11.25px] rounded outline-none focus:border-[#0A2478]"
-            style={{ width: "120px", height: "27.49px" }}
-          />
-        </div>
+          {/* LEFT SIDE: Name */}
+          <h2
+            style={{
+              fontFamily: "Source Sans 3, sans-serif",
+              fontWeight: 700,
+              fontSize: "20px",
+              lineHeight: "148%",
+            }}
+            className="text-red-600 whitespace-nowrap"
+          >
+            Item Profile List
+          </h2>
 
-        <div className="flex items-center gap-2">
-          <p className="text-[11.25px] font-semibold whitespace-nowrap">Item Name</p>
-          <input
-            type="text"
-            value={searchName}
-            onChange={(e) => setSearchName(e.target.value)}
-            onKeyPress={handleKeyPress}
-            className="border border-gray-400 px-3 py-1 text-[11.25px] rounded outline-none focus:border-[#0A2478]"
-            style={{ width: "120px", height: "27.49px" }}
-          />
+          {/* RIGHT SIDE: All Inputs and Buttons Grouped */}
+          <div className="flex items-center gap-4">
+
+            {/* Search Input Fields */}
+            <div className="flex items-center gap-3">
+              <div className="flex items-center gap-2">
+                <p className="text-[11.25px] font-semibold whitespace-nowrap">
+                  Item Types
+                </p>
+
+                <select
+                  value={searchCode}
+                  onChange={(e) => setSearchCode(e.target.value)}
+                  onKeyDown={handleKeyPress} // better than onKeyPress (deprecated)
+                  className="border border-gray-400 px-3 py-1 text-[11.25px] rounded outline-none focus:border-[#0A2478]"
+                  style={{ width: "120px", height: "27.49px" }}
+                >
+                  <option value="">Select</option>
+                  <option value="gold">Gold</option>
+                  <option value="silver">Silver</option>
+                </select>
+              </div>
+
+              <div className="flex items-center gap-2">
+                <p className="text-[11.25px] font-semibold whitespace-nowrap">Item Name</p>
+                <input
+                  type="text"
+                  value={searchName}
+                  onChange={(e) => setSearchName(e.target.value)}
+                  onKeyPress={handleKeyPress}
+                  className="border border-gray-400 px-3 py-1 text-[11.25px] rounded outline-none focus:border-[#0A2478]"
+                  style={{ width: "120px", height: "27.49px" }}
+                />
+              </div>
+            </div>
+
+            {/* Action Buttons Container */}
+            <div className="flex items-center gap-2 ml-2 border-l pl-4 border-gray-200">
+              <button
+                onClick={handleSearch}
+                className="bg-[#0b2c69] text-white text-[11.25px] rounded cursor-pointer hover:bg-[#071d45] transition-colors"
+                style={{ width: "70px", height: "27.49px" }}
+              >
+                Search
+              </button>
+
+              <button
+                onClick={handleClearSearch}
+                className="bg-[#6c757d] text-white text-[11.25px] rounded cursor-pointer hover:bg-gray-700 transition-colors"
+                style={{ width: "70px", height: "27.49px" }}
+              >
+                Clear
+              </button>
+
+              <button
+                onClick={() => handleOpenModal()}
+                className="bg-[#0A2478] text-white text-[11.25px] rounded cursor-pointer hover:bg-[#071d45] transition-colors"
+                style={{ width: "60px", height: "27.49px" }}
+              >
+                Add
+              </button>
+
+              <button
+                onClick={() => navigate("/")}
+                className="bg-[#C1121F] text-white text-[10px] rounded cursor-pointer hover:bg-[#a40f1a] transition-colors"
+                style={{ width: "60px", height: "27.49px" }}
+              >
+                Exit
+              </button>
+            </div>
+
+          </div>
         </div>
       </div>
-
-      {/* Action Buttons Container */}
-      <div className="flex items-center gap-2 ml-2 border-l pl-4 border-gray-200">
-        <button
-          onClick={handleSearch}
-          className="bg-[#0b2c69] text-white text-[11.25px] rounded cursor-pointer hover:bg-[#071d45] transition-colors"
-          style={{ width: "70px", height: "27.49px" }}
-        >
-          Search
-        </button>
-        
-        <button
-          onClick={handleClearSearch}
-          className="bg-[#6c757d] text-white text-[11.25px] rounded cursor-pointer hover:bg-gray-700 transition-colors"
-          style={{ width: "70px", height: "27.49px" }}
-        >
-          Clear
-        </button>
-
-        <button
-          onClick={() => handleOpenModal()}
-          className="bg-[#0A2478] text-white text-[11.25px] rounded cursor-pointer hover:bg-[#071d45] transition-colors"
-          style={{ width: "60px", height: "27.49px" }}
-        >
-          Add
-        </button>
-
-        <button
-          onClick={() => navigate("/")}
-          className="bg-[#C1121F] text-white text-[10px] rounded cursor-pointer hover:bg-[#a40f1a] transition-colors"
-          style={{ width: "60px", height: "27.49px" }}
-        >
-          Exit
-        </button>
-      </div>
-
-    </div>
-  </div>
-</div>
 
       {/* Modal */}
       {isModalOpen && (
@@ -305,16 +319,20 @@ const [formData, setFormData] = useState({
             <div className="flex gap-4 ">
               <div>
                 <p className="text-[14px] font-medium">
-                  Item Code <span className="text-red-500">*</span>
+                  Item Type <span className="text-red-500">*</span>
                 </p>
-                <input
-                  type="text"
+
+                <select
                   value={formData.code}
                   onChange={(e) =>
                     setFormData({ ...formData, code: e.target.value })
                   }
                   className="border border-gray-300 rounded w-[100px] px-3 py-2 mt-2"
-                />
+                >
+                  <option value="">Select</option>
+                  <option value="gold">Gold</option>
+                  <option value="silver">Silver</option>
+                </select>
               </div>
 
               <div>
@@ -345,19 +363,19 @@ const [formData, setFormData] = useState({
                 />
               </div>
 
-              
+
             </div>
-<div className="col-span-3 mb-6 mt-2">
-                <label className="text-[14px] font-medium">Remark</label>
-                <input
-                  type="text"
-                  value={formData.remark}
-                  onChange={(e) =>
-                    setFormData({ ...formData, remark: e.target.value })
-                  }
-                  className="border border-gray-300 rounded w-full px-3 py-2 mt-2"
-                />
-              </div>
+            <div className="col-span-3 mb-6 mt-2">
+              <label className="text-[14px] font-medium">Remark</label>
+              <input
+                type="text"
+                value={formData.remark}
+                onChange={(e) =>
+                  setFormData({ ...formData, remark: e.target.value })
+                }
+                className="border border-gray-300 rounded w-full px-3 py-2 mt-2"
+              />
+            </div>
             <div className="flex justify-center gap-4">
               <button
                 onClick={handleSave}
@@ -382,9 +400,9 @@ const [formData, setFormData] = useState({
           <table className="w-full border-collapse">
             <thead className="bg-[#0A2478] text-white text-sm">
               <tr>
-                <th className="px-4 py-2 border-r-2 text-left w-[100px]">Code</th>
-                <th className="px-4 py-2 border-r-2 text-left w-[220px]">Name</th>
-                {/* <th className="px-4 py-2 border-r-2 text-left">Status</th> */}
+                <th className="px-4 py-2 border-r-2 text-left w-[100px]">Item Type</th>
+                <th className="px-4 py-2 border-r-2 text-left w-[150px]">Name</th>
+                <th className="px-4 py-2 border-r-2 text-left w-[220px]">Print Name</th>
                 <th className="px-4 py-2 border-r-2 text-left w-[200px]">Added By</th>
                 <th className="px-4 py-2 border-r-2 text-left w-[120px]">Added On</th>
                 <th className="px-4 py-2 border-r-2 text-left w-[200px]">Modified By</th>
@@ -408,10 +426,11 @@ const [formData, setFormData] = useState({
                 data.map((row, index) => (
                   <tr
                     key={row.id}
-                   className={index % 2 === 0 ? "bg-gray-50" : "bg-white"}
+                    className={index % 2 === 0 ? "bg-gray-50" : "bg-white"}
                   >
                     <td className="px-4 py-2">{row.code}</td>
                     <td className="px-4 py-2">{row.name}</td>
+                    <td className="px-4 py-2">{row.print_name}</td>
                     {/* <td className="px-4 py-2">
                       {row.status === 1 ? "Active" : "Inactive"}
                     </td> */}
