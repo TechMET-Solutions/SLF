@@ -32,22 +32,7 @@ const SchemeDetailsList = () => {
     setAppTo("");
     // setFilteredData(schemes);
   };
-  //  const fetchSchemes = async (page = 1) => {
-  //     try {
-  //       const response = await axios.get(
-  //         `${API}/Scheme/getAllSchemes?page=${page}&limit=10`,
-  //       );
 
-  //       // Backend returns: { page, limit, totalItems, totalPages, data }
-  //       const result = response.data.data;
-
-  //       setData(result); // only the list
-  //       setCurrentPage(result.page);
-  //       setTotalPages(result.totalPages);
-  //     } catch (err) {
-  //       console.error("❌ Error fetching schemes:", err);
-  //     }
-  //   };
  const fetchSchemes = async (page = 1) => {
   try {
     const response = await axios.get(`${API}/Scheme/getAllSchemes`, {
@@ -269,11 +254,11 @@ const SchemeDetailsList = () => {
           <table className="w-full border-collapse">
             <thead className="bg-[#0A2478] text-white text-sm">
               <tr>
-                <th className="px-4 py-2 border w-[200px]">Scheme Name</th>
+                <th className="px-4 py-2 border w-[150px]">Scheme Name</th>
                 <th className="px-4 py-2 border w-[100px]">Product Name</th>
                 <th className="px-4 py-2 border">App From</th>
                 <th className="px-4 py-2 border">App To</th>
-                <th className="px-4 py-2 border w-[50px]">Int. Compound</th>
+                {/* <th className="px-4 py-2 border w-[50px]">Int. Compound</th> */}
 
                 <th className="px-4 py-2 border">Min Amount</th>
                 <th className="px-4 py-2 border">Max Amount</th>
@@ -281,7 +266,7 @@ const SchemeDetailsList = () => {
                 <th className="px-4 py-2 border w-[300px]">Description</th>
                 {/* <th className="px-4 py-2 border">Action</th> */}
                 <th className="px-4 py-2 border w-[110px]">Role Mapping</th>
-                <th className="px-4 py-2 border ">Active</th>
+                <th className="px-4 py-2 border w-[120px]">Active</th>
               </tr>
             </thead>
 
@@ -309,29 +294,15 @@ const SchemeDetailsList = () => {
                   <td className="px-4 py-2">
                     {formatIndianDate(row.applicableTo)}
                   </td>
-                  <td className="px-4 py-2">
+                  {/* <td className="px-4 py-2">
                     {row.calcMethod === "Compound" ? "True" : "False"}
-                  </td>
+                  </td> */}
                   <td className="px-4 py-2">{row.minLoanAmount}</td>
                   <td className="px-4 py-2">{row.maxLoanAmount}</td>
 
                   <td className="px-4 py-2">{row.description}</td>
 
-                  {/* <td className="px-4 py-2 text-center">
-                    <div className="flex items-center gap-2">
-                      
-                      <div
-                        className="w-5 h-5 bg-[#646AD9] flex items-center justify-center rounded cursor-pointer"
-                        onClick={() =>
-                          navigate("/Add-Scheme-Details-Listform", {
-                            state: { type: "view", data: row },
-                          })
-                        }
-                      >
-                        <img src={eyeIcon} className="w-3.5 h-2.5" />
-                      </div>
-                    </div>
-                  </td> */}
+                 
 
                   {/* Role Mapping */}
                   <td
@@ -344,20 +315,59 @@ const SchemeDetailsList = () => {
                   </td>
 
                   {/* Toggle */}
-                  <td className="px-4 py-2">
-                    <button
-                      onClick={() => handleStatusToggle(row)}
-                      className={`w-12 h-6 flex items-center rounded-full p-1 transition-colors ${
-                        row.status === 1 ? "bg-[#0A2478]" : "bg-gray-400"
-                      }`}
-                    >
-                      <div
-                        className={`bg-white w-4 h-4 rounded-full shadow-md transform transition-transform ${
-                          row.status === 1 ? "translate-x-6" : "translate-x-0"
-                        }`}
-                      />
-                    </button>
-                  </td>
+                  <td className="px-4 py-2 w-[120px]">
+  <div className="flex items-center gap-6">
+    {/* Status Toggle Section */}
+    <div className="flex flex-col items-start gap-1">
+      <span className="text-[10px] font-bold uppercase text-gray-400">Status</span>
+      <button
+        onClick={() => handleStatusToggle(row)}
+        className={`w-11 h-5 flex items-center rounded-full p-1 transition-all duration-300 ease-in-out ${
+          row.status === 1 ? "bg-[#0A2478]" : "bg-gray-300"
+        }`}
+      >
+        <div
+          className={`bg-white w-3 h-3 rounded-full shadow-sm transform transition-transform duration-300 ${
+            row.status === 1 ? "translate-x-6" : "translate-x-0"
+          }`}
+        />
+      </button>
+    </div>
+
+    {/* Vertical Divider */}
+    <div className="h-8 w-[1px] bg-gray-200"></div>
+
+    {/* Actions Section */}
+    <div className="flex flex-col items-start gap-1">
+      <span className="text-[10px] font-bold uppercase text-gray-400">Actions</span>
+      <div className="flex items-center gap-2">
+        {/* Edit Button */}
+        <button
+          onClick={() =>
+            navigate("/Add-Scheme-Details-Listform", {
+              state: { type: "edit", data: row },
+            })
+          }
+          className="px-3 py-1 bg-[#646AD9] hover:bg-[#4a50b5] text-white text-[11px] font-medium rounded transition-colors flex items-center gap-1"
+        >
+          Edit
+        </button>
+
+        {/* Copy Button */}
+        <button
+          onClick={() =>
+            navigate("/Add-Scheme-Details-Listform", {
+              state: { type: "view", data: row },
+            })
+          }
+          className="px-3 py-1 bg-gray-100 hover:bg-gray-200 text-[#0A2478] text-[11px] font-medium rounded border border-gray-200 transition-colors"
+        >
+          Copy
+        </button>
+      </div>
+    </div>
+  </div>
+</td>
                 </tr>
               ))}
             </tbody>

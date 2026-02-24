@@ -190,7 +190,7 @@ const AccountGroupList = () => {
             }}
             className="text-red-600"
           >
-            Ledger List
+           Group Ledger List
           </h2>
 
           {/* Right section (search + buttons) */}
@@ -213,7 +213,7 @@ const AccountGroupList = () => {
                     {isDropdownOpen && (
                       <div className="absolute top-[35px] left-[-8px] bg-white border border-gray-300 shadow-xl rounded-md z-[100] w-[160px] p-2">
                         {[
-                          { id: "group_name", label: "Ledger Name" },
+                          { id: "group_name", label: "Group Ledger List" },
                           { id: "account_type", label: "Account Type" },
                           { id: "under_type", label: "Under" },
                         ].map((col) => (
@@ -326,7 +326,7 @@ const AccountGroupList = () => {
                     letterSpacing: "0%",
                   }}
                 >
-                  Edit Ledger
+                  Edit Group Ledger
                 </h2>
               </>
             )}
@@ -350,7 +350,7 @@ const AccountGroupList = () => {
             <div className="grid grid-cols-2 gap-4">
               <div>
                 <label className="text-[14px] ">
-                  Ledger Name <span className="text-red-500">*</span>
+                 Group Ledger Name <span className="text-red-500">*</span>
                 </label>
                 <input
                   type="text"
@@ -473,7 +473,7 @@ const AccountGroupList = () => {
             <thead className="bg-[#0A2478] text-white text-sm">
               <tr>
                 <th className="px-4 py-2 text-left border-r border-gray-300 text-[13px]">
-                  Ledger Name
+                 Group Ledger 
                 </th>
                 <th className="px-4 py-2 text-left border-r border-gray-300 text-[13px] w-[150px]">
                   Account Type

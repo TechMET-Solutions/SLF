@@ -1,9 +1,10 @@
 import axios from "axios";
 import { useEffect, useState } from "react";
+import { FaSort, FaSortDown, FaSortUp } from "react-icons/fa";
 import { FiEdit } from "react-icons/fi";
 import { useNavigate } from "react-router-dom";
-import GroupData from "../assets/Group 124.svg";
 import { API } from "../api";
+import { useAuth } from "../API/Context/AuthContext";
 import {
   updateBranchApi,
   updateBranchStatusApi,
@@ -28,6 +29,7 @@ const BranchProfileList = () => {
     pin_code: "",
     // address_line3: "",
     mobile_no: "",
+    altmobile_no: "",
     lead_person: "",
     is_main: false,
     status: false,
@@ -72,87 +74,146 @@ const BranchProfileList = () => {
       [name]: type === "checkbox" ? checked : value,
     }));
   };
+  const { loginUser } = useAuth();
+  // const handleSave = async () => {
+  //   const {
+  //     branch_code,
+  //     branch_name,
+  //     print_name,
+  //     address_line1,
+  //     pin_code,
+  //     mobile_no,
+  //     city,
+  //     district,
+  //     state,
+  //   } = branchData;
 
+  //   // 🔹 Required Field Validation
+  //   if (!branch_code.trim()) {
+  //     alert("Branch Code is required.");
+  //     return;
+  //   }
+
+  //   if (!branch_name.trim()) {
+  //     alert("Branch Name is required.");
+  //     return;
+  //   }
+
+  //   if (!print_name.trim()) {
+  //     alert("Print Name is required.");
+  //     return;
+  //   }
+
+  //   if (!address_line1.trim()) {
+  //     alert("Address Line 1 is required.");
+  //     return;
+  //   }
+
+  //   if (!pin_code.trim()) {
+  //     alert("Pin Code is required.");
+  //     return;
+  //   }
+
+  //   if (!city.trim()) {
+  //     alert("City is required.");
+  //     return;
+  //   }
+
+  //   if (!district.trim()) {
+  //     alert("District is required.");
+  //     return;
+  //   }
+
+  //   if (!state.trim()) {
+  //     alert("State is required.");
+  //     return;
+  //   }
+
+  //   if (!mobile_no.trim()) {
+  //     alert("Mobile Number is required.");
+  //     return;
+  //   }
+
+  //   // 🔹 Mobile Validation (Supports +91 or 10 digit)
+  //   const mobileRegex = /^\+?[0-9]{10,13}$/;
+  //   if (!mobileRegex.test(mobile_no)) {
+  //     alert("Mobile Number must be valid (10–13 digits).");
+  //     return;
+  //   }
+
+  //   // 🔹 Pin Code Validation (6 digit India)
+  //   const pinRegex = /^[0-9]{6}$/;
+  //   // if (!pinRegex.test(pin_code)) {
+  //   //   alert("Pin Code must be 6 digits.");
+  //   //   return;
+  //   // }
+
+  //   setIsLoading(true);
+
+  //   try {
+  //     const encrypted = encryptData({
+  //       ...branchData,
+  //       id: editBranchId,
+  //     });
+
+  //     const url = isEditMode
+  //       ? `${API}/Master/Master_Profile/update_Branch`
+  //       : `${API}/Master/Master_Profile/add_Branch`;
+
+  //     await axios.post(url, { data: encrypted });
+
+  //     alert(
+  //       isEditMode
+  //         ? "Branch Updated Successfully"
+  //         : "Branch Added Successfully",
+  //     );
+
+  //     // 🔄 Reset Form Completely
+  //     setBranchData({
+  //       branch_code: "",
+  //       branch_name: "",
+  //       print_name: "",
+  //       address_line1: "",
+  //       pin_code: "",
+  //       mobile_no: "",
+  //       lead_person: "",
+  //       is_main: false,
+  //       status: false,
+  //       city: "",
+  //       district: "",
+  //       state: "",
+  //     });
+
+  //     setIsModalOpen(false);
+  //     setIsEditMode(false);
+  //     fetchBranches();
+  //   } catch (error) {
+  //     console.error(error);
+  //     alert(isEditMode ? "Error updating branch" : "Error saving branch");
+  //   } finally {
+  //     setIsLoading(false);
+  //   }
+  // };
   const handleSave = async () => {
-    const {
-      branch_code,
-      branch_name,
-      print_name,
-      address_line1,
-      pin_code,
-      mobile_no,
-      city,
-      district,
-      state,
-    } = branchData;
+    debugger;
+    const payload = {
+      ...branchData,
+      id: editBranchId,
+    };
 
-    // 🔹 Required Field Validation
-    if (!branch_code.trim()) {
-      alert("Branch Code is required.");
-      return;
+    // ✅ Always send explicitly
+    if (isEditMode) {
+      payload.modified_by = loginUser;
+    } else {
+      payload.added_by = loginUser;
     }
 
-    if (!branch_name.trim()) {
-      alert("Branch Name is required.");
-      return;
-    }
-
-    if (!print_name.trim()) {
-      alert("Print Name is required.");
-      return;
-    }
-
-    if (!address_line1.trim()) {
-      alert("Address Line 1 is required.");
-      return;
-    }
-
-    if (!pin_code.trim()) {
-      alert("Pin Code is required.");
-      return;
-    }
-
-    if (!city.trim()) {
-      alert("City is required.");
-      return;
-    }
-
-    if (!district.trim()) {
-      alert("District is required.");
-      return;
-    }
-
-    if (!state.trim()) {
-      alert("State is required.");
-      return;
-    }
-
-    if (!mobile_no.trim()) {
-      alert("Mobile Number is required.");
-      return;
-    }
-
-    // 🔹 Mobile Validation (Supports +91 or 10 digit)
-    const mobileRegex = /^\+?[0-9]{10,13}$/;
-    if (!mobileRegex.test(mobile_no)) {
-      alert("Mobile Number must be valid (10–13 digits).");
-      return;
-    }
-
-    // 🔹 Pin Code Validation (6 digit India)
-    const pinRegex = /^[0-9]{6}$/;
-    // if (!pinRegex.test(pin_code)) {
-    //   alert("Pin Code must be 6 digits.");
-    //   return;
-    // }
+    console.log("Sending Payload:", payload); // 👈 MUST CHECK
 
     setIsLoading(true);
 
     try {
-      const encrypted = encryptData({
-        ...branchData,
-        id: editBranchId,
-      });
+      const encrypted = encryptData(payload);
 
       const url = isEditMode
         ? `${API}/Master/Master_Profile/update_Branch`
@@ -166,33 +227,15 @@ const BranchProfileList = () => {
           : "Branch Added Successfully",
       );
 
-      // 🔄 Reset Form Completely
-      setBranchData({
-        branch_code: "",
-        branch_name: "",
-        print_name: "",
-        address_line1: "",
-        pin_code: "",
-        mobile_no: "",
-        lead_person: "",
-        is_main: false,
-        status: false,
-        city: "",
-        district: "",
-        state: "",
-      });
-
-      setIsModalOpen(false);
-      setIsEditMode(false);
       fetchBranches();
+      setIsModalOpen(false);
     } catch (error) {
       console.error(error);
-      alert(isEditMode ? "Error updating branch" : "Error saving branch");
+      alert("Something went wrong");
     } finally {
       setIsLoading(false);
     }
   };
-
   const [branches, setBranches] = useState([]);
 
   const [isEditMode, setIsEditMode] = useState(false);
@@ -211,7 +254,10 @@ const BranchProfileList = () => {
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
 
   console.log(searchHeaders, searchQuery);
-
+  const [sortConfig, setSortConfig] = useState({
+    key: "",
+    direction: "asc",
+  });
   const toggleHeader = (headerId) => {
     setSearchHeaders((prev) =>
       prev.includes(headerId)
@@ -312,26 +358,30 @@ const BranchProfileList = () => {
     setIsModalOpen(true);
   };
 
-  const handleUpdateBranch = async () => {
-    try {
-      const payload = {
-        id: editBranchId, // ✅ using the stored id
-        ...branchData,
-      };
+ const handleUpdateBranch = async () => {
+  try {
+    const payload = {
+      id: editBranchId,
+      ...branchData,
+      modified_by: loginUser,   // ✅ ADD THIS
+    };
 
-      const response = await updateBranchApi(payload);
-      console.log("✅ Branch updated:", response);
+    console.log("Updating Payload:", payload); // 🔍 check this
 
-      alert("Branch updated successfully!");
-      setIsModalOpen(false);
-      setIsEditMode(false);
-      setEditBranchId(null);
-      fetchBranches(); // refresh list
-    } catch (error) {
-      console.error("Error updating branch:", error);
-      alert("Failed to update branch");
-    }
-  };
+    const response = await updateBranchApi(payload);
+
+    console.log("✅ Branch updated:", response);
+
+    alert("Branch updated successfully!");
+    setIsModalOpen(false);
+    setIsEditMode(false);
+    setEditBranchId(null);
+    fetchBranches();
+  } catch (error) {
+    console.error("Error updating branch:", error);
+    alert("Failed to update branch");
+  }
+};
   return (
     <>
       <div className=" w-full">
@@ -439,7 +489,6 @@ const BranchProfileList = () => {
 
                 {/* Action Buttons Group */}
                 <div className="flex items-center gap-4">
-                 
                   <button
                     style={{
                       width: "74px",
@@ -484,14 +533,11 @@ const BranchProfileList = () => {
                   lineHeight: "24px",
                 }}
               >
-                {
-                  isViewMode
-                    ? "View Branch Details"
-                    : isEditMode
-                      ? "Edit Branch Details"
-                      : "Add Branch Details"
-                }
-
+                {isViewMode
+                  ? "View Branch Details"
+                  : isEditMode
+                    ? "Edit Branch Details"
+                    : "Add Branch Details"}
               </h2>
 
               {/* Modal Body */}
@@ -567,14 +613,27 @@ const BranchProfileList = () => {
                       value={branchData.mobile_no}
                       onChange={handleChange}
                       placeholder="+91 8456645752"
-                      className="border border-gray-300 rounded px-3 py-2 mt-1 w-[150px]"
+                      className="border border-gray-300 rounded px-3 py-2 mt-1 w-[110px]"
+                    />
+                  </div>
+                  <div className="flex flex-col gap-1">
+                    <label className="text-[14px]">
+                      Alt Mobile No<span className="text-red-500">*</span>
+                    </label>
+                    <input
+                      type="text"
+                      name="altmobile_no"
+                      value={branchData.altmobile_no}
+                      onChange={handleChange}
+                      placeholder="+91 8456645752"
+                      className="border border-gray-300 rounded px-3 py-2 mt-1 w-[110px]"
                     />
                   </div>
                   <div>
                     <p className="text-[14px]">
                       Address <span className="text-red-500">*</span>
                     </p>
-                    <input
+                    <textarea
                       type="text"
                       name="address_line1"
                       value={branchData.address_line1}
@@ -583,23 +642,9 @@ const BranchProfileList = () => {
                       className="border border-gray-300 rounded px-3 py-2 mt-2 w-[430px]"
                     />
                   </div>
-
-                  <div>
-                    <p className="text-[14px]">
-                      Pin Code <span className="text-red-500">*</span>
-                    </p>
-                    <input
-                      type="text"
-                      name="pin_code"
-                      value={branchData.pin_code}
-                      onChange={handleChange}
-                      placeholder="Pin Code"
-                      className="border border-gray-300 rounded px-3 py-2 mt-2 w-[100px]"
-                    />
-                  </div>
                 </div>
 
-                <div className="flex gap-4 mt-5">
+                <div className="flex gap-4 mt-2">
                   <div className="flex flex-col gap-1">
                     <label className="text-[14px]">
                       City<span className="text-red-500">*</span>
@@ -640,7 +685,22 @@ const BranchProfileList = () => {
                       className="border border-gray-300 rounded px-3 py-2 mt-2 w-[200px]"
                     />
                   </div>
+                  <div>
+                    <p className="text-[14px]">
+                      Pin Code <span className="text-red-500">*</span>
+                    </p>
+                    <input
+                      type="text"
+                      name="pin_code"
+                      value={branchData.pin_code}
+                      onChange={handleChange}
+                      placeholder="Pin Code"
+                      className="border border-gray-300 rounded px-3 py-2 mt-2 w-[100px]"
+                    />
+                  </div>
+                </div>
 
+                <div className="flex gap-4 mt-2">
                   <div className="flex justify-center items-center mt-4 gap-2">
                     <input
                       type="checkbox"
@@ -703,11 +763,27 @@ const BranchProfileList = () => {
             <table className="w-full border-collapse">
               <thead className="bg-[#0A2478] text-white text-sm">
                 <tr>
-                  <th className="px-4 py-2 text-left border-r border-gray-300 text-[13px] w-[110px]">
+                  <th className="px-4 py-2 text-left border-r border-gray-300 text-[13px] w-[80px]">
                     Branch Code
                   </th>
-                  <th className="px-4 py-2 text-left border-r border-gray-300 text-[13px] w-[120px]">
-                    Branch Name
+                  <th
+                    onClick={() => handleSort("branchName")}
+                    className="px-4 py-2 text-left border-r border-gray-300 text-[13px] w-[120px] cursor-pointer select-none"
+                  >
+                    <div className="flex items-center gap-2">
+                      Branch Name
+                      {sortConfig.key !== "branchName" && (
+                        <FaSort className="text-gray-400 text-xs" />
+                      )}
+                      {sortConfig.key === "branchName" &&
+                        sortConfig.direction === "asc" && (
+                          <FaSortUp className="text-blue-600 text-xs" />
+                        )}
+                      {sortConfig.key === "branchName" &&
+                        sortConfig.direction === "desc" && (
+                          <FaSortDown className="text-blue-600 text-xs" />
+                        )}
+                    </div>
                   </th>
                   <th className="px-4 py-2 text-left border-r border-gray-300 text-[13px] w-[350px]">
                     {" "}
@@ -719,9 +795,17 @@ const BranchProfileList = () => {
                   <th className="px-4 py-2 text-left border-r border-gray-300 text-[13px] w-[110px]">
                     Branch Phone
                   </th>
-
+                  <th className="px-4 py-2 text-left border-r border-gray-300 text-[13px] w-[100px]">
+                    Added By
+                  </th>
                   <th className="px-4 py-2 text-left border-r border-gray-300 text-[13px] w-[100px]">
                     Added on
+                  </th>
+                  <th className="px-4 py-2 text-left border-r border-gray-300 text-[13px] w-[100px]">
+                    Modified By
+                  </th>
+                  <th className="px-4 py-2 text-left border-r border-gray-300 text-[13px] w-[100px]">
+                    Modified on
                   </th>
                   <th className="px-4 py-2 text-left border-r border-gray-300 text-[13px] w-[100px]">
                     Action
@@ -747,11 +831,15 @@ const BranchProfileList = () => {
                     <td className="px-4 py-2">{row.address_line1}</td>
                     <td className="px-4 py-2">{row.lead_person}</td>
                     <td className="px-4 py-2">{row.mobile_no}</td>
+                    <td className="px-4 py-2">{row.added_by}</td>
+                    <td className="px-4 py-2">
+                      {formatIndianDate(row.added_on)}
+                    </td>
+                    <td className="px-4 py-2">{row.modified_by}</td>
 
                     <td className="px-4 py-2">
-                      {formatIndianDate(row.created_at)}
+                      {formatIndianDate(row.modified_on)}
                     </td>
-
                     <td className="px-4 py-2 text-[#1883EF] cursor-pointer">
                       <div className="flex gap-2 justify-center">
                         <button
@@ -775,14 +863,16 @@ const BranchProfileList = () => {
                     <td className="px-4 py-2 text-[#1883EF] cursor-pointer">
                       <button
                         onClick={() => handleToggleStatus(row.id, row.status)}
-                        className={`w-12 h-6 flex items-center rounded-full p-1 transition-colors ${row.status === "1" ? "bg-[#0A2478]" : "bg-gray-300"
-                          }`}
+                        className={`w-12 h-6 flex items-center rounded-full p-1 transition-colors ${
+                          row.status === "1" ? "bg-[#0A2478]" : "bg-gray-300"
+                        }`}
                       >
                         <div
-                          className={`bg-white w-4 h-4 rounded-full shadow-md transform transition-transform ${row.status === "1"
+                          className={`bg-white w-4 h-4 rounded-full shadow-md transform transition-transform ${
+                            row.status === "1"
                               ? "translate-x-6"
                               : "translate-x-0"
-                            }`}
+                          }`}
                         />
                       </button>
                     </td>

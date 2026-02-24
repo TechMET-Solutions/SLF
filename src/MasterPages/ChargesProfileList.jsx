@@ -448,7 +448,7 @@ const ChargesProfileList = () => {
               </div>
               <div>
                 <p className="text-[12px] font-medium">
-                  Account <span className="text-red-500">*</span>
+                  Leader <span className="text-red-500">*</span>
                 </p>
                 <select
                   name="account"
@@ -508,7 +508,7 @@ const ChargesProfileList = () => {
           <table className="w-full border-collapse">
             <thead className="bg-[#0A2478] text-white text-sm">
               <tr>
-                <th className="px-4 py-2 text-left border-r w-[100px]">Code</th>
+                <th className="px-4 py-2 text-left border-r w-[80px]">Code</th>
                 <th className="px-4 py-2 text-left border-r w-[500px]">
                   Description
                 </th>

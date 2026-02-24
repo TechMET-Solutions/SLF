@@ -581,7 +581,7 @@ const AccountCodeList = () => {
     name: "",
     accountGroup: "",
     financialDate: "",
-    type: "",
+    type: "Sub Ledger",
     addedBy: loginUser,
   });
 
@@ -691,11 +691,11 @@ const AccountCodeList = () => {
       if (editMode) {
         payload.modifiedBy = loginUser;
         await axios.put(`${API}/account-code/update/${selectedId}`, payload);
-        alert("Sub Ledger Updated ✅");
+        alert(" Ledger Updated ✅");
       } else {
         payload.addedBy = loginUser;
         await axios.post(`${API}/account-code/create`, payload);
-        alert("Sub Ledger Created ✅");
+        alert(" Ledger Created ✅");
       }
 
       setIsModalOpen(false);
@@ -733,7 +733,7 @@ const AccountCodeList = () => {
         <div className="flex justify-center mt-5">
           <div className="flex items-center px-6 py-4 w-[1290px] h-[62px] rounded-[11px] border border-gray-200 justify-between shadow-sm bg-white">
             <h2 className="text-red-600 font-bold text-[20px] whitespace-nowrap">
-              Sub Ledger List
+               Ledger List
             </h2>
 
             <div className="flex items-center gap-6">
@@ -749,7 +749,7 @@ const AccountCodeList = () => {
                   {isDropdownOpen && (
                     <div className="absolute top-[35px] left-[-8px] bg-white border border-gray-300 shadow-xl rounded-md z-[100] w-[160px] p-2">
                       {[
-                        { id: "name", label: "Sub Ledger Name" },
+                        { id: "name", label: "Ledger Name" },
                         { id: "accountGroup", label: "Ledger" },
                         { id: "financialDate", label: "Financial" },
                         { id: "type", label: "Type" },
@@ -832,11 +832,11 @@ const AccountCodeList = () => {
         <div className="fixed inset-0 flex items-center justify-center z-50 bg-black/50 backdrop-blur-sm">
           <div className="bg-white w-full rounded-lg max-w-2xl p-8 mx-4">
             <h2 className="text-[#0A2478] mb-6 font-semibold text-xl">
-              {editMode ? "Edit Sub Ledger" : "Create Sub Ledger"}
+              {editMode ? "Edit Ledger" : "Create Ledger"}
             </h2>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
               <div>
-                <label className="text-sm font-medium text-gray-700 mb-2 block">Sub Ledger <span className="text-red-500">*</span></label>
+                <label className="text-sm font-medium text-gray-700 mb-2 block">Ledger <span className="text-red-500">*</span></label>
                 <input
                   type="text"
                   value={formData.name}
@@ -846,7 +846,7 @@ const AccountCodeList = () => {
                 />
               </div>
               <div>
-                <label className="text-sm font-medium text-gray-700 mb-2 block">Ledger <span className="text-red-500">*</span></label>
+                <label className="text-sm font-medium text-gray-700 mb-2 block"> Group Ledger <span className="text-red-500">*</span></label>
                 <select
                   value={formData.accountGroup}
                   onChange={(e) => {
@@ -868,7 +868,7 @@ const AccountCodeList = () => {
                 </select>
               </div>
 
-              <div>
+              {/* <div>
                 <label className="text-sm font-medium text-gray-700 mb-2 block">Financial <span className="text-red-500">*</span></label>
                 <select
                   value={formData.financialDate}
@@ -880,7 +880,7 @@ const AccountCodeList = () => {
                   <option value="Balance Sheet">Balance Sheet</option>
                   <option value="Profit & Loss">Profit & Loss</option>
                 </select>
-              </div>
+              </div> */}
 
               <div>
                 <label className="text-sm font-medium text-gray-700 mb-2 block">Type</label>
@@ -913,7 +913,7 @@ const AccountCodeList = () => {
           <table className="w-full border-collapse">
             <thead className="bg-[#0A2478] text-white text-sm">
               <tr>
-                <th className="px-4 py-2 text-left border-r border-gray-300 text-[13px] w-[250px]">Sub Ledger Name</th>
+                <th className="px-4 py-2 text-left border-r border-gray-300 text-[13px] w-[250px]">Ledger Name</th>
                 <th className="px-4 py-2 text-left border-r border-gray-300 text-[13px] w-[150px]">Financial</th>
                 <th className="px-4 py-2 text-left border-r border-gray-300 text-[13px] w-[180px]">Ledger</th>
                 <th className="px-4 py-2 text-left border-r border-gray-300 text-[13px] w-[100px]">Type</th>

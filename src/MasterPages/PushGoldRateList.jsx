@@ -39,84 +39,135 @@ const PushGoldRateList = () => {
   const [filterDateSilver, setFilterDateSilver] = useState("");
   const { loginUser } = useAuth();
 
+  const [filterRange, setFilterRange] = useState({ from: "", to: "" });
+
+// Shared function to trigger both fetches
+// const handleGlobalFilter = (from, to) => {
+//   fetchGoldRates(1, from, to);
+//   fetchSilverRates(1, from, to);
+// };
+
+const handleGlobalReset = () => {
+  setFilterRange({ from: "", to: "" });
+  handleGlobalFilter("", "");
+};
+
   console.log("Logged in user:", loginUser);
   // 🔹 Fetch gold rates with pagination
-  const fetchGoldRates = async (page = 1) => {
-    debugger;
-    setIsLoading(true);
-    try {
-      const result = await fetchGoldRatesApi(
-        page,
-        itemsPerPage,
-        filterDateGold,
-      );
-      if (result?.items) {
-        setData(result.items);
-        setTotalItems(result.total);
-        setCurrentPage(result.page);
-        setShowPagination(result.showPagination || false);
-      } else {
-        setData([]);
-        setShowPagination(false);
-      }
-    } catch (err) {
-      console.error("❌ Fetch Error:", err);
-      setData([]);
-      setShowPagination(false);
-    } finally {
-      setIsLoading(false);
-    }
-  };
-  const fetchSilverRates = async (page = 1) => {
-    debugger;
-    setIsLoading(true);
-    try {
-      const result = await fetchSilverRatesApi(
-        page,
-        itemsPerPage,
-        filterDateSilver,
-      );
-      if (result?.items) {
-        setSilverData(result.items);
-        setTotalItemsForSilver(result.total);
-        setCurrentPageForSilver(result.page);
-        setShowPaginationForSilver(result.showPagination || false);
-      } else {
-        setSilverData([]);
-        setShowPaginationForSilver(false);
-      }
-    } catch (err) {
-      console.error("❌ Fetch Error:", err);
-      setSilverData([]);
-      setShowPaginationForSilver(false);
-    } finally {
-      setIsLoading(false);
-    }
-  };
-
-  // 🔹 Save new gold rate
-  // const handleSave = async () => {
-  //   if (!pushDate || !goldRate) return;
-
-  //   const payload = {
-  //     push_date: pushDate,
-  //     gold_rate: goldRate,
-  //     metalType:metalType,
-  //     added_on: new Date().toISOString(),
-  //     added_by: "ssl@slunawat.com",
-  //   };
-
+  // const fetchGoldRates = async (page = 1) => {
+  //   debugger;
+  //   setIsLoading(true);
   //   try {
-  //     await addGoldRateApi(payload);
-  //     fetchGoldRates(currentPage); // refresh table with current page
-  //     setGoldRate("");
-  //     setPushDate("");
-  //     setMetalType("Gold")
+  //     const result = await fetchGoldRatesApi(
+  //       page,
+  //       itemsPerPage,
+  //       filterDateGold,
+  //     );
+  //     if (result?.items) {
+  //       setData(result.items);
+  //       setTotalItems(result.total);
+  //       setCurrentPage(result.page);
+  //       setShowPagination(result.showPagination || false);
+  //     } else {
+  //       setData([]);
+  //       setShowPagination(false);
+  //     }
   //   } catch (err) {
-  //     console.error("❌ Save Error:", err.response?.data || err.message);
+  //     console.error("❌ Fetch Error:", err);
+  //     setData([]);
+  //     setShowPagination(false);
+  //   } finally {
+  //     setIsLoading(false);
   //   }
   // };
 
+  const fetchGoldRates = async (page = 1, from = "", to = "") => {
+  setIsLoading(true);
+  try {
+    const result = await fetchGoldRatesApi(
+      page,
+      itemsPerPage,
+      from,
+      to
+    );
+
+    if (result?.items) {
+      setData(result.items);
+      setTotalItems(result.total);
+      setCurrentPage(result.page);
+      setShowPagination(result.showPagination || false);
+    } else {
+      setData([]);
+      setShowPagination(false);
+    }
+  } catch (err) {
+    console.error("❌ Fetch Error:", err);
+    setData([]);
+    setShowPagination(false);
+  } finally {
+    setIsLoading(false);
+  }
+};
+  // const fetchSilverRates = async (page = 1) => {
+  //   debugger;
+  //   setIsLoading(true);
+  //   try {
+  //     const result = await fetchSilverRatesApi(
+  //       page,
+  //       itemsPerPage,
+  //       filterDateSilver,
+  //     );
+  //     if (result?.items) {
+  //       setSilverData(result.items);
+  //       setTotalItemsForSilver(result.total);
+  //       setCurrentPageForSilver(result.page);
+  //       setShowPaginationForSilver(result.showPagination || false);
+  //     } else {
+  //       setSilverData([]);
+  //       setShowPaginationForSilver(false);
+  //     }
+  //   } catch (err) {
+  //     console.error("❌ Fetch Error:", err);
+  //     setSilverData([]);
+  //     setShowPaginationForSilver(false);
+  //   } finally {
+  //     setIsLoading(false);
+  //   }
+  // };
+const fetchSilverRates = async (page = 1, from = "", to = "") => {
+  setIsLoading(true);
+  try {
+    const result = await fetchSilverRatesApi(
+      page,
+      itemsPerPageForSilver,
+      from,
+      to
+    );
+
+    if (result?.items) {
+      setSilverData(result.items);
+      setTotalItemsForSilver(result.total);
+      setCurrentPageForSilver(result.page);
+      setShowPaginationForSilver(result.showPagination || false);
+    } else {
+      setSilverData([]);
+      setShowPaginationForSilver(false);
+    }
+  } catch (err) {
+    console.error("❌ Fetch Error:", err);
+    setSilverData([]);
+    setShowPaginationForSilver(false);
+  } finally {
+    setIsLoading(false);
+  }
+  };
+  
+  const handleGlobalFilter = (from, to) => {
+  fetchGoldRates(1, from, to);
+  fetchSilverRates(1, from, to);
+};
+
+  
   const handleSave = async () => {
     debugger;
     if (!pushDate || !goldRate) return;
@@ -213,7 +264,7 @@ const PushGoldRateList = () => {
 
               <div className="flex gap-3 items-center">
                 <p className="text-[11.25px] font-source">
-                  Rate <span className="text-red-500">*</span>
+                   Funding Rate <span className="text-red-500">*</span>
                 </p>
                 <input
                   type="number"
@@ -258,46 +309,60 @@ const PushGoldRateList = () => {
           </div>
         </div>
       </div>
+      <div className='ml-[110px] mr-[110px]'>
+<div className="flex flex-col gap-4  mt-5">
+  <div className="flex items-center justify-between bg-gray-50 p-4 rounded-lg border border-gray-200">
+    <div className="flex items-center gap-6">
+      {/* <p className="font-semibold text-[#0A2478] text-[18px]">Global Date Filter</p> */}
+      
+      <div className="flex items-center border border-gray-300 rounded-[4px] overflow-hidden h-[36px] bg-white">
+        {/* From Date */}
+        <div className="flex items-center px-2 border-r border-gray-200">
+          <label className="text-[10px] uppercase text-gray-400 mr-2">From</label>
+          <input
+            type="date"
+            value={filterRange.from}
+            onChange={(e) => setFilterRange({ ...filterRange, from: e.target.value })}
+            className="text-[12px] outline-none border-none bg-transparent"
+          />
+        </div>
 
-      {/* Table */}
+        {/* To Date */}
+        <div className="flex items-center px-2">
+          <label className="text-[10px] uppercase text-gray-400 mr-2">To</label>
+          <input
+            type="date"
+            value={filterRange.to}
+            onChange={(e) => setFilterRange({ ...filterRange, to: e.target.value })}
+            className="text-[12px] outline-none border-none bg-transparent"
+          />
+        </div>
+
+        {/* Action Buttons */}
+        <button
+          onClick={() => handleGlobalFilter(filterRange.from, filterRange.to)}
+          className="bg-[#0A2478] text-white text-[12px] px-5 h-full font-medium hover:bg-[#071d45] transition-colors"
+        >
+          Apply Filter
+        </button>
+        <button
+          onClick={handleGlobalReset}
+          className="bg-[#C1121F] text-white text-[12px] px-5 h-full font-medium hover:bg-red-700 transition-colors border-l border-gray-300"
+        >
+          Reset
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+      </div>
       <div className="flex justify-center">
-        <div className="overflow-x-auto mt-5  flex gap-10 h-auto">
+        <div className="overflow-x-auto  flex gap-10 h-auto">
           <div className="mt-5">
-            {/* <div className="flex items-center gap-2 mb-2">
-              <p
-                className="font-semibold text-[#0A2478]"
-                style={{
-                  fontFamily: "Playfair Display",
-                  fontSize: "23.23px",
-                  lineHeight: "148%",
-                }}
-              >
-                Gold rate
-              </p>
-              <input
-                type="date"
-                value={filterDateGold}
-                onChange={(e) => {
-                  const newDate = e.target.value; // ✅ take latest value
-                  setFilterDateGold(newDate); // update state
-                  // fetchGoldRates(1, newDate);       // ✅ pass SAME value
-                }}
-                className="border border-gray-300 rounded px-2 py-1 text-[11px]"
-              />
+            
 
-              <button
-                onClick={() => {
-                  setFilterDateGold("");
-                  fetchGoldRates(1, "");
-                }}
-                className="text-[10px] text-red-500 underline"
-              >
-                Reset
-              </button>
-            </div> */}
-
-            <div className="flex items-center gap-4 mb-2 w-full">
-              {/* Left Side: Title */}
+            {/* <div className="flex items-center gap-4 mb-2 w-full">
+             
               <p
                 className="font-semibold text-[#0A2478]"
                 style={{
@@ -309,7 +374,7 @@ const PushGoldRateList = () => {
                 Gold rate
               </p>
 
-              {/* Right Side: Merged Input and Blue Button */}
+            
               <div className="flex items-center">
                 <div className="flex items-center border border-gray-300 rounded-[4px] overflow-hidden h-[32px]">
                   <input
@@ -318,7 +383,7 @@ const PushGoldRateList = () => {
                     onChange={(e) => {
                       const newDate = e.target.value;
                       setFilterDateGold(newDate);
-                      // fetchGoldRates(1, newDate); 
+                      
                     }}
                     className="px-2 py-1 text-[11px] outline-none border-none h-full bg-white"
                   />
@@ -334,15 +399,15 @@ const PushGoldRateList = () => {
                   </button>
                 </div>
               </div>
-            </div>
+            </div> */}
 
-            <div className="overflow-x-auto mt-5 w-[620px] h-[500px]">
+            <div className="overflow-x-auto  w-[620px] h-[500px]">
               <table className="w-[620px] border-collapse mt-2">
                 <thead className="bg-[#0A2478] text-white text-sm">
                   <tr>
                     <th className="px-4 py-2 text-left border-r w-[100px]">Date</th>
                     <th className="px-4 py-2 text-left border-r">Type</th>
-                    <th className="px-4 py-2 text-left border-r w-[100px]">Rate</th>
+                    <th className="px-4 py-2 text-left border-r w-[100px]">Funding Rate</th>
                     <th className="px-4 py-2 text-left border-r w-[100px]">Actual Rate</th>
                     <th className="px-4 py-2 text-left border-r w-[200px]">Added By</th>
                   </tr>
@@ -379,39 +444,10 @@ const PushGoldRateList = () => {
             />
           </div>
           <div className="mt-5">
-            {/* <div className="flex items-center gap-2 mb-2">
-              <p
-                className="font-semibold text-[#0A2478]"
-                style={{
-                  fontFamily: "Playfair Display",
-                  fontSize: "23.23px",
-                  lineHeight: "148%",
-                }}
-              >
-                Silver rate
-              </p>
-              <input
-                type="date"
-                value={filterDateSilver}
-                onChange={(e) => {
-                  setFilterDateSilver(e.target.value);
-                  fetchSilverRates(1, e.target.value); // Fetch immediately on change
-                }}
-                className="border border-gray-300 rounded px-2 py-1 text-[11px]"
-              />
-              <button
-                onClick={() => {
-                  setFilterDateSilver("");
-                  fetchSilverRates(1, "");
-                }}
-                className="text-[10px] text-red-500 underline"
-              >
-                Reset
-              </button>
-            </div> */}
+           
 
-            <div className="flex items-center gap-4 mb-2 w-full">
-              {/* Left Side: Title */}
+            {/* <div className="flex items-center gap-4 mb-2 w-full">
+             
               <p
                 className="font-semibold text-[#0A2478]"
                 style={{
@@ -423,7 +459,7 @@ const PushGoldRateList = () => {
                 Silver rate
               </p>
 
-              {/* Right Side: Merged Input and Blue Button */}
+           
               <div className="flex items-center">
                 <div className="flex items-center border border-gray-300 rounded-[4px] overflow-hidden h-[32px]">
                   <input
@@ -448,15 +484,15 @@ const PushGoldRateList = () => {
                   </button>
                 </div>
               </div>
-            </div>
+            </div> */}
 
-            <div className="overflow-x-auto mt-5 w-[620px] h-[500px]">
+            <div className="overflow-x-auto  w-[620px] h-[500px]">
               <table className="w-[620px] border-collapse mt-2">
                 <thead className="bg-[#0A2478] text-white text-sm">
                   <tr>
                     <th className="px-4 py-2 text-left border-r w-[100px]">Date</th>
                     <th className="px-4 py-2 text-left border-r">Type</th>
-                    <th className="px-4 py-2 text-left border-r w-[100px]">Rate</th>
+                    <th className="px-4 py-2 text-left border-r w-[100px]">Funding Rate</th>
                     <th className="px-4 py-2 text-left border-r w-[100px]">Actual Rate</th>
                     <th className="px-4 py-2 text-left border-r w-[200px]">Added By</th>
                   </tr>

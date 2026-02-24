@@ -123,9 +123,9 @@ const AddSchemeDetailsListform = () => {
     applicableFrom: "",
     applicableTo: "",
     calcBasisOn: "Daily",
+    adminChargeType: "fixed",
     calcMethod: "",
     paymentFrequency: "",
-    // KEEP these fields always visible as per the user's request
     interestInAdvance: "",
     preCloserMinDays: "",
     penaltyType: "Amount",
@@ -134,14 +134,16 @@ const AddSchemeDetailsListform = () => {
     minLoanAmount: "",
     loanPeriod: "",
     paymentBasisOn: "",
-    goldApprovePercent: "", // KEEP this field always visible
+    goldApprovePercent: "", 
     maxLoanAmount: "",
     partyType: "individual",
     administrativeCharges: "",
-    interestType: "Floating", // HIDE/SHOW this one
+    interestType: "Floating",
     docChargePercent: "",
+    docChargeFixed: "",
     docChargeMin: "",
     docChargeMax: "",
+    docChargeType: "percentage",
   });
   const [openSlabModal, setOpenSlabModal] = useState(false);
   const [selectedSlabs, setSelectedSlabs] = useState([]);
@@ -160,14 +162,14 @@ const AddSchemeDetailsListform = () => {
         setInterestRates(
           typeof data.interestRates === "string"
             ? JSON.parse(data.interestRates)
-            : data.interestRates
+            : data.interestRates,
         );
       }
       if (data.precloser) {
         setPrecloser(
           typeof data.precloser === "string"
             ? JSON.parse(data.precloser)
-            : data.precloser
+            : data.precloser,
         );
       }
     }
@@ -212,8 +214,8 @@ const AddSchemeDetailsListform = () => {
   const onchange = (id, field, value) => {
     setInterestRates((prevRates) =>
       prevRates.map((rate) =>
-        rate.id === id ? { ...rate, [field]: value } : rate
-      )
+        rate.id === id ? { ...rate, [field]: value } : rate,
+      ),
     );
   };
 
@@ -249,27 +251,28 @@ const AddSchemeDetailsListform = () => {
   //     { id: Date.now(), from: "", to: "", type: "", addInt: "" },
   //   ]);
   // };
-const addRow = () => {
-  setInterestRates((prev) => {
-    // Get the last row in the current list
-    const lastRow = prev[prev.length - 1];
-    
-    // Calculate the next "From" value
-    // If lastRow.to exists, use it + 1, otherwise default to 0 or empty
-    const nextFrom = lastRow && lastRow.to !== "" ? Number(lastRow.to) + 1 : "";
+  const addRow = () => {
+    setInterestRates((prev) => {
+      // Get the last row in the current list
+      const lastRow = prev[prev.length - 1];
 
-    return [
-      ...prev,
-      { 
-        id: Date.now(), 
-        from: nextFrom, 
-        to: "", 
-        type: lastRow?.type || "", // Carry over the type (Days/Months) for convenience
-        addInt: "" 
-      },
-    ];
-  });
-};
+      // Calculate the next "From" value
+      // If lastRow.to exists, use it + 1, otherwise default to 0 or empty
+      const nextFrom =
+        lastRow && lastRow.to !== "" ? Number(lastRow.to) + 1 : "";
+
+      return [
+        ...prev,
+        {
+          id: Date.now(),
+          from: nextFrom,
+          to: "",
+          type: lastRow?.type || "", // Carry over the type (Days/Months) for convenience
+          addInt: "",
+        },
+      ];
+    });
+  };
   const removeRow = (id) => {
     setInterestRates((prev) => prev.filter((rate) => rate.id !== id));
   };
@@ -474,7 +477,9 @@ const addRow = () => {
                     onClick={() => {
                       if (!isViewMode) {
                         handleCalcBasisChange(
-                          formData.calcBasisOn === "Daily" ? "Monthly" : "Daily"
+                          formData.calcBasisOn === "Daily"
+                            ? "Monthly"
+                            : "Daily",
                         );
                       }
                     }}
@@ -602,7 +607,7 @@ const addRow = () => {
                 </div>
               )}
 
-              {isDailyBasis && (
+              {!isDailyBasis && (
                 <div className="flex flex-col ">
                   <label className="text-[14px] font-medium">
                     Interest in Advance <span className="text-red-500">*</span>
@@ -648,7 +653,8 @@ const addRow = () => {
               {isDailyBasis && (
                 <div className="flex flex-col ">
                   <label className="text-[14px] font-medium">
-                     Fore Closure Min Days <span className="text-red-600">*</span>
+                    Fore Closure Min Days{" "}
+                    <span className="text-red-600">*</span>
                   </label>
                   <input
                     type="number"
@@ -679,6 +685,24 @@ const addRow = () => {
                   <option value="Percent">Percent</option>
                 </select>
               </div>
+              {isDailyBasis && (
+                <div className="flex flex-col ">
+                  <label className="text-[14px] font-medium">
+                    Penalty <span className="text-red-500">*</span>
+                  </label>
+                  <input
+                    type="number"
+                    name="penalty"
+                    value={formData.penalty || ""}
+                    onChange={handleInputChange}
+                    disabled={isViewMode}
+                    placeholder="e.g ₹10"
+                    onWheel={(e) => e.target.blur()}
+                    className="border border-gray-300 rounded-[8px] px-3 py-2 h-[38px] bg-white w-[125px]"
+                  />
+                </div>
+              )}
+
               {!isDailyBasis && (
                 <>
                   <div className="flex flex-col ">
@@ -699,7 +723,7 @@ const addRow = () => {
 
                   <div className="flex flex-col">
                     <label className="text-[14px] font-medium">
-                      Product approve % <span className="text-red-500">*</span>
+                      Loan approve % <span className="text-red-500">*</span>
                     </label>
                     <input
                       type="number"
@@ -715,25 +739,6 @@ const addRow = () => {
                       className="border border-gray-300 rounded-[8px] px-3 py-2 w-[127px] bg-white h-[38px]"
                     />
                   </div>
-
-                  <div className="flex flex-col">
-                    <label className="text-[14px] font-medium">
-                      Min Loan Amount <span className="text-red-500">*</span>
-                    </label>
-                    <input
-                      type="number"
-                      name="minLoanAmount"
-                      value={formData.minLoanAmount || ""}
-                      onChange={handleInputChange}
-                      disabled={isViewMode}
-                      placeholder="e.g. ₹20,000.00"
-                      style={{
-                        MozAppearance: "textfield",
-                      }}
-                      onWheel={(e) => e.target.blur()}
-                      className="border border-gray-300 rounded-[8px] px-3 py-2  w-[150px] bg-white h-[38px]"
-                    />
-                  </div>
                 </>
               )}
             </div>
@@ -742,7 +747,7 @@ const addRow = () => {
             <div className="flex gap-[12px] mt-[20px] ">
               {isDailyBasis && (
                 <>
-                  <div className="flex flex-col ">
+                  {/* <div className="flex flex-col ">
                     <label className="text-[14px] font-medium">
                       Penalty <span className="text-red-500">*</span>
                     </label>
@@ -756,7 +761,7 @@ const addRow = () => {
                       onWheel={(e) => e.target.blur()}
                       className="border border-gray-300 rounded-[8px] px-3 py-2 h-[38px] bg-white w-[125px]"
                     />
-                  </div>
+                  </div> */}
 
                   <div className="flex flex-col">
                     <label className="text-[14px] font-medium">
@@ -776,27 +781,27 @@ const addRow = () => {
                       className="border border-gray-300 rounded-[8px] px-3 py-2 w-[127px] bg-white h-[38px]"
                     />
                   </div>
-
-                  <div className="flex flex-col">
-                    <label className="text-[14px] font-medium">
-                      Min Loan Amount <span className="text-red-500">*</span>
-                    </label>
-                    <input
-                      type="number"
-                      name="minLoanAmount"
-                      value={formData.minLoanAmount || ""}
-                      onChange={handleInputChange}
-                      disabled={isViewMode}
-                      placeholder="e.g. ₹20,000.00"
-                      style={{
-                        MozAppearance: "textfield",
-                      }}
-                      onWheel={(e) => e.target.blur()}
-                      className="border border-gray-300 rounded-[8px] px-3 py-2  w-[116px] bg-white h-[38px]"
-                    />
-                  </div>
                 </>
               )}
+
+              <div className="flex flex-col">
+                <label className="text-[14px] font-medium">
+                  Min Loan Amount <span className="text-red-500">*</span>
+                </label>
+                <input
+                  type="number"
+                  name="minLoanAmount"
+                  value={formData.minLoanAmount || ""}
+                  onChange={handleInputChange}
+                  disabled={isViewMode}
+                  placeholder="e.g. ₹20,000.00"
+                  style={{
+                    MozAppearance: "textfield",
+                  }}
+                  onWheel={(e) => e.target.blur()}
+                  className="border border-gray-300 rounded-[8px] px-3 py-2  w-[116px] bg-white h-[38px]"
+                />
+              </div>
 
               <div className="flex flex-col">
                 <label className="text-[14px] font-medium">
@@ -817,24 +822,7 @@ const addRow = () => {
                 />
               </div>
 
-              <div className="flex flex-col">
-                <label className="text-[14px] font-medium">
-                  Administrative Charges
-                </label>
-                <input
-                  type="number"
-                  name="administrativeCharges"
-                  value={formData.administrativeCharges}
-                  onChange={handleInputChange}
-                  disabled={isViewMode}
-                  placeholder="e.g. ₹ 100.00"
-                  style={{
-                    MozAppearance: "textfield",
-                  }}
-                  onWheel={(e) => e.target.blur()}
-                  className="border border-gray-300 rounded-[8px] px-3 py-2 h-[38px] w-[151px] bg-white"
-                />
-              </div>
+             
 
               {!isDailyBasis && (
                 <div className="flex flex-col">
@@ -904,8 +892,49 @@ const addRow = () => {
                 <h3 className="text-[15px] font-semibold text-[#0A2478] mb-4 mt-5">
                   Document Charge
                 </h3>
+                <div className='flex gap-5'>
+<div className="flex flex-col">
+                  <label className="text-[14px] font-medium mb-1">
+                    Admin Charge Type
+                  </label>
+                  <select
+                    name="adminChargeType"
+                    value={formData.adminChargeType || "fixed"}
+                    disabled={isViewMode}
+                    onChange={handleInputChange}
+                    className="border border-gray-300 rounded-[8px] px-3 py-2 h-[38px] w-[130px] bg-white outline-none text-sm"
+                  >
+                    <option value="fixed">Fixed Amount</option>
+                    <option value="percentage">Percentage (%)</option>
+                  </select>
+                </div>
 
-                <div className="flex gap-4 w-full">
+                {/* 2. Dynamic Input: Percentage or Amount */}
+                <div className="flex flex-col">
+                  <label className="text-[14px] font-medium mb-1">
+                    {formData.adminChargeType === "percentage"
+                      ? "Percentage (%)"
+                      : "Amount (₹)"}
+                  </label>
+                  <input
+                    type="number"
+                    name="administrativeCharges"
+                    value={formData.administrativeCharges}
+                    onChange={handleInputChange}
+                    disabled={isViewMode}
+                    placeholder={
+                      formData.adminChargeType === "percentage"
+                        ? "e.g. 2%"
+                        : "e.g. 100.00"
+                    }
+                    style={{ MozAppearance: "textfield" }}
+                    onWheel={(e) => e.target.blur()}
+                    className="border border-gray-300 rounded-[8px] px-3 py-2 h-[38px] w-[100px] bg-white outline-none"
+                  />
+                </div>
+                </div>
+ 
+                <div className="flex gap-4 w-full mt-2">
                   {/* % of Loan Amount */}
                   <div className="flex flex-col">
                     <label className="text-sm font-medium">
@@ -958,51 +987,153 @@ const addRow = () => {
             {isDailyBasis && (
               <>
                 <h3 className="text-[15px] font-semibold text-[#0A2478] mb-4">
-                  Document Charge
+                  Documents Charge
                 </h3>
+ <div className="flex gap-4 items-end">
+                {/* 1. Administrative Charge Type Dropdown */}
+                <div className="flex flex-col">
+                  <label className="text-[14px] font-medium mb-1">
+                    Admin Charge Type
+                  </label>
+                  <select
+                    name="adminChargeType"
+                    value={formData.adminChargeType || "fixed"}
+                    disabled={isViewMode}
+                    onChange={handleInputChange}
+                    className="border border-gray-300 rounded-[8px] px-3 py-2 h-[38px] w-[130px] bg-white outline-none text-sm"
+                  >
+                    <option value="fixed">Fixed Amount</option>
+                    <option value="percentage">Percentage (%)</option>
+                  </select>
+                </div>
 
-                <div className="flex gap-4 w-full">
+                {/* 2. Dynamic Input: Percentage or Amount */}
+                <div className="flex flex-col">
+                  <label className="text-[14px] font-medium mb-1">
+                    {formData.adminChargeType === "percentage"
+                      ? "Percentage (%)"
+                      : "Amount (₹)"}
+                  </label>
+                  <input
+                    type="number"
+                    name="administrativeCharges"
+                    value={formData.administrativeCharges}
+                    onChange={handleInputChange}
+                    disabled={isViewMode}
+                    placeholder={
+                      formData.adminChargeType === "percentage"
+                        ? "e.g. 2%"
+                        : "e.g. 100.00"
+                    }
+                    style={{ MozAppearance: "textfield" }}
+                    onWheel={(e) => e.target.blur()}
+                    className="border border-gray-300 rounded-[8px] px-3 py-2 h-[38px] w-[100px] bg-white outline-none"
+                  />
+                </div>
+              </div>
+                <div className="flex gap-4 w-full mt-5">
                   {/* % of Loan Amount */}
                   <div className="flex flex-col">
-                    <label className="text-sm font-medium">
+                    <label className="text-sm font-medium mb-1">
                       {" "}
-                      % of Loan Amount{" "}
+                      Charge Type{" "}
+                    </label>
+                    <select
+                      name="docChargeType"
+                      value={formData.docChargeType}
+                      disabled={isViewMode}
+                      onChange={handleInputChange}
+                      className="p-2 border border-gray-300 rounded text-sm w-[120px] bg-white outline-none"
+                    >
+                      <option value="percentage">Percentage (%)</option>
+                      <option value="fixed">Fixed Amount</option>
+                    </select>
+                  </div>
+                  <div className="flex flex-col">
+                    <label className="text-sm font-medium mb-1">
+                      {formData.docChargeType === "percentage"
+                        ? "% of Loan Amount"
+                        : "Fixed Amount"}
                     </label>
                     <input
                       type="number"
-                      name="docChargePercent"
-                      value={formData.docChargePercent}
+                      name={
+                        formData.docChargeType === "percentage"
+                          ? "docChargePercent"
+                          : "docChargeFixed"
+                      }
+                      value={
+                        formData.docChargeType === "percentage"
+                          ? formData.docChargePercent
+                          : formData.docChargeFixed
+                      }
                       disabled={isViewMode}
                       onChange={handleInputChange}
                       onWheel={(e) => e.target.blur()}
-                      className="p-2 border border-gray-300 rounded text-sm w-[150px] bg-white"
+                      placeholder={
+                        formData.docChargeType === "percentage"
+                          ? "e.g. 2"
+                          : "e.g. 500"
+                      }
+                      className="p-2 border border-gray-300 rounded text-sm w-[150px] bg-white outline-none"
                     />
                   </div>
 
+                  {/* Min Field */}
                   <div className="flex flex-col">
-                    <label className="text-sm font-medium"> Min </label>
+                    <label
+                      className={`text-sm font-medium ${formData.docChargeType === "fixed" ? "text-gray-400" : ""}`}
+                    >
+                      Min
+                    </label>
                     <input
                       type="number"
                       name="docChargeMin"
-                      value={formData.docChargeMin}
+                      value={
+                        formData.docChargeType === "fixed"
+                          ? ""
+                          : formData.docChargeMin
+                      }
                       onChange={handleInputChange}
-                      disabled={isViewMode}
+                      // Disabled if in View Mode OR if Charge Type is Fixed Amount
+                      disabled={
+                        isViewMode || formData.docChargeType === "fixed"
+                      }
                       onWheel={(e) => e.target.blur()}
-                      className="p-2 border border-gray-300 rounded text-sm w-[150px] bg-white"
+                      className={`p-2 border border-gray-300 rounded text-sm w-[100px] outline-none transition-colors ${
+                        formData.docChargeType === "fixed"
+                          ? "bg-gray-100 cursor-not-allowed"
+                          : "bg-white"
+                      }`}
                     />
                   </div>
 
-                  {/* Max */}
+                  {/* Max Field */}
                   <div className="flex flex-col">
-                    <label className="text-sm font-medium"> Max </label>
+                    <label
+                      className={`text-sm font-medium ${formData.docChargeType === "fixed" ? "text-gray-400" : ""}`}
+                    >
+                      Max
+                    </label>
                     <input
                       type="number"
                       name="docChargeMax"
-                      value={formData.docChargeMax}
-                      disabled={isViewMode}
+                      value={
+                        formData.docChargeType === "fixed"
+                          ? ""
+                          : formData.docChargeMax
+                      }
                       onChange={handleInputChange}
+                      // Disabled if in View Mode OR if Charge Type is Fixed Amount
+                      disabled={
+                        isViewMode || formData.docChargeType === "fixed"
+                      }
                       onWheel={(e) => e.target.blur()}
-                      className="p-2 border border-gray-300 rounded text-sm w-[150px] bg-white"
+                      className={`p-2 border border-gray-300 rounded text-sm w-[100px] outline-none transition-colors ${
+                        formData.docChargeType === "fixed"
+                          ? "bg-gray-100 cursor-not-allowed"
+                          : "bg-white"
+                      }`}
                     />
                   </div>
                 </div>
@@ -1040,7 +1171,7 @@ const addRow = () => {
                                   handleChange(
                                     index,
                                     "fromMonth",
-                                    e.target.value
+                                    e.target.value,
                                   )
                                 }
                                 className="border px-2 py-1 w-[80px] h-[25px] text-center"
@@ -1237,45 +1368,54 @@ const addRow = () => {
 
                       <tbody>
                         {data?.renewalHistory?.map((item) => {
-  const slabs =
-    typeof item.interest_json === "string"
-      ? JSON.parse(item.interest_json)
-      : item.interest_json;
+                          const slabs =
+                            typeof item.interest_json === "string"
+                              ? JSON.parse(item.interest_json)
+                              : item.interest_json;
 
-  return (
-    <tr
-      key={item.id}
-      className="bg-white border border-gray-300"
-    >
-      <td className="p-2 text-center">
-        {new Date(item.app_from).toISOString().split("T")[0]}
-      </td>
+                          return (
+                            <tr
+                              key={item.id}
+                              className="bg-white border border-gray-300"
+                            >
+                              <td className="p-2 text-center">
+                                {
+                                  new Date(item.app_from)
+                                    .toISOString()
+                                    .split("T")[0]
+                                }
+                              </td>
 
-      <td className="p-2 text-center">
-        {new Date(item.app_to).toISOString().split("T")[0]}
-      </td>
+                              <td className="p-2 text-center">
+                                {
+                                  new Date(item.app_to)
+                                    .toISOString()
+                                    .split("T")[0]
+                                }
+                              </td>
 
-      <td
-        className="p-2 text-center text-blue-600 underline cursor-pointer"
-        onClick={() => {
-          setSelectedSlabs(slabs);
-          setOpenSlabModal(true);
-        }}
-      >
-        {slabs?.length || 0} Slabs
-      </td>
+                              <td
+                                className="p-2 text-center text-blue-600 underline cursor-pointer"
+                                onClick={() => {
+                                  setSelectedSlabs(slabs);
+                                  setOpenSlabModal(true);
+                                }}
+                              >
+                                {slabs?.length || 0} Slabs
+                              </td>
 
-      <td className="p-2 text-center">
-        {item.gold_approve_percent}%
-      </td>
+                              <td className="p-2 text-center">
+                                {item.gold_approve_percent}%
+                              </td>
 
-      <td className="p-2 text-center">
-        {new Date(item.renewal_date).toLocaleDateString("en-IN")}
-      </td>
-    </tr>
-  );
-})}
-
+                              <td className="p-2 text-center">
+                                {new Date(item.renewal_date).toLocaleDateString(
+                                  "en-IN",
+                                )}
+                              </td>
+                            </tr>
+                          );
+                        })}
                       </tbody>
                     </table>
                   </div>

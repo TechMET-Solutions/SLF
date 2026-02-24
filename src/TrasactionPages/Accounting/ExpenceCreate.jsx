@@ -649,11 +649,11 @@ const ExpenceCreate = () => {
                           </option>
                         ))}
                       </select>
-                      {row.ledgerName && (
+                      {/* {row.ledgerName && (
                         <div className="text-[11px] font-semibold text-[#0A2478] px-1 py-0.5 bg-blue-50 rounded">
                           {row.ledgerName}
                         </div>
-                      )}
+                      )} */}
                     </div>
                   </td>
                   <td className="p-1 border-r border-gray-300">

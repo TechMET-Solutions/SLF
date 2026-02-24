@@ -1457,8 +1457,8 @@ const Navbar = () => {
   console.log(canSeeMasterProfile, "canSeeMasterProfile");
 
   const masterProfileList = [
-    { name: "Ledger", path: "/account-groups" },
-    { name: "Sub Ledger ", path: "/account-code-list" },
+    { name: "Group Ledger", path: "/account-groups" },
+    { name: "Ledger ", path: "/account-code-list" },
     { name: "Branch Details", path: "/Branch-Profile-List" },
     { name: "Item Profile", path: "/Item-Profile-List" },
     { name: "Product Purity", path: "/Product-Purity" },

@@ -246,7 +246,7 @@ const Area = () => {
                         { id: "city", label: "City" },
                         { id: "state", label: "State" },
                         { id: "pincode", label: "Pincode" },
-                        { id: "landmark", label: "Landmark" }
+                       
                       ].map((col) => (
                         <label key={col.id} className="flex items-center gap-2 p-2 hover:bg-gray-50 cursor-pointer rounded">
                           <input
@@ -387,7 +387,7 @@ const Area = () => {
                   />
                 </div>
                 <div>
-                  <p className="text-[14px]">Landmark <span className="text-red-500">*</span></p>
+                  <p className="text-[14px]">Landmark </p>
                   <input
                     type="text"
                     placeholder="landmark"
