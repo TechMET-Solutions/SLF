@@ -1253,7 +1253,7 @@ const Navbar = () => {
   const [selectedBranch, setSelectedBranch] = useState("");
 
   useEffect(() => {
-    debugger;
+    // debugger;
     const userData = JSON.parse(sessionStorage.getItem("userData"));
 
     if (userData && userData.branchId) {
@@ -1274,7 +1274,7 @@ const Navbar = () => {
   // };
 
   const handleOk = () => {
-    debugger;
+    // debugger;
     // 🔹 Get existing userData
     const storedUser = JSON.parse(sessionStorage.getItem("userData"));
 

@@ -14,6 +14,7 @@ import Pagination from "../Component/Pagination";
 import { encryptData } from "../utils/cryptoHelper";
 
 import profileempty from "../assets/profileempty.png";
+import MultiSelect from "../Component/MultiSelect";
 const EmployeeProfile = () => {
   useEffect(() => {
     document.title = "SLF | Employee Profile";
@@ -49,7 +50,7 @@ const EmployeeProfile = () => {
     corresponding_address: "",
     permanent_address: "",
     branch: "",
-    branch_id: "",
+    branch_id: [],
     joining_date: "",
     designation: "",
     date_of_birth: "",
@@ -213,36 +214,7 @@ const EmployeeProfile = () => {
     setFormData((prev) => ({ ...prev, emp_id_prof: file.name }));
   };
 
-  // ✅ Fetch employee list with filters
-  // const fetchEmployee = async (page = 1, filters = {}) => {
-  //   setIsLoading(true);
-
-  //    const filltersData = {
-  //     search: searchQuery,      // text input
-  //     keys: searchHeaders,      // selected headers
-  //   };
-
-  //   try {
-  //     const result = await fetchEmployeeProfileApi(page, itemsPerPage, filters, filltersData);
-  //     if (result?.items) {
-  //       setEmployeeList(result.items);
-  //       setTotalItems(result.total || result.data.length);
-  //       setCurrentPage(result.page);
-  //       setShowPagination(result.showPagination || false);
-  //     } else {
-  //       setEmployeeList([]);
-  //       setShowPagination(false);
-  //     }
-  //   } catch (error) {
-  //     console.error("❌ Error fetching employees:", error);
-  //     setEmployeeList([]);
-  //     setShowPagination(false);
-  //   } finally {
-  //     setIsLoading(false);
-  //   }
-  // };
-
-  const fetchEmployee = async (page = 1 ,searchQuery, searchHeaders) => {
+  const fetchEmployee = async (page = 1, searchQuery, searchHeaders) => {
     setIsLoading(true);
 
     const filters = {
@@ -270,7 +242,7 @@ const EmployeeProfile = () => {
   };
 
   useEffect(() => {
-    fetchEmployee(searchQuery,searchHeaders);
+    fetchEmployee(searchQuery, searchHeaders);
   }, []);
 
   const updateEmployeeStatus = async (id, status) => {
@@ -314,22 +286,53 @@ const EmployeeProfile = () => {
       await deleteEmployeeApi(deleteId);
       setDeleteModalOpen(false);
       setDeleteId(null);
-      fetchEmployee(currentPage, searchQuery,searchHeaders);
+      fetchEmployee(currentPage, searchQuery, searchHeaders);
     } catch (error) {
       console.error("❌ Error deleting employee:", error);
       alert("Error deleting employee");
     }
   };
 
+  // const handleView = (employee) => {
+  //   setMode("view");
+  //   setFormData(employee);
+  //   setIsModalOpen(true);
+  // };
+
+  // const handleEdit = (employee) => {
+  //   setMode("edit");
+  //   setFormData(employee);
+  //   setIsModalOpen(true);
+  // };
+
+
   const handleView = (employee) => {
     setMode("view");
-    setFormData(employee);
+
+    setFormData({
+      ...employee,
+      branch_id: Array.isArray(employee.branch_id)
+        ? employee.branch_id
+        : employee.branch_id
+          ? [employee.branch_id]
+          : [],
+    });
+
     setIsModalOpen(true);
   };
 
   const handleEdit = (employee) => {
     setMode("edit");
-    setFormData(employee);
+
+    setFormData({
+      ...employee,
+      branch_id: Array.isArray(employee.branch_id)
+        ? employee.branch_id
+        : employee.branch_id
+          ? [employee.branch_id]
+          : [],
+    });
+
     setIsModalOpen(true);
   };
 
@@ -348,7 +351,7 @@ const EmployeeProfile = () => {
       corresponding_address: "",
       permanent_address: "",
       branch: "",
-      branch_id: "",
+      branch_id: [],
       joining_date: "",
       designation: "",
       date_of_birth: "",
@@ -469,7 +472,7 @@ const EmployeeProfile = () => {
     }
 
     // Branch
-    if (!branch_id) {
+    if (!branch_id || branch_id.length === 0) {
       alert("Please select Branch");
       return false;
     }
@@ -528,8 +531,9 @@ const EmployeeProfile = () => {
         email: formData.email,
         corresponding_address: formData.corresponding_address,
         permanent_address: formData.permanent_address,
-        branch: formData.branch,
-        branch_id: formData.branch_id,
+        branch: formData.branch || "",
+        // branch_id: formData.branch_id,
+        branch_id: formData.branch_id.join(","),
         joining_date: formatDateToMySQL(formData.joining_date),
         designation: formData.designation,
         date_of_birth: formatDateToMySQL(formData.date_of_birth),
@@ -560,7 +564,7 @@ const EmployeeProfile = () => {
 
       alert("✅ Employee created successfully!");
       setIsModalOpen(false);
-      fetchEmployee(currentPage, searchQuery,searchHeaders);
+      fetchEmployee(currentPage, searchQuery, searchHeaders);
     } catch (error) {
       console.error("❌ Error saving employee:", error);
       alert(error.response?.data?.message || "Error saving employee");
@@ -612,7 +616,7 @@ const EmployeeProfile = () => {
 
       alert("✅ Employee updated successfully!");
       setIsModalOpen(false);
-      fetchEmployee(currentPage, searchQuery,searchHeaders);
+      fetchEmployee(currentPage, searchQuery, searchHeaders);
     } catch (err) {
       console.error("❌ Error updating employee:", err);
       alert(err.response?.data?.message || "Error updating employee");
@@ -627,7 +631,7 @@ const EmployeeProfile = () => {
     if (searchTerm.empId) filters.id = searchTerm.empId;
     if (searchTerm.empName) filters.name = searchTerm.empName;
 
-   fetchEmployee(currentPage, searchQuery,searchHeaders);
+    fetchEmployee(currentPage, searchQuery, searchHeaders);
   };
 
   // 🔄 Handle Clear Search
@@ -637,11 +641,11 @@ const EmployeeProfile = () => {
     setSearchQuery(""); // ✅ Clear search input
     setCurrentPage(1);
 
-    fetchEmployee(currentPage, searchQuery,searchHeaders);
+    fetchEmployee(currentPage, searchQuery, searchHeaders);
   };
-// useEffect(() => {
-//   fetchEmployee(currentPage);
-// }, [currentPage, searchTerm, searchHeaders, searchQuery]);
+  // useEffect(() => {
+  //   fetchEmployee(currentPage);
+  // }, [currentPage, searchTerm, searchHeaders, searchQuery]);
   // useEffect(() => {
   //   fetchEmployee(currentPage);
   // }, [searchTerm, currentPage]);
@@ -833,7 +837,7 @@ const EmployeeProfile = () => {
 
     // Call your API:
     await axios.post(`${API}/Master/updateEmployeeValuation`, payload);
-    fetchEmployee(currentPage, searchQuery,searchHeaders);
+    fetchEmployee(currentPage, searchQuery, searchHeaders);
     setIsValuationModalOpen(false);
     setSelectedEmployees([]);
     setValuationAmount(""); // reset
@@ -910,6 +914,8 @@ const EmployeeProfile = () => {
 
     // 3. Fallback to default
     return profileempty;
+
+
   };
   return (
     <div className="min-h-screen w-full">
@@ -922,37 +928,6 @@ const EmployeeProfile = () => {
 
           {/* Search & Actions */}
           <div className="flex items-center gap-6">
-            {/* <div className="flex gap-5">
-              <div className="flex gap-3 items-center">
-                <p className="text-[11.25px] font-source">Emp Id</p>
-                <input
-                  type="text"
-                  value={searchTerm.empId}
-                  onChange={(e) =>
-                    setSearchTerm((prev) => ({
-                      ...prev,
-                      empId: e.target.value,
-                    }))
-                  }
-                  className="border border-gray-400 rounded px-3 py-1 text-[11.25px] w-[168px] h-[28px]"
-                />
-              </div>
-              <div className="flex gap-3 items-center">
-                <p className="text-[11.25px] font-source">Emp Name</p>
-                <input
-                  type="text"
-                  value={searchTerm.empName}
-                  onChange={(e) =>
-                    setSearchTerm((prev) => ({
-                      ...prev,
-                      empName: e.target.value,
-                    }))
-                  }
-                  className="border border-gray-400 rounded px-3 py-1 text-[11.25px] w-[168px] h-[28px]"
-                />
-              </div>
-            </div> */}
-
             <div className="flex items-center gap-3">
               <div className="flex items-center bg-white border border-gray-400 rounded-[5px] h-[32px] px-2 relative w-[500px]">
                 {/* Multi-Select Header Dropdown */}
@@ -972,6 +947,7 @@ const EmployeeProfile = () => {
                         { id: "emp_name", label: "Name" },
                         { id: "email", label: "Email" },
                         { id: "mobile_no", label: "Mobile" },
+                        { id: "branch", label: "Branch" },
                       ].map((col) => (
                         <label
                           key={col.id}
@@ -1019,7 +995,7 @@ const EmployeeProfile = () => {
                       keys: searchHeaders, // selected columns
                     };
 
-                   fetchEmployee(currentPage, searchQuery,searchHeaders);
+                    fetchEmployee(currentPage, searchQuery, searchHeaders);
                   }}
                   className="ml-2 bg-[#0b2c69] text-white text-[11px] px-4 h-[24px] rounded-[3px] font-source hover:bg-[#071d45]"
                 >
@@ -1036,7 +1012,7 @@ const EmployeeProfile = () => {
             </div>
 
             <div className="flex gap-3">
-              
+
               <button
                 onClick={handleValuationClick}
                 className="bg-[#129121] text-white text-[11.25px] w-[74px] h-[24px] rounded flex items-center justify-center"
@@ -1365,9 +1341,8 @@ const EmployeeProfile = () => {
                       onChange={handleInputChange}
                       disabled={mode === "view"}
                       placeholder="Email ID"
-                      className={`border rounded px-3 py-2  w-[203px] bg-white ${
-                        errors.email ? "border-red-500" : "border-gray-300"
-                      }`}
+                      className={`border rounded px-3 py-2  w-[203px] bg-white ${errors.email ? "border-red-500" : "border-gray-300"
+                        }`}
                     />
                     {errors.email && (
                       <span className="text-red-500 text-[12px] mt-1">
@@ -1385,8 +1360,8 @@ const EmployeeProfile = () => {
                       value={
                         formData.date_of_birth
                           ? new Date(formData.date_of_birth)
-                              .toISOString()
-                              .split("T")[0]
+                            .toISOString()
+                            .split("T")[0]
                           : ""
                       }
                       disabled={mode === "view"}
@@ -1405,8 +1380,8 @@ const EmployeeProfile = () => {
                       value={
                         formData.joining_date
                           ? new Date(formData.joining_date)
-                              .toISOString()
-                              .split("T")[0]
+                            .toISOString()
+                            .split("T")[0]
                           : ""
                       }
                       disabled={mode === "view"}
@@ -1444,7 +1419,7 @@ const EmployeeProfile = () => {
                       checked={
                         formData.corresponding_address &&
                         formData.corresponding_address ===
-                          formData.permanent_address
+                        formData.permanent_address
                       }
                       onChange={(e) => {
                         if (e.target.checked) {
@@ -1488,16 +1463,16 @@ const EmployeeProfile = () => {
 
                 {/* Branch, Joining Date, Designation, DOB */}
                 <div className="flex gap-2">
-                  <div className="flex flex-col gap-1">
+                  <div className="flex flex-col  gap-1">
                     <label className="text-gray-700 font-medium">
                       Branch <span className="text-red-500">*</span>
                     </label>
-                    <select
+                    {/* <select
                       name="branch"
                       value={formData.branch_id}
                       onChange={handleInputChange}
                       disabled={mode === "view"}
-                      className="border border-[#C4C4C4] rounded-[8px] px-3 py-2 focus:outline-none focus:ring-1 focus:ring-blue-500 w-[100px]"
+                      className="border border-[#C4C4C4] rounded-[8px] px-3 py-2 focus:outline-none focus:ring-1 focus:ring-blue-500 w-[280px]"
                     >
                       <option value="" disabled>
                         {" "}
@@ -1508,27 +1483,37 @@ const EmployeeProfile = () => {
                           {branch.branch_name} ({branch.branch_code})
                         </option>
                       ))}
-                    </select>
-                  </div>
-                  {/* <div className="flex flex-col gap-1">
-                    <label className="text-gray-700 font-medium">
-                      Date of Joining <span className="text-red-500">*</span>
-                    </label>
-                    <input
-                      type="date"
-                      name="joining_date"
-                      value={
-                        formData.joining_date
-                          ? new Date(formData.joining_date)
-                              .toISOString()
-                              .split("T")[0]
-                          : ""
-                      }
+                    </select> */}
+
+                  
+
+                    <MultiSelect
+                      options={branches.map((branch) => ({
+                        value: branch.id,
+                        label: `${branch.branch_name} (${branch.branch_code})`,
+                      }))}
+                      selectedValues={formData.branch_id || []}
+
+                      onChange={(newValues) => {
+
+                        const selectedBranchNames = branches
+                          .filter(branch => newValues.includes(branch.id))
+                          .map(branch => branch.branch_name)
+                          .join(", ");
+
+                        setFormData((prev) => ({
+                          ...prev,
+                          branch_id: newValues,
+                          branch: selectedBranchNames
+                        }));
+
+                      }}
+
+                      placeholder="Branch"
                       disabled={mode === "view"}
-                      onChange={handleInputChange}
-                      className="border border-[#C4C4C4] rounded-[8px] px-3 py-2 focus:outline-none focus:ring-1 focus:ring-blue-500 w-[164px]"
                     />
-                  </div> */}
+                  </div>
+
                   <div className="flex flex-col gap-1">
                     <label className="text-gray-700 font-medium">
                       Designation <span className="text-red-500">*</span>
@@ -1587,7 +1572,7 @@ const EmployeeProfile = () => {
                       className="border border-[#C4C4C4] rounded-md px-3 py-2 focus:outline-none focus:ring-1 focus:ring-blue-500 w-[140px]"
                     />
                   </div>
-                  <div className="flex flex-col gap-1">
+                  {/* <div className="flex flex-col gap-1">
                     <label className="text-gray-700 font-medium">Fax</label>
                     <input
                       type="text"
@@ -1613,7 +1598,7 @@ const EmployeeProfile = () => {
                       placeholder="salary"
                       className="border border-[#C4C4C4] rounded-md px-3 py-2 focus:outline-none focus:ring-1 focus:ring-blue-500 w-[130px]"
                     />
-                  </div>
+                  </div> */}
                 </div>
 
                 <div className="flex gap-2"></div>
@@ -1668,176 +1653,6 @@ const EmployeeProfile = () => {
 
                   {mode !== "view" && (
                     <>
-                      {/* <div className="flex items-center gap-2 mt-4">
-                        <div>
-                          <h1 className="text-[14px] font-medium mt-2">
-                            Address Proof
-                          </h1>
-                          <select
-                            name="Additional_AddressProof"
-                            value={formData.Additional_AddressProof}
-                            onChange={(e) =>
-                              setFormData({
-                                ...formData,
-                                addressProfiletype: e.target.value,
-                              })
-                            }
-                            className="border border-gray-300 px-3 py-2  w-[100px] bg-white rounded-[8px]"
-                          >
-                            <option value="">Select Address Proof</option>
-
-                            {addrProofList.map((item) => {
-                              const proof = item.proof_type.toLowerCase();
-
-                              return (
-                                <option
-                                  key={item.id}
-                                  value={item.proof_type}
-                                  disabled={
-                                    (formData.pan_card &&
-                                      proof.includes("pan")) ||
-                                    (formData.aadhar_card &&
-                                      (proof.includes("adhaar") ||
-                                        proof.includes("adhar")))
-                                  }
-                                >
-                                  {item.proof_type}
-                                </option>
-                              );
-                            })}
-                          </select>
-                        </div>
-                        <div className="flex border border-gray-400 rounded-[10px] items-center overflow-hidden w-[200px] mt-7 h-[40px]">
-                          <label
-                            htmlFor="addressProof"
-                            className="bg-[#D9D9D9] px-2 py-2 h-full text-sm text-black font-semibold cursor-pointer hover:bg-gray-300 transition-all duration-200 flex items-center"
-                          >
-                            Choose File
-                          </label>
-
-                          <input
-                            id="addressProof"
-                            type="file"
-                            disabled={mode === "view"}
-                            className="hidden"
-                            onChange={(e) =>
-                              handleFileChangeForAddProof(e, setAddressProof)
-                            }
-                          />
-
-                          <div className="flex-1 flex items-center px-3 gap-2 overflow-hidden">
-                        
-                            {addressProof || formData.emp_add_prof ? (
-                              <div className="flex items-center gap-2 truncate">
-                                <img
-                                  src={
-                                    addressProof
-                                      ? URL.createObjectURL(addressProof)
-                                      : formData.emp_add_prof
-                                  }
-                                  alt="Proof Preview"
-                                  className="w-6 h-6 rounded-sm object-cover border border-gray-300 flex-shrink-0"
-                                />
-                                <span className="text-gray-700 text-xs truncate">
-                                  {addressProof
-                                    ? addressProof.name
-                                    : "Existing Proof"}
-                                </span>
-                              </div>
-                            ) : (
-                              <span className="text-gray-500 text-xs italic">
-                                No file chosen
-                              </span>
-                            )}
-                          </div>
-                        </div>
-                      </div>
-
-                      <div className="flex items-center gap-2 mt-4">
-                        <div>
-                          <h1 className="text-[14px] font-medium mt-3">
-                            ID Proof
-                          </h1>
-
-                          <select
-                            name="Additional_IDProof"
-                            value={formData.Additional_IDProof}
-                            onChange={(e) =>
-                              setFormData({
-                                ...formData,
-                                IdProoftype: e.target.value,
-                              })
-                            }
-                            className="border border-gray-300 px-3 py-2  w-[100px] bg-white rounded-[8px]"
-                          >
-                            <option value="">Select ID Proof</option>
-
-                            {idProofList.map((item) => {
-                              const p = item.proof_type.toLowerCase();
-
-                              return (
-                                <option
-                                  key={item.id}
-                                  value={item.proof_type}
-                                  disabled={
-                                    (formData.pan_card && p.includes("pan")) ||
-                                    (formData.aadhar_card &&
-                                      (p.includes("adhaar") ||
-                                        p.includes("adhar")))
-                                  }
-                                >
-                                  {item.proof_type}
-                                </option>
-                              );
-                            })}
-                          </select>
-                        </div>
-
-                        <div className="flex border border-gray-400 rounded-[10px] items-center overflow-hidden w-[200px] mt-9 h-[40px]">
-                          <label
-                            htmlFor="idProof"
-                            className="bg-[#D9D9D9] px-6 py-2 h-full text-sm text-black font-semibold cursor-pointer hover:bg-gray-300 transition-all duration-200 flex items-center"
-                          >
-                            Choose File
-                          </label>
-
-                          <input
-                            id="idProof"
-                            type="file"
-                            disabled={mode === "view"}
-                            className="hidden"
-                            onChange={(e) =>
-                              handleFileChangeForIdProof(e, setIdProof)
-                            }
-                          />
-
-                          <div className="flex-1 flex items-center px-1 gap-2 overflow-hidden bg-white h-full">
-                            {idProof || formData.emp_id_prof ? (
-                              <>
-                               
-                                <img
-                                  src={
-                                    idProof
-                                      ? URL.createObjectURL(idProof)
-                                      : formData.emp_id_prof
-                                  }
-                                  alt="ID Preview"
-                                  className="w-7 h-7 rounded-md object-cover border border-gray-200 flex-shrink-0"
-                                />
-                                
-                                <span className="text-gray-600 text-xs truncate">
-                                  {idProof ? idProof.name : "Saved ID Proof"}
-                                </span>
-                              </>
-                            ) : (
-                              <span className="text-gray-400 text-xs italic">
-                                No file chosen
-                              </span>
-                            )}
-                          </div>
-                        </div>
-                      </div> */}
-
                       {/* --- Address Proof Section --- */}
                       <div className="flex items-center gap-4 mt-4">
                         <div className="flex flex-col">
@@ -2249,14 +2064,12 @@ const EmployeeProfile = () => {
                       <td className="px-4 py-2">
                         <button
                           onClick={() => handleToggleStatus(emp)}
-                          className={`w-12 h-6 flex items-center rounded-full p-1 transition-colors ${
-                            emp.status ? "bg-[#0A2478]" : "bg-gray-300"
-                          }`}
+                          className={`w-12 h-6 flex items-center rounded-full p-1 transition-colors ${emp.status ? "bg-[#0A2478]" : "bg-gray-300"
+                            }`}
                         >
                           <div
-                            className={`bg-white w-4 h-4 rounded-full shadow-md transform transition-transform ${
-                              emp.status ? "translate-x-6" : "translate-x-0"
-                            }`}
+                            className={`bg-white w-4 h-4 rounded-full shadow-md transform transition-transform ${emp.status ? "translate-x-6" : "translate-x-0"
+                              }`}
                           />
                         </button>
                       </td>
