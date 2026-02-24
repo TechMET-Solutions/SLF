@@ -1,8 +1,10 @@
 import axios from "axios";
 import { useEffect, useRef, useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { API } from "../api";
 import Pagination from "../Component/Pagination";
+import { TimePicker } from "../Component/TimePicker";
+import { decryptData, encryptData } from "../utils/cryptoHelper";
 
 const MemberLoginDetails = () => {
   const navigate = useNavigate();
@@ -48,7 +50,8 @@ const MemberLoginDetails = () => {
 
   useEffect(() => {
     document.title = "SLF | Member Login Details";
-    fetchEmployee(); // ✅ load initial data
+    fetchEmployee(); // ✅ load employee list
+    fetchMemberLoginPeriod(); // ✅ load login period data
   }, []);
 
   const fetchEmployee = async (page = 1, search = "") => {
@@ -94,32 +97,7 @@ const MemberLoginDetails = () => {
     fetchEmployee(page, searchTerm);
   };
 
-  // 📱 Update sender mobile numbers
-  // const updateSender = async (empId, sm1, sm2) => {
-  //   if (sm1 && sm1.toString().length !== 10) {
-  //     alert("Sender Mobile 1 must be 10 digits");
-  //     return;
-  //   }
 
-  //   if (sm2 && sm2.toString().length !== 10) {
-  //     alert("Sender Mobile 2 must be 10 digits");
-  //     return;
-  //   }
-
-  //   try {
-  //     await axios.post(`${API_BASE}/updateSender`, {
-  //       empId: empId,
-  //       sender_mobile1: sm1,
-  //       sender_mobile2: sm2,
-  //     });
-
-  //     alert("Updated Successfully");
-  //     fetchEmployee(currentPage, searchTerm); // refresh with current search
-  //   } catch (e) {
-  //     console.log(e);
-  //     alert("Update Failed");
-  //   }
-  // };
   const updateSender = async (empId, sm1, sm2) => {
     try {
       await axios.post(`${API_BASE}/updateSender`, {
@@ -172,13 +150,179 @@ const MemberLoginDetails = () => {
     }
   };
 
-  // if (isLoading) {
-  //   return (
-  //     <div className="text-center py-10">
-  //       <Loader />
-  //     </div>
-  //   );
-  // }
+  const [data, setData] = useState([]);
+  const [loading, setLoading] = useState(false);
+  const [selectedIds, setSelectedIds] = useState([]);
+  const [bulkStart, setBulkStart] = useState("");
+  const [bulkEnd, setBulkEnd] = useState("");
+  const [bulkIp, setBulkIp] = useState("");
+
+  // const navigate = useNavigate();
+  const fetchMemberLoginPeriod = async (page = 1) => {
+    try {
+      const encryptedPayload = encryptData({});
+
+      const response = await axios.get(
+        `${API}/Master/Employee_Profile/login-period`,
+        {
+          params: {
+            payload: encryptedPayload,
+            page, // send current page number
+            limit: itemsPerPage, // number of rows per page
+          },
+        },
+      );
+
+      const parsedData = decryptData(response.data.data);
+
+      console.log(parsedData);
+      if (!parsedData || !parsedData.members) {
+        console.error("❌ Invalid or decrypted data:", parsedData);
+        return;
+      }
+
+      // 🧮 Update table data
+      setData(
+        parsedData.members.map((m) => ({
+          id: m.id,
+          name: m.emp_name,
+          email: m.email,
+          startDate: m.start_time || "",
+          endDate: m.end_time || "",
+          ipAddress: m.ip_address || "",
+        })),
+      );
+
+      // 📊 Set total count (use backend's total count or members.length fallback)
+      setTotalItems(parsedData.total || parsedData.members.length);
+      setShowPagination(true);
+    } catch (error) {
+      console.error("❌ Error fetching member login period:", error);
+    }
+  };
+
+  // ✅ Update Member Login Period - FIXED
+  const updateMemberLoginPeriod = async (payload) => {
+    try {
+      setLoading(true);
+
+      // Clean payload - convert empty strings to null
+      const cleanPayload = {
+        id: payload.id,
+        start_time: payload.start_time || null,
+        end_time: payload.end_time || null,
+        ip_address: payload.ip_address || null,
+      };
+
+      console.log("📤 Clean Payload:", cleanPayload);
+
+      const encryptedPayload = encryptData(cleanPayload);
+
+      // Send as form data or JSON directly
+      const response = await axios.put(
+        `${API}/Master/Employee_Profile/update-login-period`,
+        { data: encryptedPayload },
+        {
+          headers: {
+            "Content-Type": "application/json",
+          },
+        },
+      );
+
+      if (response.data && response.data.data) {
+        const decrypted = decryptData(response.data.data);
+        console.log("✅ Updated Successfully:", decrypted);
+
+        // Refresh data after successful update
+        fetchMemberLoginPeriod();
+      } else {
+        console.error("❌ No data in response");
+      }
+    } catch (error) {
+      console.error("❌ Update error:", error);
+      if (error.response) {
+        console.error("❌ Backend error:", error.response.data);
+      }
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const to24HourTime = (time) => {
+    if (!time) return null;
+
+    // Expecting "hh:mm AM/PM"
+    const [t, modifier] = time.split(" ");
+    let [hours, minutes] = t.split(":").map(Number);
+
+    if (modifier === "PM" && hours < 12) hours += 12;
+    if (modifier === "AM" && hours === 12) hours = 0;
+
+    return `${hours.toString().padStart(2, "0")}:${minutes.toString().padStart(2, "0")}:00`;
+  };
+
+  // ✅ Trigger update on blur - FIXED to use ID instead of index
+  const handleBlur = async (empId) => {
+    const record = data.find(r => r.id === empId);
+    if (!record?.id) {
+      console.error("❌ Missing Employee ID in record:", record);
+      return;
+    }
+
+    const payload = {
+      id: record.id,
+      start_time: to24HourTime(record.startDate),
+      end_time: to24HourTime(record.endDate),
+      ip_address: record.ipAddress || null,
+    };
+
+    console.log("📤 Sending Update Payload:", payload);
+    await updateMemberLoginPeriod(payload);
+  };
+
+  const handleChange = (empId, field, value) => {
+    const updated = [...data];
+    const recordIndex = updated.findIndex(r => r.id === empId);
+    if (recordIndex !== -1) {
+      updated[recordIndex][field] = value;
+      setData(updated);
+    }
+  };
+  const toggleSelect = (id) => {
+    setSelectedIds((prev) =>
+      prev.includes(id) ? prev.filter((i) => i !== id) : [...prev, id],
+    );
+  };
+
+  const applyBulkTime = async (field, time) => {
+    if (selectedIds.length === 0) {
+      alert("Select employees first");
+      return;
+    }
+
+    const updated = [...data];
+
+    for (let i = 0; i < updated.length; i++) {
+      if (selectedIds.includes(updated[i].id)) {
+        updated[i][field] = time;
+
+        await updateMemberLoginPeriod({
+          id: updated[i].id,
+          start_time: to24HourTime(
+            field === "startDate" ? time : updated[i].startDate,
+          ),
+          end_time: to24HourTime(
+            field === "endDate" ? time : updated[i].endDate,
+          ),
+          ip_address: updated[i].ipAddress || null,
+        });
+      }
+    }
+
+    setData(updated);
+    alert("Time updated for selected employees");
+  };
+
 
   return (
     <div className="min-h-screen w-full">
@@ -186,7 +330,7 @@ const MemberLoginDetails = () => {
       <div className="flex justify-center sticky top-[80px] z-40">
         <div className="flex items-center px-6 py-4 border-b mt-5 w-[1290px] h-[62px] border rounded-[11px] border-gray-200 justify-between shadow">
           <h2 className="text-red-600 font-bold text-[20px] leading-[148%] font-source">
-            Member Login Details
+            Member Details
           </h2>
 
           {/* Search & Actions */}
@@ -226,13 +370,32 @@ const MemberLoginDetails = () => {
         </div>
       </div>
 
+      <div className="flex  mt-5 gap-2 pl-[115px]">
+        <div>
+          <label className="text-xs font-semibold">Bulk Start Time</label>
+          <TimePicker
+            initialTime=""
+            onSave={(time) => applyBulkTime("startDate", time)}
+          />
+        </div>
+
+        <div>
+          <label className="text-xs font-semibold">Bulk End Time</label>
+          <TimePicker
+            initialTime=""
+            onSave={(time) => applyBulkTime("endDate", time)}
+          />
+        </div>
+      </div>
+
       {/* Table */}
 
       <div className="overflow-x-auto mt-5 h-[500px] border-gray-300 rounded pl-[110px]">
         <table className="table-fixed border-collapse ">
           <thead className="bg-[#0A2478] text-white text-sm top-0">
             <tr>
-              <th className="px-4 py-2 border-r text-center w-[50px]">#</th>
+              <th className="px-4 py-2 border-r">Select</th>
+              {/* <th className="px-4 py-2 border-r text-center w-[50px]">#</th> */}
               <th className="px-4 py-2 border-r text-left  w-[200px]">Name</th>
               <th className="px-4 py-2 border-r text-left  w-[200px]">
                 User ID
@@ -240,80 +403,143 @@ const MemberLoginDetails = () => {
               <th className="px-4 py-2 border-r text-center w-[100px]">
                 OTP Override
               </th>
-              <th className="px-2 py-2 border-r text-center w-[100px] ">
+              <th className="px-2 py-2 border-r text-center w-[110px] ">
                 Manager Mobile No
               </th>
-              <th className="px-2 py-2 border-r text-center w-[100px] ">
+              <th className="px-2 py-2 border-r text-center w-[110px] ">
                 Admin Mobile No
               </th>
+              <th className="px-2 py-2 border-r text-center w-[100px]">Start Time</th>
+              <th className="px-2 py-2 border-r text-center w-[100px]">End Time</th>
+              <th className="px-2 py-2 border-r text-center w-[100px]">IP Address</th>
+              <th className="px-2 py-2 border-r text-center w-[100px]">Branch Mapping</th>
             </tr>
           </thead>
 
           <tbody className="text-[12px]">
             {employeeList.length > 0 ? (
-              employeeList.map((row, index) => (
-                <tr
-                  key={row.id || index}
-                  className={`${index % 2 === 0 ? "bg-gray-50" : "bg-white"} hover:bg-gray-100`}
-                >
-                  {/* Serial Number */}
-                  <td className="px-4 py-2 text-center">
-                    {(currentPage - 1) * itemsPerPage + index + 1}
-                  </td>
+              employeeList.map((row, index) => {
+                // Find corresponding login period data by ID
+                const loginData = data.find(d => d.id === row.id) || {
+                  startDate: "",
+                  endDate: "",
+                  ipAddress: ""
+                };
 
-                  <td className="px-4 py-2 font-medium">{row.emp_name}</td>
+                return (
+                  <tr
+                    key={row.id || index}
+                    className={`${index % 2 === 0 ? "bg-gray-50" : "bg-white"} hover:bg-gray-100`}
+                  >
+                    {/* Serial Number */}
+                    <td className="px-4 py-2 text-center">
+                      <input
+                        type="checkbox"
+                        checked={selectedIds.includes(row.id)}
+                        onChange={() => toggleSelect(row.id)}
+                      />
+                    </td>
+                    {/* <td className="px-4 py-2 text-center">
+                      {(currentPage - 1) * itemsPerPage + index + 1}
+                    </td> */}
 
-                  <td className="px-4 py-2">{row.email}</td>
+                    <td className="px-4 py-2 font-medium">{row.emp_name}</td>
 
-                  <td className="px-4 py-2 text-center">
-                    <input
-                      type="checkbox"
-                      checked={row.OTP_Override == 1} // if db stores 0/1
-                      onChange={(e) => updateOTP(row.id, e.target.checked)}
-                      className="w-5 h-5 accent-blue-900 cursor-pointer"
-                    />
-                  </td>
+                    <td className="px-4 py-2">{row.email}</td>
 
-                  {/* Sender Mobile 1 */}
-                  <td className="">
-                    <div className="flex items-center gap-2">
+                    <td className="px-4 py-2 text-center">
+                      <input
+                        type="checkbox"
+                        checked={row.OTP_Override == 1} // if db stores 0/1
+                        onChange={(e) => updateOTP(row.id, e.target.checked)}
+                        className="w-5 h-5 accent-blue-900 cursor-pointer"
+                      />
+                    </td>
+
+                    {/* Sender Mobile 1 */}
+                    <td className="">
+                      <div className="flex items-center px-2 gap-2">
+                        <input
+                          type="text"
+                          maxLength="10"
+                          value={row.sender_mobile1 || ""}
+                          className="py-1 text-sm w-[100px] px-2 border border-gray-300 rounded-sm flex-1 focus:outline-none focus:ring-1 focus:ring-blue-500"
+                          onChange={(e) =>
+                            handleMobileChange(
+                              row.id,
+                              "sender_mobile1",
+                              e.target.value,
+                              row,
+                            )
+                          }
+                        />
+                      </div>
+                    </td>
+
+                    <td className="">
+                      <div className="flex items-center px-2 gap-2">
+                        <input
+                          type="text"
+                          maxLength="10"
+                          value={row.sender_mobile2 || ""}
+                          className="py-1 text-sm w-[100px] px-2 border border-gray-300 rounded-sm flex-1 focus:outline-none focus:ring-1 focus:ring-blue-500"
+                          onChange={(e) =>
+                            handleMobileChange(
+                              row.id,
+                              "sender_mobile2",
+                              e.target.value,
+                              row,
+                            )
+                          }
+                        />
+                      </div>
+                    </td>
+                    {/* Start Time */}
+                    <td className="px-4 py-2">
+                      <TimePicker
+                        initialTime={loginData.startDate}
+                        onSave={(newTime) => {
+                          handleChange(row.id, "startDate", newTime);
+                          handleBlur(row.id);
+                        }}
+                      />
+                    </td>
+
+                    {/* End Time */}
+                    <td className="px-4 py-2">
+                      <TimePicker
+                        initialTime={loginData.endDate}
+                        onSave={(newTime) => {
+                          handleChange(row.id, "endDate", newTime);
+                          handleBlur(row.id);
+                        }}
+                      />
+                    </td>
+
+                    {/* ✅ Editable IP Address */}
+                    <td className="px-1 py-2">
                       <input
                         type="text"
-                        maxLength="10"
-                        value={row.sender_mobile1 || ""}
-                        className="py-1 text-sm px-2 border rounded-sm flex-1 focus:outline-none focus:ring-1 focus:ring-blue-500"
+                        value={loginData.ipAddress}
                         onChange={(e) =>
-                          handleMobileChange(
-                            row.id,
-                            "sender_mobile1",
-                            e.target.value,
-                            row,
-                          )
+                          handleChange(row.id, "ipAddress", e.target.value)
                         }
+                        onBlur={() => handleBlur(row.id)}
+                        placeholder="Enter IP address"
+                        className="border border-gray-300 w-[80px] rounded px-2 py-1 text-sm focus:outline-none focus:ring-1 focus:ring-blue-500"
                       />
-                    </div>
-                  </td>
-
-                  <td className="">
-                    <div className="flex items-center gap-2">
-                      <input
-                        type="text"
-                        maxLength="10"
-                        value={row.sender_mobile2 || ""}
-                        className="py-1 text-sm px-2 border rounded-sm flex-1 focus:outline-none focus:ring-1 focus:ring-blue-500"
-                        onChange={(e) =>
-                          handleMobileChange(
-                            row.id,
-                            "sender_mobile2",
-                            e.target.value,
-                            row,
-                          )
-                        }
-                      />
-                    </div>
-                  </td>
-                </tr>
-              ))
+                    </td>
+                    <td className="px-4 py-2 text-center">
+                      <Link
+                        to={`/Add-Member-Branch-Mapping?id=${row.id}`}
+                        className="text-blue-700"
+                      >
+                        Branch
+                      </Link>
+                    </td>
+                  </tr>
+                );
+              })
             ) : (
               <tr>
                 <td

@@ -1553,9 +1553,11 @@ const Navbar = () => {
     { name: "Employee Profile", path: "/Employee-Profile-list" },
     // { name: "Member Login Period", path: "/Member-Login-Period" },
     // { name: "Member Login Details", path: "/Member-Login-Details" },
-    { name: "Member Details", path: "/Member-Details" },
+    { name: "Employee Member Details", path: "/Member-Details" },
     { name: "Employee Attendance", path: "/Employee-Attendance" },
     { name: "Employee Designation", path: "/Employee-Designation" },
+    { name: "Employee Role Permission", path: "/User-Role-Permission" },
+
   ];
 
   const filteredEmployeeProfile = isAdmin
@@ -1773,7 +1775,7 @@ const Navbar = () => {
                 )}
 
                 {/* User Management */}
-                {canSeeUserManagement && (
+                {/* {canSeeUserManagement && (
                   <div className="relative">
                     <button
                       className="w-full text-left px-4 py-2 hover:bg-gray-100 flex justify-between items-center"
@@ -1805,7 +1807,7 @@ const Navbar = () => {
                       </div>
                     )}
                   </div>
-                )}
+                )} */}
               </div>
             )}
           </div>

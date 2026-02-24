@@ -167,36 +167,7 @@ const MemberLoginPeriod = () => {
       prev.includes(id) ? prev.filter((i) => i !== id) : [...prev, id],
     );
   };
-  // const applyBulkUpdate = async () => {
-  //   if (selectedIds.length === 0) {
-  //     alert("Select employees first");
-  //     return;
-  //   }
-
-  //   const start_time = to24HourTime(bulkStart);
-  //   const end_time = to24HourTime(bulkEnd);
-
-  //   try {
-  //     setLoading(true);
-
-  //     for (const id of selectedIds) {
-  //       await updateMemberLoginPeriod({
-  //         id,
-  //         start_time,
-  //         end_time,
-  //         ip_address: bulkIp || null,
-  //       });
-  //     }
-
-  //     alert("Updated selected employees");
-  //     setSelectedIds([]);
-  //     fetchMemberLoginPeriod(currentPage);
-  //   } catch (err) {
-  //     console.error(err);
-  //   } finally {
-  //     setLoading(false);
-  //   }
-  // };
+  
   const applyBulkTime = async (field, time) => {
     if (selectedIds.length === 0) {
       alert("Select employees first");

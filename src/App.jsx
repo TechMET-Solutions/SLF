@@ -476,7 +476,9 @@ function App() {
                     path="/Member-Login-Period"
                     element={<MemberLoginPeriod />}
                   />
-                  <Route path="/Member-Details" element={<MemberLoginTabs />} />
+                  <Route path="/Member-Details" element={<MemberLoginDetails />} />
+
+                  {/* <Route path="/Member-Details" element={<MemberLoginTabs />} /> */}
                   <Route
                     path="/WhatsApp-Configuration"
                     element={<WhatsApp />}

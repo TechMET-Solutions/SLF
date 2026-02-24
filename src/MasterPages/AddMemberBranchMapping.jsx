@@ -104,7 +104,7 @@ const AddMemberBranchMapping = () => {
               Save
             </button>
             <button
-              onClick={() => navigate("/Member-Branch-Mapping")}
+              onClick={() => navigate("/Member-Details")}
               className="bg-[#C1121F] text-white text-[10px] w-[74px] h-[24px] rounded"
             >
               Exit
