@@ -43,27 +43,27 @@ export const updateRolesStatusApi = async (id, is_active) => {
 };
 
 // 🔹 Add New roles
-// export const addRolesApi = async (payload) => {
-//   try {
-//     const encryptedPayload = encryptData(payload);
-//     return await axios.post(`${API_BASE}/add-roles`, { data: encryptedPayload }, {
-//       headers: { "Content-Type": "application/json" },
-//     });
-//   } catch (error) {
-//     console.error("❌ Error adding roles:", error);
-//     throw error;
-//   }
-// };
 export const addRolesApi = async (formData) => {
   const res = await fetch(`${API}/Master/User-Management/add-roles`, {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
     },
-    body: JSON.stringify(formData), // ✅ send directly
+    body: JSON.stringify(formData),
   });
 
-  return res.json();
+  const data = await res.json();
+
+  // ✅ Throw error for 400/500 responses
+  if (!res.ok) {
+    throw {
+      response: {
+        data: data,
+      },
+    };
+  }
+
+  return data;
 };
 
 // 🔹 Update Existing roles

@@ -80,15 +80,44 @@ const UserRolePermission = () => {
   };
 
   // 🔹 Handle form submission
+  // const handleSubmit = async (e) => {
+  //   e.preventDefault();
+  //   try {
+  //     if (isEditMode) {
+  //       await updateRolesApi(formData);
+  //     } else {
+  //       await addRolesApi(formData);
+  //     }
+  //     setIsModalOpen(false);
+  //     setFormData({
+  //       id: null,
+  //       role_name: "",
+  //       system_name: "",
+  //       is_system_role: false,
+  //       is_active: true,
+  //     });
+  //     setIsEditMode(false);
+  //     fetchRoles(currentPage);
+  //   } catch (error) {
+  //     console.error("❌ Error submitting form:", error);
+  //   }
+  // };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
+
     try {
       if (isEditMode) {
         await updateRolesApi(formData);
       } else {
         await addRolesApi(formData);
       }
+
+      // ✅ Success
+      alert("✅ Role saved successfully");
+
       setIsModalOpen(false);
+
       setFormData({
         id: null,
         role_name: "",
@@ -96,10 +125,23 @@ const UserRolePermission = () => {
         is_system_role: false,
         is_active: true,
       });
+
       setIsEditMode(false);
       fetchRoles(currentPage);
+
     } catch (error) {
+
       console.error("❌ Error submitting form:", error);
+
+      // ✅ Show duplicate role alert
+      if (
+        error?.response?.data?.error?.includes("Role name already exists") ||
+        error?.response?.data?.message?.includes("Role name already exists")
+      ) {
+        alert("❌ Role name already exists");
+      } else {
+        alert("❌ Something went wrong");
+      }
     }
   };
 

@@ -43,7 +43,12 @@ function EmployeeDesignation() {
         }
     };
 
-    // 🟩 Create Designation
+    // 🟧 Open Edit Modal
+    const handleEditClick = (row) => {
+        setSelectedDesignation(row);
+        setEditModalOpen(true);
+    };
+    
     const handleSave = async () => {
         if (!designation.trim()) {
             alert("Please enter a designation");
@@ -51,26 +56,32 @@ function EmployeeDesignation() {
         }
 
         try {
-            const response = await axios.post(`${BASE_URL}/create-designation`, {
-                designation,
-            });
+            const response = await axios.post(
+                `${BASE_URL}/create-designation`,
+                { designation }
+            );
+
             alert(response.data.message);
+
             setDesignation("");
             fetchDesignations();
+
         } catch (err) {
+
             console.error("Add Designation Error:", err);
-            alert("Error adding designation");
+
+            // ✅ Show duplicate designation error
+            if (err?.response?.data?.error?.includes("Designation already exists")) {
+                alert("❌ Designation already exists");
+            }
+            else {
+                alert("Error adding designation");
+            }
         }
     };
 
-    // 🟧 Open Edit Modal
-    const handleEditClick = (row) => {
-        setSelectedDesignation(row);
-        setEditModalOpen(true);
-    };
-
-    // 🟨 Confirm Edit
     const handleEditConfirm = async () => {
+
         if (!selectedDesignation.designation.trim()) {
             alert("Designation name cannot be empty");
             return;
@@ -81,12 +92,23 @@ function EmployeeDesignation() {
                 `${BASE_URL}/update-designation/${selectedDesignation.id}`,
                 { designation: selectedDesignation.designation }
             );
+
             alert(response.data.message || "Designation updated successfully!");
+
             setEditModalOpen(false);
             fetchDesignations();
+
         } catch (err) {
+
             console.error("Edit Error:", err);
-            alert("Error updating designation");
+
+            // ✅ Show duplicate designation error
+            if (err?.response?.data?.error?.includes("Designation already exists")) {
+                alert("❌ Designation already exists");
+            }
+            else {
+                alert("Error updating designation");
+            }
         }
     };
 
