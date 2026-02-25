@@ -358,12 +358,10 @@ const EmployeeProfile = () => {
       assign_role: "",
       assign_role_id: "",
       password: "",
-      fax: "",
       emp_image: "",
       emp_add_prof: "",
       emp_id_prof: "",
       status: true,
-      salary: null,
     });
     setProfileImage(null);
     setAddressProof(null);
@@ -594,9 +592,7 @@ const EmployeeProfile = () => {
         assign_role: formData.assign_role,
         assign_role_id: formData.assign_role_id,
         password: formData.password,
-        fax: formData.fax,
         status: formData.status,
-        salary: formData.salary,
       };
 
       const encryptedData = encryptData(JSON.stringify(payload));
@@ -1056,49 +1052,6 @@ const EmployeeProfile = () => {
               <div className=" space-y-4 text-sm">
                 {/* PAN + Aadhaar + Name */}
                 <div className="flex gap-4 w-full">
-                  {/* <div className="flex flex-col flex-1">
-                    <label className="text-[14px] font-medium">
-                      PAN No. <span className="text-red-500">*</span>
-                    </label>
-
-                    <div className="flex items-center mt-1">
-                      <div className="relative flex-1">
-                        <input
-                          type="text"
-                          placeholder="Enter PAN"
-                          name="pan_card"
-                          disabled={mode === "view"}
-                          value={formData.pan_card}
-                          onChange={handleInputChange}
-                          className="border border-[#C4C4C4] border-r-0 rounded-l-[8px] px-3 py-2 pr-10 w-full bg-white"
-                        />
-
-                        <input
-                          type="file"
-                          accept="image/*,.pdf"
-                          ref={panFileInputRef}
-                          disabled={mode === "view"}
-                          onChange={handlePanFileChange}
-                          className="hidden"
-                        />
-
-                        <FaPaperclip
-                          className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 cursor-pointer"
-                          size={16}
-                          onClick={() => panFileInputRef.current.click()}
-                        />
-                      </div>
-
-                      <button
-                        className="bg-[#0A2478] text-white px-4 py-2 rounded-r-[8px] hover:bg-[#081c5b] whitespace-nowrap"
-                        type="button"
-                        onClick={verifyPan}
-                      >
-                        Verify
-                      </button>
-                    </div>
-                  </div> */}
-
                   <div className="flex flex-col">
                     <label className="text-[14px] font-medium">
                       PAN No. <span className="text-red-500">*</span>
@@ -1109,7 +1062,7 @@ const EmployeeProfile = () => {
                           type="text"
                           placeholder="Enter PAN"
                           name="pan_card"
-                          disabled={mode === "view"}
+                          disabled={mode === "view" || mode === "edit"  }
                           value={formData.pan_card}
                           onChange={handleInputChange}
                           // Set to 140px to match Aadhaar
@@ -1119,7 +1072,7 @@ const EmployeeProfile = () => {
                           type="file"
                           accept="image/*,.pdf"
                           ref={panFileInputRef}
-                          disabled={mode === "view"}
+                          disabled={mode === "view" || mode === "edit"  }
                           onChange={handlePanFileChange}
                           className="hidden"
                         />
@@ -1142,54 +1095,6 @@ const EmployeeProfile = () => {
                   </div>
 
                   {/* Aadhaar */}
-                  {/* <div className="flex flex-col flex-1">
-                    <label className="text-[14px] font-medium">
-                      Aadhar Card Number <span className="text-red-500">*</span>
-                    </label>
-
-                    <div className="flex items-center mt-1">
-                      <div className="relative flex-1">
-                        <input
-                          type="number"
-                          placeholder={
-                            formData.aadhar
-                              ? `${formData.aadhar}`
-                              : "Enter Aadhar"
-                          }
-                          name="aadhar_card"
-                          disabled={mode === "view"}
-                          value={formData.aadhar_card}
-                          onChange={handleInputChange}
-                          className="border border-[#C4C4C4] border-r-0 rounded-l-[8px] px-3 py-2 pr-10 w-[160px] bg-white h-[38px]"
-                          style={{ MozAppearance: "textfield" }}
-                          onWheel={(e) => e.target.blur()}
-                        />
-
-                        <input
-                          type="file"
-                          accept="image/*,.pdf"
-                          ref={aadharFileInputRef}
-                          disabled={mode === "view"}
-                          onChange={handleAadharFileChange}
-                          className="hidden"
-                        />
-
-                        <FaPaperclip
-                          className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 cursor-pointer"
-                          size={16}
-                          onClick={() => aadharFileInputRef.current.click()}
-                        />
-                      </div>
-
-                      <button
-                        className="bg-[#0A2478] text-white px-4 py-2 rounded-r-[8px] hover:bg-[#081c5b] whitespace-nowrap h-[38px]"
-                        type="button"
-                        onClick={sendAadhaarOTP}
-                      >
-                        verify
-                      </button>
-                    </div>
-                  </div> */}
                   <div className="flex flex-col">
                     <label className="text-[14px] font-medium">
                       Aadhar Card Number <span className="text-red-500">*</span>
@@ -1246,31 +1151,6 @@ const EmployeeProfile = () => {
                       </button>
                     </div>
                   </div>
-
-                  {/* OTP */}
-                  {/* <div className="flex flex-col w-[140px]">
-    <label className="text-[14px] font-medium">Verify OTP</label>
-
-    <div className="relative mt-1">
-      <input
-        type="number"
-        placeholder="Enter OTP"
-        name="otp"
-        value={formData.otp}
-        onChange={handleInputChange}
-        className="border border-gray-300 rounded-[8px] px-3 py-2 w-[140px] bg-white"
-        style={{ MozAppearance: "textfield" }}
-        onWheel={(e) => e.target.blur()}
-      />
-
-      <img
-        src={righttick}
-        alt="tick"
-        onClick={verifyAadhaarOtp}
-        className="absolute right-3 top-1/2 -translate-y-1/2 w-[13px] h-[13px] cursor-pointer"
-      />
-    </div>
-  </div> */}
 
                   {/* Name */}
                   <div className="flex flex-col flex-1">
@@ -1485,7 +1365,7 @@ const EmployeeProfile = () => {
                       ))}
                     </select> */}
 
-                  
+
 
                     <MultiSelect
                       options={branches.map((branch) => ({
@@ -1566,39 +1446,13 @@ const EmployeeProfile = () => {
                       type="password"
                       name="password"
                       value={formData.password}
-                      disabled={mode === "view"}
+                      disabled={mode === "view" || mode === "edit"}
                       onChange={handleInputChange}
                       placeholder="*******"
                       className="border border-[#C4C4C4] rounded-md px-3 py-2 focus:outline-none focus:ring-1 focus:ring-blue-500 w-[140px]"
                     />
                   </div>
-                  {/* <div className="flex flex-col gap-1">
-                    <label className="text-gray-700 font-medium">Fax</label>
-                    <input
-                      type="text"
-                      name="fax"
-                      disabled={mode === "view"}
-                      value={formData.fax}
-                      onChange={handleInputChange}
-                      placeholder="Fax"
-                      className="border border-[#C4C4C4] rounded-md px-3 py-2 focus:outline-none focus:ring-1 focus:ring-blue-500 w-[140px]"
-                    />
-                  </div>
-                  <div className="flex flex-col gap-1">
-                    <label className="text-gray-700 font-medium">
-                      Salary Per Month
-                    </label>
 
-                    <input
-                      type="text"
-                      name="salary"
-                      disabled={mode === "view"}
-                      value={formData.salary}
-                      onChange={handleInputChange}
-                      placeholder="salary"
-                      className="border border-[#C4C4C4] rounded-md px-3 py-2 focus:outline-none focus:ring-1 focus:ring-blue-500 w-[130px]"
-                    />
-                  </div> */}
                 </div>
 
                 <div className="flex gap-2"></div>
@@ -1638,7 +1492,7 @@ const EmployeeProfile = () => {
                       <input
                         id="profileImage"
                         type="file"
-                        disabled={mode === "view"}
+                        disabled={mode === "view" }
                         className="hidden"
                         onChange={(e) => handleFileChange(e, setProfileImage)}
                       />
@@ -1796,7 +1650,7 @@ const EmployeeProfile = () => {
                     className="bg-[#0A2478] text-white w-[92px] h-[32px] rounded hover:bg-[#081c5b]"
                     onClick={mode === "edit" ? handleUpdate : handleSave}
                   >
-                    {mode === "edit" ? "Update" : "Save"}
+                    Save
                   </button>
                 )}
                 <button
