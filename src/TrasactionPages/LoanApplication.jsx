@@ -156,96 +156,6 @@ const LoanApplication = () => {
     },
   });
 
-  // const fetchLoanApplications = async (
-  //   page = 1,
-  //   immediateFilters = null,
-  //   immediateDate = undefined,
-  //   immediateScheme = undefined,
-  // ) => {
-  //   setLoading(true);
-  //   setError("");
-
-  //   try {
-  //     const activeFilters =
-  //       immediateFilters !== null ? immediateFilters : filters;
-  //     const activeDate =
-  //       immediateDate !== undefined ? immediateDate : selectedDate;
-  //     const activeScheme =
-  //       immediateScheme !== undefined ? immediateScheme : selectedScheme;
-
-  //     const params = new URLSearchParams({
-  //       page: page.toString(),
-  //       limit: pagination.limit.toString(),
-  //     });
-
-  //     // Add ALL existing filters
-  //     Object.entries(activeFilters).forEach(([key, value]) => {
-  //       if (value && key !== "field" && key !== "search") {
-  //         params.append(key, value);
-  //       }
-  //     });
-
-  //     // Add Product Filter (gold/silver)
-  //     if (activeFilters.loan_type) {
-  //       params.append("loan_type", activeFilters.loan_type);
-  //     }
-
-  //     // ⭐ ADD THIS ⭐ → Bullet/EMI filter
-  //     if (activeFilters.loans) {
-  //       params.append("loans", activeFilters.loans);
-  //     }
-
-  //     // Add scheme filter
-  //     if (activeScheme) {
-  //       const selectedSchemeObj = schemes.find((s) => {
-  //         const label =
-  //           typeof s === "string"
-  //             ? s
-  //             : s.schemeName ||
-  //               s.SchemeName ||
-  //               s.name ||
-  //               s.schemeCode ||
-  //               s.scheme_code ||
-  //               s.code ||
-  //               JSON.stringify(s);
-  //         return label === activeScheme;
-  //       });
-
-  //       if (selectedSchemeObj && selectedSchemeObj.id) {
-  //         params.append("scheme_id", selectedSchemeObj.id);
-  //       }
-  //     }
-
-  //     // Add Date filter
-  //     if (activeDate) {
-  //       params.append("loan_date", activeDate.toISOString().split("T")[0]);
-  //     }
-
-  //     const response = await apiClient.get(
-  //       `/Transactions/goldloan/all?${params}`,
-  //     );
-
-  //     if (response.data.success) {
-  //       setLoanApplication(response.data.data);
-  //       setPagination({
-  //         page: response.data.page,
-  //         totalPages: response.data.totalPages,
-  //         total: response.data.total,
-  //         limit: pagination.limit,
-  //       });
-  //     } else {
-  //       throw new Error(response.data.message || "No loan applications");
-  //     }
-  //   } catch (err) {
-  //     console.error("Error fetching loan applications:", err);
-  //     setError("No loan applications");
-  //     setLoanApplication([]);
-  //   } finally {
-  //     setLoading(false);
-  //   }
-  // };
-
-  // Initial fetch
   const fetchLoanApplications = async (
     page = 1,
     immediateFilters = null,
@@ -548,9 +458,8 @@ const LoanApplication = () => {
         errorMessage =
           err.response.data?.message || `Server error: ${err.response.status}`;
         if (err.response.status === 400) {
-          errorMessage = `Bad Request: ${
-            err.response.data?.message || "Invalid data sent to server"
-          }`;
+          errorMessage = `Bad Request: ${err.response.data?.message || "Invalid data sent to server"
+            }`;
         }
       } else if (err.request) {
         errorMessage = "No response from server. Please check your connection.";
@@ -735,11 +644,10 @@ const LoanApplication = () => {
         buttons.push(
           <button
             key={i}
-            className={`px-3 py-1 border rounded-md ${
-              currentPage === i
-                ? "bg-[#0b2c69] text-white"
-                : "hover:bg-gray-100"
-            }`}
+            className={`px-3 py-1 border rounded-md ${currentPage === i
+              ? "bg-[#0b2c69] text-white"
+              : "hover:bg-gray-100"
+              }`}
             onClick={() => handlePageChange(i)}
           >
             {i}
@@ -750,9 +658,8 @@ const LoanApplication = () => {
       buttons.push(
         <button
           key={1}
-          className={`px-3 py-1 border rounded-md ${
-            currentPage === 1 ? "bg-[#0b2c69] text-white" : "hover:bg-gray-100"
-          }`}
+          className={`px-3 py-1 border rounded-md ${currentPage === 1 ? "bg-[#0b2c69] text-white" : "hover:bg-gray-100"
+            }`}
           onClick={() => handlePageChange(1)}
         >
           1
@@ -774,11 +681,10 @@ const LoanApplication = () => {
         buttons.push(
           <button
             key={i}
-            className={`px-3 py-1 border rounded-md ${
-              currentPage === i
-                ? "bg-[#0b2c69] text-white"
-                : "hover:bg-gray-100"
-            }`}
+            className={`px-3 py-1 border rounded-md ${currentPage === i
+              ? "bg-[#0b2c69] text-white"
+              : "hover:bg-gray-100"
+              }`}
             onClick={() => handlePageChange(i)}
           >
             {i}
@@ -797,11 +703,10 @@ const LoanApplication = () => {
       buttons.push(
         <button
           key={totalPages}
-          className={`px-3 py-1 border rounded-md ${
-            currentPage === totalPages
-              ? "bg-[#0b2c69] text-white"
-              : "hover:bg-gray-100"
-          }`}
+          className={`px-3 py-1 border rounded-md ${currentPage === totalPages
+            ? "bg-[#0b2c69] text-white"
+            : "hover:bg-gray-100"
+            }`}
           onClick={() => handlePageChange(totalPages)}
         >
           {totalPages}
@@ -837,6 +742,21 @@ const LoanApplication = () => {
     fetchLoanApplications(1, updatedFilters);
   };
 
+  const allHeaderIds = [
+    "id",
+    "Print_Name",
+    "Scheme",
+    "Loan_amount",
+    
+  ];
+
+
+  const handleSelectAll = () => {
+    const allSelected = allHeaderIds.every((id) => searchHeaders.includes(id));
+    setSearchHeaders(allSelected ? [] : [...allHeaderIds]);
+  };
+
+
   return (
     <div>
       <div className="flex justify-center sticky top-[80px] z-40">
@@ -856,49 +776,7 @@ const LoanApplication = () => {
 
           <div className="flex gap-3">
             <div className="flex gap-5 items-center">
-              {/* <div>
-                <select
-                  name="field"
-                  value={filters.field}
-                  onChange={(e) => handleFilterChange("field", e.target.value)}
-                  className="border border-gray-300 rounded pl-2 w-[111px] h-[31px] text-[12px]"
-                >
-                  <option value="">Field</option>
-                  <option value="loan_no">Loan No</option>
-                  <option value="party_name">Party Name</option>
-                  <option value="Scheme">Scheme</option>
-                  <option value="added_by">Added By</option>
-                  <option value="approved_by">Approved By</option>
-                </select>
-              </div>
 
-              <div className="flex gap-2">
-                <input
-                  type="text"
-                  placeholder="Search"
-                  value={filters.search}
-                  onChange={(e) => handleFilterChange("search", e.target.value)}
-                  onKeyPress={(e) => e.key === "Enter" && handleSearch()}
-                  style={{
-                    width: "134.64px",
-                    height: "31.49px",
-                    borderRadius: "5px",
-                    borderWidth: "0.62px",
-                  }}
-                  className="border border-gray-400 px-3 py-1 text-[11.25px] font-source"
-                />
-                <button
-                  style={{
-                    width: "30px",
-                    height: "31px",
-                    borderRadius: "5px",
-                  }}
-                  className="bg-[#0b2c69] text-white text-[11.25px] font-source font-normal flex items-center justify-center hover:bg-[#0a1f5a]"
-                  onClick={handleSearch}
-                >
-                  <CiSearch className="w-[14px] h-[14px] font-bold" />
-                </button>
-              </div> */}
 
               <div className="flex items-center gap-3">
                 <div className="flex items-center bg-white border border-gray-400 rounded-[5px] h-[32px] px-2 relative w-[380px]">
@@ -914,6 +792,22 @@ const LoanApplication = () => {
 
                     {isDropdownOpen && (
                       <div className="absolute top-[35px] left-[-8px] bg-white border border-gray-300 shadow-xl rounded-md z-[100] w-[160px] p-2">
+
+                        <button
+                          onClick={handleSelectAll}
+                          className="flex items-center gap-2 p-2 hover:bg-blue-50 cursor-pointer rounded border-b border-gray-200 mb-1"
+                        >
+                          <input
+                            type="checkbox"
+                            checked={allHeaderIds.every((id) => searchHeaders.includes(id))}
+                            onChange={handleSelectAll}
+                            className="w-3 h-3 accent-[#0A2478]"
+                          />
+                          <span className="text-[11px] font-source font-bold text-[#0A2478]">
+                            Select All
+                          </span>
+                        </button>
+
                         {[
                           { id: "id", label: "Loan No" },
                           { id: "Print_Name", label: "Party Name" },
@@ -951,6 +845,7 @@ const LoanApplication = () => {
                   <input
                     type="text"
                     value={searchQuery}
+                    onClick={() => setIsDropdownOpen(false)}
                     onChange={(e) => setSearchQuery(e.target.value)}
                     placeholder="Type multiple items (e.g. Cash, Asset)..."
                     className="flex-grow text-[11px] font-source outline-none h-full"
@@ -983,7 +878,7 @@ const LoanApplication = () => {
                   </button>
                 </div>
               </div>
-              
+
               {/* Scheme Filter */}
               {/* <div className="relative w-[111px]">
                 <button
@@ -1108,13 +1003,13 @@ const LoanApplication = () => {
                 Object.values(filters).some(
                   (val) => val && val !== "field" && val !== "search",
                 )) && (
-                <button
-                  onClick={clearAllFilters}
-                  className="ml-2 bg-[#0b2c69] text-white text-[11px] px-4 h-[24px] rounded-[3px] font-source hover:bg-[#071d45]"
-                >
-                  Clear All
-                </button>
-              )}
+                  <button
+                    onClick={clearAllFilters}
+                    className="ml-2 bg-[#0b2c69] text-white text-[11px] px-4 h-[24px] rounded-[3px] font-source hover:bg-[#071d45]"
+                  >
+                    Clear All
+                  </button>
+                )}
             </div>
           </div>
 
@@ -1703,7 +1598,7 @@ const LoanApplication = () => {
                   value={cancelRemark}
                   config={editorConfig}
                   onBlur={(newContent) => setCancelRemark(newContent)}
-                  onChange={(newContent) => {}}
+                  onChange={(newContent) => { }}
                 />
               </div>
               <p className="text-xs text-gray-500 mt-1">

@@ -213,6 +213,25 @@ const CustProfile = () => {
     }
   };
 
+  const allHeaderIds = [
+    "id",
+    "firstName",
+    "middleName",
+    "lastName",
+    "Corresponding_City",
+    "mobile",
+    "panNo",
+    "aadhar",
+  ];
+
+  const handleSelectAll = () => {
+    if (searchHeaders.length === allHeaderIds.length) {
+      setSearchHeaders([]);
+    } else {
+      setSearchHeaders(allHeaderIds);
+    }
+  };
+
   return (
     <div className="min-h-screen w-full">
       {/* middletopbar */}
@@ -234,72 +253,6 @@ const CustProfile = () => {
 
           {/* Right section (search + buttons) */}
           <div className="flex items-center gap-6">
-            {/* Search section */}
-            {/* <div className="flex gap-5">
-              <div className="flex gap-3 items-center">
-                <p className="text-[11.25px] font-source">Search By</p>
-                <select
-                  value={searchField}
-                  onChange={handleSearchFieldChange}
-                  style={{
-                    width: "140px",
-                    height: "27.49px",
-                    borderRadius: "5px",
-                    borderWidth: "0.62px",
-                  }}
-                  className="border border-gray-400 px-3 py-1 text-[11.25px] font-source"
-                >
-                  <option value="partyUID">Party UID</option>
-                  <option value="fname">F Name</option>
-                  <option value="mname">M Name</option>
-                  <option value="lname">L Name</option>
-                  <option value="city">City</option>
-                  <option value="mobile">Mobile Number</option>
-                </select>
-              </div>
-
-              <div className="flex gap-3 items-center">
-                <input
-                  type="text"
-                  placeholder={getPlaceholderText()}
-                  value={searchValue}
-                  onChange={handleSearchInputChange}
-                  onKeyPress={handleKeyPress}
-                  style={{
-                    width: "168.64px",
-                    height: "27.49px",
-                    borderRadius: "5px",
-                    borderWidth: "0.62px",
-                  }}
-                  className="border border-gray-400 px-3 py-1 text-[11.25px] font-source"
-                />
-
-                <button
-                  onClick={handleSearch}
-                  style={{
-                    width: "84.36px",
-                    height: "26.87px",
-                    borderRadius: "5px",
-                  }}
-                  className="bg-[#0b2c69] text-white text-[11.25px] font-source font-normal flex items-center justify-center"
-                >
-                  Search
-                </button>
-
-                <button
-                  onClick={handleClearSearch}
-                  style={{
-                    width: "84.36px",
-                    height: "26.87px",
-                    borderRadius: "5px",
-                  }}
-                  className="bg-[#6c757d] text-white text-[11.25px] font-source font-normal flex items-center justify-center"
-                >
-                  Clear
-                </button>
-              </div>
-            </div> */}
-
             <div className="flex items-center gap-3">
               <div className="flex items-center bg-white border border-gray-400 rounded-[5px] h-[32px] px-2 relative w-[500px]">
                 {/* Multi-Select Header Dropdown */}
@@ -314,6 +267,21 @@ const CustProfile = () => {
 
                   {isDropdownOpen && (
                     <div className="absolute top-[35px] left-[-8px] bg-white border border-gray-300 shadow-xl rounded-md z-[100] w-[160px] p-2">
+                      <button
+                        onClick={handleSelectAll}
+                        className="flex items-center gap-2 p-2 hover:bg-blue-50 cursor-pointer rounded border-b border-gray-200 mb-1"
+                      >
+                        <input
+                          type="checkbox"
+                          checked={allHeaderIds.every((id) => searchHeaders.includes(id))}
+                          onChange={handleSelectAll}
+                          className="w-3 h-3 accent-[#0A2478]"
+                        />
+                        <span className="text-[11px] font-source font-bold text-[#0A2478]">
+                          Select All
+                        </span>
+                      </button>
+
                       {[
                         { id: "id", label: "Party UID" },
                         { id: "firstName", label: "F Name" },
@@ -355,21 +323,13 @@ const CustProfile = () => {
                 <input
                   type="text"
                   value={searchQuery}
+                  onClick={() => setIsDropdownOpen(false)}
                   onChange={(e) => setSearchQuery(e.target.value)}
                   placeholder="Type multiple items (e.g. Cash, Asset)..."
                   className="flex-grow text-[11px] font-source outline-none h-full"
                 />
 
-                {/* Search Button */}
-                {/* <button
-                  onClick={() => {
-                    setIsDropdownOpen(false);
-                    // getAccountGroups();
-                  }}
-                  className="ml-2 bg-[#0b2c69] text-white text-[11px] px-4 h-[24px] rounded-[3px] font-source hover:bg-[#071d45]"
-                >
-                  Search
-                </button> */}
+                
 
                 <button
                   className="ml-2 bg-[#0b2c69] text-white text-[11px] px-4 h-[24px] rounded-[3px] font-source hover:bg-[#071d45]"

@@ -154,6 +154,20 @@ function LoanChargesList() {
     if (page >= 1 && page <= totalPages) setCurrentPage(page);
   };
 
+  const allHeaderIds = [
+    "loan_no",
+    "party_name",
+    "Amount",
+  ];
+
+  const handleSelectAll = () => {
+    if (searchHeaders.length === allHeaderIds.length) {
+      setSearchHeaders([]);
+    } else {
+      setSearchHeaders(allHeaderIds);
+    }
+  };
+
   return (
     <div className="min-h-screen w-full">
       {/* 🔹 Header */}
@@ -164,22 +178,6 @@ function LoanChargesList() {
           </h2>
 
           <div className="flex gap-3">
-            {/* <div className="flex items-right">
-            <input
-              type="text"
-              placeholder="Search by Loan No"
-              value={searchLoanNo}
-              onChange={(e) => setSearchLoanNo(e.target.value)}
-              className="border border-gray-300 focus:outline-none  rounded-l-md px-3 py-2 text-sm w-56"
-            />
-            <button
-              onClick={() => fetchData(searchLoanNo)}
-              className="bg-[#0A2478] px-3 py-2 rounded-r-md flex items-center justify-center"
-            >
-              <HiMagnifyingGlass className="text-white w-5 h-5" />
-            </button>
-          </div> */}
-
             <div className="flex items-center gap-3">
               <div className="flex items-center bg-white border border-gray-400 rounded-[5px] h-[32px] px-2 relative w-[500px]">
 
@@ -194,6 +192,21 @@ function LoanChargesList() {
 
                   {isDropdownOpen && (
                     <div className="absolute top-[35px] left-[-8px] bg-white border border-gray-300 shadow-xl rounded-md z-[100] w-[160px] p-2">
+                     <button
+                        onClick={handleSelectAll}
+                        className="flex items-center gap-2 p-2 hover:bg-blue-50 cursor-pointer rounded border-b border-gray-200 mb-1"
+                      >
+                        <input
+                          type="checkbox"
+                          checked={allHeaderIds.every((id) => searchHeaders.includes(id))}
+                          onChange={handleSelectAll}
+                          className="w-3 h-3 accent-[#0A2478]"
+                        />
+                        <span className="text-[11px] font-source font-bold text-[#0A2478]">
+                          Select All
+                        </span>
+                      </button>
+
                       {[
                         { id: "loan_no", label: "Loan No" },
                         { id: "party_name", label: "Party Name" },
@@ -225,6 +238,7 @@ function LoanChargesList() {
                 <input
                   type="text"
                   value={searchQuery}
+                   onClick={() => setIsDropdownOpen(false)}
                   onChange={(e) => setSearchQuery(e.target.value)}
                   placeholder="Type multiple items (e.g. Cash, Asset)..."
                   className="flex-grow text-[11px] font-source outline-none h-full"

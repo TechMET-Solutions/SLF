@@ -320,7 +320,9 @@ const BranchProfileList = () => {
                     {isDropdownOpen && (
                       <div className="absolute top-[35px] left-[-8px] bg-white border border-gray-300 shadow-xl rounded-md z-[100] w-[160px] p-2">
                         {/* Select All */}
-                        <label className="flex items-center gap-2 p-2 hover:bg-blue-50 cursor-pointer rounded border-b border-gray-200 mb-1">
+                        <button
+                        onClick={handleSelectAll}
+                        className="flex items-center gap-2 p-2 hover:bg-blue-50 cursor-pointer rounded border-b border-gray-200 mb-1">
                           <input
                             type="checkbox"
                             checked={allHeaderIds.every((id) => searchHeaders.includes(id))}
@@ -337,7 +339,7 @@ const BranchProfileList = () => {
                           <span className="text-[11px] font-source font-bold text-[#0A2478]">
                             Select All
                           </span>
-                        </label>
+                        </button>
 
                         {[
                           { id: "branch_code", label: "Branch Code" },

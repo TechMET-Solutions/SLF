@@ -175,6 +175,19 @@ const AccountGroupList = () => {
     setIsModalOpen(true);
   };
 
+  const allHeaderIds = [
+    "group_name",
+    "account_type",
+    "under_type",
+  ];
+
+
+ const handleSelectAll = () => {
+    const allSelected = allHeaderIds.every((id) => searchHeaders.includes(id));
+    setSearchHeaders(allSelected ? [] : [...allHeaderIds]);
+  };
+
+
   return (
     <div className=" min-h-screen w-full">
       <div className="flex justify-center ">
@@ -212,12 +225,26 @@ const AccountGroupList = () => {
 
                     {isDropdownOpen && (
                       <div className="absolute top-[35px] left-[-8px] bg-white border border-gray-300 shadow-xl rounded-md z-[100] w-[160px] p-2">
+                        <button
+                        onClick={handleSelectAll}
+                        className="flex items-center gap-2 p-2 hover:bg-gray-50 cursor-pointer rounded">
+                          <input
+                            type="checkbox"
+                            checked={allHeaderIds.every((id) => searchHeaders.includes(id))}
+                            onChange={handleSelectAll}
+                            className="w-3 h-3 accent-[#0A2478]"
+                          />
+                          <span className="text-[11px] font-source font-bold text-[#0A2478]">
+                            Select All
+                          </span>
+                        </button>
+                        
                         {[
                           { id: "group_name", label: "Group Ledger List" },
                           { id: "account_type", label: "Account Type" },
                           { id: "under_type", label: "Under" },
                         ].map((col) => (
-                          <label
+                          <button
                             key={col.id}
                             className="flex items-center gap-2 p-2 hover:bg-gray-50 cursor-pointer rounded"
                           >
@@ -230,7 +257,7 @@ const AccountGroupList = () => {
                             <span className="text-[11px] font-source text-gray-700">
                               {col.label}
                             </span>
-                          </label>
+                          </button>
                         ))}
                         <div className="border-t mt-1 pt-1 text-center">
                           <button
@@ -248,6 +275,7 @@ const AccountGroupList = () => {
                   <input
                     type="text"
                     value={searchQuery}
+                     onClick={() => setIsDropdownOpen(false)}
                     onChange={(e) => setSearchQuery(e.target.value)}
                     placeholder="Type multiple items (e.g. Cash, Asset)..."
                     className="flex-grow text-[11px] font-source outline-none h-full"

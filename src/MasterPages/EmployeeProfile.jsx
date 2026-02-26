@@ -913,6 +913,22 @@ const EmployeeProfile = () => {
 
 
   };
+
+  const allHeaderIds = [
+    "id",
+    "emp_name",
+    "email",
+    "mobile_no",
+    "branch"
+  ];
+
+
+ const handleSelectAll = () => {
+    const allSelected = allHeaderIds.every((id) => searchHeaders.includes(id));
+    setSearchHeaders(allSelected ? [] : [...allHeaderIds]);
+  };
+
+  
   return (
     <div className="min-h-screen w-full">
       {/* Top bar */}
@@ -938,6 +954,18 @@ const EmployeeProfile = () => {
 
                   {isDropdownOpen && (
                     <div className="absolute top-[35px] left-[-8px] bg-white border border-gray-300 shadow-xl rounded-md z-[100] w-[160px] p-2">
+                      
+                      <button onClick={handleSelectAll} 
+                      className="flex items-center gap-2 p-2 hover:bg-gray-50 cursor-pointer rounded"
+                      >
+                        <input
+                          type="checkbox"
+                          checked={searchHeaders.length === allHeaderIds.length}
+                          className="w-3 h-3 accent-[#0A2478]"
+                        />
+                        <span className="text-[10px] text-[#0A2478] font-bold">Select All</span>
+                      </button>
+                      
                       {[
                         { id: "id", label: "EMP Id" },
                         { id: "emp_name", label: "Name" },
@@ -976,6 +1004,7 @@ const EmployeeProfile = () => {
                 <input
                   type="text"
                   value={searchQuery}
+                  onClick={() => setIsDropdownOpen(false)}
                   onChange={(e) => setSearchQuery(e.target.value)}
                   placeholder="Type multiple items (e.g. Cash, Asset)..."
                   className="flex-grow text-[11px] font-source outline-none h-full"
@@ -1808,7 +1837,7 @@ const EmployeeProfile = () => {
       )}
 
       {/* Table */}
-      <div className="flex justify-center">
+      <div className="flex justify-center mt-4">
         <div className="overflow-x-auto mt-5 w-[1290px] min-h-[500px]">
           {isLoading ? (
             <div className="flex justify-center items-center h-32">

@@ -218,6 +218,21 @@ const Area = () => {
 
   // if (isLoading) return <div className="text-center py-10"><Loader /></div>;
 
+  const allHeaderIds = [
+    "area_locality",
+    "city",
+    "state",
+    "pincode",
+    "landmark",
+  ];
+
+
+ const handleSelectAll = () => {
+    const allSelected = allHeaderIds.every((id) => searchHeaders.includes(id));
+    setSearchHeaders(allSelected ? [] : [...allHeaderIds]);
+  };
+
+
 
   return (
     <div className="min-h-screen w-full">
@@ -241,6 +256,20 @@ const Area = () => {
 
                   {isDropdownOpen && (
                     <div className="absolute top-[35px] left-[-8px] bg-white border border-gray-300 shadow-xl rounded-md z-[100] w-[160px] p-2">
+                      
+                      <button
+                      onClick={handleSelectAll}
+                      className="flex items-center gap-2 p-2 hover:bg-gray-50 cursor-pointer rounded">
+                        <input
+                          type="checkbox"
+                          checked={searchHeaders.length === allHeaderIds.length}
+                          onChange={handleSelectAll}
+                          // className="rounded border-gray-300 text-teal-600 focus:ring-teal-500"
+                           className="w-3 h-3 accent-[#0A2478]"
+                        />
+                        <span className="text-[11px] font-source text-gray-700">Select All</span>
+                      </button>
+                      
                       {[
                         { id: "area_locality", label: "Area/Locality" },
                         { id: "city", label: "City" },
@@ -274,6 +303,7 @@ const Area = () => {
                 <input
                   type="text"
                   value={searchQuery}
+                  onClick={() => setIsDropdownOpen(false)}
                   onChange={(e) => setSearchQuery(e.target.value)}
                   placeholder="Type multiple items (e.g. Cash, Asset)..."
                   className="flex-grow text-[11px] font-source outline-none h-full"

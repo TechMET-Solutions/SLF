@@ -97,6 +97,20 @@ const SchemeDetailsList = () => {
     }
   };
 
+    const allHeaderIds = [
+    "schemeName",
+    "product",
+    "minLoanAmount",
+    "maxLoanAmount",
+  ];
+
+
+ const handleSelectAll = () => {
+    const allSelected = allHeaderIds.every((id) => searchHeaders.includes(id));
+    setSearchHeaders(allSelected ? [] : [...allHeaderIds]);
+  };
+
+
   return (
     <div className="min-h-screen w-full">
       {/* Top Bar */}
@@ -120,7 +134,20 @@ const SchemeDetailsList = () => {
                   </button>
 
                   {isDropdownOpen && (
-                    <div className="absolute top-[35px] left-[-8px] bg-white border border-gray-300 shadow-xl rounded-md z-[100] w-[160px] p-2">
+                    <div className="absolute top-[35px] left-[-8px] bg-white border-b border-gray-300 shadow-xl rounded-md z-[100] w-[160px] p-2">
+                      
+                      <button
+                      onClick={handleSelectAll}
+                      className="flex items-center gap-2 p-2 cursor-pointer border-b border-gray-200 rounded">
+                        <input
+                          type="checkbox"
+                          checked={searchHeaders.length === allHeaderIds.length}
+                          onChange={handleSelectAll}
+                           className="w-3 h-3 accent-[#0A2478]"
+                        />
+                        <span className="text-[11px] font-source text-gray-700">Select All</span>
+                      </button>
+                      
                       {[
                         { id: "schemeName", label: "Scheme Name" },
                         { id: "product", label: "Product Name" },
@@ -158,6 +185,7 @@ const SchemeDetailsList = () => {
                 <input
                   type="text"
                   value={searchQuery}
+                  onClick={() => setIsDropdownOpen(false)}
                   onChange={(e) => setSearchQuery(e.target.value)}
                   placeholder="Type multiple items (e.g. Cash, Asset)..."
                   className="flex-grow text-[11px] font-source outline-none h-full"
@@ -218,7 +246,7 @@ const SchemeDetailsList = () => {
                   setAppTo("");
                   fetchSchemes(1);
                 }}
-                className="bg-gray-500 text-white text-[11px] px-4 py-1 rounded"
+                className="bg-[#0A2478] text-white text-[11px] px-4 py-1 rounded"
               >
                 Clear
               </button>

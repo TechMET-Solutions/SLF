@@ -72,6 +72,20 @@ function AuctionCreation() {
     }
   };
 
+  const allHeaderIds = [
+    "id",
+    "venue",
+    "loanIds"
+  ];
+
+  const handleSelectAll = () => {
+    if (searchHeaders.length === allHeaderIds.length) {
+      setSearchHeaders([]);
+    } else {
+      setSearchHeaders(allHeaderIds);
+    }
+  };
+
   return (
     <div className="min-h-screen w-full">
       {/* 🔹 Header */}
@@ -93,6 +107,22 @@ function AuctionCreation() {
 
                   {isDropdownOpen && (
                     <div className="absolute top-[35px] left-[-8px] bg-white border border-gray-300 shadow-xl rounded-md z-[100] w-[160px] p-2">
+                     
+                     <button
+                        onClick={handleSelectAll}
+                        className="flex items-center gap-2 p-2 hover:bg-blue-50 cursor-pointer rounded border-b border-gray-200 mb-1"
+                      >
+                        <input
+                          type="checkbox"
+                          checked={allHeaderIds.every((id) => searchHeaders.includes(id))}
+                          onChange={handleSelectAll}
+                          className="w-3 h-3 accent-[#0A2478]"
+                        />
+                        <span className="text-[11px] font-source font-bold text-[#0A2478]">
+                          Select All
+                        </span>
+                      </button>
+
                       {[
                         { id: "id", label: "Auction Id" },
                         { id: "venue", label: "Venue" },
@@ -129,13 +159,11 @@ function AuctionCreation() {
                 <input
                   type="text"
                   value={searchQuery}
+                  onClick={() => setIsDropdownOpen(false)}
                   onChange={(e) => setSearchQuery(e.target.value)}
                   placeholder="Type multiple items (e.g. Cash, Asset)..."
                   className="flex-grow text-[11px] font-source outline-none h-full"
                 />
-
-                {/* Search Button */}
-
               </div>
             </div>
             <input
