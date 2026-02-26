@@ -73,9 +73,8 @@ const FormField = ({
           name={field.name}
           value={formData[field.name] || ""}
           onChange={handleInputChange}
-          className={`px-2 py-1 border rounded text-xs ${
-            errors[field.name] ? "border-red-500" : "border-gray-300"
-          }`}
+          className={`px-2 py-1 border rounded text-xs ${errors[field.name] ? "border-red-500" : "border-gray-300"
+            }`}
         >
           <option value="">Select {field.label}</option>
           {field.options.map((opt) => (
@@ -91,9 +90,8 @@ const FormField = ({
             name={field.name}
             value={formData[field.name] || ""}
             onChange={handleInputChange}
-            className={`px-2 py-1 border rounded text-xs w-full pr-10 ${
-              errors[field.name] ? "border-red-500" : "border-gray-300"
-            }`}
+            className={`px-2 py-1 border rounded text-xs w-full pr-10 ${errors[field.name] ? "border-red-500" : "border-gray-300"
+              }`}
           />
           {suffixFields.includes(field.name) && (
             <span
@@ -116,6 +114,7 @@ const AddSchemeDetailsListform = () => {
   const location = useLocation();
   const { type, data } = location.state || {};
   const isViewMode = type === "view";
+  const isCopyMode = type === "copy";
   const [formData, setFormData] = useState({
     schemeName: "",
     description: "",
@@ -134,7 +133,7 @@ const AddSchemeDetailsListform = () => {
     minLoanAmount: "",
     loanPeriod: "",
     paymentBasisOn: "",
-    goldApprovePercent: "", 
+    goldApprovePercent: "",
     maxLoanAmount: "",
     partyType: "individual",
     administrativeCharges: "",
@@ -150,12 +149,16 @@ const AddSchemeDetailsListform = () => {
 
   useEffect(() => {
     if (data) {
+      // For copy mode, strip `id` so Save creates a new record
+      const { id: _omitId, ...dataWithoutId } = data;
+      const baseData = isCopyMode ? dataWithoutId : data;
+
       setFormData({
-        ...data,
-        applicableFrom: data.applicableFrom
-          ? data.applicableFrom.split("T")[0]
+        ...baseData,
+        applicableFrom: baseData.applicableFrom
+          ? baseData.applicableFrom.split("T")[0]
           : "",
-        applicableTo: data.applicableTo ? data.applicableTo.split("T")[0] : "",
+        applicableTo: baseData.applicableTo ? baseData.applicableTo.split("T")[0] : "",
       });
 
       if (data.interestRates) {
@@ -173,7 +176,7 @@ const AddSchemeDetailsListform = () => {
         );
       }
     }
-  }, [data]);
+  }, [data, isCopyMode]);
   console.log(formData, "formData");
   const [interestRates, setInterestRates] = useState([{}]);
   console.log(interestRates, "interestRates");
@@ -230,12 +233,17 @@ const AddSchemeDetailsListform = () => {
         });
         alert("✅ Scheme updated successfully!");
       } else {
+        // Both "add" and "copy" create a new record via POST
         const response = await axios.post(`${API}/Scheme/addScheme`, {
           formData,
           interestRates,
           precloser,
         });
-        alert("✅ Scheme added successfully!");
+        alert(
+          isCopyMode
+            ? "✅ Scheme copied and saved successfully!"
+            : "✅ Scheme added successfully!"
+        );
       }
 
       navigate("/Scheme-Details-List");
@@ -322,7 +330,13 @@ const AddSchemeDetailsListform = () => {
             }}
             className="text-red-600"
           >
-            Add Scheme Details Form
+            {isCopyMode
+              ? "Copy Scheme Details"
+              : type === "edit"
+                ? "Edit Scheme Details"
+                : type === "view"
+                  ? "View Scheme Details"
+                  : "Add Scheme Details Form"}
           </h2>
 
           <div className="flex items-center gap-6">
@@ -369,9 +383,8 @@ const AddSchemeDetailsListform = () => {
                     disabled={isViewMode}
                     value={formData.schemeName}
                     onChange={handleInputChange}
-                    className={`border border-gray-300 rounded-[8px] h-[38px] px-3 py-2 w-full bg-white focus:outline-none focus:ring-1 focus:ring-blue-500 ${
-                      errors.schemeName ? "border-red-500" : ""
-                    }`}
+                    className={`border border-gray-300 rounded-[8px] h-[38px] px-3 py-2 w-full bg-white focus:outline-none focus:ring-1 focus:ring-blue-500 ${errors.schemeName ? "border-red-500" : ""
+                      }`}
                   />
                 </div>
               </div>
@@ -419,9 +432,8 @@ const AddSchemeDetailsListform = () => {
                   disabled={isViewMode}
                   onChange={handleInputChange}
                   placeholder=""
-                  className={`border border-gray-300 rounded-[8px] h-[38px] px-3 py-2 mt-1 w-[305px] bg-white ${
-                    errors.description ? "border-red-500" : ""
-                  }`}
+                  className={`border border-gray-300 rounded-[8px] h-[38px] px-3 py-2 mt-1 w-[305px] bg-white ${errors.description ? "border-red-500" : ""
+                    }`}
                 />
               </div>
             </div>
@@ -441,9 +453,8 @@ const AddSchemeDetailsListform = () => {
                   disabled={isViewMode}
                   onChange={handleInputChange}
                   min={new Date().toISOString().split("T")[0]} // restrict to today or later
-                  className={`border border-gray-300 rounded-[8px] px-3 py-2 mt-1 w-[145px] h-[38px] bg-white ${
-                    errors.applicableFrom ? "border-red-500" : ""
-                  }`}
+                  className={`border border-gray-300 rounded-[8px] px-3 py-2 mt-1 w-[145px] h-[38px] bg-white ${errors.applicableFrom ? "border-red-500" : ""
+                    }`}
                 />
               </div>
 
@@ -487,11 +498,10 @@ const AddSchemeDetailsListform = () => {
                     <div className="w-1/2 flex items-center justify-center">
                       <span
                         className={`text-sm font-medium transition-all duration-200 rounded-full w-[70px] h-[30px] text-center py-1 
-          ${
-            formData.calcBasisOn === "Daily"
-              ? "bg-[#0A2478] text-white"
-              : "text-black"
-          }`}
+          ${formData.calcBasisOn === "Daily"
+                            ? "bg-[#0A2478] text-white"
+                            : "text-black"
+                          }`}
                       >
                         Daily
                       </span>
@@ -500,11 +510,10 @@ const AddSchemeDetailsListform = () => {
                     <div className="w-1/2 flex items-center justify-center">
                       <span
                         className={`text-sm font-medium transition-all duration-200 rounded-full w-full text-center py-1 
-          ${
-            formData.calcBasisOn === "Monthly"
-              ? "bg-[#0A2478] text-white"
-              : "text-black"
-          }`}
+          ${formData.calcBasisOn === "Monthly"
+                            ? "bg-[#0A2478] text-white"
+                            : "text-black"
+                          }`}
                       >
                         Monthly
                       </span>
@@ -822,7 +831,7 @@ const AddSchemeDetailsListform = () => {
                 />
               </div>
 
-             
+
 
               {!isDailyBasis && (
                 <div className="flex flex-col">
@@ -847,11 +856,10 @@ const AddSchemeDetailsListform = () => {
                         }}
                       >
                         <span
-                          className={`text-sm font-medium transition-all duration-200 rounded-full w-[90px] h-[30px] text-center py-1 ${
-                            formData.interestType === "Flat"
+                          className={`text-sm font-medium transition-all duration-200 rounded-full w-[90px] h-[30px] text-center py-1 ${formData.interestType === "Flat"
                               ? "bg-[#0A2478] text-white"
                               : "text-black"
-                          }`}
+                            }`}
                         >
                           Flat
                         </span>
@@ -872,11 +880,10 @@ const AddSchemeDetailsListform = () => {
                         }}
                       >
                         <span
-                          className={`text-sm font-medium transition-all duration-200 rounded-full w-[90px] h-[30px] text-center py-1 ${
-                            formData.interestType === "Reducing"
+                          className={`text-sm font-medium transition-all duration-200 rounded-full w-[90px] h-[30px] text-center py-1 ${formData.interestType === "Reducing"
                               ? "bg-[#0A2478] text-white"
                               : "text-black"
-                          }`}
+                            }`}
                         >
                           Reducing
                         </span>
@@ -893,47 +900,47 @@ const AddSchemeDetailsListform = () => {
                   Document Charge
                 </h3>
                 <div className='flex gap-5'>
-<div className="flex flex-col">
-                  <label className="text-[14px] font-medium mb-1">
-                    Admin Charge Type
-                  </label>
-                  <select
-                    name="adminChargeType"
-                    value={formData.adminChargeType || "fixed"}
-                    disabled={isViewMode}
-                    onChange={handleInputChange}
-                    className="border border-gray-300 rounded-[8px] px-3 py-2 h-[38px] w-[130px] bg-white outline-none text-sm"
-                  >
-                    <option value="fixed">Fixed Amount</option>
-                    <option value="percentage">Percentage (%)</option>
-                  </select>
+                  <div className="flex flex-col">
+                    <label className="text-[14px] font-medium mb-1">
+                      Admin Charge Type
+                    </label>
+                    <select
+                      name="adminChargeType"
+                      value={formData.adminChargeType || "fixed"}
+                      disabled={isViewMode}
+                      onChange={handleInputChange}
+                      className="border border-gray-300 rounded-[8px] px-3 py-2 h-[38px] w-[130px] bg-white outline-none text-sm"
+                    >
+                      <option value="fixed">Fixed Amount</option>
+                      <option value="percentage">Percentage (%)</option>
+                    </select>
+                  </div>
+
+                  {/* 2. Dynamic Input: Percentage or Amount */}
+                  <div className="flex flex-col">
+                    <label className="text-[14px] font-medium mb-1">
+                      {formData.adminChargeType === "percentage"
+                        ? "Percentage (%)"
+                        : "Amount (₹)"}
+                    </label>
+                    <input
+                      type="number"
+                      name="administrativeCharges"
+                      value={formData.administrativeCharges}
+                      onChange={handleInputChange}
+                      disabled={isViewMode}
+                      placeholder={
+                        formData.adminChargeType === "percentage"
+                          ? "e.g. 2%"
+                          : "e.g. 100.00"
+                      }
+                      style={{ MozAppearance: "textfield" }}
+                      onWheel={(e) => e.target.blur()}
+                      className="border border-gray-300 rounded-[8px] px-3 py-2 h-[38px] w-[100px] bg-white outline-none"
+                    />
+                  </div>
                 </div>
 
-                {/* 2. Dynamic Input: Percentage or Amount */}
-                <div className="flex flex-col">
-                  <label className="text-[14px] font-medium mb-1">
-                    {formData.adminChargeType === "percentage"
-                      ? "Percentage (%)"
-                      : "Amount (₹)"}
-                  </label>
-                  <input
-                    type="number"
-                    name="administrativeCharges"
-                    value={formData.administrativeCharges}
-                    onChange={handleInputChange}
-                    disabled={isViewMode}
-                    placeholder={
-                      formData.adminChargeType === "percentage"
-                        ? "e.g. 2%"
-                        : "e.g. 100.00"
-                    }
-                    style={{ MozAppearance: "textfield" }}
-                    onWheel={(e) => e.target.blur()}
-                    className="border border-gray-300 rounded-[8px] px-3 py-2 h-[38px] w-[100px] bg-white outline-none"
-                  />
-                </div>
-                </div>
- 
                 <div className="flex gap-4 w-full mt-2">
                   {/* % of Loan Amount */}
                   <div className="flex flex-col">
@@ -989,48 +996,48 @@ const AddSchemeDetailsListform = () => {
                 <h3 className="text-[15px] font-semibold text-[#0A2478] mb-4">
                   Documents Charge
                 </h3>
- <div className="flex gap-4 items-end">
-                {/* 1. Administrative Charge Type Dropdown */}
-                <div className="flex flex-col">
-                  <label className="text-[14px] font-medium mb-1">
-                    Admin Charge Type
-                  </label>
-                  <select
-                    name="adminChargeType"
-                    value={formData.adminChargeType || "fixed"}
-                    disabled={isViewMode}
-                    onChange={handleInputChange}
-                    className="border border-gray-300 rounded-[8px] px-3 py-2 h-[38px] w-[130px] bg-white outline-none text-sm"
-                  >
-                    <option value="fixed">Fixed Amount</option>
-                    <option value="percentage">Percentage (%)</option>
-                  </select>
-                </div>
+                <div className="flex gap-4 items-end">
+                  {/* 1. Administrative Charge Type Dropdown */}
+                  <div className="flex flex-col">
+                    <label className="text-[14px] font-medium mb-1">
+                      Admin Charge Type
+                    </label>
+                    <select
+                      name="adminChargeType"
+                      value={formData.adminChargeType || "fixed"}
+                      disabled={isViewMode}
+                      onChange={handleInputChange}
+                      className="border border-gray-300 rounded-[8px] px-3 py-2 h-[38px] w-[130px] bg-white outline-none text-sm"
+                    >
+                      <option value="fixed">Fixed Amount</option>
+                      <option value="percentage">Percentage (%)</option>
+                    </select>
+                  </div>
 
-                {/* 2. Dynamic Input: Percentage or Amount */}
-                <div className="flex flex-col">
-                  <label className="text-[14px] font-medium mb-1">
-                    {formData.adminChargeType === "percentage"
-                      ? "Percentage (%)"
-                      : "Amount (₹)"}
-                  </label>
-                  <input
-                    type="number"
-                    name="administrativeCharges"
-                    value={formData.administrativeCharges}
-                    onChange={handleInputChange}
-                    disabled={isViewMode}
-                    placeholder={
-                      formData.adminChargeType === "percentage"
-                        ? "e.g. 2%"
-                        : "e.g. 100.00"
-                    }
-                    style={{ MozAppearance: "textfield" }}
-                    onWheel={(e) => e.target.blur()}
-                    className="border border-gray-300 rounded-[8px] px-3 py-2 h-[38px] w-[100px] bg-white outline-none"
-                  />
+                  {/* 2. Dynamic Input: Percentage or Amount */}
+                  <div className="flex flex-col">
+                    <label className="text-[14px] font-medium mb-1">
+                      {formData.adminChargeType === "percentage"
+                        ? "Percentage (%)"
+                        : "Amount (₹)"}
+                    </label>
+                    <input
+                      type="number"
+                      name="administrativeCharges"
+                      value={formData.administrativeCharges}
+                      onChange={handleInputChange}
+                      disabled={isViewMode}
+                      placeholder={
+                        formData.adminChargeType === "percentage"
+                          ? "e.g. 2%"
+                          : "e.g. 100.00"
+                      }
+                      style={{ MozAppearance: "textfield" }}
+                      onWheel={(e) => e.target.blur()}
+                      className="border border-gray-300 rounded-[8px] px-3 py-2 h-[38px] w-[100px] bg-white outline-none"
+                    />
+                  </div>
                 </div>
-              </div>
                 <div className="flex gap-4 w-full mt-5">
                   {/* % of Loan Amount */}
                   <div className="flex flex-col">
@@ -1100,11 +1107,10 @@ const AddSchemeDetailsListform = () => {
                         isViewMode || formData.docChargeType === "fixed"
                       }
                       onWheel={(e) => e.target.blur()}
-                      className={`p-2 border border-gray-300 rounded text-sm w-[100px] outline-none transition-colors ${
-                        formData.docChargeType === "fixed"
+                      className={`p-2 border border-gray-300 rounded text-sm w-[100px] outline-none transition-colors ${formData.docChargeType === "fixed"
                           ? "bg-gray-100 cursor-not-allowed"
                           : "bg-white"
-                      }`}
+                        }`}
                     />
                   </div>
 
@@ -1129,11 +1135,10 @@ const AddSchemeDetailsListform = () => {
                         isViewMode || formData.docChargeType === "fixed"
                       }
                       onWheel={(e) => e.target.blur()}
-                      className={`p-2 border border-gray-300 rounded text-sm w-[100px] outline-none transition-colors ${
-                        formData.docChargeType === "fixed"
+                      className={`p-2 border border-gray-300 rounded text-sm w-[100px] outline-none transition-colors ${formData.docChargeType === "fixed"
                           ? "bg-gray-100 cursor-not-allowed"
                           : "bg-white"
-                      }`}
+                        }`}
                     />
                   </div>
                 </div>

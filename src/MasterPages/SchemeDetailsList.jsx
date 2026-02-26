@@ -357,7 +357,7 @@ const SchemeDetailsList = () => {
         <button
           onClick={() =>
             navigate("/Add-Scheme-Details-Listform", {
-              state: { type: "view", data: row },
+              state: { type: "copy", data: row },
             })
           }
           className="px-3 py-1 bg-gray-100 hover:bg-gray-200 text-[#0A2478] text-[11px] font-medium rounded border border-gray-200 transition-colors"
