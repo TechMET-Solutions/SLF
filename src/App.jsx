@@ -366,6 +366,8 @@ import ViewLoanCharges from "./TrasactionPages/ViewLoanCharges";
 import ViewLoanDetails from "./TrasactionPages/ViewLoanDeatils";
 import ExpenceCreate from "./TrasactionPages/Accounting/ExpenceCreate.jsx";
 import AddRecipt from "./TrasactionPages/Accounting/AddRecipt.jsx";
+import LoanRepayment from "./TrasactionPages/LoanRepayment.jsx";
+import LoanRepaymentDetails from "./TrasactionPages/LoanRepaymentDetails.jsx";
 // ---------------- LAYOUT WRAPPER ----------------
 function LayoutWithNavbar({ children }) {
   const location = useLocation();
@@ -408,6 +410,10 @@ function App() {
                   <Route
                     path="/account-code-list"
                     element={<AccountCodeList />}
+                  />
+                   <Route
+                    path="/loan-repayment-details"
+                    element={<LoanRepaymentDetails />}
                   />
                   <Route
                     path="/Branch-Profile-List"
@@ -636,6 +642,7 @@ function App() {
                     path="/Loan-Charges-List"
                     element={<LoanChargesList />}
                   />
+                   <Route path="/Loan-Repayment" element={<LoanRepayment />} />
                   <Route path="/Area" element={<Area />} />
                   <Route path="/add-loan-charge" element={<AddLoanCharges />} />
                   <Route

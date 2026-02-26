@@ -372,6 +372,7 @@ const Navbar = () => {
 
   const loanItems = [
     { name: "Loan Application", path: "/Loan-Application" },
+     { name: "Loan Repayment", path: "/Loan-Repayment" },
     { name: "Loan Charges List", path: "/Loan-Charges-List" },
   ];
 

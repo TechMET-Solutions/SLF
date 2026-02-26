@@ -885,36 +885,7 @@ function AddLoanRepayment() {
     0,
   );
 
-  // const handleRepaymentSubmit = () => {
-  //   debugger;
 
-  //   if (!isClose) return; // only close-loan case
-
-  //   const finalObject = {
-  //     loanId: data?.loanApplication?.id,
-  //     closeLoan: true,
-  //     paymentInfo: paymentInfo,
-  //     closeInfo: loanInfo,
-  //     status: "Closed"
-  //   };
-
-  //   console.log("SEND TO BACKEND:", finalObject);
-
-  //   axios
-  //     .post(`${API}/Transactions/loanRepayment`, finalObject)
-  //     .then(res => {
-  //       console.log("RESPONSE:", res.data);
-
-  //       if (res.status === 200) {
-  //         alert("Repayment Successfully!");
-  //         navigate("/Loan-Application");
-  //       }
-  //     })
-  //     .catch(err => {
-  //       console.log("ERROR:", err);
-  //       alert("Something went wrong");
-  //     });
-  // };
   const handleRepaymentSubmit = () => {
     debugger;
 

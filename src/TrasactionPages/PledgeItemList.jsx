@@ -160,61 +160,61 @@ const calculateRate = (purityName) => {
     actualRate: Math.round(actualRate) };
 };
 
-  const handleChange = (index, field, value) => {
-    debugger
-  const updatedRows = [...rows];
+//   const handleChange = (index, field, value) => {
+//     debugger
+//   const updatedRows = [...rows];
 
-  // Convert value to number if it's numeric
-  const numericValue = field === "gross" || field === "netWeight" ? parseFloat(value) || 0 : value;
+//   // Convert value to number if it's numeric
+//   const numericValue = field === "gross" || field === "netWeight" ? parseFloat(value) || 0 : value;
 
-  if (field === "netWeight") {
-    // Ensure netWeight is less than or equal to gross
-    if (numericValue > updatedRows[index].gross) {
-      alert("Net Weight cannot be greater than Gross");
-      return;
-    }
-  }
+//   if (field === "netWeight") {
+//     // Ensure netWeight is less than or equal to gross
+//     if (numericValue > updatedRows[index].gross) {
+//       alert("Net Weight cannot be greater than Gross");
+//       return;
+//     }
+//   }
 
-  // Update the value
-  // updatedRows[index][field] = numericValue;
+//   // Update the value
+//   // updatedRows[index][field] = numericValue;
 
-  // // If purity changes, recalculate rate & valuation
-  // if (field === "purity" || field === "netWeight") {
-  //   const rate = updatedRows[index].purity ? calculateRate(updatedRows[index].purity) : 0;
-  //   updatedRows[index].rate = rate;
-  //   updatedRows[index].valuation = updatedRows[index].netWeight
-  // ? Math.round(updatedRows[index].netWeight * rate)
-  // : 0;
+//   // // If purity changes, recalculate rate & valuation
+//   // if (field === "purity" || field === "netWeight") {
+//   //   const rate = updatedRows[index].purity ? calculateRate(updatedRows[index].purity) : 0;
+//   //   updatedRows[index].rate = rate;
+//   //   updatedRows[index].valuation = updatedRows[index].netWeight
+//   // ? Math.round(updatedRows[index].netWeight * rate)
+//   // : 0;
 
-  // }
+//   // }
 
-  // setRows(updatedRows);
+//   // setRows(updatedRows);
 
-  updatedRows[index][field] = numericValue;
+//   updatedRows[index][field] = numericValue;
 
-// If purity or netWeight changes, recalculate rate & valuation
-if (field === "purity" || field === "netWeight") {
-  const { rate, actualRate } = updatedRows[index].purity
-    ? calculateRate(updatedRows[index].purity)
-    : { rate: 0, actualRate: 0 };
+// // If purity or netWeight changes, recalculate rate & valuation
+// if (field === "purity" || field === "netWeight") {
+//   const { rate, actualRate } = updatedRows[index].purity
+//     ? calculateRate(updatedRows[index].purity)
+//     : { rate: 0, actualRate: 0 };
 
-  // Store both rates
-  updatedRows[index].rate = rate;
-  updatedRows[index].actualRate = actualRate;
+//   // Store both rates
+//   updatedRows[index].rate = rate;
+//   updatedRows[index].actualRate = actualRate;
 
-  // Valuation based on approved rate
-  updatedRows[index].valuation = updatedRows[index].netWeight
-    ? Math.round(updatedRows[index].netWeight * rate)
-    : 0;
+//   // Valuation based on approved rate
+//   updatedRows[index].valuation = updatedRows[index].netWeight
+//     ? Math.round(updatedRows[index].netWeight * rate)
+//     : 0;
 
-  // (Optional) If you also want valuation using actual rate
-  updatedRows[index].actualValuation = updatedRows[index].netWeight
-    ? Math.round(updatedRows[index].netWeight * actualRate)
-    : 0;
-}
+//   // (Optional) If you also want valuation using actual rate
+//   updatedRows[index].actualValuation = updatedRows[index].netWeight
+//     ? Math.round(updatedRows[index].netWeight * actualRate)
+//     : 0;
+// }
 
-setRows(updatedRows);
-};
+// setRows(updatedRows);
+// };
 
 
 
@@ -239,7 +239,42 @@ setRows(updatedRows);
       valuation: totalValuation,
     },
   };
+const handleChange = (index, field, value) => {
+  const updatedRows = [...rows];
 
+  // Convert value to number if it's numeric field
+  const numericFields = ["gross", "netWeight", "nos"];
+  const numericValue = numericFields.includes(field) ? parseFloat(value) || 0 : value;
+
+  // Validation: Net Weight cannot exceed Gross
+  if (field === "netWeight" && numericValue > updatedRows[index].gross) {
+    alert("Net Weight cannot be greater than Gross");
+    return;
+  }
+
+  // Update the specific field
+  updatedRows[index][field] = numericValue;
+
+  // Recalculate if any value affecting valuation changes
+  if (field === "purity" || field === "netWeight" || field === "nos" || field === "Calculated_Purity") {
+    // Use 'purity' for calculation as per your existing logic
+    const { rate, actualRate } = updatedRows[index].purity
+      ? calculateRate(updatedRows[index].purity)
+      : { rate: 0, actualRate: 0 };
+
+    updatedRows[index].rate = rate;
+    updatedRows[index].actualRate = actualRate;
+
+    // 💡 VALUATION = Quantity (nos) * Net Weight * Rate
+    const quantity = parseFloat(updatedRows[index].nos) || 0;
+    const weight = parseFloat(updatedRows[index].netWeight) || 0;
+
+    updatedRows[index].valuation = Math.round(quantity * weight * rate);
+    updatedRows[index].actualValuation = Math.round(quantity * weight * actualRate);
+  }
+
+  setRows(updatedRows);
+};
   return (
     <div className="flex mb-6">
       <div className="">
@@ -256,7 +291,7 @@ setRows(updatedRows);
               <th className="px-4 py-2 border-r border-gray-200   w-[80px]">Net Weight</th>
               <th className="px-4 py-2 border-r border-gray-200 w-[120px]">Purity</th>
                <th className="px-4 py-2 border-r border-gray-200 w-[120px]">Calculated Purity</th>
-              <th className="px-4 py-2 border-r border-gray-200">system Rate</th>
+              <th className="px-4 py-2 border-r border-gray-200">Funding Rate</th>
                <th className="px-4 py-2 border-r border-gray-200"> Actual Rate</th>
               <th className="px-4 py-2 border-r border-gray-200">Valuation</th>
               <th className="px-4 py-2">Remark</th>
@@ -283,7 +318,14 @@ setRows(updatedRows);
                   </select>
                 </td>
 
-                <td className="px-4 py-2 text-center">{index + 1}</td>
+             <td className="px-4 py-2">
+  <input
+    type="number"
+    value={row.nos}
+    onChange={(e) => handleChange(index, "nos", e.target.value)}
+    className="border border-gray-300 rounded-md px-2 py-1 w-[50px] focus:outline-none focus:ring-1 focus:ring-blue-500 bg-white"
+  />
+</td>
 
                 <td className="px-4 py-2">
                   <input

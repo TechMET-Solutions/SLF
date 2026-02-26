@@ -3,6 +3,7 @@ import { useEffect, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { API } from "../api";
 import { useAuth } from "../API/Context/AuthContext";
+import { MdEdit } from "react-icons/md";
 import envImg from "../assets/envImg.jpg";
 import profileempty from "../assets/profileempty.png";
 import timesvg from "../assets/timesvg.svg";
@@ -159,6 +160,7 @@ const AddGoldLoanApplication = () => {
   console.log(branchId, branchName);
   const [formData, setFormData] = useState({
     borrowerName: "",
+     borrowerID: "",
     borrowerAddress: "",
     schemeId: "",
     schemeName: "",
@@ -170,6 +172,7 @@ const AddGoldLoanApplication = () => {
     payDate: "",
     Borrower_signature: "",
     CoBorrowerName: "",
+      CoBorrowerID: "",
     CoBorrower_ProfileImg: "",
     CoBorrower_signature: "",
     CoBorrowerId: "",
@@ -520,6 +523,8 @@ const AddGoldLoanApplication = () => {
     setFormData((prev) => ({
       ...prev,
       borrowerName: customer.firstName || "",
+     borrowerID: customer.id || null,
+    
       printName: customer.printName || "",
       mobile: customer.mobile || "",
       altMobile: customer.altMobile || "",
@@ -550,6 +555,7 @@ const AddGoldLoanApplication = () => {
     setFormData((prev) => ({
       ...prev,
       CoBorrowerName: customer.firstName || "",
+      CoBorrowerID: customer.id || null,
       CoBorrower_ProfileImg: customer.profileImage || "",
       CoBorrower_signature: customer.signature || "",
       CoBorrowerId: customer.id || "",
@@ -744,12 +750,12 @@ const AddGoldLoanApplication = () => {
           className="flex ml-[110px] p-3  gap-5 
 bg-[#FFE6E6]  mr-[110px]"
         >
-          <div>
+          {/* <div>
             <div>
               <div className="flex  gap-2">
                 <div className="flex flex-col">
                   <label className="text-[14px] font-medium">
-                    Borrower<span className="text-red-500">*</span>
+                    Borrower Name<span className="text-red-500">*</span>
                   </label>
                   <div className="flex items-center mt-1 w-[280px]">
                     <div className="relative flex-1">
@@ -999,13 +1005,314 @@ bg-[#FFE6E6]  mr-[110px]"
                 </div>
               </div>
             </div>
-          </div>
+          </div> */}
+          <div className='flex gap-2'>
+            <div className='flex flex-col'>
+ <div className="flex flex-col">
+                  <label className="text-[14px] font-medium">
+                    Borrower Name<span className="text-red-500">*</span>
+                  </label>
+                  <div className="flex items-center mt-1 w-[280px]">
+                    <div className="relative flex-1">
+                      <input
+                        type="text"
+                        placeholder="Enter Borrower Name"
+                        name="Borrower_Name"
+                        value={searchTerm}
+                        onChange={(e) => {
+                          setSearchTerm(e.target.value);
+                          setSelectedCustomer(null); // reset when typing new search
+                        }}
+                        className="border border-gray-300 rounded-l px-3 py-2 w-full focus:outline-none focus:ring-1 focus:ring-blue-500 bg-white"
+                      />
 
+                      {loading && (
+                        <div className="absolute right-3 top-2 text-gray-400 text-sm">
+                          Loading...
+                        </div>
+                      )}
+
+                      {results.length > 0 && !selectedCustomer && (
+                        <ul className="absolute left-0 top-full bg-white border border-gray-200 rounded-md w-full max-h-48 overflow-y-auto mt-1 shadow-lg z-50">
+                          {results.map((customer) => (
+                            <li
+                              key={customer.id}
+                              onClick={() =>
+                                handleSelectCustomer(customer, "Borrower")
+                              }
+                              className="px-3 py-2 hover:bg-blue-100 cursor-pointer"
+                            >
+                              {customer.printName}{" "}
+                              <span className="text-gray-500 text-sm">
+                                ({customer.printName})
+                              </span>
+                            </li>
+                          ))}
+                        </ul>
+                      )}
+                    </div>
+
+                    <button
+                      className="bg-[#0A2478] text-white px-4 py-3 rounded-r border border-gray-300 border-l-0 hover:bg-[#081c5b]"
+                      type="button"
+                      onClick={() => OpenCustomerModel(selectedCustomer.id)}
+                    >
+                      <img src={timesvg} alt="eye" />
+                    </button>
+                  </div>
+                </div>
+
+              <div className="flex flex-col mt-2">
+                  <label className="text-[14px] font-medium">
+                    Co-Borrower<span className="text-red-500">*</span>
+                  </label>
+                  <div className="flex items-center w-[280px] mt-1">
+                    <div className="relative flex-1">
+                      <input
+                        type="text"
+                        placeholder="Enter Co-Borrower Name"
+                        name="CoBorrowerName"
+                        value={searchTermForCoBorrower}
+                        onChange={(e) => {
+                          setSearchTermForCoBorrower(e.target.value);
+                          setSelectedCoBorrower(null);
+                        }}
+                        className="border border-gray-300 rounded-l px-3 py-2 w-full focus:outline-none focus:ring-1 focus:ring-blue-500 bg-white h-[38px] "
+                      />
+
+                      {loading && (
+                        <div className="absolute right-3 top-2 text-gray-400 text-sm">
+                          Loading...
+                        </div>
+                      )}
+
+                      {results2.length > 0 && !selectedCoBorrower && (
+                        <ul className="absolute left-0 top-full bg-white border border-gray-200 rounded-md w-full max-h-48 overflow-y-auto mt-1 shadow-lg z-50">
+                          {results2.map((customer) => (
+                            <li
+                              key={customer.id}
+                              onClick={() =>
+                                handleSelectCoborrower(customer, "CoBorrower")
+                              }
+                              className="px-3 py-2 hover:bg-blue-100 cursor-pointer"
+                            >
+                              {customer.printName}{" "}
+                              <span className="text-gray-500 text-sm">
+                                ({customer.printName})
+                              </span>
+                            </li>
+                          ))}
+                        </ul>
+                      )}
+                    </div>
+
+                    <button
+                      className="bg-[#0A2478] text-white px-4 py-3 rounded-r border border-gray-300 border-l-0 hover:bg-[#081c5b] h-[40px]"
+                      type="button"
+                      onClick={() => OpenCustomerModel(selectedCoBorrower.id)} // <--- ADD
+                    >
+                      <img src={timesvg} alt="eye" />
+                    </button>
+                  </div>
+                </div>
+
+               <div className="mb-6  mt-2">
+                  <label className="text-[14px] font-medium block mb-1">
+                    Scheme<span className="text-red-500">*</span>
+                  </label>
+                  <select
+                    className="border border-gray-300 px-3 py-2 w-[280px] bg-white rounded-[8px] h-[40px] mt-1"
+                    onChange={handleSchemeChange}
+                    defaultValue=""
+                  >
+                    <option value="" disabled>
+                      Select Scheme
+                    </option>
+                    {schemes.map((scheme) => (
+                      <option key={scheme.id} value={scheme.id}>
+                        {scheme.schemeName}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+            </div>
+            <div className='border flex-col p-2 border-gray-300'>
+              <div className='flex gap-5'>
+<div className="">
+                  <div>
+                    <label className="text-[14px] font-medium">
+                      Borrower Id <span className="text-red-500">*</span>
+                    </label>
+                  </div>
+
+                  <input
+                    type="text"
+                    name="borrowerID"
+                    // placeholder="Enter Print Name"
+                      value={formData.borrowerID}
+                     disabled={true} 
+                    onChange={handleInputChange}
+                    className="border border-gray-300 px-3 py-2  w-[120px] rounded-[8px] bg-white h-[40px] mt-1 disabled:bg-gray-100 "
+                  />
+                </div>
+ <div >
+
+                  <div className="">
+                     
+                  <div>
+                    <label className="text-[14px] font-medium">
+                      Print Name <span className="text-red-500">*</span>
+                    </label>
+                  </div>
+
+                  <input
+                    type="text"
+                    name="printName"
+                    placeholder="Enter Print Name"
+                      value={formData.printName}
+                     disabled={true} 
+                    onChange={handleInputChange}
+                    className="border border-gray-300 px-3 py-2  w-[200px] rounded-[8px] bg-white h-[40px] mt-1 disabled:bg-gray-100 "
+                  />
+                </div>
+               
+              </div>
+               <div className="">
+                  <div>
+                    <label className="text-[14px] font-medium">
+                      Mobile Number<span className="text-red-500">*</span>
+                    </label>
+                  </div>
+
+                  <input
+                    type="number"
+                    name="mobile"
+                    placeholder="Enter mobile Name"
+                    value={formData.mobile}
+                    onChange={handleInputChange}
+                    disabled={true} 
+                    maxLength={10}
+                    style={{
+                      MozAppearance: "textfield",
+                    }}
+                    onWheel={(e) => e.target.blur()}
+                    className="border border-gray-300 px-3 py-2 mt-1 w-[136px] rounded-[8px] bg-white h-[40px] disabled:bg-gray-100 "
+                  />
+                </div>
+                 <div className="">
+                  <div>
+                    <label className="text-[14px] font-medium">
+                      Alternate Number
+                    </label>
+                  </div>
+
+                  <input
+                    type="text"
+                    name="altMobile"
+                    disabled={true} 
+                    placeholder="Enter alt Mobile Name"
+                    value={formData.altMobile}
+                    onChange={handleInputChange}
+                    className="border border-gray-300 px-3 py-2 mt-1 w-[136px] rounded-[8px] bg-white h-[40px] disabled:bg-gray-100 "
+                  />
+                </div>
+              </div>
+              <div className='flex gap-5 mt-2'>
+
+                 <div className="">
+                    <div>
+                      <label className="text-[14px] font-medium">
+                      Co-Borrower Id
+                      </label>
+                    </div>
+
+                    <input
+                      type="text"
+                      // placeholder="Co-Borrower"
+                      name="CoBorrowerID"
+                        disabled={true} 
+                      value={formData.CoBorrowerID}
+                      onChange={handleInputChange}
+                      className="border border-gray-300 px-3 py-2  w-[120px] rounded-[8px] bg-white h-[40px] disabled:bg-gray-100 "
+                    />
+                </div>
+           <div className="">
+                    <div>
+                      <label className="text-[14px] font-medium">
+                      Co-Borrower Relation
+                      </label>
+                    </div>
+
+                    <input
+                      type="text"
+                      placeholder="Co-Borrower"
+                      name="CoBorrowerRelation"
+                        // disabled={true} 
+                      value={formData.CoBorrowerRelation}
+                      onChange={handleInputChange}
+                      className="border border-gray-300 px-3 py-2  w-[150px] rounded-[8px] bg-white h-[40px] disabled:bg-gray-100 "
+                    />
+                </div>
+                 <div className="">
+                  <p> Borrower Address</p>
+                  <textarea
+                    name="borrowerAddress"
+                      disabled={true} 
+                    value={formData.borrowerAddress}
+                    onChange={handleInputChange}
+                    className="border w-[400px] h-[40px] rounded-[8px] p-2 focus:outline-none focus:ring-1 focus:ring-blue-400 bg-white border-gray-300 disabled:bg-gray-100 "
+                  />
+                </div>
+              </div>
+              <div className='flex gap-5'>
+<div className="">
+                  <div>
+                    <label className="text-[14px] font-medium">
+                      Nominee<span className="text-red-500">*</span>
+                    </label>
+                  </div>
+
+                  <input
+                    type="text"
+                    placeholder="Nominee"
+                     disabled={true} 
+                    name="Nominee_Name"
+                    value={formData.Nominee_Name}
+                    onChange={handleInputChange}
+                    className="border border-gray-300 px-3 py-2 mt-1 w-[200px] rounded-[8px] bg-white h-[38px]
+                    disabled:bg-gray-100 "
+                  />
+                </div>
+                 <div>
+                  <div className="">
+                    <div>
+                      <label className="text-[14px] font-medium">
+                        Relation<span className="text-red-500">*</span>
+                      </label>
+                    </div>
+
+                    <input
+                      type="text"
+                      placeholder="Relation"
+                      name="NomineeRelation"
+                        disabled={true} 
+                      value={formData.NomineeRelation}
+                      onChange={handleInputChange}
+                      className="border border-gray-300 px-3 py-2 mt-1 w-[120px] rounded-[8px] bg-white h-[38px]
+                      disabled:bg-gray-100 "
+                    />
+                  </div>
+                </div>
+              </div>
+             
+            </div>
+
+</div>
           <div>
             <div className="flex  gap-2">
               <div className=" h-[130px]  ">
                 {/* Profile Image */}
-                <p className="text-[14px] font-medium">Customer</p>
+                <p className="text-[14px] font-medium">Borrower</p>
 
                 <img
                   src={
@@ -1014,7 +1321,7 @@ bg-[#FFE6E6]  mr-[110px]"
                       : profileempty // fallback image
                   }
                   alt="profile"
-                  className="w-[100px] h-[80px] rounded-[8px] object-cover border border-gray-300"
+                  className="w-[100px] h-[80px] rounded-[8px] object-cover border border-gray-100"
                 />
 
                 <div className="mt-2 border w-[100px]  flex items-center justify-center bg-white">
@@ -1055,29 +1362,7 @@ bg-[#FFE6E6]  mr-[110px]"
                 </div>
               </div>
 
-              <div className="">
-                <p className="text-[14px] font-medium">Ornament Photo</p>
-
-                <img
-                  src={
-                    formData.OrnamentPhoto
-                      ? formData.OrnamentPhoto
-                      : profileempty
-                  }
-                  alt="Ornament"
-                  className="w-[100px] h-[80px] object-cover rounded-[8px] border border-gray-300 cursor-pointer"
-                  onClick={() => fileInputRef.current.click()}
-                />
-
-                <input
-                  type="file"
-                  ref={fileInputRef}
-                  id="ornamentFile"
-                  name="OrnamentFile"
-                  onChange={(e) => handleOrnamentUpload(e)}
-                  className="hidden"
-                />
-              </div>
+            
             </div>
           </div>
         </div>
@@ -1256,6 +1541,36 @@ bg-[#FFE6E6]  mr-[110px]"
                 className="border border-gray-300 px-3 py-2 mt-1 w-[136px] rounded-[8px] bg-white h-[38px]"
               />
             </div>
+             <div className="flex flex-col items-start">
+  <p className="text-[14px] font-medium mb-1">Ornament Photo</p>
+
+  <div 
+    className="relative cursor-pointer w-[100px] h-[80px]"
+    onClick={() => fileInputRef.current.click()}
+  >
+    {/* Image with a simple hover effect */}
+    <img
+      src={formData.OrnamentPhoto ? formData.OrnamentPhoto : profileempty}
+      alt="Ornament"
+      className="w-full h-full object-cover rounded-[8px] border border-gray-300 hover:brightness-90 transition-all"
+    />
+
+    {/* Pencil Icon Overlay - Placed exactly at the corner */}
+    <div className="absolute -bottom-1 -right-1 bg-[#0A2478] text-white p-1.5 rounded-full shadow-md border-2 border-white flex items-center justify-center">
+      <MdEdit size={14} />
+    </div>
+  </div>
+
+  <input
+    type="file"
+    ref={fileInputRef}
+    id="ornamentFile"
+    name="OrnamentFile"
+    accept="image/*" 
+    onChange={(e) => handleOrnamentUpload(e)}
+    className="hidden"
+  />
+</div>
           </div>
 
           <div className="flex gap-10 ">

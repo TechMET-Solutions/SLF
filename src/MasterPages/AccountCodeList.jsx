@@ -599,43 +599,7 @@ const AccountCodeList = () => {
     setCurrentPage(page);
     fetchData(page);
   };
-
-  // 🔹 FIXED: Search logic now correctly uses filteredData in the table
-  // const filteredData = useMemo(() => {
-  //   if (!searchQuery.trim() || searchHeaders.length === 0) return data;
-
-  //   const keywords = searchQuery
-  //     .toLowerCase()
-  //     .split(",")
-  //     .map((k) => k.trim())
-  //     .filter((k) => k);
-
-  //   return data.filter((row) => {
-  //     return keywords.some((keyword) =>
-  //       searchHeaders.some((header) =>
-  //         row[header]?.toString().toLowerCase().includes(keyword)
-  //       )
-  //     );
-  //   });
-  // }, [data, searchQuery, searchHeaders]);
-
-  const filteredData = useMemo(() => {
-    if (!searchQuery.trim() || searchHeaders.length === 0) return data;
-
-    const keywords = searchQuery
-      .toLowerCase()
-      .split(",")
-      .map((k) => k.trim())
-      .filter((k) => k);
-
-    return data.filter((row) => {
-      return keywords.some((keyword) =>
-        searchHeaders.some((header) =>
-          row[header]?.toString().toLowerCase().includes(keyword)
-        )
-      );
-    });
-  }, [data, searchQuery, searchHeaders]);
+ 
 
   const toggleHeader = (headerId) => {
     setSearchHeaders((prev) =>
