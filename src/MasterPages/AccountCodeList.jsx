@@ -690,6 +690,21 @@ const AccountCodeList = () => {
     setIsModalOpen(true);
   };
 
+   const allHeaderIds = [
+    "name",
+    "accountGroup",
+    "financialDate",
+    "type",
+  ];
+
+
+ const handleSelectAll = () => {
+    const allSelected = allHeaderIds.every((id) => searchHeaders.includes(id));
+    setSearchHeaders(allSelected ? [] : [...allHeaderIds]);
+  };
+
+
+
   return (
     <div className="min-h-screen w-full font-[Source_Sans_3]">
       {/* Topbar */}
@@ -712,6 +727,21 @@ const AccountCodeList = () => {
 
                   {isDropdownOpen && (
                     <div className="absolute top-[35px] left-[-8px] bg-white border border-gray-300 shadow-xl rounded-md z-[100] w-[160px] p-2">
+                      
+                      <button
+                        onClick={handleSelectAll}
+                        className="flex items-center gap-2 p-2 hover:bg-blue-50 cursor-pointer rounded border-b border-gray-200 mb-1"
+                      >
+                        <input
+                          type="checkbox"
+                          checked={allHeaderIds.every((id) => searchHeaders.includes(id))}
+                          onChange={handleSelectAll}
+                          className="w-3 h-3 accent-[#0A2478]"
+                        />
+                        <span className="text-[11px] font-source font-bold text-[#0A2478]">
+                            Select All
+                          </span>
+                      </button>
                       {[
                         { id: "name", label: "Ledger Name" },
                         { id: "accountGroup", label: "Ledger" },
@@ -740,6 +770,7 @@ const AccountCodeList = () => {
                 <input
                   type="text"
                   value={searchQuery}
+                  onClick={() => setIsDropdownOpen(false)}
                   onChange={(e) => setSearchQuery(e.target.value)}
                   placeholder="Search multiple items..."
                   className="flex-grow text-[11px] outline-none h-full bg-transparent"

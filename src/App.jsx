@@ -368,6 +368,8 @@ import ExpenceCreate from "./TrasactionPages/Accounting/ExpenceCreate.jsx";
 import AddRecipt from "./TrasactionPages/Accounting/AddRecipt.jsx";
 import LoanRepayment from "./TrasactionPages/LoanRepayment.jsx";
 import LoanRepaymentDetails from "./TrasactionPages/LoanRepaymentDetails.jsx";
+import PartyType from "./MasterPages/PartyType.jsx";
+
 // ---------------- LAYOUT WRAPPER ----------------
 function LayoutWithNavbar({ children }) {
   const location = useLocation();
@@ -644,6 +646,7 @@ function App() {
                   />
                    <Route path="/Loan-Repayment" element={<LoanRepayment />} />
                   <Route path="/Area" element={<Area />} />
+                  <Route path="/Party-Type" element={<PartyType />} />
                   <Route path="/add-loan-charge" element={<AddLoanCharges />} />
                   <Route
                     path="/view-loan-charge"

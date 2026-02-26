@@ -237,6 +237,7 @@ const Navbar = () => {
     "Push Gold Rate",
     "Charges Profile",
     "Area",
+    "Party Type",
   ];
 
   const canSeeMasterProfile = isAdmin
@@ -255,6 +256,7 @@ const Navbar = () => {
     { name: "Push Rate", path: "/Push-Rate-List" },
     { name: "Charges Profile", path: "/Charges-Profile-List" },
     { name: "Area", path: "/Area" },
+    { name: "Party Type", path: "/Party-Type" },
   ];
   const masterMiscellaneousList = [
     // { name: "Cash Balance", path: "/Cash_Balance" },
