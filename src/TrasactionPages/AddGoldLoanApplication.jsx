@@ -20,20 +20,20 @@ const AddGoldLoanApplication = () => {
   const fileInputRef = useRef(null);
 
   const handleSchemeChange = (e) => {
-
     const selectedId = parseInt(e.target.value);
     const scheme = schemes.find((s) => s.id === selectedId);
 
-    // store the full scheme in state (optional)
+    // store the full scheme in state
     setSelectedScheme(scheme);
 
-    // ✅ update formData to include schemeId (and name if needed)
+    // ✅ update formData to include schemeId and auto-fill Administrative Charges
     setFormData((prev) => ({
       ...prev,
       schemeId: scheme?.id || "",
       schemeName: scheme?.schemeName || "",
       schemeType: scheme?.calcBasisOn || "",
       interestType: scheme?.interestType || "",
+      Administrative_Charges: scheme?.administrativeCharges || "",
     }));
   };
 
@@ -42,7 +42,7 @@ const AddGoldLoanApplication = () => {
   console.log("Logged in user:", loginUser);
 
   const handleSaveLoan = async () => {
-    
+
     try {
       const formDataToSend = new FormData();
 
@@ -85,6 +85,7 @@ const AddGoldLoanApplication = () => {
       // 💰 Loan Details
       formDataToSend.append("Loan_amount", formData.Loan_amount || 0);
       formDataToSend.append("Doc_Charges", formData.Doc_Charges || 0);
+      formDataToSend.append("Administrative_Charges", formData.Administrative_Charges || 0);
       formDataToSend.append("Net_Payable", formData.Net_Payable || 0);
       formDataToSend.append("Valuer_1", formData.value1);
       formDataToSend.append("Valuer_2", formData.value2);
@@ -97,9 +98,9 @@ const AddGoldLoanApplication = () => {
         selectedScheme?.interestRates?.length > 0
           ? selectedScheme.interestRates
           : [
-              { term: "0-30", rate: 12 },
-              { term: "31-90", rate: 14 },
-            ]; // fallback default
+            { term: "0-30", rate: 12 },
+            { term: "31-90", rate: 14 },
+          ]; // fallback default
       formDataToSend.append(
         "Effective_Interest_Rates",
         JSON.stringify(effectiveInterestRates),
@@ -160,7 +161,7 @@ const AddGoldLoanApplication = () => {
   console.log(branchId, branchName);
   const [formData, setFormData] = useState({
     borrowerName: "",
-     borrowerID: "",
+    borrowerID: "",
     borrowerAddress: "",
     schemeId: "",
     schemeName: "",
@@ -172,7 +173,7 @@ const AddGoldLoanApplication = () => {
     payDate: "",
     Borrower_signature: "",
     CoBorrowerName: "",
-      CoBorrowerID: "",
+    CoBorrowerID: "",
     CoBorrower_ProfileImg: "",
     CoBorrower_signature: "",
     CoBorrowerId: "",
@@ -183,6 +184,7 @@ const AddGoldLoanApplication = () => {
     Loan_amount: "",
     interestType: "",
     Doc_Charges: "",
+    Administrative_Charges: "",
     Net_Payable: "",
     value1: "",
     value2: "",
@@ -271,7 +273,7 @@ const AddGoldLoanApplication = () => {
   }, [formData.Loan_amount]);
 
   useEffect(() => {
-   
+
     let totalGross = 0;
     let totalNet = 0;
     let totalValuation = 0;
@@ -330,7 +332,7 @@ const AddGoldLoanApplication = () => {
   }, [PledgeItem, selectedScheme]);
 
   useEffect(() => {
-   
+debugger
     let totalValuation = 0;
 
     PledgeItem.forEach((item) => {
@@ -384,6 +386,7 @@ const AddGoldLoanApplication = () => {
       Net_Payable: netPayable.toFixed(2),
     }));
   }, [PledgeItem, selectedScheme]);
+
   //  useEffect(() => {
   //     const fetchSchemes = async () => {
   //       try {
@@ -503,7 +506,7 @@ const AddGoldLoanApplication = () => {
   };
 
   const handleSelectCustomer = (customer, type) => {
-  
+
     // 1️⃣ Close dropdown immediately
     setResults([]);
     setLoading(false);
@@ -523,8 +526,8 @@ const AddGoldLoanApplication = () => {
     setFormData((prev) => ({
       ...prev,
       borrowerName: customer.firstName || "",
-     borrowerID: customer.id || null,
-    
+      borrowerID: customer.id || null,
+
       printName: customer.printName || "",
       mobile: customer.mobile || "",
       altMobile: customer.altMobile || "",
@@ -1008,137 +1011,137 @@ bg-[#FFE6E6]  mr-[110px]"
           </div> */}
           <div className='flex gap-2'>
             <div className='flex flex-col'>
- <div className="flex flex-col">
-                  <label className="text-[14px] font-medium">
-                    Borrower Name<span className="text-red-500">*</span>
-                  </label>
-                  <div className="flex items-center mt-1 w-[280px]">
-                    <div className="relative flex-1">
-                      <input
-                        type="text"
-                        placeholder="Enter Borrower Name"
-                        name="Borrower_Name"
-                        value={searchTerm}
-                        onChange={(e) => {
-                          setSearchTerm(e.target.value);
-                          setSelectedCustomer(null); // reset when typing new search
-                        }}
-                        className="border border-gray-300 rounded-l px-3 py-2 w-full focus:outline-none focus:ring-1 focus:ring-blue-500 bg-white"
-                      />
+              <div className="flex flex-col">
+                <label className="text-[14px] font-medium">
+                  Borrower Name<span className="text-red-500">*</span>
+                </label>
+                <div className="flex items-center mt-1 w-[280px]">
+                  <div className="relative flex-1">
+                    <input
+                      type="text"
+                      placeholder="Enter Borrower Name"
+                      name="Borrower_Name"
+                      value={searchTerm}
+                      onChange={(e) => {
+                        setSearchTerm(e.target.value);
+                        setSelectedCustomer(null); // reset when typing new search
+                      }}
+                      className="border border-gray-300 rounded-l px-3 py-2 w-full focus:outline-none focus:ring-1 focus:ring-blue-500 bg-white"
+                    />
 
-                      {loading && (
-                        <div className="absolute right-3 top-2 text-gray-400 text-sm">
-                          Loading...
-                        </div>
-                      )}
+                    {loading && (
+                      <div className="absolute right-3 top-2 text-gray-400 text-sm">
+                        Loading...
+                      </div>
+                    )}
 
-                      {results.length > 0 && !selectedCustomer && (
-                        <ul className="absolute left-0 top-full bg-white border border-gray-200 rounded-md w-full max-h-48 overflow-y-auto mt-1 shadow-lg z-50">
-                          {results.map((customer) => (
-                            <li
-                              key={customer.id}
-                              onClick={() =>
-                                handleSelectCustomer(customer, "Borrower")
-                              }
-                              className="px-3 py-2 hover:bg-blue-100 cursor-pointer"
-                            >
-                              {customer.printName}{" "}
-                              <span className="text-gray-500 text-sm">
-                                ({customer.printName})
-                              </span>
-                            </li>
-                          ))}
-                        </ul>
-                      )}
-                    </div>
-
-                    <button
-                      className="bg-[#0A2478] text-white px-4 py-3 rounded-r border border-gray-300 border-l-0 hover:bg-[#081c5b]"
-                      type="button"
-                      onClick={() => OpenCustomerModel(selectedCustomer.id)}
-                    >
-                      <img src={timesvg} alt="eye" />
-                    </button>
+                    {results.length > 0 && !selectedCustomer && (
+                      <ul className="absolute left-0 top-full bg-white border border-gray-200 rounded-md w-full max-h-48 overflow-y-auto mt-1 shadow-lg z-50">
+                        {results.map((customer) => (
+                          <li
+                            key={customer.id}
+                            onClick={() =>
+                              handleSelectCustomer(customer, "Borrower")
+                            }
+                            className="px-3 py-2 hover:bg-blue-100 cursor-pointer"
+                          >
+                            {customer.printName}{" "}
+                            <span className="text-gray-500 text-sm">
+                              ({customer.printName})
+                            </span>
+                          </li>
+                        ))}
+                      </ul>
+                    )}
                   </div>
+
+                  <button
+                    className="bg-[#0A2478] text-white px-4 py-3 rounded-r border border-gray-300 border-l-0 hover:bg-[#081c5b]"
+                    type="button"
+                    onClick={() => OpenCustomerModel(selectedCustomer.id)}
+                  >
+                    <img src={timesvg} alt="eye" />
+                  </button>
                 </div>
+              </div>
 
               <div className="flex flex-col mt-2">
-                  <label className="text-[14px] font-medium">
-                    Co-Borrower<span className="text-red-500">*</span>
-                  </label>
-                  <div className="flex items-center w-[280px] mt-1">
-                    <div className="relative flex-1">
-                      <input
-                        type="text"
-                        placeholder="Enter Co-Borrower Name"
-                        name="CoBorrowerName"
-                        value={searchTermForCoBorrower}
-                        onChange={(e) => {
-                          setSearchTermForCoBorrower(e.target.value);
-                          setSelectedCoBorrower(null);
-                        }}
-                        className="border border-gray-300 rounded-l px-3 py-2 w-full focus:outline-none focus:ring-1 focus:ring-blue-500 bg-white h-[38px] "
-                      />
+                <label className="text-[14px] font-medium">
+                  Co-Borrower<span className="text-red-500">*</span>
+                </label>
+                <div className="flex items-center w-[280px] mt-1">
+                  <div className="relative flex-1">
+                    <input
+                      type="text"
+                      placeholder="Enter Co-Borrower Name"
+                      name="CoBorrowerName"
+                      value={searchTermForCoBorrower}
+                      onChange={(e) => {
+                        setSearchTermForCoBorrower(e.target.value);
+                        setSelectedCoBorrower(null);
+                      }}
+                      className="border border-gray-300 rounded-l px-3 py-2 w-full focus:outline-none focus:ring-1 focus:ring-blue-500 bg-white h-[38px] "
+                    />
 
-                      {loading && (
-                        <div className="absolute right-3 top-2 text-gray-400 text-sm">
-                          Loading...
-                        </div>
-                      )}
+                    {loading && (
+                      <div className="absolute right-3 top-2 text-gray-400 text-sm">
+                        Loading...
+                      </div>
+                    )}
 
-                      {results2.length > 0 && !selectedCoBorrower && (
-                        <ul className="absolute left-0 top-full bg-white border border-gray-200 rounded-md w-full max-h-48 overflow-y-auto mt-1 shadow-lg z-50">
-                          {results2.map((customer) => (
-                            <li
-                              key={customer.id}
-                              onClick={() =>
-                                handleSelectCoborrower(customer, "CoBorrower")
-                              }
-                              className="px-3 py-2 hover:bg-blue-100 cursor-pointer"
-                            >
-                              {customer.printName}{" "}
-                              <span className="text-gray-500 text-sm">
-                                ({customer.printName})
-                              </span>
-                            </li>
-                          ))}
-                        </ul>
-                      )}
-                    </div>
-
-                    <button
-                      className="bg-[#0A2478] text-white px-4 py-3 rounded-r border border-gray-300 border-l-0 hover:bg-[#081c5b] h-[40px]"
-                      type="button"
-                      onClick={() => OpenCustomerModel(selectedCoBorrower.id)} // <--- ADD
-                    >
-                      <img src={timesvg} alt="eye" />
-                    </button>
+                    {results2.length > 0 && !selectedCoBorrower && (
+                      <ul className="absolute left-0 top-full bg-white border border-gray-200 rounded-md w-full max-h-48 overflow-y-auto mt-1 shadow-lg z-50">
+                        {results2.map((customer) => (
+                          <li
+                            key={customer.id}
+                            onClick={() =>
+                              handleSelectCoborrower(customer, "CoBorrower")
+                            }
+                            className="px-3 py-2 hover:bg-blue-100 cursor-pointer"
+                          >
+                            {customer.printName}{" "}
+                            <span className="text-gray-500 text-sm">
+                              ({customer.printName})
+                            </span>
+                          </li>
+                        ))}
+                      </ul>
+                    )}
                   </div>
-                </div>
 
-               <div className="mb-6  mt-2">
-                  <label className="text-[14px] font-medium block mb-1">
-                    Scheme<span className="text-red-500">*</span>
-                  </label>
-                  <select
-                    className="border border-gray-300 px-3 py-2 w-[280px] bg-white rounded-[8px] h-[40px] mt-1"
-                    onChange={handleSchemeChange}
-                    defaultValue=""
+                  <button
+                    className="bg-[#0A2478] text-white px-4 py-3 rounded-r border border-gray-300 border-l-0 hover:bg-[#081c5b] h-[40px]"
+                    type="button"
+                    onClick={() => OpenCustomerModel(selectedCoBorrower.id)} // <--- ADD
                   >
-                    <option value="" disabled>
-                      Select Scheme
-                    </option>
-                    {schemes.map((scheme) => (
-                      <option key={scheme.id} value={scheme.id}>
-                        {scheme.schemeName}
-                      </option>
-                    ))}
-                  </select>
+                    <img src={timesvg} alt="eye" />
+                  </button>
                 </div>
+              </div>
+
+              <div className="mb-6  mt-2">
+                <label className="text-[14px] font-medium block mb-1">
+                  Scheme<span className="text-red-500">*</span>
+                </label>
+                <select
+                  className="border border-gray-300 px-3 py-2 w-[280px] bg-white rounded-[8px] h-[40px] mt-1"
+                  onChange={handleSchemeChange}
+                  defaultValue=""
+                >
+                  <option value="" disabled>
+                    Select Scheme
+                  </option>
+                  {schemes.map((scheme) => (
+                    <option key={scheme.id} value={scheme.id}>
+                      {scheme.schemeName}
+                    </option>
+                  ))}
+                </select>
+              </div>
             </div>
             <div className='border flex-col p-2 border-gray-300'>
               <div className='flex gap-5'>
-<div className="">
+                <div className="">
                   <div>
                     <label className="text-[14px] font-medium">
                       Borrower Id <span className="text-red-500">*</span>
@@ -1149,35 +1152,35 @@ bg-[#FFE6E6]  mr-[110px]"
                     type="text"
                     name="borrowerID"
                     // placeholder="Enter Print Name"
-                      value={formData.borrowerID}
-                     disabled={true} 
+                    value={formData.borrowerID}
+                    disabled={true}
                     onChange={handleInputChange}
                     className="border border-gray-300 px-3 py-2  w-[120px] rounded-[8px] bg-white h-[40px] mt-1 disabled:bg-gray-100 "
                   />
                 </div>
- <div >
+                <div >
 
                   <div className="">
-                     
-                  <div>
-                    <label className="text-[14px] font-medium">
-                      Print Name <span className="text-red-500">*</span>
-                    </label>
+
+                    <div>
+                      <label className="text-[14px] font-medium">
+                        Print Name <span className="text-red-500">*</span>
+                      </label>
+                    </div>
+
+                    <input
+                      type="text"
+                      name="printName"
+                      placeholder="Enter Print Name"
+                      value={formData.printName}
+                      disabled={true}
+                      onChange={handleInputChange}
+                      className="border border-gray-300 px-3 py-2  w-[200px] rounded-[8px] bg-white h-[40px] mt-1 disabled:bg-gray-100 "
+                    />
                   </div>
 
-                  <input
-                    type="text"
-                    name="printName"
-                    placeholder="Enter Print Name"
-                      value={formData.printName}
-                     disabled={true} 
-                    onChange={handleInputChange}
-                    className="border border-gray-300 px-3 py-2  w-[200px] rounded-[8px] bg-white h-[40px] mt-1 disabled:bg-gray-100 "
-                  />
                 </div>
-               
-              </div>
-               <div className="">
+                <div className="">
                   <div>
                     <label className="text-[14px] font-medium">
                       Mobile Number<span className="text-red-500">*</span>
@@ -1190,7 +1193,7 @@ bg-[#FFE6E6]  mr-[110px]"
                     placeholder="Enter mobile Name"
                     value={formData.mobile}
                     onChange={handleInputChange}
-                    disabled={true} 
+                    disabled={true}
                     maxLength={10}
                     style={{
                       MozAppearance: "textfield",
@@ -1199,7 +1202,7 @@ bg-[#FFE6E6]  mr-[110px]"
                     className="border border-gray-300 px-3 py-2 mt-1 w-[136px] rounded-[8px] bg-white h-[40px] disabled:bg-gray-100 "
                   />
                 </div>
-                 <div className="">
+                <div className="">
                   <div>
                     <label className="text-[14px] font-medium">
                       Alternate Number
@@ -1209,7 +1212,7 @@ bg-[#FFE6E6]  mr-[110px]"
                   <input
                     type="text"
                     name="altMobile"
-                    disabled={true} 
+                    disabled={true}
                     placeholder="Enter alt Mobile Name"
                     value={formData.altMobile}
                     onChange={handleInputChange}
@@ -1219,45 +1222,45 @@ bg-[#FFE6E6]  mr-[110px]"
               </div>
               <div className='flex gap-5 mt-2'>
 
-                 <div className="">
-                    <div>
-                      <label className="text-[14px] font-medium">
+                <div className="">
+                  <div>
+                    <label className="text-[14px] font-medium">
                       Co-Borrower Id
-                      </label>
-                    </div>
+                    </label>
+                  </div>
 
-                    <input
-                      type="text"
-                      // placeholder="Co-Borrower"
-                      name="CoBorrowerID"
-                        disabled={true} 
-                      value={formData.CoBorrowerID}
-                      onChange={handleInputChange}
-                      className="border border-gray-300 px-3 py-2  w-[120px] rounded-[8px] bg-white h-[40px] disabled:bg-gray-100 "
-                    />
+                  <input
+                    type="text"
+                    // placeholder="Co-Borrower"
+                    name="CoBorrowerID"
+                    disabled={true}
+                    value={formData.CoBorrowerID}
+                    onChange={handleInputChange}
+                    className="border border-gray-300 px-3 py-2  w-[120px] rounded-[8px] bg-white h-[40px] disabled:bg-gray-100 "
+                  />
                 </div>
-           <div className="">
-                    <div>
-                      <label className="text-[14px] font-medium">
+                <div className="">
+                  <div>
+                    <label className="text-[14px] font-medium">
                       Co-Borrower Relation
-                      </label>
-                    </div>
+                    </label>
+                  </div>
 
-                    <input
-                      type="text"
-                      placeholder="Co-Borrower"
-                      name="CoBorrowerRelation"
-                        // disabled={true} 
-                      value={formData.CoBorrowerRelation}
-                      onChange={handleInputChange}
-                      className="border border-gray-300 px-3 py-2  w-[150px] rounded-[8px] bg-white h-[40px] disabled:bg-gray-100 "
-                    />
+                  <input
+                    type="text"
+                    placeholder="Co-Borrower"
+                    name="CoBorrowerRelation"
+                    // disabled={true} 
+                    value={formData.CoBorrowerRelation}
+                    onChange={handleInputChange}
+                    className="border border-gray-300 px-3 py-2  w-[150px] rounded-[8px] bg-white h-[40px] disabled:bg-gray-100 "
+                  />
                 </div>
-                 <div className="">
+                <div className="">
                   <p> Borrower Address</p>
                   <textarea
                     name="borrowerAddress"
-                      disabled={true} 
+                    disabled={true}
                     value={formData.borrowerAddress}
                     onChange={handleInputChange}
                     className="border w-[400px] h-[40px] rounded-[8px] p-2 focus:outline-none focus:ring-1 focus:ring-blue-400 bg-white border-gray-300 disabled:bg-gray-100 "
@@ -1265,7 +1268,7 @@ bg-[#FFE6E6]  mr-[110px]"
                 </div>
               </div>
               <div className='flex gap-5'>
-<div className="">
+                <div className="">
                   <div>
                     <label className="text-[14px] font-medium">
                       Nominee<span className="text-red-500">*</span>
@@ -1275,7 +1278,7 @@ bg-[#FFE6E6]  mr-[110px]"
                   <input
                     type="text"
                     placeholder="Nominee"
-                     disabled={true} 
+                    disabled={true}
                     name="Nominee_Name"
                     value={formData.Nominee_Name}
                     onChange={handleInputChange}
@@ -1283,7 +1286,7 @@ bg-[#FFE6E6]  mr-[110px]"
                     disabled:bg-gray-100 "
                   />
                 </div>
-                 <div>
+                <div>
                   <div className="">
                     <div>
                       <label className="text-[14px] font-medium">
@@ -1295,7 +1298,7 @@ bg-[#FFE6E6]  mr-[110px]"
                       type="text"
                       placeholder="Relation"
                       name="NomineeRelation"
-                        disabled={true} 
+                      disabled={true}
                       value={formData.NomineeRelation}
                       onChange={handleInputChange}
                       className="border border-gray-300 px-3 py-2 mt-1 w-[120px] rounded-[8px] bg-white h-[38px]
@@ -1304,10 +1307,10 @@ bg-[#FFE6E6]  mr-[110px]"
                   </div>
                 </div>
               </div>
-             
+
             </div>
 
-</div>
+          </div>
           <div>
             <div className="flex  gap-2">
               <div className=" h-[130px]  ">
@@ -1362,7 +1365,7 @@ bg-[#FFE6E6]  mr-[110px]"
                 </div>
               </div>
 
-            
+
             </div>
           </div>
         </div>
@@ -1434,14 +1437,20 @@ bg-[#FFE6E6]  mr-[110px]"
                     docCharges = Math.max(minDoc, Math.min(docCharges, maxDoc));
                   }
 
+                  // ---- Administrative Charges ----
+                  const adminCharges = Number(
+                    formData.Administrative_Charges || 0,
+                  );
+
                   // ---- Net Payable ----
-                  const netPayable = inputLoan + interestAmount + docCharges;
+                  const netPayable = inputLoan + interestAmount + docCharges + adminCharges;
 
                   setFormData((prev) => ({
                     ...prev,
                     Loan_amount: e.target.value, // keep exactly what user typed
                     Interest_Amount: interestAmount.toFixed(2),
                     Doc_Charges: docCharges.toFixed(2),
+                    Administrative_Charges: adminCharges.toFixed(2),
                     Net_Payable: netPayable.toFixed(2),
                   }));
                 }}
@@ -1472,6 +1481,20 @@ bg-[#FFE6E6]  mr-[110px]"
               </div>
             </div>
 
+            <div className="">
+              <div>
+                <label className="text-[14px] font-medium">Adm. Charges</label>
+              </div>
+
+              <input
+                type="text"
+                placeholder="Administrative Charges"
+                name="Administrative_Charges"
+                value={formData.Administrative_Charges}
+                onChange={handleInputChange}
+                className="border border-gray-300 px-3 py-2 mt-1  w-[129px] rounded-[8px] bg-white h-[38px]"
+              />
+            </div>
             <div className="">
               <div>
                 <label className="text-[14px] font-medium">Net Payable </label>
@@ -1541,36 +1564,36 @@ bg-[#FFE6E6]  mr-[110px]"
                 className="border border-gray-300 px-3 py-2 mt-1 w-[136px] rounded-[8px] bg-white h-[38px]"
               />
             </div>
-             <div className="flex flex-col items-start">
-  <p className="text-[14px] font-medium mb-1">Ornament Photo</p>
+            <div className="flex flex-col items-start">
+              <p className="text-[14px] font-medium mb-1">Ornament Photo</p>
 
-  <div 
-    className="relative cursor-pointer w-[100px] h-[80px]"
-    onClick={() => fileInputRef.current.click()}
-  >
-    {/* Image with a simple hover effect */}
-    <img
-      src={formData.OrnamentPhoto ? formData.OrnamentPhoto : profileempty}
-      alt="Ornament"
-      className="w-full h-full object-cover rounded-[8px] border border-gray-300 hover:brightness-90 transition-all"
-    />
+              <div
+                className="relative cursor-pointer w-[100px] h-[80px]"
+                onClick={() => fileInputRef.current.click()}
+              >
+                {/* Image with a simple hover effect */}
+                <img
+                  src={formData.OrnamentPhoto ? formData.OrnamentPhoto : profileempty}
+                  alt="Ornament"
+                  className="w-full h-full object-cover rounded-[8px] border border-gray-300 hover:brightness-90 transition-all"
+                />
 
-    {/* Pencil Icon Overlay - Placed exactly at the corner */}
-    <div className="absolute -bottom-1 -right-1 bg-[#0A2478] text-white p-1.5 rounded-full shadow-md border-2 border-white flex items-center justify-center">
-      <MdEdit size={14} />
-    </div>
-  </div>
+                {/* Pencil Icon Overlay - Placed exactly at the corner */}
+                <div className="absolute -bottom-1 -right-1 bg-[#0A2478] text-white p-1.5 rounded-full shadow-md border-2 border-white flex items-center justify-center">
+                  <MdEdit size={14} />
+                </div>
+              </div>
 
-  <input
-    type="file"
-    ref={fileInputRef}
-    id="ornamentFile"
-    name="OrnamentFile"
-    accept="image/*" 
-    onChange={(e) => handleOrnamentUpload(e)}
-    className="hidden"
-  />
-</div>
+              <input
+                type="file"
+                ref={fileInputRef}
+                id="ornamentFile"
+                name="OrnamentFile"
+                accept="image/*"
+                onChange={(e) => handleOrnamentUpload(e)}
+                className="hidden"
+              />
+            </div>
           </div>
 
           <div className="flex gap-10 ">
@@ -1639,7 +1662,7 @@ bg-[#FFE6E6] p-2"
                   </thead>
                   <tbody className="text-gray-700">
                     {selectedScheme?.interestRates &&
-                    selectedScheme?.interestRates.length > 0 ? (
+                      selectedScheme?.interestRates.length > 0 ? (
                       selectedScheme?.interestRates.map((rate, idx) => (
                         <tr
                           key={idx}
@@ -1850,11 +1873,10 @@ bg-[#FFE6E6] p-2"
                           ₹{Number(l.LoanPendingAmount || 0).toLocaleString()}
                         </td>
                         <td
-                          className={`px-4 py-2 font-semibold ${
-                            l.status === "Closed"
+                          className={`px-4 py-2 font-semibold ${l.status === "Closed"
                               ? "text-red-600"
                               : "text-green-600"
-                          }`}
+                            }`}
                         >
                           {l.status}
                         </td>
