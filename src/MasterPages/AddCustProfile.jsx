@@ -5,6 +5,7 @@ import JoditEditor from "jodit-react";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { MdOutlineFileUpload } from "react-icons/md";
 import { useLocation, useNavigate } from "react-router-dom";
+import SignatureCanvas from "react-signature-canvas";
 import { API } from "../api";
 import { useAuth } from "../API/Context/AuthContext";
 import { fetchAreasApi } from "../API/Master/Master_Profile/Area_Details";
@@ -19,11 +20,13 @@ const AddCustProfile = () => {
 
   const location = useLocation();
   const editor = useRef(null);
+  const signatureCanvasRef = useRef(null);
 
   const customerData = location.state?.customerData;
   const modedata = location.state?.type;
   console.log(customerData, "customerData");
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isSignatureModalOpen, setIsSignatureModalOpen] = useState(false);
   const [content, setContent] = useState("");
   const [mode, setMode] = useState(modedata);
   const [modeForBank, setModeForbank] = useState("add");
@@ -274,6 +277,39 @@ const AddCustProfile = () => {
       }));
     }
   };
+
+  const openSignatureModal = () => {
+    setIsSignatureModalOpen(true);
+  };
+
+  const closeSignatureModal = () => {
+    setIsSignatureModalOpen(false);
+  };
+
+  const clearSignature = () => {
+    if (signatureCanvasRef.current) {
+      signatureCanvasRef.current.clear();
+    }
+  };
+
+  const saveSignature = () => {
+    if (signatureCanvasRef.current) {
+      const dataUrl = signatureCanvasRef.current.toDataURL("image/png");
+
+      // Convert data URL to blob
+      fetch(dataUrl)
+        .then((res) => res.blob())
+        .then((blob) => {
+          const file = new File([blob], "signature.png", { type: "image/png" });
+          setFormData((prev) => ({
+            ...prev,
+            signature: file,
+          }));
+          setIsSignatureModalOpen(false);
+        });
+    }
+  };
+
   console.log(formData, "formData");
   const panFileInputRef = useRef(null);
   const aadharFileInputRef = useRef(null);
@@ -358,21 +394,21 @@ const AddCustProfile = () => {
         ...prevData,
         ...(newValue
           ? {
-              // ✅ Copy Permanent → Corresponding
-              Corresponding_Address: prevData.Permanent_Address,
-              Corresponding_Pincode: prevData.Permanent_Pincode,
-              Corresponding_State: prevData.Permanent_State,
-              Corresponding_City: prevData.Permanent_City,
-              Corresponding_Country: prevData.Permanent_Country,
-            }
+            // ✅ Copy Permanent → Corresponding
+            Corresponding_Address: prevData.Permanent_Address,
+            Corresponding_Pincode: prevData.Permanent_Pincode,
+            Corresponding_State: prevData.Permanent_State,
+            Corresponding_City: prevData.Permanent_City,
+            Corresponding_Country: prevData.Permanent_Country,
+          }
           : {
-              // ❌ Clear Corresponding when unchecked (optional)
-              Corresponding_Address: "",
-              Corresponding_Pincode: "",
-              Corresponding_State: "",
-              Corresponding_City: "",
-              Corresponding_Country: "",
-            }),
+            // ❌ Clear Corresponding when unchecked (optional)
+            Corresponding_Address: "",
+            Corresponding_Pincode: "",
+            Corresponding_State: "",
+            Corresponding_City: "",
+            Corresponding_Country: "",
+          }),
       }));
 
       return newValue;
@@ -390,54 +426,6 @@ const AddCustProfile = () => {
     return `${year}-${month}-${day}`;
   }
 
-  // const handleSubmit = async () => {
-  //   try {
-  //     const payloadToEncrypt = {
-  //       ...formData,
-  //       Remark: content,
-  //       Added_By: "",
-  //     };
-
-  //     const encrypted = encryptData(payloadToEncrypt);
-
-  //     const formDataToSend = new FormData();
-  //     formDataToSend.append("data", encrypted);
-
-  //     if (formData.panFile) formDataToSend.append("panFile", formData.panFile);
-  //     if (formData.aadharFile) formDataToSend.append("aadharFile", formData.aadharFile);
-  //     if (formData.profileImage) formDataToSend.append("profileImage", formData.profileImage);
-  //     if (formData.signature) formDataToSend.append("signature", formData.signature);
-  //     if (formData.Additional_UploadDocumentFile1)
-  //       formDataToSend.append("Additional_UploadDocumentFile1", formData.Additional_UploadDocumentFile1);
-  //     if (formData.Additional_UploadDocumentFile2)
-  //       formDataToSend.append("Additional_UploadDocumentFile2", formData.Additional_UploadDocumentFile2);
-
-  //     // Step 1️⃣: Add customer first
-  //     const response = await axios.post(
-  //       "http://localhost:5000/Master/doc/add",
-  //       formDataToSend,
-  //       { headers: { "Content-Type": "multipart/form-data" } }
-  //     );
-
-  //     console.log("✅ Customer API Response:", response.data);
-
-  //     if (response.data.status && response.data.statuscode === 200) {
-  //       const customerId = response.data.customerId; // Get the new customer ID
-
-  //       alert(response.data.message);
-
-  //       // Step 2️⃣: Call addBankDetails API
-  //       await addBankDetails(customerId);
-
-  //       navigate("/Customer-Profile-List");
-  //     } else {
-  //       alert("❌ Something went wrong: " + (response.data.message || "Unknown error"));
-  //     }
-  //   } catch (error) {
-  //     console.error("❌ Error submitting form:", error);
-  //     alert("An error occurred while adding the customer.");
-  //   }
-  // };
   const { loginUser } = useAuth();
 
   console.log("Logged in user:", loginUser);
@@ -522,7 +510,7 @@ const AddCustProfile = () => {
       } else {
         alert(
           "❌ Something went wrong: " +
-            (response.data.message || "Unknown error"),
+          (response.data.message || "Unknown error"),
         );
       }
     } catch (error) {
@@ -590,40 +578,6 @@ const AddCustProfile = () => {
     };
   };
 
-  //   const verifyPan = async () => {
-  //   debugger
-  //   if (!formData.panNo) {
-  //     alert("Enter PAN Number");
-  //     return;
-  //   }
-
-  //   try {
-  //     const res = await axios.post(`${API}/kyc/pan/verify`, {
-  //       pan: formData.panNo,
-  //       name: "---"
-  //     });
-
-  //     const data = res.data.data;
-
-  //     // Split registered name
-  //     const nameParts = splitFullName(data.registered_name);
-
-  //     // Update form data
-  //     setFormData({
-  //       ...formData,
-  //       printName: data.registered_name,
-  //       firstName: nameParts.firstName,
-  //       middleName: nameParts.middleName,
-  //       lastName: nameParts.lastName
-  //     });
-
-  //     alert("PAN Verified Successfully!");
-
-  //   } catch (error) {
-  //     console.log(error);
-  //     alert("PAN Verification Failed");
-  //   }
-  // };
   const verifyPan = async () => {
     debugger;
     if (!formData.panNo) {
@@ -684,29 +638,7 @@ const AddCustProfile = () => {
       alert("PAN Verification Failed");
     }
   };
-  // const sendAadhaarOTP = async () => {
-  //   if (!formData.aadhar || formData.aadhar.length !== 12) {
-  //     alert("Enter valid 12-digit Aadhaar");
-  //     return;
-  //   }
 
-  //   try {
-  //     const res = await axios.post(`${API}/kyc/aadhaar/send-otp`, {
-  //       aadhaar_number: formData.aadhar
-  //     });
-
-  //     setFormData({
-  //       ...formData,
-  //       refId: res.data.data.ref_id
-  //     });
-
-  //     alert("OTP Sent to Aadhaar Mobile!");
-
-  //   } catch (error) {
-  //     console.log(error);
-  //     alert("Failed to send OTP");
-  //   }
-  // };
   const sendAadhaarOTP = async () => {
     // 1. Basic Length Check
     if (!formData.aadhar || formData.aadhar.length !== 12) {
@@ -761,25 +693,7 @@ const AddCustProfile = () => {
       console.error(error);
     }
   };
-  // 1. Function to Send OTP
-  // const sendMobileOTP = async () => {
-  //   if (!formData.mobile || formData.mobile.length !== 10) {
-  //     alert("Please enter a valid 10-digit mobile number");
-  //     return;
-  //   }
 
-  //   try {
-  //     const res = await axios.post('https://slunawat.co.in/otp/send-otp', {
-  //       mobile: formData.mobile
-  //     });
-
-  //     // Check if your API returns a specific success flag
-  //     alert("OTP sent successfully to " + formData.mobile);
-  //   } catch (error) {
-  //     console.error("Send OTP Error:", error);
-  //     alert("Failed to send OTP. Please try again.");
-  //   }
-  // };
   const sendMobileOTP = async () => {
     const mobile = String(formData.mobile || "").trim();
 
@@ -1056,32 +970,6 @@ const AddCustProfile = () => {
                   )}
                 </div>
 
-                {/* <div className="flex flex-col">
-                <label className="text-[14px] font-medium">Verify OTP</label>
-                <div className="relative mt-1 w-[130px]">
-                  <input
-                    type="number"
-                    placeholder="Enter OTP"
-                    name="otp"
-                    value={formData.otp}
-                    onChange={handleChange}
-                    className="border border-gray-300 rounded-[8px] px-3 py-2 w-[130px]  bg-white focus:outline-none focus:ring-1 focus:ring-blue-500"
-                    style={{
-                      MozAppearance: "textfield",
-                    }}
-                    onWheel={(e) => e.target.blur()}
-                  />
-                  <img
-  src={righttick}
-  alt="tick"
-  onClick={verifyAadhaarOtp}
-  className="absolute right-3 top-1/2 -translate-y-1/2 w-[13px] h-[13px] 
-  cursor-pointer hover:scale-110 transition-all"
-/>
-
-                </div>
-              </div> */}
-
                 {/* Print Name */}
                 <div className="flex flex-col">
                   <label className="text-[14px] font-medium">
@@ -1108,9 +996,8 @@ const AddCustProfile = () => {
                     value={formData.email}
                     onChange={handleChange}
                     placeholder="Enter Email"
-                    className={`border rounded px-3 py-2 mt-1 w-[250px] bg-white ${
-                      errors.email ? "border-red-500" : "border-gray-300"
-                    }`}
+                    className={`border rounded px-3 py-2 mt-1 w-[250px] bg-white ${errors.email ? "border-red-500" : "border-gray-300"
+                      }`}
                   />
 
                   {errors.email && (
@@ -1156,11 +1043,10 @@ const AddCustProfile = () => {
                       type="button"
                       onClick={sendMobileOTP}
                       disabled={isMobileVerified}
-                      className={`bg-[#0A2478] text-white px-4 py-2 rounded-r border border-gray-300 border-l-0 flex justify-center items-center gap-2 ${
-                        isMobileVerified
-                          ? "opacity-50 cursor-not-allowed"
-                          : "hover:bg-[#081c5b]"
-                      }`}
+                      className={`bg-[#0A2478] text-white px-4 py-2 rounded-r border border-gray-300 border-l-0 flex justify-center items-center gap-2 ${isMobileVerified
+                        ? "opacity-50 cursor-not-allowed"
+                        : "hover:bg-[#081c5b]"
+                        }`}
                     >
                       <img src={send} alt="otp" className="w-4 h-4" />
                       <span>{isOtpSent ? "Resend" : "OTP"}</span>
@@ -1313,11 +1199,10 @@ const AddCustProfile = () => {
                             value={formData.gstNo}
                             onChange={handleChange}
                             disabled={isGstVerified}
-                            className={`border border-gray-300 border-r-0 rounded-l px-3 py-2 w-full pr-10 focus:outline-none ${
-                              isGstVerified
-                                ? "bg-gray-100 cursor-not-allowed"
-                                : "bg-white"
-                            }`}
+                            className={`border border-gray-300 border-r-0 rounded-l px-3 py-2 w-full pr-10 focus:outline-none ${isGstVerified
+                              ? "bg-gray-100 cursor-not-allowed"
+                              : "bg-white"
+                              }`}
                           />
                         </div>
 
@@ -1325,11 +1210,10 @@ const AddCustProfile = () => {
                           type="button"
                           onClick={verifyGst}
                           disabled={isGstVerified}
-                          className={`bg-[#0A2478] text-white px-5 py-2 rounded-r border border-gray-300 border-l-0 ${
-                            isGstVerified
-                              ? "opacity-50 cursor-not-allowed"
-                              : "hover:bg-[#081c5b]"
-                          }`}
+                          className={`bg-[#0A2478] text-white px-5 py-2 rounded-r border border-gray-300 border-l-0 ${isGstVerified
+                            ? "opacity-50 cursor-not-allowed"
+                            : "hover:bg-[#081c5b]"
+                            }`}
                         >
                           {isGstVerified ? "Verified" : "Verify"}
                         </button>
@@ -1498,8 +1382,7 @@ const AddCustProfile = () => {
                     </label>
                   </div>
 
-                  <div className="relative flex justify-center">
-                    {/* Background or Preview */}
+                  {/* <div className="relative flex justify-center">
                     <img
                       src={
                         formData.profileImage
@@ -1512,7 +1395,6 @@ const AddCustProfile = () => {
                       className="w-[130px] h-[130px] border"
                     />
 
-                    {/* Upload Button */}
                     <div
                       className="absolute inset-0 flex items-center justify-center bg-opacity-40 text-white text-sm px-4 py-2 rounded-md cursor-pointer hover:bg-opacity-60 transition"
                       onClick={() =>
@@ -1520,6 +1402,47 @@ const AddCustProfile = () => {
                       }
                     >
                       <button className="w-[101px] h-[18px] p-1 bg-[#0A2478] text-white text-[8px] rounded-[3px]">
+                        Upload from Computer
+                      </button>
+                    </div>
+
+                    <input
+                      type="file"
+                      id="profileUpload"
+                      accept="image/*"
+                      className="hidden"
+                      onChange={handleProfileUpload}
+                    />
+                  </div> */}
+
+                  <div className="relative flex justify-center group">
+                    {/* Background or Preview */}
+                    <img
+                      src={
+                        formData.profileImage
+                          ? typeof formData.profileImage === "string"
+                            ? formData.profileImage
+                            : URL.createObjectURL(formData.profileImage)
+                          : profileempty
+                      }
+                      alt="profile"
+                      className="w-[130px] h-[130px] border"
+                    />
+
+                    {/* Overlay */}
+                    <div
+                      className={`absolute inset-0 left-3 w-[130px] h-[130px] flex items-center justify-center 
+      bg-black/10 transition-opacity duration-300
+      ${formData.profileImage
+                          ? "opacity-0 group-hover:opacity-100"
+                          : "opacity-100"
+                        }
+    `}
+                      onClick={() =>
+                        document.getElementById("profileUpload").click()
+                      }
+                    >
+                      <button className="w-[101px] h-[24px] bg-[#0A2478] text-white text-[10px] rounded-[3px]">
                         Upload from Computer
                       </button>
                     </div>
@@ -1539,17 +1462,16 @@ const AddCustProfile = () => {
               <div>
                 <div className="flex justify-center mt-5 mb-2">
                   <label className="font-roboto font-bold text-[14px] leading-[100%] tracking-[0.03em] text-center">
-                    Upload Customer Signature
+                    Customer Signature
                   </label>
                 </div>
 
-                <div className="relative flex justify-center">
-                  {/* Background Image or Preview */}
+                {/* <div className="relative flex justify-center">
                   <img
                     src={
                       formData.signature
                         ? formData.signature instanceof File
-                          ? URL.createObjectURL(formData.signature) // for newly uploaded files
+                          ? URL.createObjectURL(formData.signature) // for newly drawn/uploaded files
                           : `${formData.signature}` // for existing file path
                         : profileempty
                     }
@@ -1557,32 +1479,96 @@ const AddCustProfile = () => {
                     className="w-[130px] h-[38px] border rounded-md"
                   />
 
-                  {/* Upload Button */}
                   <div
                     className="absolute inset-0 flex items-center justify-center bg-opacity-40 text-white text-sm px-4 py-2 rounded-md cursor-pointer hover:bg-opacity-60 transition"
-                    onClick={() =>
-                      document.getElementById("signatureUpload").click()
-                    }
+                    onClick={openSignatureModal}
                   >
                     <button className="w-[130px] h-[18px] p-1 bg-[#0A2478] text-white text-[8px] rounded-[3px]">
-                      Upload from Computer
+                      Draw Signature
                     </button>
                   </div>
+                </div> */}
 
-                  {/* Hidden Input */}
-                  <input
-                    type="file"
-                    id="signatureUpload"
-                    accept="image/*"
-                    className="hidden"
-                    onChange={handleSignatureUpload}
+                <div className="relative flex justify-center group">
+                  <img
+                    src={
+                      formData.signature
+                        ? formData.signature instanceof File
+                          ? URL.createObjectURL(formData.signature)
+                          : `${formData.signature}`
+                        : profileempty
+                    }
+                    alt="signature"
+                    className="w-[130px] h-[38px] border rounded-md"
                   />
+
+                  <div
+                    className={`
+      absolute inset-0 flex items-center left-3 w-[130px] h-[38px] justify-center 
+      bg-black/40 transition-opacity duration-300
+      ${formData.signature
+                        ? "opacity-0 group-hover:opacity-100"
+                        : "opacity-100"
+                      }
+    `}
+                    onClick={openSignatureModal}
+                  >
+                    <button className="w-[100px] h-[20px] bg-[#0A2478] text-white text-[10px] rounded-[3px]">
+                      Draw Signature
+                    </button>
+                  </div>
                 </div>
               </div>
             </div>
           </div>
         </div>
       </div>
+
+      {/* Signature Drawing Modal */}
+      {isSignatureModalOpen && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-[#0101017A] backdrop-blur-md">
+          <div className="bg-white p-6 rounded-lg w-[600px]">
+            <h2 className="text-lg font-semibold text-[#0A2478] mb-4">
+              Draw Your Signature
+            </h2>
+
+            <div className="border-2 border-gray-300 rounded-lg overflow-hidden bg-white">
+              <SignatureCanvas
+                ref={signatureCanvasRef}
+                penColor="black"
+                canvasProps={{
+                  width: 550,
+                  height: 200,
+                  className: "border-0",
+                }}
+              />
+            </div>
+
+            <div className="flex justify-end gap-3 mt-4">
+              <button
+                className="px-4 py-2 bg-gray-300 text-gray-800 rounded hover:bg-gray-400"
+                onClick={clearSignature}
+              >
+                Clear
+              </button>
+
+              <button
+                className="px-4 py-2 bg-gray-300 text-gray-800 rounded hover:bg-gray-400"
+                onClick={closeSignatureModal}
+              >
+                Cancel
+              </button>
+
+              <button
+                className="px-4 py-2 bg-[#0A2478] text-white rounded hover:bg-[#081c5b]"
+                onClick={saveSignature}
+              >
+                Save Signature
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
 
       <div className="pl-[110px] pr-[110px]">
         <div className="bg-[#F7F7FF]  p-6 rounded-md w-full mx-auto ">
@@ -2285,7 +2271,7 @@ const AddCustProfile = () => {
                 />
               </div>
             </div>
-             <div>
+            <div>
               <div className="">
                 <div>
                   <label className="text-[14px] font-medium">
@@ -2362,7 +2348,7 @@ const AddCustProfile = () => {
                 </select>
               </div>
             </div>
-           
+
           </div>
         </div>
       </div>
