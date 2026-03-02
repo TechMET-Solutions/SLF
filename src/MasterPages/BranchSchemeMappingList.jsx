@@ -212,7 +212,7 @@ const BranchSchemeMappingList = () => {
     <div className="min-h-screen w-full relative">
       {/* Topbar */}
       <div className="flex justify-center sticky top-[80px] z-40">
-        <div className="flex items-center px-6 py-4 border-b mt-5 w-[1462px] h-[62px] border rounded-[11px] border-gray-200 justify-between shadow bg-white">
+        <div className="flex items-center px-6 py-4 border-b  w-[1462px] h-[50px] border rounded-[11px] border-gray-200 justify-between shadow bg-white">
           <h2 className="text-red-600 font-bold text-[20px]">
             Branch Scheme Mapping List
           </h2>
@@ -228,7 +228,7 @@ const BranchSchemeMappingList = () => {
       {/* Table */}
       <div className="flex justify-center">
         <div className="overflow-x-auto mt-5 w-[1462px] h-[500px]">
-          <table className=" border-collapse shadow-sm">
+          <table className="">
             <thead className="bg-[#0A2478] text-white text-sm">
               <tr>
                 <th className="px-1 py-1 text-left border-r w-[100px]">
@@ -245,9 +245,7 @@ const BranchSchemeMappingList = () => {
               {branches.map((row, index) => (
                 <tr
                   key={row.id}
-                  className={
-                    index % 1 === 0 ? "bg-gray-50" : "bg-white border-b"
-                  }
+                   className={index % 2 === 0 ? "bg-gray-50" : "bg-white"}
                 >
                   <td className="px-1 py-1">{row.branch_code}</td>
                   <td className="px-1 py-1">{row.branch_name}</td>

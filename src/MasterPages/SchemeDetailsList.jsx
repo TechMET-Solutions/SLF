@@ -115,7 +115,7 @@ const SchemeDetailsList = () => {
     <div className="min-h-screen w-full">
       {/* Top Bar */}
       <div className="flex justify-center sticky top-[80px] z-40">
-        <div className="flex items-center px-6 py-4 border-b mt-5 w-[1462px] h-[62px] border rounded-[11px] border-gray-200 justify-between shadow bg-white">
+        <div className="flex items-center px-6 py-4 border-b  w-[1462px] h-[50px] border rounded-[11px] border-gray-200 justify-between  bg-white">
           <h2 className="text-red-600 text-[20px] font-semibold">
             Scheme List
           </h2>
@@ -277,15 +277,15 @@ const SchemeDetailsList = () => {
       </div>
 
       {/* Table */}
-      <div className="flex mx-auto w-[1462px] justify-start">
+      <div className="flex ml-[22px]">
         <div className="overflow-x-auto mt-5  h-[500px]">
           <table className="w-full border-collapse">
             <thead className="bg-[#0A2478] text-white text-sm">
-              <tr>
+              <tr className='text-left'>
                 <th className="px-1 py-1 border w-[150px]">Scheme Name</th>
                 <th className="px-1 py-1 border w-[100px]">Product Name</th>
-                <th className="px-1 py-1 border">App From</th>
-                <th className="px-1 py-1 border">App To</th>
+                <th className="px-1 py-1 border">From Date</th>
+                <th className="px-1 py-1 border">To Date</th>
                 {/* <th className="px-1 py-1 border w-[50px]">Int. Compound</th> */}
 
                 <th className="px-1 py-1 border">Min Amount</th>

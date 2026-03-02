@@ -104,10 +104,10 @@ function PartyType() {
     };
 
     return (
-        <div className="min-h-screen w-full bg-gray-50 flex flex-col items-center">
+        <div className="min-h-screen w-full  flex flex-col items-center">
             {/* Top Bar */}
-            <div className="sticky top-[80px] z-40 w-[1290px] mt-5">
-                <div className="flex items-center justify-between px-6 py-4 h-[62px] rounded-[11px] border border-gray-200 bg-white shadow-sm">
+            <div className="sticky top-[80px] z-40 w-[1462px] mt-2">
+                <div className="flex items-center justify-between px-6 py-4 h-[50px] rounded-[11px] border border-gray-200 bg-white shadow-sm ">
 
                     {/* Title */}
                     <h2 className="text-red-600 text-[20px] font-bold">
@@ -134,20 +134,20 @@ function PartyType() {
             </div>
 
             {/* Table */}
-            <div className="w-[600px] mx-30 flex items-start mt-6 bg-white self-start">
-                <table className="w-full ">
+            <div className="w-[400px] flex items-start mt-6 bg-white self-start ml-[22px] text-sm">
+                <table className="w-full">
                     <thead className="bg-[#0A2478] text-white">
                         <tr>
-                            <th className="px-3 py-2 border-r-2 border-white text-left w-[80px]">Sr No</th>
-                            <th className="px-3 py-2 border-r-2 border-white text-left w-[300px]">Party Type</th>
-                            <th className="px-3 py-2 border-r-2 border-white text-center w-[100px]">Action</th>
-                            <th className="px-3 py-2 border-r-2 border-white text-center w-[100px]">Active</th>
+                            <th className="p-1 border-r-2 border-white text-left w-[80px]">Sr No</th>
+                            <th className="p-1 border-r-2 border-white text-left w-[150px]">Party Type</th>
+                            <th className="p-1 border-r-2 border-white text-left w-[80px]">Action</th>
+                            <th className="p-1 border-r-2 border-white text-left w-[80px]">Active</th>
                         </tr>
                     </thead>
                     <tbody>
                         {loading ? (
                             <tr>
-                                <td colSpan="4" className="text-center p-4">
+                                <td colSpan="4" className="text-left p-4">
                                     Loading...
                                 </td>
                             </tr>
@@ -159,20 +159,20 @@ function PartyType() {
                             </tr>
                         ) : (
                             partyTypes.map((party, index) => (
-                                <tr key={party.id} className="border-t">
-                                    <td className="p-3">{index + 1}</td>
-                                    <td className="p-3">{party.party_type}</td>
+                                <tr key={party.id}   className={index % 2 === 0 ? "bg-gray-50" : "bg-white"}>
+                                    <td className="p-1">{index + 1}</td>
+                                    <td className="p-1">{party.party_type}</td>
 
-                                    <td className="p-3 text-center">
+                                    <td className="p-1 text-left">
                                         <button
                                             onClick={() => handleEdit(party)}
-                                            className="bg-green-500 p-1.5 text-white rounded"
+                                            className="bg-green-500 p-1 text-white rounded"
                                         >
                                             <FiEdit size={14} />
                                         </button>
                                     </td>
 
-                                    <td className="p-3 text-center">
+                                    <td className="p-1 text-left">
                                         <button
                                             onClick={() => handleToggleStatus(party.id)}
                                             className={`w-12 h-6 flex items-center rounded-full p-1 transition-colors ${party.status === 1
@@ -197,8 +197,8 @@ function PartyType() {
 
             {/* ================= Modal ================= */}
             {modalOpen && (
-                <div className="fixed inset-0 flex items-center justify-center bg-black/40 z-50">
-                    <div className="bg-white w-[350px] p-6 rounded-lg shadow-lg">
+                <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-40">
+                    <div className="bg-white w-[400px] p-6 rounded-lg shadow-lg">
                         <h3 className="text-lg font-semibold mb-4">
                             {editId ? "Edit Party Type" : "Add Party Type"}
                         </h3>
@@ -211,21 +211,20 @@ function PartyType() {
                             className="w-full border p-2 rounded mb-4"
                         />
 
-                        <div className="flex justify-center gap-3">
+                        <div className="flex justify-end gap-3">
+                            <button
+                                onClick={() => setModalOpen(false)}
+                                className="px-4 py-1 bg-gray-400 text-white rounded"
+                            >
+                                Cancel
+                            </button>
+
                             <button
                                 onClick={handleSave}
                                 className="px-4 py-1 bg-[#0A2478] text-white rounded"
                             >
                                 {editId ? "Update" : "Save"}
                             </button>
-                            <button
-                                onClick={() => setModalOpen(false)}
-                                className="px-4 py-1 bg-red-600 text-white rounded"
-                            >
-                                Exit
-                            </button>
-
-                           
                         </div>
                     </div>
                 </div>

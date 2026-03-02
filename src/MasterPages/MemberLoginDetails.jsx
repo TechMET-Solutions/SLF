@@ -328,14 +328,31 @@ const MemberLoginDetails = () => {
     <div className="min-h-screen w-full">
       {/* Top bar */}
       <div className="flex justify-center sticky top-[80px] z-40">
-        <div className="flex items-center px-6 py-4 border-b mt-5 w-[1462px] h-[62px] border rounded-[11px] border-gray-200 justify-between shadow">
+        <div className="flex items-center px-6 py-4 border-b  w-[1462px] h-[50px] border rounded-[11px] border-gray-200 justify-between shadow">
           <h2 className="text-red-600 font-bold text-[20px] leading-[148%] font-source">
             Member Details
           </h2>
+ <div className="flex mt-5 gap-2 mx-auto w-[1462px]">
+        <div className='flex gap-1'>
+          <p className="text-xs font-semibold">Bulk Start Time</p>
+          <TimePicker
+            initialTime=""
+            onSave={(time) => applyBulkTime("startDate", time)}
+          />
+        </div>
 
+        <div className='flex gap-1'>
+          <p className="text-xs font-semibold">Bulk End Time</p>
+          <TimePicker
+            initialTime=""
+            onSave={(time) => applyBulkTime("endDate", time)}
+          />
+        </div>
+      </div>
           {/* Search & Actions */}
           <div className="flex items-center gap-6">
             {/* Search */}
+            
             <div className="flex gap-3 items-center">
               <input
                 type="text"
@@ -370,23 +387,7 @@ const MemberLoginDetails = () => {
         </div>
       </div>
 
-      <div className="flex  mt-5 gap-2 mx-auto w-[1462px]">
-        <div>
-          <label className="text-xs font-semibold">Bulk Start Time</label>
-          <TimePicker
-            initialTime=""
-            onSave={(time) => applyBulkTime("startDate", time)}
-          />
-        </div>
-
-        <div>
-          <label className="text-xs font-semibold">Bulk End Time</label>
-          <TimePicker
-            initialTime=""
-            onSave={(time) => applyBulkTime("endDate", time)}
-          />
-        </div>
-      </div>
+     
 
       {/* Table */}
 
