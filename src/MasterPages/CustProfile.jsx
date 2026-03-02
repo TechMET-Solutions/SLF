@@ -770,6 +770,7 @@ const CustProfile = () => {
                         className="w-[17px] h-[17px] bg-[#56A869] rounded-[2.31px] flex items-center justify-center cursor-pointer"
                         onClick={() => handleNavigateToProfile(row)}
                       >
+                        
                         <img
                           src={GroupData}
                           alt="edit"

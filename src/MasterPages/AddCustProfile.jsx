@@ -313,6 +313,61 @@ const AddCustProfile = () => {
   console.log(formData, "formData");
   const panFileInputRef = useRef(null);
   const aadharFileInputRef = useRef(null);
+
+  // Validation function for required fields
+  const validateRequiredFields = () => {
+    const newErrors = {};
+    let hasErrors = false;
+
+    // Define required fields for Personal Information
+    const personalInfoFields = {
+      aadhar: "Aadhar Number",
+      printName: "Print Name",
+      email: "Email Id",
+      dob: "DOB",
+      mobile: "Mobile No",
+      gender: "Gender",
+      panNo: "PAN No",
+    };
+
+    // Define required fields for Permanent Address
+    const permanentAddressFields = {
+      Permanent_Address: "Address",
+      Permanent_City: "City",
+      Permanent_State: "State",
+      Permanent_Country: "Country",
+      Permanent_Pincode: "Pincode",
+    };
+
+    // Check Personal Information fields
+    Object.entries(personalInfoFields).forEach(([field, label]) => {
+      if (!formData[field] || formData[field].toString().trim() === "") {
+        newErrors[field] = `${label} is required`;
+        hasErrors = true;
+      }
+    });
+
+    // Check Permanent Address fields
+    Object.entries(permanentAddressFields).forEach(([field, label]) => {
+      if (!formData[field] || formData[field].toString().trim() === "") {
+        newErrors[field] = `${label} is required`;
+        hasErrors = true;
+      }
+    });
+
+    // Email validation
+    if (formData.email && formData.email.trim() !== "") {
+      const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+      if (!emailRegex.test(formData.email)) {
+        newErrors.email = "Please enter a valid email address";
+        hasErrors = true;
+      }
+    }
+
+    setErrors(newErrors);
+    return !hasErrors;
+  };
+
   // Handle input changes
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -322,11 +377,19 @@ const AddCustProfile = () => {
       [name]: value,
     }));
 
+    // Clear field-level error when user starts typing
+    if (errors[name]) {
+      setErrors((prev) => ({
+        ...prev,
+        [name]: "",
+      }));
+    }
+
     // Live email validation
     if (name === "email") {
       const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
-      if (!emailRegex.test(value)) {
+      if (!emailRegex.test(value) && value.trim() !== "") {
         setErrors((prev) => ({
           ...prev,
           email: "Please enter a valid email address",
@@ -432,6 +495,12 @@ const AddCustProfile = () => {
   const handleSubmit = async () => {
     debugger;
     try {
+      // Validate all required fields before submission
+      if (!validateRequiredFields()) {
+        alert("❌ Please fill all required fields");
+        return; // ⛔ STOP execution
+      }
+
       if (formData.pep === "yes") {
         alert(
           "❌ Politically Exposed Persons (PEP) cannot be added as customers.",
@@ -772,6 +841,24 @@ const AddCustProfile = () => {
     }
   };
 
+    // ===============================
+    // Party Types – dynamic (active only)
+    // ===============================
+    const [partyTypeList, setPartyTypeList] = useState([]);
+  
+    useEffect(() => {
+      const fetchPartyTypes = async () => {
+        try {
+          const res = await axios.get(`${API}/api/party-types/list`);
+          const activeOnly = (res.data.data || []).filter((item) => item.status === 1);
+          setPartyTypeList(activeOnly);
+        } catch (error) {
+          console.error("Failed to fetch party types:", error);
+        }
+      };
+      fetchPartyTypes();
+    }, []);
+
   return (
     <div>
       <div className="flex justify-center sticky top-[80px] z-40 ">
@@ -867,6 +954,7 @@ const AddCustProfile = () => {
                         type="text"
                         placeholder="Enter PAN"
                         name="panNo"
+                        required
                         value={formData.panNo}
                         onChange={(e) =>
                           setFormData({
@@ -908,6 +996,11 @@ const AddCustProfile = () => {
                     <p className="text-xs text-gray-500 mt-1">
                       Selected file: {formData.panFile.name}
                     </p>
+                  )}
+
+                  {/* Error message */}
+                  {errors.panNo && (
+                    <p className="text-red-500 text-xs mt-1">{errors.panNo}</p>
                   )}
                 </div>
 
@@ -962,11 +1055,15 @@ const AddCustProfile = () => {
                       verify
                     </button>
                   </div>
-
                   {formData.aadharFile && (
                     <p className="text-xs text-gray-500 mt-1">
                       Selected file: {formData.aadharFile.name}
                     </p>
+                  )}
+
+                  {/* Error message */}
+                  {errors.aadhar && (
+                    <p className="text-red-500 text-xs mt-1">{errors.aadhar}</p>
                   )}
                 </div>
 
@@ -981,8 +1078,14 @@ const AddCustProfile = () => {
                     value={formData.printName}
                     onChange={handleChange}
                     placeholder="Customer Full Name"
-                    className="border border-gray-300 px-3 py-2 mt-1 w-[220px] rounded-[8px] bg-white"
+                    className={`border px-3 py-2 mt-1 w-[220px] rounded-[8px] bg-white ${errors.printName ? "border-red-500" : "border-gray-300"
+                      }`}
                   />
+                  {errors.printName && (
+                    <p className="text-red-500 text-xs mt-1">
+                      {errors.printName}
+                    </p>
+                  )}
                 </div>
 
                 <div className="flex flex-col flex-1">
@@ -1016,8 +1119,12 @@ const AddCustProfile = () => {
                     name="dob"
                     value={formData.dob}
                     onChange={handleChange}
-                    className="border border-gray-300 rounded px-3 py-2 mt-1 w-[140px] bg-white"
+                    className={`border rounded px-3 py-2 mt-1 w-[140px] bg-white ${errors.dob ? "border-red-500" : "border-gray-300"
+                      }`}
                   />
+                  {errors.dob && (
+                    <p className="text-red-500 text-xs mt-1">{errors.dob}</p>
+                  )}
                 </div>
 
                 {/* Email */}
@@ -1052,6 +1159,9 @@ const AddCustProfile = () => {
                       <span>{isOtpSent ? "Resend" : "OTP"}</span>
                     </button>
                   </div>
+                  {errors.mobile && (
+                    <p className="text-red-500 text-xs mt-1">{errors.mobile}</p>
+                  )}
                 </div>
                 <div className="flex flex-col">
                   <label className="text-[14px] font-medium">Verify OTP</label>
@@ -1126,13 +1236,17 @@ const AddCustProfile = () => {
                     name="gender"
                     value={formData.gender}
                     onChange={handleChange}
-                    className="border border-gray-300 rounded px-3 py-2 mt-1 w-[100px] bg-white"
+                    className={`border rounded px-3 py-2 mt-1 w-[100px] bg-white ${errors.gender ? "border-red-500" : "border-gray-300"
+                      }`}
                   >
                     <option value="">Select</option>
                     <option value="Male">Male</option>
                     <option value="Female">Female</option>
                     <option value="Other">Other</option>
                   </select>
+                  {errors.gender && (
+                    <p className="text-red-500 text-xs mt-1">{errors.gender}</p>
+                  )}
                 </div>
                 <div className="flex flex-col">
                   <label className="text-[14px] font-medium">
@@ -1158,8 +1272,11 @@ const AddCustProfile = () => {
                     className="border border-gray-300 rounded-[8px] px-3 py-2 mt-1 w-[120px] bg-white"
                   >
                     <option value="">Select Type</option>
-                    <option value="Individual">Individual</option>
-                    <option value="Corporate">Corporate</option>
+                    {partyTypeList.map((pt) => (
+                      <option key={pt.id} value={pt.party_type}>
+                        {pt.party_type}
+                      </option>
+                    ))}
                   </select>
                 </div>
                 <div className="flex flex-col">
@@ -1591,8 +1708,16 @@ const AddCustProfile = () => {
                   value={formData.Permanent_Address}
                   onChange={handleChange}
                   placeholder="Address"
-                  className="border border-gray-300 px-3 py-2 mt-1 w-[385px]  bg-white rounded-[8px]"
+                  className={`border px-3 py-2 mt-1 w-[385px] bg-white rounded-[8px] ${errors.Permanent_Address
+                      ? "border-red-500"
+                      : "border-gray-300"
+                    }`}
                 />
+                {errors.Permanent_Address && (
+                  <p className="text-red-500 text-xs mt-1">
+                    {errors.Permanent_Address}
+                  </p>
+                )}
               </div>
             </div>
             <div>
@@ -1609,8 +1734,16 @@ const AddCustProfile = () => {
                   value={formData.Permanent_City}
                   onChange={handleChange}
                   placeholder="City"
-                  className="border border-gray-300 px-3 py-2 mt-1 w-[150px] rounded-[8px] bg-white"
+                  className={`border px-3 py-2 mt-1 w-[150px] rounded-[8px] bg-white ${errors.Permanent_City
+                      ? "border-red-500"
+                      : "border-gray-300"
+                    }`}
                 />
+                {errors.Permanent_City && (
+                  <p className="text-red-500 text-xs mt-1">
+                    {errors.Permanent_City}
+                  </p>
+                )}
               </div>
             </div>
             <div>
@@ -1625,7 +1758,10 @@ const AddCustProfile = () => {
                   name="Permanent_State"
                   value={formData.Permanent_State}
                   onChange={handleChange}
-                  className="border border-gray-300 px-3 py-2 mt-1 w-[150px] bg-white rounded-[8px]"
+                  className={`border px-3 py-2 mt-1 w-[150px] bg-white rounded-[8px] ${errors.Permanent_State
+                      ? "border-red-500"
+                      : "border-gray-300"
+                    }`}
                 >
                   <option value="">Select State</option>
                   <option value="Andhra Pradesh">Andhra Pradesh</option>
@@ -1669,6 +1805,11 @@ const AddCustProfile = () => {
                   <option value="Lakshadweep">Lakshadweep</option>
                   <option value="Puducherry">Puducherry</option>
                 </select>
+                {errors.Permanent_State && (
+                  <p className="text-red-500 text-xs mt-1">
+                    {errors.Permanent_State}
+                  </p>
+                )}
               </div>
             </div>
 
@@ -1686,8 +1827,16 @@ const AddCustProfile = () => {
                   value={formData.Permanent_Country}
                   onChange={handleChange}
                   placeholder="Country"
-                  className="border border-gray-300 px-3 py-2 mt-1 w-[120px] rounded-[8px] bg-white"
+                  className={`border px-3 py-2 mt-1 w-[120px] rounded-[8px] bg-white ${errors.Permanent_Country
+                      ? "border-red-500"
+                      : "border-gray-300"
+                    }`}
                 />
+                {errors.Permanent_Country && (
+                  <p className="text-red-500 text-xs mt-1">
+                    {errors.Permanent_Country}
+                  </p>
+                )}
               </div>
             </div>
             <div>
@@ -1704,8 +1853,16 @@ const AddCustProfile = () => {
                   value={formData.Permanent_Pincode}
                   onChange={handleChange}
                   placeholder="Pincode"
-                  className="border border-gray-300 px-3 py-2 mt-1 w-[100px] rounded-[8px] bg-white"
+                  className={`border px-3 py-2 mt-1 w-[100px] rounded-[8px] bg-white ${errors.Permanent_Pincode
+                      ? "border-red-500"
+                      : "border-gray-300"
+                    }`}
                 />
+                {errors.Permanent_Pincode && (
+                  <p className="text-red-500 text-xs mt-1">
+                    {errors.Permanent_Pincode}
+                  </p>
+                )}
               </div>
             </div>
             <div>

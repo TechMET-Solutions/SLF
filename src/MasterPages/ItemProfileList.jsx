@@ -10,6 +10,7 @@ import {
   updateItemStatusApi
 } from "../API/Master/Master_Profile/Item_Details";
 import Pagination from "../Component/Pagination";
+import { RiFileExcel2Fill, RiFileExcel2Line } from "react-icons/ri";
 
 const ItemProfileList = () => {
   useEffect(() => {
@@ -210,6 +211,10 @@ const ItemProfileList = () => {
     }
   };
 
+  const handleDownloadExcel = () => {
+    window.open(`${API}/Master/Master_Profile/excel`, "_blank");
+  };
+
   return (
     <div className="min-h-screen w-full">
       {/* Top Bar */}
@@ -267,7 +272,7 @@ const ItemProfileList = () => {
             </div>
 
             {/* Action Buttons Container */}
-            <div className="flex items-center gap-2 ml-2 border-l pl-4 border-gray-200">
+            <div className="flex items-center gap-2 ml-2 border-gray-200">
               <button
                 onClick={handleSearch}
                 className="bg-[#0b2c69] text-white text-[11.25px] rounded cursor-pointer hover:bg-[#071d45] transition-colors"
@@ -299,6 +304,16 @@ const ItemProfileList = () => {
               >
                 Exit
               </button>
+              <button
+                type="button"
+                onClick={handleDownloadExcel}
+                style={{ width: "30px", height: "27.49px" }}
+                className="flex items-center justify-center bg-[#217346] text-white rounded-md">
+                <RiFileExcel2Line className="w-4 h-4" />
+                {/* <RiFileExcel2Fill className="w-4 h-4" /> */}
+              </button>
+
+              
             </div>
 
           </div>
@@ -330,8 +345,8 @@ const ItemProfileList = () => {
                   className="border border-gray-300 rounded w-[100px] px-3 py-2 mt-2"
                 >
                   <option value="">Select</option>
-                  <option value="gold">Gold</option>
-                  <option value="silver">Silver</option>
+                  <option value="Gold">Gold</option>
+                  <option value="Silver">Silver</option>
                 </select>
               </div>
 
