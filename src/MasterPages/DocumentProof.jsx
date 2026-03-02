@@ -304,85 +304,85 @@ const DocumentProof = () => {
     });
   };
 
-//   const handleUpdateSubmit = async () => {
-//     debugger;
-//     try {
-//       if (!formData.proof_type?.trim()) {
-//         alert("Please fill all required fields!");
-//         return;
-//       }
+  //   const handleUpdateSubmit = async () => {
+  //     debugger;
+  //     try {
+  //       if (!formData.proof_type?.trim()) {
+  //         alert("Please fill all required fields!");
+  //         return;
+  //       }
 
-//       const updateObj = {
-//         ...formData,
-//         id: selectedDataid,
-//         modified_by: loginUser,
-//       };
+  //       const updateObj = {
+  //         ...formData,
+  //         id: selectedDataid,
+  //         modified_by: loginUser,
+  //       };
 
-//       const encryptedData = encryptData(JSON.stringify(updateObj));
-//       const payload = new FormData();
-//       payload.append("data", encryptedData);
+  //       const encryptedData = encryptData(JSON.stringify(updateObj));
+  //       const payload = new FormData();
+  //       payload.append("data", encryptedData);
 
-//       const response = await axios.post(
-//         `${API}/Master/Master_Profile/update_document`,
-//         payload,
-//       );
+  //       const response = await axios.post(
+  //         `${API}/Master/Master_Profile/update_document`,
+  //         payload,
+  //       );
 
-//       // ✅ Decrypt success response
-//       const decryptedResponse = JSON.parse(decryptData(response.data.data));
-// console.log("✅ UPDATE RESPONSE:", decryptedResponse);
-//       alert(decryptedResponse.message);
+  //       // ✅ Decrypt success response
+  //       const decryptedResponse = JSON.parse(decryptData(response.data.data));
+  // console.log("✅ UPDATE RESPONSE:", decryptedResponse);
+  //       alert(decryptedResponse.message);
 
-//       setIsModalOpen(false);
-//       fetchDocuments();
-//       resetForm();
-//     } catch (error) {
-//       console.error("❌ UPDATE Error:", error);
+  //       setIsModalOpen(false);
+  //       fetchDocuments();
+  //       resetForm();
+  //     } catch (error) {
+  //       console.error("❌ UPDATE Error:", error);
 
-//       // ✅ Handle backend validation message properly
-//       if (error.response && error.response.data) {
-//         alert(error.response.data.message);
-//       } else {
-//         alert("Failed to update document proof.");
-//       }
-//     }
-//   };
-const handleUpdateSubmit = async () => {
-  try {
-    if (!formData.proof_type?.trim()) {
-      alert("Please fill all required fields!");
-      return;
+  //       // ✅ Handle backend validation message properly
+  //       if (error.response && error.response.data) {
+  //         alert(error.response.data.message);
+  //       } else {
+  //         alert("Failed to update document proof.");
+  //       }
+  //     }
+  //   };
+  const handleUpdateSubmit = async () => {
+    try {
+      if (!formData.proof_type?.trim()) {
+        alert("Please fill all required fields!");
+        return;
+      }
+
+      const updateObj = {
+        ...formData,
+        id: selectedDataid,
+        modified_by: loginUser,
+      };
+
+      // ✅ Send normal JSON
+      const response = await axios.post(
+        `${API}/Master/Master_Profile/update_document`,
+        updateObj
+      );
+
+      console.log("✅ UPDATE RESPONSE:", response.data);
+
+      alert(response.data.message);
+
+      setIsModalOpen(false);
+      fetchDocuments();
+      resetForm();
+
+    } catch (error) {
+      console.error("❌ UPDATE Error:", error);
+
+      if (error.response && error.response.data) {
+        alert(error.response.data.message);
+      } else {
+        alert("Failed to update document proof.");
+      }
     }
-
-    const updateObj = {
-      ...formData,
-      id: selectedDataid,
-      modified_by: loginUser,
-    };
-
-    // ✅ Send normal JSON
-    const response = await axios.post(
-      `${API}/Master/Master_Profile/update_document`,
-      updateObj
-    );
-
-    console.log("✅ UPDATE RESPONSE:", response.data);
-
-    alert(response.data.message);
-
-    setIsModalOpen(false);
-    fetchDocuments();
-    resetForm();
-
-  } catch (error) {
-    console.error("❌ UPDATE Error:", error);
-
-    if (error.response && error.response.data) {
-      alert(error.response.data.message);
-    } else {
-      alert("Failed to update document proof.");
-    }
-  }
-};
+  };
 
   const updateDocumentStatus = async (id, currentStatus) => {
     try {
@@ -444,48 +444,10 @@ const handleUpdateSubmit = async () => {
 
   return (
     <div className=" min-h-screen w-full">
-      {/* middletopbar */}
-      {/* <div className="flex justify-center sticky top-[80px] z-40">
-        <div className="flex  items-center px-6 py-4 border-b mt-5 w-[1290px] h-[62px] border rounded-[11px] border-gray-200 justify-between">
-          <h2
-            style={{
-              fontFamily: "Source Sans 3, sans-serif",
-              fontWeight: 700, // Bold
-              fontSize: "20px",
-              lineHeight: "148%",
-              letterSpacing: "0em",
-            }}
-            className="text-red-600"
-          >
-            Document Proof List
-          </h2>
-
-          <div className="flex gap-3 ">
-            <div className="flex justify-between gap-5">
-              <button
-                style={{
-                  width: "74px",
-                  height: "24px",
-                  borderRadius: "3.75px",
-
-                  gap: "6.25px",
-                }}
-                onClick={() => setIsModalOpen(true)}
-                className="bg-[#0A2478] text-white text-[11.25px] font-source font-normal flex items-center justify-center"
-              >
-                Add
-              </button>
-
-              <button className="text-white px-[6.25px] py-[6.25px] rounded-[3.75px] bg-[#C1121F] w-[74px] h-[24px] opacity-100 text-[10px]">
-                Exit
-              </button>
-            </div>
-          </div>
-        </div>
-      </div> */}
-      <div className="flex justify-center sticky top-[80px] z-40">
-        {/* Changed justify-around to justify-between to push content to the edges */}
-        <div className="flex items-center px-6 py-4 border mt-2 w-[1462px] h-[50px] rounded-[11px] border-gray-200 justify-between bg-white shadow-sm">
+      <div className="z-40 bg-white w-full px-8">
+        <div className="flex items-center px-6 py-4 border-b mt-2 
+    w-full max-w-[1462px] lg:h-[50px] 
+    border rounded-[11px] border-gray-200 justify-between">
           {/* LEFT SIDE: Name */}
           <h2
             style={{
@@ -502,6 +464,7 @@ const handleUpdateSubmit = async () => {
           {/* RIGHT SIDE: All Inputs and Buttons Grouped */}
           <div className="flex items-center gap-4">
             {/* Search Input Fields */}
+            <div className="hidden lg:flex items-center bg-white h-[32px] px-1 relative w-[500px]">
             <div className="flex items-center gap-3">
               {/* Type Input */}
               <div className="flex items-center gap-2">
@@ -536,10 +499,9 @@ const handleUpdateSubmit = async () => {
                   style={{ width: "120px", height: "27.49px" }}
                 />
               </div>
-            </div>
+              </div>
 
-            {/* Action Buttons Container */}
-            <div className="flex items-center gap-2 ml-2 border-l pl-4 border-gray-200">
+              <div className="flex ml-2 gap-2">
               <button
                 onClick={handleSearch}
                 className="bg-[#0b2c69] text-white text-[11.25px] rounded cursor-pointer hover:bg-[#071d45] transition-colors"
@@ -547,14 +509,6 @@ const handleUpdateSubmit = async () => {
               >
                 Search
               </button>
-
-              {/* <button
-                onClick={handleClearSearch}
-                className="bg-[#6c757d] text-white text-[11.25px] rounded cursor-pointer hover:bg-gray-700 transition-colors"
-                style={{ width: "70px", height: "27.49px" }}
-              >
-                Clear
-              </button> */}
               <button
                 onClick={() => {
                   setSearchFilters({
@@ -564,11 +518,16 @@ const handleUpdateSubmit = async () => {
 
                   fetchDocuments(); // reload all data
                 }}
-                className="bg-[#0A2478] text-white text-[11.25px] rounded cursor-pointer hover:bg-[#071d45] transition-colors"
+                className="bg-[#0A2478]  text-white text-[11.25px] rounded cursor-pointer hover:bg-[#071d45] transition-colors"
                 style={{ width: "60px", height: "27.49px" }}
               >
                 Clear
-              </button>
+                </button>
+              </div>
+            </div>
+            {/* Action Buttons Container */}
+            <div className="flex items-center gap-2 ml-2 border-l pl-4 border-gray-200">
+              
 
               <button
                 onClick={() => setIsModalOpen(true)}
@@ -685,7 +644,7 @@ const handleUpdateSubmit = async () => {
       )}
 
       {/* Table */}
-      <div className="flex ml-[22px] mt-2">
+      <div className="flex ml-[36px] mt-2">
         <div className="overflow-x-auto mt-2 w-[1290px] h-[500px]">
           <table className="w-full border-collapse">
             <thead className="bg-[#0A2478] text-white text-sm">
@@ -742,7 +701,7 @@ const handleUpdateSubmit = async () => {
                     {formatIndianDate(row.modified_on)}
                   </td>
 
-                  
+
                   <td className="px-1 py-1 text-[#1883EF]">
                     <div className="flex gap-2 ">
                       {/* Edit */}
@@ -751,7 +710,7 @@ const handleUpdateSubmit = async () => {
                         onClick={() => handleEditClick(row)}
                         title="Edit"
                       >
-                       <FiEdit className="text-white text-[11px]" />
+                        <FiEdit className="text-white text-[11px]" />
                       </div>
 
                       {/* Delete */}
@@ -768,15 +727,13 @@ const handleUpdateSubmit = async () => {
                   {/* Toggle */}
                   <td className="flex  items-center">
                     <button
-                      className={`w-12 h-6 flex  rounded-full p-1 transition-colors mt-2 ${
-                        row.status ? "bg-[#0A2478]" : "bg-gray-400"
-                      }`}
+                      className={`w-12 h-6 flex  rounded-full p-1 transition-colors mt-2 ${row.status ? "bg-[#0A2478]" : "bg-gray-400"
+                        }`}
                       onClick={() => updateDocumentStatus(row.id, row.status)}
                     >
                       <div
-                        className={`bg-white w-4 h-4 rounded-full shadow-md transform transition-transform ${
-                          row.status ? "translate-x-6" : "translate-x-0"
-                        }`}
+                        className={`bg-white w-4 h-4 rounded-full shadow-md transform transition-transform ${row.status ? "translate-x-6" : "translate-x-0"
+                          }`}
                       />
                     </button>
                   </td>

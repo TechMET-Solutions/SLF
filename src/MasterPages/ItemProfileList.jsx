@@ -217,10 +217,9 @@ const ItemProfileList = () => {
 
   return (
     <div className="min-h-screen w-full">
-      {/* Top Bar */}
-      <div className="flex  sticky top-[80px] z-40 ml-[22px]">
-        {/* Changed justify-around to justify-between to push content to the edges */}
-        <div className="flex items-center px-6 py-4 border mt-2 w-[1462px] h-[50px] rounded-[11px] border-gray-200 justify-between bg-white shadow-sm">
+      
+      <div className="flex sticky top-[80px] z-40 w-full px-8">
+          <div className="flex items-center px-6 py-4 border-b mt-2 w-full max-w-[1462px] lg:h-[50px] border rounded-[11px] border-gray-200 justify-between">
 
           {/* LEFT SIDE: Name */}
           <h2
@@ -238,57 +237,61 @@ const ItemProfileList = () => {
           {/* RIGHT SIDE: All Inputs and Buttons Grouped */}
           <div className="flex items-center gap-4">
 
-            {/* Search Input Fields */}
-            <div className="flex items-center gap-3">
-              <div className="flex items-center gap-2">
-                <p className="text-[11.25px] font-semibold whitespace-nowrap">
-                  Item Types
-                </p>
+            <div className="hidden lg:flex items-center bg-white h-[32px] px-1 relative w-[570px]">
+              {/* Search Input Fields */}
+              <div className="flex items-center gap-3">
+                <div className="flex items-center gap-2">
+                  <p className="text-[11.25px] font-semibold whitespace-nowrap">
+                    Item Types
+                  </p>
 
-                <select
-                  value={searchCode}
-                  onChange={(e) => setSearchCode(e.target.value)}
-                  onKeyDown={handleKeyPress} // better than onKeyPress (deprecated)
-                  className="border border-gray-400 px-3 py-1 text-[11.25px] rounded outline-none focus:border-[#0A2478]"
-                  style={{ width: "120px", height: "27.49px" }}
-                >
-                  <option value="">Select</option>
-                  <option value="gold">Gold</option>
-                  <option value="silver">Silver</option>
-                </select>
+                  <select
+                    value={searchCode}
+                    onChange={(e) => setSearchCode(e.target.value)}
+                    onKeyDown={handleKeyPress} // better than onKeyPress (deprecated)
+                    className="border border-gray-400 px-3 py-1 text-[11.25px] rounded outline-none focus:border-[#0A2478]"
+                    style={{ width: "120px", height: "27.49px" }}
+                  >
+                    <option value="">Select</option>
+                    <option value="gold">Gold</option>
+                    <option value="silver">Silver</option>
+                  </select>
+                </div>
+
+                <div className="flex items-center gap-2">
+                  <p className="text-[11.25px] font-semibold whitespace-nowrap">Item Name</p>
+                  <input
+                    type="text"
+                    value={searchName}
+                    onChange={(e) => setSearchName(e.target.value)}
+                    onKeyPress={handleKeyPress}
+                    className="border border-gray-400 px-3 py-1 text-[11.25px] rounded outline-none focus:border-[#0A2478]"
+                    style={{ width: "120px", height: "27.49px" }}
+                  />
+                </div>
               </div>
 
-              <div className="flex items-center gap-2">
-                <p className="text-[11.25px] font-semibold whitespace-nowrap">Item Name</p>
-                <input
-                  type="text"
-                  value={searchName}
-                  onChange={(e) => setSearchName(e.target.value)}
-                  onKeyPress={handleKeyPress}
-                  className="border border-gray-400 px-3 py-1 text-[11.25px] rounded outline-none focus:border-[#0A2478]"
-                  style={{ width: "120px", height: "27.49px" }}
-                />
+              {/* Action Buttons Container */}
+              <div className="flex items-center gap-2 ml-2 border-gray-200">
+                <button
+                  onClick={handleSearch}
+                  className="bg-[#0b2c69] text-white text-[11.25px] rounded cursor-pointer hover:bg-[#071d45] transition-colors"
+                  style={{ width: "70px", height: "27.49px" }}
+                >
+                  Search
+                </button>
+
+                <button
+                  onClick={handleClearSearch}
+                  className="bg-[#6c757d] text-white text-[11.25px] rounded cursor-pointer hover:bg-gray-700 transition-colors"
+                  style={{ width: "70px", height: "27.49px" }}
+                >
+                  Clear
+                </button>
               </div>
             </div>
 
-            {/* Action Buttons Container */}
-            <div className="flex items-center gap-2 ml-2 border-gray-200">
-              <button
-                onClick={handleSearch}
-                className="bg-[#0b2c69] text-white text-[11.25px] rounded cursor-pointer hover:bg-[#071d45] transition-colors"
-                style={{ width: "70px", height: "27.49px" }}
-              >
-                Search
-              </button>
-
-              <button
-                onClick={handleClearSearch}
-                className="bg-[#6c757d] text-white text-[11.25px] rounded cursor-pointer hover:bg-gray-700 transition-colors"
-                style={{ width: "70px", height: "27.49px" }}
-              >
-                Clear
-              </button>
-
+            <div className="flex items-center gap-2">
               <button
                 onClick={() => handleOpenModal()}
                 className="bg-[#0A2478] text-white text-[11.25px] rounded cursor-pointer hover:bg-[#071d45] transition-colors"
@@ -312,8 +315,6 @@ const ItemProfileList = () => {
                 <RiFileExcel2Line className="w-4 h-4" />
                 {/* <RiFileExcel2Fill className="w-4 h-4" /> */}
               </button>
-
-              
             </div>
 
           </div>
@@ -410,7 +411,7 @@ const ItemProfileList = () => {
       )}
 
       {/* Table */}
-      <div className="flex  mt-2 ml-[22px]">
+      <div className="flex  mt-2 ml-[35px]">
         <div className="overflow-x-auto mt-2 w-[1290px] h-[500px]">
           <table className="w-full border-collapse">
             <thead className="bg-[#0A2478] text-white text-sm">

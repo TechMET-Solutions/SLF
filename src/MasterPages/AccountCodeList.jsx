@@ -599,7 +599,7 @@ const AccountCodeList = () => {
     setCurrentPage(page);
     fetchData(page);
   };
- 
+
 
   const toggleHeader = (headerId) => {
     setSearchHeaders((prev) =>
@@ -690,7 +690,7 @@ const AccountCodeList = () => {
     setIsModalOpen(true);
   };
 
-   const allHeaderIds = [
+  const allHeaderIds = [
     "name",
     "accountGroup",
     "financialDate",
@@ -698,7 +698,7 @@ const AccountCodeList = () => {
   ];
 
 
- const handleSelectAll = () => {
+  const handleSelectAll = () => {
     const allSelected = allHeaderIds.every((id) => searchHeaders.includes(id));
     setSearchHeaders(allSelected ? [] : [...allHeaderIds]);
   };
@@ -708,15 +708,21 @@ const AccountCodeList = () => {
   return (
     <div className="min-h-screen w-full font-[Source_Sans_3] ">
       {/* Topbar */}
-      <div className="flex ml-[22px]">
+      {/* <div className="flex ml-[22px]">
         <div className="flex  mt-2 ">
           <div className="flex items-center px-6 py-4 w-[1462px] h-[50px] rounded-[11px] border border-gray-200 justify-between shadow-sm bg-white">
+             */}
+
+      <div className="flex sticky top-[80px] z-40 w-full px-8">
+        <div className="z-40 bg-white w-full">
+          <div className="flex items-center px-6 py-4 border-b my-2 w-full max-w-[1462px] lg:h-[50px] border rounded-[11px] border-gray-200 justify-between  ">
+
             <h2 className="text-red-600 font-bold text-[20px] whitespace-nowrap">
-               Ledger List
+              Ledger List
             </h2>
 
             <div className="flex items-center gap-6 ">
-              <div className="flex items-center bg-white border border-gray-400 rounded-[5px] h-[32px] px-2 relative w-[450px]">
+              <div className="hidden lg:flex items-center bg-white border border-gray-400 rounded-[5px] h-[32px] px-1 relative w-[500px]">
                 <div className="relative border-r border-gray-300 pr-2 mr-2">
                   <button
                     onClick={() => setIsDropdownOpen(!isDropdownOpen)}
@@ -727,7 +733,7 @@ const AccountCodeList = () => {
 
                   {isDropdownOpen && (
                     <div className="absolute top-[35px] left-[-8px] bg-white border border-gray-300 shadow-xl rounded-md z-[100] w-[160px] p-2">
-                      
+
                       <button
                         onClick={handleSelectAll}
                         className="flex items-center gap-2 p-2 hover:bg-blue-50 cursor-pointer rounded border-b border-gray-200 mb-1"
@@ -739,8 +745,8 @@ const AccountCodeList = () => {
                           className="w-3 h-3 accent-[#0A2478]"
                         />
                         <span className="text-[11px] font-source font-bold text-[#0A2478]">
-                            Select All
-                          </span>
+                          Select All
+                        </span>
                       </button>
                       {[
                         { id: "name", label: "Ledger Name" },
@@ -799,7 +805,7 @@ const AccountCodeList = () => {
                 </button>
 
                 <button
-                  
+
                   onClick={() => {
                     setSearchQuery("");
                     setSearchHeaders([]);
@@ -813,7 +819,7 @@ const AccountCodeList = () => {
               </div>
 
               <div className="flex items-center gap-3 pl-4 border-gray-200">
-                
+
                 <button onClick={() => setIsModalOpen(true)} className="w-[70px] h-[26px] rounded-[4px] bg-[#0A2478] text-white text-[11px]">Add</button>
                 <button onClick={() => navigate("/")} className="w-[70px] h-[26px] rounded-[4px] bg-[#C1121F] text-white text-[11px]">Exit</button>
               </div>
@@ -903,7 +909,7 @@ const AccountCodeList = () => {
       )}
 
       {/* Table - Uses filteredData */}
-      <div className="flex ml-[22px] ">
+      <div className="flex ml-[35px] mt-1 ">
         <div className="overflow-x-auto mt-2 w-[1290px] h-[500px]">
           <table className="w-full border-collapse">
             <thead className="bg-[#0A2478] text-white text-sm">
@@ -915,7 +921,7 @@ const AccountCodeList = () => {
                 <th className="px-1 py-1 text-left border-r border-gray-300 text-[13px] w-[200px]">Added by</th>
                 <th className="px-1 py-1 text-left border-r border-gray-300 text-[13px] w-[100px]">Added On</th>
                 <th className="px-1 py-1 text-left border-r border-gray-300 text-[13px] w-[200px]">Modified by</th>
-                 <th className="px-1 py-1 text-left border-r border-gray-300 text-[13px] w-[100px]">Modified On</th>
+                <th className="px-1 py-1 text-left border-r border-gray-300 text-[13px] w-[100px]">Modified On</th>
                 <th className="px-1 py-1 text-left text-[13px] w-[100px]">Action</th>
               </tr>
             </thead>
@@ -929,7 +935,7 @@ const AccountCodeList = () => {
                   <td className="px-1 py-1">{row.addedBy}</td>
                   <td className="px-1 py-1">{formatIndianDate(row.created_at)}</td>
                   <td className="px-1 py-1">{row.modifiedBy || "-"}</td>
-                   <td className="px-1 py-1">{formatIndianDate(row.updated_at)}</td>
+                  <td className="px-1 py-1">{formatIndianDate(row.updated_at)}</td>
                   <td className="px-1 py-1 flex gap-2 ">
                     <div className="bg-[#3dbd5a] cursor-pointer p-1.5 text-white rounded-sm" onClick={() => handleEdit(row)}>
                       <FiEdit />

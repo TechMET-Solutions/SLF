@@ -248,9 +248,15 @@ const PurityProfile = () => {
   return (
     <div className="min-h-screen w-full">
       {/* middletopbar */}
-      <div className="flex  sticky top-[80px] z-40">
+      {/* <div className="flex  sticky top-[80px] z-40">
         <div className="flex  mt-2 ml-[22px]">
-          <div className="flex items-center justify-between px-6 py-4 border-b w-[1462px] h-[50px] border rounded-[11px] border-gray-200 bg-white">
+          <div className="flex items-center justify-between px-6 py-4 border-b w-[1462px] h-[50px] border rounded-[11px] border-gray-200 bg-white"> */}
+      
+      <div className="flex sticky top-[80px] z-40 w-full px-8">
+        <div className="z-40 bg-white w-full">
+          <div className="flex items-center px-6 py-4 border-b mt-2 
+    w-full max-w-[1462px] lg:h-[50px] 
+    border rounded-[11px] border-gray-200 justify-between">
             <h2 className="text-red-600 font-bold text-[20px] leading-[148%]">
               Product Purity
             </h2>
@@ -400,7 +406,7 @@ const PurityProfile = () => {
       )}
 
       {/* Table */}
-      <div className="flex  gap-10  mt-3 ml-[22px]">
+      <div className="flex  gap-10  mt-3 ml-[35px]">
         <div>
           <p
             className="font-semibold text-[#0A2478]"

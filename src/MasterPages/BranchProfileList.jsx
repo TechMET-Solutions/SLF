@@ -285,10 +285,14 @@ const BranchProfileList = () => {
     <>
       <div className=" w-full ">
         {/* middletopbar */}
-        <div className="flex  sticky top-[80px] z-40 ml-[22px]">
+        {/* <div className="flex  sticky top-[80px] z-40 ml-[22px]">
           <div className="z-40 bg-white">
-            {/* Changed justify-around to justify-between */}
             <div className="flex items-center px-6 py-4 border-b mt-2 w-[1462px] h-[50px] border rounded-[11px] border-gray-200 justify-between shadow-sm">
+            */}
+        
+        <div className="flex sticky top-[80px] z-40 w-full px-10">
+          <div className="z-40 bg-white w-full">
+            <div className="flex items-center px-6 py-4 border-b mt-2 w-full max-w-[1462px] lg:h-[50px] border rounded-[11px] border-gray-200 justify-between">
               {/* 1. LEFT SIDE: Title */}
               <h2
                 style={{
@@ -306,7 +310,8 @@ const BranchProfileList = () => {
               {/* 2. RIGHT SIDE: Filter + Buttons Container */}
               <div className="flex items-center gap-6">
                 {/* Search & Header Filter */}
-                <div className="flex items-center bg-white border border-gray-400 rounded-[5px] h-[32px] px-2 relative w-[500px]">
+                {/* <div className="flex items-center bg-white border border-gray-400 rounded-[5px] h-[32px] px-2 relative w-[500px]"> */}
+                <div className="hidden lg:flex items-center bg-white border border-gray-400 rounded-[5px] h-[32px] px-2 relative w-[500px]">
                   {/* Multi-Select Header Dropdown */}
                   <div className="relative border-r border-gray-300 pr-2 mr-2">
                     <button
@@ -686,7 +691,7 @@ const BranchProfileList = () => {
         )}
 
         {/* Table */}
-        <div className="flex ml-[22px]">
+        <div className="flex ml-[35px]">
           <div className="overflow-x-auto mt-5 w-[1290px] h-[500px]">
             <table className="w-full border-collapse">
               <thead className="bg-[#0A2478] text-white text-sm">

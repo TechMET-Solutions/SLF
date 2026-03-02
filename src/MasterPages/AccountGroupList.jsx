@@ -176,7 +176,8 @@ console.log(loginUser,"asdfghj")
   return (
     <div className=" min-h-screen w-full ">
       <div className="ml-[22px]">
-        <div className="flex items-center  border-b mt-2 w-[1462px] h-[50px] p-1 border rounded-[11px] border-gray-200 justify-between ">
+        {/* <div className="flex items-center  border-b mt-2 sm:w-4xl md:w-[1462px] h-[50px] p-1 border rounded-[11px] border-gray-200 justify-between "> */}
+        <div className="flex items-center justify-between w-full max-w-[1462px] mx-auto mt-2 p-2 border border-gray-200 rounded-[11px] overflow-x-auto">
           {/* Left heading */}
           <h2
             style={{
@@ -192,12 +193,12 @@ console.log(loginUser,"asdfghj")
           </h2>
 
           {/* Right section (search + buttons) */}
-          <div className="flex items-center gap-6 ml-[22px]">
+          <div className="flex items-center  gap-6 ml-[22px]">
             {/* Search section */}
             <div className="flex gap-5 "></div>
             <div className="flex items-center gap-4">
               <div className="flex items-center gap-3">
-                <div className="flex items-center bg-white border border-gray-400 rounded-[5px] h-[32px] px-1 relative w-[500px]">
+                <div className="hidden lg:flex items-center bg-white border border-gray-400 rounded-[5px] h-[32px] px-1 relative w-[500px]">
                   {/* Multi-Select Header Dropdown */}
                   <div className="relative border-r border-gray-300 pr-2 mr-2">
                     <button
@@ -385,12 +386,6 @@ console.log(loginUser,"asdfghj")
                 <label className="text-[14px] ">
                   Account Type <span className="text-red-500">*</span>
                 </label>
-                {/* <input
-                  type="text"
-                  className="border border-gray-300 rounded px-2 py-1 w-full mt-1 text-[12px]"
-                  placeholder="Enter Account Type"
-                /> */}
-
                 <input
                   type="text"
                   name="accountType"
@@ -480,7 +475,7 @@ console.log(loginUser,"asdfghj")
       )}
 
       {/* Table */}
-      <div className="flex ml-[22px] ">
+      <div className="flex ml-[35px] ">
         <div className="overflow-x-auto mt-2 w-[1290px] h-[500px]">
           <table className="w-full border-collapse">
             <thead className="bg-[#0A2478] text-white text-sm">
