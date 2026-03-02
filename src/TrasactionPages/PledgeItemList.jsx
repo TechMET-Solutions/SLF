@@ -4,6 +4,7 @@ import { IoMdAddCircleOutline } from "react-icons/io";
 import { MdOutlineCancel } from "react-icons/md";
 import { API } from "../api";
 import { decryptData } from "../utils/cryptoHelper"; // adjust the import path as needed
+import { Pencil } from 'lucide-react';
 
 const PledgeItemList = ({ rows, setRows, selectedScheme }) => {
   console.log(selectedScheme,"selectedScheme ")
@@ -12,7 +13,8 @@ const PledgeItemList = ({ rows, setRows, selectedScheme }) => {
   console.log(goldRate,"goldRate")
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-
+const [isEditing, setIsEditing] = useState(false);
+  const [selectedValue, setSelectedValue] = useState(null);
   useEffect(() => {
     // Fetch latest gold rate
     const fetchGoldRate = async () => {
@@ -35,25 +37,31 @@ const PledgeItemList = ({ rows, setRows, selectedScheme }) => {
   // 🧩 Fetch & decrypt items from API
   useEffect(() => {
     const fetchPledgeItems = async () => {
-      try {
-        const response = await axios.get(
-          `${API}/Master/Master_Profile/all_Item`
-        );
+  try {
+    const response = await axios.get(`${API}/Master/Master_Profile/all_Item`);
 
-        if (response.data?.data) {
-          const decrypted = decryptData(response.data.data);
-          console.log("🔓 Decrypted Data:", decrypted);
+    if (response.data?.data) {
+      const decrypted = decryptData(response.data.data);
+      console.log("🔓 Decrypted Data:", decrypted);
 
-          // Extract only item names from decrypted.items
-          const names = decrypted?.items?.map((item) => item.name) || [];
-          setPledgeItems(names);
-        } else {
-          console.warn("⚠️ No data found from API");
-        }
-      } catch (error) {
-        console.error("❌ Error fetching pledge items:", error);
-      }
-    };
+      // 1. Get the array of items (assuming it's decrypted.items or decrypted itself)
+      const allItems = decrypted?.items || decrypted || [];
+
+      // 2. Filter to get only "gold" items, then map to get names
+      const goldItemNames = allItems
+        .filter(item => item.code.toLowerCase().includes("gold")) // Filters 'gold', 'gold1', etc.
+        .map(item => item.name);
+
+      console.log("✨ Filtered Gold Items:", goldItemNames);
+      
+      setPledgeItems(goldItemNames);
+    } else {
+      console.warn("⚠️ No data found from API");
+    }
+  } catch (error) {
+    console.error("❌ Error fetching pledge items:", error);
+  }
+};
 
     fetchPledgeItems();
   }, []);
@@ -289,8 +297,8 @@ const handleChange = (index, field, value) => {
               <th className="px-4 py-2 border-r border-gray-200 w-[50px]">Nos.</th>
               <th className="px-4 py-2 border-r border-gray-200  w-[80px]">Gross</th>
               <th className="px-4 py-2 border-r border-gray-200   w-[80px]">Net Weight</th>
-              <th className="px-4 py-2 border-r border-gray-200 w-[120px]">Purity</th>
-               <th className="px-4 py-2 border-r border-gray-200 w-[120px]">Calculated Purity</th>
+              <th className="px-4 py-2 border-r border-gray-200 w-[120px]"> Actual Purity</th>
+               <th className="px-4 py-2 border-r border-gray-200 w-[120px]">Assigned Purity</th>
               <th className="px-4 py-2 border-r border-gray-200">Funding Rate</th>
                <th className="px-4 py-2 border-r border-gray-200"> Actual Rate</th>
               <th className="px-4 py-2 border-r border-gray-200">Valuation</th>
@@ -373,8 +381,8 @@ const handleChange = (index, field, value) => {
 </td>
 
                 
-               <td className="px-4 py-2">
-  <select
+               <td className="px-4 py-2 flex justify-center">
+  {/* <select
     value={row.Calculated_Purity}
     onChange={(e) => handleChange(index, "Calculated_Purity", e.target.value)}
     className="border border-gray-300 rounded-md px-2 py-1 w-[120px]  focus:outline-none focus:ring-1 focus:ring-blue-500 bg-white"
@@ -385,7 +393,34 @@ const handleChange = (index, field, value) => {
         {p.loan_type} {p.purity_name}
       </option>
     ))}
-  </select>
+  </select> */}
+
+  {!isEditing ? (
+          <>
+            <span>{selectedValue}</span>
+            <button onClick={() => setIsEditing(true)} className="text-blue-500">
+              <Pencil size={14} />
+            </button>
+          </>
+        ) : (
+          <select
+            value={selectedValue}
+            autoFocus
+            onBlur={() => setIsEditing(false)} // Hide when clicking away
+            onChange={(e) => {
+              setSelectedValue(e.target.value);
+              setIsEditing(false); // Hide after selecting
+            }}
+            className="border border-gray-300 rounded-md px-2 py-1 w-full text-sm bg-white"
+          >
+            <option value="">Select</option>
+            {purities.map((p) => (
+              <option key={p.id} value={p.purity_name}>
+                {p.loan_type} {p.purity_name}
+              </option>
+            ))}
+          </select>
+        )}
 </td>
               <td className="px-4 py-2 text-center">
   {row.purity ? calculateRate(row.purity).rate.toFixed(2) : "—"}

@@ -965,8 +965,8 @@ const AddSchemeDetailsListform = () => {
                   </div>
                 </div>
 
-                <div className="flex gap-4 w-full mt-2">
-                  {/* % of Loan Amount */}
+                {/* <div className="flex gap-4 w-full mt-2">
+                
                   <div className="flex flex-col">
                     <label className="text-sm font-medium">
                       {" "}
@@ -996,7 +996,7 @@ const AddSchemeDetailsListform = () => {
                     />
                   </div>
 
-                  {/* Max */}
+
                   <div className="flex flex-col">
                     <label className="text-sm font-medium"> Max </label>
                     <input
@@ -1007,6 +1007,111 @@ const AddSchemeDetailsListform = () => {
                       onChange={handleInputChange}
                       onWheel={(e) => e.target.blur()}
                       className="p-2 border border-gray-300 rounded text-sm w-[150px] bg-white"
+                    />
+                  </div>
+                </div> */}
+
+                 <div className="flex gap-4 w-full mt-5">
+                  {/* % of Loan Amount */}
+                  <div className="flex flex-col">
+                    <label className="text-sm font-medium mb-1">
+                      {" "}
+                      Charge Type{" "}
+                    </label>
+                    <select
+                      name="docChargeType"
+                      value={formData.docChargeType}
+                      disabled={isViewMode}
+                      onChange={handleInputChange}
+                      className="p-2 border border-gray-300 rounded text-sm w-[120px] bg-white outline-none"
+                    >
+                      <option value="percentage">Percentage (%)</option>
+                      <option value="fixed">Fixed Amount</option>
+                    </select>
+                  </div>
+                  <div className="flex flex-col">
+                    <label className="text-sm font-medium mb-1">
+                      {formData.docChargeType === "percentage"
+                        ? "% of Loan Amount"
+                        : "Fixed Amount"}
+                    </label>
+                    <input
+                      type="number"
+                      name={
+                        formData.docChargeType === "percentage"
+                          ? "docChargePercent"
+                          : "docChargeFixed"
+                      }
+                      value={
+                        formData.docChargeType === "percentage"
+                          ? formData.docChargePercent
+                          : formData.docChargeFixed
+                      }
+                      disabled={isViewMode}
+                      onChange={handleInputChange}
+                      onWheel={(e) => e.target.blur()}
+                      placeholder={
+                        formData.docChargeType === "percentage"
+                          ? "e.g. 2"
+                          : "e.g. 500"
+                      }
+                      className="p-2 border border-gray-300 rounded text-sm w-[150px] bg-white outline-none"
+                    />
+                  </div>
+
+                  {/* Min Field */}
+                  <div className="flex flex-col">
+                    <label
+                      className={`text-sm font-medium ${formData.docChargeType === "fixed" ? "text-gray-400" : ""}`}
+                    >
+                      Min
+                    </label>
+                    <input
+                      type="number"
+                      name="docChargeMin"
+                      value={
+                        formData.docChargeType === "fixed"
+                          ? ""
+                          : formData.docChargeMin
+                      }
+                      onChange={handleInputChange}
+                      // Disabled if in View Mode OR if Charge Type is Fixed Amount
+                      disabled={
+                        isViewMode || formData.docChargeType === "fixed"
+                      }
+                      onWheel={(e) => e.target.blur()}
+                      className={`p-2 border border-gray-300 rounded text-sm w-[100px] outline-none transition-colors ${formData.docChargeType === "fixed"
+                        ? "bg-gray-100 cursor-not-allowed"
+                        : "bg-white"
+                        }`}
+                    />
+                  </div>
+
+                  {/* Max Field */}
+                  <div className="flex flex-col">
+                    <label
+                      className={`text-sm font-medium ${formData.docChargeType === "fixed" ? "text-gray-400" : ""}`}
+                    >
+                      Max
+                    </label>
+                    <input
+                      type="number"
+                      name="docChargeMax"
+                      value={
+                        formData.docChargeType === "fixed"
+                          ? ""
+                          : formData.docChargeMax
+                      }
+                      onChange={handleInputChange}
+                      // Disabled if in View Mode OR if Charge Type is Fixed Amount
+                      disabled={
+                        isViewMode || formData.docChargeType === "fixed"
+                      }
+                      onWheel={(e) => e.target.blur()}
+                      className={`p-2 border border-gray-300 rounded text-sm w-[100px] outline-none transition-colors ${formData.docChargeType === "fixed"
+                        ? "bg-gray-100 cursor-not-allowed"
+                        : "bg-white"
+                        }`}
                     />
                   </div>
                 </div>

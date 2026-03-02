@@ -93,7 +93,7 @@ export default function Footer() {
       <div className="border-t border-gray-700 mt-10 py-4 text-center text-sm text-gray-400">
         © 2023 S Lunawat Finance Pvt Ltd. All Rights Reserved
         <span className="block md:inline md:ml-2">
-          | Design & Developed By: Maraekat Infotech Ltd.
+          | Design & Developed By: 
         </span>
       </div>
     </footer>

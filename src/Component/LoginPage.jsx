@@ -32,36 +32,40 @@ function LoginPage() {
   }, [showExtra]);
 
  
-  const staticUsers = [
-    {
-      id: 0,
-      email: "admin@gmail.com",
-      password: "123",
-      role: "Admin",
-      permissions: "all",
-    },
-    {
-      id: 1,
-      email: "tester1@gmail.com",
-      password: "123",
-      role: "Admin",
-      permissions: "limited",
-    },
-    {
-      id: 2,
-      email: "tester2@gmail.com",
-      password: "123",
-      role: "Admin",
-      permissions: "limited",
-    },
-    {
-      id: 3,
-      email: "sumittest@gmail.com",
-      password: "123",
-      role: "Admin",
-      permissions: "custom",
-    },
-  ];
+ const staticUsers = [
+  {
+    id: 0,
+    name: "Admin",
+    email: "admin@gmail.com",
+    password: "123",
+    role: "Admin",
+    permissions: "all",
+  },
+  {
+    id: 1,
+    name: "Tester 1",
+    email: "tester1@gmail.com",
+    password: "123",
+    role: "Admin",
+    permissions: "limited",
+  },
+  {
+    id: 2,
+    name: "Tester 2",
+    email: "tester2@gmail.com",
+    password: "123",
+    role: "Admin",
+    permissions: "limited",
+  },
+  {
+    id: 3,
+    name: "Sumit",
+    email: "sumittest@gmail.com",
+    password: "123",
+    role: "Admin",
+    permissions: "custom",
+  },
+];
 
   const handleLogin = async (e) => {
     e.preventDefault();
@@ -80,6 +84,7 @@ function LoginPage() {
       if (matchedUser) {
         setTempLogin({
           id: matchedUser.id,
+           name: matchedUser.name,
           email: matchedUser.email,
           role: matchedUser.role,
           isAdmin: matchedUser.role === "Admin",

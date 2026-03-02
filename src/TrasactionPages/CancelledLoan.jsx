@@ -7,6 +7,7 @@ import { default as profileempty } from "../assets/profileempty.png";
 
 const ViewLoanDetails = () => {
   const [loanData, setLoanData] = useState(null);
+  console.log(loanData, "loanData");
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const navigate = useNavigate();
@@ -213,7 +214,7 @@ const ViewLoanDetails = () => {
   // Parse the JSON strings from API
   const pledgeItems = parseJSONData(loanData.Pledge_Item_List);
   const interestRates = parseJSONData(loanData.Effective_Interest_Rates);
-
+  console.log(interestRates, "-------interestRates-------");
   // Calculate totals from pledge items
   const totalNos = pledgeItems.reduce(
     (sum, item) => sum + (parseInt(item.nos) || 0),
@@ -262,9 +263,9 @@ const ViewLoanDetails = () => {
       </div>
 
       {/* ===== FORM SECTIONS ===== */}
-      <div className="p-9 py-6 min-h-screen space-y-8 px-4">
+      <div className="mt-5 min-h-screen space-y-8  ml-[110px] mr-[110px]">
         {/* ===== Loan Details Section ===== */}
-        <div className="flex justify-center mb-6">
+        <div className="flex justify-center  bg-[#FFE6E6] p-2 ">
           <div className="w-[950px] pt-3 pl-14">
             {/* Remark Section */}
             <div className="flex mb-5 justify-center ">
@@ -305,7 +306,7 @@ const ViewLoanDetails = () => {
                 </p>
               </div>
               <div>
-                <p className="font-semibold">Party Name</p>
+                <p className="font-semibold">Borrower Name</p>
                 <p>{loanData.Borrower || "N/A"}</p>
               </div>
               <div>
@@ -351,7 +352,7 @@ const ViewLoanDetails = () => {
           <div className="flex mr-17 space-x-[1px]">
             {/* Borrower */}
             <div className="w-[120px] h-auto flex flex-col items-center">
-              <p className="font-medium mb-1 text-xs">Customer</p>
+              <p className="font-medium mb-1 text-xs">Borrower</p>
               <img
                 src={loanData.borrower_profileImage || profileempty}
                 alt="Borrower Profile"
@@ -425,7 +426,7 @@ const ViewLoanDetails = () => {
         </div>
 
         {/* ===== Pledge Item List ===== */}
-        <div className="flex justify-center mb-6">
+        <div className=" bg-[#F7F7FF] p-2 ">
           <div className="w-[1290px]">
             <h3 className="font-semibold mb-4 text-[#0A2478] text-lg">
               Pledge Item List
@@ -445,7 +446,10 @@ const ViewLoanDetails = () => {
                   Net Weight
                 </div>
                 <div className="w-28 p-2 border-r-2 border-white text-center">
-                  Purity
+                  Actual Purity
+                </div>
+                <div className="w-28 p-2 border-r-2 border-white text-center">
+                  Assigned Purity
                 </div>
                 <div className="w-24 p-2 border-r-2 border-white text-center">
                   Rate
@@ -478,6 +482,9 @@ const ViewLoanDetails = () => {
                       </div>
                       <div className="w-28 p-2 border-r border-gray-300 text-center">
                         {item.purity || "Gold 20K"}
+                      </div>
+                      <div className="w-28 p-2 border-r border-gray-300 text-center">
+                        {item.Calculated_Purity || ""}
                       </div>
                       <div className="w-24 p-2 border-r border-gray-300 text-center">
                         {formatCurrency(item.rate)}
@@ -522,77 +529,88 @@ const ViewLoanDetails = () => {
               )}
             </div>
           </div>
+
+          <div className="">
+            <div className="w-full mt-2 flex items-start gap-4 text-xs">
+              <div className="flex flex-col w-40">
+                <label className="text-[13px] font-semibold">
+                  Loan amount <span className="text-red-500">*</span>
+                </label>
+                <input
+                  type="text"
+                  value={formatCurrency(loanData.Loan_amount)}
+                  readOnly
+                  className="border border-gray-300 rounded-md px-2 py-1 mt-1 text-sm focus:outline-none bg-gray-50"
+                />
+              </div>
+
+              {/* Doc Charges */}
+              <div className="flex flex-col">
+                <label className="text-[13px] font-semibold">Doc Charges</label>
+                <div className="flex mt-1">
+                  {/* <div className="bg-[#0B2B68] text-white px-2 py-1 rounded-l-md text-sm flex items-center justify-center">
+                  2%
+                </div> */}
+                  <input
+                    type="text"
+                    value={`₹${formatCurrency(loanData.Doc_Charges)}`}
+                    readOnly
+                    className="border border-gray-300 rounded-r-md px-2 py-1 text-sm focus:outline-none w-24 bg-gray-50"
+                  />
+                </div>
+              </div>
+              <div className="flex flex-col w-40">
+                <label className="text-[13px] font-semibold">
+                  Admin Charges
+                </label>
+                <input
+                  type="text"
+                  value={formatCurrency(loanData.Admin_Charges)}
+                  readOnly
+                  className="border border-gray-300 rounded-md px-2 py-1 mt-1 text-sm focus:outline-none bg-gray-50"
+                />
+              </div>
+              {/* Net Payable */}
+              <div className="flex flex-col w-40">
+                <label className="text-[13px] font-semibold">Net Payable</label>
+                <input
+                  type="text"
+                  value={formatCurrency(loanData.Net_Payable)}
+                  readOnly
+                  className="border border-gray-300 rounded-md px-2 py-1 mt-1 text-sm focus:outline-none bg-gray-50"
+                />
+              </div>
+
+              {/* Valuer 1 */}
+              <div className="flex flex-col w-44">
+                <label className="text-[13px] font-semibold">
+                  Valuer 1 <span className="text-red-500">*</span>
+                </label>
+                <div className="border border-gray-300 rounded-md px-2 py-1 mt-1 text-sm bg-gray-50">
+                  {loanData.Valuer_1 || "Not Assigned"}
+                </div>
+              </div>
+
+              {/* Valuer 2 */}
+              <div className="flex flex-col w-60">
+                <label className="text-[13px] font-semibold">
+                  Valuer 2 <span className="text-red-500">*</span>
+                </label>
+                <div className="border border-gray-300 rounded-md px-2 py-1 mt-1 text-sm bg-gray-50">
+                  {loanData.Valuer_2 || "Not Assigned"}
+                </div>
+              </div>
+            </div>
+            <div className="text-[11px] mt-2  font-semibold">
+              {numberToWords(loanData.Loan_amount)}
+            </div>
+          </div>
         </div>
 
         {/* Loan Amount Section */}
-        <div className="pl-[45px]">
-          <div className="w-full px-14 flex items-start gap-4 text-xs">
-            <div className="flex flex-col w-40">
-              <label className="text-[13px] font-semibold">
-                Loan amount <span className="text-red-500">*</span>
-              </label>
-              <input
-                type="text"
-                value={formatCurrency(loanData.Loan_amount)}
-                readOnly
-                className="border border-gray-300 rounded-md px-2 py-1 mt-1 text-sm focus:outline-none bg-gray-50"
-              />
-            </div>
-
-            {/* Doc Charges */}
-            <div className="flex flex-col">
-              <label className="text-[13px] font-semibold">Doc Charges</label>
-              <div className="flex mt-1">
-                <div className="bg-[#0B2B68] text-white px-2 py-1 rounded-l-md text-sm flex items-center justify-center">
-                  2%
-                </div>
-                <input
-                  type="text"
-                  value={`₹${formatCurrency(loanData.Doc_Charges)}`}
-                  readOnly
-                  className="border border-gray-300 rounded-r-md px-2 py-1 text-sm focus:outline-none w-24 bg-gray-50"
-                />
-              </div>
-            </div>
-
-            {/* Net Payable */}
-            <div className="flex flex-col w-40">
-              <label className="text-[13px] font-semibold">Net Payable</label>
-              <input
-                type="text"
-                value={formatCurrency(loanData.Net_Payable)}
-                readOnly
-                className="border border-gray-300 rounded-md px-2 py-1 mt-1 text-sm focus:outline-none bg-gray-50"
-              />
-            </div>
-
-            {/* Valuer 1 */}
-            <div className="flex flex-col w-44">
-              <label className="text-[13px] font-semibold">
-                Valuer 1 <span className="text-red-500">*</span>
-              </label>
-              <div className="border border-gray-300 rounded-md px-2 py-1 mt-1 text-sm bg-gray-50">
-                {loanData.Valuer_1 || "Not Assigned"}
-              </div>
-            </div>
-
-            {/* Valuer 2 */}
-            <div className="flex flex-col w-44">
-              <label className="text-[13px] font-semibold">
-                Valuer 2 <span className="text-red-500">*</span>
-              </label>
-              <div className="border border-gray-300 rounded-md px-2 py-1 mt-1 text-sm bg-gray-50">
-                {loanData.Valuer_2 || "Not Assigned"}
-              </div>
-            </div>
-          </div>
-          <div className="text-[11px] mt-2 ml-14 font-semibold">
-            {numberToWords(loanData.Loan_amount)}
-          </div>
-        </div>
 
         {/* ===== Scheme Details & Effective Interest Rates ===== */}
-        <div className="flex gap-8 text-xs mx-14 justify-center">
+        <div className="flex gap-8 text-xs mb-5 ">
           {/* Scheme Details Table */}
           <div className="w-[550px]">
             <h2 className="font-semibold text-[20px] mb-1 text-[#0A2478]">
@@ -608,7 +626,7 @@ const ViewLoanDetails = () => {
                 </div>
                 <div className="w-40 p-2 py-4 text-center">Max Loan</div>
               </div>
-              <div className="flex border-t border-gray-300">
+              <div className="flex border-t border-gray-300 bg-gray-50">
                 <div className="flex-1 p-2 py-4 border-r border-gray-300 text-center">
                   {loanData.Loan_Tenure || loanData.loanPeriod || "N/A"}
                 </div>
@@ -636,20 +654,28 @@ const ViewLoanDetails = () => {
                   Effective Interest Rates
                 </div>
               </div>
+              {loanData?.Effective_Interest_Rates?.length > 0 ? (
+                loanData.Effective_Interest_Rates.map((item, index) => {
+                  const label =
+                    loanData?.Scheme_type === "Monthly" ? "MONTHS" : "DAYS";
 
-              {/* Dynamic Interest Rates */}
-              {interestRates.length > 0 ? (
-                interestRates.map((rate, index) => (
-                  <div
-                    key={index}
-                    className={`flex ${index % 2 === 0 ? "bg-[#FFCDCD]" : "bg-[#E5E5FF]"}`}
-                  >
-                    <div className="flex-1 p-2 border-r border-white text-center">
-                      {rate.term} DAYS
+                  return (
+                    <div
+                      key={index}
+                      // className={`flex ${
+                      //   index % 2 === 0 ? "bg-[#FFCDCD]" : "bg-[#E5E5FF]"
+                      // }`}
+
+                      className={index % 2 === 0 ? "bg-gray-50 flex" : "bg-white flex"}
+                    >
+                      <div className="flex-1 p-2 border-r border-white text-center">
+                        {item.from} - {item.to} {label}
+                      </div>
+
+                      <div className="w-40 p-2 text-center">{item.addInt}%</div>
                     </div>
-                    <div className="w-40 p-2 text-center">{rate.rate}%</div>
-                  </div>
-                ))
+                  );
+                })
               ) : (
                 <div className="flex bg-[#FFCDCD]">
                   <div className="flex-1 p-2 border-r border-white text-center">

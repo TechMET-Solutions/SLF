@@ -12,7 +12,7 @@ import {
 import Pagination from "../Component/Pagination";
 import { decryptData, encryptData } from "../utils/cryptoHelper";
 import { formatIndianDate } from "../utils/Helpers";
-import Excel from "../assets/excel.png";
+
 
 const BranchProfileList = () => {
   const navigate = useNavigate();

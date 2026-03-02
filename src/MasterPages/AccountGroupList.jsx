@@ -59,21 +59,6 @@ const AccountGroupList = () => {
     );
   };
 
-  // const getAccountGroups = async () => {
-  //   try {
-  //     const response = await axios.get(`${API}/api/account-group/list`, {
-  //       params: {
-  //         headers: searchHeaders.join(","), // group_name,account_type
-  //         search: searchQuery,
-  //       },
-  //     });
-
-  //     setData(response.data.data);
-  //   } catch (error) {
-  //     console.error(error);
-  //   }
-  // };
-
   const getAccountGroups = async (page = 1) => {
     try {
       const response = await axios.get(`${API}/api/account-group/list`, {
@@ -96,7 +81,7 @@ const AccountGroupList = () => {
   };
 
   const { loginUser } = useAuth();
-
+console.log(loginUser,"asdfghj")
   const handleSave = async () => {
     try {
       const payload = {

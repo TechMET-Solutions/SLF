@@ -3,7 +3,7 @@
 // const AuthContext = () => {
 //   return (
 //     <div>
-      
+
 //     </div>
 //   )
 // }
@@ -21,8 +21,7 @@ export const AuthProvider = ({ children }) => {
 
   useEffect(() => {
     const user = JSON.parse(sessionStorage.getItem("userData") || "{}");
-    const addedByValue = user.name || user.email || "";
-    setLoginUser(addedByValue);
+    setLoginUser(user.name || "");
   }, []);
 
   return (
