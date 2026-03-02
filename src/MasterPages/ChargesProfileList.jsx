@@ -301,7 +301,7 @@ const ChargesProfileList = () => {
     <div className="min-h-screen w-full">
       {/* Header and Add Button */}
       <div className="flex justify-center sticky top-[80px] z-40">
-        <div className="flex items-center px-6 py-4 border-b mt-5 w-[1290px] h-[62px] border rounded-[11px] border-gray-200 justify-between shadow bg-white">
+        <div className="flex items-center px-6 py-4 border-b mt-2 w-[1462px] h-[50px] border rounded-[11px] border-gray-200 justify-between shadow bg-white">
           <h2 className="text-red-600 font-bold text-[20px] leading-[148%] font-source">
             Charges Profile List
           </h2>
@@ -503,28 +503,28 @@ const ChargesProfileList = () => {
       )}
 
       {/* Table */}
-      <div className="flex justify-center">
+      <div className="flex ml-[22px]">
         <div className="overflow-x-auto mt-5 w-[1290px] h-[500px]">
           <table className="w-full border-collapse">
             <thead className="bg-[#0A2478] text-white text-sm">
               <tr>
-                <th className="px-4 py-2 text-left border-r w-[80px]">Code</th>
-                <th className="px-4 py-2 text-left border-r w-[500px]">
+                <th className="px-1 py-1 text-left border-r w-[80px]">Code</th>
+                <th className="px-1 py-1 text-left border-r w-[500px]">
                   Description
                 </th>
-                <th className="px-4 py-2 text-left border-r w-[100px]">
+                <th className="px-1 py-1 text-left border-r w-[100px]">
                   Amount
                 </th>
-                <th className="px-4 py-2 text-left border-r w-[250px]">
+                <th className="px-1 py-1 text-left border-r w-[250px]">
                   Added By
                 </th>
-                <th className="px-4 py-2 text-left border-r w-[150px]">
+                <th className="px-1 py-1 text-left border-r w-[150px]">
                   Added On
                 </th>
-                <th className="px-4 py-2 text-left border-r w-[100px]">
+                <th className="px-1 py-1 text-left border-r w-[100px]">
                   Action
                 </th>
-                <th className="px-4 py-2 text-left">Active</th>
+                <th className="px-1 py-1 text-left">Active</th>
               </tr>
             </thead>
             <tbody className="text-[12px]">
@@ -534,18 +534,18 @@ const ChargesProfileList = () => {
                   className={index % 2 === 0 ? "bg-gray-50" : "bg-white"}
                 >
                   <td
-                    className="px-4 py-2 text-blue-500 cursor-pointer"
+                    className="px-1 py-1 text-blue-500 cursor-pointer"
                     onClick={() => handleView(row)}
                   >
                     {row.code}
                   </td>
-                  <td className="px-4 py-2">{row.description}</td>
-                  <td className="px-4 py-2">{row.amount}</td>
-                  <td className="px-4 py-2">{row.addedBy}</td>
-                  <td className="px-4 py-2">
+                  <td className="px-1 py-1">{row.description}</td>
+                  <td className="px-1 py-1">{row.amount}</td>
+                  <td className="px-1 py-1">{row.addedBy}</td>
+                  <td className="px-1 py-1">
                     {new Date(row.createdAt).toLocaleDateString()}
                   </td>
-                  <td className="px-4 py-2 text-[#1883EF] cursor-pointer">
+                  <td className="px-1 py-1 text-[#1883EF] cursor-pointer">
                     <div className="flex gap-2">
                       <div
                         className="bg-[#3dbd5a] cursor-pointer p-1.5 text-white rounded-sm"
@@ -561,7 +561,7 @@ const ChargesProfileList = () => {
                       </div>
                     </div>
                   </td>
-                  <td className="px-4 py-2">
+                  <td className="px-1 py-1">
                     <button
                       onClick={() => handleToggle(row.id, row.isActive)}
                       className={`w-12 h-6 flex cursor-pointer items-center rounded-full p-1 transition-colors ${row.isActive ? "bg-[#0A2478]" : "bg-gray-300"

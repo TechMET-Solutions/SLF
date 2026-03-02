@@ -485,7 +485,7 @@ const handleUpdateSubmit = async () => {
       </div> */}
       <div className="flex justify-center sticky top-[80px] z-40">
         {/* Changed justify-around to justify-between to push content to the edges */}
-        <div className="flex items-center px-6 py-4 border mt-5 w-[1290px] h-[62px] rounded-[11px] border-gray-200 justify-between bg-white shadow-sm">
+        <div className="flex items-center px-6 py-4 border mt-2 w-[1462px] h-[50px] rounded-[11px] border-gray-200 justify-between bg-white shadow-sm">
           {/* LEFT SIDE: Name */}
           <h2
             style={{
@@ -685,33 +685,33 @@ const handleUpdateSubmit = async () => {
       )}
 
       {/* Table */}
-      <div className="flex justify-center">
-        <div className="overflow-x-auto mt-5 w-[1290px] h-[500px]">
+      <div className="flex ml-[22px] mt-2">
+        <div className="overflow-x-auto mt-2 w-[1290px] h-[500px]">
           <table className="w-full border-collapse">
             <thead className="bg-[#0A2478] text-white text-sm">
               <tr>
-                <th className="px-4 py-2 text-left border-r border-gray-300 text-[13px] w-[200px]">
+                <th className="px-1 py-1 text-left border-r border-gray-300 text-[13px] w-[200px]">
                   Type
                 </th>
-                <th className="px-4 py-2 text-left border-r border-gray-300 text-[13px] w-[150px]">
+                <th className="px-1 py-1 text-left border-r border-gray-300 text-[13px] w-[150px]">
                   Name
                 </th>
-                <th className="px-4 py-2 text-left border-r border-gray-300 text-[13px] w-[150px]">
+                <th className="px-1 py-1 text-left border-r border-gray-300 text-[13px] w-[150px]">
                   Added By
                 </th>
-                <th className="px-4 py-2 text-left border-r border-gray-300 text-[13px] w-[100px]">
+                <th className="px-1 py-1 text-left border-r border-gray-300 text-[13px] w-[100px]">
                   Added On
                 </th>
-                <th className="px-4 py-2 text-left border-r border-gray-300 text-[13px] w-[150px]">
+                <th className="px-1 py-1 text-left border-r border-gray-300 text-[13px] w-[150px]">
                   Modified By
                 </th>
-                <th className="px-4 py-2 text-left border-r border-gray-300 text-[13px]  w-[100px]">
+                <th className="px-1 py-1 text-left border-r border-gray-300 text-[13px]  w-[100px]">
                   Modified On
                 </th>
-                <th className="px-4 py-2 text-left border-r border-gray-300 text-[13px] w-[80px]">
+                <th className="px-1 py-1 text-left border-r border-gray-300 text-[13px] w-[80px]">
                   Action
                 </th>
-                <th className="px-4 py-2 text-left border-r border-gray-300 text-[13px] w-[80px]">
+                <th className="px-1 py-1 text-left border-r border-gray-300 text-[13px] w-[80px]">
                   Active
                 </th>
               </tr>
@@ -722,7 +722,7 @@ const handleUpdateSubmit = async () => {
                   key={row.id}
                   className={index % 2 === 0 ? "bg-gray-50" : "bg-white"}
                 >
-                  <td className="px-4 py-2">
+                  <td className="px-1 py-1">
                     {row.is_id_proof && row.is_address_proof
                       ? "ID Proof, Address Proof"
                       : row.is_id_proof
@@ -732,19 +732,19 @@ const handleUpdateSubmit = async () => {
                           : "-"}
                   </td>
 
-                  <td className="px-4 py-2">{row.proof_type}</td>
-                  <td className="px-4 py-2">{row.added_by}</td>
-                  <td className="px-4 py-2">
+                  <td className="px-1 py-1">{row.proof_type}</td>
+                  <td className="px-1 py-1">{row.added_by}</td>
+                  <td className="px-1 py-1">
                     {formatIndianDate(row.added_on)}
                   </td>
-                  <td className="px-4 py-2">{row.modified_by || "-"}</td>
-                  <td className="px-4 py-2">
+                  <td className="px-1 py-1">{row.modified_by || "-"}</td>
+                  <td className="px-1 py-1">
                     {formatIndianDate(row.modified_on)}
                   </td>
 
                   
-                  <td className="px-4 py-2 text-[#1883EF]">
-                    <div className="flex gap-2 justify-center">
+                  <td className="px-1 py-1 text-[#1883EF]">
+                    <div className="flex gap-2 ">
                       {/* Edit */}
                       <div
                         className="bg-[#3dbd5a] cursor-pointer p-1.5 text-white rounded-sm"
@@ -766,7 +766,7 @@ const handleUpdateSubmit = async () => {
                   </td>
 
                   {/* Toggle */}
-                  <td className="flex justify-center items-center">
+                  <td className="flex  items-center">
                     <button
                       className={`w-12 h-6 flex  rounded-full p-1 transition-colors mt-2 ${
                         row.status ? "bg-[#0A2478]" : "bg-gray-400"

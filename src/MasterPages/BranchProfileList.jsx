@@ -283,12 +283,12 @@ const BranchProfileList = () => {
   };
   return (
     <>
-      <div className=" w-full">
+      <div className=" w-full ">
         {/* middletopbar */}
-        <div className="flex justify-center sticky top-[80px] z-40">
+        <div className="flex  sticky top-[80px] z-40 ml-[22px]">
           <div className="z-40 bg-white">
             {/* Changed justify-around to justify-between */}
-            <div className="flex items-center px-6 py-4 border-b mt-5 w-[1290px] h-[62px] border rounded-[11px] border-gray-200 justify-between shadow-sm">
+            <div className="flex items-center px-6 py-4 border-b mt-2 w-[1462px] h-[50px] border rounded-[11px] border-gray-200 justify-between shadow-sm">
               {/* 1. LEFT SIDE: Title */}
               <h2
                 style={{
@@ -686,17 +686,17 @@ const BranchProfileList = () => {
         )}
 
         {/* Table */}
-        <div className="flex justify-center">
+        <div className="flex ml-[22px]">
           <div className="overflow-x-auto mt-5 w-[1290px] h-[500px]">
             <table className="w-full border-collapse">
               <thead className="bg-[#0A2478] text-white text-sm">
                 <tr>
-                  <th className="px-4 py-2 text-left border-r border-gray-300 text-[13px] w-[80px]">
-                    Branch Code
+                  <th className="px-1 py-1 text-left border-r border-gray-300 text-[13px] w-[80px]">
+                     Code
                   </th>
                   <th
                     onClick={() => handleSort("branchName")}
-                    className="px-4 py-2 text-left border-r border-gray-300 text-[13px] w-[120px] cursor-pointer select-none"
+                    className="px-1 py-1 text-left border-r border-gray-300 text-[13px] w-[120px] cursor-pointer select-none"
                   >
                     <div className="flex items-center gap-2">
                       Branch Name
@@ -713,32 +713,32 @@ const BranchProfileList = () => {
                         )}
                     </div>
                   </th>
-                  <th className="px-4 py-2 text-left border-r border-gray-300 text-[13px] w-[350px]">
+                  <th className="px-1 py-1 text-left border-r border-gray-300 text-[13px] w-[350px]">
                     {" "}
                     Branch Address
                   </th>
-                  <th className="px-4 py-2 text-left border-r border-gray-300 text-[13px] w-[110px]">
+                  <th className="px-1 py-1 text-left border-r border-gray-300 text-[13px] w-[110px]">
                     Branch Lead
                   </th>
-                  <th className="px-4 py-2 text-left border-r border-gray-300 text-[13px] w-[110px]">
+                  <th className="px-1 py-1 text-left border-r border-gray-300 text-[13px] w-[110px]">
                     Branch Phone
                   </th>
-                  <th className="px-4 py-2 text-left border-r border-gray-300 text-[13px] w-[100px]">
+                  <th className="px-1 py-1 text-left border-r border-gray-300 text-[13px] w-[100px]">
                     Added By
                   </th>
-                  <th className="px-4 py-2 text-left border-r border-gray-300 text-[13px] w-[100px]">
+                  <th className="px-1 py-1 text-left border-r border-gray-300 text-[13px] w-[100px]">
                     Added on
                   </th>
-                  <th className="px-4 py-2 text-left border-r border-gray-300 text-[13px] w-[100px]">
+                  <th className="px-1 py-1 text-left border-r border-gray-300 text-[13px] w-[100px]">
                     Modified By
                   </th>
-                  <th className="px-4 py-2 text-left border-r border-gray-300 text-[13px] w-[100px]">
+                  <th className="px-1 py-1 text-left border-r border-gray-300 text-[13px] w-[100px]">
                     Modified on
                   </th>
-                  <th className="px-4 py-2 text-left border-r border-gray-300 text-[13px] w-[100px]">
+                  <th className="px-1 py-1 text-left border-r border-gray-300 text-[13px] w-[100px]">
                     Action
                   </th>
-                  <th className="px-4 py-2 text-left border-r border-gray-300 text-[13px] w-[100px]">
+                  <th className="px-1 py-1 text-left border-r border-gray-300 text-[13px] w-[100px]">
                     Active
                   </th>
                 </tr>
@@ -750,26 +750,26 @@ const BranchProfileList = () => {
                     className={index % 2 === 0 ? "bg-gray-50" : "bg-white"}
                   >
                     <td
-                      className="px-4 py-2 text-blue-500 cursor-pointer"
+                      className="px-1 py-1 text-blue-500 cursor-pointer"
                       onClick={() => handleView(row)}
                     >
                       {row.branch_code}
                     </td>
-                    <td className="px-4 py-2">{row.branch_name}</td>
-                    <td className="px-4 py-2">{row.address_line1}</td>
-                    <td className="px-4 py-2">{row.lead_person}</td>
-                    <td className="px-4 py-2">{row.mobile_no}</td>
-                    <td className="px-4 py-2">{row.added_by}</td>
-                    <td className="px-4 py-2">
+                    <td className="px-1 py-1">{row.branch_name}</td>
+                    <td className="px-1 py-1">{row.address_line1}</td>
+                    <td className="px-1 py-1">{row.lead_person}</td>
+                    <td className="px-1 py-1">{row.mobile_no}</td>
+                    <td className="px-1 py-1">{row.added_by}</td>
+                    <td className="px-1 py-1">
                       {formatIndianDate(row.added_on)}
                     </td>
-                    <td className="px-4 py-2">{row.modified_by}</td>
+                    <td className="px-1 py-1">{row.modified_by}</td>
 
-                    <td className="px-4 py-2">
+                    <td className="px-1 py-1">
                       {formatIndianDate(row.modified_on)}
                     </td>
-                    <td className="px-4 py-2 text-[#1883EF] cursor-pointer">
-                      <div className="flex gap-2 justify-center">
+                    <td className="px-1 py-1 text-[#1883EF] cursor-pointer">
+                      <div className="flex gap-2 ">
                         <button
                           disabled={isViewMode}
                           className="bg-[#3dbd5a] cursor-pointer p-1.5 text-white rounded-sm"
@@ -777,18 +777,12 @@ const BranchProfileList = () => {
                           title="Edit"
                         >
                           <FiEdit className="text-white text-sm" />
-
-                          {/* <FiEdit /> */}
                         </button>
-                        {/* <button
-                          className="bg-[#646AD9] p-1.5 text-white rounded cursor-pointer"
-                          onClick={() => handleView(row)} title="view"                   >
-                          <FiEye className="text-white text-sm" />
-                        </button> */}
+                       
                       </div>
                     </td>
 
-                    <td className="px-4 py-2 text-[#1883EF] cursor-pointer">
+                    <td className="px-1 py-1 text-[#1883EF] cursor-pointer">
                       <button
                         onClick={() => handleToggleStatus(row.id, row.status)}
                         className={`w-12 h-6 flex items-center rounded-full p-1 transition-colors ${row.status === "1" ? "bg-[#0A2478]" : "bg-gray-300"

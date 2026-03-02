@@ -238,7 +238,7 @@ const Area = () => {
     <div className="min-h-screen w-full">
       {/* Header */}
       <div className="flex justify-center sticky top-[80px] z-40">
-        <div className="flex items-center px-6 py-4 border-b mt-5 w-[1290px] h-[62px] border rounded-[11px] border-gray-200 justify-between bg-white">
+        <div className="flex items-center px-6 py-4 border-b mt-2 w-[1462px] h-[50px] border rounded-[11px] border-gray-200 justify-between bg-white">
           <h2 className="text-red-600 font-bold text-[20px]">Area</h2>
           <div className="flex items-center gap-3">
 
@@ -431,13 +431,13 @@ const Area = () => {
 
               <div className="flex justify-center items-center gap-4 mt-6">
                 <button
-                  className="bg-[#0A2478] text-white px-4 py-2 rounded cursor-pointer"
+                  className="bg-[#0A2478] text-white px-1 py-1 rounded cursor-pointer"
                   onClick={handleSave}
                 >
                   Submit
                 </button>
                 <button
-                  className="bg-[#C1121F] text-white px-4 py-2 rounded cursor-pointer"
+                  className="bg-[#C1121F] text-white px-1 py-1 rounded cursor-pointer"
                   onClick={() => setIsModalOpen(false)}
                 >
                   Close
@@ -481,20 +481,20 @@ const Area = () => {
       )}
 
       {/* Area Table */}
-      <div className="flex justify-center">
+      <div className="flex ml-[22px]">
         <div className="overflow-x-auto mt-5 w-[1290px] h-[500px]">
           <table className="w-full border-collapse">
 
             {/* ✅ TABLE HEADER ALWAYS VISIBLE */}
             <thead className="bg-[#0A2478] text-white text-sm">
               <tr>
-                <th className="px-4 py-2 border-r-2 text-left w-[60px]">Sr No</th>
-                <th className="px-4 py-2 border-r-2 text-left w-[300px]">Area/Locality</th>
-                <th className="px-4 py-2 border-r-2 text-left w-[100px]">City</th>
-                <th className="px-4 py-2 border-r-2 text-left w-[100px]">State</th>
-                <th className="px-4 py-2 border-r-2 text-left w-[100px]">Pincode</th>
-                <th className="px-4 py-2 border-r-2 text-left w-[300px]">Landmark</th>
-                <th className="px-4 py-2 border-r-2 text-center w-[100px]">Action</th>
+                <th className="px-1 py-1 border-r-2 text-left w-[60px]">Sr No</th>
+                <th className="px-1 py-1 border-r-2 text-left w-[300px]">Area/Locality</th>
+                <th className="px-1 py-1 border-r-2 text-left w-[100px]">City</th>
+                <th className="px-1 py-1 border-r-2 text-left w-[100px]">State</th>
+                <th className="px-1 py-1 border-r-2 text-left w-[100px]">Pincode</th>
+                <th className="px-1 py-1 border-r-2 text-left w-[300px]">Landmark</th>
+                <th className="px-1 py-1 border-r-2 text-center w-[100px]">Action</th>
               </tr>
             </thead>
 
@@ -511,16 +511,16 @@ const Area = () => {
                     key={row.id}
                     className={index % 2 === 0 ? "bg-gray-50" : "bg-white"}
                   >
-                    <td className="px-4 py-2">
+                    <td className="px-1 py-1">
                       {(currentPage - 1) * itemsPerPage + index + 1}
                     </td>
-                    <td className="px-4 py-2">{row.area_locality}</td>
-                    <td className="px-4 py-2">{row.city}</td>
-                    <td className="px-4 py-2">{row.state}</td>
-                    <td className="px-4 py-2">{row.pincode}</td>
-                    <td className="px-4 py-2">{row.landmark}</td>
-                    <td className="px-4 py-2 text-center">
-                      <div className="flex gap-2 justify-center">
+                    <td className="px-1 py-1">{row.area_locality}</td>
+                    <td className="px-1 py-1">{row.city}</td>
+                    <td className="px-1 py-1">{row.state}</td>
+                    <td className="px-1 py-1">{row.pincode}</td>
+                    <td className="px-1 py-1">{row.landmark}</td>
+                    <td className="px-1 py-1 text-center">
+                      <div className="flex gap-2">
                         <button
                           className="bg-green-500 p-1.5 text-white rounded cursor-pointer"
                           onClick={() => handleOpenModal(row)}

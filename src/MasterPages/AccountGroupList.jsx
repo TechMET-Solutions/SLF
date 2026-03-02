@@ -174,9 +174,9 @@ console.log(loginUser,"asdfghj")
 
 
   return (
-    <div className=" min-h-screen w-full">
-      <div className="flex justify-center ">
-        <div className="flex items-center px-6 py-4 border-b mt-5 w-[1290px] h-[62px] border rounded-[11px] border-gray-200 justify-between shadow">
+    <div className=" min-h-screen w-full ">
+      <div className="ml-[22px]">
+        <div className="flex items-center  border-b mt-2 w-[1462px] h-[50px] p-1 border rounded-[11px] border-gray-200 justify-between ">
           {/* Left heading */}
           <h2
             style={{
@@ -192,12 +192,12 @@ console.log(loginUser,"asdfghj")
           </h2>
 
           {/* Right section (search + buttons) */}
-          <div className="flex items-center gap-6">
+          <div className="flex items-center gap-6 ml-[22px]">
             {/* Search section */}
             <div className="flex gap-5 "></div>
             <div className="flex items-center gap-4">
               <div className="flex items-center gap-3">
-                <div className="flex items-center bg-white border border-gray-400 rounded-[5px] h-[32px] px-2 relative w-[500px]">
+                <div className="flex items-center bg-white border border-gray-400 rounded-[5px] h-[32px] px-1 relative w-[500px]">
                   {/* Multi-Select Header Dropdown */}
                   <div className="relative border-r border-gray-300 pr-2 mr-2">
                     <button
@@ -480,39 +480,39 @@ console.log(loginUser,"asdfghj")
       )}
 
       {/* Table */}
-      <div className="flex justify-center ">
-        <div className="overflow-x-auto mt-5 w-[1290px] h-[500px]">
+      <div className="flex ml-[22px] ">
+        <div className="overflow-x-auto mt-2 w-[1290px] h-[500px]">
           <table className="w-full border-collapse">
             <thead className="bg-[#0A2478] text-white text-sm">
               <tr>
-                <th className="px-4 py-2 text-left border-r border-gray-300 text-[13px]">
+                <th className="px-1 py-1 text-left border-r border-gray-300 text-[13px]">
                  Group Ledger 
                 </th>
-                <th className="px-4 py-2 text-left border-r border-gray-300 text-[13px] w-[150px]">
+                <th className="px-1 py-1 text-left border-r border-gray-300 text-[13px] w-[150px]">
                   Account Type
                 </th>
 
-                <th className="px-4 py-2 text-left border-r border-gray-300 text-[13px] w-[100px]">
+                <th className="px-1 py-1 text-left border-r border-gray-300 text-[13px] w-[100px]">
                   Under
                 </th>
-                <th className="px-4 py-2 text-left border-r border-gray-300 text-[13px]">
+                <th className="px-1 py-1 text-left border-r border-gray-300 text-[13px]">
                   Added By
                 </th>
 
-                <th className="px-4 py-2 text-left border-r border-gray-300 text-[13px] w-[100px]">
+                <th className="px-1 py-1 text-left border-r border-gray-300 text-[13px] w-[100px]">
                   Added On
                 </th>
-                <th className="px-4 py-2 text-left border-r border-gray-300 text-[13px]  w-[110px]">
+                <th className="px-1 py-1 text-left border-r border-gray-300 text-[13px]  w-[110px]">
                   Modified By
                 </th>
-                <th className="px-4 py-2 text-left border-r border-gray-300 text-[13px]  w-[130px]">
+                <th className="px-1 py-1 text-left border-r border-gray-300 text-[13px]  w-[130px]">
                   Modified On
                 </th>
 
-                <th className="px-4 py-2 text-left border-r border-gray-300 text-[13px] w-[250px]">
+                <th className="px-1 py-1 text-left border-r border-gray-300 text-[13px] w-[250px]">
                   Comments
                 </th>
-                <th className="px-4 py-2 text-left text-[13px] w-[80px]">
+                <th className="px-1 py-1 text-left text-[13px] w-[80px]">
                   Action
                 </th>
               </tr>
@@ -523,18 +523,18 @@ console.log(loginUser,"asdfghj")
                   key={index}
                   className={index % 2 === 0 ? "bg-gray-100" : "bg-white"}
                 >
-                  <td className="px-4 py-2">{row.group_name}</td>
-                  <td className="px-4 py-2">{row.account_type}</td>
+                  <td className="px-1 py-1">{row.group_name}</td>
+                  <td className="px-1 py-1">{row.account_type}</td>
 
-                  <td className="px-4 py-2">{row.under_type}</td>
-                  <td className="px-4 py-2">{row.added_by_email}</td>
+                  <td className="px-1 py-1">{row.under_type}</td>
+                  <td className="px-1 py-1">{row.added_by_email}</td>
 
-                  <td className="px-4 py-2">
+                  <td className="px-1 py-1">
                     {new Date(row.created_at).toLocaleDateString("en-GB")}
                   </td>
-                  <td className="px-4 py-2">{row.modified_by_email}</td>
+                  <td className="px-1 py-1">{row.modified_by_email}</td>
 
-                <td className="px-4 py-2">
+                <td className="px-1 py-1">
   {row.modified_on
     ? new Date(row.modified_on).toLocaleString("en-IN", {
         day: "2-digit",
@@ -545,8 +545,8 @@ console.log(loginUser,"asdfghj")
       })
     : "-"}
 </td>
-                  <td className="px-4 py-2">{row.comments}</td>
-                  <td className="px-4 py-2 flex gap-2 justify-center">
+                  <td className="px-1 py-1">{row.comments}</td>
+                  <td className="px-1 py-1 flex gap-2 ">
                     <div
                       className="bg-[#3dbd5a] cursor-pointer p-1.5 text-white rounded-sm"
                       onClick={() => handleEdit(row)}

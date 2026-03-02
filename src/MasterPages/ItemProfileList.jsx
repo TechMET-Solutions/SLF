@@ -218,9 +218,9 @@ const ItemProfileList = () => {
   return (
     <div className="min-h-screen w-full">
       {/* Top Bar */}
-      <div className="flex justify-center sticky top-[80px] z-40">
+      <div className="flex  sticky top-[80px] z-40 ml-[22px]">
         {/* Changed justify-around to justify-between to push content to the edges */}
-        <div className="flex items-center px-6 py-4 border mt-5 w-[1290px] h-[62px] rounded-[11px] border-gray-200 justify-between bg-white shadow-sm">
+        <div className="flex items-center px-6 py-4 border mt-2 w-[1462px] h-[50px] rounded-[11px] border-gray-200 justify-between bg-white shadow-sm">
 
           {/* LEFT SIDE: Name */}
           <h2
@@ -410,20 +410,20 @@ const ItemProfileList = () => {
       )}
 
       {/* Table */}
-      <div className="flex justify-center">
-        <div className="overflow-x-auto mt-5 w-[1290px] h-[500px]">
+      <div className="flex  mt-2 ml-[22px]">
+        <div className="overflow-x-auto mt-2 w-[1290px] h-[500px]">
           <table className="w-full border-collapse">
             <thead className="bg-[#0A2478] text-white text-sm">
               <tr>
-                <th className="px-4 py-2 border-r-2 text-left w-[100px]">Item Type</th>
-                <th className="px-4 py-2 border-r-2 text-left w-[150px]">Name</th>
-                <th className="px-4 py-2 border-r-2 text-left w-[220px]">Print Name</th>
-                <th className="px-4 py-2 border-r-2 text-left w-[200px]">Added By</th>
-                <th className="px-4 py-2 border-r-2 text-left w-[120px]">Added On</th>
-                <th className="px-4 py-2 border-r-2 text-left w-[200px]">Modified By</th>
-                <th className="px-4 py-2 border-r-2 text-left w-[120px]">Modified On</th>
-                <th className="px-4 py-2 border-r-2 text-left w-[100px]">Action</th>
-                <th className="px-4 py-2 border-r-2 text-left  w-[50px]">Active</th>
+                <th className="px-1 py-1 border-r-2 text-left w-[100px]">Item Type</th>
+                <th className="px-1 py-1 border-r-2 text-left w-[150px]">Name</th>
+                <th className="px-1 py-1 border-r-2 text-left w-[220px]">Print Name</th>
+                <th className="px-1 py-1 border-r-2 text-left w-[200px]">Added By</th>
+                <th className="px-1 py-1 border-r-2 text-left w-[120px]">Added On</th>
+                <th className="px-1 py-1 border-r-2 text-left w-[200px]">Modified By</th>
+                <th className="px-1 py-1 border-r-2 text-left w-[120px]">Modified On</th>
+                <th className="px-1 py-1 border-r-2 text-left w-[100px]">Action</th>
+                <th className="px-1 py-1 border-r-2 text-left  w-[50px]">Active</th>
               </tr>
             </thead>
 
@@ -443,25 +443,25 @@ const ItemProfileList = () => {
                     key={row.id}
                     className={index % 2 === 0 ? "bg-gray-50" : "bg-white"}
                   >
-                    <td className="px-4 py-2">{row.code}</td>
-                    <td className="px-4 py-2">{row.name}</td>
-                    <td className="px-4 py-2">{row.print_name}</td>
-                    {/* <td className="px-4 py-2">
+                    <td className="px-1 py-1">{row.code}</td>
+                    <td className="px-1 py-1">{row.name}</td>
+                    <td className="px-1 py-1">{row.print_name}</td>
+                    {/* <td className="px-1 py-1">
                       {row.status === 1 ? "Active" : "Inactive"}
                     </td> */}
-                    <td className="px-4 py-2">{row.added_by || "-"}</td>
-                    <td className="px-4 py-2">
+                    <td className="px-1 py-1">{row.added_by || "-"}</td>
+                    <td className="px-1 py-1">
                       {row.add_on
                         ? new Date(row.add_on).toLocaleDateString()
                         : "-"}
                     </td>
-                    <td className="px-4 py-2">{row.modified_by || "-"}</td>
-                    <td className="px-4 py-2">
+                    <td className="px-1 py-1">{row.modified_by || "-"}</td>
+                    <td className="px-1 py-1">
                       {row.modified_on
                         ? new Date(row.modified_on).toLocaleDateString()
                         : "-"}
                     </td>
-                    <td className="px-4 py-2 text-[#1883EF] text-center cursor-pointer">
+                    <td className="px-1 py-1 text-[#1883EF] text-center cursor-pointer">
                       <button
                         className="bg-green-500 p-1.5 text-white rounded cursor-pointer"
                         onClick={() => handleOpenModal(row)}
@@ -470,7 +470,7 @@ const ItemProfileList = () => {
                         <FiEdit className="text-white text-sm" />
                       </button>
                     </td>
-                    <td className="px-4 py-2">
+                    <td className="px-1 py-1">
                       <button
                         onClick={() => handleToggleStatus(row)}
                         className={`w-12 h-6 flex items-center rounded-full p-1 transition-colors ${row.status === 1 ? "bg-[#0A2478]" : "bg-gray-400"

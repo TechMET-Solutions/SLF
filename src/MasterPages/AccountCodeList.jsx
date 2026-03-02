@@ -706,16 +706,16 @@ const AccountCodeList = () => {
 
 
   return (
-    <div className="min-h-screen w-full font-[Source_Sans_3]">
+    <div className="min-h-screen w-full font-[Source_Sans_3] ">
       {/* Topbar */}
-      <div className="flex justify-center">
-        <div className="flex justify-center mt-5">
-          <div className="flex items-center px-6 py-4 w-[1290px] h-[62px] rounded-[11px] border border-gray-200 justify-between shadow-sm bg-white">
+      <div className="flex ml-[22px]">
+        <div className="flex  mt-2 ">
+          <div className="flex items-center px-6 py-4 w-[1462px] h-[50px] rounded-[11px] border border-gray-200 justify-between shadow-sm bg-white">
             <h2 className="text-red-600 font-bold text-[20px] whitespace-nowrap">
                Ledger List
             </h2>
 
-            <div className="flex items-center gap-6">
+            <div className="flex items-center gap-6 ">
               <div className="flex items-center bg-white border border-gray-400 rounded-[5px] h-[32px] px-2 relative w-[450px]">
                 <div className="relative border-r border-gray-300 pr-2 mr-2">
                   <button
@@ -903,34 +903,34 @@ const AccountCodeList = () => {
       )}
 
       {/* Table - Uses filteredData */}
-      <div className="flex justify-center">
-        <div className="overflow-x-auto mt-5 w-[1290px] h-[500px]">
+      <div className="flex ml-[22px] ">
+        <div className="overflow-x-auto mt-2 w-[1290px] h-[500px]">
           <table className="w-full border-collapse">
             <thead className="bg-[#0A2478] text-white text-sm">
               <tr>
-                <th className="px-4 py-2 text-left border-r border-gray-300 text-[13px] w-[250px]">Ledger Name</th>
-                <th className="px-4 py-2 text-left border-r border-gray-300 text-[13px] w-[150px]">Financial</th>
-                <th className="px-4 py-2 text-left border-r border-gray-300 text-[13px] w-[180px]">Ledger</th>
-                <th className="px-4 py-2 text-left border-r border-gray-300 text-[13px] w-[100px]">Type</th>
-                <th className="px-4 py-2 text-left border-r border-gray-300 text-[13px] w-[300px]">Added by Email</th>
-                <th className="px-4 py-2 text-left border-r border-gray-300 text-[13px] w-[100px]">Added On</th>
-                <th className="px-4 py-2 text-left border-r border-gray-300 text-[13px] w-[100px]">Modified by</th>
-                 <th className="px-4 py-2 text-left border-r border-gray-300 text-[13px] w-[100px]">Modified On</th>
-                <th className="px-4 py-2 text-left text-[13px]">Action</th>
+                <th className="px-1 py-1 text-left border-r border-gray-300 text-[13px] w-[250px]">Ledger Name</th>
+                <th className="px-1 py-1 text-left border-r border-gray-300 text-[13px] w-[150px]">Financial</th>
+                <th className="px-1 py-1 text-left border-r border-gray-300 text-[13px] w-[180px]">Ledger</th>
+                <th className="px-1 py-1 text-left border-r border-gray-300 text-[13px] w-[100px]">Type</th>
+                <th className="px-1 py-1 text-left border-r border-gray-300 text-[13px] w-[200px]">Added by</th>
+                <th className="px-1 py-1 text-left border-r border-gray-300 text-[13px] w-[100px]">Added On</th>
+                <th className="px-1 py-1 text-left border-r border-gray-300 text-[13px] w-[200px]">Modified by</th>
+                 <th className="px-1 py-1 text-left border-r border-gray-300 text-[13px] w-[100px]">Modified On</th>
+                <th className="px-1 py-1 text-left text-[13px] w-[100px]">Action</th>
               </tr>
             </thead>
             <tbody className="text-[12px]">
               {data?.map((row, index) => (
                 <tr key={index} className={index % 2 === 0 ? "bg-gray-50" : "bg-white"}>
-                  <td className="px-4 py-2">{row.name}</td>
-                  <td className="px-4 py-2">{row.financialDate}</td>
-                  <td className="px-4 py-2">{row.accountGroup}</td>
-                  <td className="px-4 py-2">{row.type}</td>
-                  <td className="px-4 py-2">{row.addedBy}</td>
-                  <td className="px-4 py-2">{formatIndianDate(row.created_at)}</td>
-                  <td className="px-4 py-2">{row.modifiedBy || "-"}</td>
-                   <td className="px-4 py-2">{formatIndianDate(row.updated_at)}</td>
-                  <td className="px-4 py-2 flex gap-2 justify-center">
+                  <td className="px-1 py-1">{row.name}</td>
+                  <td className="px-1 py-1">{row.financialDate}</td>
+                  <td className="px-1 py-1">{row.accountGroup}</td>
+                  <td className="px-1 py-1">{row.type}</td>
+                  <td className="px-1 py-1">{row.addedBy}</td>
+                  <td className="px-1 py-1">{formatIndianDate(row.created_at)}</td>
+                  <td className="px-1 py-1">{row.modifiedBy || "-"}</td>
+                   <td className="px-1 py-1">{formatIndianDate(row.updated_at)}</td>
+                  <td className="px-1 py-1 flex gap-2 ">
                     <div className="bg-[#3dbd5a] cursor-pointer p-1.5 text-white rounded-sm" onClick={() => handleEdit(row)}>
                       <FiEdit />
                     </div>

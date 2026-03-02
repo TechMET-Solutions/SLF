@@ -248,9 +248,9 @@ const PurityProfile = () => {
   return (
     <div className="min-h-screen w-full">
       {/* middletopbar */}
-      <div className="flex justify-center sticky top-[80px] z-40">
-        <div className="flex justify-center mt-5">
-          <div className="flex items-center justify-between px-6 py-4 border-b w-[1290px] h-[61px] border rounded-[11px] border-gray-200 bg-white">
+      <div className="flex  sticky top-[80px] z-40">
+        <div className="flex  mt-2 ml-[22px]">
+          <div className="flex items-center justify-between px-6 py-4 border-b w-[1462px] h-[50px] border rounded-[11px] border-gray-200 bg-white">
             <h2 className="text-red-600 font-bold text-[20px] leading-[148%]">
               Product Purity
             </h2>
@@ -400,7 +400,7 @@ const PurityProfile = () => {
       )}
 
       {/* Table */}
-      <div className="flex justify-center gap-10 p-2 mt-5">
+      <div className="flex  gap-10  mt-3 ml-[22px]">
         <div>
           <p
             className="font-semibold text-[#0A2478]"
@@ -413,98 +413,18 @@ const PurityProfile = () => {
             Gold Purity
           </p>
 
-          {/* <div className="overflow-x-auto mt-5 w-[620px] h-[500px]">
-            {data.length === 0 && !isLoading ? (
-              <div className="flex justify-center items-center h-full">
-                <p className="text-lg text-gray-500">No Data Found</p>
-              </div>
-            ) : (
-              <table className="w-full border-collapse">
-                <thead className="bg-[#0A2478] text-white text-sm">
-                  <tr>
-                    <th className="px-4 py-2 text-left border-r border-gray-300 text-[13px] w-[80px]">
-                      Purity Name
-                    </th>
-                    <th className="px-4 py-2 text-left border-r border-gray-300 text-[13px] w-[80px]">
-                      Purity %
-                    </th>
-                    <th className="px-4 py-2 text-left border-r border-gray-300 text-[13px] w-[80px]">
-                      Product Name
-                    </th>
-                    <th className="px-4 py-2 text-left border-r border-gray-300 text-[13px] w-[200px]">
-                      Added By
-                    </th>
-                    <th className="px-4 py-2 text-left border-r border-gray-300 text-[13px]">
-                      Action
-                    </th>
-                    <th className="px-4 py-2 text-left border-r border-gray-300 text-[13px]">
-                      Active
-                    </th>
-                  </tr>
-                </thead>
-                <tbody className="text-[12px]">
-                  {data.map((row, index) => (
-                    <tr
-                      key={index}
-                     className={index % 2 === 0 ? "bg-gray-50" : "bg-white"}
-                    >
-                      <td className="px-4 py-2">{row.purity_name}</td>
-                      <td className="px-4 py-2">{row.purity_percent}</td>
-                      <td className="px-4 py-2">{row.loan_type}</td>
-                      <td className="px-4 py-2">{row.added_by}</td>
-                      <td className="px-4 py-2 text-center">
-                        <div className="flex gap-2 justify-center">
-                          <button
-                            className="bg-[#3dbd5a] cursor-pointer p-1.5 text-white rounded-sm"
-                            onClick={() => handleOpenModal(row)}
-                            title="Edit"
-                          >
-                            <FiEdit />
-                          </button>
-                          <button
-                            className="bg-[#f51111ec] cursor-pointer p-1.5 text-white rounded-sm"
-                            onClick={() =>
-                              handleDeleteClick(row.id, row.loan_type)
-                            }
-                            title="Delete"
-                          >
-                            <FiTrash2 />
-                          </button>
-                        </div>
-                      </td>
-                      <td className="px-4 py-2 text-[#1883EF] cursor-pointer">
-                        <button
-                          onClick={() => handleToggleStatus(row)}
-                          className={`w-12 h-6 flex items-center rounded-full p-1 transition-colors duration-300 ease-in-out ${
-                            row.status === 1 ? "bg-[#0A2478]" : "bg-gray-400"
-                          }`}
-                        >
-                          <div
-                            className={`bg-white w-4 h-4 rounded-full shadow-md transform transition-transform duration-300 ease-in-out ${
-                              row.status === 1
-                                ? "translate-x-6"
-                                : "translate-x-0"
-                            }`}
-                          />
-                        </button>
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            )}
-          </div> */}
+       
 
-          <div className="overflow-x-auto mt-5 w-[620px] h-[500px]">
+          <div className="overflow-x-auto mt-2 w-[620px] h-[500px]">
             <table className="w-full border-collapse">
               <thead className="bg-[#0A2478] text-white text-sm sticky top-0">
                 <tr>
-                  <th className="px-4 py-2 text-left border-r border-gray-300 text-[13px] w-[80px]">Purity Name</th>
-                  <th className="px-4 py-2 text-left border-r border-gray-300 text-[13px] w-[80px]">Purity %</th>
-                  <th className="px-4 py-2 text-left border-r border-gray-300 text-[13px] w-[80px]">Product Name</th>
-                  <th className="px-4 py-2 text-left border-r border-gray-300 text-[13px] w-[200px]">Added By</th>
-                  <th className="px-4 py-2 text-left border-r border-gray-300 text-[13px]">Action</th>
-                  <th className="px-4 py-2 text-left border-r border-gray-300 text-[13px]">Active</th>
+                  <th className="px-1 py-1 text-left border-r border-gray-300 text-[13px] w-[80px]">Purity </th>
+                  <th className="px-1 py-1 text-left border-r border-gray-300 text-[13px] w-[80px]">Purity %</th>
+                  <th className="px-1 py-1 text-left border-r border-gray-300 text-[13px] w-[80px]">Product</th>
+                  <th className="px-1 py-1 text-left border-r border-gray-300 text-[13px] w-[200px]">Added By</th>
+                  <th className="px-1 py-1 text-left border-r border-gray-300 text-[13px]">Action</th>
+                  <th className="px-1 py-1 text-left border-r border-gray-300 text-[13px]">Active</th>
                 </tr>
               </thead>
               <tbody className="text-[12px]">
@@ -517,11 +437,11 @@ const PurityProfile = () => {
                 ) : (
                   data.map((row, index) => (
                     <tr key={index} className={index % 2 === 0 ? "bg-gray-50" : "bg-white"}>
-                      <td className="px-4 py-2">{row.purity_name}</td>
-                      <td className="px-4 py-2">{row.purity_percent}</td>
-                      <td className="px-4 py-2">{row.loan_type}</td>
-                      <td className="px-4 py-2">{row.added_by}</td>
-                      <td className="px-4 py-2 text-center">
+                      <td className="px-1 py-1">{row.purity_name}</td>
+                      <td className="px-1 py-1">{row.purity_percent}</td>
+                      <td className="px-1 py-1">{row.loan_type}</td>
+                      <td className="px-1 py-1">{row.added_by}</td>
+                      <td className="px-1 py-1 text-center">
                         <div className="flex gap-2 justify-center">
                           <button
                             className="bg-[#3dbd5a] cursor-pointer p-1.5 text-white rounded-sm"
@@ -539,7 +459,7 @@ const PurityProfile = () => {
                           </button>
                         </div>
                       </td>
-                      <td className="px-4 py-2">
+                      <td className="px-1 py-1">
                         <button
                           onClick={() => handleToggleStatus(row)}
                           className={`w-12 h-6 flex items-center rounded-full p-1 transition-colors duration-300 ease-in-out ${row.status === 1 ? "bg-[#0A2478]" : "bg-gray-400"
@@ -576,16 +496,16 @@ const PurityProfile = () => {
           >
             Silver Purity
           </p>
-          <div className="overflow-x-auto mt-5 w-[620px] h-[500px]">
+          <div className="overflow-x-auto mt-2 w-[620px] h-[500px]">
             <table className="w-full border-collapse">
               <thead className="bg-[#0A2478] text-white text-sm sticky top-0">
                 <tr>
-                  <th className="px-4 py-2 text-left border-r border-gray-300 text-[13px] w-[80px]">Purity Name</th>
-                  <th className="px-4 py-2 text-left border-r border-gray-300 text-[13px] w-[80px]">Purity %</th>
-                  <th className="px-4 py-2 text-left border-r border-gray-300 text-[13px] w-[80px]">Product Name</th>
-                  <th className="px-4 py-2 text-left border-r border-gray-300 text-[13px] w-[200px]">Added By</th>
-                  <th className="px-4 py-2 text-left border-r border-gray-300 text-[13px]">Action</th>
-                  <th className="px-4 py-2 text-left border-r border-gray-300 text-[13px]">Active</th>
+                  <th className="px-1 py-1 text-left border-r border-gray-300 text-[13px] w-[80px]">Purity</th>
+                  <th className="px-1 py-1 text-left border-r border-gray-300 text-[13px] w-[80px]">Purity %</th>
+                  <th className="px-1 py-1 text-left border-r border-gray-300 text-[13px] w-[80px]">Product</th>
+                  <th className="px-1 py-1 text-left border-r border-gray-300 text-[13px] w-[200px]">Added By</th>
+                  <th className="px-1 py-1 text-left border-r border-gray-300 text-[13px]">Action</th>
+                  <th className="px-1 py-1 text-left border-r border-gray-300 text-[13px]">Active</th>
                 </tr>
               </thead>
               <tbody className="text-[12px]">
@@ -598,11 +518,11 @@ const PurityProfile = () => {
                 ) : (
                   Silverdata.map((row, index) => (
                     <tr key={index} className={index % 2 === 0 ? "bg-gray-50" : "bg-white"}>
-                      <td className="px-4 py-2">{row.purity_name}</td>
-                      <td className="px-4 py-2">{row.purity_percent}</td>
-                      <td className="px-4 py-2">{row.loan_type}</td>
-                      <td className="px-4 py-2">{row.added_by}</td>
-                      <td className="px-4 py-2 text-center">
+                      <td className="px-1 py-1">{row.purity_name}</td>
+                      <td className="px-1 py-1">{row.purity_percent}</td>
+                      <td className="px-1 py-1">{row.loan_type}</td>
+                      <td className="px-1 py-1">{row.added_by}</td>
+                      <td className="px-1 py-1 text-center">
                         <div className="flex gap-2 justify-center">
                           <button
                             className="bg-[#3dbd5a] cursor-pointer p-1.5 text-white rounded-sm"
@@ -620,7 +540,7 @@ const PurityProfile = () => {
                           </button>
                         </div>
                       </td>
-                      <td className="px-4 py-2">
+                      <td className="px-1 py-1">
                         <button
                           onClick={() => handleToggleStatusForSilver(row)}
                           className={`w-12 h-6 flex items-center rounded-full p-1 transition-colors duration-300 ease-in-out ${row.status === 1 ? "bg-[#0A2478]" : "bg-gray-400"
