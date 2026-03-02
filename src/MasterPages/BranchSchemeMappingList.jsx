@@ -212,7 +212,7 @@ const BranchSchemeMappingList = () => {
     <div className="min-h-screen w-full relative">
       {/* Topbar */}
       <div className="flex justify-center sticky top-[80px] z-40">
-        <div className="flex items-center px-6 py-4 border-b mt-5 w-[1290px] h-[62px] border rounded-[11px] border-gray-200 justify-between shadow bg-white">
+        <div className="flex items-center px-6 py-4 border-b mt-5 w-[1462px] h-[62px] border rounded-[11px] border-gray-200 justify-between shadow bg-white">
           <h2 className="text-red-600 font-bold text-[20px]">
             Branch Scheme Mapping List
           </h2>
@@ -227,18 +227,18 @@ const BranchSchemeMappingList = () => {
 
       {/* Table */}
       <div className="flex justify-center">
-        <div className="overflow-x-auto mt-5 w-[1290px] h-[500px]">
+        <div className="overflow-x-auto mt-5 w-[1462px] h-[500px]">
           <table className=" border-collapse shadow-sm">
             <thead className="bg-[#0A2478] text-white text-sm">
               <tr>
-                <th className="px-4 py-2 text-left border-r w-[100px]">
+                <th className="px-1 py-1 text-left border-r w-[100px]">
                   Branch Code
                 </th>
-                <th className="px-4 py-2 text-left border-r w-[250px]">Name</th>
-                <th className="px-4 py-2 text-left border-r w-[350px]">
+                <th className="px-1 py-1 text-left border-r w-[250px]">Name</th>
+                <th className="px-1 py-1 text-left border-r w-[350px]">
                   Address
                 </th>
-                <th className="px-4 py-2 text-left w-[100px]">Action</th>
+                <th className="px-1 py-1 text-left w-[100px]">Action</th>
               </tr>
             </thead>
             <tbody className="text-[12px]">
@@ -246,16 +246,16 @@ const BranchSchemeMappingList = () => {
                 <tr
                   key={row.id}
                   className={
-                    index % 2 === 0 ? "bg-gray-50" : "bg-white border-b"
+                    index % 1 === 0 ? "bg-gray-50" : "bg-white border-b"
                   }
                 >
-                  <td className="px-4 py-2">{row.branch_code}</td>
-                  <td className="px-4 py-2">{row.branch_name}</td>
-                  <td className="px-4 py-2">
+                  <td className="px-1 py-1">{row.branch_code}</td>
+                  <td className="px-1 py-1">{row.branch_name}</td>
+                  <td className="px-1 py-1">
                     {row.address_line1}, {row.address_line3}
                   </td>
                   <td
-                    className="px-4 py-2 text-blue-600 font-medium cursor-pointer hover:underline"
+                    className="px-1 py-1 text-blue-600 font-medium cursor-pointer hover:underline"
                     onClick={() => openMappingModal(row)}
                   >
                     Map

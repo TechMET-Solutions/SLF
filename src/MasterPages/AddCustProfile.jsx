@@ -11,7 +11,6 @@ import { useAuth } from "../API/Context/AuthContext";
 import { fetchAreasApi } from "../API/Master/Master_Profile/Area_Details";
 import profileempty from "../assets/profileempty.png";
 import righttick from "../assets/righttick.png";
-import send from "../assets/send.svg";
 import { encryptData } from "../utils/cryptoHelper";
 import CustBankDetails from "./CustBankDetails";
 
@@ -364,14 +363,71 @@ const AddCustProfile = () => {
       }
     }
 
+    // Mobile validation
+    if (formData.mobile && formData.mobile.trim() !== "") {
+      const mobileRegex = /^[6-9]\d{9}$/;
+      // Starts with 6-9 and total 10 digits
+
+      if (!mobileRegex.test(formData.mobile)) {
+        newErrors.mobile = "Please enter a valid 10-digit mobile number";
+        hasErrors = true;
+      }
+    }
+
     setErrors(newErrors);
     return !hasErrors;
   };
 
+
+
   // Handle input changes
+  // const handleChange = (e) => {
+  //   const { name, value } = e.target;
+
+  //   setFormData((prev) => ({
+  //     ...prev,
+  //     [name]: value,
+  //   }));
+
+  //   // Clear field-level error when user starts typing
+  //   if (errors[name]) {
+  //     setErrors((prev) => ({
+  //       ...prev,
+  //       [name]: "",
+  //     }));
+  //   }
+
+  //   // PAN validation
+  //   if (formData.panNo && formData.panNo.trim() !== "") {
+  //     const panRegex = /^[A-Z]{5}[0-9]{4}[A-Z]{1}$/;
+  //     if (!panRegex.test(formData.panNo)) {
+  //       newErrors.panNo = "Please enter a valid PAN number";
+  //       hasErrors = true;
+  //     }
+  //   }
+
+  //   // Live email validation
+  //   if (name === "email") {
+  //     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+  //     if (!emailRegex.test(value) && value.trim() !== "") {
+  //       setErrors((prev) => ({
+  //         ...prev,
+  //         email: "Please enter a valid email address",
+  //       }));
+  //     } else {
+  //       setErrors((prev) => ({
+  //         ...prev,
+  //         email: "",
+  //       }));
+  //     }
+  //   }
+  // };
+
   const handleChange = (e) => {
     const { name, value } = e.target;
 
+    // Update form data
     setFormData((prev) => ({
       ...prev,
       [name]: value,
@@ -385,11 +441,28 @@ const AddCustProfile = () => {
       }));
     }
 
+    // PAN validation (validate using value, not formData)
+    if (name === "panNo") {
+      const panRegex = /^[A-Z]{5}[0-9]{4}[A-Z]{1}$/;
+
+      if (value.trim() !== "" && !panRegex.test(value)) {
+        setErrors((prev) => ({
+          ...prev,
+          panNo: "Please enter a valid PAN number",
+        }));
+      } else {
+        setErrors((prev) => ({
+          ...prev,
+          panNo: "",
+        }));
+      }
+    }
+
     // Live email validation
     if (name === "email") {
       const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
-      if (!emailRegex.test(value) && value.trim() !== "") {
+      if (value.trim() !== "" && !emailRegex.test(value)) {
         setErrors((prev) => ({
           ...prev,
           email: "Please enter a valid email address",
@@ -841,50 +914,50 @@ const AddCustProfile = () => {
     }
   };
 
-    // ===============================
-    // Party Types – dynamic (active only)
-    // ===============================
-    const [partyTypeList, setPartyTypeList] = useState([]);
-  
-    useEffect(() => {
-      const fetchPartyTypes = async () => {
-        try {
-          const res = await axios.get(`${API}/api/party-types/list`);
-          const activeOnly = (res.data.data || []).filter((item) => item.status === 1);
-          setPartyTypeList(activeOnly);
-        } catch (error) {
-          console.error("Failed to fetch party types:", error);
-        }
-      };
-      fetchPartyTypes();
-    }, []);
+  // ===============================
+  // Party Types – dynamic (active only)
+  // ===============================
+  const [partyTypeList, setPartyTypeList] = useState([]);
+
+  useEffect(() => {
+    const fetchPartyTypes = async () => {
+      try {
+        const res = await axios.get(`${API}/api/party-types/list`);
+        const activeOnly = (res.data.data || []).filter((item) => item.status === 1);
+        setPartyTypeList(activeOnly);
+      } catch (error) {
+        console.error("Failed to fetch party types:", error);
+      }
+    };
+    fetchPartyTypes();
+  }, []);
 
   return (
     <div>
-      <div className="flex justify-center sticky top-[80px] z-40 ">
-        <div className="flex items-center px-6 py-4 border-b mt-5 w-[1290px] h-[62px] border rounded-[11px] border-gray-200 justify-between shadow bg-white">
+      <div className="flex justify-center sticky top-0 md:top-[80px] z-40 px-4">
+        <div className="flex flex-col md:flex-row items-center justify-between mt-5 w-full max-w-[1462px] min-h-[62px] py-3 md:py-0 px-4 md:px-6 border rounded-[11px] border-gray-200 shadow bg-white gap-4">
+
           {/* Left heading */}
           <h2
             style={{
               fontFamily: "Source Sans 3, sans-serif",
               fontWeight: 700,
-              fontSize: "20px",
+              fontSize: "clamp(16px, 4vw, 20px)", // Fluid typography
               lineHeight: "148%",
-              letterSpacing: "0em",
             }}
-            className="text-red-600"
+            className="text-red-600 whitespace-nowrap"
           >
             Add Customer Profile Form
           </h2>
 
           {/* Right section (search + buttons) */}
-          <div className="flex items-center gap-6">
-            {/* Search section */}
+          <div className="flex flex-wrap items-center justify-center md:justify-end gap-4 md:gap-6 w-full md:w-auto">
 
+            {/* Bad Debtor Checkbox */}
             <div className="flex items-center gap-2">
               <label
                 htmlFor="badDebtor"
-                className="text-gray-700 font-medium text-[11.25px]"
+                className="text-gray-700 font-medium text-[11.25px] whitespace-nowrap"
               >
                 Bad Debtor
               </label>
@@ -895,9 +968,8 @@ const AddCustProfile = () => {
                 checked={formData.badDebtor}
                 onChange={(e) => {
                   const checked = e.target.checked;
-
                   if (checked) {
-                    setIsBadDebtorModalOpen(true); // 👉 Open modal
+                    setIsBadDebtorModalOpen(true);
                   } else {
                     setFormData({
                       ...formData,
@@ -910,24 +982,18 @@ const AddCustProfile = () => {
               />
             </div>
 
-            {/* Buttons stuck to right */}
+            {/* Buttons */}
             <div className="flex gap-3">
               <button
-                style={{
-                  width: "74px",
-                  height: "24px",
-                  borderRadius: "3.75px",
-                }}
-                // onClick={() => setIsModalOpen(true)}
-                className="bg-[#0A2478] text-white text-[11.25px] font-source font-normal flex items-center justify-center"
                 onClick={handleSubmit}
+                className="bg-[#0A2478] text-white text-[11.25px] font-normal flex items-center justify-center w-[74px] h-[28px] md:h-[24px] rounded-[3.75px] transition-hover hover:bg-blue-900"
               >
-                save
+                Save
               </button>
 
               <button
                 onClick={() => navigate("/Customer-Profile-List")}
-                className="text-white px-[6.25px] py-[6.25px] rounded-[3.75px] bg-[#C1121F] w-[74px] h-[24px] opacity-100 text-[10px]"
+                className="bg-[#C1121F] text-white text-[10px] md:text-[11.25px] flex items-center justify-center w-[74px] h-[28px] md:h-[24px] rounded-[3.75px] transition-hover hover:bg-red-800"
               >
                 Exit
               </button>
@@ -937,18 +1003,22 @@ const AddCustProfile = () => {
       </div>
 
       {/* personal information */}
-      <div className="flex pl-[110px] pr-[110px] mt-2">
-        <div className="bg-[#FFE6E6] mt-2 p-6 rounded-md w-full mx-auto ">
-          <p className="font-[Source_Sans_3] font-bold text-[24px] leading-[100%] tracking-[0.03em] text-[#0A2478] mb-4">
+      <div className="flex mx-auto mt-1 w-[1462px]">
+        <div className="bg-[#FFE6E6] mt-2 p-4 rounded-md w-full mx-auto ">
+          <p className="font-[Source_Sans_3] font-bold text-[24px] leading-[100%] tracking-[0.03em] text-[#0A2478] mb-2">
             Personal Information
           </p>
 
           <div className="flex justify-between gap-2">
             <div className="">
               <div className="flex items-center gap-4 w-full">
-                <div className="flex flex-col">
-                  <label className="text-[14px] font-medium">PAN Number </label>
-                  <div className="flex items-center mt-1 ">
+                <div className="flex flex-col w-full max-w-sm md:max-w-md">
+                  <label className="text-[14px] font-medium">
+                    PAN Number <span className="text-red-500">*</span>
+                  </label>
+
+                  {/* Input and Button Container */}
+                  <div className="flex items-center mt-1 w-[210px]">
                     <div className="relative flex-1">
                       <input
                         type="text"
@@ -956,13 +1026,13 @@ const AddCustProfile = () => {
                         name="panNo"
                         required
                         value={formData.panNo}
-                        onChange={(e) =>
-                          setFormData({
-                            ...formData,
-                            panNo: e.target.value.toUpperCase(),
-                          })
-                        }
-                        className="border border-[#C4C4C4] border-r-0 rounded-l px-3 py-2  pr-10 focus:outline-none focus:ring-1 focus:ring-blue-500 bg-white w-[140px]"
+                        onChange={handleChange}
+                        className={`border border-r-0 rounded-l px-1 py-1 w-full pr-10 focus:outline-none focus:ring-1 focus:ring-blue-500 bg-white ${errors.panNo ? "border-red-500" : "border-gray-300"
+                          }`}
+                        style={{
+                          MozAppearance: "textfield",
+                        }}
+                        onWheel={(e) => e.target.blur()}
                       />
 
                       {/* Hidden file input */}
@@ -974,16 +1044,17 @@ const AddCustProfile = () => {
                         className="hidden"
                       />
 
-                      {/* Paperclip icon triggers file selection */}
+                      {/* Paperclip icon - Scaled down slightly to match text */}
                       <FaPaperclip
-                        className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 cursor-pointer"
-                        size={16}
+                        className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600 cursor-pointer transition-colors"
+                        size={14}
                         onClick={() => panFileInputRef.current.click()}
                       />
                     </div>
 
+                    {/* Verify Button - text-xs for smaller button label */}
                     <button
-                      className="bg-[#0A2478] text-white px-5 py-2 rounded-r border border-gray-300 border-l-0 hover:bg-[#081c5b] w-[70px]"
+                      className="bg-[#0A2478] text-white px-3 py-2 rounded-r border border-[#0A2478] hover:bg-[#081c5b] transition-colors text-xs font-medium whitespace-nowrap"
                       type="button"
                       onClick={verifyPan}
                     >
@@ -991,16 +1062,18 @@ const AddCustProfile = () => {
                     </button>
                   </div>
 
-                  {/* Show selected file name */}
+                  {/* File Name Info - text-[10px] for a very small footnote style */}
                   {formData.panFile && (
-                    <p className="text-xs text-gray-500 mt-1">
-                      Selected file: {formData.panFile.name}
+                    <p className="text-[10px] text-gray-500 mt-1 truncate">
+                      <span className="font-semibold text-gray-600">Selected:</span> {formData.panFile.name}
                     </p>
                   )}
 
-                  {/* Error message */}
+                  {/* Error message - Reduced to text-[11px] */}
                   {errors.panNo && (
-                    <p className="text-red-500 text-xs mt-1">{errors.panNo}</p>
+                    <p className="text-red-500 text-[11px] mt-1 font-medium">
+                      {errors.panNo}
+                    </p>
                   )}
                 </div>
 
@@ -1023,7 +1096,8 @@ const AddCustProfile = () => {
                         name="aadhar"
                         value={formData.aadhar}
                         onChange={handleChange}
-                        className="border border-gray-300 border-r-0 rounded-l px-3 py-2 w-full pr-10 focus:outline-none focus:ring-1 focus:ring-blue-500 bg-white"
+                        className={`border border-r-0 rounded-l px-1 py-1 w-full pr-10 focus:outline-none focus:ring-1 focus:ring-blue-500 bg-white ${errors.aadhar ? "border-red-500" : "border-gray-300"
+                          }`}
                         style={{
                           MozAppearance: "textfield",
                         }}
@@ -1048,7 +1122,7 @@ const AddCustProfile = () => {
                     </div>
 
                     <button
-                      className="bg-[#0A2478] text-white px-2 py-2 rounded-r border border-gray-300 border-l-0 hover:bg-[#081c5b] "
+                      className="bg-[#0A2478] text-white px-1 py-1 rounded-r border border-gray-300 border-l-0 hover:bg-[#081c5b] "
                       type="button"
                       onClick={sendAadhaarOTP}
                     >
@@ -1078,7 +1152,7 @@ const AddCustProfile = () => {
                     value={formData.printName}
                     onChange={handleChange}
                     placeholder="Customer Full Name"
-                    className={`border px-3 py-2 mt-1 w-[220px] rounded-[8px] bg-white ${errors.printName ? "border-red-500" : "border-gray-300"
+                    className={`border px-1 py-1 mt-1 w-[220px] rounded-[8px] bg-white ${errors.printName ? "border-red-500" : "border-gray-300"
                       }`}
                   />
                   {errors.printName && (
@@ -1099,7 +1173,7 @@ const AddCustProfile = () => {
                     value={formData.email}
                     onChange={handleChange}
                     placeholder="Enter Email"
-                    className={`border rounded px-3 py-2 mt-1 w-[250px] bg-white ${errors.email ? "border-red-500" : "border-gray-300"
+                    className={`border rounded px-1 py-1 mt-1 w-[250px] bg-white ${errors.email ? "border-red-500" : "border-gray-300"
                       }`}
                   />
 
@@ -1119,15 +1193,13 @@ const AddCustProfile = () => {
                     name="dob"
                     value={formData.dob}
                     onChange={handleChange}
-                    className={`border rounded px-3 py-2 mt-1 w-[140px] bg-white ${errors.dob ? "border-red-500" : "border-gray-300"
+                    className={`border rounded px-1 py-1 mt-1 w-[140px] bg-white ${errors.dob ? "border-red-500" : "border-gray-300"
                       }`}
                   />
                   {errors.dob && (
                     <p className="text-red-500 text-xs mt-1">{errors.dob}</p>
                   )}
                 </div>
-
-                {/* Email */}
               </div>
 
               <div className="flex items-end gap-4 w-full mt-4">
@@ -1144,18 +1216,18 @@ const AddCustProfile = () => {
                       value={formData.mobile}
                       onChange={handleChange}
                       placeholder="mobile Number"
-                      className={`border border-gray-300 border-r-0 rounded-l px-3 py-2 w-full focus:outline-none bg-white ${isMobileVerified ? "bg-gray-100 cursor-not-allowed" : ""}`}
+                      className={`border border-gray-300 border-r-0 rounded-l px-1 py-1 w-full focus:outline-none bg-white ${isMobileVerified ? "bg-gray-100 cursor-not-allowed" : ""}`}
                     />
                     <button
                       type="button"
                       onClick={sendMobileOTP}
                       disabled={isMobileVerified}
-                      className={`bg-[#0A2478] text-white px-4 py-2 rounded-r border border-gray-300 border-l-0 flex justify-center items-center gap-2 ${isMobileVerified
+                      className={`bg-[#0A2478] text-white px-1 py-1 rounded-r border border-gray-300 border-l-0 flex justify-center items-center gap-2 ${isMobileVerified
                         ? "opacity-50 cursor-not-allowed"
                         : "hover:bg-[#081c5b]"
                         }`}
                     >
-                      <img src={send} alt="otp" className="w-4 h-4" />
+                      {/* <img src={send} alt="otp" className="w-4 h-4" /> */}
                       <span>{isOtpSent ? "Resend" : "OTP"}</span>
                     </button>
                   </div>
@@ -1173,7 +1245,7 @@ const AddCustProfile = () => {
                       disabled={isMobileVerified} // Disable if verified
                       value={formData.MobileNumberOtp}
                       onChange={handleChange}
-                      className={`border border-gray-300 rounded-[8px] px-3 py-2 w-[110px] focus:outline-none ${isMobileVerified ? "bg-gray-100 cursor-not-allowed" : "bg-white"}`}
+                      className={`border border-gray-300 rounded-[8px] px-1 py-1 w-[110px] focus:outline-none ${isMobileVerified ? "bg-gray-100 cursor-not-allowed" : "bg-white"}`}
                       style={{ MozAppearance: "textfield" }}
                     />
 
@@ -1206,8 +1278,14 @@ const AddCustProfile = () => {
                     maxLength={10}
                     onChange={handleChange}
                     placeholder="Enter Alternate Mobile"
-                    className="border border-gray-300 rounded px-3 py-2 mt-1 w-[110px] bg-white"
+                    className={`border rounded px-1 py-1 mt-1 w-[110px] bg-white ${errors.altMobile ? "border-red-500" : "border-gray-300"
+                      }`}
                   />
+                  {errors.altMobile && (
+                    <p className="text-red-500 text-xs mt-1">
+                      {errors.altMobile}
+                    </p>
+                  )}
                 </div>
 
                 <div className="flex flex-col">
@@ -1220,7 +1298,7 @@ const AddCustProfile = () => {
                     value={formData.landline}
                     onChange={handleChange}
                     placeholder="Eg.+91 9658426853"
-                    className="border border-gray-300 rounded px-3 py-2 mt-1 w-[140px] bg-white"
+                    className="border border-gray-300 rounded px-1 py-1 mt-1 w-[140px] bg-white"
                     style={{
                       MozAppearance: "textfield",
                     }}
@@ -1236,7 +1314,7 @@ const AddCustProfile = () => {
                     name="gender"
                     value={formData.gender}
                     onChange={handleChange}
-                    className={`border rounded px-3 py-2 mt-1 w-[100px] bg-white ${errors.gender ? "border-red-500" : "border-gray-300"
+                    className={`border rounded px-1 py-1 mt-1 w-[100px] bg-white ${errors.gender ? "border-red-500" : "border-gray-300"
                       }`}
                   >
                     <option value="">Select</option>
@@ -1256,7 +1334,7 @@ const AddCustProfile = () => {
                     name="marital"
                     value={formData.marital}
                     onChange={handleChange}
-                    className="border border-gray-300 rounded px-3 py-2 mt-1 w-[100px] bg-white"
+                    className="border border-gray-300 rounded px-1 py-1 mt-1 w-[100px] bg-white"
                   >
                     <option value="">Select</option>
                     <option value="Single">Single</option>
@@ -1269,7 +1347,7 @@ const AddCustProfile = () => {
                     name="partyType"
                     value={formData.partyType}
                     onChange={handleChange}
-                    className="border border-gray-300 rounded-[8px] px-3 py-2 mt-1 w-[120px] bg-white"
+                    className="border border-gray-300 rounded-[8px] px-1 py-1 mt-1 w-[120px] bg-white"
                   >
                     <option value="">Select Type</option>
                     {partyTypeList.map((pt) => (
@@ -1287,7 +1365,7 @@ const AddCustProfile = () => {
                     name="religion"
                     value={formData.religion}
                     onChange={handleChange}
-                    className="border border-gray-300 rounded-[8px] px-3 py-2 mt-1 w-[120px] bg-white"
+                    className="border border-gray-300 rounded-[8px] px-1 py-1 mt-1 w-[120px] bg-white"
                   >
                     <option value="">Select Religion</option>
                     <option value="Hindu">Hindu</option>
@@ -1316,7 +1394,7 @@ const AddCustProfile = () => {
                             value={formData.gstNo}
                             onChange={handleChange}
                             disabled={isGstVerified}
-                            className={`border border-gray-300 border-r-0 rounded-l px-3 py-2 w-full pr-10 focus:outline-none ${isGstVerified
+                            className={`border border-gray-300 border-r-0 rounded-l px-1 py-1 w-full pr-10 focus:outline-none ${isGstVerified
                               ? "bg-gray-100 cursor-not-allowed"
                               : "bg-white"
                               }`}
@@ -1327,7 +1405,7 @@ const AddCustProfile = () => {
                           type="button"
                           onClick={verifyGst}
                           disabled={isGstVerified}
-                          className={`bg-[#0A2478] text-white px-5 py-2 rounded-r border border-gray-300 border-l-0 ${isGstVerified
+                          className={`bg-[#0A2478] text-white px-1 py-1 rounded-r border border-gray-300 border-l-0 ${isGstVerified
                             ? "opacity-50 cursor-not-allowed"
                             : "hover:bg-[#081c5b]"
                             }`}
@@ -1345,7 +1423,7 @@ const AddCustProfile = () => {
                     name="education"
                     value={formData.education}
                     onChange={handleChange}
-                    className="border border-gray-300 rounded-[8px] px-3 py-2 mt-1 w-[160px] bg-white"
+                    className="border border-gray-300 rounded-[8px] px-1 py-1 mt-1 w-[160px] bg-white"
                   >
                     <option value="">Select Education</option>
                     <option value="No Formal Education">
@@ -1379,7 +1457,7 @@ const AddCustProfile = () => {
                     value={formData.occupation}
                     onChange={handleChange}
                     placeholder="Eg.Employee."
-                    className="border border-gray-300 rounded px-3 py-2 mt-1 w-[158px] bg-white"
+                    className="border border-gray-300 rounded px-1 py-1 mt-1 w-[158px] bg-white"
                   />
                 </div>
 
@@ -1391,7 +1469,7 @@ const AddCustProfile = () => {
                     name="riskCategory"
                     value={formData.riskCategory}
                     onChange={handleChange}
-                    className="border border-gray-300 rounded-[8px] px-3 py-2 mt-1 w-[80px] bg-white"
+                    className="border border-gray-300 rounded-[8px] px-1 py-1 mt-1 w-[80px] bg-white"
                   >
                     <option value="Low">Low</option>
                     <option value="High">High</option>
@@ -1406,7 +1484,7 @@ const AddCustProfile = () => {
                     value={formData.firstName}
                     onChange={handleChange}
                     placeholder="First Name"
-                    className="border border-gray-300 rounded px-3 py-2 mt-1 w-[120px] bg-white"
+                    className="border border-gray-300 rounded px-1 py-1 mt-1 w-[120px] bg-white"
                   />
                 </div>
 
@@ -1418,7 +1496,7 @@ const AddCustProfile = () => {
                     value={formData.middleName}
                     onChange={handleChange}
                     placeholder="Middle Name"
-                    className="border border-gray-300 rounded px-3 py-2 mt-1 w-[120px] bg-white"
+                    className="border border-gray-300 rounded px-1 py-1 mt-1 w-[120px] bg-white"
                   />
                 </div>
 
@@ -1430,7 +1508,7 @@ const AddCustProfile = () => {
                     value={formData.lastName}
                     onChange={handleChange}
                     placeholder="Last Name"
-                    className="border border-gray-300 rounded px-3 py-2 mt-1 w-[125px] bg-white"
+                    className="border border-gray-300 rounded px-1 py-1 mt-1 w-[125px] bg-white"
                   />
                 </div>
               </div>
@@ -1451,7 +1529,7 @@ const AddCustProfile = () => {
                     value={formData.fatherFirstName}
                     onChange={handleChange}
                     placeholder="Father/Husbands First Name"
-                    className="border border-gray-300 rounded px-3 py-2 mt-1 w-[260px] bg-white"
+                    className="border border-gray-300 rounded px-1 py-1 mt-1 w-[260px] bg-white"
                   />
                 </div>
 
@@ -1499,38 +1577,7 @@ const AddCustProfile = () => {
                     </label>
                   </div>
 
-                  {/* <div className="relative flex justify-center">
-                    <img
-                      src={
-                        formData.profileImage
-                          ? typeof formData.profileImage === "string"
-                            ? formData.profileImage // use existing URL from backend
-                            : URL.createObjectURL(formData.profileImage) // use File preview
-                          : profileempty // default placeholder
-                      }
-                      alt="profile"
-                      className="w-[130px] h-[130px] border"
-                    />
 
-                    <div
-                      className="absolute inset-0 flex items-center justify-center bg-opacity-40 text-white text-sm px-4 py-2 rounded-md cursor-pointer hover:bg-opacity-60 transition"
-                      onClick={() =>
-                        document.getElementById("profileUpload").click()
-                      }
-                    >
-                      <button className="w-[101px] h-[18px] p-1 bg-[#0A2478] text-white text-[8px] rounded-[3px]">
-                        Upload from Computer
-                      </button>
-                    </div>
-
-                    <input
-                      type="file"
-                      id="profileUpload"
-                      accept="image/*"
-                      className="hidden"
-                      onChange={handleProfileUpload}
-                    />
-                  </div> */}
 
                   <div className="relative flex justify-center group">
                     {/* Background or Preview */}
@@ -1548,8 +1595,7 @@ const AddCustProfile = () => {
 
                     {/* Overlay */}
                     <div
-                      className={`absolute inset-0 left-3 w-[130px] h-[130px] flex items-center justify-center 
-      bg-black/10 transition-opacity duration-300
+                      className={`absolute inset-0 left-3 w-[130px] h-[130px] flex items-center justify-center bg-black/10 transition-opacity duration-300
       ${formData.profileImage
                           ? "opacity-0 group-hover:opacity-100"
                           : "opacity-100"
@@ -1582,29 +1628,6 @@ const AddCustProfile = () => {
                     Customer Signature
                   </label>
                 </div>
-
-                {/* <div className="relative flex justify-center">
-                  <img
-                    src={
-                      formData.signature
-                        ? formData.signature instanceof File
-                          ? URL.createObjectURL(formData.signature) // for newly drawn/uploaded files
-                          : `${formData.signature}` // for existing file path
-                        : profileempty
-                    }
-                    alt="signature"
-                    className="w-[130px] h-[38px] border rounded-md"
-                  />
-
-                  <div
-                    className="absolute inset-0 flex items-center justify-center bg-opacity-40 text-white text-sm px-4 py-2 rounded-md cursor-pointer hover:bg-opacity-60 transition"
-                    onClick={openSignatureModal}
-                  >
-                    <button className="w-[130px] h-[18px] p-1 bg-[#0A2478] text-white text-[8px] rounded-[3px]">
-                      Draw Signature
-                    </button>
-                  </div>
-                </div> */}
 
                 <div className="relative flex justify-center group">
                   <img
@@ -1654,14 +1677,20 @@ const AddCustProfile = () => {
                 ref={signatureCanvasRef}
                 penColor="black"
                 canvasProps={{
-                  width: 550,
-                  height: 200,
+                  width: 450,
+                  height: 150,
                   className: "border-0",
                 }}
               />
             </div>
 
-            <div className="flex justify-end gap-3 mt-4">
+            <div className="flex justify-center gap-3 mt-4">
+              <button
+                className="px-4 py-2 bg-[#0A2478] text-white rounded hover:bg-[#081c5b]"
+                onClick={saveSignature}
+              >
+                Save
+              </button>
               <button
                 className="px-4 py-2 bg-gray-300 text-gray-800 rounded hover:bg-gray-400"
                 onClick={clearSignature}
@@ -1670,24 +1699,19 @@ const AddCustProfile = () => {
               </button>
 
               <button
-                className="px-4 py-2 bg-gray-300 text-gray-800 rounded hover:bg-gray-400"
+                className="px-4 py-2 bg-red-600 text-white rounded hover:bg-red-700"
                 onClick={closeSignatureModal}
               >
-                Cancel
+                Exit
               </button>
 
-              <button
-                className="px-4 py-2 bg-[#0A2478] text-white rounded hover:bg-[#081c5b]"
-                onClick={saveSignature}
-              >
-                Save Signature
-              </button>
+
             </div>
           </div>
         </div>
       )}
 
-      <div className="pl-[110px] pr-[110px]">
+      <div className="flex mx-auto mt-1 w-[1462px]">
         <div className="bg-[#F7F7FF]  p-6 rounded-md w-full mx-auto ">
           <p className="font-[Source_Sans_3] font-bold text-[24px] leading-[100%] tracking-[0.03em] text-[#0A2478] mb-4 mt-5">
             Permanent Address
@@ -1708,9 +1732,9 @@ const AddCustProfile = () => {
                   value={formData.Permanent_Address}
                   onChange={handleChange}
                   placeholder="Address"
-                  className={`border px-3 py-2 mt-1 w-[385px] bg-white rounded-[8px] ${errors.Permanent_Address
-                      ? "border-red-500"
-                      : "border-gray-300"
+                  className={`border px-1 py-1 mt-1 w-[385px] bg-white rounded-[8px] ${errors.Permanent_Address
+                    ? "border-red-500"
+                    : "border-gray-300"
                     }`}
                 />
                 {errors.Permanent_Address && (
@@ -1734,9 +1758,9 @@ const AddCustProfile = () => {
                   value={formData.Permanent_City}
                   onChange={handleChange}
                   placeholder="City"
-                  className={`border px-3 py-2 mt-1 w-[150px] rounded-[8px] bg-white ${errors.Permanent_City
-                      ? "border-red-500"
-                      : "border-gray-300"
+                  className={`border px-1 py-1 mt-1 w-[150px] rounded-[8px] bg-white ${errors.Permanent_City
+                    ? "border-red-500"
+                    : "border-gray-300"
                     }`}
                 />
                 {errors.Permanent_City && (
@@ -1758,9 +1782,9 @@ const AddCustProfile = () => {
                   name="Permanent_State"
                   value={formData.Permanent_State}
                   onChange={handleChange}
-                  className={`border px-3 py-2 mt-1 w-[150px] bg-white rounded-[8px] ${errors.Permanent_State
-                      ? "border-red-500"
-                      : "border-gray-300"
+                  className={`border px-1 py-1 mt-1 w-[150px] bg-white rounded-[8px] ${errors.Permanent_State
+                    ? "border-red-500"
+                    : "border-gray-300"
                     }`}
                 >
                   <option value="">Select State</option>
@@ -1827,9 +1851,9 @@ const AddCustProfile = () => {
                   value={formData.Permanent_Country}
                   onChange={handleChange}
                   placeholder="Country"
-                  className={`border px-3 py-2 mt-1 w-[120px] rounded-[8px] bg-white ${errors.Permanent_Country
-                      ? "border-red-500"
-                      : "border-gray-300"
+                  className={`border px-1 py-1 mt-1 w-[120px] rounded-[8px] bg-white ${errors.Permanent_Country
+                    ? "border-red-500"
+                    : "border-gray-300"
                     }`}
                 />
                 {errors.Permanent_Country && (
@@ -1853,9 +1877,9 @@ const AddCustProfile = () => {
                   value={formData.Permanent_Pincode}
                   onChange={handleChange}
                   placeholder="Pincode"
-                  className={`border px-3 py-2 mt-1 w-[100px] rounded-[8px] bg-white ${errors.Permanent_Pincode
-                      ? "border-red-500"
-                      : "border-gray-300"
+                  className={`border px-1 py-1 mt-1 w-[100px] rounded-[8px] bg-white ${errors.Permanent_Pincode
+                    ? "border-red-500"
+                    : "border-gray-300"
                     }`}
                 />
                 {errors.Permanent_Pincode && (
@@ -1877,7 +1901,7 @@ const AddCustProfile = () => {
                   name="Permanent_ResiStatus"
                   value={formData.Permanent_ResiStatus}
                   onChange={handleChange}
-                  className="border border-gray-300 px-3 py-2 mt-1 w-[140px] bg-white rounded-[8px]"
+                  className="border border-gray-300 px-1 py-1 mt-1 w-[140px] bg-white rounded-[8px]"
                 >
                   <option value="">Select Status</option>
                   <option value="Owner">Owner</option>
@@ -1903,7 +1927,7 @@ const AddCustProfile = () => {
                   value={formData.Permanent_Resisince}
                   onChange={handleChange}
                   placeholder="Eg.10"
-                  className="border border-gray-300 px-3 py-2 mt-1 w-[100px] rounded-[8px] bg-white"
+                  className="border border-gray-300 px-1 py-1 mt-1 w-[100px] rounded-[8px] bg-white"
                 />
               </div>
             </div>
@@ -1920,7 +1944,7 @@ const AddCustProfile = () => {
                   name="Permanent_Category"
                   value={formData.Permanent_Category}
                   onChange={handleChange}
-                  className="border border-gray-300 px-3 py-2 mt-1 w-[180px] bg-white rounded-[8px]"
+                  className="border border-gray-300 px-1 py-1 mt-1 w-[180px] bg-white rounded-[8px]"
                 >
                   <option value="">Select Category</option>
                   <option value="Salaried">Salaried</option>
@@ -1949,7 +1973,7 @@ const AddCustProfile = () => {
                   name="Permanent_CompanyType"
                   value={formData.Permanent_CompanyType}
                   onChange={handleChange}
-                  className="border border-gray-300 px-3 py-2 mt-1 w-[130px] bg-white rounded-[8px]"
+                  className="border border-gray-300 px-1 py-1 mt-1 w-[130px] bg-white rounded-[8px]"
                 >
                   <option value="">Select Company Type</option>
                   <option value="State Govt">State Govt</option>
@@ -1974,7 +1998,7 @@ const AddCustProfile = () => {
                   name="Permanent_IndustryType"
                   value={formData.Permanent_IndustryType}
                   onChange={handleChange}
-                  className="border border-gray-300 px-3 py-2 mt-1 w-[150px] bg-white rounded-[8px]"
+                  className="border border-gray-300 px-1 py-1 mt-1 w-[150px] bg-white rounded-[8px]"
                 >
                   <option value="">Select Industry Type</option>
                   <option value="Manufacturing">Manufacturing</option>
@@ -2001,7 +2025,7 @@ const AddCustProfile = () => {
                   value={formData.Permanent_Businessworkingsince}
                   onChange={handleChange}
                   placeholder="Eg.10"
-                  className="border border-gray-300 px-3 py-2 mt-1 w-[120px] rounded-[8px] bg-white"
+                  className="border border-gray-300 px-1 py-1 mt-1 w-[120px] rounded-[8px] bg-white"
                 />
               </div>
             </div>
@@ -2009,7 +2033,7 @@ const AddCustProfile = () => {
         </div>
       </div>
 
-      <div className="pl-[110px] pr-[110px]">
+      <div className="flex mx-auto mt-1 w-[1462px]">
         <div className="bg-[#FFE6E6]  p-6 rounded-md w-full mx-auto ">
           <p className="mt-1">
             <label className="flex items-center gap-2 font-['Roboto'] text-[16px]">
@@ -2042,7 +2066,7 @@ const AddCustProfile = () => {
                   value={formData.Corresponding_Address}
                   onChange={handleChange}
                   placeholder="Address"
-                  className="border border-gray-300 px-3 py-2 mt-1 w-[385px]  bg-white rounded-[8px]"
+                  className="border border-gray-300 px-1 py-1 mt-1 w-[385px]  bg-white rounded-[8px]"
                 />
               </div>
             </div>
@@ -2056,7 +2080,7 @@ const AddCustProfile = () => {
                 name="Corresponding_Area"
                 value={formData.Corresponding_Area}
                 onChange={handleChange}
-                className="border border-gray-300 px-3 py-2 mt-1 w-[130px] bg-white rounded-[8px]"
+                className="border border-gray-300 px-1 py-1 mt-1 w-[130px] bg-white rounded-[8px]"
               >
                 <option value="">Select Area</option>
                 {areas.length > 0 ? (
@@ -2081,7 +2105,7 @@ const AddCustProfile = () => {
                   name="Corresponding_State"
                   value={formData.Corresponding_State}
                   onChange={handleChange}
-                  className="border border-gray-300 px-3 py-2 mt-1 w-[150px] bg-white rounded-[8px]"
+                  className="border border-gray-300 px-1 py-1 mt-1 w-[150px] bg-white rounded-[8px]"
                 >
                   <option value="">Select State</option>
                   <option value="Andhra Pradesh">Andhra Pradesh</option>
@@ -2140,7 +2164,7 @@ const AddCustProfile = () => {
                   value={formData.Corresponding_City}
                   onChange={handleChange}
                   placeholder="City"
-                  className="border border-gray-300 px-3 py-2 mt-1 w-[150px] rounded-[8px] bg-white"
+                  className="border border-gray-300 px-1 py-1 mt-1 w-[150px] rounded-[8px] bg-white"
                 />
               </div>
             </div>
@@ -2157,7 +2181,7 @@ const AddCustProfile = () => {
                   value={formData.Corresponding_Country}
                   onChange={handleChange}
                   placeholder="Country"
-                  className="border border-gray-300 px-3 py-2 mt-1 w-[120px] rounded-[8px] bg-white"
+                  className="border border-gray-300 px-1 py-1 mt-1 w-[120px] rounded-[8px] bg-white"
                 />
               </div>
             </div>
@@ -2173,7 +2197,7 @@ const AddCustProfile = () => {
                   value={formData.Corresponding_Pincode}
                   onChange={handleChange}
                   placeholder="Pincode"
-                  className="border border-gray-300 px-3 py-2 mt-1 w-[100px] rounded-[8px] bg-white"
+                  className="border border-gray-300 px-1 py-1 mt-1 w-[100px] rounded-[8px] bg-white"
                 />
               </div>
             </div>
@@ -2181,7 +2205,7 @@ const AddCustProfile = () => {
         </div>
       </div>
 
-      <div className=" pl-[110px] pr-[110px]  ">
+      <div className="flex mx-auto mt-1 w-[1462px]">
         <div className="bg-[#F7F7FF]  p-6 rounded-md w-full mx-auto ">
           <p className="font-[Source_Sans_3] font-bold text-[24px] leading-[100%] tracking-[0.03em] text-[#0A2478] mb-4 mt-5">
             Additional Documents
@@ -2197,7 +2221,7 @@ const AddCustProfile = () => {
                 name="Additional_AddressProof"
                 value={formData.Additional_AddressProof}
                 onChange={handleChange}
-                className="border border-gray-300 px-3 py-2 mt-1 w-[200px] bg-white rounded-[8px]"
+                className="border border-gray-300 px-1 py-1 mt-1 w-[200px] bg-white rounded-[8px]"
               >
                 <option value="">Select Address Proof</option>
 
@@ -2232,13 +2256,13 @@ const AddCustProfile = () => {
                 value={formData.Additional_AnyDetails1}
                 onChange={handleChange}
                 placeholder="Any Details"
-                className="border border-gray-300 px-3 py-2 mt-1 w-[250px] rounded-[8px] bg-white"
+                className="border border-gray-300 px-1 py-1 mt-1 w-[250px] rounded-[8px] bg-white"
               />
             </div>
             <div className="mt-6">
               <label
                 htmlFor="uploadDocument1"
-                className="w-[160px] h-[40px] border rounded-[8px] bg-[#0A2478] text-[12px] text-white flex justify-center items-center gap-2 cursor-pointer "
+                className="w-[120px] h-[35px] border rounded-[8px] bg-[#0A2478] text-[12px] text-white flex justify-center items-center gap-2 cursor-pointer "
               >
                 <p>Upload Document</p>
                 <MdOutlineFileUpload />
@@ -2270,7 +2294,7 @@ const AddCustProfile = () => {
                 name="Additional_IDProof"
                 value={formData.Additional_IDProof}
                 onChange={handleChange}
-                className="border border-gray-300 px-3 py-2 mt-1 w-[170px] bg-white rounded-[8px]"
+                className="border border-gray-300 px-1 py-1 mt-1 w-[170px] bg-white rounded-[8px]"
               >
                 <option value="">Select ID Proof</option>
 
@@ -2305,7 +2329,7 @@ const AddCustProfile = () => {
                 value={formData.Additional_AnyDetails2}
                 onChange={handleChange}
                 placeholder="Any Details"
-                className="border border-gray-300 px-3 py-2 mt-1 w-[200px] rounded-[8px] bg-white"
+                className="border border-gray-300 px-1 py-1 mt-1 w-[200px] rounded-[8px] bg-white"
               />
             </div>
 
@@ -2313,7 +2337,7 @@ const AddCustProfile = () => {
             <div className="mt-6">
               <label
                 htmlFor="uploadDocument2"
-                className="w-[160px] h-[40px] border rounded-[8px] bg-[#0A2478] text-[12px] text-white flex justify-center items-center gap-2 cursor-pointer"
+                className="w-[120px] h-[35px] border rounded-[8px] bg-[#0A2478] text-[12px] text-white flex justify-center items-center gap-2 cursor-pointer"
               >
                 <p>Upload Document</p>
                 <MdOutlineFileUpload />
@@ -2346,7 +2370,7 @@ const AddCustProfile = () => {
                 value={formData.Additional_Reference1}
                 onChange={handleChange}
                 placeholder="Reference"
-                className="border border-gray-300 px-3 py-2 mt-1 w-[300px] rounded-[8px] bg-white"
+                className="border border-gray-300 px-1 py-1 mt-1 w-[300px] rounded-[8px] bg-white"
               />
             </div>
 
@@ -2358,14 +2382,14 @@ const AddCustProfile = () => {
                 value={formData.Additional_Reference2}
                 onChange={handleChange}
                 placeholder="Reference"
-                className="border border-gray-300 px-3 py-2 mt-1 w-[300px] rounded-[8px] bg-white"
+                className="border border-gray-300 px-1 py-1 mt-1 w-[300px] rounded-[8px] bg-white"
               />
             </div>
           </div>
         </div>
       </div>
 
-      <div className="pl-[110px] pr-[110px]">
+      <div className="flex mx-auto mt-1 w-[1462px]">
         <div className="bg-[#FFE6E6]  p-6 rounded-md w-full mx-auto ">
           <p className="font-[Source_Sans_3] font-bold text-[24px] leading-[100%] tracking-[0.03em] text-[#0A2478] mb-4">
             Nominee Details
@@ -2386,7 +2410,7 @@ const AddCustProfile = () => {
                   value={formData.Nominee_NomineeName}
                   onChange={handleChange}
                   placeholder="Nominee Name"
-                  className="border border-gray-300 px-3 py-2 mt-1 w-[300px]  bg-white rounded-[8px]"
+                  className="border border-gray-300 px-1 py-1 mt-1 w-[300px]  bg-white rounded-[8px]"
                 />
               </div>
             </div>
@@ -2405,7 +2429,7 @@ const AddCustProfile = () => {
                   value={formData.Nominee_Relation}
                   onChange={handleChange}
                   placeholder="Relation"
-                  className="border border-gray-300 px-3 py-2 mt-1 w-[90px] rounded-[8px] bg-white"
+                  className="border border-gray-300 px-1 py-1 mt-1 w-[90px] rounded-[8px] bg-white"
                 />
               </div>
             </div>
@@ -2424,7 +2448,7 @@ const AddCustProfile = () => {
                   value={formData.Nominee_Address}
                   onChange={handleChange}
                   placeholder="Address"
-                  className="border border-gray-300 px-3 py-2 mt-1 w-[300px] rounded-[8px] bg-white"
+                  className="border border-gray-300 px-1 py-1 mt-1 w-[300px] rounded-[8px] bg-white"
                 />
               </div>
             </div>
@@ -2442,7 +2466,7 @@ const AddCustProfile = () => {
                   value={formData.Nominee_City}
                   onChange={handleChange}
                   placeholder="City"
-                  className="border border-gray-300 px-3 py-2 mt-1 w-[131px] rounded-[8px] bg-white"
+                  className="border border-gray-300 px-1 py-1 mt-1 w-[131px] rounded-[8px] bg-white"
                 />
               </div>
             </div>
@@ -2459,7 +2483,7 @@ const AddCustProfile = () => {
                   name="Nominee_State"
                   value={formData.Nominee_State}
                   onChange={handleChange}
-                  className="border border-gray-300 px-3 py-2 mt-1 w-[220px] bg-white rounded-[8px]"
+                  className="border border-gray-300 px-1 py-1 mt-1 w-[220px] bg-white rounded-[8px]"
                 >
                   <option value="">Select State</option>
                   <option value="Andhra Pradesh">Andhra Pradesh</option>
@@ -2510,7 +2534,7 @@ const AddCustProfile = () => {
         </div>
       </div>
 
-      <div className="pl-[110px] pr-[110px]">
+      <div className="flex mx-auto mt-1 w-[1462px]">
         <div className="flex  gap-[100px]  bg-[#F7F7FF] p-6">
           {/* Header */}
           <p className="font-['Source_Sans_3'] font-bold text-[24px] text-[#0A2478] mb-2">
@@ -2536,23 +2560,7 @@ const AddCustProfile = () => {
         </div>
       </div>
 
-      {/* Password Field (only show when access = Yes)
-      {formData.access === "Yes" && (
-        <div className="pl-[115px] pr-[120px] mb-5">
-          <label className="font-['Roboto'] text-[16px] block mb-1">
-            Set Password
-          </label>
-          <input
-            type="password"
-            name="password"
-            value={formData.password}
-            onChange={handleChange}
-            placeholder="Enter password"
-            className="border border-gray-300 px-3 py-2 rounded w-[300px]"
-          />
-        </div>
-      )} */}
-      <div className="pl-[110px] pr-[110px]">
+      <div className="flex mx-auto mt-1 w-[1462px]">
         <div className="p-6 rounded-md w-full mx-auto bg-[#FFE6E6]">
           <p className="font-[Source_Sans_3] font-bold text-[24px] leading-[100%] tracking-[0.03em] text-[#0A2478] mb-4 ">
             Remark
@@ -2567,7 +2575,7 @@ const AddCustProfile = () => {
         </div>
       </div>
 
-      <div className="pl-[110px] pr-[110px]">
+      <div className="flex mx-auto mt-1 w-[1462px]">
         <div>
           <CustBankDetails
             bankData={bankData}

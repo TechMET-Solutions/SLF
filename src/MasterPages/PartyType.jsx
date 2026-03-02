@@ -136,12 +136,12 @@ function PartyType() {
             {/* Table */}
             <div className="w-[600px] mx-30 flex items-start mt-6 bg-white self-start">
                 <table className="w-full ">
-                    <thead className="bg-[#0A2478] text-white ">
+                    <thead className="bg-[#0A2478] text-white">
                         <tr>
-                            <th className="p-3 border-r-2 border-white text-left w-[80px]">Sr No</th>
-                            <th className="p-3 border-r-2 border-white text-left w-[300px]">Party Type</th>
-                            <th className="p-3 border-r-2 border-white text-center w-[100px]">Action</th>
-                            <th className="p-3 border-r-2 border-white text-center w-[100px]">Active</th>
+                            <th className="px-3 py-2 border-r-2 border-white text-left w-[80px]">Sr No</th>
+                            <th className="px-3 py-2 border-r-2 border-white text-left w-[300px]">Party Type</th>
+                            <th className="px-3 py-2 border-r-2 border-white text-center w-[100px]">Action</th>
+                            <th className="px-3 py-2 border-r-2 border-white text-center w-[100px]">Active</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -197,8 +197,8 @@ function PartyType() {
 
             {/* ================= Modal ================= */}
             {modalOpen && (
-                <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-40">
-                    <div className="bg-white w-[400px] p-6 rounded-lg shadow-lg">
+                <div className="fixed inset-0 flex items-center justify-center bg-black/40 z-50">
+                    <div className="bg-white w-[350px] p-6 rounded-lg shadow-lg">
                         <h3 className="text-lg font-semibold mb-4">
                             {editId ? "Edit Party Type" : "Add Party Type"}
                         </h3>
@@ -211,20 +211,21 @@ function PartyType() {
                             className="w-full border p-2 rounded mb-4"
                         />
 
-                        <div className="flex justify-end gap-3">
-                            <button
-                                onClick={() => setModalOpen(false)}
-                                className="px-4 py-1 bg-gray-400 text-white rounded"
-                            >
-                                Cancel
-                            </button>
-
+                        <div className="flex justify-center gap-3">
                             <button
                                 onClick={handleSave}
                                 className="px-4 py-1 bg-[#0A2478] text-white rounded"
                             >
                                 {editId ? "Update" : "Save"}
                             </button>
+                            <button
+                                onClick={() => setModalOpen(false)}
+                                className="px-4 py-1 bg-red-600 text-white rounded"
+                            >
+                                Exit
+                            </button>
+
+                           
                         </div>
                     </div>
                 </div>

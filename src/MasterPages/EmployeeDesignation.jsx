@@ -140,7 +140,7 @@ function EmployeeDesignation() {
         <div className="min-h-screen w-full">
             {/* Top Bar */}
             <div className="flex justify-center sticky top-[80px] z-40">
-                <div className="flex items-center px-6 py-4 border-b mt-5 w-[1290px] h-[62px] border rounded-[11px] border-gray-200 justify-between shadow">
+                <div className="flex items-center px-6 py-4 border-b mt-5 w-[1462px] h-[62px] border rounded-[11px] border-gray-200 justify-between shadow">
                     <h2 className="text-red-600 font-bold text-[20px] leading-[148%] font-source">
                         Employee Designation
                     </h2>
@@ -202,7 +202,7 @@ function EmployeeDesignation() {
                                         })
                                     }
                                     placeholder="Enter designation name"
-                                    className="border border-gray-300 rounded-md w-full px-4 py-2 mt-2 text-[14px] focus:ring-2 focus:ring-[#0A2478] focus:outline-none"
+                                    className="border border-gray-300 rounded-md w-full px-2 py-1 mt-2 text-[14px] focus:ring-2 focus:ring-[#0A2478] focus:outline-none"
                                 />
                             </div>
                         </div>
@@ -260,7 +260,7 @@ function EmployeeDesignation() {
 
             {/* 🧾 Table */}
             <div className="flex justify-center">
-                <div className="overflow-x-auto mt-5 w-[1290px] h-[500px]">
+                <div className="overflow-x-auto mt-5 w-[1462px] h-[500px]">
                     {isLoading ? (
                         <div className="flex justify-center items-center h-full">
                             <p className="text-lg text-gray-500">Loading...</p>
@@ -277,9 +277,9 @@ function EmployeeDesignation() {
                         <table className=" border-collapse">
                             <thead className="bg-[#0A2478] text-white text-sm">
                                 <tr>
-                                    <th className="px-4 py-2 text-left border-r">ID</th>
-                                    <th className="px-4 py-2 text-left border-r w-[350px]">Designation</th>
-                                    <th className="px-4 py-2 text-center border-r">Action</th>
+                                    <th className="px-2 py-1 text-left border-r">ID</th>
+                                    <th className="px-2 py-1 text-left border-r w-[350px]">Designation</th>
+                                    <th className="px-2 py-1 text-center border-r">Action</th>
                                 </tr>
                             </thead>
                             <tbody className="text-[12px]">
@@ -289,9 +289,9 @@ function EmployeeDesignation() {
                                         className={`${index % 2 === 0 ? "bg-gray-50" : "bg-white"
                                             }`}
                                     >
-                                        <td className="px-4 py-2">{(currentPage - 1) * itemsPerPage + index + 1}</td>
-                                        <td className="px-4 py-2">{row.designation}</td>
-                                        <td className="px-4 py-2 text-center">
+                                        <td className="px-2 py-1">{(currentPage - 1) * itemsPerPage + index + 1}</td>
+                                        <td className="px-2 py-1">{row.designation}</td>
+                                        <td className="px-2 py-1 text-center">
                                             <div className="flex gap-2 justify-center">
                                                 <button
                                                     title="Edit"

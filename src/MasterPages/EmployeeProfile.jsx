@@ -933,7 +933,7 @@ const EmployeeProfile = () => {
     <div className="min-h-screen w-full">
       {/* Top bar */}
       <div className="flex justify-center sticky top-[80px] z-40">
-        <div className="flex items-center px-6 py-4 border-b mt-5 w-[1290px] h-[62px] border rounded-[11px] border-gray-200 justify-between shadow bg-white">
+        <div className="flex items-center px-6 py-4 border-b mt-5 w-[1462px] h-[62px] border rounded-[11px] border-gray-200 justify-between shadow bg-white">
           <h2 className="text-red-600 font-bold text-[20px] leading-[148%] font-source">
             Employee Profile List
           </h2>
@@ -1838,7 +1838,7 @@ const EmployeeProfile = () => {
 
       {/* Table */}
       <div className="flex justify-center mt-4">
-        <div className="overflow-x-auto mt-5 w-[1290px] min-h-[500px]">
+        <div className="overflow-x-auto mt-5 w-[1462px] min-h-[500px]">
           {isLoading ? (
             <div className="flex justify-center items-center h-32">
               <p>Loading employees...</p>
@@ -1847,26 +1847,26 @@ const EmployeeProfile = () => {
             <table className="w-full border-collapse">
               <thead className="bg-[#0A2478] text-white text-sm">
                 <tr>
-                  <th className="px-4 py-2 text-left border-r">Select</th>
-                  <th className="px-4 py-2 text-left border-r">Emp ID</th>
-                  <th className="px-4 py-2 text-left border-r">Profile</th>
-                  <th className="px-4 py-2 text-left border-r">Name</th>
-                  <th className="px-4 py-2 text-left border-r w-[211px]">
+                  <th className="px-1 py-1 text-left border-r">Select</th>
+                  <th className="px-1 py-1 text-left border-r">Emp ID</th>
+                  <th className="px-1 py-1 text-left border-r">Profile</th>
+                  <th className="px-1 py-1 text-left border-r">Name</th>
+                  <th className="px-1 py-1 text-left border-r w-[211px]">
                     Email
                   </th>
-                  <th className="px-4 py-2 text-left border-r w-[111px]">
+                  <th className="px-1 py-1 text-left border-r w-[111px]">
                     Mobile
                   </th>
-                  {/* <th className="px-4 py-2 text-left border-r">DOJ</th>
-                  <th className="px-4 py-2 text-left border-r">DOB</th> */}
-                  <th className="px-4 py-2 text-left border-r w-[313px]">
+                  {/* <th className="px-1 py-1 text-left border-r">DOJ</th>
+                  <th className="px-1 py-1 text-left border-r">DOB</th> */}
+                  <th className="px-1 py-1 text-left border-r w-[313px]">
                     Address
                   </th>
-                  <th className="px-4 py-2 text-left border-r w-[81px]">
+                  <th className="px-1 py-1 text-left border-r w-[81px]">
                     Valuation
                   </th>
-                  <th className="px-4 py-2 text-left border-r">Action</th>
-                  <th className="px-4 py-2 text-left border-r">Active</th>
+                  <th className="px-1 py-1 text-left border-r">Action</th>
+                  <th className="px-1 py-1 text-left border-r">Active</th>
                 </tr>
               </thead>
               <tbody className="text-[12px]">
@@ -1877,7 +1877,7 @@ const EmployeeProfile = () => {
                       className={index % 2 === 0 ? "bg-gray-50" : "bg-white"}
                     >
                       {/* Select Column */}
-                      <td className="px-4 py-2 text-center">
+                      <td className="px-1 py-1 text-center">
                         <input
                           type="checkbox"
                           checked={selectedEmployees.some(
@@ -1887,8 +1887,8 @@ const EmployeeProfile = () => {
                           className="w-4 h-4 cursor-pointer"
                         />
                       </td>
-                      <td className="px-4 py-2">{emp.id}</td>
-                      <td className="px-4 py-2 flex items-center justify-center gap-2">
+                      <td className="px-1 py-1">{emp.id}</td>
+                      <td className="px-1 py-1 flex items-center justify-center gap-2">
                         <img
                           src={emp.emp_image}
                           alt={emp.emp_name}
@@ -1897,29 +1897,29 @@ const EmployeeProfile = () => {
                       </td>
 
                       <td
-                        className="px-4 py-2 text-blue-500 cursor-pointer"
+                        className="px-1 py-1 text-blue-500 cursor-pointer"
                         onClick={() => handleView(emp)}
                       >
                         {emp.emp_name}
                       </td>
-                      <td className="px-4 py-2">{emp.email}</td>
-                      <td className="px-4 py-2">{emp.mobile_no}</td>
-                      {/* <td className="px-4 py-2">{new Date(emp.joining_date).toLocaleDateString()}</td>
-                      <td className="px-4 py-2">{new Date(emp.date_of_birth).toLocaleDateString()}</td> */}
+                      <td className="px-1 py-1">{emp.email}</td>
+                      <td className="px-1 py-1">{emp.mobile_no}</td>
+                      {/* <td className="px-1 py-1">{new Date(emp.joining_date).toLocaleDateString()}</td>
+                      <td className="px-1 py-1">{new Date(emp.date_of_birth).toLocaleDateString()}</td> */}
                       <td
-                        className="px-4 py-2 max-w-[200px] truncate"
+                        className="px-1 py-1 max-w-[200px] truncate"
                         title={emp.permanent_address}
                       >
                         {emp.permanent_address}
                       </td>
                       <td
-                        className="px-4 py-2 text-blue-700 cursor-pointer underline"
+                        className="px-1 py-1 text-blue-700 cursor-pointer underline"
                         onClick={() => openValuationModal(emp)}
                       >
                         {emp.Valuer_Valuation?.trim() || "---"}
                       </td>
 
-                      <td className="px-4 py-2">
+                      <td className="px-1 py-1">
                         <div className="flex gap-2 justify-center">
                           {/* <button
                             title="View"
@@ -1944,7 +1944,7 @@ const EmployeeProfile = () => {
                           </button>
                         </div>
                       </td>
-                      <td className="px-4 py-2">
+                      <td className="px-1 py-1">
                         <button
                           onClick={() => handleToggleStatus(emp)}
                           className={`w-12 h-6 flex items-center rounded-full p-1 transition-colors ${emp.status ? "bg-[#0A2478]" : "bg-gray-300"

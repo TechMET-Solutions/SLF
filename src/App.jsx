@@ -834,7 +834,7 @@ function App() {
           <Route path="*" element={<Navigate to="/" />} />
         </Routes>
       </LayoutWithNavbar>
-      <Footer />
+      {/* <Footer /> */}
     </Router>
   );
 }

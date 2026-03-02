@@ -33,29 +33,29 @@ const SchemeDetailsList = () => {
     // setFilteredData(schemes);
   };
 
- const fetchSchemes = async (page = 1) => {
-  try {
-    const response = await axios.get(`${API}/Scheme/getAllSchemes`, {
-      params: {
-        page,
-        limit: 10,
-        search: searchQuery || undefined,
-        keys: searchHeaders.length ? searchHeaders.join(",") : undefined,
-        appFrom: appFrom || undefined,
-        appTo: appTo || undefined,
-      },
-    });
+  const fetchSchemes = async (page = 1) => {
+    try {
+      const response = await axios.get(`${API}/Scheme/getAllSchemes`, {
+        params: {
+          page,
+          limit: 10,
+          search: searchQuery || undefined,
+          keys: searchHeaders.length ? searchHeaders.join(",") : undefined,
+          appFrom: appFrom || undefined,
+          appTo: appTo || undefined,
+        },
+      });
 
-    const result = response.data;   // ✅ Correct
+      const result = response.data;   // ✅ Correct
 
-    setData(result.items);          // ✅ Use items
-    setCurrentPage(result.page);    // ✅ From API
-    setTotalPages(result.totalPages);
+      setData(result.items);          // ✅ Use items
+      setCurrentPage(result.page);    // ✅ From API
+      setTotalPages(result.totalPages);
 
-  } catch (err) {
-    console.error("❌ Error fetching schemes:", err);
-  }
-};
+    } catch (err) {
+      console.error("❌ Error fetching schemes:", err);
+    }
+  };
 
 
   useEffect(() => {
@@ -97,7 +97,7 @@ const SchemeDetailsList = () => {
     }
   };
 
-    const allHeaderIds = [
+  const allHeaderIds = [
     "schemeName",
     "product",
     "minLoanAmount",
@@ -105,7 +105,7 @@ const SchemeDetailsList = () => {
   ];
 
 
- const handleSelectAll = () => {
+  const handleSelectAll = () => {
     const allSelected = allHeaderIds.every((id) => searchHeaders.includes(id));
     setSearchHeaders(allSelected ? [] : [...allHeaderIds]);
   };
@@ -115,7 +115,7 @@ const SchemeDetailsList = () => {
     <div className="min-h-screen w-full">
       {/* Top Bar */}
       <div className="flex justify-center sticky top-[80px] z-40">
-        <div className="flex items-center px-6 py-4 border-b mt-5 w-[1290px] h-[62px] border rounded-[11px] border-gray-200 justify-between shadow bg-white">
+        <div className="flex items-center px-6 py-4 border-b mt-5 w-[1462px] h-[62px] border rounded-[11px] border-gray-200 justify-between shadow bg-white">
           <h2 className="text-red-600 text-[20px] font-semibold">
             Scheme List
           </h2>
@@ -135,19 +135,19 @@ const SchemeDetailsList = () => {
 
                   {isDropdownOpen && (
                     <div className="absolute top-[35px] left-[-8px] bg-white border-b border-gray-300 shadow-xl rounded-md z-[100] w-[160px] p-2">
-                      
+
                       <button
-                      onClick={handleSelectAll}
-                      className="flex items-center gap-2 p-2 cursor-pointer border-b border-gray-200 rounded">
+                        onClick={handleSelectAll}
+                        className="flex items-center gap-2 p-2 cursor-pointer border-b border-gray-200 rounded">
                         <input
                           type="checkbox"
                           checked={searchHeaders.length === allHeaderIds.length}
                           onChange={handleSelectAll}
-                           className="w-3 h-3 accent-[#0A2478]"
+                          className="w-3 h-3 accent-[#0A2478]"
                         />
                         <span className="text-[11px] font-source text-gray-700">Select All</span>
                       </button>
-                      
+
                       {[
                         { id: "schemeName", label: "Scheme Name" },
                         { id: "product", label: "Product Name" },
@@ -277,35 +277,35 @@ const SchemeDetailsList = () => {
       </div>
 
       {/* Table */}
-      <div className="flex justify-center">
+      <div className="flex mx-auto w-[1462px] justify-start">
         <div className="overflow-x-auto mt-5  h-[500px]">
           <table className="w-full border-collapse">
             <thead className="bg-[#0A2478] text-white text-sm">
               <tr>
-                <th className="px-4 py-2 border w-[150px]">Scheme Name</th>
-                <th className="px-4 py-2 border w-[100px]">Product Name</th>
-                <th className="px-4 py-2 border">App From</th>
-                <th className="px-4 py-2 border">App To</th>
-                {/* <th className="px-4 py-2 border w-[50px]">Int. Compound</th> */}
+                <th className="px-1 py-1 border w-[150px]">Scheme Name</th>
+                <th className="px-1 py-1 border w-[100px]">Product Name</th>
+                <th className="px-1 py-1 border">App From</th>
+                <th className="px-1 py-1 border">App To</th>
+                {/* <th className="px-1 py-1 border w-[50px]">Int. Compound</th> */}
 
-                <th className="px-4 py-2 border">Min Amount</th>
-                <th className="px-4 py-2 border">Max Amount</th>
+                <th className="px-1 py-1 border">Min Amount</th>
+                <th className="px-1 py-1 border">Max Amount</th>
 
-                <th className="px-4 py-2 border w-[300px]">Description</th>
-                {/* <th className="px-4 py-2 border">Action</th> */}
-                <th className="px-4 py-2 border w-[110px]">Role Mapping</th>
-                <th className="px-4 py-2 border w-[120px]">Active</th>
+                <th className="px-1 py-1 border w-[300px]">Description</th>
+                {/* <th className="px-1 py-1 border">Action</th> */}
+                <th className="px-1 py-1 border w-[110px]">Role Mapping</th>
+                <th className="px-1 py-1 border w-[120px]">Active</th>
               </tr>
             </thead>
 
-            <tbody className="text-[12px] text-center">
+            <tbody className="text-[12px] text-left">
               {data?.map((row, index) => (
                 <tr
                   key={row.id}
                   className={index % 2 === 0 ? "bg-gray-50" : "bg-white"}
                 >
                   <td
-                    className="px-4 py-2 cursor-pointer hover:underline text-blue-500"
+                    className="px-1 py-1 cursor-pointer hover:underline text-blue-500"
                     onClick={() =>
                       navigate("/Add-Scheme-Details-Listform", {
                         state: { type: "view", data: row },
@@ -314,27 +314,27 @@ const SchemeDetailsList = () => {
                   >
                     {row.schemeName}
                   </td>
-                  <td className="px-4 py-2">{row.product}</td>
+                  <td className="px-1 py-1">{row.product}</td>
 
-                  <td className="px-4 py-2">
+                  <td className="px-1 py-1">
                     {formatIndianDate(row.applicableFrom)}
                   </td>
-                  <td className="px-4 py-2">
+                  <td className="px-1 py-1">
                     {formatIndianDate(row.applicableTo)}
                   </td>
-                  {/* <td className="px-4 py-2">
+                  {/* <td className="px-1 py-1">
                     {row.calcMethod === "Compound" ? "True" : "False"}
                   </td> */}
-                  <td className="px-4 py-2">{row.minLoanAmount}</td>
-                  <td className="px-4 py-2">{row.maxLoanAmount}</td>
+                  <td className="px-1 py-1">{row.minLoanAmount}</td>
+                  <td className="px-1 py-1">{row.maxLoanAmount}</td>
 
-                  <td className="px-4 py-2">{row.description}</td>
+                  <td className="px-1 py-1">{row.description}</td>
 
-                 
+
 
                   {/* Role Mapping */}
                   <td
-                    className="px-4 py-2 text-[#1883EF] cursor-pointer"
+                    className="px-1 py-1 text-[#1883EF] cursor-pointer"
                     onClick={() =>
                       navigate("/Role-Mapping", { state: { data: row } })
                     }
@@ -343,59 +343,55 @@ const SchemeDetailsList = () => {
                   </td>
 
                   {/* Toggle */}
-                  <td className="px-4 py-2 w-[120px]">
-  <div className="flex items-center gap-6">
-    {/* Status Toggle Section */}
-    <div className="flex flex-col items-start gap-1">
-      <span className="text-[10px] font-bold uppercase text-gray-400">Status</span>
-      <button
-        onClick={() => handleStatusToggle(row)}
-        className={`w-11 h-5 flex items-center rounded-full p-1 transition-all duration-300 ease-in-out ${
-          row.status === 1 ? "bg-[#0A2478]" : "bg-gray-300"
-        }`}
-      >
-        <div
-          className={`bg-white w-3 h-3 rounded-full shadow-sm transform transition-transform duration-300 ${
-            row.status === 1 ? "translate-x-6" : "translate-x-0"
-          }`}
-        />
-      </button>
-    </div>
+                  <td className="px-1 py-1 w-[120px]">
+                    <div className="flex items-center gap-6">
+                      {/* Status Toggle Section */}
+                      <div className="flex flex-col items-start gap-1">
+                        <button
+                          onClick={() => handleStatusToggle(row)}
+                          className={`w-11 h-5 flex items-center rounded-full p-1 transition-all duration-300 ease-in-out ${row.status === 1 ? "bg-[#0A2478]" : "bg-gray-300"
+                            }`}
+                        >
+                          <div
+                            className={`bg-white w-3 h-3 rounded-full shadow-sm transform transition-transform duration-300 ${row.status === 1 ? "translate-x-6" : "translate-x-0"
+                              }`}
+                          />
+                        </button>
+                      </div>
 
-    {/* Vertical Divider */}
-    <div className="h-8 w-[1px] bg-gray-200"></div>
+                      {/* Vertical Divider */}
+                      <div className="h-8 w-[1px] bg-gray-200"></div>
 
-    {/* Actions Section */}
-    <div className="flex flex-col items-start gap-1">
-      <span className="text-[10px] font-bold uppercase text-gray-400">Actions</span>
-      <div className="flex items-center gap-2">
-        {/* Edit Button */}
-        <button
-          onClick={() =>
-            navigate("/Add-Scheme-Details-Listform", {
-              state: { type: "edit", data: row },
-            })
-          }
-          className="px-3 py-1 bg-[#646AD9] hover:bg-[#4a50b5] text-white text-[11px] font-medium rounded transition-colors flex items-center gap-1"
-        >
-          Edit
-        </button>
+                      {/* Actions Section */}
+                      <div className="flex flex-col items-start gap-1">
+                        <div className="flex items-center gap-2">
+                          {/* Edit Button */}
+                          <button
+                            onClick={() =>
+                              navigate("/Add-Scheme-Details-Listform", {
+                                state: { type: "edit", data: row },
+                              })
+                            }
+                            className="px-3 py-1 bg-[#646AD9] hover:bg-[#4a50b5] text-white text-[11px] font-medium rounded transition-colors flex items-center gap-1"
+                          >
+                            Edit
+                          </button>
 
-        {/* Copy Button */}
-        <button
-          onClick={() =>
-            navigate("/Add-Scheme-Details-Listform", {
-              state: { type: "copy", data: row },
-            })
-          }
-          className="px-3 py-1 bg-gray-100 hover:bg-gray-200 text-[#0A2478] text-[11px] font-medium rounded border border-gray-200 transition-colors"
-        >
-          Copy
-        </button>
-      </div>
-    </div>
-  </div>
-</td>
+                          {/* Copy Button */}
+                          <button
+                            onClick={() =>
+                              navigate("/Add-Scheme-Details-Listform", {
+                                state: { type: "copy", data: row },
+                              })
+                            }
+                            className="px-3 py-1 bg-gray-100 hover:bg-gray-200 text-[#0A2478] text-[11px] font-medium rounded border border-gray-200 transition-colors"
+                          >
+                            Copy
+                          </button>
+                        </div>
+                      </div>
+                    </div>
+                  </td>
                 </tr>
               ))}
             </tbody>

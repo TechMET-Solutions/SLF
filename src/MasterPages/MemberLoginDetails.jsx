@@ -328,7 +328,7 @@ const MemberLoginDetails = () => {
     <div className="min-h-screen w-full">
       {/* Top bar */}
       <div className="flex justify-center sticky top-[80px] z-40">
-        <div className="flex items-center px-6 py-4 border-b mt-5 w-[1290px] h-[62px] border rounded-[11px] border-gray-200 justify-between shadow">
+        <div className="flex items-center px-6 py-4 border-b mt-5 w-[1462px] h-[62px] border rounded-[11px] border-gray-200 justify-between shadow">
           <h2 className="text-red-600 font-bold text-[20px] leading-[148%] font-source">
             Member Details
           </h2>
@@ -370,7 +370,7 @@ const MemberLoginDetails = () => {
         </div>
       </div>
 
-      <div className="flex  mt-5 gap-2 pl-[115px]">
+      <div className="flex  mt-5 gap-2 mx-auto w-[1462px]">
         <div>
           <label className="text-xs font-semibold">Bulk Start Time</label>
           <TimePicker
@@ -390,29 +390,29 @@ const MemberLoginDetails = () => {
 
       {/* Table */}
 
-      <div className="overflow-x-auto mt-5 h-[500px] border-gray-300 rounded pl-[110px]">
+      <div className="overflow-x-auto mt-2 h-[500px] border-gray-300 mx-auto w-[1462px]">
         <table className="table-fixed border-collapse ">
           <thead className="bg-[#0A2478] text-white text-sm top-0">
             <tr>
-              <th className="px-4 py-2 border-r">Select</th>
-              {/* <th className="px-4 py-2 border-r text-center w-[50px]">#</th> */}
-              <th className="px-4 py-2 border-r text-left  w-[200px]">Name</th>
-              <th className="px-4 py-2 border-r text-left  w-[200px]">
+              <th className="px-1 py-1 border-r">Select</th>
+              {/* <th className="px-1 py-1 border-r text-center w-[50px]">#</th> */}
+              <th className="px-1 py-1 border-r text-left  w-[200px]">Name</th>
+              <th className="px-1 py-1 border-r text-left  w-[200px]">
                 User ID
               </th>
-              <th className="px-4 py-2 border-r text-center w-[100px]">
+              <th className="px-1 py-1 border-r text-center w-[100px]">
                 OTP Override
               </th>
-              <th className="px-2 py-2 border-r text-center w-[110px] ">
-                Manager Mobile No
+              <th className="px-2 py-2 border-r text-center w-[120px] ">
+                Manager Mob No
               </th>
               <th className="px-2 py-2 border-r text-center w-[110px] ">
-                Admin Mobile No
+                Admin Mob No
               </th>
               <th className="px-2 py-2 border-r text-center w-[100px]">Start Time</th>
               <th className="px-2 py-2 border-r text-center w-[100px]">End Time</th>
               <th className="px-2 py-2 border-r text-center w-[100px]">IP Address</th>
-              <th className="px-2 py-2 border-r text-center w-[100px]">Branch Mapping</th>
+              <th className="px-2 py-2 border-r text-center w-[120px]">Branch Mapping</th>
             </tr>
           </thead>
 
@@ -432,22 +432,22 @@ const MemberLoginDetails = () => {
                     className={`${index % 2 === 0 ? "bg-gray-50" : "bg-white"} hover:bg-gray-100`}
                   >
                     {/* Serial Number */}
-                    <td className="px-4 py-2 text-center">
+                    <td className="px-1 py-1 text-center">
                       <input
                         type="checkbox"
                         checked={selectedIds.includes(row.id)}
                         onChange={() => toggleSelect(row.id)}
                       />
                     </td>
-                    {/* <td className="px-4 py-2 text-center">
+                    {/* <td className="px-1 py-1 text-center">
                       {(currentPage - 1) * itemsPerPage + index + 1}
                     </td> */}
 
-                    <td className="px-4 py-2 font-medium">{row.emp_name}</td>
+                    <td className="px-1 py-1 font-medium">{row.emp_name}</td>
 
-                    <td className="px-4 py-2">{row.email}</td>
+                    <td className="px-1 py-1">{row.email}</td>
 
-                    <td className="px-4 py-2 text-center">
+                    <td className="px-1 py-1 text-center">
                       <input
                         type="checkbox"
                         checked={row.OTP_Override == 1} // if db stores 0/1
@@ -495,7 +495,7 @@ const MemberLoginDetails = () => {
                       </div>
                     </td>
                     {/* Start Time */}
-                    <td className="px-4 py-2">
+                    <td className="px-1 py-1">
                       <TimePicker
                         initialTime={loginData.startDate}
                         onSave={(newTime) => {
@@ -506,7 +506,7 @@ const MemberLoginDetails = () => {
                     </td>
 
                     {/* End Time */}
-                    <td className="px-4 py-2">
+                    <td className="px-1 py-1">
                       <TimePicker
                         initialTime={loginData.endDate}
                         onSave={(newTime) => {
@@ -529,7 +529,7 @@ const MemberLoginDetails = () => {
                         className="border border-gray-300 w-[80px] rounded px-2 py-1 text-sm focus:outline-none focus:ring-1 focus:ring-blue-500"
                       />
                     </td>
-                    <td className="px-4 py-2 text-center">
+                    <td className="px-1 py-1 text-center">
                       <Link
                         to={`/Add-Member-Branch-Mapping?id=${row.id}`}
                         className="text-blue-700"

@@ -74,7 +74,7 @@ const EmpAttendance = () => {
     <div className="p-4">
       {/* Header */}
       <div className="flex justify-center sticky top-[80px] z-40">
-        <div className="flex items-center px-6 py-4 mt-5 w-[1290px] h-[62px] border rounded-[11px] border-gray-200 justify-between shadow">
+        <div className="flex items-center px-6 py-4 mt-5 w-[1462px] h-[62px] border rounded-[11px] border-gray-200 justify-between shadow">
           <h2
             style={{
               fontFamily: "Source Sans 3, sans-serif",
@@ -96,16 +96,16 @@ const EmpAttendance = () => {
       </div>
 
       {/* Table */}
-      <div className="flex  mt-6 pl-[100px]">
+      <div className="flex  mt-4 mx-auto w-[1462px] ">
         <table className=" ">
           <thead className="bg-[#0A2478] text-white text-sm">
             <tr>
-              <th className="p-2 border w-[80px]">Emp Id</th>
-              <th className="p-2 border w-[250px]">Name</th>
-              <th className="p-2 border w-[250px]">Email</th>
-              <th className="p-2 border w-[100px]">Mobile</th>
-              <th className="p-2 border w-[150px]">Branch</th>
-              <th className="p-2 border w-[100px]">Action</th>
+              <th className="px-1 py-1 border w-[80px]">Emp Id</th>
+              <th className="px-1 py-1 border w-[250px]">Name</th>
+              <th className="px-1 py-1 border w-[250px]">Email</th>
+              <th className="px-1 py-1 border w-[100px]">Mobile</th>
+              <th className="px-1 py-1 border w-[150px]">Branch</th>
+              <th className="px-1 py-1 border w-[100px]">Action</th>
             </tr>
           </thead>
 
@@ -118,13 +118,13 @@ const EmpAttendance = () => {
                     i % 2 === 0 ? "bg-gray-50 text-sm" : "bg-white text-sm"
                   }
                 >
-                  <td className="p-2 ">{emp.id}</td>
-                  <td className="p-2 ">{emp.emp_name}</td>
-                  <td className="p-2 ">{emp.email}</td>
-                  <td className="p-2 ">{emp.mobile_no}</td>
-                  <td className="p-2 ">{emp.branch}</td>
+                  <td className="px-1 py-1 ">{emp.id}</td>
+                  <td className="px-1 py-1 ">{emp.emp_name}</td>
+                  <td className="px-1 py-1 ">{emp.email}</td>
+                  <td className="px-1 py-1 ">{emp.mobile_no}</td>
+                  <td className="px-1 py-1 ">{emp.branch}</td>
                   <td
-                    className="p-2 text-blue-500 hover:underline cursor-pointer"
+                    className="px-1 py-1 text-blue-500 hover:underline cursor-pointer"
                     onClick={() => {
                       setSelectedEmp(emp);
                       setShowModal(true);
@@ -208,7 +208,7 @@ const EmpAttendance = () => {
             <div className="flex gap-4 mb-4">
               {/* Month */}
               <select
-                className="border p-2 rounded w-1/2"
+                className="border px-1 py-1 rounded w-1/2"
                 value={month}
                 onChange={(e) => setMonth(Number(e.target.value))}
               >
@@ -221,7 +221,7 @@ const EmpAttendance = () => {
 
               {/* Year */}
               <select
-                className="border p-2 rounded w-1/2"
+                className="border px-1 py-1 rounded w-1/2"
                 value={year}
                 onChange={(e) => setYear(Number(e.target.value))}
               >
@@ -241,9 +241,9 @@ const EmpAttendance = () => {
               <table className="w-full text-sm text-center">
                 <thead className="bg-[#0A2478] text-white">
                   <tr>
-                    <th className="p-2 border">Date</th>
-                    <th className="p-2 border">Punch In</th>
-                    <th className="p-2 border">Punch Out</th>
+                    <th className="px-1 py-1 border">Date</th>
+                    <th className="px-1 py-1 border">Punch In</th>
+                    <th className="px-1 py-1 border">Punch Out</th>
                   </tr>
                 </thead>
 
@@ -251,18 +251,18 @@ const EmpAttendance = () => {
                   {attendanceData.length > 0 ? (
                     attendanceData.map((row, i) => (
                       <tr key={i} className="border-b hover:bg-gray-50">
-                        <td className="p-2 border">
+                        <td className="px-1 py-1 border">
                           {formatIndianDate(row.date)}
                         </td>
 
-                        <td className="p-2 border">
+                        <td className="px-1 py-1 border">
                           {row.punch_in ? (
                             row.punch_in
                           ) : (
                             <span className="text-gray-400">-</span>
                           )}
                         </td>
-                        <td className="p-2 border">
+                        <td className="px-1 py-1 border">
                           {row.punch_out ? (
                             row.punch_out
                           ) : (
