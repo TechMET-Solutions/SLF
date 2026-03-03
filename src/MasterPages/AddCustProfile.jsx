@@ -32,49 +32,18 @@ const AddCustProfile = () => {
   console.log(mode, "mode");
   const [bankData, setBankData] = useState([]);
   console.log(bankData, "bankData");
-  const config = useMemo(
-    () => ({
-      readonly: false,
-      height: 300,
-      toolbarAdaptive: false,
-      buttons: [
-        "bold",
-        "italic",
-        "underline",
-        "|",
-        "ul",
-        "ol",
-        "|",
-        "font",
-        "fontsize",
-        "|",
-        "align",
-        "|",
-        "link",
-        "|",
-        "undo",
-        "redo",
-      ],
-      removeButtons: [
-        "image",
-        "video",
-        "table",
-        "file",
-        "source",
-        "fullsize",
-        "about",
-        "print",
-        "eraser",
-        "brush",
-        "superscript",
-        "subscript",
-        "hr",
-        "symbol",
-        "copyformat",
-      ],
-    }),
-    [],
-  );
+  const config = {
+  readonly: false,
+  height: 90,            // Sets the total height
+  minHeight: 90,         // Prevents shrinking
+  maxHeight: 90,         // Prevents expanding
+  width: 'auto',
+  toolbar: false,        // Hides toolbar to allow space for text at 40px
+  showPlaceholder: true,
+  placeholder: "Enter Remark...",
+  statusbar: false,      // Hides the bottom bar
+  spellcheck: false,
+};
   const [formData, setFormData] = useState({
     panNo: "",
     panFile: null, // store selected file here
@@ -935,7 +904,7 @@ const AddCustProfile = () => {
   return (
     <div>
       <div className="flex justify-center sticky top-0 md:top-[80px] z-40 px-4">
-        <div className="flex flex-col md:flex-row items-center justify-between mt-5 w-full max-w-[1462px] min-h-[62px] py-3 md:py-0 px-4 md:px-6 border rounded-[11px] border-gray-200 shadow bg-white gap-4">
+        <div className="flex flex-col md:flex-row items-center justify-between mt-2 w-full max-w-[1462px] min-h-[50px]  md:py-0  md:px-6 border rounded-[11px] border-gray-200 shadow bg-white gap-4">
 
           {/* Left heading */}
           <h2
@@ -1003,240 +972,175 @@ const AddCustProfile = () => {
       </div>
 
       {/* personal information */}
-      <div className="flex mx-auto mt-1 w-[1462px]">
+      <div className="flex mx-auto mt-2 w-[1462px]">
         <div className="bg-[#FFE6E6] mt-2 p-4 rounded-md w-full mx-auto ">
           <p className="font-[Source_Sans_3] font-bold text-[24px] leading-[100%] tracking-[0.03em] text-[#0A2478] mb-2">
             Personal Information
           </p>
 
-          <div className="flex justify-between gap-2">
+          <div className="flex justify-between ">
             <div className="">
-              <div className="flex items-center gap-4 w-full">
-                <div className="flex flex-col w-full max-w-sm md:max-w-md">
-                  <label className="text-[14px] font-medium">
-                    PAN Number <span className="text-red-500">*</span>
-                  </label>
+             <div className="flex flex-row items-start gap-4 w-full overflow-x-auto pb-2">
+  
+  {/* 1. PAN Number */}
+  <div className="flex flex-col flex-shrink-0">
+    <label className="text-[14px] font-medium">
+      PAN No <span className="text-red-500">*</span>
+    </label>
+    <div className="flex items-stretch mt-1 w-[170px] h-[30px]">
+      <div className="relative flex-1">
+        <input
+          type="text"
+          placeholder="Enter PAN"
+          name="panNo"
+          value={formData.panNo}
+          onChange={handleChange}
+          className={`border border-r-0 rounded-l-[8px] px-2 w-full h-full focus:outline-none focus:ring-1 focus:ring-blue-500 bg-white text-xs ${
+            errors.panNo ? "border-red-500" : "border-gray-300"
+          }`}
+        />
+        <FaPaperclip
+          className="absolute right-2 top-1/2 -translate-y-1/2 text-gray-400 cursor-pointer"
+          size={12}
+          onClick={() => panFileInputRef.current.click()}
+        />
+      </div>
+      <button
+        className="bg-[#0A2478] text-white px-3 rounded-r-[8px] text-xs font-medium w-[64px] h-full"
+        type="button"
+        onClick={verifyPan}
+      >
+        Verify
+      </button>
+    </div>
+    {errors.panNo && <p className="text-red-500 text-[11px] mt-1">{errors.panNo}</p>}
+  </div>
 
-                  {/* Input and Button Container */}
-                  <div className="flex items-center mt-1 w-[210px]">
-                    <div className="relative flex-1">
-                      <input
-                        type="text"
-                        placeholder="Enter PAN"
-                        name="panNo"
-                        required
-                        value={formData.panNo}
-                        onChange={handleChange}
-                        className={`border border-r-0 rounded-l px-1 py-1 w-full pr-10 focus:outline-none focus:ring-1 focus:ring-blue-500 bg-white ${errors.panNo ? "border-red-500" : "border-gray-300"
-                          }`}
-                        style={{
-                          MozAppearance: "textfield",
-                        }}
-                        onWheel={(e) => e.target.blur()}
-                      />
+  {/* 2. Aadhaar Number */}
+  <div className="flex flex-col flex-shrink-0">
+    <label className="text-[14px] font-medium">
+      Aadhar <span className="text-red-500">*</span>
+    </label>
+    <div className="flex items-stretch mt-1 w-[180px] h-[30px]">
+      <div className="relative flex-1">
+        <input
+          type="number"
+          placeholder="Enter Aadhar"
+          name="aadhar"
+          value={formData.aadhar}
+          onChange={handleChange}
+          className={`border border-r-0 rounded-l-[8px] px-2 w-full h-full focus:outline-none focus:ring-1 focus:ring-blue-500 bg-white text-xs ${
+            errors.aadhar ? "border-red-500" : "border-gray-300"
+          }`}
+        />
+        <FaPaperclip
+          className="absolute right-2 top-1/2 -translate-y-1/2 text-gray-400 cursor-pointer"
+          size={12}
+          onClick={() => aadharFileInputRef.current.click()}
+        />
+      </div>
+      <button
+        className="bg-[#0A2478] text-white px-2 rounded-r-[8px] text-xs font-medium w-[60px] h-full"
+        type="button"
+        onClick={sendAadhaarOTP}
+      >
+        verify
+      </button>
+    </div>
+    {errors.aadhar && <p className="text-red-500 text-[11px] mt-1">{errors.aadhar}</p>}
+  </div>
 
-                      {/* Hidden file input */}
-                      <input
-                        type="file"
-                        accept="image/*,.pdf"
-                        ref={panFileInputRef}
-                        onChange={handlePanFileChange}
-                        className="hidden"
-                      />
+  {/* 3. Print Name */}
+  <div className="flex flex-col flex-shrink-0">
+    <label className="text-[14px] font-medium">
+      Print Name <span className="text-red-500">*</span>
+    </label>
+    <input
+      type="text"
+      name="printName"
+      value={formData.printName}
+      onChange={handleChange}
+      placeholder="Customer Full Name"
+      className={`border px-2 mt-1 w-[180px] h-[30px] rounded-[8px] bg-white text-xs focus:outline-none ${
+        errors.printName ? "border-red-500" : "border-gray-300"
+      }`}
+    />
+    {errors.printName && <p className="text-red-500 text-[11px] mt-1">{errors.printName}</p>}
+  </div>
 
-                      {/* Paperclip icon - Scaled down slightly to match text */}
-                      <FaPaperclip
-                        className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600 cursor-pointer transition-colors"
-                        size={14}
-                        onClick={() => panFileInputRef.current.click()}
-                      />
-                    </div>
+  {/* 4. Email Id */}
+  <div className="flex flex-col flex-shrink-0">
+    <label className="text-[14px] font-medium">
+      Email Id <span className="text-red-500">*</span>
+    </label>
+    <input
+      type="email"
+      name="email"
+      value={formData.email}
+      onChange={handleChange}
+      placeholder="Enter Email"
+      className={`border rounded-[8px] px-2 mt-1 w-[150px] h-[30px] bg-white text-xs focus:outline-none ${
+        errors.email ? "border-red-500" : "border-gray-300"
+      }`}
+    />
+    {errors.email && <p className="text-red-500 text-[11px] mt-1">{errors.email}</p>}
+  </div>
 
-                    {/* Verify Button - text-xs for smaller button label */}
-                    <button
-                      className="bg-[#0A2478] text-white px-3 py-2 rounded-r border border-[#0A2478] hover:bg-[#081c5b] transition-colors text-xs font-medium whitespace-nowrap"
-                      type="button"
-                      onClick={verifyPan}
-                    >
-                      Verify
-                    </button>
-                  </div>
+  {/* 5. DOB */}
+  <div className="flex flex-col flex-shrink-0">
+    <label className="text-[14px] font-medium">
+      DOB <span className="text-red-500">*</span>
+    </label>
+    <input
+      type="date"
+      name="dob"
+      value={formData.dob}
+      onChange={handleChange}
+      className={`border rounded-[8px] px-2 mt-1 w-[120px] h-[30px] bg-white text-xs uppercase focus:outline-none ${
+        errors.dob ? "border-red-500" : "border-gray-300"
+      }`}
+    />
+    {errors.dob && <p className="text-red-500 text-[11px] mt-1">{errors.dob}</p>}
+  </div>
+ <div className="flex flex-col flex-shrink-0">
+  <label className="text-[14px] font-medium">
+    Mobile No <span className="text-red-500">*</span>
+  </label>
+  
+  <div className="flex items-stretch mt-1 w-[150px] h-[30px]">
+    <input
+      type="text"
+      name="mobile"
+      disabled={isMobileVerified}
+      value={formData.mobile}
+      onChange={handleChange}
+      placeholder="Mobile Number"
+      // Added rounded-l and removed py-1 for exact 30px height
+      className={`border border-r-0 rounded-l-[8px] px-2 w-full focus:outline-none focus:ring-1 focus:ring-blue-500 text-xs transition-colors ${
+        isMobileVerified ? "bg-gray-100 cursor-not-allowed" : "bg-white"
+      } ${errors.mobile ? "border-red-500" : "border-gray-300"}`}
+    />
+    
+    <button
+      type="button"
+      onClick={sendMobileOTP}
+      disabled={isMobileVerified}
+      // Fixed height via h-full, rounded-r only, and centered text
+      className={`bg-[#0A2478] text-white px-3 rounded-r-[8px] border border-[#0A2478] text-xs font-medium w-[64px] h-full flex justify-center items-center transition-opacity ${
+        isMobileVerified ? "opacity-50 cursor-not-allowed" : "hover:bg-[#081c5b]"
+      }`}
+    >
+      <span>{isOtpSent ? "Resend" : "OTP"}</span>
+    </button>
+  </div>
 
-                  {/* File Name Info - text-[10px] for a very small footnote style */}
-                  {formData.panFile && (
-                    <p className="text-[10px] text-gray-500 mt-1 truncate">
-                      <span className="font-semibold text-gray-600">Selected:</span> {formData.panFile.name}
-                    </p>
-                  )}
+  {errors.mobile && (
+    <p className="text-red-500 text-[11px] mt-1 font-medium">{errors.mobile}</p>
+  )}
+</div>
 
-                  {/* Error message - Reduced to text-[11px] */}
-                  {errors.panNo && (
-                    <p className="text-red-500 text-[11px] mt-1 font-medium">
-                      {errors.panNo}
-                    </p>
-                  )}
-                </div>
-
-                {/* Aadhaar */}
-
-                <div className="flex flex-col">
-                  <label className="text-[14px] font-medium">
-                    Aadhar Number <span className="text-red-500">*</span>
-                  </label>
-                  <div className="flex items-center mt-1 w-[210px]">
-                    <div className="relative flex-1">
-                      <input
-                        type="number"
-                        placeholder={
-                          formData.aadhar
-                            ? `${formData.aadhar}`
-                            : "Enter Aadhar"
-                        }
-                        //  placeholder={formData.aadhar}
-                        name="aadhar"
-                        value={formData.aadhar}
-                        onChange={handleChange}
-                        className={`border border-r-0 rounded-l px-1 py-1 w-full pr-10 focus:outline-none focus:ring-1 focus:ring-blue-500 bg-white ${errors.aadhar ? "border-red-500" : "border-gray-300"
-                          }`}
-                        style={{
-                          MozAppearance: "textfield",
-                        }}
-                        onWheel={(e) => e.target.blur()}
-                      />
-
-                      {/* Hidden file input */}
-                      <input
-                        type="file"
-                        accept="image/*,.pdf"
-                        ref={aadharFileInputRef}
-                        onChange={handleAdharFileChange}
-                        className="hidden"
-                      />
-
-                      {/* Paperclip icon triggers file selection */}
-                      <FaPaperclip
-                        className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 cursor-pointer"
-                        size={16}
-                        onClick={() => aadharFileInputRef.current.click()}
-                      />
-                    </div>
-
-                    <button
-                      className="bg-[#0A2478] text-white px-1 py-1 rounded-r border border-gray-300 border-l-0 hover:bg-[#081c5b] "
-                      type="button"
-                      onClick={sendAadhaarOTP}
-                    >
-                      verify
-                    </button>
-                  </div>
-                  {formData.aadharFile && (
-                    <p className="text-xs text-gray-500 mt-1">
-                      Selected file: {formData.aadharFile.name}
-                    </p>
-                  )}
-
-                  {/* Error message */}
-                  {errors.aadhar && (
-                    <p className="text-red-500 text-xs mt-1">{errors.aadhar}</p>
-                  )}
-                </div>
-
-                {/* Print Name */}
-                <div className="flex flex-col">
-                  <label className="text-[14px] font-medium">
-                    Print Name <span className="text-red-500">*</span>
-                  </label>
-                  <input
-                    type="text"
-                    name="printName"
-                    value={formData.printName}
-                    onChange={handleChange}
-                    placeholder="Customer Full Name"
-                    className={`border px-1 py-1 mt-1 w-[220px] rounded-[8px] bg-white ${errors.printName ? "border-red-500" : "border-gray-300"
-                      }`}
-                  />
-                  {errors.printName && (
-                    <p className="text-red-500 text-xs mt-1">
-                      {errors.printName}
-                    </p>
-                  )}
-                </div>
-
-                <div className="flex flex-col flex-1">
-                  <label className="text-[14px] font-medium">
-                    Email Id <span className="text-red-500">*</span>
-                  </label>
-
-                  <input
-                    type="email"
-                    name="email"
-                    value={formData.email}
-                    onChange={handleChange}
-                    placeholder="Enter Email"
-                    className={`border rounded px-1 py-1 mt-1 w-[250px] bg-white ${errors.email ? "border-red-500" : "border-gray-300"
-                      }`}
-                  />
-
-                  {errors.email && (
-                    <span className="text-red-500 text-[12px] mt-1">
-                      {errors.email}
-                    </span>
-                  )}
-                </div>
-                <div className="flex flex-col">
-                  <label className="text-[14px] font-medium">
-                    DOB
-                    <span className="text-red-500">*</span>
-                  </label>
-                  <input
-                    type="date"
-                    name="dob"
-                    value={formData.dob}
-                    onChange={handleChange}
-                    className={`border rounded px-1 py-1 mt-1 w-[140px] bg-white ${errors.dob ? "border-red-500" : "border-gray-300"
-                      }`}
-                  />
-                  {errors.dob && (
-                    <p className="text-red-500 text-xs mt-1">{errors.dob}</p>
-                  )}
-                </div>
-              </div>
-
-              <div className="flex items-end gap-4 w-full mt-4">
-                {/* Mobile Number + OTP Button */}
-                <div className="flex flex-col">
-                  <label className="text-[14px] font-medium">
-                    Mobile No <span className="text-red-500">*</span>
-                  </label>
-                  <div className="flex items-center mt-1 w-[180px]">
-                    <input
-                      type="text"
-                      name="mobile"
-                      disabled={isMobileVerified} // Disable if verified
-                      value={formData.mobile}
-                      onChange={handleChange}
-                      placeholder="mobile Number"
-                      className={`border border-gray-300 border-r-0 rounded-l px-1 py-1 w-full focus:outline-none bg-white ${isMobileVerified ? "bg-gray-100 cursor-not-allowed" : ""}`}
-                    />
-                    <button
-                      type="button"
-                      onClick={sendMobileOTP}
-                      disabled={isMobileVerified}
-                      className={`bg-[#0A2478] text-white px-1 py-1 rounded-r border border-gray-300 border-l-0 flex justify-center items-center gap-2 ${isMobileVerified
-                        ? "opacity-50 cursor-not-allowed"
-                        : "hover:bg-[#081c5b]"
-                        }`}
-                    >
-                      {/* <img src={send} alt="otp" className="w-4 h-4" /> */}
-                      <span>{isOtpSent ? "Resend" : "OTP"}</span>
-                    </button>
-                  </div>
-                  {errors.mobile && (
-                    <p className="text-red-500 text-xs mt-1">{errors.mobile}</p>
-                  )}
-                </div>
-                <div className="flex flex-col">
-                  <label className="text-[14px] font-medium">Verify OTP</label>
+  <div className="flex flex-col flex-shrink-0">
+                  <label className=" text-[14px] font-medium">Verify OTP</label>
                   <div className="relative mt-1 w-[110px]">
                     <input
                       type="number"
@@ -1245,7 +1149,7 @@ const AddCustProfile = () => {
                       disabled={isMobileVerified} // Disable if verified
                       value={formData.MobileNumberOtp}
                       onChange={handleChange}
-                      className={`border border-gray-300 rounded-[8px] px-1 py-1 w-[110px] focus:outline-none ${isMobileVerified ? "bg-gray-100 cursor-not-allowed" : "bg-white"}`}
+                      className={`border border-gray-300 rounded-[8px] px-1 py-1 w-[110px] h-[30px] text-xs focus:outline-none ${isMobileVerified ? "bg-gray-100 cursor-not-allowed" : "bg-white"}`}
                       style={{ MozAppearance: "textfield" }}
                     />
 
@@ -1264,12 +1168,18 @@ const AddCustProfile = () => {
                     )}
                   </div>
                 </div>
+</div>
+
+              <div className="flex items-end gap-4 w-full mt-2">
+                {/* Mobile Number + OTP Button */}
+               
+              
                 {/* OTP Verification */}
 
                 {/* Alternate Mobile */}
                 <div className="flex flex-col">
                   <label className="text-[14px] font-medium">
-                    Alt Mobile No
+                   Alternate Mobile No
                   </label>
                   <input
                     type="text"
@@ -1278,7 +1188,7 @@ const AddCustProfile = () => {
                     maxLength={10}
                     onChange={handleChange}
                     placeholder="Enter Alternate Mobile"
-                    className={`border rounded px-1 py-1 mt-1 w-[110px] bg-white ${errors.altMobile ? "border-red-500" : "border-gray-300"
+                    className={`border rounded-[8px] text-xs h-[30px] px-1 mt-1 w-[120px] bg-white ${errors.altMobile ? "border-red-500" : "border-gray-300"
                       }`}
                   />
                   {errors.altMobile && (
@@ -1298,7 +1208,7 @@ const AddCustProfile = () => {
                     value={formData.landline}
                     onChange={handleChange}
                     placeholder="Eg.+91 9658426853"
-                    className="border border-gray-300 rounded px-1 py-1 mt-1 w-[140px] bg-white"
+                    className="border border-gray-300 rounded-[8px] px-1 h-[30px] mt-1 w-[130px] text-xs bg-white"
                     style={{
                       MozAppearance: "textfield",
                     }}
@@ -1314,7 +1224,7 @@ const AddCustProfile = () => {
                     name="gender"
                     value={formData.gender}
                     onChange={handleChange}
-                    className={`border rounded px-1 py-1 mt-1 w-[100px] bg-white ${errors.gender ? "border-red-500" : "border-gray-300"
+                    className={`border rounded-[8px] px-1 text-xs h-[30px] w-[100px] bg-white ${errors.gender ? "border-red-500" : "border-gray-300"
                       }`}
                   >
                     <option value="">Select</option>
@@ -1334,7 +1244,7 @@ const AddCustProfile = () => {
                     name="marital"
                     value={formData.marital}
                     onChange={handleChange}
-                    className="border border-gray-300 rounded px-1 py-1 mt-1 w-[100px] bg-white"
+                    className="border border-gray-300 rounded-[8px] px-1 text-xs h-[30px] w-[100px] bg-white"
                   >
                     <option value="">Select</option>
                     <option value="Single">Single</option>
@@ -1347,7 +1257,7 @@ const AddCustProfile = () => {
                     name="partyType"
                     value={formData.partyType}
                     onChange={handleChange}
-                    className="border border-gray-300 rounded-[8px] px-1 py-1 mt-1 w-[120px] bg-white"
+                    className="border border-gray-300 rounded-[8px] px-1 h-[30px] text-xs mt-1 w-[120px] bg-white"
                   >
                     <option value="">Select Type</option>
                     {partyTypeList.map((pt) => (
@@ -1365,7 +1275,7 @@ const AddCustProfile = () => {
                     name="religion"
                     value={formData.religion}
                     onChange={handleChange}
-                    className="border border-gray-300 rounded-[8px] px-1 py-1 mt-1 w-[120px] bg-white"
+                    className="border border-gray-300 rounded-[8px] px-1 text-xs h-[30px] w-[130px] bg-white"
                   >
                     <option value="">Select Religion</option>
                     <option value="Hindu">Hindu</option>
@@ -1378,52 +1288,53 @@ const AddCustProfile = () => {
                     <option value="Other">Other</option>
                   </select>
                 </div>
-              </div>
 
-              <div className="flex items-end gap-4 w-full mt-3">
                 {formData.partyType !== "" && (
-                  <>
-                    <div className="flex flex-col">
-                      <label className="text-[14px] font-medium">GST No.</label>
-                      <div className="flex items-center mt-1 w-[233px]">
-                        <div className="relative flex-1">
-                          <input
-                            type="text"
-                            placeholder="Enter GST No."
-                            name="gstNo"
-                            value={formData.gstNo}
-                            onChange={handleChange}
-                            disabled={isGstVerified}
-                            className={`border border-gray-300 border-r-0 rounded-l px-1 py-1 w-full pr-10 focus:outline-none ${isGstVerified
-                              ? "bg-gray-100 cursor-not-allowed"
-                              : "bg-white"
-                              }`}
-                          />
-                        </div>
+  <div className="flex flex-col flex-shrink-0">
+    <label className="text-[14px] font-medium">GST No.</label>
+    
+    {/* Main Container: Fixed width 233px, Height 30px */}
+    <div className="flex items-stretch mt-1 w-[193px] h-[30px]">
+      <div className="relative flex-1">
+        <input
+          type="text"
+          placeholder="Enter GST No."
+          name="gstNo"
+          value={formData.gstNo}
+          onChange={handleChange}
+          disabled={isGstVerified}
+          // Changed to rounded-l only and removed py-1
+          className={`border border-r-0 rounded-l-[8px] px-2 w-full h-full focus:outline-none focus:ring-1 focus:ring-blue-500 text-xs transition-colors ${
+            isGstVerified ? "bg-gray-100 cursor-not-allowed" : "bg-white"
+          } ${errors?.gstNo ? "border-red-500" : "border-gray-300"}`}
+        />
+      </div>
 
-                        <button
-                          type="button"
-                          onClick={verifyGst}
-                          disabled={isGstVerified}
-                          className={`bg-[#0A2478] text-white px-1 py-1 rounded-r border border-gray-300 border-l-0 ${isGstVerified
-                            ? "opacity-50 cursor-not-allowed"
-                            : "hover:bg-[#081c5b]"
-                            }`}
-                        >
-                          {isGstVerified ? "Verified" : "Verify"}
-                        </button>
-                      </div>
-                    </div>
-                  </>
+      <button
+        type="button"
+        onClick={verifyGst}
+        disabled={isGstVerified}
+        // h-full ensures it matches input height, rounded-r only for the joint
+        className={`bg-[#0A2478] text-white px-3 rounded-r-[8px] border border-[#0A2478] text-xs font-medium min-w-[64px] h-full flex justify-center items-center transition-opacity ${
+          isGstVerified ? "opacity-50 cursor-not-allowed" : "hover:bg-[#081c5b]"
+        }`}
+      >
+        {isGstVerified ? "Verified" : "Verify"}
+      </button>
+    </div>
+    
+    {errors?.gstNo && (
+      <p className="text-red-500 text-[11px] mt-1 font-medium">{errors.gstNo}</p>
+    )}
+  </div>
                 )}
-
-                <div className="flex flex-col">
+                  <div className="flex flex-col">
                   <label className="text-[14px] font-medium">Education</label>
                   <select
                     name="education"
                     value={formData.education}
                     onChange={handleChange}
-                    className="border border-gray-300 rounded-[8px] px-1 py-1 mt-1 w-[160px] bg-white"
+                    className="border border-gray-300 rounded-[8px] px-1  text-xs h-[30px] mt-1 w-[150px] bg-white"
                   >
                     <option value="">Select Education</option>
                     <option value="No Formal Education">
@@ -1446,6 +1357,12 @@ const AddCustProfile = () => {
                     <option value="Other">Other</option>
                   </select>
                 </div>
+              </div>
+
+              <div className="flex items-end gap-4 w-full mt-3">
+               
+
+              
 
                 <div className="flex flex-col ">
                   <label className="text-[14px] font-medium">
@@ -1457,7 +1374,7 @@ const AddCustProfile = () => {
                     value={formData.occupation}
                     onChange={handleChange}
                     placeholder="Eg.Employee."
-                    className="border border-gray-300 rounded px-1 py-1 mt-1 w-[158px] bg-white"
+                    className="border border-gray-300 rounded-[8px] px-1 text-xs h-[30px] mt-1 w-[158px] bg-white"
                   />
                 </div>
 
@@ -1469,7 +1386,7 @@ const AddCustProfile = () => {
                     name="riskCategory"
                     value={formData.riskCategory}
                     onChange={handleChange}
-                    className="border border-gray-300 rounded-[8px] px-1 py-1 mt-1 w-[80px] bg-white"
+                    className="border border-gray-300 rounded-[8px] px-1 text-xs h-[30px]  mt-1 w-[80px] bg-white"
                   >
                     <option value="Low">Low</option>
                     <option value="High">High</option>
@@ -1484,7 +1401,7 @@ const AddCustProfile = () => {
                     value={formData.firstName}
                     onChange={handleChange}
                     placeholder="First Name"
-                    className="border border-gray-300 rounded px-1 py-1 mt-1 w-[120px] bg-white"
+                    className="border border-gray-300 rounded-[8px] text-xs h-[30px] px-1 mt-1 w-[130px] bg-white"
                   />
                 </div>
 
@@ -1496,7 +1413,7 @@ const AddCustProfile = () => {
                     value={formData.middleName}
                     onChange={handleChange}
                     placeholder="Middle Name"
-                    className="border border-gray-300 rounded px-1 py-1 mt-1 w-[120px] bg-white"
+                    className="border border-gray-300 rounded-[8px] px-1 text-xs h-[30px]  mt-1 w-[130px] bg-white"
                   />
                 </div>
 
@@ -1508,16 +1425,11 @@ const AddCustProfile = () => {
                     value={formData.lastName}
                     onChange={handleChange}
                     placeholder="Last Name"
-                    className="border border-gray-300 rounded px-1 py-1 mt-1 w-[125px] bg-white"
+                    className="border border-gray-300 rounded-[8px] px-1 text-xs h-[30px] mt-1 w-[130px] bg-white"
                   />
                 </div>
-              </div>
 
-              <div className="flex items-end gap-4 w-full mt-3">
-                {/* Marital */}
-              </div>
-
-              <div className="flex gap-6 ">
+                   <div className="flex gap-6 ">
                 {/* Father/Husband's Last Name */}
                 <div className="flex flex-col">
                   <label className="text-[14px] font-medium">
@@ -1529,7 +1441,7 @@ const AddCustProfile = () => {
                     value={formData.fatherFirstName}
                     onChange={handleChange}
                     placeholder="Father/Husbands First Name"
-                    className="border border-gray-300 rounded px-1 py-1 mt-1 w-[260px] bg-white"
+                    className="border border-gray-300 rounded-[8px] px-1 text-xs h-[30px]  mt-1 w-[260px] bg-white"
                   />
                 </div>
 
@@ -1565,6 +1477,13 @@ const AddCustProfile = () => {
                   </div>
                 </div>
               </div>
+              </div>
+
+              <div className="flex items-end gap-4 w-full mt-3">
+                {/* Marital */}
+              </div>
+
+           
             </div>
 
             <div>
@@ -1590,12 +1509,12 @@ const AddCustProfile = () => {
                           : profileempty
                       }
                       alt="profile"
-                      className="w-[130px] h-[130px] border"
+                      className="w-[200px] h-[121px] border"
                     />
 
                     {/* Overlay */}
                     <div
-                      className={`absolute inset-0 left-3 w-[130px] h-[130px] flex items-center justify-center bg-black/10 transition-opacity duration-300
+                      className={`absolute inset-0  w-[200px] h-[121px] flex items-center justify-center bg-black/10 transition-opacity duration-300
       ${formData.profileImage
                           ? "opacity-0 group-hover:opacity-100"
                           : "opacity-100"
@@ -1639,12 +1558,12 @@ const AddCustProfile = () => {
                         : profileempty
                     }
                     alt="signature"
-                    className="w-[130px] h-[38px] border rounded-md"
+                    className="w-[200px] h-[38px] border rounded-md"
                   />
 
                   <div
                     className={`
-      absolute inset-0 flex items-center left-3 w-[130px] h-[38px] justify-center 
+      absolute inset-0 flex items-center  w-[200px] h-[38px] justify-center 
       bg-black/40 transition-opacity duration-300
       ${formData.signature
                         ? "opacity-0 group-hover:opacity-100"
@@ -1710,10 +1629,11 @@ const AddCustProfile = () => {
           </div>
         </div>
       )}
-
-      <div className="flex mx-auto mt-1 w-[1462px]">
+      <div className='flex justify-center gap-5'>
+        <div>
+<div className="flex mx-auto mt-4 w-[728px]">
         <div className="bg-[#F7F7FF]  p-6 rounded-md w-full mx-auto ">
-          <p className="font-[Source_Sans_3] font-bold text-[24px] leading-[100%] tracking-[0.03em] text-[#0A2478] mb-4 mt-5">
+          <p className="font-[Source_Sans_3] font-bold text-[24px] leading-[100%] tracking-[0.03em] text-[#0A2478] mb-4 ">
             Permanent Address
           </p>
 
@@ -1732,7 +1652,7 @@ const AddCustProfile = () => {
                   value={formData.Permanent_Address}
                   onChange={handleChange}
                   placeholder="Address"
-                  className={`border px-1 py-1 mt-1 w-[385px] bg-white rounded-[8px] ${errors.Permanent_Address
+                  className={`border px-1 text-xs h-[30px] mt-1 w-[400px] bg-white rounded-[8px] ${errors.Permanent_Address
                     ? "border-red-500"
                     : "border-gray-300"
                     }`}
@@ -1740,6 +1660,32 @@ const AddCustProfile = () => {
                 {errors.Permanent_Address && (
                   <p className="text-red-500 text-xs mt-1">
                     {errors.Permanent_Address}
+                  </p>
+                )}
+              </div>
+                </div>
+                 <div>
+              <div className="">
+                <div>
+                  <label className="text-[14px] font-medium">
+                    Pincode <span className="text-red-500">*</span>
+                  </label>
+                </div>
+
+                <input
+                  type="text"
+                  name="Permanent_Pincode"
+                  value={formData.Permanent_Pincode}
+                  onChange={handleChange}
+                  placeholder="Pincode"
+                  className={`border px-1 text-xs h-[30px] mt-1 w-[100px] rounded-[8px] bg-white ${errors.Permanent_Pincode
+                    ? "border-red-500"
+                    : "border-gray-300"
+                    }`}
+                />
+                {errors.Permanent_Pincode && (
+                  <p className="text-red-500 text-xs mt-1">
+                    {errors.Permanent_Pincode}
                   </p>
                 )}
               </div>
@@ -1758,7 +1704,7 @@ const AddCustProfile = () => {
                   value={formData.Permanent_City}
                   onChange={handleChange}
                   placeholder="City"
-                  className={`border px-1 py-1 mt-1 w-[150px] rounded-[8px] bg-white ${errors.Permanent_City
+                  className={`border px-1 text-xs h-[30px] mt-1 w-[110px] rounded-[8px] bg-white ${errors.Permanent_City
                     ? "border-red-500"
                     : "border-gray-300"
                     }`}
@@ -1770,6 +1716,10 @@ const AddCustProfile = () => {
                 )}
               </div>
             </div>
+            
+          </div>
+
+          <div className="flex gap-3 mt-2">
             <div>
               <div className="">
                 <div>
@@ -1782,7 +1732,7 @@ const AddCustProfile = () => {
                   name="Permanent_State"
                   value={formData.Permanent_State}
                   onChange={handleChange}
-                  className={`border px-1 py-1 mt-1 w-[150px] bg-white rounded-[8px] ${errors.Permanent_State
+                  className={`border px-1 text-xs h-[30px] mt-1 w-[150px] bg-white rounded-[8px] ${errors.Permanent_State
                     ? "border-red-500"
                     : "border-gray-300"
                     }`}
@@ -1851,7 +1801,7 @@ const AddCustProfile = () => {
                   value={formData.Permanent_Country}
                   onChange={handleChange}
                   placeholder="Country"
-                  className={`border px-1 py-1 mt-1 w-[120px] rounded-[8px] bg-white ${errors.Permanent_Country
+                  className={`border px-1 text-xs h-[30px] mt-1 w-[80px] rounded-[8px] bg-white ${errors.Permanent_Country
                     ? "border-red-500"
                     : "border-gray-300"
                     }`}
@@ -1863,32 +1813,7 @@ const AddCustProfile = () => {
                 )}
               </div>
             </div>
-            <div>
-              <div className="">
-                <div>
-                  <label className="text-[14px] font-medium">
-                    Pincode <span className="text-red-500">*</span>
-                  </label>
-                </div>
-
-                <input
-                  type="text"
-                  name="Permanent_Pincode"
-                  value={formData.Permanent_Pincode}
-                  onChange={handleChange}
-                  placeholder="Pincode"
-                  className={`border px-1 py-1 mt-1 w-[100px] rounded-[8px] bg-white ${errors.Permanent_Pincode
-                    ? "border-red-500"
-                    : "border-gray-300"
-                    }`}
-                />
-                {errors.Permanent_Pincode && (
-                  <p className="text-red-500 text-xs mt-1">
-                    {errors.Permanent_Pincode}
-                  </p>
-                )}
-              </div>
-            </div>
+           
             <div>
               <div className="">
                 <div>
@@ -1901,7 +1826,7 @@ const AddCustProfile = () => {
                   name="Permanent_ResiStatus"
                   value={formData.Permanent_ResiStatus}
                   onChange={handleChange}
-                  className="border border-gray-300 px-1 py-1 mt-1 w-[140px] bg-white rounded-[8px]"
+                  className="border border-gray-300 px-1 text-xs h-[30px]  mt-1 w-[120px] bg-white rounded-[8px]"
                 >
                   <option value="">Select Status</option>
                   <option value="Owner">Owner</option>
@@ -1927,14 +1852,12 @@ const AddCustProfile = () => {
                   value={formData.Permanent_Resisince}
                   onChange={handleChange}
                   placeholder="Eg.10"
-                  className="border border-gray-300 px-1 py-1 mt-1 w-[100px] rounded-[8px] bg-white"
+                  className="border border-gray-300 px-1 text-xs h-[30px] mt-1 w-[120px] rounded-[8px] bg-white"
                 />
               </div>
             </div>
-          </div>
 
-          <div className="flex gap-3 mt-2">
-            <div>
+                 <div>
               <div className="">
                 <div>
                   <label className="text-[14px] font-medium">Category</label>
@@ -1944,7 +1867,7 @@ const AddCustProfile = () => {
                   name="Permanent_Category"
                   value={formData.Permanent_Category}
                   onChange={handleChange}
-                  className="border border-gray-300 px-1 py-1 mt-1 w-[180px] bg-white rounded-[8px]"
+                  className="border border-gray-300 px-1 text-xs h-[30px] mt-1 w-[115px] bg-white rounded-[8px]"
                 >
                   <option value="">Select Category</option>
                   <option value="Salaried">Salaried</option>
@@ -1960,6 +1883,10 @@ const AddCustProfile = () => {
                 </select>
               </div>
             </div>
+              </div>
+              
+                <div className="flex gap-3 mt-2">
+           
 
             <div>
               <div className="">
@@ -1973,7 +1900,7 @@ const AddCustProfile = () => {
                   name="Permanent_CompanyType"
                   value={formData.Permanent_CompanyType}
                   onChange={handleChange}
-                  className="border border-gray-300 px-1 py-1 mt-1 w-[130px] bg-white rounded-[8px]"
+                  className="border border-gray-300 px-1 text-xs h-[30px] mt-1 w-[130px] bg-white rounded-[8px]"
                 >
                   <option value="">Select Company Type</option>
                   <option value="State Govt">State Govt</option>
@@ -1998,7 +1925,7 @@ const AddCustProfile = () => {
                   name="Permanent_IndustryType"
                   value={formData.Permanent_IndustryType}
                   onChange={handleChange}
-                  className="border border-gray-300 px-1 py-1 mt-1 w-[150px] bg-white rounded-[8px]"
+                  className="border border-gray-300 px-1 text-xs h-[30px] mt-1 w-[150px] bg-white rounded-[8px]"
                 >
                   <option value="">Select Industry Type</option>
                   <option value="Manufacturing">Manufacturing</option>
@@ -2025,7 +1952,7 @@ const AddCustProfile = () => {
                   value={formData.Permanent_Businessworkingsince}
                   onChange={handleChange}
                   placeholder="Eg.10"
-                  className="border border-gray-300 px-1 py-1 mt-1 w-[120px] rounded-[8px] bg-white"
+                  className="border border-gray-300 px-1 text-xs h-[30px] mt-1 w-[120px] rounded-[8px] bg-white"
                 />
               </div>
             </div>
@@ -2033,181 +1960,9 @@ const AddCustProfile = () => {
         </div>
       </div>
 
-      <div className="flex mx-auto mt-1 w-[1462px]">
+            <div className="flex mx-auto mt-4 w-[728px]">
         <div className="bg-[#FFE6E6]  p-6 rounded-md w-full mx-auto ">
-          <p className="mt-1">
-            <label className="flex items-center gap-2 font-['Roboto'] text-[16px]">
-              <input
-                type="radio"
-                name="access2"
-                checked={sameAddress}
-                onChange={handleRadioChange}
-                className="accent-[#0A2478]"
-              />
-              <span className="text-[16px] text-[#000000]">
-                Permanent Address same as Current Address?
-              </span>
-            </label>
-          </p>
-          <p className="font-[Source_Sans_3] font-bold text-[24px] leading-[100%] tracking-[0.03em] text-[#0A2478] mb-4 mt-4">
-            Current Address
-          </p>
-
-          <div className="flex gap-3">
-            <div>
-              <div className="">
-                <div>
-                  <label className="text-[14px] font-medium">Address</label>
-                </div>
-
-                <input
-                  type="text"
-                  name="Corresponding_Address"
-                  value={formData.Corresponding_Address}
-                  onChange={handleChange}
-                  placeholder="Address"
-                  className="border border-gray-300 px-1 py-1 mt-1 w-[385px]  bg-white rounded-[8px]"
-                />
-              </div>
-            </div>
-
-            <div className="">
-              <div>
-                <label className="text-[14px] font-medium">Area*</label>
-              </div>
-
-              <select
-                name="Corresponding_Area"
-                value={formData.Corresponding_Area}
-                onChange={handleChange}
-                className="border border-gray-300 px-1 py-1 mt-1 w-[130px] bg-white rounded-[8px]"
-              >
-                <option value="">Select Area</option>
-                {areas.length > 0 ? (
-                  areas.map((area) => (
-                    <option key={area.id} value={area.area_locality}>
-                      {area.area_locality}
-                    </option>
-                  ))
-                ) : (
-                  <option disabled>Loading areas...</option>
-                )}
-              </select>
-            </div>
-            <div>
-              <div className="">
-                <div>
-                  {" "}
-                  <label className="text-[14px] font-medium">State</label>
-                </div>
-
-                <select
-                  name="Corresponding_State"
-                  value={formData.Corresponding_State}
-                  onChange={handleChange}
-                  className="border border-gray-300 px-1 py-1 mt-1 w-[150px] bg-white rounded-[8px]"
-                >
-                  <option value="">Select State</option>
-                  <option value="Andhra Pradesh">Andhra Pradesh</option>
-                  <option value="Arunachal Pradesh">Arunachal Pradesh</option>
-                  <option value="Assam">Assam</option>
-                  <option value="Bihar">Bihar</option>
-                  <option value="Chhattisgarh">Chhattisgarh</option>
-                  <option value="Goa">Goa</option>
-                  <option value="Gujarat">Gujarat</option>
-                  <option value="Haryana">Haryana</option>
-                  <option value="Himachal Pradesh">Himachal Pradesh</option>
-                  <option value="Jharkhand">Jharkhand</option>
-                  <option value="Karnataka">Karnataka</option>
-                  <option value="Kerala">Kerala</option>
-                  <option value="Madhya Pradesh">Madhya Pradesh</option>
-                  <option value="Maharashtra">Maharashtra</option>
-                  <option value="Manipur">Manipur</option>
-                  <option value="Meghalaya">Meghalaya</option>
-                  <option value="Mizoram">Mizoram</option>
-                  <option value="Nagaland">Nagaland</option>
-                  <option value="Odisha">Odisha</option>
-                  <option value="Punjab">Punjab</option>
-                  <option value="Rajasthan">Rajasthan</option>
-                  <option value="Sikkim">Sikkim</option>
-                  <option value="Tamil Nadu">Tamil Nadu</option>
-                  <option value="Telangana">Telangana</option>
-                  <option value="Tripura">Tripura</option>
-                  <option value="Uttar Pradesh">Uttar Pradesh</option>
-                  <option value="Uttarakhand">Uttarakhand</option>
-                  <option value="West Bengal">West Bengal</option>
-                  <option value="Andaman and Nicobar Islands">
-                    Andaman and Nicobar Islands
-                  </option>
-                  <option value="Chandigarh">Chandigarh</option>
-                  <option value="Dadra and Nagar Haveli and Daman and Diu">
-                    Dadra and Nagar Haveli and Daman and Diu
-                  </option>
-                  <option value="Delhi">Delhi</option>
-                  <option value="Jammu and Kashmir">Jammu and Kashmir</option>
-                  <option value="Ladakh">Ladakh</option>
-                  <option value="Lakshadweep">Lakshadweep</option>
-                  <option value="Puducherry">Puducherry</option>
-                </select>
-              </div>
-            </div>
-
-            <div>
-              <div className="">
-                <div>
-                  <label className="text-[14px] font-medium">City</label>
-                </div>
-
-                <input
-                  type="text"
-                  name="Corresponding_City"
-                  value={formData.Corresponding_City}
-                  onChange={handleChange}
-                  placeholder="City"
-                  className="border border-gray-300 px-1 py-1 mt-1 w-[150px] rounded-[8px] bg-white"
-                />
-              </div>
-            </div>
-
-            <div>
-              <div className="">
-                <div>
-                  <label className="text-[14px] font-medium">Country</label>
-                </div>
-
-                <input
-                  type="text"
-                  name="Corresponding_Country"
-                  value={formData.Corresponding_Country}
-                  onChange={handleChange}
-                  placeholder="Country"
-                  className="border border-gray-300 px-1 py-1 mt-1 w-[120px] rounded-[8px] bg-white"
-                />
-              </div>
-            </div>
-            <div>
-              <div className="">
-                <div>
-                  <label className="text-[14px] font-medium">Pincode*</label>
-                </div>
-
-                <input
-                  type="text"
-                  name="Corresponding_Pincode"
-                  value={formData.Corresponding_Pincode}
-                  onChange={handleChange}
-                  placeholder="Pincode"
-                  className="border border-gray-300 px-1 py-1 mt-1 w-[100px] rounded-[8px] bg-white"
-                />
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <div className="flex mx-auto mt-1 w-[1462px]">
-        <div className="bg-[#F7F7FF]  p-6 rounded-md w-full mx-auto ">
-          <p className="font-[Source_Sans_3] font-bold text-[24px] leading-[100%] tracking-[0.03em] text-[#0A2478] mb-4 mt-5">
+          <p className="font-[Source_Sans_3] font-bold text-[24px] leading-[100%] tracking-[0.03em] text-[#0A2478] mb-4 ">
             Additional Documents
           </p>
 
@@ -2221,7 +1976,7 @@ const AddCustProfile = () => {
                 name="Additional_AddressProof"
                 value={formData.Additional_AddressProof}
                 onChange={handleChange}
-                className="border border-gray-300 px-1 py-1 mt-1 w-[200px] bg-white rounded-[8px]"
+                className="border border-gray-300 px-1 text-xs h-[30px] mt-1 w-[150px] bg-white rounded-[8px]"
               >
                 <option value="">Select Address Proof</option>
 
@@ -2256,13 +2011,13 @@ const AddCustProfile = () => {
                 value={formData.Additional_AnyDetails1}
                 onChange={handleChange}
                 placeholder="Any Details"
-                className="border border-gray-300 px-1 py-1 mt-1 w-[250px] rounded-[8px] bg-white"
+                className="border border-gray-300 px-1 text-xs h-[30px] mt-1 w-[141px] rounded-[8px] bg-white"
               />
             </div>
             <div className="mt-6">
               <label
                 htmlFor="uploadDocument1"
-                className="w-[120px] h-[35px] border rounded-[8px] bg-[#0A2478] text-[12px] text-white flex justify-center items-center gap-2 cursor-pointer "
+                className="w-[141px] h-[35px] border rounded-[8px] bg-[#0A2478] text-[12px] text-white flex justify-center items-center gap-2 cursor-pointer "
               >
                 <p>Upload Document</p>
                 <MdOutlineFileUpload />
@@ -2294,7 +2049,7 @@ const AddCustProfile = () => {
                 name="Additional_IDProof"
                 value={formData.Additional_IDProof}
                 onChange={handleChange}
-                className="border border-gray-300 px-1 py-1 mt-1 w-[170px] bg-white rounded-[8px]"
+                className="border border-gray-300 px-1 text-xs h-[30px] mt-1 w-[150px] bg-white rounded-[8px]"
               >
                 <option value="">Select ID Proof</option>
 
@@ -2318,7 +2073,10 @@ const AddCustProfile = () => {
               </select>
             </div>
 
-            {/* ID Details */}
+            
+          </div>
+              <div className="flex items-center gap-4 mt-2">
+                {/* ID Details */}
             <div className="flex flex-col">
               <label className="text-[14px] font-medium">
                 Any Details <span className="text-red-500">*</span>
@@ -2329,7 +2087,7 @@ const AddCustProfile = () => {
                 value={formData.Additional_AnyDetails2}
                 onChange={handleChange}
                 placeholder="Any Details"
-                className="border border-gray-300 px-1 py-1 mt-1 w-[200px] rounded-[8px] bg-white"
+                className="border border-gray-300 px-1 text-xs h-[30px] mt-1 w-[141px] rounded-[8px] bg-white"
               />
             </div>
 
@@ -2337,7 +2095,7 @@ const AddCustProfile = () => {
             <div className="mt-6">
               <label
                 htmlFor="uploadDocument2"
-                className="w-[120px] h-[35px] border rounded-[8px] bg-[#0A2478] text-[12px] text-white flex justify-center items-center gap-2 cursor-pointer"
+                className="w-[141px] h-[35px] border rounded-[8px] bg-[#0A2478] text-[12px] text-white flex justify-center items-center gap-2 cursor-pointer"
               >
                 <p>Upload Document</p>
                 <MdOutlineFileUpload />
@@ -2360,8 +2118,6 @@ const AddCustProfile = () => {
                 </p>
               )}
             </div>
-          </div>
-          <div className="flex items-center gap-4 mt-2">
             <div className="flex flex-col">
               <label className="text-[14px] font-medium">Reference 1</label>
               <input
@@ -2370,7 +2126,7 @@ const AddCustProfile = () => {
                 value={formData.Additional_Reference1}
                 onChange={handleChange}
                 placeholder="Reference"
-                className="border border-gray-300 px-1 py-1 mt-1 w-[300px] rounded-[8px] bg-white"
+                className="border border-gray-300 px-1 text-xs h-[30px] mt-1 w-[152px] rounded-[8px] bg-white"
               />
             </div>
 
@@ -2382,108 +2138,117 @@ const AddCustProfile = () => {
                 value={formData.Additional_Reference2}
                 onChange={handleChange}
                 placeholder="Reference"
-                className="border border-gray-300 px-1 py-1 mt-1 w-[300px] rounded-[8px] bg-white"
+                className="border border-gray-300 px-1 text-xs h-[30px] mt-1 w-[150px]  mt-1  rounded-[8px] bg-white"
               />
             </div>
           </div>
         </div>
       </div>
-
-      <div className="flex mx-auto mt-1 w-[1462px]">
-        <div className="bg-[#FFE6E6]  p-6 rounded-md w-full mx-auto ">
-          <p className="font-[Source_Sans_3] font-bold text-[24px] leading-[100%] tracking-[0.03em] text-[#0A2478] mb-4">
-            Nominee Details
+  <div className="flex mx-auto mt-4 w-[728px]">
+        <div className="flex  w-[728px] justify-between bg-[#F7F7FF] p-6">
+          {/* Header */}
+          <p className="font-['Source_Sans_3'] font-bold text-[24px] text-[#0A2478] mb-2">
+            Additional User Access
           </p>
 
-          <div className="flex gap-3">
-            <div>
-              <div className="">
-                <div>
-                  <label className="text-[14px] font-medium">
-                    Nominee <span className="text-red-500">*</span>
-                  </label>
-                </div>
+          {/* Question */}
+          <div className="mt-1">
+            <label className="flex items-center gap-2 font-['Roboto'] text-[16px]">
+              <input
+                type="radio"
+                name="access"
+                className="accent-[#0A2478]"
+                value="Yes"
+                checked={formData.access === "Yes"}
+                onChange={handleChange}
+              />
+              <span className="font-['Roboto'] text-[16px] text-[#000000]">
+                Allow Customers to access Mobile App?
+              </span>
+            </label>
+          </div>
+        </div>
+      </div>
 
-                <input
-                  type="text"
-                  name="Nominee_NomineeName"
-                  value={formData.Nominee_NomineeName}
-                  onChange={handleChange}
-                  placeholder="Nominee Name"
-                  className="border border-gray-300 px-1 py-1 mt-1 w-[300px]  bg-white rounded-[8px]"
-                />
+        </div>
+        <div>
+ <div className="flex mx-auto mt-4 w-[710px]">
+            <div className="bg-[#F7F7FF]   p-6 rounded-md w-full mx-auto ">
+              <div className='flex justify-between'>
+<p className="font-[Source_Sans_3] font-bold text-[24px] leading-[100%] tracking-[0.03em] text-[#0A2478]  ">
+            Current Address
+          </p>
+           <p className="">
+            <label className="flex items-center gap-2 font-['Roboto'] text-[16px]">
+              <input
+                type="radio"
+                name="access2"
+                checked={sameAddress}
+                onChange={handleRadioChange}
+                className="accent-[#0A2478]"
+              />
+              <span className="text-[16px] text-[#000000]">
+                Permanent Address same as Current Address?
+              </span>
+            </label>
+          </p>
               </div>
-            </div>
+         
+          
 
+          <div className="flex gap-3 mt-5">
             <div>
               <div className="">
                 <div>
-                  <label className="text-[14px] font-medium">
-                    Relation <span className="text-red-500">*</span>
-                  </label>
+                  <label className="text-[14px] font-medium">Address</label>
                 </div>
 
                 <input
                   type="text"
-                  name="Nominee_Relation"
-                  value={formData.Nominee_Relation}
-                  onChange={handleChange}
-                  placeholder="Relation"
-                  className="border border-gray-300 px-1 py-1 mt-1 w-[90px] rounded-[8px] bg-white"
-                />
-              </div>
-            </div>
-
-            <div>
-              <div className="">
-                <div>
-                  <label className="text-[14px] font-medium">
-                    Address <span className="text-red-500">*</span>
-                  </label>
-                </div>
-
-                <input
-                  type="text"
-                  name="Nominee_Address"
-                  value={formData.Nominee_Address}
+                  name="Corresponding_Address"
+                  value={formData.Corresponding_Address}
                   onChange={handleChange}
                   placeholder="Address"
-                  className="border border-gray-300 px-1 py-1 mt-1 w-[300px] rounded-[8px] bg-white"
+                  className="border border-gray-300 px-1 text-xs h-[30px] mt-1 w-[385px]  bg-white rounded-[8px]"
                 />
               </div>
             </div>
-            <div>
-              <div className="">
-                <div>
-                  <label className="text-[14px] font-medium">
-                    City <span className="text-red-500">*</span>
-                  </label>
-                </div>
 
-                <input
-                  type="text"
-                  name="Nominee_City"
-                  value={formData.Nominee_City}
-                  onChange={handleChange}
-                  placeholder="City"
-                  className="border border-gray-300 px-1 py-1 mt-1 w-[131px] rounded-[8px] bg-white"
-                />
+            <div className="">
+              <div>
+                <label className="text-[14px] font-medium">Area*</label>
               </div>
+
+              <select
+                name="Corresponding_Area"
+                value={formData.Corresponding_Area}
+                onChange={handleChange}
+                className="border border-gray-300 px-1 text-xs h-[30px] mt-1 w-[100px] bg-white rounded-[8px]"
+              >
+                <option value="">Select Area</option>
+                {areas.length > 0 ? (
+                  areas.map((area) => (
+                    <option key={area.id} value={area.area_locality}>
+                      {area.area_locality}
+                    </option>
+                  ))
+                ) : (
+                  <option disabled>Loading areas...</option>
+                )}
+              </select>
             </div>
             <div>
               <div className="">
                 <div>
                   {" "}
-                  <label className="text-[14px] font-medium">
-                    State <span className="text-red-500">*</span>
-                  </label>
+                  <label className="text-[14px] font-medium">State</label>
                 </div>
 
                 <select
-                  name="Nominee_State"
-                  value={formData.Nominee_State}
+                  name="Corresponding_State"
+                  value={formData.Corresponding_State}
                   onChange={handleChange}
-                  className="border border-gray-300 px-1 py-1 mt-1 w-[220px] bg-white rounded-[8px]"
+                  className="border border-gray-300 px-1 text-xs h-[30px] mt-1 w-[120px] bg-white rounded-[8px]"
                 >
                   <option value="">Select State</option>
                   <option value="Andhra Pradesh">Andhra Pradesh</option>
@@ -2530,52 +2295,256 @@ const AddCustProfile = () => {
               </div>
             </div>
 
+           
           </div>
+              <div className='flex gap-3 mt-2'>
+                 <div>
+              <div className="">
+                <div>
+                  <label className="text-[14px] font-medium">City</label>
+                </div>
+
+                <input
+                  type="text"
+                  name="Corresponding_City"
+                  value={formData.Corresponding_City}
+                  onChange={handleChange}
+                  placeholder="City"
+                  className="border border-gray-300 px-1 text-xs h-[30px] mt-1 w-[150px] rounded-[8px] bg-white"
+                />
+              </div>
+            </div>
+
+            <div>
+              <div className="">
+                <div>
+                  <label className="text-[14px] font-medium">Country</label>
+                </div>
+
+                <input
+                  type="text"
+                  name="Corresponding_Country"
+                  value={formData.Corresponding_Country}
+                  onChange={handleChange}
+                  placeholder="Country"
+                  className="border border-gray-300 px-1 text-xs h-[30px] mt-1 w-[120px] rounded-[8px] bg-white"
+                />
+              </div>
+            </div>
+            <div>
+              <div className="">
+                <div>
+                  <label className="text-[14px] font-medium">Pincode*</label>
+                </div>
+
+                <input
+                  type="text"
+                  name="Corresponding_Pincode"
+                  value={formData.Corresponding_Pincode}
+                  onChange={handleChange}
+                  placeholder="Pincode"
+                  className="border border-gray-300 px-1 text-xs h-[30px] mt-1 w-[100px] rounded-[8px] bg-white"
+                />
+              </div>
+            </div>
+          </div>
+
+
+
         </div>
       </div>
 
-      <div className="flex mx-auto mt-1 w-[1462px]">
-        <div className="flex  gap-[100px]  bg-[#F7F7FF] p-6">
-          {/* Header */}
-          <p className="font-['Source_Sans_3'] font-bold text-[24px] text-[#0A2478] mb-2">
-            Additional User Access
+          
+           <div className="flex mx-auto mt-4 w-[710px]">
+        <div className="bg-[#FFE6E6]  p-6 rounded-md w-full mx-auto ">
+          <p className="font-[Source_Sans_3] font-bold text-[24px] leading-[100%] tracking-[0.03em] text-[#0A2478] mb-4">
+            Nominee Details
           </p>
 
-          {/* Question */}
-          <div className="mt-1">
-            <label className="flex items-center gap-2 font-['Roboto'] text-[16px]">
-              <input
-                type="radio"
-                name="access"
-                className="accent-[#0A2478]"
-                value="Yes"
-                checked={formData.access === "Yes"}
-                onChange={handleChange}
-              />
-              <span className="font-['Roboto'] text-[16px] text-[#000000]">
-                Allow Customers to access Mobile App?
-              </span>
-            </label>
+          <div className="flex gap-3">
+            <div>
+              <div className="">
+                <div>
+                  <label className="text-[14px] font-medium">
+                    Nominee <span className="text-red-500">*</span>
+                  </label>
+                </div>
+
+                <input
+                  type="text"
+                  name="Nominee_NomineeName"
+                  value={formData.Nominee_NomineeName}
+                  onChange={handleChange}
+                  placeholder="Nominee Name"
+                  className="border border-gray-300 px-1 text-xs h-[30px] mt-1 w-[180px]  bg-white rounded-[8px]"
+                />
+              </div>
+            </div>
+
+            <div>
+              <div className="">
+                <div>
+                  <label className="text-[14px] font-medium">
+                    Relation <span className="text-red-500">*</span>
+                  </label>
+                </div>
+
+                <input
+                  type="text"
+                  name="Nominee_Relation"
+                  value={formData.Nominee_Relation}
+                  onChange={handleChange}
+                  placeholder="Relation"
+                  className="border border-gray-300 px-1 text-xs h-[30px] mt-1 w-[90px] rounded-[8px] bg-white"
+                />
+              </div>
+            </div>
+
+            <div>
+              <div className="">
+                <div>
+                  <label className="text-[14px] font-medium">
+                    Address <span className="text-red-500">*</span>
+                  </label>
+                </div>
+
+                <input
+                  type="text"
+                  name="Nominee_Address"
+                  value={formData.Nominee_Address}
+                  onChange={handleChange}
+                  placeholder="Address"
+                  className="border border-gray-300 px-1 text-xs h-[30px] mt-1 w-[300px] rounded-[8px] bg-white"
+                />
+              </div>
+                </div>
+               
+            
+
           </div>
+           <div className='flex gap-4 mt-2'>
+
+<div>
+              <div className=" ">
+                <div>
+                  <label className="text-[14px] font-medium">
+                    City <span className="text-red-500">*</span>
+                  </label>
+                </div>
+
+                <input
+                  type="text"
+                  name="Nominee_City"
+                  value={formData.Nominee_City}
+                  onChange={handleChange}
+                  placeholder="City"
+                  className="border border-gray-300 px-1 text-xs h-[30px] mt-1 w-[131px] rounded-[8px] bg-white"
+                />
+              </div>
+            </div>
+            <div>
+              <div className="">
+                <div>
+                  {" "}
+                  <label className="text-[14px] font-medium">
+                    State <span className="text-red-500">*</span>
+                  </label>
+                </div>
+
+                <select
+                  name="Nominee_State"
+                  value={formData.Nominee_State}
+                  onChange={handleChange}
+                  className="border border-gray-300 px-1 text-xs h-[30px] mt-1 w-[220px] bg-white rounded-[8px]"
+                >
+                  <option value="">Select State</option>
+                  <option value="Andhra Pradesh">Andhra Pradesh</option>
+                  <option value="Arunachal Pradesh">Arunachal Pradesh</option>
+                  <option value="Assam">Assam</option>
+                  <option value="Bihar">Bihar</option>
+                  <option value="Chhattisgarh">Chhattisgarh</option>
+                  <option value="Goa">Goa</option>
+                  <option value="Gujarat">Gujarat</option>
+                  <option value="Haryana">Haryana</option>
+                  <option value="Himachal Pradesh">Himachal Pradesh</option>
+                  <option value="Jharkhand">Jharkhand</option>
+                  <option value="Karnataka">Karnataka</option>
+                  <option value="Kerala">Kerala</option>
+                  <option value="Madhya Pradesh">Madhya Pradesh</option>
+                  <option value="Maharashtra">Maharashtra</option>
+                  <option value="Manipur">Manipur</option>
+                  <option value="Meghalaya">Meghalaya</option>
+                  <option value="Mizoram">Mizoram</option>
+                  <option value="Nagaland">Nagaland</option>
+                  <option value="Odisha">Odisha</option>
+                  <option value="Punjab">Punjab</option>
+                  <option value="Rajasthan">Rajasthan</option>
+                  <option value="Sikkim">Sikkim</option>
+                  <option value="Tamil Nadu">Tamil Nadu</option>
+                  <option value="Telangana">Telangana</option>
+                  <option value="Tripura">Tripura</option>
+                  <option value="Uttar Pradesh">Uttar Pradesh</option>
+                  <option value="Uttarakhand">Uttarakhand</option>
+                  <option value="West Bengal">West Bengal</option>
+                  <option value="Andaman and Nicobar Islands">
+                    Andaman and Nicobar Islands
+                  </option>
+                  <option value="Chandigarh">Chandigarh</option>
+                  <option value="Dadra and Nagar Haveli and Daman and Diu">
+                    Dadra and Nagar Haveli and Daman and Diu
+                  </option>
+                  <option value="Delhi">Delhi</option>
+                  <option value="Jammu and Kashmir">Jammu and Kashmir</option>
+                  <option value="Ladakh">Ladakh</option>
+                  <option value="Lakshadweep">Lakshadweep</option>
+                  <option value="Puducherry">Puducherry</option>
+                </select>
+              </div>
+            </div>
+
+                </div>
         </div>
       </div>
 
-      <div className="flex mx-auto mt-1 w-[1462px]">
-        <div className="p-6 rounded-md w-full mx-auto bg-[#FFE6E6]">
-          <p className="font-[Source_Sans_3] font-bold text-[24px] leading-[100%] tracking-[0.03em] text-[#0A2478] mb-4 ">
-            Remark
-          </p>
+<div className="flex mx-auto mt-4 w-[710px]">
+  <div className="p-4 rounded-md w-full bg-[#F7F7FF]  flex flex-col">
+    <p className="font-[Source_Sans_3] font-bold text-[20px] leading-none tracking-[0.03em] text-[#0A2478] mb-3">
+      Remark
+    </p>
 
-          <JoditEditor
-            ref={editor}
-            value={content}
-            config={config}
-            onChange={(newContent) => setContent(newContent)}
-          />
+    {/* Wrapper to control editor boundaries */}
+    <div className="jodit-wrapper border rounded-md overflow-hidden">
+      <JoditEditor
+        ref={editor}
+        value={content}
+        config={{
+          ...config,
+          readonly: false,
+          height: 150, // Sets the editing area height
+          toolbarAdaptive: false, // Keeps toolbar visible
+          buttons: "bold,italic,underline,strikethrough,ul,ol,font,fontsize,paragraph", // Minimal buttons to save space
+        }}
+        onChange={(newContent) => setContent(newContent)}
+      />
+    </div>
+  </div>
+</div>
+          
         </div>
-      </div>
+</div>
+      
 
-      <div className="flex mx-auto mt-1 w-[1462px]">
+     
+
+    
+
+     
+
+    
+
+      
+<div className='mx-auto mt-4 flex justify-center bg-[#FFE6E6] w-[1462px]'>
+ <div className=" ">
         <div>
           <CustBankDetails
             bankData={bankData}
@@ -2586,6 +2555,9 @@ const AddCustProfile = () => {
           />
         </div>
       </div>
+        
+</div>
+     
 
       <div className="flex gap-3 mt-5 mb-5 justify-center">
         <button

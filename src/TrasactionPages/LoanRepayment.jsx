@@ -55,14 +55,14 @@ const LoanRepayment = () => {
     <div className="min-h-screen font-sans text-sm">
       {/* Header Section (UNCHANGED DESIGN) */}
       <div className="flex justify-center">
-        <div className="flex justify-center mt-5">
-          <div className="flex items-center px-6 py-4 w-[1290px] h-[62px] rounded-[11px] border border-gray-200 justify-between shadow-sm bg-white">
+        <div className="flex justify-center mt-2">
+          <div className="flex items-center px-6 py-4 w-[1462px] h-[50px] rounded-[11px] border border-gray-200 justify-between shadow-sm bg-white">
             <h2 className="text-red-600 font-bold text-[20px] whitespace-nowrap">
               Loan-Repayment
             </h2>
 
             <div className="flex items-center gap-6">
-              <div className="flex items-center bg-white border border-gray-400 rounded-[5px] h-[32px] px-2 relative w-[450px]">
+              <div className="flex items-center bg-white border border-gray-400 rounded-[5px] h-[30px] px-2 relative w-[450px]">
                 <input
                   type="text"
                   value={searchQuery}
@@ -100,8 +100,8 @@ const LoanRepayment = () => {
       </div>
 
       {/* Table Section (DESIGN SAME) */}
-      <div className="flex mr-[110px] ml-[110px] text-sm">
-        <div className="overflow-x-auto mt-4 shadow-sm">
+      <div className="flex  text-sm ml-[22px]">
+        <div className="overflow-x-auto mt-2 shadow-sm">
           <table className="w-full text-left border-collapse">
             <thead className="bg-[#0A2478] text-white  text-[11px]">
               <tr>

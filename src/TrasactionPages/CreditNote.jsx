@@ -93,7 +93,7 @@ function CreditNote() {
       <div className="flex flex-col items-center w-full bg-white">
         {/* Header */}
         <div className="flex justify-center sticky top-[80px] z-40">
-          <div className="flex items-center justify-between border border-gray-200 rounded-[10px] px-4 py-2 mt-4 w-[1290px] h-[62px] shadow-sm bg-white">
+          <div className="flex items-center justify-between border border-gray-200 rounded-[10px] px-6 py-4 w-[1462px] h-[50px] shadow-sm bg-white">
             <h2 className="text-[#C1121F] font-bold text-[20px] whitespace-nowrap">
               Customer Credit Notes
             </h2>
@@ -224,37 +224,37 @@ function CreditNote() {
         {/* Table */}
         <div className="p-6 ">
           <table className="min-w-full border-collapse bg-white text-sm text-gray-700">
-            <thead className=" text-white text-left ">
+            <thead className=" text-white text-left">
               <tr>
-                <th className="bg-[#0A2478] border-r-2 border-white px-4 py-2 font-semibold w-[150px]">
+                <th className="bg-[#0A2478] border-r-2 border-white px-1 py-1 font-semibold w-[150px]">
                   Credit Note No.
                 </th>
-                <th className="bg-[#0A2478] border-r-2 border-white px-4 py-2 font-semibold w-[100px]">
+                <th className="bg-[#0A2478] border-r-2 border-white px-1 py-1 font-semibold w-[100px]">
                   Customer Id.
                 </th>
 
-                <th className="bg-[#0A2478] border-r-2 border-white px-4 py-2 font-semibold w-[200px]">
+                <th className="bg-[#0A2478] border-r-2 border-white px-1 py-1 font-semibold w-[200px]">
                   Customer Name
                 </th>
-                <th className="bg-[#0A2478] border-r-2 border-white px-4 py-2 font-semibold w-[200px]">
+                <th className="bg-[#0A2478] border-r-2 border-white px-1 py-1 font-semibold w-[200px]">
                   Customer Address
                 </th>
-                <th className="bg-[#0A2478] border-r-2 border-white px-4 py-2 font-semibold w-[120px]">
+                <th className="bg-[#0A2478] border-r-2 border-white px-1 py-1 font-semibold w-[120px]">
                   Phone No.
                 </th>
-                <th className="bg-[#0A2478] border-r-2 border-white px-4 py-2 font-semibold w-[120px]">
+                <th className="bg-[#0A2478] border-r-2 border-white px-1 py-1 font-semibold w-[120px]">
                   Credit Note Amount
                 </th>
-                <th className="bg-[#0A2478] border-r-2 border-white px-4 py-2 font-semibold w-[120px]">
+                <th className="bg-[#0A2478] border-r-2 border-white px-1 py-1 font-semibold w-[120px]">
                   Utilized Amount
                 </th>
-                <th className="bg-[#0A2478] border-r-2 border-white px-4 py-2 font-semibold w-[120px]">
+                <th className="bg-[#0A2478] border-r-2 border-white px-1 py-1 font-semibold w-[120px]">
                   Un-Utilized Amount
                 </th>
-                <th className="bg-[#0A2478] border-r-2 border-white px-4 py-2 font-semibold w-[80px]">
+                <th className="bg-[#0A2478] border-r-2 border-white px-1 py-1 font-semibold w-[80px]">
                   Date
                 </th>
-                <th className="bg-[#0A2478] border-r-2 border-white px-4 py-2 text-center font-semibold">
+                <th className="bg-[#0A2478] border-r-2 border-white px-1 py-1 text-center font-semibold">
                   Action
                 </th>
               </tr>
@@ -268,28 +268,28 @@ function CreditNote() {
                     className={index % 2 === 0 ? "bg-gray-50" : "bg-white"}
                   >
                     <td
-                      className="px-4 py-2 text-blue-500 hover:cursor-pointer"
+                      className="px-1 py-1 text-blue-500 hover:cursor-pointer"
                       onClick={() =>
                         navigate("/View-Credit-Note", { state: { id: row.id } })
                       }
                     >
                       {row.credit_note_no}
                     </td>
-                    <td className="px-4 py-2">{row.customer_no}</td>
+                    <td className="px-1 py-1">{row.customer_no}</td>
 
-                    <td className="px-4 py-2">{row.customer_name}</td>
+                    <td className="px-1 py-1">{row.customer_name}</td>
                     <td
-                      className="px-4 py-2 max-w-[200px] truncate"
+                      className="px-1 py-1 max-w-[500px] truncate"
                       title={row.customer_address}
                     >
                       {row.customer_address}
                     </td>
-                    <td className="px-4 py-2">{row.phone_no}</td>
-                    <td className="px-4 py-2">{row.CreditAmount}</td>
-                    <td className="px-4 py-2">{row.Utilized_Amount}</td>
-                    <td className="px-4 py-2">{row.Unutilized_Amount}</td>
-                    <td className="px-4 py-2">{formatIndianDate(row.date)}</td>
-                    <td className="px-4 py-2 flex justify-center gap-2">
+                    <td className="px-1 py-1">{row.phone_no}</td>
+                    <td className="px-1 py-1">{row.CreditAmount}</td>
+                    <td className="px-1 py-1">{row.Utilized_Amount}</td>
+                    <td className="px-1 py-1">{row.Unutilized_Amount}</td>
+                    <td className="px-1 py-1">{formatIndianDate(row.date)}</td>
+                    <td className="px-1 py-1 flex justify-center gap-2">
                       {/* VIEW BUTTON (passing id via state instead of URL param) */}
 
                       {/* PRINT BUTTON (passing id via state instead of URL param) */}

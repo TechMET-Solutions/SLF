@@ -73,13 +73,13 @@ const allHeaderIds = [
   };
   return (
     <div className="min-h-screen bg-white font-sans text-[#333]">
-      <div className="ml-[110px] mr-[110px] mx-auto ">
+      <div className="mx-auto  ">
 
       
 
         <div className="flex justify-center sticky top-[80px] z-40">
-          <div className="flex justify-center p-6 ">
-            <div className="flex items-center justify-between px-6 py-4 border-b w-[1290px] h-[61px] border rounded-[11px] border-gray-200 bg-white">
+          <div className="flex justify-center">
+            <div className="flex items-center justify-between px-6 py-4 border-b w-[1462px] h-[50px] border rounded-[11px] border-gray-200 bg-white">
               <h2 className="text-red-600 font-bold text-[20px] leading-[148%]">
                 Expense List
               </h2>
@@ -156,7 +156,7 @@ const allHeaderIds = [
     type="date"
     value={selectedDate}
     onChange={(e) => setSelectedDate(e.target.value)}
-    className="ml-2 border border-gray-300 text-[11px] px-2 h-[34px] rounded"
+    className="ml-2 border border-gray-300 text-[11px] px-2 h-[30px] rounded"
   />
                 <button
                   onClick={() => {
@@ -164,7 +164,7 @@ const allHeaderIds = [
                     // setCurrentPage(1);
                     // fetchData(1);   // 🔥 API CALL
                   }}
-                  className="ml-2 bg-[#0b2c69] text-white text-[11px] px-4  rounded-[3px] font-source hover:bg-[#071d45] h-[34px]"
+                  className="ml-2 bg-[#0b2c69] text-white text-[11px] px-4  rounded-[3px] font-source hover:bg-[#071d45] h-[30px]"
                 >
                   Search
                 </button>
@@ -178,7 +178,7 @@ const allHeaderIds = [
                     // setCurrentPage(1);
                     // fetchData(1);
                   }}
-                  className="ml-2 bg-[#0b2c69] text-white text-[11px] px-4  rounded-[3px] font-source hover:bg-[#071d45] h-[34px]"
+                  className="ml-2 bg-[#0b2c69] text-white text-[11px] px-4  rounded-[3px] font-source hover:bg-[#071d45] h-[30px]"
                 >
                   Clear
                 </button>  
@@ -186,13 +186,13 @@ const allHeaderIds = [
  
                 <button
                  onClick={() => navigate("/Expences/create")}
-                  className="w-[100px] h-[30px]  cursor-pointer rounded bg-[#0A2478] text-white text-[11.25px] flex items-center justify-center mt-2 py-2 h-[34px]"
+                  className="w-[100px] h-[30px]  cursor-pointer rounded bg-[#0A2478] text-white text-[11.25px] flex items-center justify-center mt-2 py-2 "
                 >
                   Add Expense
                 </button>
                 <button
                   onClick={() => navigate("/")}
-                  className="w-[74px] h-[30px] h-[34px] cursor-pointer  rounded bg-[#C1121F] text-white text-[10px] mt-2"
+                  className="w-[74px] h-[30px] cursor-pointer  rounded bg-[#C1121F] text-white text-[10px] mt-2"
                 >
                   Exit
                 </button>
@@ -202,13 +202,13 @@ const allHeaderIds = [
         </div>
 
         {/* TABLE */}
-        <div className="overflow-hidden mt-5">
-          <table className=" text-left border-collapse w-[500px]" >
+        <div className="overflow-hidden mt-5  ml-[22px]">
+          <table className="text-left border-collapse w-[500px]" >
             <thead>
-              <tr className="bg-[#0D3082] text-white text-[12px] uppercase">
-                <th className="p-3 border-r">Expense No</th>
-                <th className="p-3 border-r">Expense Date</th>
-                <th className="p-3 text-center">Action</th>
+              <tr className="bg-[#0D3082] text-white text-[12px]">
+                <th className="p-1 border-r text-left">Expense No</th>
+                <th className="p-1 border-r text-left">Expense Date</th>
+                <th className="p-1 text-left">Action</th>
               </tr>
             </thead>
 
@@ -217,18 +217,18 @@ const allHeaderIds = [
                 <tr key={row.id} className={index % 2 === 0 ? "bg-gray-50" : "bg-white"}>
 
                   {/* Expense No */}
-                  <td className="p-3  font-medium">
+                  <td className="p-1  ">
                     {row.expense_no}
                   </td>
 
                   {/* Expense Date */}
-                  <td className="p-3 ">
+                  <td className="p-1 ">
                     {new Date(row.expense_date).toLocaleDateString("en-GB")}
                   </td>
 
                   {/* Actions */}
-                  <td className="p-3 text-center">
-                    <div className="flex justify-center gap-2">
+                  <td className="p-1 ">
+                    <div className="flex  gap-2">
 
                       {/* View */}
                       <button

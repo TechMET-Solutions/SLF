@@ -166,7 +166,7 @@ useEffect(() => {
     <div className="min-h-screen w-full bg-gray-50 pb-10">
       {/* Header */}
       <div className="flex justify-center sticky top-[80px] z-40">
-        <div className="flex items-center px-6 py-4 border-b mt-5 w-[1290px] h-[62px] border rounded-[11px] border-gray-200 justify-between bg-white shadow">
+        <div className="flex items-center px-6 py-4 border-b  w-[1462px] h-[50px] border rounded-[11px] border-gray-200 justify-between bg-white shadow">
           <h2
             style={{
               fontFamily: "Source Sans 3, sans-serif",
@@ -199,7 +199,7 @@ useEffect(() => {
       </div>
 
       {/* Tabs */}
-      <div className="flex  gap-2 mt-5 pl-[120px] mt-2">
+      <div className="flex  gap-2 mt-5 ml-[22px] ">
         {Object.keys(tabData).map((tab) => (
           <div
             key={tab}
@@ -215,8 +215,8 @@ useEffect(() => {
       </div>
 
       {/* Table */}
-      <div className="flex pl-[120px] mt-2">
-        <div className="overflow-x-auto mt-5 ">
+      <div className="flex  mt-2 ml-[22px]">
+        <div className="overflow-x-auto mt-2 ">
           <table className="w-full border-collapse">
             <thead className="bg-[#0A2478] text-white text-sm">
               <tr>

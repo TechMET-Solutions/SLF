@@ -91,7 +91,7 @@ const AddMemberBranchMapping = () => {
   return (
     <div className="min-h-screen w-full">
       <div className="flex justify-center sticky top-[80px] z-40">
-        <div className="flex items-center px-6 py-4 border-b mt-5 w-[1290px] h-[62px] border rounded-[11px] border-gray-200 justify-between shadow">
+        <div className="flex items-center px-6 py-4 border-b w-[1462px] h-[50px] border rounded-[11px] border-gray-200 justify-between shadow">
           <h2 className="text-red-600 font-bold text-[20px]">
             Member Branch Mapping
           </h2>
@@ -113,7 +113,7 @@ const AddMemberBranchMapping = () => {
         </div>
       </div>
 
-      <div className="p-8 px-32">
+      <div className="mt-5 ml-[22px]">
         <div className="flex flex-col gap-2 w-[540px]">
           <label className="text-gray-700 font-medium">Employee Name</label>
           <input
@@ -124,9 +124,9 @@ const AddMemberBranchMapping = () => {
           />
         </div>
 
-        <div className="flex flex-col gap-2 mt-6">
+        <div className="flex flex-col gap-2 mt-2">
           <label className="text-gray-700 font-medium">Select Branches</label>
-          <div className="flex flex-wrap gap-12">
+          <div className="flex flex-wrap gap-3">
             {branches
               .filter((branch) => branch.status !== "0") // or branch.status === "1"
               .map((branch) => (

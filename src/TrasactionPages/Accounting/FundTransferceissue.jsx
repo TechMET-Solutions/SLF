@@ -65,8 +65,8 @@ const FundTransferList = () => {
 
   return (
     <div className="min-h-screen bg-white font-sans text-gray-800 ">
-      <div className="flex justify-center p-2 mt-5">
-        <div className="flex items-center px-6 py-4 border-b mt-5 w-[1290px] h-[62px] border rounded-[11px] border-gray-200 justify-between ">
+      <div className="flex justify-center p-2 ">
+        <div className="flex items-center px-6 py-4 border-b  w-[1462px] h-[50px] border rounded-[11px] border-gray-200 justify-between ">
           {/* Left heading */}
           <h2
             style={{
@@ -109,49 +109,44 @@ const FundTransferList = () => {
           </div>
         </div>
       </div>
-      <div className="ml-[110px] mr-[110px]">
-        <div className="mt-5 ">
-          {/* 2. List Header with +Add Button */}
-
-          {/* 3. Search Bar Area */}
-
-          {/* 4. Data Grid */}
-          <div className="overflow-x-auto  ">
+      <div className="">
+       
+          <div className="overflow-x-auto ml-[22px]">
             <table>
               <thead className="bg-[#0A2478] text-white text-sm">
                 <tr className=" text-white text-[12px] font-bold border-b border-gray-300">
-                  <th className="p-1.5 border-r border-gray-300 w-[100px]">
+                  <th className="p-1 border-r border-gray-300 w-[100px] text-left">
                     Doc No
                   </th>
-                  <th className="p-1.5 border-r border-gray-300 w-[100px]">
+                  <th className="p-1 border-r border-gray-300 w-[100px] text-left">
                     Doc Date
                   </th>
                   {/* <th className="p-1.5 border-r border-gray-300">Paymode</th> */}
-                  <th className="p-1.5 border-r border-gray-300 w-[150px]">
+                  <th className="p-1 border-r border-gray-300 w-[150px] text-left">
                     From Branch
                   </th>
-                  <th className="p-1.5 border-r border-gray-300 w-[100px]">
+                  <th className="p-1 border-r border-gray-300 w-[100px] text-left">
                     To Branch
                   </th>
                   {/* <th className="p-1.5 border-r border-gray-300">
                   Account Ledger Name
                 </th> */}
-                  <th className="p-1.5 border-r border-gray-300 w-[100px]">
+                  <th className="p-1 border-r border-gray-300 w-[100px] text-left">
                     Amount
                   </th>
-                  <th className="p-1.5 border-r border-gray-300 w-[100px]">
+                  <th className="p-1 border-r border-gray-300 w-[100px] text-left">
                     MOP
                   </th>
-                  <th className="p-1.5 border-r border-gray-300 w-[120px]">
+                  <th className="p-1 border-r border-gray-300 w-[120px] text-left">
                     Add By
                   </th>
-                  <th className="p-1.5 border-r border-gray-300 w-[120px]">
+                  <th className="p-1 border-r border-gray-300 w-[120px]  text-left">
                     Add On
                   </th>
-                  <th className="p-1.5 border-r border-gray-300 w-[120px]">
+                  <th className="p-1 border-r border-gray-300 w-[120px] text-left">
                     Receipt Status
                   </th>
-                  <th className="p-1.5 text-center w-[100px]">Action</th>
+                  <th className="p-1 text-center w-[100px]  text-left">Action</th>
                 </tr>
               </thead>
               <tbody className="text-[11px] divide-y divide-gray-200">
@@ -160,25 +155,25 @@ const FundTransferList = () => {
                     key={i}
                     className={i % 2 === 0 ? "bg-gray-50" : "bg-white"}
                   >
-                    <td className="p-1.5 text-blue-800">{item.id}</td>
+                    <td className="p-1 text-blue-800">{item.id}</td>
 
-                    <td className="p-1.5">
+                    <td className="p-1">
                       {new Date(item.doc_date).toLocaleDateString("en-GB")}
                     </td>
 
                     {/* <td className="p-1.5">{item.pay_mode}</td> */}
-                    <td className="p-1.5">{item.from_branch_name}</td>
-                    <td className="p-1.5">{item.to_branch_name}</td>
+                    <td className="p-1">{item.from_branch_name}</td>
+                    <td className="p-1">{item.to_branch_name}</td>
 
-                    <td className="p-1.5 font-bold">
+                    <td className="p-1 font-bold">
                       {item.amount || "-"}
                     </td>
 
-                    <td className="p-1.5">{item.pay_mode}</td>
+                    <td className="p-1">{item.pay_mode}</td>
 
-                    <td className="p-1.5 text-gray-500">Admin</td>
+                    <td className="p-1 text-gray-500">Admin</td>
 
-                    <td className="p-1.5">
+                    <td className="p-1">
                       {item.created_at?.split("T")[0]}
                     </td>
 
@@ -195,7 +190,7 @@ const FundTransferList = () => {
                     </td>
 
                     <td className="p-1.5 text-center whitespace-nowrap">
-                      <div className="flex justify-center gap-2">
+                      <div className="flex gap-2">
 
                         {/* View Button */}
                         <button
@@ -228,7 +223,7 @@ const FundTransferList = () => {
               </tbody>
             </table>
           </div>
-        </div>
+        
       </div>
     </div>
   );

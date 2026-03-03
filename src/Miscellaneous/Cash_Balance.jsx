@@ -164,10 +164,10 @@ const Cash_Balance = () => {
   };
 
   return (
-    <div className="min-h-screen w-full bg-gray-50 pb-10">
+    <div className="min-h-screen w-full  pb-10 ">
       {/* Top Navbar */}
-      <div className="flex justify-center pt-5 px-4">
-        <div className="flex items-center px-6 py-3 w-full max-w-[1290px] bg-white border border-gray-200 rounded-xl shadow-sm justify-between">
+      <div className="flex justify-center mt-2">
+        <div className="flex items-center px-5 py-2  w-[1462px] bg-white border border-gray-200 rounded-xl shadow-sm justify-between">
           <h2 className="text-red-600 font-bold text-xl tracking-tight uppercase">
             Cash Balance
           </h2>
@@ -190,7 +190,7 @@ const Cash_Balance = () => {
       </div>
 
       {/* Main Content Card */}
-      <div className="ml-[110px] mr-[110px] mx-auto mt-6 ">
+      <div className=" mt-2  ml-[22px] mr-[22px] ">
         <div className="bg-white border border-blue-900 shadow-md">
           {/* Internal Header */}
           <div className="bg-blue-900 text-white px-4 py-1.5 text-sm font-bold">

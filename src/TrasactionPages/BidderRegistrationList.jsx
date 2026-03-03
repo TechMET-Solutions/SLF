@@ -26,20 +26,20 @@ const BidderRegistrationList = () => {
   }, []);
 
   return (
-    <div className="min-h-screen w-full flex flex-col items-center py-8">
+    <div className="min-h-screen w-full flex flex-col ml-[22px]">
       {/* Header Section */}
-      <div className="w-[90%] max-w-[1300px] bg-white shadow-md rounded-lg p-4 flex justify-between items-center border border-gray-200 sticky top-[80px] z-40">
+      <div className="w-[1462px] bg-white  rounded-lg h-[50px] p-2 flex justify-between items-center border border-gray-200 sticky top-[80px] z-40">
         <h2 className="text-red-600 font-semibold text-xl">
           Bidder Registration List
         </h2>
 <div className="flex gap-3">
         <button
           onClick={() => navigate("/Bidder-Registration")}
-          className="bg-[#0A2478] text-white text-[12px] w-[80px] h-[32px] rounded-[3.75px] transition cursor-pointer"
+          className="bg-[#0A2478] text-white text-[12px] w-[80px] h-[30px] rounded-[3.75px] transition cursor-pointer"
         >
           Add Bidder
         </button>
-        <button onClick={() => navigate("/")} className="bg-[#C1121F] text-white text-[12px] w-[80px] h-[32px] rounded-[3.75px] hover:bg-red-700 transition">
+        <button onClick={() => navigate("/")} className="bg-[#C1121F] text-white text-[12px] w-[80px] h-[30px] rounded-[3.75px] hover:bg-red-700 transition">
           Exit
           </button>
         </div>
@@ -49,31 +49,31 @@ const BidderRegistrationList = () => {
       {loading ? (
         <div className="mt-8 text-gray-600">Loading bidders...</div>
       ) : (
-        <div className=" mt-6 bg-white">
-          <table className="w-full text-sm border-collapse">
+        <div className=" mt-5 bg-white">
+          <table className=" text-sm border-collapse">
             <thead className="bg-[#0A2478] text-white">
               <tr>
-                <th className="px-4 py-2 text-left border-r">ID</th>
-                <th className="px-4 py-2 text-left border-r w-[180px]">
+                <th className="px-1 py-1 text-left border-r">ID</th>
+                <th className="px-1 py-1 text-left border-r w-[180px]">
                   Bidder Name
                 </th>
-                <th className="px-4 py-2 text-left border-r w-[120px]">
+                <th className="px-1 py-1 text-left border-r w-[120px]">
                   Mobile No
                 </th>
-                <th className="px-6 py-2 text-left border-r w-[250px]">
+                <th className="px-1 py-2 text-left border-r w-[250px]">
                   Shop Address
                 </th>
-                <th className="px-4 py-2 text-left border-r">Landline No</th>
-                <th className="px-4 py-2 text-left border-r w-[200px]">
+                <th className="px-1 py-1 text-left border-r">Landline No</th>
+                <th className="px-1 py-1 text-left border-r w-[200px]">
                   GST No
                 </th>
-                <th className="px-6 py-2 text-left border-r w-[160px]">
+                <th className="px-1 py-1 text-left border-r w-[160px]">
                   Firm Name
                 </th>
-                <th className="px-6 py-2 text-left border-r w-[160px]">
+                <th className="px-1 py-1 text-left border-r w-[160px]">
                   Email ID
                 </th>
-                <th className="px-4 py-2 text-center">Action</th>
+                <th className="px-1 py-1 text-center">Action</th>
               </tr>
             </thead>
 
@@ -85,7 +85,7 @@ const BidderRegistrationList = () => {
                     className={index % 2 === 0 ? "bg-gray-50" : "bg-white"}
                   >
                     <td
-                      className="px-4 py-2 text-blue-500 cursor-pointer"
+                      className="px-1 py-1 text-blue-500 cursor-pointer"
                       onClick={() =>
                         navigate("/View-Bidder-Details", {
                           state: { item: item.id },
@@ -94,19 +94,19 @@ const BidderRegistrationList = () => {
                     >
                       {item.id}
                     </td>
-                    <td className="px-4 py-2">{item.bidder_name}</td>
-                    <td className="px-4 py-2">{item.mobile_no}</td>
+                    <td className="px-1 py-1">{item.bidder_name}</td>
+                    <td className="px-1 py-1">{item.mobile_no}</td>
                     <td
-                      className="px-6 py-2 max-w-[200px] truncate"
+                      className="px-1 py-1 max-w-[200px] truncate"
                       title={item.shop_address}
                     >
                       {item.shop_address}
                     </td>
-                    <td className="px-4 py-2">{item.landline_no || "-"}</td>
-                    <td className="px-4 py-2">{item.gst_no}</td>
-                    <td className="px-6 py-2">{item.firm_name}</td>
-                    <td className="px-6 py-2">{item.email}</td>
-                    <td className="px-4 py-2 flex justify-center gap-2">
+                    <td className="px-1 py-1">{item.landline_no || "-"}</td>
+                    <td className="px-1 py-1">{item.gst_no}</td>
+                    <td className="px-1 py-1">{item.firm_name}</td>
+                    <td className="px-1 py-1">{item.email}</td>
+                    <td className="px-1 py-1 flex justify-center gap-2">
                       {/* <button
                         onClick={() =>
                           navigate('/View-Bidder-Details', {

@@ -236,7 +236,7 @@ const CustProfile = () => {
     <div className="min-h-screen w-full">
       {/* middletopbar */}
       <div className="flex justify-center sticky top-[80px] z-40">
-        <div className="flex items-center px-6 py-4 border-b mt-5 w-[1462px] h-[62px] border rounded-[11px] border-gray-200 justify-between shadow bg-white">
+        <div className="flex items-center px-6 py-4 border-b  w-[1462px] h-[50px] border rounded-[11px] border-gray-200 justify-between shadow bg-white">
           {/* Left heading */}
           <h2
             style={{
@@ -441,7 +441,7 @@ const CustProfile = () => {
               <div>
                 <label className="text-[12px] font-medium">Under</label>
                 <select
-                  className="border border-gray-300 rounded px-2 py-1 w-full mt-1 text-[12px]"
+                  className="border border-gray-300 rounded px-1 py-1 w-full mt-1 text-[12px]"
                   style={{
                     width: "280px",
                     height: "38px",
@@ -459,7 +459,7 @@ const CustProfile = () => {
                 <label className="text-[12px] font-medium">Comments</label>
                 <input
                   type="text"
-                  className="border border-gray-300 rounded px-2 py-1 w-full mt-1 text-[12px]"
+                  className="border border-gray-300 rounded px-1 py-1 w-full mt-1 text-[12px]"
                   placeholder="Test"
                   style={{
                     width: "280px",
@@ -617,43 +617,43 @@ const CustProfile = () => {
       )}
 
       {/* Table */}
-      <div className="flex justify-center">
-        <div className="overflow-x-auto mt-5 w-[1462px] h-[500px]">
+      <div className="flex ml-[22px]">
+        <div className="overflow-x-auto mt-5 w-[1300px] h-[500px]">
           <table className="w-full border-collapse">
             <thead className="bg-[#0A2478] text-white text-sm">
               <tr>
-                <th className="px-2.5 py-2 text-left border-r border-gray-300 text-[13px]">
+                <th className="px-1 py-1 text-left border-r border-gray-300 text-[13px]">
                   Customer
                 </th>
-                <th className="px-2.5 py-2 text-left border-r border-gray-300 text-[13px]">
+                <th className="px-1 py-1 text-left border-r border-gray-300 text-[13px]">
                   Party UID
                 </th>
-                <th className="px-2.5 py-2 text-left border-r border-gray-300 text-[13px]">
+                <th className="px-1 py-1 text-left border-r border-gray-300 text-[13px]">
                   F Name
                 </th>
-                <th className="px-2.5 py-2 text-left border-r border-gray-300 text-[13px]">
+                <th className="px-1 py-1 text-left border-r border-gray-300 text-[13px]">
                   M Name
                 </th>
-                <th className="px-2.5 py-2 text-left border-r border-gray-300 text-[13px]">
+                <th className="px-1 py-1 text-left border-r border-gray-300 text-[13px]">
                   L Name
                 </th>
-                <th className="px-2.5 py-2 text-left border-r border-gray-300 text-[13px]">
+                <th className="px-1 py-1 text-left border-r border-gray-300 text-[13px]">
                   City
                 </th>
-                <th className="px-2.5 py-2 text-left border-r border-gray-300 text-[13px]">
+                <th className="px-1 py-1 text-left border-r border-gray-300 text-[13px]">
                   Mobile Number
                 </th>
-                {/* <th className="px-2.5 py-2 text-left border-r border-gray-300 text-[13px]">Bad Debtor</th> */}
-                <th className="px-2.5 py-2 text-left border-r text-[13px]">
+                {/* <th className="px-1 py-1 text-left border-r border-gray-300 text-[13px]">Bad Debtor</th> */}
+                <th className="px-1 py-1 text-left border-r text-[13px]">
                   Added On
                 </th>
-                <th className="px-2.5 py-2 text-left border-r text-[13px]">
+                <th className="px-1 py-1 text-left border-r text-[13px]">
                   Added By
                 </th>
-                <th className="px-2.5 py-2 text-left border-r text-[13px]">
+                <th className="px-1 py-1 text-left border-r text-[13px]">
                   Block
                 </th>
-                <th className="px-2.5 py-2 text-center text-[13px]">Action</th>
+                <th className="px-1 py-1 text-center text-[13px]">Action</th>
               </tr>
             </thead>
 
@@ -661,7 +661,7 @@ const CustProfile = () => {
               {data.map((row, index) => (
                 <tr
                   key={index}
-                  className={`border-b 
+                  className={`
               ${row.badDebtor
                       ? "bg-red-100 text-red-700 font-semibold"
                       : index % 2 === 0
@@ -670,7 +670,7 @@ const CustProfile = () => {
                     }
             `}
                 >
-                  <td className="px-2 py-1 flex items-center gap-3">
+                  <td className="px-1 py-1 flex items-center gap-3">
                     <img
                       src={row.profileImage}
                       alt={row.customer}
@@ -679,23 +679,23 @@ const CustProfile = () => {
                     <span className="font-medium">{row.customer}</span>
                   </td>
 
-                  <td className="px-2 py-1">{row.id}</td>
-                  <td className="px-2 py-1">{row.firstName}</td>
-                  <td className="px-2 py-1">{row.middleName}</td>
-                  <td className="px-2 py-1">{row.lastName}</td>
-                  <td className="px-2 py-1">{row.Permanent_City}</td>
-                  <td className="px-2 py-1">{row.mobile}</td>
+                  <td className="px-1 py-1">{row.id}</td>
+                  <td className="px-1 py-1">{row.firstName}</td>
+                  <td className="px-1 py-1">{row.middleName}</td>
+                  <td className="px-1 py-1">{row.lastName}</td>
+                  <td className="px-1 py-1">{row.Permanent_City}</td>
+                  <td className="px-1 py-1">{row.mobile}</td>
 
-                  {/* <td className="px-2 py-1 font-bold text-center">
+                  {/* <td className="px-1 py-1 font-bold text-center">
               {row.badDebtor ? "Yes" : "No"}
             </td> */}
 
-                  <td className="px-2 py-1">
+                  <td className="px-1 py-1">
                     {formatIndianDate(row.Added_On)}
                   </td>
-                  <td className="px-2 py-1">{row.Added_By}</td>
+                  <td className="px-1 py-1">{row.Added_By}</td>
 
-                  <td className="px-2 py-1">
+                  <td className="px-1 py-1">
                     <input
                       type="checkbox"
                       className="w-[20px] h-[20px]"

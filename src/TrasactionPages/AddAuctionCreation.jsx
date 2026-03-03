@@ -202,7 +202,7 @@ function AddAuctionCreation() {
     <div className="min-h-screen w-full">
       {/* 🔹 Header */}
       <div className="flex justify-center sticky top-[80px] z-40">
-        <div className="flex items-center px-6 py-4 border-b mt-5 w-[1290px] h-[62px] border rounded-[11px] border-gray-200 justify-between bg-white">
+        <div className="flex items-center px-6 py-4 border-b mt-5 w-[1462px] h-[50px] border rounded-[11px] border-gray-200 justify-between bg-white">
           <h2 className="text-red-600 font-bold text-[20px]">
             Auction Creation
           </h2>
@@ -316,7 +316,7 @@ function AddAuctionCreation() {
       </div>
 
       {/* 🔹 Form Section */}
-      <div className="mr-[110px] ml-[110px] mt-5 p-4 bg-[#F7F7FF] rounded-md">
+      <div className=" p-4  rounded-md ml-[22px]">
         <div className="flex  mt-2    gap-2 ">
           <div className="flex flex-col ">
             <label className="text-xs font-medium mb-1">
@@ -393,29 +393,29 @@ function AddAuctionCreation() {
         </div>
 
         {/* 🔹 Title */}
-        <h2 className="font-bold text-[20px] text-[#0A2478] pt-5 ">
+        <h2 className="font-bold text-[20px] text-[#0A2478] mt-2 ">
           Add Loans
         </h2>
 
         {/* 🔹 Table Section */}
-        <div className="flex justify-center">
-          <div className="overflow-x-auto mt-6 w-[1300px] h-[500px] ">
+        <div className="flex ">
+          <div className="overflow-x-auto mt-2 w-[1300px] h-[500px] ">
             <table className="w-full border-collapse">
               <thead className="bg-[#0A2478] text-white text-sm">
                 <tr>
-                  <th className="px-4 py-2 text-left border-r">Select</th>
-                  <th className="px-4 py-2 text-left border-r">Loan No</th>
-                  <th className="px-4 py-2 text-left border-r">Loan Scheme</th>
+                  <th className="px-1 py-1 text-left border-r">Select</th>
+                  <th className="px-1 py-1 text-left border-r">Loan No</th>
+                  <th className="px-1 py-1 text-left border-r">Loan Scheme</th>
 
-                  <th className="px-4 py-2 text-left border-r">Loan Date</th>
-                  <th className="px-4 py-2 text-left border-r">
+                  <th className="px-1 py-1 text-left border-r">Loan Date</th>
+                  <th className="px-1 py-1 text-left border-r">
                     Extended Date
                   </th>
-                  <th className="px-4 py-2 text-left border-r">
+                  <th className="px-1 py-1 text-left border-r">
                     Customer Name
                   </th>
-                  <th className="px-4 py-2 text-left border-r">Valuation</th>
-                  <th className="px-4 py-2 text-left border-r">Mobile No.</th>
+                  <th className="px-1 py-1 text-left border-r">Valuation</th>
+                  <th className="px-1 py-1 text-left border-r">Mobile No.</th>
 
                   {[
                     "Total Amt",
@@ -439,17 +439,17 @@ function AddAuctionCreation() {
                     key={row.id}
                     className={index % 2 === 0 ? "bg-gray-50" : "bg-white"}
                   >
-                    <td className="px-4 py-2 flex items-center justify-center">
+                    <td className="px-1 py-1 flex items-center justify-center">
                       <input
                         type="checkbox"
                         checked={selectedLoans.includes(row.id)}
                         onChange={() => handleSelectLoan(row.id)}
                       />
                     </td>
-                    <td className="px-4 py-2">{row.id}</td>
-                    <td className="px-4 py-2">{row.Scheme}</td>
+                    <td className="px-1 py-1">{row.id}</td>
+                    <td className="px-1 py-1">{row.Scheme}</td>
 
-                    <td className="px-4 py-2">
+                    <td className="px-1 py-1">
                       {row.approval_date
                         ? new Date(row.approval_date).toLocaleDateString(
                           "en-GB",
@@ -457,9 +457,9 @@ function AddAuctionCreation() {
                         : "-"}
                     </td>
 
-                    <td className="px-4 py-2">-</td>
-                    <td className="px-4 py-2">{row.Print_Name}</td>
-                    <td className="px-4 py-2">
+                    <td className="px-1 py-1">-</td>
+                    <td className="px-1 py-1">{row.Print_Name}</td>
+                    <td className="px-1 py-1">
                       {(() => {
                         try {
                           const items = JSON.parse(
@@ -472,11 +472,11 @@ function AddAuctionCreation() {
                       })()}
                     </td>
 
-                    <td className="px-4 py-2">{row.Mobile_Number}</td>
-                    <td className="px-4 py-2">{row.Loan_amount}</td>
-                    <td className="px-4 py-2">{row.LoanAmountPaid}</td>
-                    <td className="px-4 py-2">{row.LoanPendingAmount}</td>
-                    <td className="px-4 py-2">{row.branch_id}</td>
+                    <td className="px-1 py-1">{row.Mobile_Number}</td>
+                    <td className="px-1 py-1">{row.Loan_amount}</td>
+                    <td className="px-1 py-1">{row.LoanAmountPaid}</td>
+                    <td className="px-1 py-1">{row.LoanPendingAmount}</td>
+                    <td className="px-1 py-1">{row.branch_id}</td>
                   </tr>
                 ))}
               </tbody>

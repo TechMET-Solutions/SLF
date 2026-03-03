@@ -332,27 +332,27 @@ const MemberLoginDetails = () => {
           <h2 className="text-red-600 font-bold text-[20px] leading-[148%] font-source">
             Member Details
           </h2>
- <div className="flex mt-5 gap-2 mx-auto w-[1462px]">
-        <div className='flex gap-1'>
-          <p className="text-xs font-semibold">Bulk Start Time</p>
+
+          {/* Search & Actions */}
+          <div className="flex items-center gap-6">
+            {/* Search */}
+             <div className="flex  gap-2">
+        <div className='flex gap-2'>
+          <p className="text-xs font-semibold mt-2" >Bulk Start Time</p>
           <TimePicker
             initialTime=""
             onSave={(time) => applyBulkTime("startDate", time)}
           />
         </div>
 
-        <div className='flex gap-1'>
-          <p className="text-xs font-semibold">Bulk End Time</p>
+        <div className='flex gap-2'>
+          <p className="text-xs font-semibold mt-2">Bulk End Time</p>
           <TimePicker
             initialTime=""
             onSave={(time) => applyBulkTime("endDate", time)}
           />
         </div>
       </div>
-          {/* Search & Actions */}
-          <div className="flex items-center gap-6">
-            {/* Search */}
-            
             <div className="flex gap-3 items-center">
               <input
                 type="text"
@@ -391,29 +391,29 @@ const MemberLoginDetails = () => {
 
       {/* Table */}
 
-      <div className="overflow-x-auto mt-2 h-[500px] border-gray-300 mx-auto w-[1462px]">
+      <div className="overflow-x-auto mt-5 h-[500px] border-gray-300 mx-auto w-[1462px]">
         <table className="table-fixed border-collapse ">
           <thead className="bg-[#0A2478] text-white text-sm top-0">
             <tr>
               <th className="px-1 py-1 border-r">Select</th>
-              {/* <th className="px-1 py-1 border-r text-center w-[50px]">#</th> */}
+              {/* <th className="px-1 py-1 border-r text-left w-[50px]">#</th> */}
               <th className="px-1 py-1 border-r text-left  w-[200px]">Name</th>
               <th className="px-1 py-1 border-r text-left  w-[200px]">
                 User ID
               </th>
-              <th className="px-1 py-1 border-r text-center w-[100px]">
+              <th className="px-1 py-1 border-r text-left w-[100px]">
                 OTP Override
               </th>
-              <th className="px-2 py-2 border-r text-center w-[120px] ">
+              <th className="px-2 py-2 border-r text-left w-[120px] ">
                 Manager Mob No
               </th>
-              <th className="px-2 py-2 border-r text-center w-[110px] ">
+              <th className="px-2 py-2 border-r text-left w-[110px] ">
                 Admin Mob No
               </th>
-              <th className="px-2 py-2 border-r text-center w-[100px]">Start Time</th>
-              <th className="px-2 py-2 border-r text-center w-[100px]">End Time</th>
-              <th className="px-2 py-2 border-r text-center w-[100px]">IP Address</th>
-              <th className="px-2 py-2 border-r text-center w-[120px]">Branch Mapping</th>
+              <th className="px-2 py-2 border-r text-left w-[100px]">Start Time</th>
+              <th className="px-2 py-2 border-r text-left w-[100px]">End Time</th>
+              <th className="px-2 py-2 border-r text-left w-[100px]">IP Address</th>
+              <th className="px-2 py-2 border-r text-left w-[120px]">Branch Mapping</th>
             </tr>
           </thead>
 
@@ -433,14 +433,14 @@ const MemberLoginDetails = () => {
                     className={`${index % 2 === 0 ? "bg-gray-50" : "bg-white"} hover:bg-gray-100`}
                   >
                     {/* Serial Number */}
-                    <td className="px-1 py-1 text-center">
+                    <td className="px-1 py-1 text-left">
                       <input
                         type="checkbox"
                         checked={selectedIds.includes(row.id)}
                         onChange={() => toggleSelect(row.id)}
                       />
                     </td>
-                    {/* <td className="px-1 py-1 text-center">
+                    {/* <td className="px-1 py-1 text-left">
                       {(currentPage - 1) * itemsPerPage + index + 1}
                     </td> */}
 
@@ -448,7 +448,7 @@ const MemberLoginDetails = () => {
 
                     <td className="px-1 py-1">{row.email}</td>
 
-                    <td className="px-1 py-1 text-center">
+                    <td className="px-1 py-1 text-left">
                       <input
                         type="checkbox"
                         checked={row.OTP_Override == 1} // if db stores 0/1
@@ -530,7 +530,7 @@ const MemberLoginDetails = () => {
                         className="border border-gray-300 w-[80px] rounded px-2 py-1 text-sm focus:outline-none focus:ring-1 focus:ring-blue-500"
                       />
                     </td>
-                    <td className="px-1 py-1 text-center">
+                    <td className="px-1 py-1 text-left">
                       <Link
                         to={`/Add-Member-Branch-Mapping?id=${row.id}`}
                         className="text-blue-700"
@@ -545,7 +545,7 @@ const MemberLoginDetails = () => {
               <tr>
                 <td
                   colSpan="6"
-                  className="text-center text-gray-500 py-6 font-medium"
+                  className="text-left text-gray-500 py-6 font-medium"
                 >
                   {searchTerm
                     ? "No employees found matching your search."

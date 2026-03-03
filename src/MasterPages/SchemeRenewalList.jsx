@@ -105,10 +105,10 @@
 //           <table className="w-full border-collapse">
 //             <thead className="bg-[#0A2478] text-white text-sm">
 //               <tr>
-//                 <th className="px-4 py-2 text-left border-r border-gray-300 text-[13px]">
+//                 <th className="px-1 py-1 text-left border-r border-gray-300 text-[13px]">
 //                   Product Name
 //                 </th>
-//                 <th className="px-4 py-2 text-left border-r border-gray-300 text-[13px]">
+//                 <th className="px-1 py-1 text-left border-r border-gray-300 text-[13px]">
 //                   Scheme Name
 //                 </th>
 //                 <th className="px-4 py-2 text-left border-r border-gray-300 text-[13px]">
@@ -285,7 +285,7 @@ const SchemeDetailsList = () => {
 
       {/* Header */}
       <div className="flex justify-center sticky top-[80px] z-40">
-        <div className="flex items-center px-6 py-4 border-b mt-5 w-[1290px] h-[62px] border rounded-[11px] border-gray-200 justify-between shadow bg-white">
+        <div className="flex items-center px-6 py-4 border-b  w-[1462px] h-[50px] border rounded-[11px] border-gray-200 justify-between shadow bg-white">
           <h2 className="text-red-600 text-[20px] font-semibold">
             Scheme Renewal List
           </h2>
@@ -300,46 +300,47 @@ const SchemeDetailsList = () => {
       </div>
 
       {/* Table */}
-      <div className="flex justify-center">
+      <div className="flex ml-[22px] ">
         <div className="overflow-x-auto mt-5  h-[500px]">
           <table className="w-full border-collapse">
             <thead className="bg-[#0A2478] text-white text-sm">
-              <tr>
+              <tr className='text-left'>
              
-                <th className="px-4 py-2 border w-[190px]">Scheme Name</th>
-                   <th className="px-4 py-2 border w-[80px]">Product Name</th>
-                <th className="px-4 py-2 border w-[120px]">App From</th>
-                <th className="px-4 py-2 border w-[120px]">App To</th>
-                <th className="px-4 py-2 border">Approval %</th>
-                <th className="px-4 py-2 border w-[150px]">Min Loan</th>
-                <th className="px-4 py-2 border w-[150px]">Max Loan</th>
-                <th className="px-4 py-2 border w-[150px]">Renewed By</th>
-                <th className="px-4 py-2 border">Renewed On</th>
-                <th className="px-4 py-2 border">Action</th>
+                <th className="px-1 py-1 border w-[130px]">Scheme Name</th>
+                   <th className="px-1 py-1 border w-[80px]">Product</th>
+                <th className="px-1 py-1 border w-[120px]">From Date</th>
+                <th className="px-1 py-1 border w-[120px]">To Date</th>
+                <th className="px-1 py-1 border">Approval %</th>
+                <th className="px-1 py-1 border w-[150px]">Min Loan</th>
+                <th className="px-1 py-1 border w-[150px]">Max Loan</th>
+                <th className="px-1 py-1 border w-[150px]">Renewed By</th>
+                <th className="px-1 py-1 border">Renewed On</th>
+                <th className="px-1 py-1 border">Action</th>
               </tr>
             </thead>
 
-            <tbody className="text-[12px] text-center">
+            <tbody className="text-[12px] text-left">
               {data?.map((row, index) => (
                 <tr
                   key={row.id}
                   className={index % 2 === 0 ? "bg-gray-50" : "bg-white"}
                 >
-                  <td className="px-4 py-2">{row.product}</td>
-                  <td className="px-4 py-2">{row.schemeName}</td>
-                  <td className="px-4 py-2">
+                   <td className="px-1 py-1">{row.schemeName}</td>
+                  <td className="px-1 py-1">{row.product}</td>
+                 
+                  <td className="px-1 py-1">
                     {formatIndianDate(row.applicableFrom)}
                   </td>
-                  <td className="px-4 py-2">
+                  <td className="px-1 py-1">
                     {formatIndianDate(row.applicableTo)}
                   </td>
-                  <td className="px-4 py-2">{row.goldApprovePercent}</td>
-                  <td className="px-4 py-2">{row.minLoanAmount}</td>
-                  <td className="px-4 py-2">{row.maxLoanAmount}</td>
-                  <td className="px-4 py-2">{row.renewedBy}</td>
-                  <td className="px-4 py-2">{row.renewedOn}</td>
+                  <td className="px-1 py-1">{row.goldApprovePercent}</td>
+                  <td className="px-1 py-1">{row.minLoanAmount}</td>
+                  <td className="px-1 py-1">{row.maxLoanAmount}</td>
+                  <td className="px-1 py-1">{row.renewedBy}</td>
+                  <td className="px-1 py-1">{row.renewedOn}</td>
 
-                  <td className="px-4 py-2 text-center">
+                  <td className="px-1 py-1 text-center">
                     <div
                       className="w-5 h-5 bg-[#56A869] flex items-center justify-center rounded cursor-pointer"
                       onClick={() =>

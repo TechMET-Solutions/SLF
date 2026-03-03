@@ -90,7 +90,7 @@ function AuctionCreation() {
     <div className="min-h-screen w-full">
       {/* 🔹 Header */}
       <div className="flex justify-center sticky top-[80px] z-40">
-        <div className="flex items-center px-6 py-4 border-b mt-5 w-[1290px] h-[62px] border rounded-[11px] border-gray-200 justify-between bg-white">
+        <div className="flex items-center px-6 py-4 border-b  w-[1462px] h-[50px] border rounded-[11px] border-gray-200 justify-between bg-white">
           <h2 className="text-red-600 font-bold text-[20px]">Auction List</h2>
           <div className="flex gap-5">
             <div className="flex items-center gap-3">
@@ -216,24 +216,24 @@ function AuctionCreation() {
       </div>
 
       {/* 🔹 Table Section */}
-      <div className="mr-[110px] ml-[110px]">
-        <div className="flex justify-center ">
+      <div className="">
+        <div className="flex ml-[22px]">
           <div className="overflow-x-auto mt-6 w-[1300px]">
             <table className=" border-collapse">
               <thead className="bg-[#0A2478] text-white text-sm">
                 <tr>
-                  <th className="px-4 py-2 text-left border-r w-[100px]">
+                  <th className="px-1 py-1 text-left border-r w-[100px]">
                     Auction Id
                   </th>
-                  <th className="px-4 py-2 text-left border-r">Loan Id</th>
-                  <th className="px-4 py-2 text-left border-r w-[400px]">
+                  <th className="px-1 py-1 text-left border-r">Loan Id</th>
+                  <th className="px-1 py-1 text-left border-r w-[400px]">
                     Venue
                   </th>
-                  <th className="px-4 py-2 text-left border-r">Date</th>
-                  <th className="px-4 py-2 text-left border-r">Time</th>
-                  <th className="px-4 py-2 text-left border-r">Fees</th>
+                  <th className="px-1 py-1 text-left border-r">Date</th>
+                  <th className="px-1 py-1 text-left border-r">Time</th>
+                  <th className="px-1 py-1 text-left border-r">Fees</th>
 
-                  <th className="px-4 py-2 flex gap-3">Status</th>
+                  <th className="px-1 py-1 flex gap-3">Status</th>
                 </tr>
               </thead>
 
@@ -245,7 +245,7 @@ function AuctionCreation() {
                   >
                     {/* Auction ID + Navigation */}
                     <td
-                      className="px-4 py-2 cursor-pointer text-blue-400"
+                      className="px-1 py-1 cursor-pointer text-blue-400"
                       onClick={() =>
                         navigate("/Auction-Items-List", {
                           state: {
@@ -257,28 +257,28 @@ function AuctionCreation() {
                     >
                       {row.id}
                     </td>
-                    <td className="px-4 py-2">
+                    <td className="px-1 py-1">
                       {row.loanDetails && row.loanDetails.length > 0
                         ? row.loanDetails.map((d) => d.loanId).join(", ")
                         : "No Loan IDs"}
                     </td>
                     {/* Venue */}
-                    <td className="px-4 py-2">{row.venue}</td>
+                    <td className="px-1 py-1">{row.venue}</td>
 
                     {/* Date */}
-                    <td className="px-4 py-2">{row.date?.slice(0, 10)}</td>
+                    <td className="px-1 py-1">{row.date?.slice(0, 10)}</td>
 
                     {/* Time */}
-                    <td className="px-4 py-2">{row.time}</td>
+                    <td className="px-1 py-1">{row.time}</td>
 
                     {/* Fees */}
-                    <td className="px-4 py-2">{row.fees}</td>
+                    <td className="px-1 py-1">{row.fees}</td>
 
                     {/* Loan IDs */}
 
                     {/* Status */}
                     <td
-                      className={`px-4 py-2 ${row.status === "OPEN"
+                      className={`px-1 py-1 ${row.status === "OPEN"
                           ? "text-green-600"
                           : "text-red-600"
                         }`}

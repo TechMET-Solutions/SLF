@@ -92,7 +92,7 @@
 //           <table className="w-full text-left border-collapse table-auto">
 //             <thead>
 //               <tr className="bg-gray-100 text-gray-700 text-[10px] font-bold border-b border-gray-300">
-//                 <th className="p-1.5 border-r border-gray-300">Doc No</th>
+//                 <th className="p-1 border-r border-gray-300">Doc No</th>
 //                 <th className="p-1.5 border-r border-gray-300">Doc Date</th>
 //                 <th className="p-1.5 border-r border-gray-300">Paymode</th>
 //                 <th className="p-1.5 border-r border-gray-300">Branch Name</th>
@@ -316,8 +316,8 @@ const FundTransferReceipt = () => {
   return (
     <div className="min-h-screen bg-white font-sans text-gray-800 ">
 
-       <div className="flex justify-center p-5 ">
-        <div className="flex items-center px-6 py-4 border-b mt-5 w-[1290px] h-[62px] border rounded-[11px] border-gray-200 justify-between ">
+       <div className="flex justify-center  ">
+        <div className="flex items-center px-6 py-4 border-b  w-[1462px] h-[50px] border rounded-[11px] border-gray-200 justify-between mt-2">
           {/* Left heading */}
           <h2
             style={{
@@ -367,27 +367,27 @@ const FundTransferReceipt = () => {
       
 
         {/* 4. Data Grid */}
-        <div className='ml-[110px] mr-[110px] mt-2'>
+        <div className=' mt-2 ml-[22px]' >
 <div className="overflow-x-auto  border-gray-300">
           <table className=" text-left border-collapse table-auto">
             <thead className="bg-[#0A2478] text-white text-sm">
               <tr className=" text-white text-[12px] font-bold border-b border-gray-300">
-                <th className="p-1.5 border-r  border-gray-300 w-[100px]">Doc No</th>
-                <th className="p-1.5 border-r  border-gray-300 w-[100px]">Doc Date</th>
-                {/* <th className="p-1.5 bord er-r border-gray-300">Paymode</th> */}
-                <th className="p-1.5 border-r  border-gray-300 w-[150px]">From Branch</th>
-                <th className="p-1.5 border-r  border-gray-300 w-[100px]">To Branch</th>
-                {/* <th className="p-1.5 bord er-r border-gray-300">
+                <th className="p-1 border-r  border-gray-300 w-[100px]">Doc No</th>
+                <th className="p-1 border-r  border-gray-300 w-[100px]">Doc Date</th>
+                {/* <th className="p-1 bord er-r border-gray-300">Paymode</th> */}
+                <th className="p-1 border-r  border-gray-300 w-[150px]">From Branch</th>
+                <th className="p-1 border-r  border-gray-300 w-[100px]">To Branch</th>
+                {/* <th className="p-1 bord er-r border-gray-300">
                   Account Ledger Name 
                 </th> */} 
-                <th className="p-1.5 border-r  border-gray-300 w-[100px]">Amount</th>
-                <th className="p-1.5 border-r  border-gray-300 w-[100px]">MOP</th>
-                <th className="p-1.5 border-r  border-gray-300 w-[120px]">Add By</th>
-                <th className="p-1.5 border-r  border-gray-300 w-[120px]">Add On</th>
-                <th className="p-1.5 border-r  border-gray-300 w-[120px]" >
+                <th className="p-1 border-r  border-gray-300 w-[100px]">Amount</th>
+                <th className="p-1 border-r  border-gray-300 w-[100px]">MOP</th>
+                <th className="p-1 border-r  border-gray-300 w-[120px]">Add By</th>
+                <th className="p-1 border-r  border-gray-300 w-[120px]">Add On</th>
+                <th className="p-1 border-r  border-gray-300 w-[120px]" >
                   Receipt Status
                 </th>
-                <th className="p-1.5 text-center w-[100px]">Action</th>
+                <th className="p-1 text-center w-[100px]">Action</th>
               </tr>
             </thead>
             <tbody className="text-[11px] divide-y divide-gray-200">
@@ -403,25 +403,25 @@ const FundTransferReceipt = () => {
   ) : (
     list.map((item, i) => (
       <tr key={i} className={i % 2 === 0 ? "bg-gray-50" : "bg-white"}>
-        <td className="p-1.5 text-blue-800">{item.id}</td>
+        <td className="p-1 text-blue-800">{item.id}</td>
 
-        <td className="p-1.5">
+        <td className="p-1">
           {new Date(item.doc_date).toLocaleDateString("en-GB")}
         </td>
 
-        <td className="p-1.5">{item.from_branch_name}</td>
+        <td className="p-1">{item.from_branch_name}</td>
 
-        <td className="p-1.5">{item.to_branch_name}</td>
+        <td className="p-1">{item.to_branch_name}</td>
 
-        <td className="p-1.5 font-bold">
+        <td className="p-1 font-bold">
           {item.amount || "-"}
         </td>
 
-        <td className="p-1.5">{item.pay_mode}</td>
+        <td className="p-1">{item.pay_mode}</td>
 
-        <td className="p-1.5 text-gray-500">Admin</td>
+        <td className="p-1 text-gray-500">Admin</td>
 
-        <td className="p-1.5">
+        <td className="p-1">
           {item.created_at?.split("T")[0]}
         </td>
 
@@ -432,7 +432,7 @@ const FundTransferReceipt = () => {
               setIsModalOpen(true);
             }
           }}
-          className={`p-1.5 font-bold cursor-pointer ${
+          className={`p-1 font-bold cursor-pointer ${
             item.status === "Pending"
               ? "text-yellow-600 underline"
               : item.status === "Accepted"
@@ -443,10 +443,10 @@ const FundTransferReceipt = () => {
           {item.status}
         </td>
 
-        <td className="p-1.5 text-center whitespace-nowrap">
+        <td className="p-1 text-center whitespace-nowrap">
           <div className="flex justify-center gap-2">
           <span
-            className="bg-blue-500 hover:bg-blue-600 text-white p-1.5 rounded cursor-pointer transition"
+            className="bg-blue-500 hover:bg-blue-600 text-white p-1 rounded cursor-pointer transition"
             onClick={() =>
               navigate("/FundTransfer/create", {
                 state: { fundData: item },
@@ -458,7 +458,7 @@ const FundTransferReceipt = () => {
           </span>
 
           <span
-            className="bg-red-600 hover:bg-red-700 text-white p-1.5 rounded cursor-pointer transition"
+            className="bg-red-600 hover:bg-red-700 text-white p-1 rounded cursor-pointer transition"
             onClick={() => handleDelete(item.id)}
           >
             <Trash2 size={14} />

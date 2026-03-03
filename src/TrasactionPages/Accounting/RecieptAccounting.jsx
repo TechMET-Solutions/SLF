@@ -344,30 +344,15 @@ const allHeaderIds = [
 
   return (
     <div className="min-h-screen bg-white font-sans text-[#333]">
-      <div className="ml-[110px] mr-[110px] mx-auto ">
+      <div className=" mx-auto ">
         {/* HEADER */}
 
         <div className="flex justify-center sticky top-[80px] z-40">
-          <div className="flex justify-center p-6 ">
-            <div className="flex items-center justify-between px-6 py-4 border-b w-[1290px] h-[61px] border rounded-[11px] border-gray-300 bg-white">
+          <div className="flex justify-center">
+            <div className="flex items-center justify-between px-6 py-4 border-b w-[1462px] h-[50px] border rounded-[11px] border-gray-300 bg-white">
               <h2 className="text-red-600 font-bold text-[20px] leading-[148%]">
                 Receipt List
               </h2>
-
-              {/* <div className="flex gap-5">
-                <button
-                  onClick={() => navigate("/Receipt/create")}
-                  className="w-[100px] h-[30px]  cursor-pointer rounded bg-[#0A2478] text-white text-[11.25px] flex items-center justify-center mt-2"
-                >
-                  Add Receipt
-                </button>
-                <button
-                  onClick={() => navigate("/")}
-                  className="w-[74px] h-[30px] cursor-pointer  rounded bg-[#C1121F] text-white text-[10px] mt-2"
-                >
-                  Exit
-                </button>
-              </div> */}
 
               <div className="flex gap-5">
                 <div className='flex gap-2 mt-2'>
@@ -449,7 +434,7 @@ const allHeaderIds = [
                     // setCurrentPage(1);
                     // fetchData(1);   // 🔥 API CALL
                   }}
-                  className="ml-2 bg-[#0b2c69] text-white text-[11px] px-4  rounded-[3px] font-source hover:bg-[#071d45] h-[34px]"
+                  className="ml-2 bg-[#0b2c69] text-white text-[11px] px-4  rounded-[3px] font-source hover:bg-[#071d45] h-[30px]"
                 >
                   Search
                 </button>
@@ -463,7 +448,7 @@ const allHeaderIds = [
                     // setCurrentPage(1);
                     // fetchData(1);
                   }}
-                  className="ml-2 bg-[#0b2c69] text-white text-[11px] px-4  rounded-[3px] font-source hover:bg-[#071d45] h-[34px]"
+                  className="ml-2 bg-[#0b2c69] text-white text-[11px] px-4  rounded-[3px] font-source hover:bg-[#071d45] h-[30px]"
                 >
                   Clear
                 </button>  
@@ -471,13 +456,13 @@ const allHeaderIds = [
  
              <button
                   onClick={() => navigate("/Receipt/create")}
-                  className="w-[100px] h-[34px]  cursor-pointer rounded bg-[#0A2478] text-white text-[11.25px] flex items-center justify-center mt-2"
+                  className="w-[100px] h-[30px]  cursor-pointer rounded bg-[#0A2478] text-white text-[11.25px] flex items-center justify-center mt-2"
                 >
                   Add Receipt
                 </button>
                 <button
                   onClick={() => navigate("/")}
-                  className="w-[74px] h-[34px] cursor-pointer  rounded bg-[#C1121F] text-white text-[10px] mt-2"
+                  className="w-[74px] h-[30px] cursor-pointer  rounded bg-[#C1121F] text-white text-[10px] mt-2"
                 >
                   Exit
                 </button>
@@ -487,32 +472,32 @@ const allHeaderIds = [
         </div>
 
         {/* TABLE */}
-        <div className="overflow-hidden mt-5">
+        <div className="overflow-hidden mt-5 ml-[22px] ">
           <table className=" text-left border-collapse w-[500px]">
             <thead>
               <tr className="bg-[#0D3082] text-white text-[12px] uppercase">
-                <th className="p-3 border-r">Receipt No</th>
-                <th className="p-3 border-r">Expense Date</th>
-                <th className="p-3 text-center">Action</th>
+                <th className="p-1 border-r text-left">Receipt No</th>
+                <th className="p-1 border-r text-left">Expense Date</th>
+                <th className="p-1 text-left">Action</th>
               </tr>
             </thead>
 
-            <tbody className="text-[13px] bg-white">
+            <tbody className="text-[13px] bg-white text-left">
               {tableData.map((row, index) => (
                 <tr
                   key={row.id}
                   className={index % 2 === 0 ? "bg-gray-50" : "bg-white"}
                 >
                   {/* Expense No */}
-                  <td className="p-3  font-medium">{row.Receipt_no}</td>
+                  <td className="p-1  font-medium">{row.Receipt_no}</td>
 
                   {/* Expense Date */}
-                  <td className="p-3 ">
+                  <td className="p-1 ">
                     {new Date(row.expense_date).toLocaleDateString("en-GB")}
                   </td>
 
                   {/* Actions */}
-                  <td className="p-3 text-center">
+                  <td className="p-1 text-center">
                     <div className="flex justify-center gap-2">
                       {/* View */}
                       <button

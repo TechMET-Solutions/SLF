@@ -71,10 +71,10 @@ const EmpAttendance = () => {
   }, [selectedEmp, month, year]);
 
   return (
-    <div className="p-4">
+    <div className="">
       {/* Header */}
       <div className="flex justify-center sticky top-[80px] z-40">
-        <div className="flex items-center px-6 py-4 mt-5 w-[1462px] h-[62px] border rounded-[11px] border-gray-200 justify-between shadow">
+        <div className="flex items-center px-6 py-4  w-[1462px] h-[50px] border rounded-[11px] border-gray-200 justify-between shadow">
           <h2
             style={{
               fontFamily: "Source Sans 3, sans-serif",
@@ -99,12 +99,12 @@ const EmpAttendance = () => {
       <div className="flex  mt-4 mx-auto w-[1462px] ">
         <table className=" ">
           <thead className="bg-[#0A2478] text-white text-sm">
-            <tr>
+            <tr className='text-left'>
               <th className="px-1 py-1 border w-[80px]">Emp Id</th>
-              <th className="px-1 py-1 border w-[250px]">Name</th>
-              <th className="px-1 py-1 border w-[250px]">Email</th>
-              <th className="px-1 py-1 border w-[100px]">Mobile</th>
-              <th className="px-1 py-1 border w-[150px]">Branch</th>
+              <th className="px-1 py-1 border w-[250px]"> Emp Name</th>
+              <th className="px-1 py-1 border w-[250px]"> Emp Email</th>
+              <th className="px-1 py-1 border w-[100px]">Emp Mobile</th>
+              <th className="px-1 py-1 border w-[200px]">Emp Branch</th>
               <th className="px-1 py-1 border w-[100px]">Action</th>
             </tr>
           </thead>

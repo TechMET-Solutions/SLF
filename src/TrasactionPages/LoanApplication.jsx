@@ -760,7 +760,7 @@ const LoanApplication = () => {
   return (
     <div>
       <div className="flex justify-center sticky top-[80px] z-40">
-        <div className="flex items-center px-6 py-4 border-b mt-5 w-[1290px] h-[62px] border rounded-[11px] border-gray-200 justify-around bg-white">
+        <div className="flex items-center px-6 py-4 border-b  w-[1462px] h-[50px] border rounded-[11px] border-gray-200 justify-around bg-white">
           <h2
             style={{
               fontFamily: "Source Sans 3, sans-serif",
@@ -878,56 +878,6 @@ const LoanApplication = () => {
                   </button>
                 </div>
               </div>
-
-              {/* Scheme Filter */}
-              {/* <div className="relative w-[111px]">
-                <button
-                  className="border border-black rounded h-[31px] w-full text-left text-[12px] flex items-center justify-between px-2 transition-colors duration-200 hover:border-gray-400"
-                  onClick={() => setIsOpen(!isOpen)}
-                >
-                  <span className="truncate">{selectedScheme || "Scheme"}</span>
-                  <IoChevronDownOutline
-                    className={`w-3 h-3 transition-transform duration-200 ${
-                      isOpen ? "rotate-180" : "rotate-0"
-                    }`}
-                  />
-                </button>
-
-                {isOpen && (
-                  <ul className="absolute z-10 w-full max-h-40 overflow-y-auto border border-gray-300 bg-white mt-1 rounded shadow-lg">
-                    {schemesLoading ? (
-                      <li className="px-2 py-1 text-[12px]">Loading...</li>
-                    ) : schemesError ? (
-                      <li className="px-2 py-1 text-[12px]">{schemesError}</li>
-                    ) : schemes && schemes.length > 0 ? (
-                      schemes.map((s, index) => {
-                        const label = typeof s === 'string' ? s : (s.schemeName || s.SchemeName || s.name || s.schemeCode || s.scheme_code || s.code || JSON.stringify(s));
-                        return (
-                          <li
-                            key={s.id || index}
-                            className="px-2 py-1 cursor-pointer text-[12px] hover:bg-gray-100"
-                            onClick={() => handleSchemeSelect(label)}
-                          >
-                            {label}
-                          </li>
-                        );
-                      })
-                    ) : (
-                      <li className="px-2 py-1 text-[12px]">No schemes available</li>
-                    )}
-                  </ul>
-                )}
-                {selectedScheme && (
-                  <button
-                    onClick={clearSchemeFilter}
-                    className="absolute -right-2 -top-2 bg-red-500 text-white rounded-full w-4 h-4 text-xs flex items-center justify-center"
-                    title="Clear scheme filter"
-                  >
-                    ×
-                  </button>
-                )}
-              </div> */}
-
               <div>
                 <select
                   name="loan_type"
@@ -1072,7 +1022,7 @@ const LoanApplication = () => {
         </div>
       )}
 
-      <div className="flex justify-center text-center">
+      <div className="flex ml-[30px]">
         <div className="overflow-x-auto mt-5 w-[1290px] min-h-[500px]">
           {loading ? (
             <div className="flex justify-center items-center h-64">
@@ -1084,22 +1034,22 @@ const LoanApplication = () => {
             <table className="w-full border-collapse  border-gray-300">
               <thead className="bg-[#0A2478] text-white text-sm">
                 <tr>
-                  <th className="px-4 py-2 border-r border-gray-300 text-[14px] w-[103px]">
+                  <th className="px-1 py-1 border-r border-gray-300 text-[14px] w-[103px]">
                     Loan No
                   </th>
-                  <th className="px-4 py-2 border-r border-gray-300 text-[14px] w-[350px]">
+                  <th className="px-1 py-1 border-r border-gray-300 text-[14px] w-[350px]">
                     Party Name
                   </th>
-                  <th className="px-4 py-2 border-r border-gray-300 text-[14px] w-[101px]">
+                  <th className="px-1 py-1 border-r border-gray-300 text-[14px] w-[101px]">
                     Loan Date
                   </th>
-                  <th className="px-4 py-2 border-r border-gray-300 text-[14px] w-[160px]">
+                  <th className="px-1 py-1 border-r border-gray-300 text-[14px] w-[160px]">
                     Scheme
                   </th>
-                  <th className="px-4 py-2 border-r border-gray-300 text-[14px] w-[170px]">
+                  <th className="px-1 py-1 border-r border-gray-300 text-[14px] w-[170px]">
                     Loan Amount
                   </th>
-                  <th className="px-4 py-2 border-r border-gray-300 text-[14px] w-[180px]">
+                  <th className="px-1 py-1 border-r border-gray-300 text-[14px] w-[180px]">
                     <select
                       className="rounded text-[13px] w-full bg-transparent text-white focus:outline-none"
                       value={filters.status}
@@ -1122,20 +1072,20 @@ const LoanApplication = () => {
                       </option>
                     </select>
                   </th>
-                  <th className="px-4 py-2 border-r border-gray-300 text-[14px] w-[100px]">
+                  <th className="px-1 py-1 border-r border-gray-300 text-[14px] w-[100px]">
                     Added By
                   </th>
-                  <th className="px-4 py-2 border-r border-gray-300 text-[14px] w-[156px]">
+                  <th className="px-1 py-1 border-r border-gray-300 text-[14px] w-[156px]">
                     Approved By
                   </th>
-                  <th className="px-4 py-2 border-r border-gray-300 text-[14px] w-[156px]">
+                  <th className="px-1 py-1 border-r border-gray-300 text-[14px] w-[156px]">
                     Action
                   </th>
-                  <th className="px-4 py-2 border-r border-gray-300 text-[14px] w-[100px]">
+                  <th className="px-1 py-1 border-r border-gray-300 text-[14px] w-[100px]">
                     Payment
                   </th>
-                  <th className="px-4 py-2 border-r border-gray-300 text-[13px] w-[60px]">
-                    Loan Repayment
+                  <th className="px-1 py-1 border-r border-gray-300 text-[13px] w-[60px]">
+                    Repayment
                   </th>
                 </tr>
               </thead>
@@ -1146,31 +1096,31 @@ const LoanApplication = () => {
                     className={index % 2 === 0 ? "bg-gray-50" : "bg-white"}
                   >
                     <td
-                      className="px-4 py-2 text-blue-600 cursor-pointer hover:underline font-medium"
+                      className="px-1 py-1 text-blue-600 cursor-pointer hover:underline font-medium"
                       onClick={() => handleClick(row)}
                     >
                       {row.Loan_No}
                     </td>
-                    <td className="px-4 py-2">{row.Party_Name}</td>
-                    <td className="px-4 py-2">
+                    <td className="px-1 py-1">{row.Party_Name}</td>
+                    <td className="px-1 py-1">
                       {formatIndianDate(row.Loan_Date)}
                     </td>
-                    <td className="px-4 py-2">{row.Scheme}</td>
-                    <td className="px-4 py-2 font-medium">
+                    <td className="px-1 py-1">{row.Scheme}</td>
+                    <td className="px-1 py-1 font-medium">
                       ₹{row.Net_Payable?.toLocaleString("en-IN")}
                     </td>
                     <td
-                      className={`px-4 py-2 font-semibold ${getStatusColor(
+                      className={`px-1 py-1 font-semibold ${getStatusColor(
                         row.Status,
                       )}`}
                     >
                       {getStatusText(row.Status)}
                     </td>
-                    <td className="px-4 py-2">{row.added_by || "N/A"}</td>
-                    <td className="px-4 py-2">{row.Approved_By || "N/A"}</td>
+                    <td className="px-1 py-1">{row.added_by || "N/A"}</td>
+                    <td className="px-1 py-1">{row.Approved_By || "N/A"}</td>
 
                     {/* Action buttons */}
-                    <td className="px-4 py-2">
+                    <td className="px-1 py-1">
                       {(() => {
                         const st = (row.Status || "").toLowerCase();
 
@@ -1398,7 +1348,7 @@ const LoanApplication = () => {
                     </td>
 
                     {/* Payment column */}
-                    <td className="px-4 py-2 text-center">
+                    <td className="px-1 py-1 text-center">
                       {(() => {
                         const st = (row.Status || "").toLowerCase();
                         if (st === "approved") {
@@ -1457,7 +1407,7 @@ const LoanApplication = () => {
                     </td>
 
                     {/* Loan Repayment column */}
-                    <td className="px-4 py-2 text-center">
+                    <td className="px-1 py-1 text-center">
                       {(() => {
                         const st = (row.Status || "").toLowerCase();
                         if (st === "approved") {
@@ -1552,7 +1502,7 @@ const LoanApplication = () => {
 
             <div className="flex justify-center mt-4 gap-2">
               <button
-                className="px-4 py-2 rounded w-[119px] h-[38px] bg-[#C1121F] text-white font-semibold cursor-pointer hover:bg-[#a50e1a]"
+                className="px-1 py-1 rounded w-[119px] h-[38px] bg-[#C1121F] text-white font-semibold cursor-pointer hover:bg-[#a50e1a]"
                 onClick={() => {
                   setIsRemarkOpen(false);
                   setRemarkData(null);

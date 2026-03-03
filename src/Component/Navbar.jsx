@@ -346,7 +346,7 @@ const Navbar = () => {
     // { name: "Member Login Details", path: "/Member-Login-Details" },
     { name: "Employee Member Details", path: "/Member-Details" },
     { name: "Employee Attendance", path: "/Employee-Attendance" },
-    { name: "Employee Designation", path: "/Employee-Designation" },
+    { name: "Designation", path: "/Employee-Designation" },
     { name: "Employee Role Permission", path: "/User-Role-Permission" },
 
   ];

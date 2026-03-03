@@ -172,7 +172,7 @@ function LoanChargesList() {
     <div className="min-h-screen w-full">
       {/* 🔹 Header */}
       <div className="flex justify-center sticky top-[80px] z-40 ">
-        <div className="flex items-center px-6 py-4 border-b mt-5 w-[1290px] h-[62px] border rounded-[11px] border-gray-200 justify-between bg-white ">
+        <div className="flex items-center px-6 py-4 border-b w-[1462px] h-[50px] border rounded-[11px] border-gray-200 justify-between bg-white ">
           <h2 className="text-red-600 font-bold text-[20px]">
             Loan Charges List
           </h2>
@@ -284,9 +284,9 @@ function LoanChargesList() {
       </div>
 
       {/* 🔹 Table Section */}
-      <div className='pr-[110px] pl-[110px]'>
+      <div className='ml-[22px]'>
         <div className="flex ">
-          <div className="overflow-x-auto mt-6  h-[500px]">
+          <div className="overflow-x-auto mt-5 h-[500px]">
             {isLoading ? (
               <p className="text-center text-gray-500 mt-10">Loading...</p>
             ) : (
@@ -294,12 +294,12 @@ function LoanChargesList() {
                 {/* ✅ Table Header */}
                 <thead className="bg-[#0A2478] text-white text-sm">
                   <tr>
-                    <th className="px-4 py-2 text-left border-r w-[130px]">Loan No</th>
-                    <th className="px-10 py-2 text-left border-r w-[200px]">Party Name</th>
-                    <th className="px-4 py-2 text-left border-r w-[150px]">Amount</th>
-                    <th className="px-4 py-2 text-left border-r w-[100px]">Added On</th>
-                    <th className="px-4 py-2 text-left border-r w-[200px]">Added By Email</th>
-                    <th className="px-4 py-2 text-left border-r">Action</th>
+                    <th className="px-1 py-1 text-left border-r w-[130px]">Loan No</th>
+                    <th className="px-1 py-1 text-left border-r w-[200px]">Party Name</th>
+                    <th className="px-1 py-1 text-left border-r w-[150px]">Amount</th>
+                    <th className="px-1 py-1 text-left border-r w-[100px]">Added On</th>
+                    <th className="px-1 py-1 text-left border-r w-[200px]">Added By Email</th>
+                    <th className="px-1 py-1 text-left border-r">Action</th>
                   </tr>
                 </thead>
 
@@ -321,13 +321,13 @@ function LoanChargesList() {
                         className={`${index % 2 === 0 ? "bg-gray-50" : "bg-white"
                           }`}
                       >
-                        <td className="px-4 py-2">{row.loan_no}</td>
-                        <td className="px-4 py-2">{row.party_name}</td>
-                        <td className="px-4 py-2">{row.total_charges}</td>
-                        <td className="px-4 py-2">{row.loan_date}</td>
-                        <td className="px-4 py-2">{row.added_by || "-"}</td>
+                        <td className="px-1 py-1">{row.loan_no}</td>
+                        <td className="px-1 py-1">{row.party_name}</td>
+                        <td className="px-1 py-1">{row.total_charges}</td>
+                        <td className="px-1 py-1">{row.loan_date}</td>
+                        <td className="px-1 py-1">{row.added_by || "-"}</td>
 
-                        <td className="px-4 py-2 flex items-center gap-2">
+                        <td className="px-1 py-1 flex items-center gap-2">
                           <button
                             onClick={() => handleViewClick(row)}
                             className="bg-blue-500 hover:bg-blue-600 p-1.5 rounded text-white"

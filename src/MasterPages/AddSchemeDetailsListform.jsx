@@ -336,9 +336,9 @@ const AddSchemeDetailsListform = () => {
   const isDailyBasis = formData.calcBasisOn === "Daily";
 
   return (
-    <div className="min-h-screen bg-white p-5">
+    <div className="min-h-screen bg-white ">
       <div className="flex justify-center sticky top-[80px] z-40">
-        <div className="flex items-center px-6 py-4 border-b mt-5 w-[1290px] h-[62px] border rounded-[11px] border-gray-200 justify-between shadow bg-white">
+        <div className="flex items-center px-6 py-4 border-b  w-[1462px] h-[50px] border rounded-[11px] border-gray-200 justify-between shadow bg-white">
           <h2
             style={{
               fontFamily: "Source Sans 3, sans-serif",
@@ -385,9 +385,9 @@ const AddSchemeDetailsListform = () => {
         </div>
       </div>
 
-      <div className="bg-white rounded-lg mt-2 ">
+      <div className="bg-white rounded-lg mt-5 ">
         {/* First Row (ALWAYS VISIBLE) */}
-        <div className="flex gap-2 justify-center">
+        <div className="flex gap-2 ml-[22px]">
           <div className="w-[739px] h-auto bg-[#FFE6E6] p-[20px]">
             <div className="flex gap-[12px] ">
               <div className="flex flex-col ">

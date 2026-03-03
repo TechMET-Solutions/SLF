@@ -231,7 +231,7 @@ function AuctionItemsList() {
     <div className="min-h-screen w-full">
       {/* Header */}
       <div className="flex justify-center sticky top-[80px] z-40">
-        <div className="flex items-center px-6 py-4 border-b mt-5 w-[1290px] h-[62px] border rounded-[11px] border-gray-200 justify-between">
+        <div className="flex items-center px-6 py-4 border-b  w-[1462px] h-[50px] border rounded-[11px] border-gray-200 justify-between">
           <h2 className="text-red-600 font-bold text-[20px]">Auction ID: {AuctionData.id} — Loans Details</h2>
 
           <div className="flex gap-3">
@@ -261,22 +261,22 @@ function AuctionItemsList() {
 
       {/* Table */}
       <div className="flex justify-center">
-        <div className="overflow-x-auto mt-6 ">
-          <table className="border-collapse">
+        <div className="overflow-x-auto mt-5 ">
+          <table className="border-collapse text-left">
             <thead className="bg-[#0A2478] text-white text-sm">
-              <tr className="[&>th]:px-4 [&>th]:py-3 [&>th]:border-r">
-                <th className='w-[20px]'>Loan No.</th>
-                <th className='w-[200px]' >Item Name</th>
-                <th className='w-[80px]'>Gross Weight</th>
-                <th className='w-[80px]'>Net Weight</th>
-                <th className='w-[100px]' >Amount</th>
-                <th className='w-[80px]'>Outstanding Amt</th>
-                <th className='w-[120px]'>Valuation Gold Rate</th>
-                <th className='w-[100px]'>Bid Closing Amt</th>
-                <th className='w-[150px]'>Assign Bidder</th>
-                <th className='w-[100px]'>Invoice</th>
-                <th>Payment</th>
-                <th>Remark</th>
+              <tr className=" [&>th]:border-r">
+                <th className='w-[120px] p-1'>Loan No.</th>
+                <th className='w-[200px] p-1' >Item Name</th>
+                <th className='w-[80px] p-1'>Gross Weight</th>
+                <th className='w-[80px] p-1'>Net Weight</th>
+                <th className='w-[100px] p-1' >Amount</th>
+                <th className='w-[150px] p-1'>Outstanding Amt</th>
+                <th className='w-[150px] p-1'>Valuation Gold Rate</th>
+                <th className='w-[100px] p-1'>Bid Closing Amt</th>
+                <th className='w-[150px] p-1'>Assign Bidder</th>
+                <th className='w-[60px] p-1'>Invoice</th>
+                <th className='w-[60px] p-1'>Payment</th>
+                <th className='w-[180px] p-1'>Remark</th>
               </tr>
             </thead>
 
@@ -307,22 +307,22 @@ function AuctionItemsList() {
 
                 return (
                   <tr key={item.id} className={index % 2 === 0 ? "bg-gray-50" : "bg-white"}>
-                    <td className="px-4 py-2">{item.id}</td>
-                    <td className="px-4 py-2">{itemName}</td>
-                    <td className="px-4 py-2">{gross}</td>
-                    <td className="px-4 py-2">{net}</td>
-                    <td className="px-4 py-2">
+                    <td className="px-1 py-1">{item.id}</td>
+                    <td className="px-1 py-1">{itemName}</td>
+                    <td className="px-1 py-1">{gross}</td>
+                    <td className="px-1 py-1">{net}</td>
+                    <td className="px-1 py-1">
                       {Number(item.Loan_amount || 0).toFixed(2)}
                     </td>
 
-                    <td className="px-4 py-2">{item.LoanPendingAmount}</td>
-                    <td className="px-4 py-2">
+                    <td className="px-1 py-1">{item.LoanPendingAmount}</td>
+                    <td className="px-1 py-1">
                       {Number(valuation || 0).toFixed(2)}
                     </td>
 
 
                     {/* ⭐ Bidding Close Amount Input */}
-                    <td className="px-4 py-2">
+                    <td className="px-1 py-1">
                       {item.BidderCloseAmt ? (
                         <span className="font-medium">{item.BidderCloseAmt}</span>
                       ) : (
@@ -333,9 +333,9 @@ function AuctionItemsList() {
 
 
                     {/* You can fill these later */}
-                    <td className="px-4 py-2">{item.AssignBidderName ? item.AssignBidderName : "---"}</td>
+                    <td className="px-1 py-1">{item.AssignBidderName ? item.AssignBidderName : "---"}</td>
 
-                    <td className="px-4 py-2">
+                    <td className="px-1 py-1">
                       {item.AuctionStatus === 0 ? (
                         // Show Pending Invoice (Auction not closed yet)
                         <img
@@ -374,7 +374,7 @@ function AuctionItemsList() {
                       )}
                     </td>
 
-                    <td className="px-4 py-2">
+                    <td className="px-1 py-1">
                       {item.AuctionStatus === 0 ? (
                         // Show Pending Invoice (Auction not closed yet)
                         <p>---</p>
@@ -395,7 +395,7 @@ function AuctionItemsList() {
                       )}
                     </td>
 
-                    <td className="px-4 py-2">--</td>
+                    <td className="px-1 py-1">--</td>
 
                   </tr>
                 );

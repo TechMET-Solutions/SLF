@@ -80,8 +80,8 @@ const handleStatusClick = (row) => {
       
       {/* 🔹 HEADER */}
       <div className="flex justify-center sticky top-[80px] z-40">
-        <div className="flex items-center px-6 py-4 border-b mt-5 w-[1290px] h-[62px] border rounded-[11px] border-gray-200 justify-between">
-          <h2 className="text-red-600 font-bold text-[20px]">
+        <div className="flex items-center px-6 py-4 border-b w-[1462px] h-[50px] border rounded-[11px] border-gray-200 justify-between bg-white">
+          <h2 className="text-red-600 font-bold text-[20px] ">
             Auction Bidder List (Auction ID: {auctionId})
           </h2>
 
@@ -104,24 +104,24 @@ const handleStatusClick = (row) => {
       </div>
 
       {/* 🔹 TABLE SECTION */}
-      <div className="flex justify-center">
-        <div className="overflow-x-auto mt-6 w-[1300px]">
+      <div className="flex ml-[22px] mr-[22px]">
+        <div className="overflow-x-auto mt-5 ">
           <table className="w-full border-collapse">
             <thead className="bg-[#0A2478] text-white text-sm">
               <tr>
-                <th className="px-4 py-2 text-left border-r">Bidder ID</th>
-                <th className="px-4 py-2 text-left border-r">Name</th>
-                <th className="px-4 py-2 text-left border-r">Mobile No.</th>
-                  <th className="px-4 py-2 text-left border-r">Shop Address</th>
+                <th className="px-4 py-2 text-left border-r w-[120px]">Bidder ID</th>
+                <th className="px-4 py-2 text-left border-r w-[180px]">Name</th>
+                <th className="px-4 py-2 text-left border-r w-[120px]">Mobile No.</th>
+                  <th className="px-4 py-2 text-left border-r w-[400px]">Shop Address</th>
               
-                <th className="px-4 py-2 text-left border-r">Landline No.</th>
-                <th className="px-4 py-2 text-left border-r">GST No.</th>
-                  <th className="px-4 py-2 text-left border-r">Firm Name</th>
-                <th className="px-4 py-2 text-left border-r">Fees</th>
-                 <th className="px-4 py-2 text-left border-r">Status</th>
+                {/* <th className="px-4 py-2 text-left border-r w-[130px]">Landline No.</th> */}
+                <th className="px-4 py-2 text-left border-r w-[180px]">GST No.</th>
+                  <th className="px-4 py-2 text-left border-r w-[180px]">Firm Name</th>
+                <th className="px-4 py-2 text-left border-r w-[100px]">Fees</th>
+                 <th className="px-4 py-2 text-left border-r w-[100px]">Status</th>
                
-                <th className="px-4 py-2 text-left border-r">Credit Note</th>
-                <th className="px-4 py-2 text-left">Action</th>
+                <th className="px-4 py-2 text-left border-r w-[130px]">Credit Note</th>
+                <th className="px-4 py-2 text-left w-[100px]">Action</th>
               </tr>
             </thead>
 
@@ -149,7 +149,7 @@ const handleStatusClick = (row) => {
                     <td className="px-4 py-2">{row.mobile}</td>
                     <td className="px-4 py-2">{row.shop_address}</td>
                  
-                    <td className="px-4 py-2">{row.landline}</td>
+                    {/* <td className="px-4 py-2">{row.landline}</td> */}
                     <td className="px-4 py-2">{row.gst_no}</td>
                     <td className="px-4 py-2">{row.firm_name}</td>
                     <td className="px-4 py-2">₹ {row.fees}</td>

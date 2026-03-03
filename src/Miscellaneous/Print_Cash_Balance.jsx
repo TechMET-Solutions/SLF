@@ -104,9 +104,9 @@ const Print_Cash_Balance = () => {
   const printTime = new Date().toLocaleTimeString();
 
   return (
-    <div className="min-h-screen w-full  pb-10">
-      <div className="flex justify-center pt-5 px-4">
-        <div className="flex items-center px-6 py-3 w-full max-w-[1290px] bg-white border border-gray-200 rounded-xl shadow-sm justify-between">
+    <div className="min-h-screen w-full">
+      <div className="flex justify-center ">
+        <div className="flex items-center px-6 py-3 w-[1462px] bg-white border border-gray-200 rounded-xl shadow-sm justify-between mt-2">
           <h2 className="text-red-600 font-bold text-xl tracking-tight uppercase">
             Print Cash Balance
           </h2>
@@ -127,8 +127,8 @@ const Print_Cash_Balance = () => {
           </div>
         </div>
       </div>
-      <div className='mr-[110px] ml-[110px]'>
-         <div className="p-6  text-black print:p-4">
+      <div className='p-6'>
+         <div className="  text-black print:p-4">
         {/* Header */}
         <div className="flex justify-end text-xs mb-2">
           Date: {currentDate} | Time: {printTime}
