@@ -4,6 +4,8 @@ import { useNavigate } from "react-router-dom";
 import { API } from "../api";
 import Pagination from "../Component/Pagination";
 import { formatIndianDate } from "../utils/Helpers";
+import { FiEdit } from "react-icons/fi";
+import { MdContentCopy } from "react-icons/md";
 const SchemeDetailsList = () => {
   useEffect(() => {
     document.title = "SLF | Scheme Details List";
@@ -121,10 +123,10 @@ const SchemeDetailsList = () => {
           </h2>
 
           <div className="flex items-center gap-3">
-            <div className="flex items-center gap-3">
-              <div className="hidden lg:flex items-center bg-white  h-[32px] px-1 relative ">
+            <div className="flex items-center  gap-3">
+              <div className="hidden lg:flex items-center bg-white border border-gray-400 rounded-[5px]  h-[32px] px-1 relative ">
                 {/* Multi-Select Header Dropdown */}
-                <div className="relative border-r border-gray-300 pr-2 mr-2">
+                <div className="relative  border-r border-gray-300 pr-2 mr-2">
                   <button
                     onClick={() => setIsDropdownOpen(!isDropdownOpen)}
                     className="text-[11px] font-source font-bold text-[#0A2478] flex items-center gap-1 outline-none h-full"
@@ -200,7 +202,7 @@ const SchemeDetailsList = () => {
                 </button>
               </div>
 
-              <div className="hidden lg:flex items-center bg-white  h-[32px] px-1 relative ">
+              <div className="hidden lg:flex items-center border border-gray-400 rounded-[5px] bg-white  h-[32px] px-1 relative ">
                 {/* App From Date */}
                 <div className="flex items-center gap-1 border-r border-gray-200 pr-2 mr-2">
                   <span className="text-[10px] text-gray-500 font-bold uppercase">
@@ -277,8 +279,8 @@ const SchemeDetailsList = () => {
       </div>
 
       {/* Table */}
-      <div className="flex ml-[22px]">
-        <div className="overflow-x-auto mt-5  h-[500px]">
+      <div className="flex ml-[32px]">
+        <div className="overflow-x-auto mt-2  h-[500px]">
           <table className="w-full border-collapse">
             <thead className="bg-[#0A2478] text-white text-sm">
               <tr className='text-left'>
@@ -344,12 +346,12 @@ const SchemeDetailsList = () => {
 
                   {/* Toggle */}
                   <td className="px-1 py-1 w-[120px]">
-                    <div className="flex items-center gap-6">
+                    <div className="flex items-center gap-2">
                       {/* Status Toggle Section */}
                       <div className="flex flex-col items-start gap-1">
                         <button
                           onClick={() => handleStatusToggle(row)}
-                          className={`w-11 h-5 flex items-center rounded-full p-1 transition-all duration-300 ease-in-out ${row.status === 1 ? "bg-[#0A2478]" : "bg-gray-300"
+                          className={`w-11 h-5 cursor-pointer flex items-center rounded-full p-1 transition-all duration-300 ease-in-out ${row.status === 1 ? "bg-[#0A2478]" : "bg-gray-300"
                             }`}
                         >
                           <div
@@ -372,9 +374,9 @@ const SchemeDetailsList = () => {
                                 state: { type: "edit", data: row },
                               })
                             }
-                            className="px-3 py-1 bg-[#646AD9] hover:bg-[#4a50b5] text-white text-[11px] font-medium rounded transition-colors flex items-center gap-1"
+                            className="px-2 py-1 bg-green-500 hover:bg-green-600 text-white text-[11px] font-medium rounded transition-colors flex items-center gap-1 cursor-pointer"
                           >
-                            Edit
+                            <FiEdit className="text-white text-sm" />
                           </button>
 
                           {/* Copy Button */}
@@ -384,9 +386,9 @@ const SchemeDetailsList = () => {
                                 state: { type: "copy", data: row },
                               })
                             }
-                            className="px-3 py-1 bg-gray-100 hover:bg-gray-200 text-[#0A2478] text-[11px] font-medium rounded border border-gray-200 transition-colors"
+                            className="px-2 py-1 bg-[#646AD9] hover:bg-[#4a50b5] text-white text-[11px] font-medium rounded border border-gray-200 transition-colors cursor-pointer"
                           >
-                            Copy
+                            <MdContentCopy className="text-white text-sm" />
                           </button>
                         </div>
                       </div>

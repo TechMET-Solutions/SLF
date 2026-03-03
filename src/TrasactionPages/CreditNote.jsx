@@ -92,14 +92,14 @@ function CreditNote() {
     <div className="min-h-screen w-full">
       <div className="flex flex-col items-center w-full bg-white">
         {/* Header */}
-        <div className="flex justify-center sticky top-[80px] z-40">
-          <div className="flex items-center justify-between border border-gray-200 rounded-[10px] px-6 py-4 w-[1462px] h-[50px] shadow-sm bg-white">
-            <h2 className="text-[#C1121F] font-bold text-[20px] whitespace-nowrap">
+        <div className="z-40 ml-[50px] bg-white w-full">
+          <div className="flex items-center px-6 py-4 border-b my-2 w-full max-w-[1462px] h-[50px] border rounded-[11px] border-gray-200 justify-between  ">
+            <h2 className="text-red-600 font-bold text-[20px] whitespace-nowrap">
               Customer Credit Notes
             </h2>
 
             <div className="flex items-center gap-3">
-              <div className="flex items-center gap-3">
+              <div className="hidden lg:flex items-center gap-3">
                 <div className="flex items-center bg-white border border-gray-400 rounded-[5px] h-[32px] px-2 relative w-[500px]">
                   {/* Multi-Select Header Dropdown */}
                   <div className="relative border-r border-gray-300 pr-2 mr-2">
@@ -181,7 +181,7 @@ function CreditNote() {
                 type="date"
                 value={selectedDate}
                 onChange={(e) => setSelectedDate(e.target.value)}
-                className="border border-gray-300 rounded-[5px] h-[32px] px-2 text-[11px] outline-none"
+                className="hidden lg:flex border border-gray-300 rounded-[5px] h-[32px] px-2 text-[11px] outline-none"
               />
 
               <button
@@ -189,9 +189,11 @@ function CreditNote() {
                   setIsDropdownOpen(false);
                   fetchCreditNotes();
                 }}
-                className="ml-2 bg-[#0b2c69] text-white text-[11px] px-4 h-[28px] rounded-[3px] font-source hover:bg-[#071d45]"
+                className="ml-2 bg-[#0b2c69] hidden lg:flex text-white text-[11px] px-4 h-[28px] rounded-[3px] font-source hover:bg-[#071d45]"
               >
-                Search
+                <span className="mt-1">
+                  Search
+                </span>
               </button>
               <button
                 onClick={() => {
@@ -200,9 +202,11 @@ function CreditNote() {
                   setSelectedDate("");
                   fetchCreditNotes();
                 }}
-                className=" bg-[#0b2c69] text-white text-[11px] px-4 h-[28px] rounded-[3px] font-source hover:bg-[#071d45]"
+                className=" bg-[#0b2c69] hidden lg:flex text-white text-[11px] px-4 h-[28px] rounded-[3px] font-source hover:bg-[#071d45]"
               >
-                Clear
+                <span className="mt-1">
+                  Clear
+                </span>
               </button>
 
               <button
@@ -222,36 +226,36 @@ function CreditNote() {
         </div>
 
         {/* Table */}
-        <div className="p-6 ">
+        <div className="px-8 ">
           <table className="min-w-full border-collapse bg-white text-sm text-gray-700">
-            <thead className=" text-white text-left">
+            <thead className="text-left bg-[#0A2478] text-white text-sm">
               <tr>
-                <th className="bg-[#0A2478] border-r-2 border-white px-1 py-1 font-semibold w-[150px]">
+                <th className="px-1 py-1 text-left border-r border-gray-300 text-[13px] w-[150px]">
                   Credit Note No.
                 </th>
-                <th className="bg-[#0A2478] border-r-2 border-white px-1 py-1 font-semibold w-[100px]">
+                <th className="px-1 py-1 text-left border-r border-gray-300 text-[13px] w-[100px]">
                   Customer Id.
                 </th>
 
-                <th className="bg-[#0A2478] border-r-2 border-white px-1 py-1 font-semibold w-[200px]">
+                <th className="px-1 py-1 text-left border-r border-gray-300 text-[13px] w-[200px]">
                   Customer Name
                 </th>
-                <th className="bg-[#0A2478] border-r-2 border-white px-1 py-1 font-semibold w-[200px]">
+                <th className="px-1 py-1 text-left border-r border-gray-300 text-[13px] w-[200px]">
                   Customer Address
                 </th>
-                <th className="bg-[#0A2478] border-r-2 border-white px-1 py-1 font-semibold w-[120px]">
+                <th className="px-1 py-1 text-left border-r border-gray-300 text-[13px] w-[120px]">
                   Phone No.
                 </th>
-                <th className="bg-[#0A2478] border-r-2 border-white px-1 py-1 font-semibold w-[120px]">
+                <th className="px-1 py-1 text-left border-r border-gray-300 text-[13px] w-[120px]">
                   Credit Note Amount
                 </th>
-                <th className="bg-[#0A2478] border-r-2 border-white px-1 py-1 font-semibold w-[120px]">
+                <th className="px-1 py-1 text-left border-r border-gray-300 text-[13px] w-[120px]">
                   Utilized Amount
                 </th>
-                <th className="bg-[#0A2478] border-r-2 border-white px-1 py-1 font-semibold w-[120px]">
+                <th className="px-1 py-1 text-left border-r border-gray-300 text-[13px] w-[120px]">
                   Un-Utilized Amount
                 </th>
-                <th className="bg-[#0A2478] border-r-2 border-white px-1 py-1 font-semibold w-[80px]">
+                <th className="px-1 py-1 text-left border-r border-gray-300 text-[13px] w-[80px]">
                   Date
                 </th>
                 <th className="bg-[#0A2478] border-r-2 border-white px-1 py-1 text-center font-semibold">

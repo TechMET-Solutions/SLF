@@ -28,9 +28,9 @@ const BidderRegistrationList = () => {
   return (
     <div className="min-h-screen w-full flex flex-col ml-[22px]">
       {/* Header Section */}
-      <div className="w-[1462px] bg-white  rounded-lg h-[50px] p-2 flex justify-between items-center border border-gray-200 sticky top-[80px] z-40">
+        <div className="flex items-center px-6 py-4 border-b my-2 w-full max-w-[1462px] h-[50px] border rounded-[11px] border-gray-200 justify-between  ">
         <h2 className="text-red-600 font-semibold text-xl">
-          Bidder Registration List
+          Bidder Registration List 
         </h2>
 <div className="flex gap-3">
         <button
@@ -49,11 +49,11 @@ const BidderRegistrationList = () => {
       {loading ? (
         <div className="mt-8 text-gray-600">Loading bidders...</div>
       ) : (
-        <div className=" mt-5 bg-white">
+        <div className="bg-white max-w-[1462px] w-full overflow-x-auto">
           <table className=" text-sm border-collapse">
             <thead className="bg-[#0A2478] text-white">
               <tr>
-                <th className="px-1 py-1 text-left border-r">ID</th>
+                  <th className="px-1 py-1 text-left border-r w-[40px]">ID</th>
                 <th className="px-1 py-1 text-left border-r w-[180px]">
                   Bidder Name
                 </th>
@@ -73,7 +73,7 @@ const BidderRegistrationList = () => {
                 <th className="px-1 py-1 text-left border-r w-[160px]">
                   Email ID
                 </th>
-                <th className="px-1 py-1 text-center">Action</th>
+                  <th className="px-1 py-1 text-center w-[80px]">Action</th>
               </tr>
             </thead>
 

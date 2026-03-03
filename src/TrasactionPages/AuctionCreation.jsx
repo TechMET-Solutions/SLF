@@ -93,7 +93,7 @@ function AuctionCreation() {
         <div className="flex items-center px-6 py-4 border-b  w-[1462px] h-[50px] border rounded-[11px] border-gray-200 justify-between bg-white">
           <h2 className="text-red-600 font-bold text-[20px]">Auction List</h2>
           <div className="flex gap-5">
-            <div className="flex items-center gap-3">
+            <div className="hidden lg:flex items-center gap-3">
               <div className="flex items-center bg-white border border-gray-400 rounded-[5px] h-[32px] px-2 relative w-[500px]">
                 {/* Multi-Select Header Dropdown */}
                 <div className="relative border-r border-gray-300 pr-2 mr-2">
@@ -170,21 +170,23 @@ function AuctionCreation() {
               type="date"
               value={selectedDate}
               onChange={(e) => setSelectedDate(e.target.value)}
-              className="ml-2 border border-gray-300 text-[11px] px-2 h-[px] rounded-[3px] outline-none"
+              className="hidden lg:flex ml-2 border border-gray-300 text-[11px] px-2 h-[px] rounded-[3px] outline-none"
             />
 <div className="flex gap-2 mt-0.5">
             <button
-              className="ml-2 bg-[#0b2c69] cursor-pointer text-white text-[11px] px-4 h-[28px] rounded-[3px] font-source hover:bg-[#071d45]"
+                className="hidden lg:flex ml-2 bg-[#0b2c69] cursor-pointer text-white text-[11px] px-4 h-[28px] rounded-[3px] font-source hover:bg-[#071d45]"
               onClick={() => {
                 setIsDropdownOpen(false);
                 fetchAuctions();
               }}
-            >
-              Search
+              >
+                <span className="mt-1.5">
+                  Search
+                </span>
             </button>
 
             <button
-              className="bg-[#0b2c69] cursor-pointer text-white text-[11px] px-4 h-[28px] rounded-[3px]  hover:bg-[#071d45]"
+                className="bg-[#0b2c69] hidden lg:flex cursor-pointer text-white text-[11px] px-4 h-[28px] rounded-[3px]  hover:bg-[#071d45]"
               onClick={() => {
                 setSearchQuery("");
                 setSearchHeaders([]);
@@ -192,8 +194,10 @@ function AuctionCreation() {
                 setIsDropdownOpen(false);
                 fetchAuctions();
               }}
-            >
-              Clear
+              >
+                <span className="mt-1.5">
+                  Clear
+                </span>
               </button>
             </div>
 

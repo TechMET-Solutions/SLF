@@ -208,7 +208,7 @@ function AddAuctionCreation() {
           </h2>
           <div className="flex gap-2">
             <div className="flex items-center gap-3">
-              <div className="flex items-center bg-white border border-gray-400 rounded-[5px] h-[32px] px-2 relative w-[500px]">
+              <div className="hidden lg:flex items-center bg-white border border-gray-400 rounded-[5px] h-[32px] px-2 relative w-[500px]">
                 {/* Multi-Select Header Dropdown */}
                 <div className="relative border-r border-gray-300 pr-2 mr-2">
                   <button
@@ -271,7 +271,7 @@ function AddAuctionCreation() {
               type="date"
               value={selectedDate}
               onChange={(e) => setSelectedDate(e.target.value)}
-              className="border border-gray-300 rounded-[5px] h-[32px] px-2 text-[11px] outline-none"
+              className="border hidden lg:flex border-gray-300 rounded-[5px] h-[32px] px-2 text-[11px] outline-none"
             />
 
             <div className="flex gap-3">
@@ -280,9 +280,11 @@ function AddAuctionCreation() {
                   setIsDropdownOpen(false);
                   fetchLoans();
                 }}
-                className="ml-2 bg-[#0b2c69] text-white text-[11px] px-4 h-[30px] rounded-[3px] font-source hover:bg-[#071d45] "
+                className="ml-2 hidden lg:flex bg-[#0b2c69] text-white text-[11px] px-4 h-[30px] rounded-[3px] font-source hover:bg-[#071d45] "
               >
+                <span className="mt-1.5">
                 Search
+                </span>
               </button>
               <button
                 onClick={() => {
@@ -291,9 +293,11 @@ function AddAuctionCreation() {
                   setSelectedDate("")
                   fetchLoans();
                 }}
-                className="ml-2 bg-[#0b2c69] text-white text-[11px] px-4 h-[30px] rounded-[3px] font-source hover:bg-[#071d45] "
+                className="ml-2 hidden lg:flex  bg-[#0b2c69] text-white text-[11px] px-4 h-[30px] rounded-[3px] font-source hover:bg-[#071d45] "
               >
-                Clear
+                <span className="mt-1.5">
+                  Clear
+                </span>
               </button>
             </div>
             <div className="flex gap-3">
@@ -317,7 +321,7 @@ function AddAuctionCreation() {
 
       {/* 🔹 Form Section */}
       <div className=" p-4  rounded-md ml-[22px]">
-        <div className="flex  mt-2    gap-2 ">
+        {/* <div className="flex  mt-2    gap-2 ">
           <div className="flex flex-col ">
             <label className="text-xs font-medium mb-1">
               Venue <span className="text-red-600">*</span>
@@ -390,6 +394,84 @@ function AddAuctionCreation() {
               className="  no-spinner border border-gray-300 rounded px-2 w-30 py-2 text-xs focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white"
             />
           </div>
+        </div> */}
+
+        <div className="grid grid-cols-5 sm:grid-cols-5 lg:w-[800px] gap-4 mt-2">
+
+          {/* Venue */}
+          <div className="flex flex-col">
+            <label className="text-xs font-medium mb-1">
+              Venue <span className="text-red-600">*</span>
+            </label>
+            <input
+              type="text"
+              name="venue"
+              value={formData.venue}
+              onChange={handleInputChange}
+              className="border border-gray-300 rounded px-1.5 py-1.5 text-xs focus:outline-none focus:ring-2 focus:ring-blue-500 w-full bg-white"
+              placeholder="Location"
+            />
+          </div>
+
+          {/* Date */}
+          <div className="flex flex-col">
+            <label className="text-xs font-medium mb-1">
+              Date <span className="text-red-600">*</span>
+            </label>
+            <input
+              type="date"
+              name="date"
+              value={formData.date}
+              onChange={handleInputChange}
+              className="border border-gray-300 rounded px-1.5 py-1.5 text-xs focus:outline-none focus:ring-2 focus:ring-blue-500 w-full bg-white"
+            />
+          </div>
+
+          {/* Time */}
+          <div className="flex flex-col">
+            <label className="text-xs font-medium mb-1">
+              Time <span className="text-red-600">*</span>
+            </label>
+            <input
+              type="time"
+              name="time"
+              value={formData.time}
+              onChange={handleInputChange}
+              className="border border-gray-300 rounded px-1.5 py-1.5 text-xs focus:outline-none focus:ring-2 focus:ring-blue-500 w-full bg-white"
+            />
+          </div>
+
+          {/* Fees */}
+          <div className="flex flex-col">
+            <label className="text-xs font-medium mb-1">
+              Fees <span className="text-red-600">*</span>
+            </label>
+            <input
+              type="number"
+              name="fees"
+              value={formData.fees}
+              onChange={handleInputChange}
+              onWheel={(e) => e.target.blur()}
+              className="border border-gray-300 rounded px-1.5 py-1.5 text-xs focus:outline-none focus:ring-2 focus:ring-blue-500 w-full bg-white"
+              placeholder="Enter fees"
+            />
+          </div>
+
+          {/* Charges */}
+          <div className="flex flex-col">
+            <label className="text-xs font-medium mb-1">
+              Charges
+            </label>
+            <input
+              type="number"
+              name="charges"
+              value={formData.charges}
+              onChange={handleInputChange}
+              onWheel={(e) => e.target.blur()}
+              className="border border-gray-300 rounded px-1.5 py-1.5 text-xs focus:outline-none focus:ring-2 focus:ring-blue-500 w-full bg-white"
+            />
+          </div>
+
         </div>
 
         {/* 🔹 Title */}
