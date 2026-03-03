@@ -185,7 +185,7 @@
 
 // export default FundTransferReceipt;
 import axios from "axios";
-import { Eye, Plus, Search, Trash2 } from "lucide-react";
+import { Eye, Trash2 } from "lucide-react";
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { API } from "../../api";
@@ -316,7 +316,7 @@ const FundTransferReceipt = () => {
   return (
     <div className="min-h-screen bg-white font-sans text-gray-800 ">
 
-       <div className="flex justify-center  ">
+      <div className="flex justify-center  ">
         <div className="flex items-center px-6 py-4 border-b  w-[1462px] h-[50px] border rounded-[11px] border-gray-200 justify-between mt-2">
           {/* Left heading */}
           <h2
@@ -329,14 +329,14 @@ const FundTransferReceipt = () => {
             }}
             className="text-red-600"
           >
-           FT Receipt 
+            FT Receipt
           </h2>
 
           {/* Right section (search + buttons) */}
           <div className="flex items-center gap-6">
             {/* Search section */}
-           
-           
+
+
             {/* Buttons stuck to right */}
             <div className="flex gap-3">
               {/* <button
@@ -362,117 +362,108 @@ const FundTransferReceipt = () => {
           </div>
         </div>
       </div>
-      <div className="w-[1500px]">
-      
-      
+      <div className="w-full lg:w-[1500px]">
 
         {/* 4. Data Grid */}
-        <div className=' mt-2 ml-[22px]' >
-<div className="overflow-x-auto  border-gray-300">
-          <table className=" text-left border-collapse table-auto">
-            <thead className="bg-[#0A2478] text-white text-sm">
-              <tr className=" text-white text-[12px] font-bold border-b border-gray-300">
-                <th className="p-1 border-r  border-gray-300 w-[100px]">Doc No</th>
-                <th className="p-1 border-r  border-gray-300 w-[100px]">Doc Date</th>
-                {/* <th className="p-1 bord er-r border-gray-300">Paymode</th> */}
-                <th className="p-1 border-r  border-gray-300 w-[150px]">From Branch</th>
-                <th className="p-1 border-r  border-gray-300 w-[100px]">To Branch</th>
-                {/* <th className="p-1 bord er-r border-gray-300">
-                  Account Ledger Name 
-                </th> */} 
-                <th className="p-1 border-r  border-gray-300 w-[100px]">Amount</th>
-                <th className="p-1 border-r  border-gray-300 w-[100px]">MOP</th>
-                <th className="p-1 border-r  border-gray-300 w-[120px]">Add By</th>
-                <th className="p-1 border-r  border-gray-300 w-[120px]">Add On</th>
-                <th className="p-1 border-r  border-gray-300 w-[120px]" >
-                  Receipt Status
-                </th>
-                <th className="p-1 text-center w-[100px]">Action</th>
+        <div className='overflow-x-auto ml-[22px] mt-2 w-full lg:w-auto' >
+
+          <table className="w-full min-w-max lg:min-w-0">
+            <thead className="bg-[#0A2478] text-white text-sm sticky top-0">
+              <tr className="text-white text-[10px] sm:text-[12px] font-bold border-b border-gray-300">
+                <th className="p-1 border-r border-gray-300 w-[70px] sm:w-[100px]">Doc No</th>
+                <th className="p-1 border-r border-gray-300 w-[70px] sm:w-[100px] hidden sm:table-cell">Doc Date</th>
+                <th className="p-1 border-r border-gray-300 w-[90px] sm:w-[150px]">From Branch</th>
+                <th className="p-1 border-r border-gray-300 w-[80px] sm:w-[100px]">To Branch</th>
+                <th className="p-1 border-r border-gray-300 w-[70px] sm:w-[100px]">Amount</th>
+                <th className="p-1 border-r border-gray-300 w-[60px] sm:w-[100px] hidden md:table-cell">MOP</th>
+                <th className="p-1 border-r border-gray-300 w-[70px] sm:w-[120px] hidden lg:table-cell">Add By</th>
+                <th className="p-1 border-r border-gray-300 w-[70px] sm:w-[120px] hidden lg:table-cell">Add On</th>
+                <th className="p-1 border-r border-gray-300 w-[80px] sm:w-[120px]">Status</th>
+                <th className="p-1 text-center w-[70px] sm:w-[100px]">Action</th>
               </tr>
             </thead>
-            <tbody className="text-[11px] divide-y divide-gray-200">
-  {list.length === 0 ? (
-    <tr>
-      <td
-        colSpan="10"   // 👈 make sure this matches your total column count
-        className="text-center py-6 text-gray-500 font-semibold"
-      >
-        Receipt Not Found
-      </td>
-    </tr>
-  ) : (
-    list.map((item, i) => (
-      <tr key={i} className={i % 2 === 0 ? "bg-gray-50" : "bg-white"}>
-        <td className="p-1 text-blue-800">{item.id}</td>
+            <tbody className="text-[10px] sm:text-[11px] divide-y divide-gray-200">
+              {list.length === 0 ? (
+                <tr>
+                  <td
+                    colSpan="10"
+                    className="text-center py-6 text-gray-500 font-semibold"
+                  >
+                    Receipt Not Found
+                  </td>
+                </tr>
+              ) : (
+                list.map((item, i) => (
+                  <tr key={i} className={i % 2 === 0 ? "bg-gray-50" : "bg-white"}>
+                    <td className="p-1 text-blue-800 font-bold">{item.id}</td>
 
-        <td className="p-1">
-          {new Date(item.doc_date).toLocaleDateString("en-GB")}
-        </td>
+                    <td className="p-1 hidden sm:table-cell">
+                      {new Date(item.doc_date).toLocaleDateString("en-GB")}
+                    </td>
 
-        <td className="p-1">{item.from_branch_name}</td>
+                    <td className="p-1">{item.from_branch_name}</td>
 
-        <td className="p-1">{item.to_branch_name}</td>
+                    <td className="p-1">{item.to_branch_name}</td>
 
-        <td className="p-1 font-bold">
-          {item.amount || "-"}
-        </td>
+                    <td className="p-1 font-bold">
+                      {item.amount || "-"}
+                    </td>
 
-        <td className="p-1">{item.pay_mode}</td>
+                    <td className="p-1 hidden md:table-cell">{item.pay_mode}</td>
 
-        <td className="p-1 text-gray-500">Admin</td>
+                    <td className="p-1 text-gray-500 hidden lg:table-cell">Admin</td>
 
-        <td className="p-1">
-          {item.created_at?.split("T")[0]}
-        </td>
+                    <td className="p-1 hidden lg:table-cell">
+                      {item.created_at?.split("T")[0]}
+                    </td>
 
-        <td
-          onClick={() => {
-            if (item.status === "Pending") {
-              setSelectedItem(item);
-              setIsModalOpen(true);
-            }
-          }}
-          className={`p-1 font-bold cursor-pointer ${
-            item.status === "Pending"
-              ? "text-yellow-600 underline"
-              : item.status === "Accepted"
-              ? "text-green-700"
-              : "text-red-600"
-          }`}
-        >
-          {item.status}
-        </td>
+                    <td
+                      onClick={() => {
+                        if (item.status === "Pending") {
+                          setSelectedItem(item);
+                          setIsModalOpen(true);
+                        }
+                      }}
+                      className={`p-1 font-bold cursor-pointer text-[9px] sm:text-[11px] ${item.status === "Pending"
+                        ? "text-yellow-600 underline"
+                        : item.status === "Accepted"
+                          ? "text-green-700"
+                          : "text-red-600"
+                        }`}
+                    >
+                      {item.status}
+                    </td>
 
-        <td className="p-1 text-center whitespace-nowrap">
-          <div className="flex justify-center gap-2">
-          <span
-            className="bg-blue-500 hover:bg-blue-600 text-white p-1 rounded cursor-pointer transition"
-            onClick={() =>
-              navigate("/FundTransfer/create", {
-                state: { fundData: item },
-              })
-            }
-          >
+                    <td className="p-1 text-center">
+                      <div className="flex justify-center gap-1 sm:gap-2">
+                        <span
+                          className="bg-blue-500 hover:bg-blue-600 text-white p-1 rounded cursor-pointer transition"
+                          onClick={() =>
+                            navigate("/FundTransfer/create", {
+                              state: { fundData: item },
+                            })
+                          }
+                        >
 
-            <Eye size={14} />
-          </span>
+                          <Eye size={14} />
+                        </span>
 
-          <span
-            className="bg-red-600 hover:bg-red-700 text-white p-1 rounded cursor-pointer transition"
-            onClick={() => handleDelete(item.id)}
-          >
-            <Trash2 size={14} />
-            </span>
-          </div>
-        </td>
-      </tr>
-    ))
-  )}
-</tbody>
+                        <span
+                          className="bg-red-600 hover:bg-red-700 text-white p-1 rounded cursor-pointer transition"
+                          onClick={() => handleDelete(item.id)}
+                        >
+                          <Trash2 size={14} />
+                        </span>
+                      </div>
+                    </td>
+                  </tr>
+                ))
+              )}
+            </tbody>
           </table>
+
         </div>
-        </div>
-        
+
         {isModalOpen && (
           <div className="fixed inset-0 z-50 flex items-center justify-center">
             {/* 🔹 Background Overlay */}

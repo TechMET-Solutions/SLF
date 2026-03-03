@@ -49,12 +49,12 @@ const Accounts_Opening_Balance = () => {
   };
 
   return (
-    <div className="p-4  min-h-screen font-sans">
+    <div className="min-h-screen font-sans">
       
 
-      <div className="flex justify-center mb-2">
-        <div className="flex justify-center mt-5">
-          <div className="flex items-center px-6 py-4 w-[1290px] h-[62px] rounded-[11px] border border-gray-200 justify-between shadow-sm bg-white">
+      <div className="flex justify-center">
+        <div className="flex sticky top-[80px] z-40 w-full px-8">
+          <div className="flex items-center px-6 py-4 border-b my-2 w-full max-w-[1462px] h-[50px] border rounded-[11px] border-gray-200 justify-between  ">
             {/* Left Side: Title */}
             <h2 className="text-red-600 font-bold text-[20px] leading-[148%] whitespace-nowrap">
               Opening Account Balance
@@ -72,11 +72,11 @@ const Accounts_Opening_Balance = () => {
         </div>
       </div>
 
-      <div className="flex justify-start ml-30">
+      <div className="flex ml-[38px]">
         {loading ? (
           <div className="p-4 text-center">Loading...</div>
         ) : (
-            <div className="overflow-x-auto mt-2 max-w-3xl h-[500px]">
+            <div className="overflow-x-auto max-w-3xl h-[600px]">
               <table className="w-full border-collapse text-[12px]">
                 <thead className="bg-[#0A2478] text-white text-sm">
                 <tr>

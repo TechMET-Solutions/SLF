@@ -9,8 +9,8 @@ const ExpenseList = () => {
   const [searchHeaders, setSearchHeaders] = useState([]);
   const [searchQuery, setSearchQuery] = useState("");
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
-const [selectedDate, setSelectedDate] = useState("");
- const toggleHeader = (headerId) => {
+  const [selectedDate, setSelectedDate] = useState("");
+  const toggleHeader = (headerId) => {
     setSearchHeaders((prev) =>
       prev.includes(headerId)
         ? prev.filter((id) => id !== headerId)
@@ -60,14 +60,14 @@ const [selectedDate, setSelectedDate] = useState("");
   };
 
 
-const allHeaderIds = [
-  "Expense No",
-  "Subledger Name",
-  "Expense date"
-];
+  const allHeaderIds = [
+    "Expense No",
+    "Subledger Name",
+    "Expense date"
+  ];
 
 
- const handleSelectAll = () => {
+  const handleSelectAll = () => {
     const allSelected = allHeaderIds.every((id) => searchHeaders.includes(id));
     setSearchHeaders(allSelected ? [] : [...allHeaderIds]);
   };
@@ -75,117 +75,118 @@ const allHeaderIds = [
     <div className="min-h-screen bg-white font-sans text-[#333]">
       <div className="mx-auto  ">
 
-      
+
 
         <div className="flex justify-center sticky top-[80px] z-40">
-          <div className="flex justify-center">
-            <div className="flex items-center justify-between px-6 py-4 border-b w-[1462px] h-[50px] border rounded-[11px] border-gray-200 bg-white">
+          <div className="flex sticky top-[80px] z-40 w-full px-8">
+            <div className="flex items-center px-6 py-4 border-b my-2 w-full max-w-[1462px] h-[50px] border rounded-[11px] border-gray-200 justify-between  ">
               <h2 className="text-red-600 font-bold text-[20px] leading-[148%]">
                 Expense List
               </h2>
 
               <div className="flex gap-5">
                 <div className='flex gap-2 mt-2'>
-                   <div className="flex items-center bg-white border border-gray-400 rounded-[5px] h-[32px] px-2 relative w-[450px]">
-                <div className="relative border-r border-gray-300 pr-2 mr-2">
+                  <div className="hidden lg:flex items-center bg-white border border-gray-400 rounded-[5px] h-[32px] px-2 relative w-[450px]">
+                    <div className="relative border-r border-gray-300 pr-2 mr-2">
+                      <button
+                        onClick={() => setIsDropdownOpen(!isDropdownOpen)}
+                        className="text-[11px] font-bold text-[#0A2478] flex items-center gap-1 outline-none h-full whitespace-nowrap"
+                      >
+                        Headers ({searchHeaders.length}) <span className="text-[8px]">▼</span>
+                      </button>
+
+                      {isDropdownOpen && (
+                        <div className="absolute top-[35px] left-[-8px] bg-white border border-gray-300 shadow-xl rounded-md z-[100] w-[160px] p-2">
+
+                          <button
+                            onClick={handleSelectAll}
+                            className="flex items-center gap-2 p-2 hover:bg-blue-50 cursor-pointer rounded border-b border-gray-200 mb-1"
+                          >
+                            <input
+                              type="checkbox"
+                              checked={allHeaderIds.every((id) => searchHeaders.includes(id))}
+                              onChange={handleSelectAll}
+                              className="w-3 h-3 accent-[#0A2478]"
+                            />
+                            <span className="text-[11px] font-source font-bold text-[#0A2478]">
+                              Select All
+                            </span>
+                          </button>
+                          {[
+                            { id: "expenseNo", label: "Expense No" },
+                            { id: "subledgerName", label: "Subledger Name" },
+                          ].map((col) => (
+                            <label
+                              key={col.id}
+                              className="flex items-center gap-2 p-2 hover:bg-gray-50 cursor-pointer rounded"
+                            >
+                              <input
+                                type="checkbox"
+                                checked={searchHeaders.includes(col.id)}
+                                onChange={() => toggleHeader(col.id)}
+                                className="w-3 h-3 accent-[#0A2478]"
+                              />
+                              <span className="text-[11px] text-gray-700">{col.label}</span>
+                            </label>
+                          ))}
+
+                          <div className="border-t mt-1 pt-1 text-center">
+                            <button onClick={() => setIsDropdownOpen(false)} className="text-[10px] text-[#0A2478] font-bold uppercase">
+                              Apply
+                            </button>
+                          </div>
+                        </div>
+                      )}
+                    </div>
+
+                    <input
+                      type="text"
+                      value={searchQuery}
+                      onClick={() => setIsDropdownOpen(false)}
+                      onChange={(e) => setSearchQuery(e.target.value)}
+                      placeholder="Search multiple items..."
+                      className="flex-grow text-[11px] outline-none h-full bg-transparent"
+                    />
+                  </div>
+                  <input
+                    type="date"
+                    value={selectedDate}
+                    onChange={(e) => setSelectedDate(e.target.value)}
+                    className="hidden lg:flex ml-2 border border-gray-300 text-[11px] px-2 h-[30px] rounded"
+                  />
                   <button
-                    onClick={() => setIsDropdownOpen(!isDropdownOpen)}
-                    className="text-[11px] font-bold text-[#0A2478] flex items-center gap-1 outline-none h-full whitespace-nowrap"
+                    onClick={() => {
+                      setIsDropdownOpen(false);
+                      // setCurrentPage(1);
+                      // fetchData(1);   // 🔥 API CALL
+                    }}
+                    className="hidden lg:flex ml-2 bg-[#0b2c69] text-white text-[11px] px-4  rounded-[3px] font-source hover:bg-[#071d45] h-[30px]"
                   >
-                    Headers ({searchHeaders.length}) <span className="text-[8px]">▼</span>
+                    
+                    <span className="mt-1">
+                      Search
+                    </span>
                   </button>
 
-                  {isDropdownOpen && (
-                    <div className="absolute top-[35px] left-[-8px] bg-white border border-gray-300 shadow-xl rounded-md z-[100] w-[160px] p-2">
-                      
-                      <button
-                        onClick={handleSelectAll}
-                        className="flex items-center gap-2 p-2 hover:bg-blue-50 cursor-pointer rounded border-b border-gray-200 mb-1"
-                      >
-                        <input
-                          type="checkbox"
-                          checked={allHeaderIds.every((id) => searchHeaders.includes(id))}
-                          onChange={handleSelectAll}
-                          className="w-3 h-3 accent-[#0A2478]"
-                        />
-                        <span className="text-[11px] font-source font-bold text-[#0A2478]">
-                            Select All
-                          </span>
-                      </button>
-                      {[
-  { id: "expenseNo", label: "Expense No" },
-  { id: "subledgerName", label: "Subledger Name" },
-].map((col) => (
-  <label
-    key={col.id}
-    className="flex items-center gap-2 p-2 hover:bg-gray-50 cursor-pointer rounded"
-  >
-    <input
-      type="checkbox"
-      checked={searchHeaders.includes(col.id)}
-      onChange={() => toggleHeader(col.id)}
-      className="w-3 h-3 accent-[#0A2478]"
-    />
-    <span className="text-[11px] text-gray-700">{col.label}</span>
-  </label>
-))}
+                  <button
 
-                      <div className="border-t mt-1 pt-1 text-center">
-                        <button onClick={() => setIsDropdownOpen(false)} className="text-[10px] text-[#0A2478] font-bold uppercase">
-                          Apply
-                        </button>
-                      </div>
-                    </div>
-                  )}
-                </div>
-
-                <input
-                  type="text"
-                  value={searchQuery}
-                  onClick={() => setIsDropdownOpen(false)}
-                  onChange={(e) => setSearchQuery(e.target.value)}
-                  placeholder="Search multiple items..."
-                  className="flex-grow text-[11px] outline-none h-full bg-transparent"
-                />
-
-               
-
-               
-              </div>
-                  <input
-    type="date"
-    value={selectedDate}
-    onChange={(e) => setSelectedDate(e.target.value)}
-    className="ml-2 border border-gray-300 text-[11px] px-2 h-[30px] rounded"
-  />
-                <button
-                  onClick={() => {
-                    setIsDropdownOpen(false);
-                    // setCurrentPage(1);
-                    // fetchData(1);   // 🔥 API CALL
-                  }}
-                  className="ml-2 bg-[#0b2c69] text-white text-[11px] px-4  rounded-[3px] font-source hover:bg-[#071d45] h-[30px]"
-                >
-                  Search
-                </button>
-
-                <button
-                  
-                  onClick={() => {
-                    setSearchQuery("");
+                    onClick={() => {
+                      setSearchQuery("");
                       setSearchHeaders([]);
                       setSelectedDate("")
-                    // setCurrentPage(1);
-                    // fetchData(1);
-                  }}
-                  className="ml-2 bg-[#0b2c69] text-white text-[11px] px-4  rounded-[3px] font-source hover:bg-[#071d45] h-[30px]"
-                >
-                  Clear
-                </button>  
-</div>
- 
+                      // setCurrentPage(1);
+                      // fetchData(1);
+                    }}
+                    className="hidden lg:flex ml-2 bg-[#0b2c69] text-white text-[11px] px-4 rounded-[3px] font-source hover:bg-[#071d45] h-[30px]"
+                  >
+                    <span className="mt-1">  
+                      Clear
+                    </span>
+                  </button>
+                </div>
+
                 <button
-                 onClick={() => navigate("/Expences/create")}
+                  onClick={() => navigate("/Expences/create")}
                   className="w-[100px] h-[30px]  cursor-pointer rounded bg-[#0A2478] text-white text-[11.25px] flex items-center justify-center mt-2 py-2 "
                 >
                   Add Expense
@@ -202,7 +203,7 @@ const allHeaderIds = [
         </div>
 
         {/* TABLE */}
-        <div className="overflow-hidden mt-5  ml-[22px]">
+        <div className="overflow-hidden mt-5  ml-[28px]">
           <table className="text-left border-collapse w-[500px]" >
             <thead>
               <tr className="bg-[#0D3082] text-white text-[12px]">
@@ -213,7 +214,7 @@ const allHeaderIds = [
             </thead>
 
             <tbody className="text-[13px] bg-white">
-              {tableData.map((row,index) => (
+              {tableData.map((row, index) => (
                 <tr key={row.id} className={index % 2 === 0 ? "bg-gray-50" : "bg-white"}>
 
                   {/* Expense No */}

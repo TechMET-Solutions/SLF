@@ -56,9 +56,9 @@ const Application_Setting = () => {
 
     <div className=" bg-white shadow-sm font-sans">
       {/* Header Bar */}
-      <div className="flex justify-center mb-4">
-        <div className="flex justify-center mt-5">
-          <div className="flex items-center px-6 py-4 w-[1290px] h-[62px] rounded-[11px] border border-gray-200 justify-between shadow-sm bg-white">
+      <div className="flex justify-center ">
+        <div className="flex sticky top-[80px] z-40 w-full px-10">
+          <div className="flex items-center px-6 py-4 border-b my-2 w-full max-w-[1462px] h-[50px] border rounded-[11px] border-gray-200 justify-between  ">
             {/* Left Side: Title */}
             <h2 className="text-red-600 font-bold text-[20px] leading-[148%] whitespace-nowrap">
               Advance Setting List
@@ -71,14 +71,17 @@ const Application_Setting = () => {
               <div className="flex items-center gap-3 border-l pl-6 border-gray-200">
                 <button
                   onClick={() => handleAdd()}
-                  className="w-[70px] h-[26px] rounded-[4px] bg-[#0A2478] text-white text-[11px] font-medium transition-colors hover:bg-[#071d45]"
+                  className="w-[70px] h-[26px] rounded-[4px] bg-[#0A2478] text-white text-[11px] font-medium transition-colors hover:bg-[#071d45] cursor-pointer"
                 >
                   Add
                 </button>
 
-                {/* <button className="w-[70px] h-[26px] rounded-[4px] bg-[#C1121F] text-white text-[11px] font-medium transition-colors hover:bg-[#a40f1a]">
+                <button
+                  className="bg-[#C1121F] w-[70px] h-[26px] rounded-[4px] text-white text-[11px] font-medium transition-colors cursor-pointer"
+                  onClick={() => navigate("/")}
+                >
                   Exit
-                </button> */}
+                </button>
               </div>
             </div>
           </div>
@@ -87,8 +90,8 @@ const Application_Setting = () => {
 
 
       {/* Table Section */}
-      <div className="flex justify-start ml-30">
-        <div className="overflow-x-auto mt-5 max-w-3xl h-[500px]">
+      <div className="flex ml-[38px]">
+        <div className="overflow-x-auto max-w-3xl h-[500px]">
           <table className="w-full border-collapse">
             <thead className="bg-[#0A2478] text-white text-sm">
               <tr className="">

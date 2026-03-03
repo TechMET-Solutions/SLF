@@ -121,14 +121,15 @@ const JournalVoucherlist = () => {
     <div className="min-h-screen ">
       <div className="mx-auto">
         <div className="flex justify-center sticky top-[80px] z-40">
-          <div className="flex justify-center ">
-            <div className="flex items-center justify-between px-6 py-4 border-b w-[1462px] h-[50px] border rounded-[11px] border-gray-200 bg-white">
+          {/* <div className="flex justify-center "> */}
+            <div className="flex sticky top-[80px] z-40 w-full px-8">
+              <div className="flex items-center px-6 py-4 border-b my-2 w-full max-w-[1462px] h-[50px] border rounded-[11px] border-gray-200 justify-between  ">
               <h2 className="text-red-600 font-bold text-[20px] leading-[148%]">
                 Journal Voucher List
               </h2>
 
               <div className="flex gap-5">
-                <div className="flex gap-2 mt-2">
+                <div className="hidden lg:flex gap-2 mt-2">
                   <div className="flex items-center bg-white border border-gray-400 rounded-[5px] h-[32px] px-2 relative w-[450px]">
                     <div className="relative border-r border-gray-300 pr-2 mr-2">
                       <button
@@ -210,7 +211,7 @@ const JournalVoucherlist = () => {
                       // setCurrentPage(1);
                       // fetchData(1);   // 🔥 API CALL
                     }}
-                    className="ml-2 bg-[#0b2c69] text-white text-[11px] px-4  rounded-[3px] font-source hover:bg-[#071d45] h-[34px]"
+                    className="ml-2 bg-[#0b2c69] text-white text-[11px] px-4 h-[24px] rounded-[3px] font-source hover:bg-[#071d45]"
                   >
                     Search
                   </button>
@@ -223,24 +224,25 @@ const JournalVoucherlist = () => {
                       // setCurrentPage(1);
                       // fetchData(1);
                     }}
-                    className="ml-2 bg-[#0b2c69] text-white text-[11px] px-4  rounded-[3px] font-source hover:bg-[#071d45] h-[34px]"
+                    className="ml-2 bg-[#0b2c69] text-white text-[11px] px-4 h-[24px] rounded-[3px] font-source hover:bg-[#071d45]"
                   >
                     Clear
                   </button>
                 </div>
-
+                <div className="flex gap-3 py-2">
                 <button
                   onClick={() => navigate("/JournalVoucher/create")}
-                  className="w-[74px] h-[34px]  cursor-pointer rounded bg-[#0A2478] text-white text-[11.25px] flex items-center justify-center mt-2"
+                    className="ml-2 bg-[#0b2c69] text-white text-sm rounded px-4 py-1 cursor-pointer"
                 >
                   Add
                 </button>
                 <button
                   onClick={() => navigate("/")}
-                  className="w-[74px] h-[34px] cursor-pointer  rounded bg-[#C1121F] text-white text-[10px] mt-2"
+                  className="bg-[#C1121F] text-white text-sm rounded px-4 py-1 cursor-pointer hover:bg-[#8b0a14]"
                 >
                   Exit
                 </button>
+              </div>
               </div>
             </div>
           </div>
