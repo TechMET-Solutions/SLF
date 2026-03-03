@@ -303,10 +303,10 @@ const RoleMapping = () => {
   };
 
   return (
-    <div className="min-h-screen w-full bg-gray-100">
+    <div className="min-h-screen w-full ">
       {/* Top Navigation Bar */}
       <div className="flex justify-center sticky top-[80px] z-40">
-        <div className="flex items-center px-6 py-4 border mt-5 w-[1290px] h-[62px] rounded-[11px] border-gray-200 justify-between shadow bg-white">
+        <div className="flex items-center px-6 py-4 border mt-5 w-[1462px] h-[50px] rounded-[11px] border-gray-200 justify-between shadow bg-white">
           <h2 className="text-red-600 font-bold text-[20px] font-source">
             Scheme Role Mapping —{" "}
             <span className="text-black font-semibold">
@@ -332,7 +332,7 @@ const RoleMapping = () => {
       </div>
 
       {/* Roles Table */}
-      <div className="flex  pb-10 pl-[110px]">
+      <div className="flex pb-10 ">
         <div className="overflow-x-auto mt-5  bg-white rounded-lg shadow">
           {isLoading ? (
             <div className="flex flex-col items-center justify-center p-20">
@@ -340,13 +340,13 @@ const RoleMapping = () => {
               <p className="mt-4 text-gray-600 font-medium">Loading available roles...</p>
             </div>
           ) : (
-            <table className=" border-collapse">
+            <table className=" border-collapse ml-[22px]">
               <thead className="bg-[#0A2478] text-white">
                 <tr>
-                  <th className="w-[120px] px-4 py-4 text-center   text-[16px] font-semibold border-r-2 ">
+                  <th className="w-[120px] px-1 py-1 text-left font-semibold border-r-2 ">
                     Select
                   </th>
-                  <th className="px-6 py-4 text-left text-[16px] font-semibold w-[200px]">
+                  <th className="px-1 py-1 text-left font-semibold w-[200px]">
                     Role Name
                   </th>
                 </tr>
@@ -358,7 +358,7 @@ const RoleMapping = () => {
                       key={role.id || index}
                       className={index % 2 === 0 ? "bg-gray-50" : "bg-white"}
                     >
-                      <td className="px-2 py-2 text-center">
+                      <td className="px-2 py-1 ">
                         <input
                           type="checkbox"
                           checked={role.selected || false}
@@ -366,7 +366,7 @@ const RoleMapping = () => {
                           className="w-5 h-5 cursor-pointer accent-[#0A2478]"
                         />
                       </td>
-                      <td className="px-6 py-3 text-gray-700 font-medium">
+                      <td className="  text-gray-700 font-medium">
                         {role.role_name}
                       </td>
                     </tr>

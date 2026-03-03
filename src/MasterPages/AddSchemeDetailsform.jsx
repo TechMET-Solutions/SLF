@@ -76,7 +76,7 @@ const AddSchemeDetailsform = () => {
         {/* Row 1 */}
         <div className="flex gap-6 ">
           <div className="flex flex-col ">
-            <label className="text-xs font-medium mb-1 ">
+            <label className="text-[14px] font-medium mb-1 ">
               Scheme Name <span className="text-red-600">*</span>
             </label>
             <input
@@ -84,7 +84,7 @@ const AddSchemeDetailsform = () => {
               name="schemeName"
               value={formData.schemeName || ""}
               onChange={handleInputChange}
-              className="border border-gray-300 rounded px-2 w-60 py-2 text-xs focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent "
+              className="border border-gray-300 rounded px-2 w-60 text-xs h-[30px]  focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent "
               placeholder="Scheme Name"
             />
           </div>

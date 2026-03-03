@@ -392,58 +392,64 @@ const AddCustProfile = () => {
   //     }
   //   }
   // };
+const toCamelCase = (text) => {
+  return text
+    .toLowerCase()
+    .split(" ")
+    .map((word, index) =>
+      index === 0
+        ? word
+        : word.charAt(0).toUpperCase() + word.slice(1)
+    )
+    .join("");
+};
+const toTitleCase = (text = "") => {
+  return text
+    .toLowerCase()
+    .trim()
+    .split(/\s+/)
+    .map(word => word.charAt(0).toUpperCase() + word.slice(1))
+    .join(" ");
+};
+const handleChange = (e) => {
+  const { name, value } = e.target;
 
-  const handleChange = (e) => {
-    const { name, value } = e.target;
+  setFormData((prev) => ({
+    ...prev,
+    [name]: value,
+  }));
 
-    // Update form data
-    setFormData((prev) => ({
+  if (errors[name]) {
+    setErrors((prev) => ({
       ...prev,
-      [name]: value,
+      [name]: "",
     }));
+  }
 
-    // Clear field-level error when user starts typing
-    if (errors[name]) {
+  // PAN validation
+  if (name === "panNo") {
+    const panRegex = /^[A-Z]{5}[0-9]{4}[A-Z]{1}$/;
+
+    if (value.trim() !== "" && !panRegex.test(value)) {
       setErrors((prev) => ({
         ...prev,
-        [name]: "",
+        panNo: "Please enter a valid PAN number",
       }));
     }
+  }
 
-    // PAN validation (validate using value, not formData)
-    if (name === "panNo") {
-      const panRegex = /^[A-Z]{5}[0-9]{4}[A-Z]{1}$/;
+  // Email validation
+  if (name === "email") {
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
-      if (value.trim() !== "" && !panRegex.test(value)) {
-        setErrors((prev) => ({
-          ...prev,
-          panNo: "Please enter a valid PAN number",
-        }));
-      } else {
-        setErrors((prev) => ({
-          ...prev,
-          panNo: "",
-        }));
-      }
+    if (value.trim() !== "" && !emailRegex.test(value)) {
+      setErrors((prev) => ({
+        ...prev,
+        email: "Please enter a valid email address",
+      }));
     }
-
-    // Live email validation
-    if (name === "email") {
-      const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-
-      if (value.trim() !== "" && !emailRegex.test(value)) {
-        setErrors((prev) => ({
-          ...prev,
-          email: "Please enter a valid email address",
-        }));
-      } else {
-        setErrors((prev) => ({
-          ...prev,
-          email: "",
-        }));
-      }
-    }
-  };
+  }
+};
 
   const handlePanFileChange = (e) => {
     const file = e.target.files[0];
@@ -723,7 +729,7 @@ const AddCustProfile = () => {
       // 3. Update State
       setFormData((prev) => ({
         ...prev,
-        printName: panDetails.full_name,
+       printName: toTitleCase(panDetails.full_name),
         firstName: fName || "",
         middleName: mName || "",
         lastName: lName || "",
@@ -1114,6 +1120,7 @@ const AddCustProfile = () => {
       disabled={isMobileVerified}
       value={formData.mobile}
       onChange={handleChange}
+       maxLength={10}
       placeholder="Mobile Number"
       // Added rounded-l and removed py-1 for exact 30px height
       className={`border border-r-0 rounded-l-[8px] px-2 w-full focus:outline-none focus:ring-1 focus:ring-blue-500 text-xs transition-colors ${
@@ -1187,7 +1194,7 @@ const AddCustProfile = () => {
                     value={formData.altMobile}
                     maxLength={10}
                     onChange={handleChange}
-                    placeholder="Enter Alternate Mobile"
+                    placeholder="Alternate Mobile"
                     className={`border rounded-[8px] text-xs h-[30px] px-1 mt-1 w-[120px] bg-white ${errors.altMobile ? "border-red-500" : "border-gray-300"
                       }`}
                   />
@@ -1224,7 +1231,7 @@ const AddCustProfile = () => {
                     name="gender"
                     value={formData.gender}
                     onChange={handleChange}
-                    className={`border rounded-[8px] px-1 text-xs h-[30px] w-[100px] bg-white ${errors.gender ? "border-red-500" : "border-gray-300"
+                    className={`border rounded-[8px] px-1 text-xs h-[30px] mt-1 w-[100px] bg-white ${errors.gender ? "border-red-500" : "border-gray-300"
                       }`}
                   >
                     <option value="">Select</option>
@@ -1244,7 +1251,7 @@ const AddCustProfile = () => {
                     name="marital"
                     value={formData.marital}
                     onChange={handleChange}
-                    className="border border-gray-300 rounded-[8px] px-1 text-xs h-[30px] w-[100px] bg-white"
+                    className="border border-gray-300 rounded-[8px] mt-1 px-1 text-xs h-[30px] w-[100px] bg-white"
                   >
                     <option value="">Select</option>
                     <option value="Single">Single</option>
@@ -1275,7 +1282,7 @@ const AddCustProfile = () => {
                     name="religion"
                     value={formData.religion}
                     onChange={handleChange}
-                    className="border border-gray-300 rounded-[8px] px-1 text-xs h-[30px] w-[130px] bg-white"
+                    className="border border-gray-300 rounded-[8px] mt-1 px-1 text-xs h-[30px] w-[130px] bg-white"
                   >
                     <option value="">Select Religion</option>
                     <option value="Hindu">Hindu</option>
@@ -1394,7 +1401,7 @@ const AddCustProfile = () => {
                 </div>
 
                 <div className="flex flex-col ">
-                  <label className="text-[14px] font-medium">First Name.</label>
+                  <label className="text-[14px] font-medium">First Name <span className="text-red-500">*</span></label>
                   <input
                     type="text"
                     name="firstName"
@@ -1418,7 +1425,7 @@ const AddCustProfile = () => {
                 </div>
 
                 <div className="flex flex-col">
-                  <label className="text-[14px] font-medium">Last Name</label>
+                  <label className="text-[14px] font-medium">Last Name <span className="text-red-500">*</span></label>
                   <input
                     type="text"
                     name="lastName"
@@ -2216,7 +2223,7 @@ const AddCustProfile = () => {
 
             <div className="">
               <div>
-                <label className="text-[14px] font-medium">Area*</label>
+                <label className="text-[14px] font-medium">Area<span className="text-red-500">*</span></label>
               </div>
 
               <select
@@ -2543,8 +2550,8 @@ const AddCustProfile = () => {
     
 
       
-<div className='mx-auto mt-4 flex justify-center bg-[#FFE6E6] w-[1462px]'>
- <div className=" ">
+<div className=' mt-4 ml-[22px]  bg-[#FFE6E6] w-[1462px]'>
+ <div className=" ml-[25px]">
         <div>
           <CustBankDetails
             bankData={bankData}

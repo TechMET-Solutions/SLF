@@ -73,8 +73,9 @@ const FormField = ({
           name={field.name}
           value={formData[field.name] || ""}
           onChange={handleInputChange}
-          className={`px-2 py-1 border rounded text-xs ${errors[field.name] ? "border-red-500" : "border-gray-300"
-            }`}
+          className={`px-2 py-1 border rounded text-xs ${
+            errors[field.name] ? "border-red-500" : "border-gray-300"
+          }`}
         >
           <option value="">Select {field.label}</option>
           {field.options.map((opt) => (
@@ -90,8 +91,9 @@ const FormField = ({
             name={field.name}
             value={formData[field.name] || ""}
             onChange={handleInputChange}
-            className={`px-2 py-1 border rounded text-xs w-full pr-10 ${errors[field.name] ? "border-red-500" : "border-gray-300"
-              }`}
+            className={`px-2 py-1 border rounded text-xs w-full pr-10 ${
+              errors[field.name] ? "border-red-500" : "border-gray-300"
+            }`}
           />
           {suffixFields.includes(field.name) && (
             <span
@@ -125,7 +127,9 @@ const AddSchemeDetailsListform = () => {
     const fetchPartyTypes = async () => {
       try {
         const res = await axios.get(`${API}/api/party-types/list`);
-        const activeOnly = (res.data.data || []).filter((item) => item.status === 1);
+        const activeOnly = (res.data.data || []).filter(
+          (item) => item.status === 1,
+        );
         setPartyTypeList(activeOnly);
       } catch (error) {
         console.error("Failed to fetch party types:", error);
@@ -177,7 +181,9 @@ const AddSchemeDetailsListform = () => {
         applicableFrom: baseData.applicableFrom
           ? baseData.applicableFrom.split("T")[0]
           : "",
-        applicableTo: baseData.applicableTo ? baseData.applicableTo.split("T")[0] : "",
+        applicableTo: baseData.applicableTo
+          ? baseData.applicableTo.split("T")[0]
+          : "",
       });
 
       if (data.interestRates) {
@@ -261,7 +267,7 @@ const AddSchemeDetailsListform = () => {
         alert(
           isCopyMode
             ? "✅ Scheme copied and saved successfully!"
-            : "✅ Scheme added successfully!"
+            : "✅ Scheme added successfully!",
         );
       }
 
@@ -385,12 +391,12 @@ const AddSchemeDetailsListform = () => {
         </div>
       </div>
 
-      <div className="bg-white rounded-lg mt-5 ">
+      <div className="bg-white rounded-lg mt-5">
         {/* First Row (ALWAYS VISIBLE) */}
         <div className="flex gap-2 ml-[22px]">
           <div className="w-[739px] h-auto bg-[#FFE6E6] p-[20px]">
             <div className="flex gap-[12px] ">
-              <div className="flex flex-col ">
+              <div className="flex flex-col">
                 <label className="text-[14px] font-medium">
                   Scheme Name <span className="text-red-500">*</span>
                 </label>
@@ -402,14 +408,15 @@ const AddSchemeDetailsListform = () => {
                     disabled={isViewMode}
                     value={formData.schemeName}
                     onChange={handleInputChange}
-                    className={`border border-gray-300 rounded-[8px] h-[38px] px-3 py-2 w-full bg-white focus:outline-none focus:ring-1 focus:ring-blue-500 ${errors.schemeName ? "border-red-500" : ""
-                      }`}
+                    className={`border border-gray-300 rounded-[8px] h-[30px] px-2 text-xs w-full bg-white focus:outline-none focus:ring-1 focus:ring-blue-500 ${
+                      errors.schemeName ? "border-red-500" : ""
+                    }`}
                   />
                 </div>
               </div>
 
               <div className="">
-                <p className="font-medium text-sm">
+                <p className="font-medium text-[14px]">
                   Product Type <span className="text-red-500">*</span>
                 </p>
                 <select
@@ -417,7 +424,7 @@ const AddSchemeDetailsListform = () => {
                   value={formData.product}
                   onChange={handleInputChange}
                   disabled={isViewMode || isCopyMode}
-                  className="border p-2 rounded-[8px] w-[90px] h-[38px]  bg-white border-gray-300 mt-1"
+                  className="border p-2 rounded-[8px] w-[90px] h-[30px] text-xs bg-white border-gray-300 mt-1"
                 >
                   <option value="Gold">Gold</option>
                   <option value="Silver">Silver</option>
@@ -433,7 +440,7 @@ const AddSchemeDetailsListform = () => {
                   value={formData.partyType}
                   disabled={isViewMode || isCopyMode}
                   onChange={handleInputChange}
-                  className="border border-gray-300 rounded-[8px] h-[38px] px-3 py-2 mt-1 w-[111px] bg-white"
+                  className="border border-gray-300 rounded-[8px] h-[30px] text-xs px-3  mt-1 w-[111px] bg-white"
                 >
                   <option value="">Select</option>
                   {partyTypeList.map((pt) => (
@@ -455,15 +462,16 @@ const AddSchemeDetailsListform = () => {
                   disabled={isViewMode || isCopyMode}
                   onChange={handleInputChange}
                   placeholder=""
-                  className={`border border-gray-300 rounded-[8px] h-[38px] px-3 py-2 mt-1 w-[305px] bg-white ${errors.description ? "border-red-500" : ""
-                    }`}
+                  className={`border border-gray-300 rounded-[8px] h-[30px] text-xs px-3  mt-1 w-[305px] bg-white ${
+                    errors.description ? "border-red-500" : ""
+                  }`}
                 />
               </div>
             </div>
 
             {/* //2ndrows */}
 
-            <div className="flex gap-[12px] mt-[20px] ">
+            <div className="flex gap-[12px] mt-3 ">
               <div className="flex flex-col">
                 <label className="text-[14px] font-medium">
                   Applicable From
@@ -476,8 +484,9 @@ const AddSchemeDetailsListform = () => {
                   disabled={isViewMode}
                   onChange={handleInputChange}
                   min={new Date().toISOString().split("T")[0]} // restrict to today or later
-                  className={`border border-gray-300 rounded-[8px] px-3 py-2 mt-1 w-[145px] h-[38px] bg-white ${errors.applicableFrom ? "border-red-500" : ""
-                    }`}
+                  className={`border border-gray-300 rounded-[8px] px-2  mt-1 w-[145px] h-[30px] text-xs bg-white ${
+                    errors.applicableFrom ? "border-red-500" : ""
+                  }`}
                 />
               </div>
 
@@ -495,7 +504,7 @@ const AddSchemeDetailsListform = () => {
                     formData.applicableFrom ||
                     new Date().toISOString().split("T")[0]
                   } // always after 'Applicable From'
-                  className="border border-gray-300 rounded-[8px] h-[38px] px-3 py-2 mt-1 w-[145px] bg-white"
+                  className="border border-gray-300 rounded-[8px] px-2 h-[30px] text-xs mt-1 w-[145px] bg-white"
                 />
               </div>
 
@@ -507,7 +516,7 @@ const AddSchemeDetailsListform = () => {
                 <div className="flex items-center gap-2 mt-1">
                   <div
                     disabled={isViewMode || isCopyMode}
-                    className={`w-[146px] h-[38px] rounded-[8px] flex bg-white p-1 
+                    className={`w-[146px] h-[30px] text-xs rounded-[8px] flex bg-white p-2 
         ${isViewMode ? "opacity-50 cursor-not-allowed" : "cursor-pointer"}`}
                     onClick={() => {
                       if (!isViewMode) {
@@ -522,10 +531,11 @@ const AddSchemeDetailsListform = () => {
                     <div className="w-1/2 flex items-center justify-center">
                       <span
                         className={`text-sm font-medium transition-all duration-200 rounded-full w-[70px] h-[30px] text-center py-1 
-                        ${formData.calcBasisOn === "Daily"
+                        ${
+                          formData.calcBasisOn === "Daily"
                             ? "bg-[#0A2478] text-white"
                             : "text-black"
-                          }`}
+                        }`}
                       >
                         Daily
                       </span>
@@ -534,10 +544,11 @@ const AddSchemeDetailsListform = () => {
                     <div className="w-1/2 flex items-center justify-center">
                       <span
                         className={`text-sm font-medium transition-all duration-200 rounded-full w-full text-center py-1 
-          ${formData.calcBasisOn === "Monthly"
-                            ? "bg-[#0A2478] text-white"
-                            : "text-black"
-                          }`}
+          ${
+            formData.calcBasisOn === "Monthly"
+              ? "bg-[#0A2478] text-white"
+              : "text-black"
+          }`}
                       >
                         Monthly
                       </span>
@@ -556,7 +567,7 @@ const AddSchemeDetailsListform = () => {
                     value={formData.addOneDay}
                     onChange={handleInputChange}
                     disabled={isViewMode || isCopyMode}
-                    className="border border-gray-300 rounded-[8px] px-3 py-2 mt-1 w-[94px] bg-white h-[38px]"
+                    className="border border-gray-300 rounded-[8px] px-3 h-[30px] text-xs mt-1 w-[94px] bg-white "
                   >
                     <option value="">Select</option>
                     <option value="Yes">Yes</option>
@@ -574,7 +585,7 @@ const AddSchemeDetailsListform = () => {
                   value={formData.calcMethod}
                   onChange={handleInputChange}
                   disabled={isViewMode || isCopyMode}
-                  className="border border-gray-300 px-3 py-2 mt-1 bg-white rounded-[8px] w-[104px] h-[38px]"
+                  className="border border-gray-300 px-3 h-[30px] text-xs mt-1 bg-white rounded-[8px] w-[104px]"
                 >
                   <option value="">Select</option>
                   <option value="Simple">Simple</option>
@@ -597,9 +608,9 @@ const AddSchemeDetailsListform = () => {
                       value={formData.paymentFrequency}
                       disabled={isViewMode || isCopyMode}
                       onChange={handleInputChange}
-                      className="border border-gray-300 px-3 py-2 w-[80px] h-[38px] bg-white rounded-l-[8px] mt-1"
+                      className="border border-gray-300 px-3 py-2 w-[80px] h-[30px] text-xs bg-white rounded-l-[8px] mt-1"
                     />
-                    <div className="bg-[#0A2478] text-white px-4 py-2 rounded-r-[8px] w-[40px] h-[38px] mt-1">
+                    <div className="bg-[#0A2478] text-white px-4 py-1 rounded-r-[8px] w-[40px] h-[30px] mt-1">
                       {formData.calcBasisOn === "Daily"
                         ? "D"
                         : formData.calcBasisOn === "Monthly"
@@ -612,7 +623,7 @@ const AddSchemeDetailsListform = () => {
             </div>
 
             {/* 3rd row */}
-            <div className="flex gap-[12px] mt-[20px] ">
+            <div className="flex gap-[12px] mt-3 ">
               {isDailyBasis && (
                 <div className="flex flex-col ">
                   <label className="text-[14px] font-medium">
@@ -627,9 +638,9 @@ const AddSchemeDetailsListform = () => {
                       value={formData.paymentFrequency}
                       disabled={isViewMode || isCopyMode}
                       onChange={handleInputChange}
-                      className="border border-gray-300 px-3 py-2 w-[80px] h-[38px] bg-white rounded-l-[8px]"
+                      className="border border-gray-300 px-3 py-2 w-[80px] h-[30px] mt-1  text-xs bg-white rounded-l-[8px]"
                     />
-                    <div className="bg-[#0A2478] text-white px-4 py-2 rounded-r-[8px] w-[40px] h-[38px]">
+                    <div className="bg-[#0A2478] text-white px-2 py-1 rounded-r-[8px] w-[40px] h-[28px] mt-1">
                       {formData.calcBasisOn === "Daily"
                         ? "D"
                         : formData.calcBasisOn === "Monthly"
@@ -650,7 +661,7 @@ const AddSchemeDetailsListform = () => {
                     value={formData.interestInAdvance || ""}
                     onChange={handleInputChange}
                     disabled={isViewMode || isCopyMode}
-                    className="border rounded-md px-3 py-2  bg-white w-[126px] h-[38px]"
+                    className="border rounded-[8px] px-3 h-[30px] mt-1 text-xs bg-white w-[126px] "
                   >
                     <option value="Yes">Yes</option>
                     <option value="No">No</option>
@@ -671,9 +682,9 @@ const AddSchemeDetailsListform = () => {
                     placeholder="e.g.185"
                     onChange={handleInputChange}
                     disabled={isViewMode || isCopyMode}
-                    className="border border-gray-300 px-3 py-2 w-[100px] rounded-l-[8px] h-[38px] bg-white"
+                    className="border border-gray-300 px-2 mt-1 w-[100px] rounded-l-[8px] h-[30px] text-xs bg-white"
                   />
-                  <div className="bg-[#0A2478] text-white px-4 py-2 rounded-r-[8px] w-[40px] h-[38px]">
+                  <div className="bg-[#0A2478] text-white px-2 py-1 mt-1 rounded-r-[8px] w-[40px] h-[28px]">
                     {formData.calcBasisOn === "Daily"
                       ? "D"
                       : formData.calcBasisOn === "Monthly"
@@ -697,7 +708,7 @@ const AddSchemeDetailsListform = () => {
                     disabled={isViewMode || isCopyMode}
                     placeholder="e.g 15 days"
                     onWheel={(e) => e.target.blur()}
-                    className="border border-gray-300 rounded px-3 py-2  bg-white w-[130px] h-[38px]"
+                    className="border border-gray-300 rounded-[8px] px-2 h-[30px] mt-1 text-xs  bg-white w-[130px] "
                   />
                 </div>
               )}
@@ -711,7 +722,7 @@ const AddSchemeDetailsListform = () => {
                   value={formData.penaltyType || ""}
                   disabled={isViewMode || isCopyMode}
                   onChange={handleInputChange}
-                  className="border rounded-[8px] px-3 py-2  bg-white border-gray-300 w-[111px] h-[38px]"
+                  className="border rounded-[8px] px-3 h-[30px] text-xs mt-1 bg-white border-gray-300 w-[111px]"
                 >
                   <option value="">Select</option>
                   <option value="Amount">Amount</option>
@@ -731,7 +742,7 @@ const AddSchemeDetailsListform = () => {
                     disabled={isViewMode || isCopyMode}
                     placeholder="e.g ₹10"
                     onWheel={(e) => e.target.blur()}
-                    className="border border-gray-300 rounded-[8px] px-3 py-2 h-[38px] bg-white w-[125px]"
+                    className="border border-gray-300 rounded-[8px] px-2 h-[30px] text-xs mt-1 bg-white w-[125px]"
                   />
                 </div>
               )}
@@ -750,7 +761,7 @@ const AddSchemeDetailsListform = () => {
                       disabled={isViewMode || isCopyMode}
                       placeholder="e.g ₹10"
                       onWheel={(e) => e.target.blur()}
-                      className="border border-gray-300 rounded-[8px] px-3 py-2 h-[38px] bg-white w-[125px]"
+                      className="border border-gray-300 rounded-[8px] px-2 mt-1 h-[30px] text-xs bg-white w-[125px]"
                     />
                   </div>
 
@@ -769,7 +780,7 @@ const AddSchemeDetailsListform = () => {
                       }}
                       placeholder="e.g 95%"
                       onWheel={(e) => e.target.blur()}
-                      className="border border-gray-300 rounded-[8px] px-3 py-2 w-[127px] bg-white h-[38px]"
+                      className="border border-gray-300 rounded-[8px] px-2 h-[30px] mt-1 text-xs w-[127px] bg-white "
                     />
                   </div>
                 </>
@@ -811,7 +822,7 @@ const AddSchemeDetailsListform = () => {
                       }}
                       placeholder="e.g 95%"
                       onWheel={(e) => e.target.blur()}
-                      className="border border-gray-300 rounded-[8px] px-3 py-2 w-[127px] bg-white h-[38px]"
+                      className="border border-gray-300 rounded-[8px] px-2 h-[30px] text-xs w-[127px] bg-white "
                     />
                   </div>
                 </>
@@ -832,7 +843,7 @@ const AddSchemeDetailsListform = () => {
                     MozAppearance: "textfield",
                   }}
                   onWheel={(e) => e.target.blur()}
-                  className="border border-gray-300 rounded-[8px] px-3 py-2  w-[116px] bg-white h-[38px]"
+                  className="border border-gray-300 rounded-[8px] px-2   w-[116px] bg-white h-[30px] text-xs"
                 />
               </div>
 
@@ -851,11 +862,9 @@ const AddSchemeDetailsListform = () => {
                     MozAppearance: "textfield",
                   }}
                   onWheel={(e) => e.target.blur()}
-                  className="border border-gray-300 rounded-[8px] px-3 py-2 h-[38px] w-[119px] bg-white"
+                  className="border border-gray-300 rounded-[8px] px-2 h-[30px] text-xs w-[119px] bg-white"
                 />
               </div>
-
-
 
               {!isDailyBasis && (
                 <div className="flex flex-col">
@@ -865,7 +874,7 @@ const AddSchemeDetailsListform = () => {
 
                   <div className="flex items-center gap-2">
                     <div
-                      className={`w-[200px] h-[38px] rounded-[8px] flex bg-white p-1 
+                      className={`w-[200px] h-[30px] rounded-[8px] flex bg-white p-1 
           ${isViewMode ? "opacity-50 cursor-not-allowed" : "cursor-pointer"}`}
                     >
                       {/* Floating */}
@@ -880,10 +889,11 @@ const AddSchemeDetailsListform = () => {
                         }}
                       >
                         <span
-                          className={`text-sm font-medium transition-all duration-200 rounded-full w-[90px] h-[30px] text-center py-1 ${formData.interestType === "Flat"
-                            ? "bg-[#0A2478] text-white"
-                            : "text-black"
-                            }`}
+                          className={`text-sm font-medium transition-all duration-200 rounded-full w-[90px] h-[30px] text-center py-1 ${
+                            formData.interestType === "Flat"
+                              ? "bg-[#0A2478] text-white"
+                              : "text-black"
+                          }`}
                         >
                           Flat
                         </span>
@@ -904,10 +914,11 @@ const AddSchemeDetailsListform = () => {
                         }}
                       >
                         <span
-                          className={`text-sm font-medium transition-all duration-200 rounded-full w-[90px] h-[30px] text-center py-1 ${formData.interestType === "Reducing"
-                            ? "bg-[#0A2478] text-white"
-                            : "text-black"
-                            }`}
+                          className={`text-sm font-medium transition-all duration-200 rounded-full w-[90px] h-[30px] text-center py-1 ${
+                            formData.interestType === "Reducing"
+                              ? "bg-[#0A2478] text-white"
+                              : "text-black"
+                          }`}
                         >
                           Reducing
                         </span>
@@ -920,10 +931,10 @@ const AddSchemeDetailsListform = () => {
 
             {!isDailyBasis && (
               <>
-                <h3 className="text-[15px] font-semibold text-[#0A2478] mb-4 mt-5">
+                <h3 className="text-[15px] font-semibold text-[#0A2478]  mt-3">
                   Document Charge
                 </h3>
-                <div className='flex gap-5'>
+                <div className="flex gap-5 mt-2">
                   <div className="flex flex-col">
                     <label className="text-[14px] font-medium mb-1">
                       Admin Charge Type
@@ -933,7 +944,7 @@ const AddSchemeDetailsListform = () => {
                       value={formData.adminChargeType || "fixed"}
                       disabled={isViewMode}
                       onChange={handleInputChange}
-                      className="border border-gray-300 rounded-[8px] px-3 py-2 h-[38px] w-[130px] bg-white outline-none text-sm"
+                      className="border border-gray-300 rounded-[8px] px-2 text-xs h-[30px] w-[130px] bg-white outline-none "
                     >
                       <option value="fixed">Fixed Amount</option>
                       <option value="percentage">Percentage (%)</option>
@@ -960,7 +971,7 @@ const AddSchemeDetailsListform = () => {
                       }
                       style={{ MozAppearance: "textfield" }}
                       onWheel={(e) => e.target.blur()}
-                      className="border border-gray-300 rounded-[8px] px-3 py-2 h-[38px] w-[100px] bg-white outline-none"
+                      className="border border-gray-300 rounded-[8px] px-2  text-xs h-[30px] w-[100px] bg-white outline-none"
                     />
                   </div>
                 </div>
@@ -1011,7 +1022,7 @@ const AddSchemeDetailsListform = () => {
                   </div>
                 </div> */}
 
-                 <div className="flex gap-4 w-full mt-5">
+                <div className="flex gap-4 w-full mt-3">
                   {/* % of Loan Amount */}
                   <div className="flex flex-col">
                     <label className="text-sm font-medium mb-1">
@@ -1023,7 +1034,7 @@ const AddSchemeDetailsListform = () => {
                       value={formData.docChargeType}
                       disabled={isViewMode}
                       onChange={handleInputChange}
-                      className="p-2 border border-gray-300 rounded text-sm w-[120px] bg-white outline-none"
+                      className=" border border-gray-300 rounded-[8px] text-xs h-[30px] w-[120px] bg-white outline-none"
                     >
                       <option value="percentage">Percentage (%)</option>
                       <option value="fixed">Fixed Amount</option>
@@ -1055,7 +1066,7 @@ const AddSchemeDetailsListform = () => {
                           ? "e.g. 2"
                           : "e.g. 500"
                       }
-                      className="p-2 border border-gray-300 rounded text-sm w-[150px] bg-white outline-none"
+                      className="p-2 border border-gray-300 rounded-[8px] text-xs h-[30px] w-[150px] bg-white outline-none"
                     />
                   </div>
 
@@ -1080,10 +1091,11 @@ const AddSchemeDetailsListform = () => {
                         isViewMode || formData.docChargeType === "fixed"
                       }
                       onWheel={(e) => e.target.blur()}
-                      className={`p-2 border border-gray-300 rounded text-sm w-[100px] outline-none transition-colors ${formData.docChargeType === "fixed"
-                        ? "bg-gray-100 cursor-not-allowed"
-                        : "bg-white"
-                        }`}
+                      className={`p-2 border border-gray-300 mt-1 rounded-[8px] text-xs h-[30px] w-[100px] outline-none transition-colors ${
+                        formData.docChargeType === "fixed"
+                          ? "bg-gray-100 cursor-not-allowed"
+                          : "bg-white"
+                      }`}
                     />
                   </div>
 
@@ -1108,10 +1120,11 @@ const AddSchemeDetailsListform = () => {
                         isViewMode || formData.docChargeType === "fixed"
                       }
                       onWheel={(e) => e.target.blur()}
-                      className={`p-2 border border-gray-300 rounded text-sm w-[100px] outline-none transition-colors ${formData.docChargeType === "fixed"
-                        ? "bg-gray-100 cursor-not-allowed"
-                        : "bg-white"
-                        }`}
+                      className={`p-2 border border-gray-300 mt-1 rounded-[8px] text-xs h-[30px] w-[100px] outline-none transition-colors ${
+                        formData.docChargeType === "fixed"
+                          ? "bg-gray-100 cursor-not-allowed"
+                          : "bg-white"
+                      }`}
                     />
                   </div>
                 </div>
@@ -1136,7 +1149,7 @@ const AddSchemeDetailsListform = () => {
                       value={formData.adminChargeType || "fixed"}
                       disabled={isViewMode}
                       onChange={handleInputChange}
-                      className="border border-gray-300 rounded-[8px] px-3 py-2 h-[38px] w-[130px] bg-white outline-none text-sm"
+                      className="border border-gray-300 rounded-[8px]  text-xs h-[30px] w-[130px] bg-white outline-none"
                     >
                       <option value="fixed">Fixed Amount</option>
                       <option value="percentage">Percentage (%)</option>
@@ -1163,7 +1176,7 @@ const AddSchemeDetailsListform = () => {
                       }
                       style={{ MozAppearance: "textfield" }}
                       onWheel={(e) => e.target.blur()}
-                      className="border border-gray-300 rounded-[8px] px-3 py-2 h-[38px] w-[100px] bg-white outline-none"
+                      className="border border-gray-300 rounded-[8px] px-3 text-xs  h-[30px] w-[100px] bg-white outline-none"
                     />
                   </div>
                 </div>
@@ -1179,7 +1192,7 @@ const AddSchemeDetailsListform = () => {
                       value={formData.docChargeType}
                       disabled={isViewMode}
                       onChange={handleInputChange}
-                      className="p-2 border border-gray-300 rounded text-sm w-[120px] bg-white outline-none"
+                      className=" border border-gray-300 rounded-[8px] text-xs  h-[30px] w-[120px] bg-white outline-none"
                     >
                       <option value="percentage">Percentage (%)</option>
                       <option value="fixed">Fixed Amount</option>
@@ -1211,7 +1224,7 @@ const AddSchemeDetailsListform = () => {
                           ? "e.g. 2"
                           : "e.g. 500"
                       }
-                      className="p-2 border border-gray-300 rounded text-sm w-[150px] bg-white outline-none"
+                      className="p-2 border border-gray-300 rounded-[8px] text-xs  h-[30px] w-[150px] bg-white outline-none"
                     />
                   </div>
 
@@ -1236,10 +1249,11 @@ const AddSchemeDetailsListform = () => {
                         isViewMode || formData.docChargeType === "fixed"
                       }
                       onWheel={(e) => e.target.blur()}
-                      className={`p-2 border border-gray-300 rounded text-sm w-[100px] outline-none transition-colors ${formData.docChargeType === "fixed"
-                        ? "bg-gray-100 cursor-not-allowed"
-                        : "bg-white"
-                        }`}
+                      className={`p-2 border border-gray-300 rounded-[8px] text-xs  h-[30px] w-[100px] outline-none transition-colors ${
+                        formData.docChargeType === "fixed"
+                          ? "bg-gray-100 cursor-not-allowed"
+                          : "bg-white"
+                      }`}
                     />
                   </div>
 
@@ -1264,10 +1278,11 @@ const AddSchemeDetailsListform = () => {
                         isViewMode || formData.docChargeType === "fixed"
                       }
                       onWheel={(e) => e.target.blur()}
-                      className={`p-2 border border-gray-300 rounded text-sm w-[100px] outline-none transition-colors ${formData.docChargeType === "fixed"
-                        ? "bg-gray-100 cursor-not-allowed"
-                        : "bg-white"
-                        }`}
+                      className={`p-2 border border-gray-300 rounded-[8px] text-xs h-[30px] w-[100px] outline-none transition-colors ${
+                        formData.docChargeType === "fixed"
+                          ? "bg-gray-100 cursor-not-allowed"
+                          : "bg-white"
+                      }`}
                     />
                   </div>
                 </div>
@@ -1308,7 +1323,7 @@ const AddSchemeDetailsListform = () => {
                                     e.target.value,
                                   )
                                 }
-                                className="border px-2 py-1 w-[80px] h-[25px] text-center"
+                                className="border px-2 py-1 w-[80px] h-[30px] text-center rounded-[8px]"
                               />
                             </td>
 
@@ -1320,7 +1335,7 @@ const AddSchemeDetailsListform = () => {
                                 onChange={(e) =>
                                   handleChange(index, "toMonth", e.target.value)
                                 }
-                                className="border px-2 py-1 w-[80px] h-[25px] text-center"
+                                className="border px-2 py-1 w-[80px] h-[30px] text-center rounded-[8px]"
                               />
                             </td>
 
@@ -1332,7 +1347,7 @@ const AddSchemeDetailsListform = () => {
                                 onChange={(e) =>
                                   handleChange(index, "charges", e.target.value)
                                 }
-                                className="border px-2 py-1 w-[80px] h-[25px] text-center"
+                                className="border px-2 py-1 w-[80px] h-[30px] text-center rounded-[8px]"
                               />
                             </td>
                           </tr>
@@ -1353,12 +1368,12 @@ const AddSchemeDetailsListform = () => {
                 <table className="w-full border-collapse bg-white">
                   {/* Table Header */}
                   <thead>
-                    <tr className="bg-[#0A2478] text-white text-sm">
-                      <th className="p-3 border-r w-[80px]">From</th>
-                      <th className="p-3 border-r w-[80px]">To</th>
-                      <th className="p-3 border-r w-[80px]">Type</th>
-                      <th className="p-3 border-r w-[100px]">Add %</th>
-                      <th className="p-3 w-[80px]">Action</th>
+                    <tr className="bg-[#0A2478] text-white text-xs text-left">
+                      <th className="p-1 border-r w-[80px]">From</th>
+                      <th className="p-1 border-r w-[80px]">To</th>
+                      <th className="p-1 border-r w-[80px]">Type</th>
+                      <th className="p-1 border-r w-[100px]">Add %</th>
+                      <th className="p-1 w-[80px]">Action</th>
                     </tr>
                   </thead>
 
@@ -1370,7 +1385,7 @@ const AddSchemeDetailsListform = () => {
                         className={i % 2 === 0 ? "bg-white" : "bg-gray-50"}
                       >
                         {/* From */}
-                        <td className="p-3 text-center">
+                        <td className=" text-left">
                           <input
                             type="number"
                             value={rate.from || ""}
@@ -1379,13 +1394,13 @@ const AddSchemeDetailsListform = () => {
                               onchange(rate.id, "from", e.target.value)
                             }
                             onWheel={(e) => e.target.blur()}
-                            className="border border-gray-300 rounded px-2 py-1 w-[80px] text-center"
+                            className="border border-gray-300 rounded-[8px] px-2 text-xs h-[30px] w-[80px] text-left"
                             placeholder="From"
                           />
                         </td>
 
                         {/* To */}
-                        <td className="p-3 text-center">
+                        <td className=" text-left">
                           <input
                             type="number"
                             value={rate.to || ""}
@@ -1394,13 +1409,13 @@ const AddSchemeDetailsListform = () => {
                               onchange(rate.id, "to", e.target.value)
                             }
                             onWheel={(e) => e.target.blur()}
-                            className="border border-gray-300 rounded px-2 py-1 w-[80px] text-center"
+                            className="border border-gray-300 rounded-[8px] px-2 text-xs h-[30px] w-[80px] text-left"
                             placeholder="To"
                           />
                         </td>
 
                         {/* Type */}
-                        <td className="p-3 text-center">
+                        <td className=" text-left">
                           <select
                             value={
                               rate.type ||
@@ -1414,7 +1429,7 @@ const AddSchemeDetailsListform = () => {
                             onChange={(e) =>
                               onchange(rate.id, "type", e.target.value)
                             }
-                            className="border border-gray-300 rounded px-2 py-1 w-[70px]"
+                            className="border border-gray-300 rounded-[8px] px-2 text-xs h-[30px] w-[70px]"
                           >
                             <option
                               value="days"
@@ -1432,7 +1447,7 @@ const AddSchemeDetailsListform = () => {
                         </td>
 
                         {/* Add % */}
-                        <td className="p-3 text-center">
+                        <td className=" text-center">
                           <input
                             type="number"
                             value={rate.addInt || ""}
@@ -1441,13 +1456,13 @@ const AddSchemeDetailsListform = () => {
                             }
                             disabled={isViewMode}
                             onWheel={(e) => e.target.blur()}
-                            className="border border-gray-300 rounded px-2 py-1 w-[90px] text-center"
+                            className="border border-gray-300 rounded-[8px] px-2 text-xs h-[30px] w-[90px] text-left"
                             placeholder="%"
                           />
                         </td>
 
                         {/* Action Buttons */}
-                        <td className="p-3 text-center">
+                        <td className="p-1 text-left">
                           <div className="flex justify-center gap-2">
                             <button
                               type="button"

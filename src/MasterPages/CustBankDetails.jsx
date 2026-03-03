@@ -213,13 +213,16 @@ const verifyBankDetails = async () => {
   };
 
   return (
-    <div className="flex justify-center">
+    <div className="flex">
       <div className="overflow-x-auto mt-5 w-[1250px] h-auto mb-5">
         {/* Header + Add Button */}
         <div className="flex justify-between">
-          <p className="font-[Source_Sans_3] font-semibold text-[14px] underline">
+          {/* <p className="font-[Source_Sans_3] font-semibold text-[14px] underline">
             Bank Details
-                  </p>
+                  </p> */}
+           <p className="font-[Source_Sans_3] font-bold text-[24px] leading-[100%] tracking-[0.03em] text-[#0A2478] mb-4 ">
+             Bank Details
+          </p>
                   {
                       updatemode !== "edit" && (
                            <button
@@ -238,17 +241,17 @@ const verifyBankDetails = async () => {
 
         {/* Table */}
         <table className="w-full border-collapse mt-5">
-          <thead className="bg-[#0A2478] text-white text-sm">
+          <thead className="bg-[#0A2478] text-white text-xs text-left">
             <tr>
-              <th className="px-4 py-2 border-r">Bank Name</th>
-              <th className="px-4 py-2 border-r">Customer Name</th>
-              <th className="px-4 py-2 border-r">Account No</th>
-              <th className="px-4 py-2 border-r">IFSC</th>
-              {/* <th className="px-4 py-2 border-r">Cancelled Cheque</th> */}
-              <th className="px-4 py-2 border-r">Bank Address</th>
-              <th className="px-4 py-2 border-r">Update By</th>
-              <th className="px-4 py-2 border-r">Update On</th>
-              <th className="px-4 py-2">Action</th>
+              <th className="px-1 py-1 border-r">Bank Name</th>
+              <th className="px-1 py-1 border-r">Customer Name</th>
+              <th className="px-1 py-1 border-r">Account No</th>
+              <th className="px-1 py-1 border-r">IFSC</th>
+              {/* <th className="px-1 py-1 border-r">Cancelled Cheque</th> */}
+              <th className="px-1 py-1 border-r">Bank Address</th>
+              <th className="px-1 py-1 border-r">Update By</th>
+              <th className="px-1 py-1 border-r">Update On</th>
+              <th className="px-1 py-1">Action</th>
             </tr>
           </thead>
 
@@ -260,35 +263,14 @@ const verifyBankDetails = async () => {
                   index % 2 === 0 ? "bg-gray-50" : "bg-white"
                 }`}
               >
-                <td className="px-4 py-2">{row.bankName}</td>
-                <td className="px-4 py-2">{row.Customer_Name}</td>
-                <td className="px-4 py-2">{row.Account_No}</td>
-                <td className="px-4 py-2">{row.IFSC}</td>
-
-                {/* Cancel Cheque Image */}
-                {/* <td className="px-4 py-2">
-                  {row.cancelCheque ? (
-                    <div className="flex items-center gap-2">
-                      <img
-                        src={previewUrls[index]}
-                        alt="Cheque"
-                        className="w-12 h-12 object-cover rounded border"
-                      />
-                      <span className="text-blue-600 underline">
-                        {typeof row.cancelCheque === "object"
-                          ? row.cancelCheque.name
-                          : "Cheque Image"}
-                      </span>
-                    </div>
-                  ) : (
-                    "-"
-                  )}
-                </td> */}
-
-                <td className="px-4 py-2">{row.Bank_Address}</td>
-                <td className="px-4 py-2">{row.Update_By}</td>
-                <td className="px-4 py-2">{row.Update_On}</td>
-                <td className="px-4 py-2">
+                <td className="px-1 py-1">{row.bankName}</td>
+                <td className="px-1 py-1">{row.Customer_Name}</td>
+                <td className="px-1 py-1">{row.Account_No}</td>
+                <td className="px-1 py-1">{row.IFSC}</td>
+                <td className="px-1 py-1">{row.Bank_Address}</td>
+                <td className="px-1 py-1">{row.Update_By}</td>
+                <td className="px-1 py-1">{row.Update_On}</td>
+                <td className="px-1 py-1">
                   <div className="flex gap-2 justify-center">
                     <div
                       className="w-[17px] h-[17px] bg-[#56A869] rounded flex items-center justify-center p-0.5 cursor-pointer"
