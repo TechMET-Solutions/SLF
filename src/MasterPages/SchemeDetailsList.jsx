@@ -114,15 +114,15 @@ const SchemeDetailsList = () => {
   return (
     <div className="min-h-screen w-full">
       {/* Top Bar */}
-      <div className="flex justify-center sticky top-[80px] z-40">
-        <div className="flex items-center px-6 py-4 border-b  w-[1462px] h-[50px] border rounded-[11px] border-gray-200 justify-between  bg-white">
+      <div className="flex sticky top-[80px] z-40 w-full px-8">
+        <div className="flex items-center px-6 py-4 border-b my-2 w-full max-w-[1462px] h-[50px] border rounded-[11px] border-gray-200 justify-between">
           <h2 className="text-red-600 text-[20px] font-semibold">
             Scheme List
           </h2>
 
           <div className="flex items-center gap-3">
             <div className="flex items-center gap-3">
-              <div className="flex items-center bg-white border border-gray-400 rounded-[5px] h-[32px] px-2 relative w-[300px]">
+              <div className="hidden lg:flex items-center bg-white  h-[32px] px-1 relative ">
                 {/* Multi-Select Header Dropdown */}
                 <div className="relative border-r border-gray-300 pr-2 mr-2">
                   <button
@@ -200,7 +200,7 @@ const SchemeDetailsList = () => {
                 </button>
               </div>
 
-              <div className="flex items-center bg-white border border-gray-400 rounded-[5px] h-[32px] px-2 relative">
+              <div className="hidden lg:flex items-center bg-white  h-[32px] px-1 relative ">
                 {/* App From Date */}
                 <div className="flex items-center gap-1 border-r border-gray-200 pr-2 mr-2">
                   <span className="text-[10px] text-gray-500 font-bold uppercase">
@@ -246,7 +246,7 @@ const SchemeDetailsList = () => {
                   setAppTo("");
                   fetchSchemes(1);
                 }}
-                className="bg-[#0A2478] text-white text-[11px] px-4 py-1 rounded"
+                className="bg-[#0A2478] hidden lg:flex text-white text-[11px] px-4 py-1 rounded"
               >
                 Clear
               </button>

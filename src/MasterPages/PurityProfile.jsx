@@ -178,7 +178,8 @@ const PurityProfile = () => {
         purity_name: formData.purity_name,
         purity_percent: formData.purity_percent,
         loan_type: formData.loan_type,
-        added_by: loginUser,
+        // Keep original added_by when editing, use loginUser for new entries
+        added_by: isEditMode ? formData.added_by : loginUser,
         status: formData.status,
       };
 
@@ -251,7 +252,7 @@ const PurityProfile = () => {
       {/* <div className="flex  sticky top-[80px] z-40">
         <div className="flex  mt-2 ml-[22px]">
           <div className="flex items-center justify-between px-6 py-4 border-b w-[1462px] h-[50px] border rounded-[11px] border-gray-200 bg-white"> */}
-      
+
       <div className="flex sticky top-[80px] z-40 w-full px-8">
         <div className="z-40 bg-white w-full">
           <div className="flex items-center px-6 py-4 border-b mt-2 
@@ -344,8 +345,8 @@ const PurityProfile = () => {
                 disabled={isLoading}
                 onClick={handleSave}
                 className={`bg-[#0A2478] cursor-pointer text-white px-5 py-2 rounded ${isLoading
-                    ? "opacity-50 cursor-not-allowed"
-                    : "hover:bg-[#081b5c]"
+                  ? "opacity-50 cursor-not-allowed"
+                  : "hover:bg-[#081b5c]"
                   }`}
               >
                 {isLoading ? "Saving..." : isEditMode ? "Update" : "Save"}
@@ -419,7 +420,7 @@ const PurityProfile = () => {
             Gold Purity
           </p>
 
-       
+
 
           <div className="overflow-x-auto mt-2 w-[620px] h-[500px]">
             <table className="w-full border-collapse">

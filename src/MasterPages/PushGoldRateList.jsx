@@ -234,7 +234,7 @@ const fetchSilverRates = async (page = 1, from = "", to = "") => {
           </h2>
 
           {/* Input & Actions */}
-          <div className="flex items-center gap-6">
+          <div className="gap-6 hidden lg:flex items-center bg-white  px-1 relative ">
             <div className="flex gap-5">
               <div className="flex gap-1 items-center">
                 <p className="text-[11.25px] font-source">
@@ -279,7 +279,7 @@ const fetchSilverRates = async (page = 1, from = "", to = "") => {
               {/* New Actual Rate Field */}
               <div className="flex gap-1 items-center">
                 <p className="text-[11.25px] font-source">
-                  Actual Rate <span className="text-red-500">*</span>
+                  Valuation Rate <span className="text-red-500">*</span>
                 </p>
                 <input
                   type="number"
@@ -408,7 +408,7 @@ const fetchSilverRates = async (page = 1, from = "", to = "") => {
                     <th className="px-1 py-1 text-left border-r w-[100px]">Date</th>
                     <th className="px-1 py-1 text-left border-r">Type</th>
                     <th className="px-1 py-1 text-left border-r w-[100px]">Funding Rate</th>
-                    <th className="px-1 py-1 text-left border-r w-[100px]">Actual Rate</th>
+                    <th className="px-1 py-1 text-left border-r w-[100px]">Valuation Rate</th>
                     <th className="px-1 py-1 text-left border-r w-[200px]">Added By</th>
                   </tr>
                 </thead>
@@ -452,7 +452,7 @@ const fetchSilverRates = async (page = 1, from = "", to = "") => {
                     <th className="px-1 py-1 text-left border-r w-[100px]">Date</th>
                     <th className="px-1 py-1 text-left border-r">Type</th>
                     <th className="px-1 py-1 text-left border-r w-[100px]">Funding Rate</th>
-                    <th className="px-1 py-1 text-left border-r w-[100px]">Actual Rate</th>
+                    <th className="px-1 py-1 text-left border-r w-[100px]">Valuation Rate</th>
                     <th className="px-1 py-1 text-left border-r w-[200px]">Added By</th>
                   </tr>
                 </thead>

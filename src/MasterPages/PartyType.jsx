@@ -104,13 +104,14 @@ function PartyType() {
     };
 
     return (
-        <div className="min-h-screen w-full  flex flex-col items-center">
+        <div className="min-h-screen w-full font-[Source_Sans_3]">
             {/* Top Bar */}
-            <div className="sticky top-[80px] z-40 w-[1462px] mt-2">
-                <div className="flex items-center justify-between px-6 py-4 h-[50px] rounded-[11px] border border-gray-200 bg-white shadow-sm ">
+            <div className="flex sticky top-[80px] z-40 w-full px-8">
+                {/* <div className="z-40 bg-white w-full"> */}
+                    <div className="flex items-center px-6 py-4 border-b my-2 w-full max-w-[1462px] h-[50px] border rounded-[11px] border-gray-200 justify-between  ">
 
                     {/* Title */}
-                    <h2 className="text-red-600 text-[20px] font-bold">
+                    <h2 className="text-red-600 font-bold text-[20px] whitespace-nowrap">
                         Party Type
                     </h2>
 

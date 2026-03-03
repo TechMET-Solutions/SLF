@@ -5,6 +5,8 @@ import {
   FiChevronRight,
   FiChevronUp,
   FiLogOut,
+  FiMenu,
+  FiX,
 } from "react-icons/fi";
 import { TfiReload } from "react-icons/tfi";
 import { Link, useNavigate } from "react-router-dom";
@@ -42,7 +44,7 @@ const Navbar = () => {
 
   const [selectedYear, setSelectedYear] = useState("2025");
 
- 
+
   const [tempBranch, setTempBranch] = useState("");
   const [tempYear, setTempYear] = useState("");
 
@@ -57,8 +59,8 @@ const Navbar = () => {
       console.log("Branch Name:", userData.branchId.branch_name);
       setSelectedYear(userData.financialYear);
       setSelectedBranch(userData.branchId.branch_name);
-       setTempBranch(userData.branchId.id);  
-    setSelectedYear(userData.financialYear);
+      setTempBranch(userData.branchId.id);
+      setSelectedYear(userData.financialYear);
     }
   }, []);
 
@@ -79,11 +81,11 @@ const Navbar = () => {
       ...storedUser,
       branchId: selectedBranchObj.id,
       branchName: selectedBranchObj.branch_name,
-     branchId:{                     
-    id: selectedBranchObj.id,
-    branch_code: selectedBranchObj.branch_code,
-    branch_name: selectedBranchObj.branch_name,
-  },
+      branchId: {
+        id: selectedBranchObj.id,
+        branch_code: selectedBranchObj.branch_code,
+        branch_name: selectedBranchObj.branch_name,
+      },
       financialYear: tempYear,
     };
 
@@ -187,7 +189,7 @@ const Navbar = () => {
 
   console.log("Converted Permissions", userPermissions);
 
-  // ✅ Close all dropdowns when clicking outside
+  // ✅ Close sidebar when clicking outside
   useEffect(() => {
     const handleClickOutside = (event) => {
       if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
@@ -197,6 +199,7 @@ const Navbar = () => {
         setOpenMasterSubMenu(null);
         setOpenTransactionSubMenu(null);
         setOpenReportSubMenu(null);
+        setIsSidebarOpen(false);
       }
     };
 
@@ -284,18 +287,18 @@ const Navbar = () => {
   const filteredMasterProfile = isAdmin
     ? masterProfileList
     : masterProfileList.filter(
-        (item) => masterPermissions[item.name]?.view === true,
-      );
+      (item) => masterPermissions[item.name]?.view === true,
+    );
   const filteredReporttrasaction = isAdmin
     ? ReportTrasaction
     : ReportTrasaction.filter(
-        (item) => masterPermissions[item.name]?.view === true,
-      );
+      (item) => masterPermissions[item.name]?.view === true,
+    );
   const filteredMiscellaneousrasaction = isAdmin
     ? masterMiscellaneousList
     : masterMiscellaneousList.filter(
-        (item) => masterPermissions[item.name]?.view === true,
-      );
+      (item) => masterPermissions[item.name]?.view === true,
+    );
   const schemeMasterItems = [
     { name: "Scheme Details", path: "/Scheme-Details-List" },
     { name: "Scheme Branch Mapping", path: "/Branch-Scheme-Mapping-List" },
@@ -324,19 +327,19 @@ const Navbar = () => {
   const filteredSchemeMaster = isAdmin
     ? schemeMasterItems
     : schemeMasterItems.filter(
-        (item) => masterPermissions[item.name]?.view === true,
-      );
+      (item) => masterPermissions[item.name]?.view === true,
+    );
   const cashfinancialreport = isAdmin
     ? cashBankFinancialReport
     : cashBankFinancialReport.filter(
-        (item) => masterPermissions[item.name]?.view === true,
-      );
+      (item) => masterPermissions[item.name]?.view === true,
+    );
 
   const misreportsection = isAdmin
     ? misreporttab
     : misreporttab.filter(
-        (item) => masterPermissions[item.name]?.view === true,
-      );
+      (item) => masterPermissions[item.name]?.view === true,
+    );
 
   const canSeeSchemeMaster = filteredSchemeMaster.length > 0;
 
@@ -354,8 +357,8 @@ const Navbar = () => {
   const filteredEmployeeProfile = isAdmin
     ? employeeProfileItems
     : employeeProfileItems.filter(
-        (item) => masterPermissions[item.name]?.view === true,
-      );
+      (item) => masterPermissions[item.name]?.view === true,
+    );
 
   const canSeeEmployeeProfile = filteredEmployeeProfile.length > 0;
 
@@ -367,14 +370,14 @@ const Navbar = () => {
   const filteredUserManagement = isAdmin
     ? userManagementItems
     : userManagementItems.filter(
-        (item) => masterPermissions[item.name]?.view === true,
-      );
+      (item) => masterPermissions[item.name]?.view === true,
+    );
 
   const canSeeUserManagement = filteredUserManagement.length > 0;
 
   const loanItems = [
     { name: "Loan Application", path: "/Loan-Application" },
-     { name: "Loan Repayment", path: "/Loan-Repayment" },
+    { name: "Loan Repayment", path: "/Loan-Repayment" },
     { name: "Loan Charges List", path: "/Loan-Charges-List" },
   ];
 
@@ -401,13 +404,13 @@ const Navbar = () => {
   const filteredLoan = isAdmin
     ? loanItems
     : loanItems.filter(
-        (item) => TrasactionPermissions[item.name]?.view === true,
-      );
+      (item) => TrasactionPermissions[item.name]?.view === true,
+    );
   const filteredAccounting = isAdmin
     ? AccountingItems
     : AccountingItems.filter(
-        (item) => TrasactionPermissions[item.name]?.view === true,
-      );
+      (item) => TrasactionPermissions[item.name]?.view === true,
+    );
   const canSeeLoan = filteredLoan.length > 0;
 
   const canSeeCustomerProfile = isAdmin
@@ -417,683 +420,1306 @@ const Navbar = () => {
   const filteredAuction = isAdmin
     ? auctionItems
     : auctionItems.filter(
-        (item) => TrasactionPermissions[item.name]?.view === true,
-      );
+      (item) => TrasactionPermissions[item.name]?.view === true,
+    );
 
   const canSeeAuction = filteredAuction.length > 0;
 
   const canSeeTransactions =
     canSeeLoan || canSeeCustomerProfile || canSeeAuction;
 
-  return (
-    <div className="flex justify-center sticky top-0 z-50 bg-transparent">
-      <div className="bg-[#0A2478] text-white flex items-center justify-between relative mt-5 p-5 w-[1460px] h-[50px] rounded-[10px]">
-        {/* Left side placeholder */}
-        <div className="flex items-center gap-3">
-          <Link to="/">
-            <img
-              src="/logo.svg"
-              alt="Logo"
-              className="w-12 h-12 object-contain cursor-pointer"
-            />
-          </Link>
-        </div>
+  const [isSidebarOpen, setIsSidebarOpen] = useState(false);
 
-        {/* ===== Center Menu ===== */}
+  return (
+    <div className="sticky top-0 z-50 bg-transparent">
+      {/* Desktop Navbar */}
+      <div className="hidden lg:flex justify-center bg-transparent">
         <div
-          className="absolute left-1/2 transform -translate-x-1/2 flex gap-8"
+          className="bg-[#0A2478] text-white flex items-center justify-between relative mt-5 p-5 w-[1460px] h-[50px] rounded-[10px]"
           ref={dropdownRef}
         >
-          {/* ================== MASTERS ================== */}
-          <div className="relative">
-            {canSeeMaster && (
-              <button
-                className="hover:underline text-[20px] flex items-center gap-1"
-                onClick={() => {
-                  toggleMenu("masters");
-                  setOpenMasterSubMenu(null);
-                }}
-              >
-                Masters
-                {openMenu === "masters" ? <FiChevronUp /> : <FiChevronDown />}
-              </button>
-            )}
-
-            {openMenu === "masters" && (
-              <div className="absolute top-full left-0 mt-2 bg-white text-black rounded shadow-lg w-[200px] z-50">
-                {/* Master Profile */}
-                {canSeeMasterProfile && (
-                  <div className="relative">
-                    <button
-                      className="w-full text-left px-4 py-2 hover:bg-gray-100 flex justify-between items-center"
-                      onClick={() => toggleMasterSubMenu("profile")}
-                    >
-                      Master Profile
-                      {openMasterSubMenu === "profile" ? (
-                        <FiChevronDown />
-                      ) : (
-                        <FiChevronRight />
-                      )}
-                    </button>
-
-                    {openMasterSubMenu === "profile" && (
-                      <div className="absolute top-0 left-full ml-1 w-[200px] bg-white text-black rounded shadow-lg flex flex-col text-sm">
-                        {filteredMasterProfile.map((item) => (
-                          <Link
-                            key={item.path}
-                            to={item.path}
-                            className="px-4 py-2 hover:bg-gray-100"
-                            onClick={() => {
-                              setOpenMenu(null);
-                              setOpenMasterSubMenu(null);
-                            }}
-                          >
-                            {item.name}
-                          </Link>
-                        ))}
-                      </div>
-                    )}
-                  </div>
-                )}
-
-                {/* Scheme Master */}
-                {canSeeSchemeMaster && (
-                  <div className="relative">
-                    <button
-                      className="w-full text-left px-4 py-2 hover:bg-gray-100 flex justify-between items-center"
-                      onClick={() => toggleMasterSubMenu("scheme")}
-                    >
-                      Scheme Master
-                      {openMasterSubMenu === "scheme" ? (
-                        <FiChevronDown />
-                      ) : (
-                        <FiChevronRight />
-                      )}
-                    </button>
-
-                    {openMasterSubMenu === "scheme" && (
-                      <div className="absolute top-0 left-full ml-1 w-[200px] bg-white text-black rounded shadow-lg flex flex-col text-sm">
-                        {filteredSchemeMaster.map((item) => (
-                          <Link
-                            key={item.path}
-                            to={item.path}
-                            className="px-4 py-2 hover:bg-gray-100"
-                            onClick={() => {
-                              setOpenMenu(null);
-                              setOpenMasterSubMenu(null);
-                            }}
-                          >
-                            {item.name}
-                          </Link>
-                        ))}
-                      </div>
-                    )}
-                  </div>
-                )}
-
-                {/* Employee Profile */}
-                {canSeeEmployeeProfile && (
-                  <div className="relative">
-                    <button
-                      className="w-full text-left px-4 py-2 hover:bg-gray-100 flex justify-between items-center"
-                      onClick={() => toggleMasterSubMenu("employee")}
-                    >
-                      Employee Profile
-                      {openMasterSubMenu === "employee" ? (
-                        <FiChevronDown />
-                      ) : (
-                        <FiChevronRight />
-                      )}
-                    </button>
-
-                    {openMasterSubMenu === "employee" && (
-                      <div className="absolute top-0 left-full ml-1 w-[200px] bg-white text-black rounded shadow-lg flex flex-col text-sm">
-                        {filteredEmployeeProfile.map((item) => (
-                          <Link
-                            key={item.path}
-                            to={item.path}
-                            className="px-4 py-2 hover:bg-gray-100"
-                            onClick={() => {
-                              setOpenMenu(null);
-                              setOpenMasterSubMenu(null);
-                            }}
-                          >
-                            {item.name}
-                          </Link>
-                        ))}
-                      </div>
-                    )}
-                  </div>
-                )}
-              </div>
-            )}
+          {/* Left side - Logo */}
+          <div className="flex items-center gap-3">
+            <Link to="/">
+              <img
+                src="/logo.svg"
+                alt="Logo"
+                className="w-12 h-12 object-contain cursor-pointer"
+              />
+            </Link>
           </div>
 
-          {/* ================== TRANSACTIONS ================== */}
-          <div className="relative">
-            {canSeeScheme && (
-              <button
-                className="hover:underline text-[20px] flex items-center gap-1"
-                onClick={() => {
-                  toggleMenu("transactions");
-                  setOpenTransactionSubMenu(null);
-                }}
-              >
-                Transactions
-                {openMenu === "transactions" ? (
-                  <FiChevronUp />
-                ) : (
-                  <FiChevronDown />
-                )}
-              </button>
-            )}
+          {/* Center Menu */}
+          <div
+            className="absolute left-1/2 transform -translate-x-1/2 flex gap-8"
+          >
+            {/* ================== MASTERS ================== */}
+            <div className="relative">
+              {canSeeMaster && (
+                <button
+                  className="hover:underline text-[20px] flex items-center gap-1"
+                  onClick={() => {
+                    toggleMenu("masters");
+                    setOpenMasterSubMenu(null);
+                  }}
+                >
+                  Masters
+                  {openMenu === "masters" ? <FiChevronUp /> : <FiChevronDown />}
+                </button>
+              )}
 
-            {openMenu === "transactions" && canSeeTransactions && (
-              <div className="absolute top-full left-0 mt-2 bg-white text-black rounded shadow-lg w-[200px] z-50">
-                {/* Loan */}
-                {canSeeLoan && (
-                  <div className="relative">
-                    <button
-                      className="w-full text-left px-4 py-2 hover:bg-gray-100 flex justify-between items-center"
-                      onClick={() => toggleTransactionSubMenu("loan")}
-                    >
-                      Loan
-                      {openTransactionSubMenu === "loan" ? (
-                        <FiChevronDown />
-                      ) : (
-                        <FiChevronRight />
+              {openMenu === "masters" && (
+                <div className="absolute top-full left-0 mt-2 bg-white text-black rounded shadow-lg w-[200px] z-50">
+                  {/* Master Profile */}
+                  {canSeeMasterProfile && (
+                    <div className="relative">
+                      <button
+                        className="w-full text-left px-4 py-2 hover:bg-gray-100 flex justify-between items-center"
+                        onClick={() => toggleMasterSubMenu("profile")}
+                      >
+                        Master Profile
+                        {openMasterSubMenu === "profile" ? (
+                          <FiChevronDown />
+                        ) : (
+                          <FiChevronRight />
+                        )}
+                      </button>
+
+                      {openMasterSubMenu === "profile" && (
+                        <div className="absolute top-0 left-full ml-1 w-[200px] bg-white text-black rounded shadow-lg flex flex-col text-sm">
+                          {filteredMasterProfile.map((item) => (
+                            <Link
+                              key={item.path}
+                              to={item.path}
+                              className="px-4 py-2 hover:bg-gray-100"
+                              onClick={() => {
+                                setOpenMenu(null);
+                                setOpenMasterSubMenu(null);
+                              }}
+                            >
+                              {item.name}
+                            </Link>
+                          ))}
+                        </div>
                       )}
-                    </button>
+                    </div>
+                  )}
 
-                    {openTransactionSubMenu === "loan" && (
-                      <div className="absolute top-0 left-full ml-1 w-[200px] bg-white text-black rounded shadow-lg flex flex-col text-sm">
-                        {filteredLoan.map((item) => (
-                          <Link
-                            key={item.path}
-                            to={item.path}
-                            className="px-4 py-2 hover:bg-gray-100"
-                            onClick={() => {
-                              setOpenMenu(null);
-                              setOpenTransactionSubMenu(null);
-                            }}
-                          >
-                            {item.name}
-                          </Link>
-                        ))}
-                      </div>
-                    )}
-                  </div>
-                )}
+                  {/* Scheme Master */}
+                  {canSeeSchemeMaster && (
+                    <div className="relative">
+                      <button
+                        className="w-full text-left px-4 py-2 hover:bg-gray-100 flex justify-between items-center"
+                        onClick={() => toggleMasterSubMenu("scheme")}
+                      >
+                        Scheme Master
+                        {openMasterSubMenu === "scheme" ? (
+                          <FiChevronDown />
+                        ) : (
+                          <FiChevronRight />
+                        )}
+                      </button>
 
-                {/* Customer Profile */}
-                {canSeeCustomerProfile && (
+                      {openMasterSubMenu === "scheme" && (
+                        <div className="absolute top-0 left-full ml-1 w-[200px] bg-white text-black rounded shadow-lg flex flex-col text-sm">
+                          {filteredSchemeMaster.map((item) => (
+                            <Link
+                              key={item.path}
+                              to={item.path}
+                              className="px-4 py-2 hover:bg-gray-100"
+                              onClick={() => {
+                                setOpenMenu(null);
+                                setOpenMasterSubMenu(null);
+                              }}
+                            >
+                              {item.name}
+                            </Link>
+                          ))}
+                        </div>
+                      )}
+                    </div>
+                  )}
+
+                  {/* Employee Profile */}
+                  {canSeeEmployeeProfile && (
+                    <div className="relative">
+                      <button
+                        className="w-full text-left px-4 py-2 hover:bg-gray-100 flex justify-between items-center"
+                        onClick={() => toggleMasterSubMenu("employee")}
+                      >
+                        Employee Profile
+                        {openMasterSubMenu === "employee" ? (
+                          <FiChevronDown />
+                        ) : (
+                          <FiChevronRight />
+                        )}
+                      </button>
+
+                      {openMasterSubMenu === "employee" && (
+                        <div className="absolute top-0 left-full ml-1 w-[200px] bg-white text-black rounded shadow-lg flex flex-col text-sm">
+                          {filteredEmployeeProfile.map((item) => (
+                            <Link
+                              key={item.path}
+                              to={item.path}
+                              className="px-4 py-2 hover:bg-gray-100"
+                              onClick={() => {
+                                setOpenMenu(null);
+                                setOpenMasterSubMenu(null);
+                              }}
+                            >
+                              {item.name}
+                            </Link>
+                          ))}
+                        </div>
+                      )}
+                    </div>
+                  )}
+                </div>
+              )}
+            </div>
+
+            {/* ================== TRANSACTIONS ================== */}
+            <div className="relative">
+              {canSeeScheme && (
+                <button
+                  className="hover:underline text-[20px] flex items-center gap-1"
+                  onClick={() => {
+                    toggleMenu("transactions");
+                    setOpenTransactionSubMenu(null);
+                  }}
+                >
+                  Transactions
+                  {openMenu === "transactions" ? (
+                    <FiChevronUp />
+                  ) : (
+                    <FiChevronDown />
+                  )}
+                </button>
+              )}
+
+              {openMenu === "transactions" && canSeeTransactions && (
+                <div className="absolute top-full left-0 mt-2 bg-white text-black rounded shadow-lg w-[200px] z-50">
+                  {/* Loan */}
+                  {canSeeLoan && (
+                    <div className="relative">
+                      <button
+                        className="w-full text-left px-4 py-2 hover:bg-gray-100 flex justify-between items-center"
+                        onClick={() => toggleTransactionSubMenu("loan")}
+                      >
+                        Loan
+                        {openTransactionSubMenu === "loan" ? (
+                          <FiChevronDown />
+                        ) : (
+                          <FiChevronRight />
+                        )}
+                      </button>
+
+                      {openTransactionSubMenu === "loan" && (
+                        <div className="absolute top-0 left-full ml-1 w-[200px] bg-white text-black rounded shadow-lg flex flex-col text-sm">
+                          {filteredLoan.map((item) => (
+                            <Link
+                              key={item.path}
+                              to={item.path}
+                              className="px-4 py-2 hover:bg-gray-100"
+                              onClick={() => {
+                                setOpenMenu(null);
+                                setOpenTransactionSubMenu(null);
+                              }}
+                            >
+                              {item.name}
+                            </Link>
+                          ))}
+                        </div>
+                      )}
+                    </div>
+                  )}
+
+                  {/* Customer Profile */}
+                  {canSeeCustomerProfile && (
+                    <Link
+                      to={customerProfileItem.path}
+                      className="block px-4 py-2 hover:bg-gray-100"
+                      onClick={() => {
+                        setOpenMenu(null);
+                        setOpenTransactionSubMenu(null);
+                      }}
+                    >
+                      Customer Profile
+                    </Link>
+                  )}
+
+                  {/* Accounting */}
+                  {canSeeLoan && (
+                    <div className="relative">
+                      <button
+                        className="w-full text-left px-4 py-2 hover:bg-gray-100 flex justify-between items-center"
+                        onClick={() => toggleTransactionSubMenu("accounting")}
+                      >
+                        Accounting
+                        {openTransactionSubMenu === "accounting" ? (
+                          <FiChevronDown />
+                        ) : (
+                          <FiChevronRight />
+                        )}
+                      </button>
+
+                      {openTransactionSubMenu === "accounting" && (
+                        <div className="absolute top-0 left-full ml-1 w-[200px] bg-white text-black rounded shadow-lg flex flex-col text-sm">
+                          {filteredAccounting.map((item) => (
+                            <Link
+                              key={item.path}
+                              to={item.path}
+                              className="px-4 py-2 hover:bg-gray-100"
+                              onClick={() => {
+                                setOpenMenu(null);
+                                setOpenTransactionSubMenu(null);
+                              }}
+                            >
+                              {item.name}
+                            </Link>
+                          ))}
+                        </div>
+                      )}
+                    </div>
+                  )}
+
+                  {/* Auction */}
+                  {canSeeAuction && (
+                    <div className="relative">
+                      <button
+                        className="w-full text-left px-4 py-2 hover:bg-gray-100 flex justify-between items-center"
+                        onClick={() => toggleTransactionSubMenu("auction")}
+                      >
+                        Auction
+                        {openTransactionSubMenu === "auction" ? (
+                          <FiChevronDown />
+                        ) : (
+                          <FiChevronRight />
+                        )}
+                      </button>
+
+                      {openTransactionSubMenu === "auction" && (
+                        <div className="absolute top-0 left-full ml-1 w-[200px] bg-white text-black rounded shadow-lg flex flex-col text-sm">
+                          {filteredAuction.map((item) => (
+                            <Link
+                              key={item.path}
+                              to={item.path}
+                              className="px-4 py-2 hover:bg-gray-100"
+                              onClick={() => {
+                                setOpenMenu(null);
+                                setOpenTransactionSubMenu(null);
+                              }}
+                            >
+                              {item.name}
+                            </Link>
+                          ))}
+                        </div>
+                      )}
+                    </div>
+                  )}
+
+                  {/* Cash Balance */}
                   <Link
-                    to={customerProfileItem.path}
+                    to="/Cash_Balance"
                     className="block px-4 py-2 hover:bg-gray-100"
                     onClick={() => {
                       setOpenMenu(null);
                       setOpenTransactionSubMenu(null);
                     }}
                   >
-                    Customer Profile
+                    Cash Balance
                   </Link>
-                )}
+                </div>
+              )}
+            </div>
 
-                {/* Accounting */}
-                {canSeeLoan && (
-                  <div className="relative">
-                    <button
-                      className="w-full text-left px-4 py-2 hover:bg-gray-100 flex justify-between items-center"
-                      onClick={() => toggleTransactionSubMenu("accounting")}
+            {/* ================== OTHER BUTTONS ================== */}
+
+            <div className="relative">
+              <button
+                className="hover:underline text-[20px] flex items-center gap-1"
+                onClick={() => toggleMenu("misc")}
+              >
+                Miscellaneous
+                {openMenu === "misc" ? <FiChevronUp /> : <FiChevronDown />}
+              </button>
+
+              {openMenu === "misc" && (
+                <div className="absolute top-full left-0 mt-2 w-[200px] bg-white text-black rounded shadow-lg z-50">
+                  {filteredMiscellaneousrasaction.map((item) => (
+                    <Link
+                      key={item.path}
+                      to={item.path}
+                      className="block px-4 py-2 text-sm hover:bg-gray-100"
+                      onClick={() => setOpenMenu(null)}
                     >
-                      Accounting
-                      {openTransactionSubMenu === "accounting" ? (
-                        <FiChevronDown />
-                      ) : (
-                        <FiChevronRight />
-                      )}
-                    </button>
+                      {item.name}
+                    </Link>
+                  ))}
+                </div>
+              )}
+            </div>
 
-                    {openTransactionSubMenu === "accounting" && (
-                      <div className="absolute top-0 left-full ml-1 w-[200px] bg-white text-black rounded shadow-lg flex flex-col text-sm">
-                        {filteredAccounting.map((item) => (
-                          <Link
-                            key={item.path}
-                            to={item.path}
-                            className="px-4 py-2 hover:bg-gray-100"
-                            onClick={() => {
-                              setOpenMenu(null);
-                              setOpenTransactionSubMenu(null);
-                            }}
-                          >
-                            {item.name}
-                          </Link>
-                        ))}
-                      </div>
-                    )}
-                  </div>
-                )}
+            {/* ================== REPORTS ================== */}
+            <div className="relative">
+              <button
+                className="hover:underline text-[20px] flex items-center gap-1"
+                onClick={() => {
+                  toggleMenu("reports");
+                  setOpenReportSubMenu(null); // reset submenu when main closes
+                }}
+              >
+                Reports
+                {openMenu === "reports" ? <FiChevronUp /> : <FiChevronDown />}
+              </button>
 
-                {/* Auction */}
-                {canSeeAuction && (
-                  <div className="relative">
-                    <button
-                      className="w-full text-left px-4 py-2 hover:bg-gray-100 flex justify-between items-center"
-                      onClick={() => toggleTransactionSubMenu("auction")}
-                    >
-                      Auction
-                      {openTransactionSubMenu === "auction" ? (
-                        <FiChevronDown />
-                      ) : (
-                        <FiChevronRight />
-                      )}
-                    </button>
-
-                    {openTransactionSubMenu === "auction" && (
-                      <div className="absolute top-0 left-full ml-1 w-[200px] bg-white text-black rounded shadow-lg flex flex-col text-sm">
-                        {filteredAuction.map((item) => (
-                          <Link
-                            key={item.path}
-                            to={item.path}
-                            className="px-4 py-2 hover:bg-gray-100"
-                            onClick={() => {
-                              setOpenMenu(null);
-                              setOpenTransactionSubMenu(null);
-                            }}
-                          >
-                            {item.name}
-                          </Link>
-                        ))}
-                      </div>
-                    )}
-                  </div>
-                )}
-
-                {/* Cash Balance */}
-                <Link
-                  to="/Cash_Balance"
-                  className="block px-4 py-2 hover:bg-gray-100"
-                  onClick={() => {
-                    setOpenMenu(null);
-                    setOpenTransactionSubMenu(null);
-                  }}
-                >
-                  Cash Balance
-                </Link>
-              </div>
-            )}
-          </div>
-
-          {/* ================== OTHER BUTTONS ================== */}
-
-          <div className="relative">
-            <button
-              className="hover:underline text-[20px] flex items-center gap-1"
-              onClick={() => toggleMenu("misc")}
-            >
-              Miscellaneous
-              {openMenu === "misc" ? <FiChevronUp /> : <FiChevronDown />}
-            </button>
-
-            {openMenu === "misc" && (
-              <div className="absolute top-full left-0 mt-2 w-[200px] bg-white text-black rounded shadow-lg z-50">
-                {filteredMiscellaneousrasaction.map((item) => (
-                  <Link
-                    key={item.path}
-                    to={item.path}
-                    className="block px-4 py-2 text-sm hover:bg-gray-100"
-                    onClick={() => setOpenMenu(null)}
-                  >
-                    {item.name}
-                  </Link>
-                ))}
-              </div>
-            )}
-          </div>
-
-          {/* ================== REPORTS ================== */}
-          <div className="relative">
-            <button
-              className="hover:underline text-[20px] flex items-center gap-1"
-              onClick={() => {
-                toggleMenu("reports");
-                setOpenReportSubMenu(null); // reset submenu when main closes
-              }}
-            >
-              Reports
-              {openMenu === "reports" ? <FiChevronUp /> : <FiChevronDown />}
-            </button>
-
-            {openMenu === "reports" && (
-              <div className="absolute top-full left-0 mt-2 bg-white text-black rounded shadow-lg w-[200px] z-50">
-                {/* Transaction Reports */}
-                {canSeeMasterProfile && (
-                  <div className="relative">
-                    <button
-                      className="w-full text-left px-4 py-2 hover:bg-gray-100 flex justify-between items-center"
-                      onClick={() => toggleReportSubMenu("transaction")}
-                    >
-                      Transaction Reports
-                      {openReportSubMenu === "transaction" ? (
-                        <FiChevronDown />
-                      ) : (
-                        <FiChevronRight />
-                      )}
-                    </button>
-
-                    {openReportSubMenu === "transaction" && (
-                      <div className="absolute top-0 left-full ml-1 w-[200px] bg-white text-black rounded shadow-lg flex flex-col text-sm">
-                        {filteredReporttrasaction.map((item) => (
-                          <Link
-                            key={item.path}
-                            to={item.path}
-                            className="px-4 py-2 hover:bg-gray-100"
-                            onClick={() => {
-                              setOpenMenu(null);
-                              setOpenReportSubMenu(null);
-                            }}
-                          >
-                            {item.name}
-                          </Link>
-                        ))}
-                      </div>
-                    )}
-                  </div>
-                )}
-
-                {/* Cash/Bank/Financial */}
-                {canSeeSchemeMaster && (
-                  <div className="relative">
-                    <button
-                      className="w-full text-left px-4 py-2 hover:bg-gray-100 flex justify-between items-center"
-                      onClick={() => toggleReportSubMenu("financial")}
-                    >
-                      Cash/Bank/Financial Report
-                      {openReportSubMenu === "financial" ? (
-                        <FiChevronDown />
-                      ) : (
-                        <FiChevronRight />
-                      )}
-                    </button>
-
-                    {openReportSubMenu === "financial" && (
-                      <div className="absolute top-0 left-full ml-1 w-[200px] bg-white text-black rounded shadow-lg flex flex-col text-sm">
-                        {cashfinancialreport.map((item) => (
-                          <Link
-                            key={item.path}
-                            to={item.path}
-                            className="px-4 py-2 hover:bg-gray-100"
-                            onClick={() => {
-                              setOpenMenu(null);
-                              setOpenReportSubMenu(null);
-                            }}
-                          >
-                            {item.name}
-                          </Link>
-                        ))}
-                      </div>
-                    )}
-                  </div>
-                )}
-
-                {/* MIS Report */}
-                {canSeeSchemeMaster && (
-                  <div className="relative">
-                    <button
-                      className="w-full text-left px-4 py-2 hover:bg-gray-100 flex justify-between items-center"
-                      onClick={() => toggleReportSubMenu("mis")}
-                    >
-                      MIS Report
-                      {openReportSubMenu === "mis" ? (
-                        <FiChevronDown />
-                      ) : (
-                        <FiChevronRight />
-                      )}
-                    </button>
-
-                    {openReportSubMenu === "mis" && (
-                      <div className="absolute top-0 left-full ml-1 w-[200px] bg-white text-black rounded shadow-lg flex flex-col text-sm">
-                        {misreportsection.map((item) => (
-                          <Link
-                            key={item.path}
-                            to={item.path}
-                            className="px-4 py-2 hover:bg-gray-100"
-                            onClick={() => {
-                              setOpenMenu(null);
-                              setOpenReportSubMenu(null);
-                            }}
-                          >
-                            {item.name}
-                          </Link>
-                        ))}
-                      </div>
-                    )}
-                  </div>
-                )}
-
-                {/* Direct Links */}
-                {[
-                  { name: "Loan Follow Up", path: "/loan_follow_up" },
-                  { name: "Customer History", path: "/Customer_history" },
-                  {
-                    name: "PaymentGetWay History",
-                    path: "/paymentgetway_history",
-                  },
-                  // {
-                  //   name: "Employee PayRoll Report",
-                  //   path: "/Employee-payroll",
-                  // },
-                ].map((item) => (
-                  <button
-                    key={item.path}
-                    className="w-full text-left px-4 py-2 hover:bg-gray-100"
-                    onClick={() => {
-                      navigate(item.path);
-                      setOpenMenu(null);
-                      setOpenReportSubMenu(null);
-                    }}
-                  >
-                    {item.name}
-                  </button>
-                ))}
-              </div>
-            )}
-          </div>
-
-          {/* ================== TOOLS/UTILITIES ================== */}
-          <div className="relative">
-            <button
-              className="hover:underline text-[20px] flex items-center gap-1"
-              onClick={() => {
-                toggleMenu("tools");
-                setOpenSubMenu(null); // reset submenu when main menu toggles
-              }}
-            >
-              Tools / Utilities
-              {openMenu === "tools" ? <FiChevronUp /> : <FiChevronDown />}
-            </button>
-
-            {openMenu === "tools" && (
-              <div className="absolute top-full left-0 mt-2 bg-white text-black rounded shadow-lg w-[220px] z-50">
-                {/* SETTINGS */}
-                <div className="relative">
-                  <button
-                    className="w-full text-left px-4 py-2 hover:bg-gray-100 flex justify-between items-center"
-                    onClick={() => toggleSubMenu("settings")}
-                  >
-                    <span>Settings</span>
-                    {openSubMenu === "settings" ? (
-                      <FiChevronDown />
-                    ) : (
-                      <FiChevronRight />
-                    )}
-                  </button>
-
-                  {openSubMenu === "settings" && (
-                    <div className="absolute top-0 left-full ml-1 w-[200px] bg-white text-black rounded shadow-lg flex flex-col z-50">
-                      <Link
-                        to="/Gress-Period"
-                        className="px-4 py-2 hover:bg-gray-100 text-sm"
-                        onClick={() => {
-                          setOpenMenu(null);
-                          setOpenSubMenu(null);
-                        }}
+              {openMenu === "reports" && (
+                <div className="absolute top-full left-0 mt-2 bg-white text-black rounded shadow-lg w-[200px] z-50">
+                  {/* Transaction Reports */}
+                  {canSeeMasterProfile && (
+                    <div className="relative">
+                      <button
+                        className="w-full text-left px-4 py-2 hover:bg-gray-100 flex justify-between items-center"
+                        onClick={() => toggleReportSubMenu("transaction")}
                       >
-                        Grace Period
-                      </Link>
+                        Transaction Reports
+                        {openReportSubMenu === "transaction" ? (
+                          <FiChevronDown />
+                        ) : (
+                          <FiChevronRight />
+                        )}
+                      </button>
+
+                      {openReportSubMenu === "transaction" && (
+                        <div className="absolute top-0 left-full ml-1 w-[200px] bg-white text-black rounded shadow-lg flex flex-col text-sm">
+                          {filteredReporttrasaction.map((item) => (
+                            <Link
+                              key={item.path}
+                              to={item.path}
+                              className="px-4 py-2 hover:bg-gray-100"
+                              onClick={() => {
+                                setOpenMenu(null);
+                                setOpenReportSubMenu(null);
+                              }}
+                            >
+                              {item.name}
+                            </Link>
+                          ))}
+                        </div>
+                      )}
                     </div>
                   )}
+
+                  {/* Cash/Bank/Financial */}
+                  {canSeeSchemeMaster && (
+                    <div className="relative">
+                      <button
+                        className="w-full text-left px-4 py-2 hover:bg-gray-100 flex justify-between items-center"
+                        onClick={() => toggleReportSubMenu("financial")}
+                      >
+                        Cash/Bank/Financial Report
+                        {openReportSubMenu === "financial" ? (
+                          <FiChevronDown />
+                        ) : (
+                          <FiChevronRight />
+                        )}
+                      </button>
+
+                      {openReportSubMenu === "financial" && (
+                        <div className="absolute top-0 left-full ml-1 w-[200px] bg-white text-black rounded shadow-lg flex flex-col text-sm">
+                          {cashfinancialreport.map((item) => (
+                            <Link
+                              key={item.path}
+                              to={item.path}
+                              className="px-4 py-2 hover:bg-gray-100"
+                              onClick={() => {
+                                setOpenMenu(null);
+                                setOpenReportSubMenu(null);
+                              }}
+                            >
+                              {item.name}
+                            </Link>
+                          ))}
+                        </div>
+                      )}
+                    </div>
+                  )}
+
+                  {/* MIS Report */}
+                  {canSeeSchemeMaster && (
+                    <div className="relative">
+                      <button
+                        className="w-full text-left px-4 py-2 hover:bg-gray-100 flex justify-between items-center"
+                        onClick={() => toggleReportSubMenu("mis")}
+                      >
+                        MIS Report
+                        {openReportSubMenu === "mis" ? (
+                          <FiChevronDown />
+                        ) : (
+                          <FiChevronRight />
+                        )}
+                      </button>
+
+                      {openReportSubMenu === "mis" && (
+                        <div className="absolute top-0 left-full ml-1 w-[200px] bg-white text-black rounded shadow-lg flex flex-col text-sm">
+                          {misreportsection.map((item) => (
+                            <Link
+                              key={item.path}
+                              to={item.path}
+                              className="px-4 py-2 hover:bg-gray-100"
+                              onClick={() => {
+                                setOpenMenu(null);
+                                setOpenReportSubMenu(null);
+                              }}
+                            >
+                              {item.name}
+                            </Link>
+                          ))}
+                        </div>
+                      )}
+                    </div>
+                  )}
+
+                  {/* Direct Links */}
+                  {[
+                    { name: "Loan Follow Up", path: "/loan_follow_up" },
+                    { name: "Customer History", path: "/Customer_history" },
+                    {
+                      name: "PaymentGetWay History",
+                      path: "/paymentgetway_history",
+                    },
+                    // {
+                    //   name: "Employee PayRoll Report",
+                    //   path: "/Employee-payroll",
+                    // },
+                  ].map((item) => (
+                    <button
+                      key={item.path}
+                      className="w-full text-left px-4 py-2 hover:bg-gray-100"
+                      onClick={() => {
+                        navigate(item.path);
+                        setOpenMenu(null);
+                        setOpenReportSubMenu(null);
+                      }}
+                    >
+                      {item.name}
+                    </button>
+                  ))}
                 </div>
+              )}
+            </div>
 
-                {/* SYSTEM TOOLS */}
-                <div className="relative">
-                  <button
-                    className="w-full text-left px-4 py-2 hover:bg-gray-100 flex justify-between items-center"
-                    onClick={() => toggleSubMenu("system")}
-                  >
-                    <span>System tools</span>
-                    {openSubMenu === "system" ? (
-                      <FiChevronDown />
-                    ) : (
-                      <FiChevronRight />
-                    )}
-                  </button>
+            {/* ================== TOOLS/UTILITIES ================== */}
+            <div className="relative">
+              <button
+                className="hover:underline text-[20px] flex items-center gap-1"
+                onClick={() => {
+                  toggleMenu("tools");
+                  setOpenSubMenu(null); // reset submenu when main menu toggles
+                }}
+              >
+                Tools / Utilities
+                {openMenu === "tools" ? <FiChevronUp /> : <FiChevronDown />}
+              </button>
 
-                  {openSubMenu === "system" && (
-                    <div className="absolute top-0 left-full ml-1 w-[200px] bg-white text-black rounded shadow-lg flex flex-col z-50">
-                      {[
-                        { name: "SMS Config", path: "/SmsConfig/Create" },
-                        {
-                          name: "WhatsApp Config",
-                          path: "/WhatsApp-Configuration",
-                        },
-                        { name: "Backup utility", path: "/DBBackup" },
-                      ].map((item) => (
+              {openMenu === "tools" && (
+                <div className="absolute top-full left-0 mt-2 bg-white text-black rounded shadow-lg w-[220px] z-50">
+                  {/* SETTINGS */}
+                  <div className="relative">
+                    <button
+                      className="w-full text-left px-4 py-2 hover:bg-gray-100 flex justify-between items-center"
+                      onClick={() => toggleSubMenu("settings")}
+                    >
+                      <span>Settings</span>
+                      {openSubMenu === "settings" ? (
+                        <FiChevronDown />
+                      ) : (
+                        <FiChevronRight />
+                      )}
+                    </button>
+
+                    {openSubMenu === "settings" && (
+                      <div className="absolute top-0 left-full ml-1 w-[200px] bg-white text-black rounded shadow-lg flex flex-col z-50">
                         <Link
-                          key={item.path}
-                          to={item.path}
+                          to="/Gress-Period"
                           className="px-4 py-2 hover:bg-gray-100 text-sm"
                           onClick={() => {
                             setOpenMenu(null);
                             setOpenSubMenu(null);
                           }}
                         >
-                          {item.name}
+                          Grace Period
                         </Link>
-                      ))}
+                      </div>
+                    )}
+                  </div>
+
+                  {/* SYSTEM TOOLS */}
+                  <div className="relative">
+                    <button
+                      className="w-full text-left px-4 py-2 hover:bg-gray-100 flex justify-between items-center"
+                      onClick={() => toggleSubMenu("system")}
+                    >
+                      <span>System tools</span>
+                      {openSubMenu === "system" ? (
+                        <FiChevronDown />
+                      ) : (
+                        <FiChevronRight />
+                      )}
+                    </button>
+
+                    {openSubMenu === "system" && (
+                      <div className="absolute top-0 left-full ml-1 w-[200px] bg-white text-black rounded shadow-lg flex flex-col z-50">
+                        {[
+                          { name: "SMS Config", path: "/SmsConfig/Create" },
+                          {
+                            name: "WhatsApp Config",
+                            path: "/WhatsApp-Configuration",
+                          },
+                          { name: "Backup utility", path: "/DBBackup" },
+                        ].map((item) => (
+                          <Link
+                            key={item.path}
+                            to={item.path}
+                            className="px-4 py-2 hover:bg-gray-100 text-sm"
+                            onClick={() => {
+                              setOpenMenu(null);
+                              setOpenSubMenu(null);
+                            }}
+                          >
+                            {item.name}
+                          </Link>
+                        ))}
+                      </div>
+                    )}
+                  </div>
+
+                  {/* BANK DETAILS */}
+                  <Link
+                    to="/Bank_Details"
+                    className="px-4 py-2 hover:bg-gray-100 text-sm block"
+                    onClick={() => {
+                      setOpenMenu(null);
+                      setOpenSubMenu(null);
+                    }}
+                  >
+                    Bank Details
+                  </Link>
+                </div>
+              )}
+            </div>
+          </div>
+
+          {/* Right side - Buttons */}
+          <div className="flex gap-3">
+            <button
+              onClick={() => setIsBranchModelOpen(true)}
+              className="w-[150px] h-[40px] flex items-center gap-2 justify-center bg-white rounded-[4.8px] text-[#0b2c69] font-medium border border-gray-300"
+            >
+              {selectedBranch}
+              <TfiReload className="text-lg size-5" />
+            </button>
+            <button
+              onClick={handleLogout}
+              className="w-[50px] h-[36px] flex items-center justify-center bg-white rounded-[4.8px] text-[#0b2c69] font-medium p-2"
+            >
+              <span className="flex items-center gap-1 text-xl font-semibold">
+                <FiLogOut className="text-xl" />
+              </span>
+            </button>
+          </div>
+        </div>
+      </div>
+
+      {/* Mobile/Tablet Navbar */}
+      <div className="lg:hidden bg-[#0A2478] text-white flex items-center justify-between p-4">
+        {/* Logo */}
+        <Link to="/">
+          <img
+            src="/logo.svg"
+            alt="Logo"
+            className="w-10 h-10 object-contain cursor-pointer"
+          />
+        </Link>
+
+        {/* Right section - Branch selector and hamburger */}
+        <div className="flex items-center gap-3">
+          <button
+            onClick={() => setIsBranchModelOpen(true)}
+            className="hidden sm:flex h-[36px] items-center gap-2 bg-white rounded-[4.8px] text-[#0b2c69] font-medium px-3 text-sm"
+          >
+            {selectedBranch}
+            <TfiReload className="text-lg size-4" />
+          </button>
+          <button
+            onClick={() => setIsSidebarOpen(!isSidebarOpen)}
+            className="text-white text-2xl p-2 hover:bg-[#1a3a8a] rounded"
+          >
+            {isSidebarOpen ? <FiX /> : <FiMenu />}
+          </button>
+        </div>
+      </div>
+
+      {/* Mobile Sidebar */}
+      {isSidebarOpen && (
+        <div className="lg:hidden fixed top-0 left-0 w-full h-full z-40">
+          {/* Backdrop */}
+          <div
+            className="absolute inset-0 bg-black/50"
+            onClick={() => setIsSidebarOpen(false)}
+          />
+
+          {/* Sidebar Panel */}
+          <div
+            ref={dropdownRef}
+            className="absolute left-0 top-0 w-64 h-full bg-[#0A2478] text-white overflow-y-auto shadow-lg"
+          >
+            {/* Close Button */}
+            <div className="flex items-center justify-between p-4 border-b border-[#1a3a8a]">
+              {/* <h2 className="text-xl font-bold">Menu</h2> */}
+              <div className="flex items-center gap-3">
+                <Link to="/">
+                  <img
+                    src="/logo.svg"
+                    alt="Logo"
+                    className="w-12 h-12 object-contain cursor-pointer"
+                  />
+                </Link>
+              </div>
+              <button
+                onClick={() => setIsSidebarOpen(false)}
+                className="text-white text-2xl"
+              >
+                <FiX />
+              </button>
+            </div>
+
+            {/* Sidebar Content */}
+            <div className="p-4 space-y-2">
+              {/* Masters */}
+              {canSeeMaster && (
+                <div className="border-b border-[#1a3a8a]">
+                  <button
+                    className="w-full text-left px-4 py-2 hover:bg-[#1a3a8a] rounded flex justify-between items-center"
+                    onClick={() => {
+                      toggleMenu("masters");
+                      setOpenMasterSubMenu(null);
+                    }}
+                  >
+                    Masters
+                    {openMenu === "masters" ? (
+                      <FiChevronUp />
+                    ) : (
+                      <FiChevronDown />
+                    )}
+                  </button>
+
+                  {openMenu === "masters" && (
+                    <div className="pl-4 space-y-1 bg-[#1a3a8a] rounded mt-1">
+                      {/* Master Profile */}
+                      {canSeeMasterProfile && (
+                        <div>
+                          <button
+                            className="w-full text-left px-4 py-2 hover:bg-[#2d5aa0] rounded flex justify-between items-center"
+                            onClick={() => toggleMasterSubMenu("profile")}
+                          >
+                            Master Profile
+                            {openMasterSubMenu === "profile" ? (
+                              <FiChevronUp />
+                            ) : (
+                              <FiChevronDown />
+                            )}
+                          </button>
+
+                          {openMasterSubMenu === "profile" && (
+                            <div className="pl-4 space-y-1 bg-[#2d5aa0] rounded mt-1">
+                              {filteredMasterProfile.map((item) => (
+                                <Link
+                                  key={item.path}
+                                  to={item.path}
+                                  className="block px-4 py-2 hover:bg-[#3a6fb0] rounded text-sm"
+                                  onClick={() => setIsSidebarOpen(false)}
+                                >
+                                  {item.name}
+                                </Link>
+                              ))}
+                            </div>
+                          )}
+                        </div>
+                      )}
+
+                      {/* Scheme Master */}
+                      {canSeeSchemeMaster && (
+                        <div>
+                          <button
+                            className="w-full text-left px-4 py-2 hover:bg-[#2d5aa0] rounded flex justify-between items-center"
+                            onClick={() => toggleMasterSubMenu("scheme")}
+                          >
+                            Scheme Master
+                            {openMasterSubMenu === "scheme" ? (
+                              <FiChevronUp />
+                            ) : (
+                              <FiChevronDown />
+                            )}
+                          </button>
+
+                          {openMasterSubMenu === "scheme" && (
+                            <div className="pl-4 space-y-1 bg-[#2d5aa0] rounded mt-1">
+                              {filteredSchemeMaster.map((item) => (
+                                <Link
+                                  key={item.path}
+                                  to={item.path}
+                                  className="block px-4 py-2 hover:bg-[#3a6fb0] rounded text-sm"
+                                  onClick={() => setIsSidebarOpen(false)}
+                                >
+                                  {item.name}
+                                </Link>
+                              ))}
+                            </div>
+                          )}
+                        </div>
+                      )}
+
+                      {/* Employee Profile */}
+                      {canSeeEmployeeProfile && (
+                        <div>
+                          <button
+                            className="w-full text-left px-4 py-2 hover:bg-[#2d5aa0] rounded flex justify-between items-center"
+                            onClick={() => toggleMasterSubMenu("employee")}
+                          >
+                            Employee Profile
+                            {openMasterSubMenu === "employee" ? (
+                              <FiChevronUp />
+                            ) : (
+                              <FiChevronDown />
+                            )}
+                          </button>
+
+                          {openMasterSubMenu === "employee" && (
+                            <div className="pl-4 space-y-1 bg-[#2d5aa0] rounded mt-1">
+                              {filteredEmployeeProfile.map((item) => (
+                                <Link
+                                  key={item.path}
+                                  to={item.path}
+                                  className="block px-4 py-2 hover:bg-[#3a6fb0] rounded text-sm"
+                                  onClick={() => setIsSidebarOpen(false)}
+                                >
+                                  {item.name}
+                                </Link>
+                              ))}
+                            </div>
+                          )}
+                        </div>
+                      )}
                     </div>
                   )}
                 </div>
+              )}
 
-                {/* BANK DETAILS */}
-                <Link
-                  to="/Bank_Details"
-                  className="px-4 py-2 hover:bg-gray-100 text-sm block"
+              {/* Transactions */}
+              {canSeeScheme && (
+                <div className="border-b border-[#1a3a8a]">
+                  <button
+                    className="w-full text-left px-4 py-2 hover:bg-[#1a3a8a] rounded flex justify-between items-center"
+                    onClick={() => {
+                      toggleMenu("transactions");
+                      setOpenTransactionSubMenu(null);
+                    }}
+                  >
+                    Transactions
+                    {openMenu === "transactions" ? (
+                      <FiChevronUp />
+                    ) : (
+                      <FiChevronDown />
+                    )}
+                  </button>
+
+                  {openMenu === "transactions" && canSeeTransactions && (
+                    <div className="pl-4 space-y-1 bg-[#1a3a8a] rounded mt-1">
+                      {/* Loan */}
+                      {canSeeLoan && (
+                        <div>
+                          <button
+                            className="w-full text-left px-4 py-2 hover:bg-[#2d5aa0] rounded flex justify-between items-center"
+                            onClick={() => toggleTransactionSubMenu("loan")}
+                          >
+                            Loan
+                            {openTransactionSubMenu === "loan" ? (
+                              <FiChevronUp />
+                            ) : (
+                              <FiChevronDown />
+                            )}
+                          </button>
+
+                          {openTransactionSubMenu === "loan" && (
+                            <div className="pl-4 space-y-1 bg-[#2d5aa0] rounded mt-1">
+                              {filteredLoan.map((item) => (
+                                <Link
+                                  key={item.path}
+                                  to={item.path}
+                                  className="block px-4 py-2 hover:bg-[#3a6fb0] rounded text-sm"
+                                  onClick={() => setIsSidebarOpen(false)}
+                                >
+                                  {item.name}
+                                </Link>
+                              ))}
+                            </div>
+                          )}
+                        </div>
+                      )}
+
+                      {/* Customer Profile */}
+                      {canSeeCustomerProfile && (
+                        <Link
+                          to={customerProfileItem.path}
+                          className="block px-4 py-2 hover:bg-[#2d5aa0] rounded text-sm"
+                          onClick={() => setIsSidebarOpen(false)}
+                        >
+                          Customer Profile
+                        </Link>
+                      )}
+
+                      {/* Accounting */}
+                      {canSeeLoan && (
+                        <div>
+                          <button
+                            className="w-full text-left px-4 py-2 hover:bg-[#2d5aa0] rounded flex justify-between items-center"
+                            onClick={() =>
+                              toggleTransactionSubMenu("accounting")
+                            }
+                          >
+                            Accounting
+                            {openTransactionSubMenu === "accounting" ? (
+                              <FiChevronUp />
+                            ) : (
+                              <FiChevronDown />
+                            )}
+                          </button>
+
+                          {openTransactionSubMenu === "accounting" && (
+                            <div className="pl-4 space-y-1 bg-[#2d5aa0] rounded mt-1">
+                              {filteredAccounting.map((item) => (
+                                <Link
+                                  key={item.path}
+                                  to={item.path}
+                                  className="block px-4 py-2 hover:bg-[#3a6fb0] rounded text-sm"
+                                  onClick={() => setIsSidebarOpen(false)}
+                                >
+                                  {item.name}
+                                </Link>
+                              ))}
+                            </div>
+                          )}
+                        </div>
+                      )}
+
+                      {/* Auction */}
+                      {canSeeAuction && (
+                        <div>
+                          <button
+                            className="w-full text-left px-4 py-2 hover:bg-[#2d5aa0] rounded flex justify-between items-center"
+                            onClick={() =>
+                              toggleTransactionSubMenu("auction")
+                            }
+                          >
+                            Auction
+                            {openTransactionSubMenu === "auction" ? (
+                              <FiChevronUp />
+                            ) : (
+                              <FiChevronDown />
+                            )}
+                          </button>
+
+                          {openTransactionSubMenu === "auction" && (
+                            <div className="pl-4 space-y-1 bg-[#2d5aa0] rounded mt-1">
+                              {filteredAuction.map((item) => (
+                                <Link
+                                  key={item.path}
+                                  to={item.path}
+                                  className="block px-4 py-2 hover:bg-[#3a6fb0] rounded text-sm"
+                                  onClick={() => setIsSidebarOpen(false)}
+                                >
+                                  {item.name}
+                                </Link>
+                              ))}
+                            </div>
+                          )}
+                        </div>
+                      )}
+
+                      {/* Cash Balance */}
+                      <Link
+                        to="/Cash_Balance"
+                        className="block px-4 py-2 hover:bg-[#2d5aa0] rounded text-sm"
+                        onClick={() => setIsSidebarOpen(false)}
+                      >
+                        Cash Balance
+                      </Link>
+                    </div>
+                  )}
+                </div>
+              )}
+
+              {/* Miscellaneous */}
+              <div className="border-b border-[#1a3a8a]">
+                <button
+                  className="w-full text-left px-4 py-2 hover:bg-[#1a3a8a] rounded flex justify-between items-center"
+                  onClick={() => toggleMenu("misc")}
+                >
+                  Miscellaneous
+                  {openMenu === "misc" ? <FiChevronUp /> : <FiChevronDown />}
+                </button>
+
+                {openMenu === "misc" && (
+                  <div className="pl-4 space-y-1 bg-[#1a3a8a] rounded mt-1">
+                    {filteredMiscellaneousrasaction.map((item) => (
+                      <Link
+                        key={item.path}
+                        to={item.path}
+                        className="block px-4 py-2 hover:bg-[#2d5aa0] rounded text-sm"
+                        onClick={() => setIsSidebarOpen(false)}
+                      >
+                        {item.name}
+                      </Link>
+                    ))}
+                  </div>
+                )}
+              </div>
+
+              {/* Reports */}
+              <div className="border-b border-[#1a3a8a]">
+                <button
+                  className="w-full text-left px-4 py-2 hover:bg-[#1a3a8a] rounded flex justify-between items-center"
                   onClick={() => {
-                    setOpenMenu(null);
+                    toggleMenu("reports");
+                    setOpenReportSubMenu(null);
+                  }}
+                >
+                  Reports
+                  {openMenu === "reports" ? <FiChevronUp /> : <FiChevronDown />}
+                </button>
+
+                {openMenu === "reports" && (
+                  <div className="pl-4 space-y-1 bg-[#1a3a8a] rounded mt-1">
+                    {/* Transaction Reports */}
+                    {canSeeMasterProfile && (
+                      <div>
+                        <button
+                          className="w-full text-left px-4 py-2 hover:bg-[#2d5aa0] rounded flex justify-between items-center"
+                          onClick={() =>
+                            toggleReportSubMenu("transaction")
+                          }
+                        >
+                          Transaction Reports
+                          {openReportSubMenu === "transaction" ? (
+                            <FiChevronUp />
+                          ) : (
+                            <FiChevronDown />
+                          )}
+                        </button>
+
+                        {openReportSubMenu === "transaction" && (
+                          <div className="pl-4 space-y-1 bg-[#2d5aa0] rounded mt-1">
+                            {filteredReporttrasaction.map((item) => (
+                              <Link
+                                key={item.path}
+                                to={item.path}
+                                className="block px-4 py-2 hover:bg-[#3a6fb0] rounded text-sm"
+                                onClick={() => setIsSidebarOpen(false)}
+                              >
+                                {item.name}
+                              </Link>
+                            ))}
+                          </div>
+                        )}
+                      </div>
+                    )}
+
+                    {/* Cash/Bank/Financial */}
+                    {canSeeSchemeMaster && (
+                      <div>
+                        <button
+                          className="w-full text-left px-4 py-2 hover:bg-[#2d5aa0] rounded flex justify-between items-center"
+                          onClick={() =>
+                            toggleReportSubMenu("financial")
+                          }
+                        >
+                          Cash/Bank/Financial Report
+                          {openReportSubMenu === "financial" ? (
+                            <FiChevronUp />
+                          ) : (
+                            <FiChevronDown />
+                          )}
+                        </button>
+
+                        {openReportSubMenu === "financial" && (
+                          <div className="pl-4 space-y-1 bg-[#2d5aa0] rounded mt-1">
+                            {cashfinancialreport.map((item) => (
+                              <Link
+                                key={item.path}
+                                to={item.path}
+                                className="block px-4 py-2 hover:bg-[#3a6fb0] rounded text-sm"
+                                onClick={() => setIsSidebarOpen(false)}
+                              >
+                                {item.name}
+                              </Link>
+                            ))}
+                          </div>
+                        )}
+                      </div>
+                    )}
+
+                    {/* MIS Report */}
+                    {canSeeSchemeMaster && (
+                      <div>
+                        <button
+                          className="w-full text-left px-4 py-2 hover:bg-[#2d5aa0] rounded flex justify-between items-center"
+                          onClick={() => toggleReportSubMenu("mis")}
+                        >
+                          MIS Report
+                          {openReportSubMenu === "mis" ? (
+                            <FiChevronUp />
+                          ) : (
+                            <FiChevronDown />
+                          )}
+                        </button>
+
+                        {openReportSubMenu === "mis" && (
+                          <div className="pl-4 space-y-1 bg-[#2d5aa0] rounded mt-1">
+                            {misreportsection.map((item) => (
+                              <Link
+                                key={item.path}
+                                to={item.path}
+                                className="block px-4 py-2 hover:bg-[#3a6fb0] rounded text-sm"
+                                onClick={() => setIsSidebarOpen(false)}
+                              >
+                                {item.name}
+                              </Link>
+                            ))}
+                          </div>
+                        )}
+                      </div>
+                    )}
+
+                    {/* Direct Links */}
+                    {[
+                      { name: "Loan Follow Up", path: "/loan_follow_up" },
+                      { name: "Customer History", path: "/Customer_history" },
+                      {
+                        name: "PaymentGetWay History",
+                        path: "/paymentgetway_history",
+                      },
+                    ].map((item) => (
+                      <button
+                        key={item.path}
+                        className="w-full text-left px-4 py-2 hover:bg-[#2d5aa0] rounded text-sm"
+                        onClick={() => {
+                          navigate(item.path);
+                          setIsSidebarOpen(false);
+                        }}
+                      >
+                        {item.name}
+                      </button>
+                    ))}
+                  </div>
+                )}
+              </div>
+
+              {/* Tools / Utilities */}
+              <div className="border-b border-[#1a3a8a]">
+                <button
+                  className="w-full text-left px-4 py-2 hover:bg-[#1a3a8a] rounded flex justify-between items-center"
+                  onClick={() => {
+                    toggleMenu("tools");
                     setOpenSubMenu(null);
                   }}
                 >
-                  Bank Details
-                </Link>
-              </div>
-            )}
-          </div>
-        </div>
-
-        {/* ===== Logout Button ===== */}
-        <div className="flex gap-3">
-          <button
-            onClick={() => setIsBranchModelOpen(true)}
-            className="w-[150px] h-[40px] flex items-center gap-2 justify-center bg-white rounded-[4.8px] text-[#0b2c69] font-medium border border-gray-300"
-          >
-            {selectedBranch}
-            <TfiReload className="text-lg size-5" />
-          </button>
-          <button
-            onClick={handleLogout}
-            className="w-[50px] h-[36px] flex items-center justify-center bg-white rounded-[4.8px] text-[#0b2c69] font-medium p-2"
-          >
-            <span className="flex items-center gap-1 text-xl font-semibold">
-              <FiLogOut className="text-xl" />
-            </span>
-          </button>
-        </div>
-        {/* modelforAdd */}
-        {isBranchModelOpen && (
-          <div className="fixed inset-0 z-50 flex items-center justify-center bg-[#0101017A] backdrop-blur-md">
-            <div className="bg-white w-[396px] rounded-lg shadow-xl h-auto p-6">
-              <h1 className="text-xl font-bold text-[#0A2478] mb-6 text-center">
-                Change Branch
-              </h1>
-
-              {/* Change Branch Dropdown */}
-              <div className="mb-4">
-                <label
-                  htmlFor="branch"
-                  className="block text-sm font-medium text-gray-700 mb-1"
-                >
-                  Select Branch
-                </label>
-                <select
-                  id="branch"
-                  name="branch"
-                  className="w-full border border-gray-300 text-black rounded px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#0A2478]"
-                  value={tempBranch}
-                  onChange={(e) => setTempBranch(e.target.value)}
-                >
-                  <option value="" disabled>
-                    Choose a branch
-                  </option>
-
-                  {branches.map((branch) => (
-                    <option key={branch.id} value={branch.id}>
-                      {branch.branch_name}
-                    </option>
-                  ))}
-                </select>
-              </div>
-
-              {/* Change Year Dropdown */}
-              <div className="mb-6">
-                <label
-                  htmlFor="year"
-                  className="block text-sm font-medium text-gray-700 mb-1"
-                >
-                  Select Year
-                </label>
-
-                <select
-                  name="year"
-                  value={selectedYear} // ✅ bind state
-                  onChange={(e) => setSelectedYear(e.target.value)} // ✅ update state
-                  className="w-full border border-gray-300 text-black rounded px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#0A2478]"
-                >
-                  <option value="">Select</option>
-                  <option value="2023-2024">01/04/2023 - 31/03/2024</option>
-                  <option value="2025-2026">01/01/2025 - 31/12/2026</option>
-                </select>
-              </div>
-
-              {/* Buttons */}
-              <div className="flex justify-center gap-4">
-                <button
-                  className=" bg-[#0A2478]  text-white px-5 py-2 rounded text-base font-medium"
-                  onClick={handleOk}
-                >
-                  OK
+                  Tools / Utilities
+                  {openMenu === "tools" ? <FiChevronUp /> : <FiChevronDown />}
                 </button>
+
+                {openMenu === "tools" && (
+                  <div className="pl-4 space-y-1 bg-[#1a3a8a] rounded mt-1">
+                    {/* Settings */}
+                    <div>
+                      <button
+                        className="w-full text-left px-4 py-2 hover:bg-[#2d5aa0] rounded flex justify-between items-center"
+                        onClick={() => toggleSubMenu("settings")}
+                      >
+                        Settings
+                        {openSubMenu === "settings" ? (
+                          <FiChevronUp />
+                        ) : (
+                          <FiChevronDown />
+                        )}
+                      </button>
+
+                      {openSubMenu === "settings" && (
+                        <div className="pl-4 space-y-1 bg-[#2d5aa0] rounded mt-1">
+                          <Link
+                            to="/Gress-Period"
+                            className="block px-4 py-2 hover:bg-[#3a6fb0] rounded text-sm"
+                            onClick={() => setIsSidebarOpen(false)}
+                          >
+                            Grace Period
+                          </Link>
+                        </div>
+                      )}
+                    </div>
+
+                    {/* System Tools */}
+                    <div>
+                      <button
+                        className="w-full text-left px-4 py-2 hover:bg-[#2d5aa0] rounded flex justify-between items-center"
+                        onClick={() => toggleSubMenu("system")}
+                      >
+                        System Tools
+                        {openSubMenu === "system" ? (
+                          <FiChevronUp />
+                        ) : (
+                          <FiChevronDown />
+                        )}
+                      </button>
+
+                      {openSubMenu === "system" && (
+                        <div className="pl-4 space-y-1 bg-[#2d5aa0] rounded mt-1">
+                          {[
+                            { name: "SMS Config", path: "/SmsConfig/Create" },
+                            {
+                              name: "WhatsApp Config",
+                              path: "/WhatsApp-Configuration",
+                            },
+                            {
+                              name: "Backup utility",
+                              path: "/DBBackup",
+                            },
+                          ].map((item) => (
+                            <Link
+                              key={item.path}
+                              to={item.path}
+                              className="block px-4 py-2 hover:bg-[#3a6fb0] rounded text-sm"
+                              onClick={() => setIsSidebarOpen(false)}
+                            >
+                              {item.name}
+                            </Link>
+                          ))}
+                        </div>
+                      )}
+                    </div>
+
+                    {/* Bank Details */}
+                    <Link
+                      to="/Bank_Details"
+                      className="block px-4 py-2 hover:bg-[#2d5aa0] rounded text-sm"
+                      onClick={() => setIsSidebarOpen(false)}
+                    >
+                      Bank Details
+                    </Link>
+                  </div>
+                )}
+              </div>
+
+              {/* Mobile Branch Selector */}
+              <div className="sm:hidden mt-4 pt-4 border-t border-[#1a3a8a]">
                 <button
-                  className="bg-[#F11717] text-white px-5 py-2 rounded text-base font-medium"
-                  onClick={() => setIsBranchModelOpen(false)}
+                  onClick={() => {
+                    setIsBranchModelOpen(true);
+                    setIsSidebarOpen(false);
+                  }}
+                  className="w-full h-[40px] flex items-center gap-2 justify-center bg-white rounded text-[#0b2c69] font-medium"
                 >
-                  Exit
+                  {selectedBranch}
+                  <TfiReload className="text-lg size-4" />
                 </button>
               </div>
+
+              {/* Mobile Logout */}
+              <button
+                onClick={handleLogout}
+                className="w-full flex items-center justify-center gap-2 font-semibold text-red-600 bg-white px-4 py-2 rounded mt-4"
+              >
+                <FiLogOut className="text-lg" />
+                Logout
+              </button>
             </div>
           </div>
-        )}
-      </div>
+        </div>
+      )}
+
+      {/* Branch Modal */}
+      {isBranchModelOpen && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-[#0101017A] backdrop-blur-md">
+          <div className="bg-white w-[396px] rounded-lg shadow-xl h-auto p-6">
+            <h1 className="text-xl font-bold text-[#0A2478] mb-6 text-center">
+              Change Branch
+            </h1>
+
+            {/* Change Branch Dropdown */}
+            <div className="mb-4">
+              <label
+                htmlFor="branch"
+                className="block text-sm font-medium text-gray-700 mb-1"
+              >
+                Select Branch
+              </label>
+              <select
+                id="branch"
+                name="branch"
+                className="w-full border border-gray-300 text-black rounded px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#0A2478]"
+                value={tempBranch}
+                onChange={(e) => setTempBranch(e.target.value)}
+              >
+                <option value="" disabled>
+                  Choose a branch
+                </option>
+
+                {branches.map((branch) => (
+                  <option key={branch.id} value={branch.id}>
+                    {branch.branch_name}
+                  </option>
+                ))}
+              </select>
+            </div>
+
+            {/* Change Year Dropdown */}
+            <div className="mb-6">
+              <label
+                htmlFor="year"
+                className="block text-sm font-medium text-gray-700 mb-1"
+              >
+                Select Year
+              </label>
+
+              <select
+                name="year"
+                value={selectedYear} // ✅ bind state
+                onChange={(e) => setSelectedYear(e.target.value)} // ✅ update state
+                className="w-full border border-gray-300 text-black rounded px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#0A2478]"
+              >
+                <option value="">Select</option>
+                <option value="2023-2024">01/04/2023 - 31/03/2024</option>
+                <option value="2025-2026">01/01/2025 - 31/12/2026</option>
+              </select>
+            </div>
+
+            {/* Buttons */}
+            <div className="flex justify-center gap-4">
+              <button
+                className=" bg-[#0A2478]  text-white px-5 py-2 rounded text-base font-medium"
+                onClick={handleOk}
+              >
+                OK
+              </button>
+              <button
+                className="bg-[#F11717] text-white px-5 py-2 rounded text-base font-medium"
+                onClick={() => setIsBranchModelOpen(false)}
+              >
+                Exit
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };

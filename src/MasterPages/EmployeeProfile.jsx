@@ -15,6 +15,8 @@ import { encryptData } from "../utils/cryptoHelper";
 
 import profileempty from "../assets/profileempty.png";
 import MultiSelect from "../Component/MultiSelect";
+
+
 const EmployeeProfile = () => {
   useEffect(() => {
     document.title = "SLF | Employee Profile";
@@ -933,16 +935,14 @@ const EmployeeProfile = () => {
     <div className="min-h-screen w-full">
       {/* Top bar */}
       <div className="flex justify-center sticky top-[80px] z-40">
-        <div className="flex items-center px-6 py-4 border-b  w-[1462px] h-[50px] border rounded-[11px] border-gray-200 justify-between shadow bg-white">
-          <h2 className="text-red-600 font-bold text-[20px] leading-[148%] font-source">
+       <div className="flex items-center px-6 py-4 border-b  w-[1462px] h-[50px] border rounded-[11px] border-gray-200 justify-between shadow bg-white">
+          <h2 className="text-red-600 font-bold text-[20px] whitespace-nowrap">
             Employee Profile List
           </h2>
 
-          {/* Search & Actions */}
           <div className="flex items-center gap-6">
-            <div className="flex items-center gap-3">
+            <div className="hidden lg:flex items-center bg-white  h-[32px] px-1 relative w-[500px]">
               <div className="flex items-center bg-white border border-gray-400 rounded-[5px] h-[32px] px-2 relative w-[500px]">
-                {/* Multi-Select Header Dropdown */}
                 <div className="relative border-r border-gray-300 pr-2 mr-2">
                   <button
                     onClick={() => setIsDropdownOpen(!isDropdownOpen)}
@@ -1000,7 +1000,6 @@ const EmployeeProfile = () => {
                   )}
                 </div>
 
-                {/* Text Input Field */}
                 <input
                   type="text"
                   value={searchQuery}
@@ -1010,7 +1009,6 @@ const EmployeeProfile = () => {
                   className="flex-grow text-[11px] font-source outline-none h-full"
                 />
 
-                {/* Search Button */}
                 <button
                   onClick={() => {
                     setIsDropdownOpen(false);
@@ -1061,7 +1059,7 @@ const EmployeeProfile = () => {
               </button>
             </div>
           </div>
-        </div>
+        </div> 
       </div>
 
       {/* Add/Edit Modal */}

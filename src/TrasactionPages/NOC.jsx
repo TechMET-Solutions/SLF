@@ -196,10 +196,10 @@ function NOC() {
                                 ग्राहकाची सही -
                             </td>
                             <td colSpan="3" className="border px-2 py-1 text-left">
-                                Loan Created By: <br /> - Nitin.Suryawanshi@Slunawat.Com
+                                Loan Created By: <br /> - {loanData.approved_by || "N/A"}
                             </td>
                             <td colSpan="3" className="border px-2 py-1 text-left">
-                                Loan Approved By: <br /> - Nitin.Suryawanshi@Slunawat.Com
+                                Loan Approved By: <br /> - {loanData.approved_by || "N/A"}
                             </td>
 
                         </tr>

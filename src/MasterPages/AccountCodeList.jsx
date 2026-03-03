@@ -645,6 +645,7 @@ const AccountCodeList = () => {
   };
 
   const handleSave = async () => {
+    debugger
     if (!formData.name || !formData.financialDate || !formData.accountGroup || !formData.type) {
       alert("Please fill all required fields");
       return;
@@ -713,9 +714,9 @@ const AccountCodeList = () => {
           <div className="flex items-center px-6 py-4 w-[1462px] h-[50px] rounded-[11px] border border-gray-200 justify-between shadow-sm bg-white">
              */}
 
-      <div className="flex sticky top-[80px] z-40 w-full px-8">
+       <div className="flex sticky top-[80px] z-40 w-full px-8">
         <div className="z-40 bg-white w-full">
-          <div className="flex items-center px-6 py-4 border-b my-2 w-full max-w-[1462px] lg:h-[50px] border rounded-[11px] border-gray-200 justify-between  ">
+          <div className="flex items-center px-6 py-4 border-b my-2 w-full max-w-[1462px] h-[50px] border rounded-[11px] border-gray-200 justify-between  ">
 
             <h2 className="text-red-600 font-bold text-[20px] whitespace-nowrap">
               Ledger List
@@ -782,16 +783,7 @@ const AccountCodeList = () => {
                   className="flex-grow text-[11px] outline-none h-full bg-transparent"
                 />
 
-                {/* <button
-                  onClick={() => {
-                    setIsDropdownOpen(false);
-                    setCurrentPage(1); // Reset to page 1 on search
-                    fetchData(1);
-                  }}
-                  className="ml-2 bg-[#0b2c69] text-white text-[10px] px-3 h-[22px] rounded-[3px] hover:opacity-90"
-                >
-                  Search
-                </button> */}
+               
 
                 <button
                   onClick={() => {
@@ -826,7 +818,8 @@ const AccountCodeList = () => {
             </div>
           </div>
         </div>
-      </div>
+      </div> 
+
 
       {/* Modal - Kept your auto-fill logic for financialDate */}
       {isModalOpen && (

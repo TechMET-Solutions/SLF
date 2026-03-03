@@ -306,7 +306,7 @@ const ChargesProfileList = () => {
             Charges Profile List
           </h2>
           <div className="flex items-center gap-6">
-            <div className="flex items-center gap-3">
+            <div className="hidden lg:flex items-center bg-white  px-1 relative gap-2">
               {/* Type Input */}
               <div className="flex items-center gap-2">
                 <p className="text-[11.25px] font-semibold whitespace-nowrap">
