@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { API } from "../api";
 
 const LoanDetails = () => {
   const [schemes, setSchemes] = useState([]);
@@ -21,7 +22,7 @@ const [rows, setRows] = useState([]);
     const fetchSchemes = async () => {
       try {
         const response = await fetch(
-          "https://slunawat.co.in/Scheme/getAllSchemes?page=1&limit=10",
+          `${API}/Scheme/getAllSchemes?page=1&limit=10`,
         );
         const result = await response.json();
         setSchemes(result.data || []);
@@ -35,7 +36,7 @@ const [rows, setRows] = useState([]);
   }, []);
   const handleView = async () => {
     const res = await fetch(
-      `https://slunawat.co.in/api/Reports/loan-detail-report?fromDate=${fromDate}&toDate=${toDate}&schemeId=${selectedScheme}&status=${status}&party=${selectedParty}`,
+      `${API}/api/Reports/loan-detail-report?fromDate=${fromDate}&toDate=${toDate}&schemeId=${selectedScheme}&status=${status}&party=${selectedParty}`,
     );
     const data = await res.json();
       console.log(data.data);
@@ -52,7 +53,7 @@ const [rows, setRows] = useState([]);
 
       try {
         const res = await fetch(
-          `https://slunawat.co.in/api/Reports/legal-parties?schemeId=${selectedScheme}&party=${partySearch}`,
+          `${API}/api/Reports/legal-parties?schemeId=${selectedScheme}&party=${partySearch}`,
         );
         const data = await res.json();
         setPartyList(data.data || []);

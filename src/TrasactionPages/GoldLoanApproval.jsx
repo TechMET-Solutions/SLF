@@ -16,7 +16,7 @@ const GoldLoanApproval = () => {
   useEffect(() => {
     const fetchBanks = async () => {
       try {
-        const res = await axios.get("https://slunawat.co.in/api/banks/list");
+        const res = await axios.get(`${API}/api/banks/list`);
         // Convert API data to your dropdown format
         const formattedBanks = res.data.map((bank) => ({
           id: bank.id,

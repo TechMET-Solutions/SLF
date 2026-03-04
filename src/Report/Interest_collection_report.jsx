@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { API } from "../api";
 
 const InterestCollectionReport = () => {
   const [schemes, setSchemes] = useState([]);
@@ -15,7 +16,7 @@ const InterestCollectionReport = () => {
     const fetchSchemes = async () => {
       try {
         const response = await fetch(
-          "https://slunawat.co.in/Scheme/getAllSchemes?page=1&limit=10",
+          `${API}/Scheme/getAllSchemes?page=1&limit=10`,
         );
         const result = await response.json();
         setSchemes(result.data || []);
@@ -28,7 +29,7 @@ const InterestCollectionReport = () => {
     fetchSchemes();
   }, []);
   const fetchReport = async () => {
-  const url = `https://slunawat.co.in/api/Reports/interest-collection?fromDate=${fromDate}&toDate=${toDate}&scheme=${selectedScheme}`;
+  const url = `${API}/api/Reports/interest-collection?fromDate=${fromDate}&toDate=${toDate}&scheme=${selectedScheme}`;
 
   const res = await fetch(url);
   const data = await res.json();

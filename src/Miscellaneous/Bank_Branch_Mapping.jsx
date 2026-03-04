@@ -18,7 +18,7 @@
 //   const fetchBranches = async (pageNo = page, pageSize = limit) => {
 //     try {
 //       const res = await axios.get(
-//         `https://slunawat.co.in/Master/Master_Profile/get_Branches?page=${pageNo}&limit=${pageSize}&search=`
+//         `${API}/Master/Master_Profile/get_Branches?page=${pageNo}&limit=${pageSize}&search=`
 //       );
 
 //       const data = res.data;
@@ -163,7 +163,7 @@ const Bank_Branch_Mapping = () => {
   const fetchBranches = async (pageNo = page, pageSize = limit) => {
     try {
       const res = await axios.get(
-        `https://slunawat.co.in/Master/Master_Profile/get_Branches?page=${pageNo}&limit=${pageSize}&search=`
+        `${API}/Master/Master_Profile/get_Branches?page=${pageNo}&limit=${pageSize}&search=`
       );
       if (res.data) {
         setBranchData(res.data.branches || []);

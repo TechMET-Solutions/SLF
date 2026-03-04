@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { API } from "../api";
 
 const Legal_notice_report = () => {
   const [schemes, setSchemes] = useState([]);
@@ -19,7 +20,7 @@ const Legal_notice_report = () => {
     const fetchSchemes = async () => {
       try {
         const response = await fetch(
-          "https://slunawat.co.in/Scheme/getAllSchemes?page=1&limit=10",
+          `${API}/Scheme/getAllSchemes?page=1&limit=10`,
         );
         const result = await response.json();
         setSchemes(result.data || []);
@@ -43,7 +44,7 @@ const Legal_notice_report = () => {
     const fetchParties = async () => {
       try {
         const res = await fetch(
-          `https://slunawat.co.in/api/Reports/legal-parties?schemeId=${selectedScheme}&q=${partyQuery}`,
+          `${API}/api/Reports/legal-parties?schemeId=${selectedScheme}&q=${partyQuery}`,
         );
         const data = await res.json();
         setPartyList(data.data || []);
@@ -66,7 +67,7 @@ const Legal_notice_report = () => {
     setSearching(true);
     try {
       const res = await fetch(
-        `https://slunawat.co.in/api/Reports/legal-notice?schemeId=${selectedScheme}&fromDate=${fromDate}&toDate=${toDate}&party=${encodeURIComponent(
+        `${API}/api/Reports/legal-notice?schemeId=${selectedScheme}&fromDate=${fromDate}&toDate=${toDate}&party=${encodeURIComponent(
           selectedParty,
         )}`,
       );

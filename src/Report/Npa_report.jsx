@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { API } from "../api";
 
 const NpaReport = () => {
   const [schemes, setSchemes] = useState([]);
@@ -19,7 +20,7 @@ const NpaReport = () => {
     const fetchSchemes = async () => {
       try {
         const response = await fetch(
-          "https://slunawat.co.in/Scheme/getAllSchemes?page=1&limit=10",
+          `${API}/Scheme/getAllSchemes?page=1&limit=10`,
         );
         const result = await response.json();
         setSchemes(result.data || []);
@@ -45,7 +46,7 @@ const NpaReport = () => {
     setIsLoading(true);
     try {
       const res = await fetch(
-        `https://slunawat.co.in/api/Reports/npa-report?date=${asOnDate}&schemeId=${selectedScheme}`,
+        `${API}/api/Reports/npa-report?date=${asOnDate}&schemeId=${selectedScheme}`,
       );
       const data = await res.json();
       setRows(data.data || []);

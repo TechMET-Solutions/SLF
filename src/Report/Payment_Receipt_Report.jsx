@@ -61,7 +61,7 @@ const Payment_Receipt_Report = () => {
 
   const fetchBanks = async () => {
     try {
-      const res = await axios.get("https://slunawat.co.in/api/banks/list");
+      const res = await axios.get(`${API}/api/banks/list`);
       setBanks(res.data);
     } catch (error) {
       console.error("Error fetching banks:", error);

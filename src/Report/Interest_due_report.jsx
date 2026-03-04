@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { API } from "../api";
 
 const InterestDueReport = () => {
   const [schemes, setSchemes] = useState([]);
@@ -15,7 +16,7 @@ const InterestDueReport = () => {
     const fetchSchemes = async () => {
       try {
         const response = await fetch(
-          "https://slunawat.co.in/Scheme/getAllSchemes?page=1&limit=10",
+          `${API}/Scheme/getAllSchemes?page=1&limit=10`,
         );
         const result = await response.json();
         setSchemes(result.data || []);
@@ -33,7 +34,7 @@ const InterestDueReport = () => {
     const fetchLoans = async () => {
       try {
         const res = await fetch(
-          `https://slunawat.co.in/api/Reports/loan-numbers?scheme=${selectedScheme}&search=${loanSearch}`,
+          `${API}/api/Reports/loan-numbers?scheme=${selectedScheme}&search=${loanSearch}`,
         );
         const data = await res.json();
         setLoanNumbers(data.data || []);
@@ -47,7 +48,7 @@ const InterestDueReport = () => {
   const handleView = async () => {
     try {
       const res = await fetch(
-        `https://slunawat.co.in/api/Reports/interest-due-report?loanNo=${selectedLoan}&scheme=${selectedScheme}`,
+        `${API}/api/Reports/interest-due-report?loanNo=${selectedLoan}&scheme=${selectedScheme}`,
       );
       const data = await res.json();
       setReportRows(data.data || []);

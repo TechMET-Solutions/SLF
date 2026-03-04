@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { API } from "../api";
 
 const LoanApplicationHistory = () => {
   const [schemes, setSchemes] = useState([]);
@@ -20,7 +21,7 @@ const [toDate, setToDate] = useState(
     const fetchSchemes = async () => {
       try {
         const response = await fetch(
-          "https://slunawat.co.in/Scheme/getAllSchemes?page=1&limit=50",
+          `${API}/Scheme/getAllSchemes?page=1&limit=50`,
         );
         const result = await response.json();
         setSchemes(result.data || []);
@@ -37,7 +38,7 @@ const [toDate, setToDate] = useState(
   const handleView = async () => {
     try {
       setTableLoading(true);
-      const url = `https://slunawat.co.in/api/Reports/loan-history?fromDate=${fromDate}&toDate=${toDate}&schemeId=${schemeId}&status=${status}`;
+      const url = `${API}/api/Reports/loan-history?fromDate=${fromDate}&toDate=${toDate}&schemeId=${schemeId}&status=${status}`;
       const res = await fetch(url);
       const result = await res.json();
 

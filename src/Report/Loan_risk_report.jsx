@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { API } from "../api";
 
 const LoanRiskReport = () => {
   const [schemes, setSchemes] = useState([]);
@@ -15,7 +16,7 @@ const LoanRiskReport = () => {
     const fetchSchemes = async () => {
       try {
         const response = await fetch(
-          "https://slunawat.co.in/Scheme/getAllSchemes?page=1&limit=10",
+          `${API}/Scheme/getAllSchemes?page=1&limit=10`,
         );
         const result = await response.json();
         setSchemes(result.data || []);
@@ -35,7 +36,7 @@ const LoanRiskReport = () => {
     try {
       // Replace with your actual Search API endpoint
       const response = await fetch(
-        `https://slunawat.co.in/api/Reports/getLoanRisk?date=${selectedDate}&schemeId=${selectedScheme}`,
+        `${API}/api/Reports/getLoanRisk?date=${selectedDate}&schemeId=${selectedScheme}`,
       );
       const result = await response.json();
 

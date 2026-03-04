@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { API } from "../api";
 
 const LoanStatement = () => {
   const [schemes, setSchemes] = useState([]);
@@ -22,7 +23,7 @@ const [statement, setStatement] = useState(null);
     const fetchSchemes = async () => {
       try {
         const response = await fetch(
-          "https://slunawat.co.in/Scheme/getAllSchemes?page=1&limit=10",
+          `${API}/Scheme/getAllSchemes?page=1&limit=10`,
         );
         const result = await response.json();
         setSchemes(result.data || []);
@@ -45,7 +46,7 @@ const [statement, setStatement] = useState(null);
     const fetchLoans = async () => {
       try {
         const res = await fetch(
-          `https://slunawat.co.in/api/Reports/loan-statement-loans?fromDate=${fromDate}&toDate=${toDate}&schemeId=${selectedScheme}`,
+          `${API}/api/Reports/loan-statement-loans?fromDate=${fromDate}&toDate=${toDate}&schemeId=${selectedScheme}`,
         );
         const data = await res.json();
         setLoanList(data.data || []);
@@ -71,7 +72,7 @@ const [statement, setStatement] = useState(null);
 
     try {
       const res = await fetch(
-        `https://slunawat.co.in/api/Reports/loan-statement-customer?loanNo=${ln}`,
+        `${API}/api/Reports/loan-statement-customer?loanNo=${ln}`,
       );
       const data = await res.json();
       setCustomerName(data?.data?.Print_Name || "");
@@ -88,7 +89,7 @@ const [statement, setStatement] = useState(null);
 
   try {
     const res = await fetch(
-      `https://slunawat.co.in/api/Reports/loan-statement-details?loanNo=${loanNo}`
+      `${API}/api/Reports/loan-statement-details?loanNo=${loanNo}`
     );
     const data = await res.json();
     setStatement(data.data?.[0] || null);

@@ -57,7 +57,7 @@ const FundTransferReciptCreate = () => {
   const fetchBanks = async () => {
     try {
       setLoadingBanks(true);
-      const res = await fetch("https://slunawat.co.in/api/banks/list");
+      const res = await fetch(`${API}/api/banks/list`);
       const data = await res.json();
       setBanks(data || []);
     } catch (err) {

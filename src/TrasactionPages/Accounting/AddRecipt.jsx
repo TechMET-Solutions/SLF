@@ -1049,7 +1049,7 @@ const AddRecipt = () => {
     try {
       // Using the 'name' parameter as per your backend logic
       const response = await fetch(
-        `https://slunawat.co.in/Master/Employee_Profile/getAll-employees?name=${searchTerm}&limit=10`,
+        `${API}/Master/Employee_Profile/getAll-employees?name=${searchTerm}&limit=10`,
       );
       const result = await response.json();
 

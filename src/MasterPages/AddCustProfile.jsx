@@ -826,7 +826,7 @@ const handleChange = (e) => {
     }
 
     try {
-      const res = await axios.post("https://slunawat.co.in/otp/send-otp", {
+      const res = await axios.post(`${API}/otp/send-otp`, {
         mobile: String(formData.mobile).trim(),
       });
 
@@ -850,7 +850,7 @@ const handleChange = (e) => {
     }
 
     try {
-      const res = await axios.post("https://slunawat.co.in/otp/verify-otp", {
+      const res = await axios.post(`${API}/otp/verify-otp`, {
         mobile: String(formData.mobile).trim(),
         otp: String(formData.MobileNumberOtp).trim(),
       });

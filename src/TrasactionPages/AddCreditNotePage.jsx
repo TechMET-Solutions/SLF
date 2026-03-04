@@ -87,8 +87,8 @@ const AddCreditNotePage = () => {
       setCustomerLoading(true);
 
       const response = await axios.get(
-        // `https://slunawat.co.in/Master/doc/searchCustomers&search=${searchValue}`
-        `https://slunawat.co.in/Master/doc/Customer_list?search=${searchValue}`
+        // `/Master/doc/searchCustomers&search=${searchValue}`
+        `${API}/Master/doc/Customer_list?search=${searchValue}`
       );
 
       if (response.data && Array.isArray(response.data)) {

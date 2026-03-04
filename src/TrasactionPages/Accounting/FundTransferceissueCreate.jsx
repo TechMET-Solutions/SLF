@@ -103,7 +103,7 @@ const isViewMode = editData;
   const fetchBanks = async () => {
     try {
       setLoadingBanks(true);
-      const res = await axios.get(`https://slunawat.co.in/api/banks/list`);
+      const res = await axios.get(`${API}/api/banks/list`);
       setBanks(res.data || []);
     } catch (err) {
       console.error("Bank API error", err);

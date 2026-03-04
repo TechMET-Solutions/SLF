@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { API } from "../api";
 
 const GoldStockReport = () => {
   const [schemes, setSchemes] = useState([]); // All schemes from API
@@ -19,7 +20,7 @@ const GoldStockReport = () => {
     const fetchSchemes = async () => {
       try {
         const response = await fetch(
-          "https://slunawat.co.in/Scheme/getAllSchemes?page=1&limit=10",
+          `${API}/Scheme/getAllSchemes?page=1&limit=10`,
         );
         const result = await response.json();
         setSchemes(result.data || []);
@@ -40,7 +41,7 @@ const GoldStockReport = () => {
 
     try {
       const res = await fetch(
-        `https://slunawat.co.in/api/Reports/gold-stock?scheme=${selectedScheme}&fromDate=${fromDate}`,
+        `${API}/api/Reports/gold-stock?scheme=${selectedScheme}&fromDate=${fromDate}`,
       );
       const data = await res.json();
       setRows(data.data || []);
