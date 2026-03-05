@@ -725,19 +725,54 @@ const EmployeeProfile = () => {
 
   const handleForceDownload = async (fileUrl, filename) => {
     try {
-      const response = await fetch(fileUrl, { mode: "cors" });
-      const blob = await response.blob();
-      const blobUrl = window.URL.createObjectURL(blob);
-      const link = document.createElement("a");
-      link.href = blobUrl;
-      link.download = filename || "document";
-      document.body.appendChild(link);
-      link.click();
-      link.remove();
-      window.URL.revokeObjectURL(blobUrl);
+      // Type check and validation
+      if (!fileUrl || typeof fileUrl !== "string" || fileUrl.trim() === "") {
+        alert("No file available to download");
+        return;
+      }
+
+      // Try using fetch API first
+      try {
+        const response = await fetch(fileUrl, {
+          mode: "cors",
+          headers: {
+            "Accept": "*/*"
+          }
+        });
+
+        if (!response.ok) {
+          throw new Error(`HTTP Error: ${response.status}`);
+        }
+
+        const blob = await response.blob();
+        const blobUrl = window.URL.createObjectURL(blob);
+        const link = document.createElement("a");
+        link.href = blobUrl;
+        link.download = filename || "document";
+        link.style.display = "none";
+        document.body.appendChild(link);
+        link.click();
+        setTimeout(() => {
+          document.body.removeChild(link);
+          window.URL.revokeObjectURL(blobUrl);
+        }, 100);
+      } catch (fetchError) {
+        // Fallback: Direct download using anchor tag
+        console.warn("Fetch failed, trying direct download:", fetchError);
+        const link = document.createElement("a");
+        link.href = fileUrl;
+        link.download = filename || "document";
+        link.style.display = "none";
+        link.target = "_blank";
+        document.body.appendChild(link);
+        link.click();
+        setTimeout(() => {
+          document.body.removeChild(link);
+        }, 100);
+      }
     } catch (error) {
       console.error("❌ Error downloading file:", error);
-      alert("Failed to download file.");
+      alert("Failed to download file. Please try again or contact support.");
     }
   };
 
@@ -925,17 +960,17 @@ const EmployeeProfile = () => {
   ];
 
 
- const handleSelectAll = () => {
+  const handleSelectAll = () => {
     const allSelected = allHeaderIds.every((id) => searchHeaders.includes(id));
     setSearchHeaders(allSelected ? [] : [...allHeaderIds]);
   };
 
-  
+
   return (
     <div className="min-h-screen w-full">
       {/* Top bar */}
       <div className="flex justify-center sticky top-[80px] z-40">
-       <div className="flex items-center px-6 py-4 border-b  w-[1462px] h-[50px] border rounded-[11px] border-gray-200 justify-between shadow bg-white">
+        <div className="flex items-center px-6 py-4 border-b  w-[1462px] h-[50px] border rounded-[11px] border-gray-200 justify-between shadow bg-white">
           <h2 className="text-red-600 font-bold text-[20px] whitespace-nowrap">
             Employee Profile List
           </h2>
@@ -954,9 +989,9 @@ const EmployeeProfile = () => {
 
                   {isDropdownOpen && (
                     <div className="absolute top-[35px] left-[-8px] bg-white border border-gray-300 shadow-xl rounded-md z-[100] w-[160px] p-2">
-                      
-                      <button onClick={handleSelectAll} 
-                      className="flex items-center gap-2 p-2 hover:bg-gray-50 cursor-pointer rounded"
+
+                      <button onClick={handleSelectAll}
+                        className="flex items-center gap-2 p-2 hover:bg-gray-50 cursor-pointer rounded"
                       >
                         <input
                           type="checkbox"
@@ -965,7 +1000,7 @@ const EmployeeProfile = () => {
                         />
                         <span className="text-[10px] text-[#0A2478] font-bold">Select All</span>
                       </button>
-                      
+
                       {[
                         { id: "id", label: "EMP Id" },
                         { id: "emp_name", label: "Name" },
@@ -1059,7 +1094,7 @@ const EmployeeProfile = () => {
               </button>
             </div>
           </div>
-        </div> 
+        </div>
       </div>
 
       {/* Add/Edit Modal */}
@@ -1089,7 +1124,7 @@ const EmployeeProfile = () => {
                           type="text"
                           placeholder="Enter PAN"
                           name="pan_card"
-                          disabled={mode === "view" || mode === "edit"  }
+                          disabled={mode === "view" || mode === "edit"}
                           value={formData.pan_card}
                           onChange={handleInputChange}
                           // Set to 140px to match Aadhaar
@@ -1099,7 +1134,7 @@ const EmployeeProfile = () => {
                           type="file"
                           accept="image/*,.pdf"
                           ref={panFileInputRef}
-                          disabled={mode === "view" || mode === "edit"  }
+                          disabled={mode === "view" || mode === "edit"}
                           onChange={handlePanFileChange}
                           className="hidden"
                         />
@@ -1273,7 +1308,7 @@ const EmployeeProfile = () => {
                       }
                       disabled={mode === "view"}
                       onChange={handleInputChange}
-                      className={`border border-[#C4C4C4] rounded-md px-3 py-2 focus:outline-none focus:ring-1 focus:ring-blue-500 w-[168px] 
+                      className={`border border-[#C4C4C4] rounded-md px-3 py-2 focus:outline-none focus:ring-1 focus:ring-blue-500 w-[168px]
     }`}
                     />
                   </div>
@@ -1519,7 +1554,7 @@ const EmployeeProfile = () => {
                       <input
                         id="profileImage"
                         type="file"
-                        disabled={mode === "view" }
+                        disabled={mode === "view"}
                         className="hidden"
                         onChange={(e) => handleFileChange(e, setProfileImage)}
                       />
@@ -1576,24 +1611,6 @@ const EmployeeProfile = () => {
                             handleFileChangeForAddProof(e, setAddressProof)
                           }
                         />
-
-                        {/* Preview (Shows only if file exists) */}
-                        {/* {(addressProof || formData.emp_add_prof) && (
-                          <div className="mt-7 flex items-center gap-2 border border-dashed border-gray-400 p-1 rounded-md bg-gray-50 h-[40px] px-2">
-                            <img
-                              src={
-                                addressProof
-                                  ? URL.createObjectURL(addressProof)
-                                  : formData.emp_add_prof
-                              }
-                              className="w-7 h-7 object-cover rounded"
-                              alt="preview"
-                            />
-                            <span className="text-[10px] text-gray-500 max-w-[80px] truncate">
-                              {addressProof ? addressProof.name : "Saved File"}
-                            </span>
-                          </div>
-                        )} */}
                       </div>
 
                       {/* --- ID Proof Section --- */}
@@ -1633,24 +1650,6 @@ const EmployeeProfile = () => {
                             handleFileChangeForIdProof(e, setIdProof)
                           }
                         />
-
-                        {/* Preview (Shows only if file exists) */}
-                        {/* {(idProof || formData.emp_id_prof) && (
-                          <div className="mt-7 flex items-center gap-2 border border-dashed border-gray-400 p-1 rounded-md bg-gray-50 h-[40px] px-2">
-                            <img
-                              src={
-                                idProof
-                                  ? URL.createObjectURL(idProof)
-                                  : formData.emp_id_prof
-                              }
-                              className="w-7 h-7 object-cover rounded"
-                              alt="preview"
-                            />
-                            <span className="text-[10px] text-gray-500 max-w-[80px] truncate">
-                              {idProof ? idProof.name : "Saved File"}
-                            </span>
-                          </div>
-                        )} */}
                       </div>
                     </>
                   )}
@@ -1730,55 +1729,127 @@ const EmployeeProfile = () => {
 
       {isViewDocumentHistory && (
         <div className="fixed inset-0 flex items-center justify-center z-50 bg-[#0101017A] backdrop-blur-md">
-          <div className="bg-white rounded-xl w-[500px] shadow-lg p-6">
-            <h2 className="text-lg font-bold text-[#1B2C79] mb-4">
-              Uploaded Document History
-            </h2>
+          {/* Increased width to 800px or max-w-4xl for better two-column spacing */}
+          <div className="bg-white rounded-xl w-full max-w-4xl max-h-[85vh] shadow-2xl p-8 overflow-y-auto mx-4">
+            <div className="flex justify-between items-center mb-4">
+              <h2 className="text-2xl font-bold text-[#1B2C79]">
+                Uploaded Document History
+              </h2>
+              <button
+                onClick={() => setIsDocumentHistory(false)}
+                className="text-gray-400 hover:text-gray-600 text-2xl"
+              >
+                ✕
+              </button>
+            </div>
 
-            <div className="grid grid-cols-2 gap-4">
-              {/* ID Proof */}
-              <div>
-                <label className="text-sm font-semibold text-gray-700">
-                  ID Proof <span className="text-red-500">*</span>
-                </label>
-                <div className="border border-gray-300 rounded-md mt-1 p-2 flex justify-between items-center">
-                  <span className="text-gray-500 text-sm">Download</span>
-                  {formData.emp_id_prof ? (
-                    <button
-                      onClick={() =>
-                        handleForceDownload(formData.emp_id_prof, "ID_Proof")
-                      }
-                      className="bg-[#E2E8F0] text-sm text-[#1B2C79] font-medium px-3 py-1 rounded hover:bg-[#CBD5E1]"
-                    >
-                      Download
-                    </button>
+            {/* Documents Grid - Changed to 2 columns */}
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+
+              {/* Left Side: Address Proof */}
+              <div className="border border-gray-300 rounded-lg p-5 hover:shadow-md transition-shadow flex flex-col h-full">
+                <div className="flex-1">
+                  <h3 className="text-base font-semibold text-gray-900 mb-3 flex items-center flex-wrap gap-2">
+                    🏠 Address Proof
+                    {formData.addressProfiletype && (
+                      <span className="text-xs bg-blue-100 text-blue-800 px-2 py-1 rounded">
+                        {formData.addressProfiletype}
+                      </span>
+                    )}
+                  </h3>
+
+                  {formData.emp_add_prof ? (
+                    <div className="space-y-4">
+                      <div className="flex items-center justify-between">
+                        <p className="text-xs text-gray-600">
+                          Status: <span className="text-green-600 font-semibold">✓ Uploaded</span>
+                        </p>
+                        {Array.isArray(formData.emp_add_prof) && (
+                          <span className="text-xs bg-gray-100 text-gray-700 px-2 py-1 rounded">
+                            {formData.emp_add_prof.length} file(s)
+                          </span>
+                        )}
+                      </div>
+
+                      <div className="space-y-2">
+                        {Array.isArray(formData.emp_add_prof) ? (
+                          formData.emp_add_prof.map((file, index) => (
+                            <button
+                              key={index}
+                              onClick={() => handleForceDownload(file, `Address_Proof_${index + 1}`)}
+                              className="w-full bg-[#0A2478] text-white text-sm font-medium px-4 py-2 rounded hover:bg-[#081c5b] transition-colors flex items-center justify-between"
+                            >
+                              <span>Download </span>
+                            </button>
+                          ))
+                        ) : (
+                          <button
+                            onClick={() => handleForceDownload(formData.emp_add_prof, `Address_Proof_${formData.addressProfiletype || "Document"}`)}
+                            className="w-full bg-[#0A2478] text-white text-sm font-medium px-4 py-2 rounded hover:bg-[#081c5b] transition-colors flex items-center justify-center"
+                          >
+                            🔽 Download Document
+                          </button>
+                        )}
+                      </div>
+                    </div>
                   ) : (
-                    <span className="text-gray-400 text-sm">No file</span>
+                    <div className="flex flex-col items-center justify-center py-6 border-2 border-dashed border-gray-100 rounded">
+                      <span className="text-sm text-gray-400 italic">No file uploaded</span>
+                    </div>
                   )}
                 </div>
               </div>
 
-              {/* Address Proof */}
-              <div>
-                <label className="text-sm font-semibold text-gray-700">
-                  Address Proof
-                </label>
-                <div className="border border-gray-300 rounded-md mt-1 p-2 flex justify-between items-center">
-                  <span className="text-gray-500 text-sm">Download</span>
-                  {formData.emp_add_prof ? (
-                    <button
-                      onClick={() =>
-                        handleForceDownload(
-                          formData.emp_add_prof,
-                          "Address_Proof",
-                        )
-                      }
-                      className="bg-[#E2E8F0] text-sm text-[#1B2C79] font-medium px-3 py-1 rounded hover:bg-[#CBD5E1]"
-                    >
-                      Download
-                    </button>
+              {/* Right Side: ID Proof */}
+              <div className="border border-gray-300 rounded-lg p-5 hover:shadow-md transition-shadow flex flex-col h-full">
+                <div className="flex-1">
+                  <h3 className="text-base font-semibold text-gray-900 mb-3 flex items-center flex-wrap gap-2">
+                    🆔 ID Proof
+                    {formData.IdProoftype && (
+                      <span className="text-xs bg-blue-100 text-blue-800 px-2 py-1 rounded">
+                        {formData.IdProoftype}
+                      </span>
+                    )}
+                  </h3>
+
+                  {formData.emp_id_prof ? (
+                    <div className="space-y-4">
+                      <div className="flex items-center justify-between">
+                        <p className="text-xs text-gray-600">
+                          Status: <span className="text-green-600 font-semibold">✓ Uploaded</span>
+                        </p>
+                        {Array.isArray(formData.emp_id_prof) && (
+                          <span className="text-xs bg-gray-100 text-gray-700 px-2 py-1 rounded">
+                            {formData.emp_id_prof.length} file(s)
+                          </span>
+                        )}
+                      </div>
+
+                      <div className="space-y-2">
+                        {Array.isArray(formData.emp_id_prof) ? (
+                          formData.emp_id_prof.map((file, index) => (
+                            <button
+                              key={index}
+                              onClick={() => handleForceDownload(file, `ID_Proof_${index + 1}`)}
+                              className="w-full bg-[#0A2478] text-white text-sm font-medium px-4 py-2 rounded hover:bg-[#081c5b] transition-colors flex items-center justify-between"
+                            >
+                              <span> Download </span>
+                            </button>
+                          ))
+                        ) : (
+                          <button
+                            onClick={() => handleForceDownload(formData.emp_id_prof, `ID_Proof_${formData.IdProoftype || "Document"}`)}
+                            className="w-full bg-[#0A2478] text-white text-sm font-medium px-4 py-2 rounded hover:bg-[#081c5b] transition-colors flex items-center justify-center"
+                          >
+                            Download Document
+                          </button>
+                        )}
+                      </div>
+                    </div>
                   ) : (
-                    <span className="text-gray-400 text-sm">No file</span>
+                    <div className="flex flex-col items-center justify-center py-6 border-2 border-dashed border-gray-100 rounded">
+                      <span className="text-sm text-gray-400 italic">No file uploaded</span>
+                    </div>
                   )}
                 </div>
               </div>
@@ -1788,7 +1859,7 @@ const EmployeeProfile = () => {
             <div className="flex justify-center mt-6">
               <button
                 onClick={() => setIsDocumentHistory(false)}
-                className="bg-[#D32F2F] text-white font-semibold px-6 py-2 rounded-lg hover:bg-[#B71C1C]"
+                className="bg-[#D32F2F] text-white font-semibold px-5 py-1.5api rounded-lg hover:bg-[#B71C1C] transition-colors shadow-lg"
               >
                 Close
               </button>
@@ -1919,13 +1990,7 @@ const EmployeeProfile = () => {
 
                       <td className="px-1 py-1">
                         <div className="flex gap-2 justify-center">
-                          {/* <button
-                            title="View"
-                            onClick={() => handleView(emp)}
-                            className="bg-[#646AD9] p-1.5 rounded text-white hover:bg-[#5057c9] cursor-pointer"
-                          >
-                            <FiEye />
-                          </button> */}
+
                           <button
                             title="Edit"
                             className="bg-green-500 p-1.5 rounded text-white hover:bg-green-600 cursor-pointer"

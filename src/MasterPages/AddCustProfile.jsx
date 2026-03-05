@@ -730,9 +730,9 @@ const handleChange = (e) => {
       setFormData((prev) => ({
         ...prev,
        printName: toTitleCase(panDetails.full_name),
-        firstName: fName || "",
-        middleName: mName || "",
-        lastName: lName || "",
+        firstName: toTitleCase(fName || ""),
+        middleName: toTitleCase(mName || ""),
+        lastName: toTitleCase(lName || ""),
         dob: panDetails.dob,
         aadhar: panDetails.masked_aadhaar,
         gender: genderMap[panDetails.gender] || prev.gender,
@@ -1214,7 +1214,7 @@ const handleChange = (e) => {
                     name="landline"
                     value={formData.landline}
                     onChange={handleChange}
-                    placeholder="Eg.+91 9658426853"
+                    placeholder="Landline Number"
                     className="border border-gray-300 rounded-[8px] px-1 h-[30px] mt-1 w-[130px] text-xs bg-white"
                     style={{
                       MozAppearance: "textfield",
