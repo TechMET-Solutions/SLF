@@ -1000,9 +1000,9 @@ function AddLoanRepayment() {
   };
 
   return (
-    <div className="flex flex-col items-center mt-5">
+    <div className="flex flex-col items-center ">
       {/* Header Section */}
-      <div className="flex items-center justify-between px-6 py-4 w-[1290px] h-[62px] border border-gray-200 rounded-[11px] shadow-sm sticky top-[80px] z-40 bg-white">
+      <div className="flex items-center justify-between px-6 py-4 w-[1460px] h-[40px] border border-gray-200  sticky top-[50px] z-40 bg-white">
         <h2 className="text-red-600 font-bold text-[20px] leading-[1.48] font-['Source_Sans_3']">
           Add Loan Repayment
         </h2>
@@ -1025,11 +1025,9 @@ function AddLoanRepayment() {
       </div>
 
       {/* Loan Information Section */}
-      <div className="flex flex-col items-center ">
-        {/* Header Section */}
-
-        {/* Loan Information Section */}
-        <div className=" max-w-[1290px] bg-[#FFE6E6]  rounded-md p-5 mt-2">
+      <div className="flex flex-col items-center">
+        
+        <div className=" w-[1462px] bg-[#FFE6E6] p-5">
           <h1 className="text-blue-900 font-semibold text-xl ">
             Loan Information
           </h1>
@@ -1041,21 +1039,21 @@ function AddLoanRepayment() {
               <div className="flex gap-2">
                 {/* Loan No */}
                 <div className="flex flex-col">
-                  <label className="text-gray-800 font-medium">Loan No</label>
+                  <label className="text-gray-800 font-medium text-xs">Loan No</label>
                   <input
                     type="text"
                     name="loanNo"
                     disabled
                     value={data?.loanApplication?.id}
                     onChange={handleChange}
-                    className="border border-gray-300 rounded-md px-3 py-2 focus:ring-1 focus:outline-none w-[104px]
-               disabled:bg-gray-100 disabled:text-gray-600 disabled:cursor-not-allowed"
+                    className="border border-gray-300 rounded-md px-1 py-1 focus:ring-1 focus:outline-none w-[104px]
+               disabled:bg-gray-100 disabled:text-gray-600 disabled:cursor-not-allowed text-xs"
                   />
                 </div>
 
                 {/* Customer Name */}
                 <div className="flex flex-col">
-                  <label className="text-gray-800 font-medium">
+                  <label className="text-gray-800 font-medium text-xs">
                     Borrower Name
                   </label>
                   <input
@@ -1064,13 +1062,13 @@ function AddLoanRepayment() {
                     disabled
                     value={data?.loanApplication?.Print_Name}
                     onChange={handleChange}
-                    className="border border-gray-300 disabled:bg-gray-100 rounded-md px-3 py-2 focus:ring-1 focus:outline-none w-[186px]"
+                    className="border border-gray-300 disabled:bg-gray-100 rounded-md px-1 py-1 focus:ring-1 focus:outline-none w-[186px] text-xs"
                   />
                 </div>
 
                 {/* Mobile Number */}
                 <div className="flex flex-col">
-                  <label className="text-gray-800 font-medium">
+                  <label className="text-gray-800 font-medium text-xs">
                     Mobile Number
                   </label>
                   <input
@@ -1079,13 +1077,13 @@ function AddLoanRepayment() {
                     disabled
                     value={data?.loanApplication?.Mobile_Number}
                     onChange={handleChange}
-                    className="border border-gray-300 disabled:bg-gray-100 rounded-md px-3 py-2 focus:ring-1 focus:outline-none w-[109px]"
+                    className="border border-gray-300 disabled:bg-gray-100 rounded-md px-1 py-1 focus:ring-1 focus:outline-none w-[109px] text-xs"
                   />
                 </div>
 
                 {/* Loan Date */}
                 <div className="flex flex-col">
-                  <label className="text-gray-800 font-medium">Loan Date</label>
+                  <label className="text-gray-800 font-medium text-xs">Loan Date</label>
 
                   <input
                     type="date"
@@ -1104,13 +1102,13 @@ function AddLoanRepayment() {
                         : ""
                     }
                     onChange={handleChange}
-                    className="border border-gray-100 disabled:bg-gray-100 rounded-md px-3 py-2 focus:ring-1 focus:ring-blue-500 focus:outline-none"
+                    className="border border-gray-100 disabled:bg-gray-100 rounded-md px-1 py-1 focus:ring-1 focus:ring-blue-500 focus:outline-none text-xs"
                   />
                 </div>
 
                 {/* Loan Amount with Interest Button */}
                 <div className="flex flex-col">
-                  <label className="text-gray-800 font-medium">
+                  <label className="text-gray-800 font-medium text-xs">
                     Loan Amount
                   </label>
                   <div className="flex">
@@ -1120,9 +1118,9 @@ function AddLoanRepayment() {
                       disabled
                       value={data?.loanApplication?.Loan_amount}
                       onChange={handleChange}
-                      className="border border-gray-300 disabled:bg-gray-100 rounded-l-md px-3 py-2 w-full focus:ring-1 focus:outline-none"
+                      className="border border-gray-300 disabled:bg-gray-100 rounded-l-md px-1 py-1 w-[80px] focus:ring-1 focus:outline-none text-xs"
                     />
-                    <button className="bg-[#0A2478] text-white px-2 py-2 rounded-r-md hover:bg-[#081c5b] text-xs w-[40px]">
+                    <button className="bg-[#0A2478] text-white px-1 py-1 rounded-r-md hover:bg-[#081c5b] text-xs w-[40px]">
                       {intrestPercentage ? `${intrestPercentage}%` : "-"}
                     </button>
                   </div>
@@ -1130,7 +1128,7 @@ function AddLoanRepayment() {
 
                 {/* Under the Scheme */}
                 <div className="flex flex-col">
-                  <label className="text-gray-800 font-medium">
+                  <label className="text-gray-800 font-medium text-xs">
                     Under the Scheme
                   </label>
                   <input
@@ -1139,16 +1137,12 @@ function AddLoanRepayment() {
                     disabled
                     value={data?.schemeData?.schemeName}
                     onChange={handleChange}
-                    className="border border-gray-300 disabled:bg-gray-100 rounded-md px-3 py-2 focus:ring-1 focus:outline-none"
+                    className="border border-gray-300 disabled:bg-gray-100 rounded-md px-1 py-1 focus:ring-1 focus:outline-none text-xs"
                   />
                 </div>
-              </div>
 
-              {/* Row 2 */}
-              <div className="flex gap-4">
-                {/* Pending Loan Amount */}
-                <div className="flex flex-col" style={{ width: "150px" }}>
-                  <label className="text-gray-800 font-medium">
+                 <div className="flex flex-col" style={{ width: "120px" }}>
+                  <label className="text-gray-800 font-medium text-xs">
                     Pending Loan Amount
                   </label>
                   <input
@@ -1157,13 +1151,12 @@ function AddLoanRepayment() {
                     disabled
                     value={data?.loanApplication?.LoanPendingAmount}
                     onChange={handleChange}
-                    className="border border-gray-300 disabled:bg-gray-100 rounded-md px-3 py-2 focus:ring-1 focus:ring-blue-500 focus:outline-none"
+                    className="border border-gray-300 disabled:bg-gray-100 rounded-md px-1 py-1 focus:ring-1 focus:ring-blue-500 focus:outline-none text-xs"
                   />
                 </div>
 
-                {/* Pending Int */}
-                <div className="flex flex-col" style={{ width: "120px" }}>
-                  <label className="text-gray-800 font-medium">
+                 <div className="flex flex-col" style={{ width: "100px" }}>
+                  <label className="text-gray-800 font-medium text-xs">
                     Pending Int
                   </label>
                   <input
@@ -1172,13 +1165,22 @@ function AddLoanRepayment() {
                     disabled
                     value={loanInfo.pendingInt}
                     onChange={handleChange}
-                    className="border border-gray-300 disabled:bg-gray-100 rounded-md px-3 py-2 focus:ring-1 focus:ring-blue-500 focus:outline-none"
+                    className="border border-gray-300 disabled:bg-gray-100 rounded-md px-1 py-1 focus:ring-1 focus:ring-blue-500 focus:outline-none text-xs"
                   />
                 </div>
+              </div>
+
+              {/* Row 2 */}
+              <div className="flex gap-4">
+                {/* Pending Loan Amount */}
+               
+
+                {/* Pending Int */}
+               
 
                 {/* Pending Days */}
                 <div className="flex flex-col" style={{ width: "120px" }}>
-                  <label className="text-gray-800  font-medium">
+                  <label className="text-gray-800  font-medium text-xs">
                     Int Pending Days
                   </label>
                   <input
@@ -1187,13 +1189,13 @@ function AddLoanRepayment() {
                     disabled
                     value={loanInfo.pendingDays}
                     onChange={handleChange}
-                    className="border border-gray-300 disabled:bg-gray-100 rounded-md px-3 py-2 focus:ring-1 focus:ring-blue-500 focus:outline-none"
+                    className="border border-gray-300 disabled:bg-gray-100 rounded-md px-1 py-1 focus:ring-1 focus:ring-blue-500 focus:outline-none text-xs"
                   />
                 </div>
 
                 {/* Loan Amount Paid */}
-                <div className="flex flex-col" style={{ width: "130px" }}>
-                  <label className="text-gray-800 font-medium">
+                <div className="flex flex-col" style={{ width: "120px" }}>
+                  <label className="text-gray-800 font-medium text-xs">
                     Loan Amount Paid
                   </label>
                   <input
@@ -1202,13 +1204,13 @@ function AddLoanRepayment() {
                     disabled
                     value={data?.loanApplication?.LoanAmountPaid}
                     onChange={handleChange}
-                    className="border border-gray-300 disabled:bg-gray-100 rounded-md px-3 py-2 focus:ring-1 focus:ring-blue-500 focus:outline-none"
+                    className="border border-gray-300 disabled:bg-gray-100 rounded-md px-1 py-1 focus:ring-1 focus:ring-blue-500 focus:outline-none text-xs"
                   />
                 </div>
 
                 {/* Charges Due */}
-                <div className="flex flex-col" style={{ width: "130px" }}>
-                  <label className="text-gray-800 font-medium">
+                <div className="flex flex-col" style={{ width: "80px" }}>
+                  <label className="text-gray-800 font-medium text-xs">
                     Charges Due
                   </label>
                   <input
@@ -1217,11 +1219,11 @@ function AddLoanRepayment() {
                     disabled
                     value={data?.loanApplication?.total_unpaid_charges}
                     onChange={handleChange}
-                    className="border border-gray-300 disabled:bg-gray-100 rounded-md px-3 py-2 focus:ring-1 focus:ring-blue-500 focus:outline-none"
+                    className="border border-gray-300 disabled:bg-gray-100 rounded-md px-1 py-1 focus:ring-1 focus:ring-blue-500 focus:outline-none text-xs"
                   />
                 </div>
                 <div className="flex flex-col" style={{ width: "130px" }}>
-                  <label className="text-gray-800 font-medium">
+                  <label className="text-gray-800 font-medium text-xs">
                     Advance Interest
                   </label>
                   <input
@@ -1230,16 +1232,12 @@ function AddLoanRepayment() {
                     disabled
                     value={data?.loanApplication?.AdvanceInterestPaid}
                     onChange={handleChange}
-                    className="border border-gray-300 disabled:bg-gray-100 rounded-md px-3 py-2 focus:ring-1 focus:ring-blue-500 focus:outline-none"
+                    className="border border-gray-300 disabled:bg-gray-100 rounded-md px-1 py-1 focus:ring-1 focus:ring-blue-500 focus:outline-none text-xs"
                   />
                 </div>
-              </div>
 
-              {/* Row 3 */}
-              <div className="flex gap-4">
-                {/* Last Interest Paid Date */}
-                <div className="flex flex-col" style={{ width: "150px" }}>
-                  <label className="text-gray-800 font-medium">
+                 <div className="flex flex-col" style={{ width: "150px" }}>
+                  <label className="text-gray-800 font-medium text-xs">
                     Last Interest Paid Date
                   </label>
                   <input
@@ -1254,13 +1252,12 @@ function AddLoanRepayment() {
                     }
                     disabled
                     onChange={handleChange}
-                    className="border border-gray-300 disabled:bg-gray-100 rounded-md px-3 py-2 focus:ring-1 focus:ring-blue-500 focus:outline-none"
+                    className="border border-gray-300 disabled:bg-gray-100 rounded-md px-1 py-1 focus:ring-1 focus:ring-blue-500 focus:outline-none text-xs"
                   />
                 </div>
 
-                {/* Last Interest Paid Upto */}
-                <div className="flex flex-col" style={{ width: "150px" }}>
-                  <label className="text-gray-800 font-medium">
+                 <div className="flex flex-col" style={{ width: "120px" }}>
+                  <label className="text-gray-800 font-medium text-xs">
                     Last Interest Paid Upto
                   </label>
                   <input
@@ -1273,11 +1270,11 @@ function AddLoanRepayment() {
                       ""
                     }
                     onChange={handleChange}
-                    className="border border-gray-300 disabled:bg-gray-100 rounded-md px-3 py-2 focus:ring-1 focus:ring-blue-500 focus:outline-none"
+                    className="border border-gray-300 disabled:bg-gray-100 rounded-md px-1 py-1 focus:ring-1 focus:ring-blue-500 focus:outline-none text-xs"
                   />
                 </div>
-                <div className="flex flex-col" style={{ width: "150px" }}>
-                  <label className="text-gray-800 font-medium">
+                <div className="flex flex-col" style={{ width: "120px" }}>
+                  <label className="text-gray-800 font-medium text-xs">
                     Starting Payment Date{" "}
                   </label>
                   <input
@@ -1288,9 +1285,16 @@ function AddLoanRepayment() {
                       loanInfo.Pay_Date || data?.loanApplication?.Pay_Date || ""
                     }
                     onChange={handleChange}
-                    className="border border-gray-300 disabled:bg-gray-100 rounded-md px-3 py-2 focus:ring-1 focus:ring-blue-500 focus:outline-none"
+                    className="border border-gray-300 disabled:bg-gray-100 rounded-md px-3 py-2 focus:ring-1 focus:ring-blue-500 focus:outline-none text-xs"
                   />
                 </div>
+              </div>
+
+              {/* Row 3 */}
+              <div className="flex gap-4">
+               
+               
+                
               </div>
             </div>
 
@@ -1370,17 +1374,18 @@ function AddLoanRepayment() {
         </div>
 
         {/* Payment Section */}
-        <div className=" w-[1290px] bg-[#F7F7FF] rounded-md p-5">
-          <h1 className="text-blue-900 font-semibold text-xl pb-2">Payment</h1>
+        <div className=" w-[1462px] bg-[#F7F7FF]  p-5 flex gap-5 ">
+          <div className='border-r-2 border-gray-400 pr-6'>
+<h1 className="text-blue-900 font-semibold text-xl pb-2">Payment</h1>
 
           {/* Top Checkboxes */}
-          <div className="flex gap-6 mb-4">
+          <div className=" ">
             {/* Is Close */}
             <div className="flex items-center gap-2">
               <input
                 type="checkbox"
                 id="isClose"
-                className="accent-[#0A2478] h-4 w-4"
+                className="accent-[#0A2478] h-3 w-3"
                 checked={isClose}
                 onChange={(e) => {
                   const checked = e.target.checked;
@@ -1390,16 +1395,16 @@ function AddLoanRepayment() {
                   // setIsAdvInt(checked ? true : isAdvInt);
                 }}
               />
-              <label htmlFor="isClose" className="font-medium text-gray-900">
+              <label htmlFor="isClose" className="font-medium text-gray-900 text-xs">
                 Is Close
               </label>
             </div>
 
-            <div className="flex items-center gap-2">
+            <div className="flex items-center gap-2 mt-2">
               <input
                 type="checkbox"
                 id="isAdvInt"
-                className="accent-[#0A2478] h-4 w-4"
+                className="accent-[#0A2478] h-3 w-3"
                 checked={isAdvInt}
                 onChange={(e) => {
                   const checked = e.target.checked;
@@ -1410,29 +1415,28 @@ function AddLoanRepayment() {
                   if (checked) setIsClose(false);
                 }}
               />
-              <label htmlFor="isAdvInt" className="font-medium text-gray-900">
+              <label htmlFor="isAdvInt" className="font-medium text-gray-900 text-xs">
                 Is Adv. Int
               </label>
             </div>
           </div>
-
-          {/* Row 1: Individual Fields */}
-          {isClose && (
-            <div className="flex flex-wrap gap-x-6 gap-y-4">
-              {/* Pay Amount */}
-              <div className="flex flex-col gap-1 w-[150px]">
-                <label className="text-gray-900 font-medium">Pay Amount</label>
+          </div>
+          <div>
+{isClose && (
+            <div className="flex  gap-x-6 gap-y-4">
+              <div className="flex flex-col gap-1 w-[120px]">
+                <label className="text-gray-900 font-medium text-xs">Pay Amount</label>
                 <input
                   type="text"
                   value={loanInfo.payAmount}
-                  className="border border-gray-300 disabled:bg-gray-100 rounded-md px-3 py-2 focus:ring-1 focus:ring-blue-500 focus:outline-none"
+                  className="border border-gray-300 disabled:bg-gray-100 rounded-md px-1 py-1 focus:ring-1 focus:ring-blue-500 focus:outline-none text-xs"
                   disabled={isClose}
                 />
               </div>
 
               {/* Interest Adjusted */}
-              <div className="flex flex-col gap-1 w-[150px]">
-                <label className="text-gray-900 font-medium">
+              <div className="flex flex-col gap-1 w-[120px]">
+                <label className="text-gray-900 font-medium text-xs">
                   Interest Amount
                 </label>
                 <input
@@ -1442,53 +1446,53 @@ function AddLoanRepayment() {
                       ? loanInfo.preCloseInt
                       : loanInfo.pendingInt
                   }
-                  className="border border-gray-300 disabled:bg-gray-100 rounded-md px-3 py-2 focus:ring-1 focus:ring-blue-500 focus:outline-none"
+                  className="border border-gray-300 disabled:bg-gray-100 rounded-md px-1 py-1 focus:ring-1 focus:ring-blue-500 focus:outline-none text-xs"
                   disabled={isClose}
                 />
               </div>
 
               {/* Loan Amt Adjusted */}
-              <div className="flex flex-col gap-1 w-[150px]">
-                <label className="text-gray-900 font-medium">
+              <div className="flex flex-col gap-1 w-[120px]">
+                <label className="text-gray-900 font-medium text-xs">
                   Loan Amt Adjusted
                 </label>
                 <input
                   type="text"
                   value={loanInfo.loanAmountPaid}
-                  className="border border-gray-300 disabled:bg-gray-100 rounded-md px-3 py-2 focus:ring-1 focus:ring-blue-500 focus:outline-none"
+                  className="border border-gray-300 disabled:bg-gray-100 rounded-md px-1 py-1 focus:ring-1 focus:ring-blue-500 focus:outline-none text-xs"
                   disabled={isClose}
                 />
               </div>
 
               {/* Balance Loan Amt */}
-              <div className="flex flex-col gap-1 w-[150px]">
-                <label className="text-gray-900 font-medium">
+              <div className="flex flex-col gap-1 w-[100px]">
+                <label className="text-gray-900 font-medium text-xs">
                   Balance Loan Amt
                 </label>
                 <input
                   type="text"
                   value={loanInfo.balanceLoanAmt}
-                  className="border border-gray-300 disabled:bg-gray-100 rounded-md px-3 py-2 focus:ring-1 focus:ring-blue-500 focus:outline-none"
+                  className="border border-gray-300 disabled:bg-gray-100 rounded-md px-1 py-1 focus:ring-1 focus:ring-blue-500 focus:outline-none text-xs"
                   disabled={isClose}
                 />
               </div>
 
               {/* Charges Adjusted */}
-              <div className="flex flex-col gap-1 w-[150px]">
-                <label className="text-gray-900 font-medium">
+              <div className="flex flex-col gap-1 w-[100px]">
+                <label className="text-gray-900 font-medium text-xs">
                   Charges Adjusted
                 </label>
                 <input
                   type="text"
                   value={loanInfo.chargesAdjusted}
-                  className="border border-gray-300 disabled:bg-gray-100 rounded-md px-3 py-2 focus:ring-1 focus:ring-blue-500 focus:outline-none"
+                  className="border border-gray-300 disabled:bg-gray-100 rounded-md px-1 py-1 focus:ring-1 focus:ring-blue-500 focus:outline-none text-xs"
                   disabled={isClose}
                 />
               </div>
 
               {/* Interest Paid For */}
               <div className="flex flex-col gap-1 w-[150px]">
-                <label className="text-gray-900 font-medium">
+                <label className="text-gray-900 font-medium text-xs">
                   Interest Paid For
                 </label>
                 <input
@@ -1499,14 +1503,14 @@ function AddLoanRepayment() {
                       ? loanInfo.interestPaidDaysPreClose
                       : loanInfo.pendingDays
                   }
-                  className="border border-gray-300 disabled:bg-gray-100 rounded-md px-3 py-2 focus:ring-1 focus:ring-blue-500 focus:outline-none"
+                  className="border border-gray-300 disabled:bg-gray-100 rounded-md px-1 py-1 focus:ring-1 focus:ring-blue-500 focus:outline-none text-xs"
                   disabled={isClose}
                 />
               </div>
 
               {/* Int. Paid Upto (Date Picker) */}
               <div className="flex flex-col gap-1 w-[150px]">
-                <label className="text-gray-900 font-medium">
+                <label className="text-gray-900 font-medium text-xs">
                   Int. Paid Upto
                 </label>
                 <DatePicker
@@ -1520,7 +1524,7 @@ function AddLoanRepayment() {
                     setLoanInfo((prev) => ({ ...prev, intPaidUpto: date }))
                   }
                   dateFormat="dd/MM/yyyy"
-                  className="border border-gray-300 disabled:bg-gray-100 rounded-md px-3 py-2 w-full focus:ring-1 focus:ring-blue-500 focus:outline-none"
+                  className="border border-gray-300 disabled:bg-gray-100 rounded-md px-1 py-1 w-full focus:ring-1 focus:ring-blue-500 focus:outline-none text-xs"
                   disabled={isClose}
                 />
               </div>
@@ -1540,7 +1544,7 @@ function AddLoanRepayment() {
                 }
               />
 
-              <label className="text-gray-900 font-medium">
+              <label className="text-gray-900 font-medium text-xs">
                 Loan Adjustment
               </label>
             </div>
@@ -1551,7 +1555,7 @@ function AddLoanRepayment() {
               <div className="flex flex-wrap gap-x-6 gap-y-4 mt-5">
                 {/* Pay Amount */}
                 <div className="flex flex-col gap-1 w-[150px]">
-                  <label className="text-gray-900 font-medium">
+                  <label className="text-gray-900 font-medium text-xs">
                     Pay Amount
                   </label>
                   <input
@@ -1560,13 +1564,13 @@ function AddLoanRepayment() {
                     // disabled={data?.schemeData?.interestInAdvance !== "Yes"}
                     onChange={(e) => handlePayAmountChange(e.target.value)}
                     onBlur={validatePayAmount}
-                    className="border border-gray-300 disabled:bg-gray-100 rounded-md px-3 py-2 focus:ring-1 focus:ring-blue-500 focus:outline-none bg-white"
+                    className="border border-gray-300 disabled:bg-gray-100 rounded-md px-1 py-1 focus:ring-1 focus:ring-blue-500 focus:outline-none bg-white text-xs"
                   />
                 </div>
 
                 {/* Interest Adjusted */}
                 <div className="flex flex-col gap-1 w-[150px]">
-                  <label className="text-gray-900 font-medium">
+                  <label className="text-gray-900 font-medium text-xs">
                     Interest Adjusted
                   </label>
                   <input
@@ -1580,64 +1584,64 @@ function AddLoanRepayment() {
                         pendingInt: e.target.value,
                       }))
                     }
-                    className="border border-gray-300 disabled:bg-gray-100 rounded-md px-3 py-2 focus:ring-1 focus:ring-blue-500 focus:outline-none"
+                    className="border border-gray-300 disabled:bg-gray-100 rounded-md px-1 py-1 focus:ring-1 focus:ring-blue-500 focus:outline-none text-xs"
                   />
                 </div>
 
                 {/* Loan Amt Adjusted */}
                 <div className="flex flex-col gap-1 w-[150px]">
-                  <label className="text-gray-900 font-medium">
+                  <label className="text-gray-900 font-medium text-xs">
                     Loan Amt Adjusted
                   </label>
                   <input
                     type="text"
                     disabled
                     value={loanInfoForAdj.loanAmountPaid}
-                    className="border border-gray-300 disabled:bg-gray-100 rounded-md px-3 py-2 focus:ring-1 focus:ring-blue-500 focus:outline-none"
+                    className="border border-gray-300 disabled:bg-gray-100 rounded-md px-1 py-1 focus:ring-1 focus:ring-blue-500 focus:outline-none text-xs"
                   />
                 </div>
 
                 {/* Balance Loan Amt */}
                 <div className="flex flex-col gap-1 w-[150px]">
-                  <label className="text-gray-900 font-medium">
+                  <label className="text-gray-900 font-medium text-xs">
                     Balance Loan Amt
                   </label>
                   <input
                     type="text"
                     disabled
                     value={loanInfoForAdj.balanceLoanAmt}
-                    className="border border-gray-300 disabled:bg-gray-100 rounded-md px-3 py-2 focus:ring-1 focus:ring-blue-500 focus:outline-none"
+                    className="border border-gray-300 disabled:bg-gray-100 rounded-md px-1 py-1 focus:ring-1 focus:ring-blue-500 focus:outline-none text-xs"
                   />
                 </div>
 
                 {/* Charges Adjusted */}
                 <div className="flex flex-col gap-1 w-[150px]">
-                  <label className="text-gray-900 font-medium">
+                  <label className="text-gray-900 font-medium text-xs">
                     Charges Adjusted
                   </label>
                   <input
                     type="text"
                     value={loanInfoForAdj.chargesAdjusted}
-                    className="border border-gray-300 disabled:bg-gray-100 rounded-md px-3 py-2 focus:ring-1 focus:ring-blue-500 focus:outline-none"
+                    className="border border-gray-300 disabled:bg-gray-100 rounded-md px-1 py-1 focus:ring-1 focus:ring-blue-500 focus:outline-none text-xs"
                     disabled
                   />
                 </div>
 
                 {/* Interest Paid For */}
                 <div className="flex flex-col gap-1 w-[150px]">
-                  <label className="text-gray-900 font-medium">
+                  <label className="text-gray-900 font-medium text-xs">
                     Interest Paid For
                   </label>
                   <input
                     type="text"
                     value={loanInfoForAdj.pendingDays}
-                    className="border border-gray-300 disabled:bg-gray-100 rounded-md px-3 py-2 focus:ring-1 focus:ring-blue-500 focus:outline-none"
+                    className="border border-gray-300 disabled:bg-gray-100 rounded-md px-1 py-1 focus:ring-1 focus:ring-blue-500 focus:outline-none text-xs"
                   />
                 </div>
 
                 {/* Int. Paid Upto (Date Picker) */}
                 <div className="flex flex-col gap-1 w-[150px]">
-                  <label className="text-gray-900 font-medium">
+                  <label className="text-gray-900 font-medium text-xs">
                     Int. Paid Upto
                   </label>
                   <DatePicker
@@ -1647,7 +1651,7 @@ function AddLoanRepayment() {
                     }
                     dateFormat="dd/MM/yyyy"
                     disabled
-                    className="border border-gray-300 disabled:bg-gray-100 rounded-md px-3 py-2 w-full focus:ring-1 focus:ring-blue-500 focus:outline-none"
+                    className="border border-gray-300 disabled:bg-gray-100 rounded-md px-1 py-1 w-full focus:ring-1 focus:ring-blue-500 focus:outline-none text-xs"
                   />
                 </div>
               </div>
@@ -1657,20 +1661,20 @@ function AddLoanRepayment() {
             <div className="flex flex-wrap gap-x-6 gap-y-4">
               {/* Pay Amount */}
               <div className="flex flex-col gap-1 w-[150px]">
-                <label className="text-gray-900 font-medium">Pay Amount</label>
+                <label className="text-gray-900 font-medium text-xs">Pay Amount</label>
                 <input
                   type="text"
                   value={loanInfoForAdj.payAmount}
                   onChange={(e) =>
                     handlePayAmountChangeForNotAdvance(e.target.value)
                   }
-                  className="border border-gray-300 rounded-md px-3 py-2 focus:ring-1 focus:ring-blue-500 focus:outline-none bg-white"
+                  className="border border-gray-300 rounded-md px-1 py-1 focus:ring-1 focus:ring-blue-500 focus:outline-none bg-white text-xs"
                 />
               </div>
 
               {/* Interest Adjusted */}
               <div className="flex flex-col gap-1 w-[150px]">
-                <label className="text-gray-900 font-medium">
+                <label className="text-gray-900 font-medium text-xs">
                   Interest Adjusted
                 </label>
                 <input
@@ -1683,64 +1687,64 @@ function AddLoanRepayment() {
                       pendingInt: e.target.value,
                     }))
                   }
-                  className="border border-gray-300 rounded-md px-3 py-2 focus:ring-1 focus:ring-blue-500 focus:outline-none "
+                  className="border border-gray-300 rounded-md px-1 py-1 focus:ring-1 focus:ring-blue-500 focus:outline-none text-xs"
                 />
               </div>
 
               {/* Loan Amt Adjusted */}
               <div className="flex flex-col gap-1 w-[150px]">
-                <label className="text-gray-900 font-medium">
+                <label className="text-gray-900 font-medium text-xs">
                   Loan Amt Adjusted
                 </label>
                 <input
                   type="text"
                   disabled
                   value={loanInfoForAdj.loanAmountPaid}
-                  className="border border-gray-300 rounded-md px-3 py-2 focus:ring-1 focus:ring-blue-500 focus:outline-none"
+                  className="border border-gray-300 rounded-md px-1 py-1 focus:ring-1 focus:ring-blue-500 focus:outline-none text-xs"
                 />
               </div>
 
               {/* Balance Loan Amt */}
               <div className="flex flex-col gap-1 w-[150px]">
-                <label className="text-gray-900 font-medium">
+                <label className="text-gray-900 font-medium text-xs">
                   Balance Loan Amt
                 </label>
                 <input
                   type="text"
                   disabled
                   value={loanInfoForAdj.balanceLoanAmt}
-                  className="border border-gray-300 rounded-md px-3 py-2 focus:ring-1 focus:ring-blue-500 focus:outline-none"
+                  className="border border-gray-300 rounded-md px-1 py-1 focus:ring-1 focus:ring-blue-500 focus:outline-none text-xs"
                 />
               </div>
 
               {/* Charges Adjusted */}
               <div className="flex flex-col gap-1 w-[150px]">
-                <label className="text-gray-900 font-medium">
+                <label className="text-gray-900 font-medium text-xs">
                   Charges Adjusted
                 </label>
                 <input
                   type="text"
                   value={loanInfoForAdj.chargesAdjusted}
                   disabled
-                  className="border border-gray-300 disabled:bg-gray-100 rounded-md px-3 py-2 focus:ring-1 focus:ring-blue-500 focus:outline-none"
+                  className="border border-gray-300 disabled:bg-gray-100 rounded-md px-1 py-1 focus:ring-1 focus:ring-blue-500 focus:outline-none text-xs"
                 />
               </div>
 
               {/* Interest Paid For */}
               <div className="flex flex-col gap-1 w-[150px]">
-                <label className="text-gray-900 font-medium">
+                <label className="text-gray-900 font-medium text-xs">
                   Interest Paid For
                 </label>
                 <input
                   type="text"
                   value={loanInfoForAdj.pendingDays}
-                  className="border border-gray-300 rounded-md px-3 py-2 focus:ring-1 focus:ring-blue-500 focus:outline-none"
+                  className="border border-gray-300 rounded-md px-1 py-1 focus:ring-1 focus:ring-blue-500 focus:outline-none text-xs"
                 />
               </div>
 
               {/* Int. Paid Upto (Date Picker) */}
               <div className="flex flex-col gap-1 w-[150px]">
-                <label className="text-gray-900 font-medium">
+                <label className="text-gray-900 font-medium text-xs">
                   Int. Paid Upto
                 </label>
                 <DatePicker
@@ -1753,7 +1757,7 @@ function AddLoanRepayment() {
                   }
                   dateFormat="dd/MM/yyyy"
                   disabled
-                  className="border border-gray-300 disabled:bg-gray-100 rounded-md px-3 py-2 w-full focus:ring-1 focus:ring-blue-500 focus:outline-none"
+                  className="border border-gray-300 disabled:bg-gray-100 rounded-md px-1 py-1 w-full focus:ring-1 focus:ring-blue-500 focus:outline-none text-xs"
                 />
               </div>
               <div className="text-sm text-gray-500 mt-1 ml-1">
@@ -1763,14 +1767,13 @@ function AddLoanRepayment() {
           )}
 
           <div className="flex flex-wrap gap-x-6 gap-y-4 mt-4">
-            {/* Mode of Payment */}
-            {/* Mode of Payment */}
-            <div className="flex flex-col gap-1 w-[200px]">
-              <label className="text-gray-900 font-medium">
+            
+            <div className="flex flex-col gap-1 w-[120px]">
+              <label className="text-gray-900 font-medium text-xs">
                 Mode of Payment
               </label>
               <select
-                className="border border-gray-300 rounded-md px-3 py-2 focus:ring-1 focus:ring-blue-500 focus:outline-none bg-white"
+                className="border border-gray-300 rounded-md px-1 py-1 focus:ring-1 focus:ring-blue-500 focus:outline-none bg-white text-xs"
                 value={paymentInfo.mode}
                 onChange={(e) =>
                   setPaymentInfo({ ...paymentInfo, mode: e.target.value })
@@ -1783,35 +1786,17 @@ function AddLoanRepayment() {
               </select>
             </div>
 
-            {/* Type of Payment dynamic */}
-            {/* {paymentInfo.mode === "Cash" && (
-               <div className="flex flex-col gap-1 w-[200px]">
-                <label className="text-gray-900 font-medium">
-                  Bank Details
-                </label>
-                <select
-                  className="border border-gray-300 rounded-md px-3 py-2 focus:ring-1 focus:ring-blue-500 focus:outline-none"
-                  value={paymentInfo.type}
-                  onChange={(e) =>
-                    setPaymentInfo({ ...paymentInfo, type: e.target.value })
-                  }
-                >
-                  <option value="">--Select--</option>
-                  <option value="HDFC">HDFC</option>
-                  <option value="SBI">SBI</option>
-                </select>
-              </div>
-            )} */}
+          
 
             {(paymentInfo.mode === "Net Banking" ||
               paymentInfo.mode === "Cash") && (
               <div className="flex flex-col gap-1 w-[200px]">
-                <label className="text-gray-900 font-medium">
+                <label className="text-gray-900 font-medium text-xs">
                   Bank Details
                 </label>
 
                 <select
-                  className="border border-gray-300 rounded-md px-3 py-2 focus:ring-1 focus:ring-blue-500 focus:outline-none bg-white"
+                  className="border border-gray-300 rounded-md px-1 py-1 focus:ring-1 focus:ring-blue-500 focus:outline-none bg-white text-xs"
                   value={paymentInfo.bankId}
                   onChange={(e) => {
                     const selectedId = e.target.value;
@@ -1840,12 +1825,12 @@ function AddLoanRepayment() {
 
             {paymentInfo.mode === "Credit Note" && (
               <div className="flex flex-col gap-1 w-[200px]">
-                <label className="text-gray-900 font-medium">
+                <label className="text-gray-900 font-medium text-xs">
                   Select Credit Note
                 </label>
 
                 <select
-                  className="border border-gray-300 rounded-md px-3 py-2 focus:ring-1 focus:ring-blue-500 focus:outline-none bg-white"
+                  className="border border-gray-300 rounded-md px-1 py-1 focus:ring-1 focus:ring-blue-500 focus:outline-none bg-white text-xs"
                   value={paymentInfo.creditNote}
                   onChange={(e) => handleCreditNoteSelect(e.target.value)}
                 >
@@ -1864,27 +1849,27 @@ function AddLoanRepayment() {
               <div className="flex gap-3 ">
                 {/* Utilized Amount */}
                 <div className="flex flex-col gap-1 w-[200px]">
-                  <label className="text-gray-900 font-medium">
+                  <label className="text-gray-900 font-medium text-xs">
                     Utilized Amount
                   </label>
                   <input
                     type="text"
                     value={paymentInfo.utilizedAmount}
                     disabled
-                    className="border border-gray-300 rounded-md px-3 py-2 bg-gray-100"
+                    className="border border-gray-300 rounded-md px-1 py-1 bg-gray-100 text-xs"
                   />
                 </div>
 
                 {/* Unutilized Amount */}
                 <div className="flex flex-col gap-1 w-[200px]">
-                  <label className="text-gray-900 font-medium">
+                  <label className="text-gray-900 font-medium text-xs">
                     Unutilized Amount
                   </label>
                   <input
                     type="text"
                     value={paymentInfo.unutilizedAmount}
                     disabled
-                    className="border border-gray-300 rounded-md px-3 py-2 bg-gray-100"
+                    className="border border-gray-300 rounded-md px-1 py-1 bg-gray-100 text-xs"
                   />
                 </div>
               </div>
@@ -1892,13 +1877,13 @@ function AddLoanRepayment() {
 
             {/* Payment Ref. No */}
             <div className="flex flex-col gap-1 w-[200px]">
-              <label className="text-gray-900 font-medium">
+              <label className="text-gray-900 font-medium text-xs">
                 Payment Ref. No
               </label>
               <input
                 type="text"
                 placeholder="Reference Number"
-                className="border border-gray-300 rounded-md px-3 py-2 focus:ring-1 focus:ring-blue-500 focus:outline-none bg-white"
+                className="border border-gray-300 rounded-md px-1 py-1 focus:ring-1 focus:ring-blue-500 focus:outline-none bg-white text-xs"
                 value={paymentInfo.refNo}
                 onChange={(e) =>
                   setPaymentInfo({ ...paymentInfo, refNo: e.target.value })
@@ -1908,13 +1893,13 @@ function AddLoanRepayment() {
 
             {/* Payment Made By */}
             <div className="flex flex-col gap-1 w-[200px]">
-              <label className="text-gray-900 font-medium">
+              <label className="text-gray-900 font-medium text-xs">
                 Payment Made By
               </label>
               <input
                 type="text"
                 placeholder="Name"
-                className="border border-gray-300 rounded-md px-3 py-2 focus:ring-1 focus:ring-blue-500 focus:outline-none bg-white"
+                className="border border-gray-300 rounded-md px-1 py-1 focus:ring-1 focus:ring-blue-500 focus:outline-none bg-white text-xs"
                 value={paymentInfo.madeBy}
                 onChange={(e) =>
                   setPaymentInfo({ ...paymentInfo, madeBy: e.target.value })
@@ -1922,43 +1907,45 @@ function AddLoanRepayment() {
               />
             </div>
           </div>
+          </div>
+          
         </div>
 
         {/* Pledge Item List */}
         <div className="flex justify-center  bg-[#FFE6E6] p-5">
-          <div className="w-[1250px]">
-            <h3 className="font-semibold mb-4 text-[#0A2478] text-lg">
-              Pledge Item List
+          <div className="w-[1422px]">
+            <h3 className="font-semibold  text-[#0A2478] text-lg">
+             
             </h3>
 
-            <div className="w-full text-xs border border-gray-300">
+            <div className="w-[1000px] text-xs border border-gray-300">
               {/* Header */}
               <div className="flex bg-[#0A2478] text-white font-semibold">
-                <div className="flex-1 p-3 border-r border-white text-center">
-                  Particulars
+                <div className="flex-1 p-1 border-r border-white text-center">
+                  Particulars( Pledge Item )
                 </div>
-                <div className="w-16 p-3 border-r border-white text-center">
+                <div className="w-16 p-1 border-r border-white text-center">
                   Nos.
                 </div>
-                <div className="w-24 p-3 border-r border-white text-center">
+                <div className="w-24 p-1 border-r border-white text-center">
                   Gross
                 </div>
-                <div className="w-24 p-3 border-r border-white text-center">
+                <div className="w-24 p-1 border-r border-white text-center">
                   Net Weight
                 </div>
-                <div className="w-24 p-3 border-r border-white text-center">
-                  Purity
+                <div className="w-24 p-1 border-r border-white text-center">
+                  Actual Purity
                 </div>
-                <div className="w-28 p-3 border-r border-white text-center">
-                  Calculated Purity
+                <div className="w-28 p-1 border-r border-white text-center">
+                 Assigned Purity
                 </div>
-                <div className="w-24 p-3 border-r border-white text-center">
+                <div className="w-24 p-1 border-r border-white text-center">
                   Rate
                 </div>
-                <div className="w-28 p-3 border-r border-white text-center">
+                <div className="w-28 p-1 border-r border-white text-center">
                   Valuation
                 </div>
-                <div className="w-28 p-3 text-center">Remark</div>
+                <div className="w-28 p-1 text-center">Remark</div>
               </div>
 
               {/* Dynamic Rows */}
@@ -2053,18 +2040,18 @@ function AddLoanRepayment() {
         </div>
 
         {/* Installments Table */}
-        <div className=" w-[1290px] bg-[#F7F7FF]">
+        <div className=" w-[1462px] bg-[#F7F7FF] p-2">
           <h1 className="text-blue-900 font-semibold text-xl py-2">
             Installments
           </h1>
           <div className="overflow-x-auto">
             <table className="w-full border-collapse">
               <thead>
-                <tr className="bg-blue-900 text-white text-sm">
-                  <th className="p-2 border border-gray-300">Sr. No</th>
-                  <th className="p-2 border border-gray-300">Receipt No</th>
-                  <th className="p-2 border border-gray-300">Payment Date</th>
-                  <th className="p-2 border border-gray-300">
+                <tr className="bg-blue-900 text-white text-xs">
+                  <th className="p-1 border border-gray-300">Sr. No</th>
+                  <th className="p-1 border border-gray-300">Receipt No</th>
+                  <th className="p-1 border border-gray-300">Payment Date</th>
+                  {/* <th className="p-1 border border-gray-300">
                     <input
                       type="date"
                       value={formData.paidUpto}
@@ -2073,11 +2060,11 @@ function AddLoanRepayment() {
                       }
                       className="border border-gray-300 rounded px-2 py-1 text-sm focus:ring-1 focus:ring-blue-500 focus:outline-none"
                     />
-                  </th>
-                  <th className="p-2 border border-gray-300">
+                  </th> */}
+                  <th className="p-1 border border-gray-300">
                     Mode of Payment
                   </th>
-                  <th className="p-2 border border-gray-300">
+                  <th className="p-1 border border-gray-300">
                     Payment Ref. No
                   </th>
                   <th className="p-2 border border-gray-300">Amount</th>
@@ -2097,9 +2084,9 @@ function AddLoanRepayment() {
                     <td className="p-2 border border-gray-300">
                       {row.receiptNo}
                     </td>
-                    <td className="p-2 border border-gray-300">
+                    {/* <td className="p-2 border border-gray-300">
                       {row.paymentDate}
-                    </td>
+                    </td> */}
                     <td className="p-2 border border-gray-300">
                       {row.paidUpto}
                     </td>
