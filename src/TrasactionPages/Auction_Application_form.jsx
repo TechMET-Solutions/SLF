@@ -175,7 +175,6 @@ function Auction_Application_form() {
 
           <div className="flex gap-3">
             <button
-              //   onClick={() => navigate("/Add-Auction-Creation")}
               onClick={() => handleSubmit()}
               className="bg-[#0A2478] text-white text-sm rounded px-5 py-2 cursor-pointer"
             >
@@ -193,93 +192,113 @@ function Auction_Application_form() {
 
       {/* 🔹 Form Container */}
 
-      <div className=" ml-[110px] mr-[110px] mt-6">
-        <div className="flex justify-center mt-6 gap-2 bg-[#FFE6E6] ">
-          <div className="  rounded-xl p-6 gap-2">
-            {/* 🔸 SECTION: Auction Details */}
-            <h3 className="text-[#0A2478] font-semibold text-lg mb-4">
-              Auction Details
-            </h3>
+      {/* <div className="mx-[28px]">
+        <div className="flex justify-center p-4 gap-2 bg-[#FFE6E6] ">
+          <div className=" flex rounded-xl  gap-2">
+            <div className="">
+              <h3 className="text-[#0A2478] font-semibold text-lg mb-1">
+                Auction Details
+              </h3>
+              <div className="flex gap-2">
+                <div>
+                  <label className="text-sm font-medium">Select Auction*</label>
+                  <select
+                    name="auction"
+                    value={formData.auction}
+                    onChange={(e) => handleAuctionSelect(e.target.value)}
+                    className="border rounded-[8px] border-gray-300 px-1 py-1 w-full  bg-white"
+                  >
+                    <option value="">Select Auction</option>
 
-            <div className="flex gap-2">
-              <div>
-                <label className="text-sm font-medium">Select Auction*</label>
-                <select
-                  name="auction"
-                  value={formData.auction}
-                  onChange={(e) => handleAuctionSelect(e.target.value)}
-                  className="border rounded-[8px] border-gray-300 px-2 py-2 w-full mt-1 bg-white"
-                >
-                  <option value="">Select Auction</option>
+                    {auctions.map((auction) => {
+                      const auctionDate = new Date(
+                        auction.date,
+                      ).toLocaleDateString("en-GB");
 
-                  {auctions.map((auction) => {
-                    const auctionDate = new Date(
-                      auction.date,
-                    ).toLocaleDateString("en-GB");
+                      return (
+                        <option key={auction.id} value={auction.id}>
+                          {auction.id}| {auctionDate} | {auction.time} |{" "}
+                          {auction.venue}
+                        </option>
+                      );
+                    })}
+                  </select>
+                </div>
 
-                    return (
-                      <option key={auction.id} value={auction.id}>
-                        {auction.id}| {auctionDate} | {auction.time} |{" "}
-                        {auction.venue}
-                      </option>
-                    );
-                  })}
-                </select>
+                <div className="mt-1">
+                  <p className="text-sm font-medium">Auction Date*</p>
+                  <input
+                    type="date"
+                    name="auctionDate"
+                    value={formData.auctionDate}
+                    onChange={onChange}
+                    disabled
+                    className="border border-gray-300 rounded-[8px] px-1 py-1 w-[120px]  bg-white disabled:bg-gray-50 "
+                  />
+                </div>
+
+                <div className="mt-1">
+                  <p className="text-sm font-medium">Auction Time*</p>
+                  <input
+                    type="time"
+                    name="auctionTime"
+                    value={formData.auctionTime}
+                    onChange={onChange}
+                    disabled
+                    className="border border-gray-300 rounded-[8px] px-1 py-1 w-[110px]  disabled:bg-gray-50 bg-white"
+                  />
+                </div>
+
+                <div className="mt-1 flex flex-col">
+                  <label className="text-sm font-medium">Auction Venue*</label>
+                  <input
+                    type="text"
+                    name="auctionVenue"
+                    value={formData.auctionVenue}
+                    onChange={onChange}
+                    placeholder="Venue"
+                    disabled
+                    className="border border-gray-300 rounded-[8px] px-1 py-1 w-[310px]  disabled:bg-gray-50"
+                  />
+                </div>
+
+                
               </div>
+            </div>
+            <div className="">
+              <div className="flex flex-col items-center justify-start pt-1">
+                <p className="font-roboto font-medium text-[16px] leading-[100%] tracking-[3%] text-center">
+                  Bidder Profile
+                </p>
 
-              <div className="mt-1">
-                <p className="text-sm font-medium">Auction Date*</p>
-                <input
-                  type="date"
-                  name="auctionDate"
-                  value={formData.auctionDate}
-                  onChange={onChange}
-                  disabled
-                  className="border border-gray-300 rounded-[8px] px-2 py-2 w-[120px] mt-1 bg-white disabled:bg-gray-50 "
+                <img
+                  src={
+                    formData.bidderimg
+                      ? typeof formData.bidderimg === "string"
+                        ? formData.bidderimg // Already a URL from DB
+                        : URL.createObjectURL(formData.bidderimg) // New file preview
+                      : profileempty
+                  }
+                  alt="Bidder Profile"
+                  className="w-[120px] h-[120px] mt-2 object-cover rounded-md"
                 />
-              </div>
 
-              <div className="mt-1">
-                <p className="text-sm font-medium">Auction Time*</p>
-                <input
-                  type="time"
-                  name="auctionTime"
-                  value={formData.auctionTime}
-                  onChange={onChange}
-                  disabled
-                  className="border border-gray-300 rounded-[8px] px-2 py-2 w-[100px] mt-1 disabled:bg-gray-50 bg-white"
-                />
-              </div>
-
-              <div>
-                <label className="text-sm font-medium">Auction Venue*</label>
-                <input
-                  type="text"
-                  name="auctionVenue"
-                  value={formData.auctionVenue}
-                  onChange={onChange}
-                  placeholder="Venue"
-                  disabled
-                  className="border border-gray-300 rounded-[8px] px-2 py-2 w-[510px] mt-1 disabled:bg-gray-50"
-                />
               </div>
             </div>
 
-            {/* 🔸 SECTION: Bidder Details */}
-            <h3 className="text-[#0A2478] font-semibold text-lg mt-5 mb-4">
+            <h3 className="text-[#0A2478] font-semibold text-lg mt-4">
               Bidder Details
             </h3>
 
-            <div className="flex gap-2">
-              <div className="relative">
+            <div className="flex gap-1">
+              <div className="">
                 <label className="text-sm font-medium">Bidder Name*</label>
-
                 <input
                   type="text"
                   name="bidderName"
                   value={formData.bidderName}
                   onChange={onChangeForbidders}
-                  className="border rounded-[8px] border-gray-300 px-2 py-2 w-[250px] mt-1  bg-white"
+                  className="border rounded-[8px] border-gray-300 px-1 py-1 w-[250px] bg-white"
                   autoComplete="off"
                 />
 
@@ -320,7 +339,7 @@ function Auction_Application_form() {
                   value={formData.bidderId}
                   onChange={onChange}
                   disabled
-                  className="border rounded-[8px] border-gray-300 px-2 py-2 w-[130px] mt-1 disabled:bg-gray-50"
+                  className="border rounded-[8px] border-gray-300 px-1 py-1 w-[80px]  disabled:bg-gray-50"
                 />
               </div>
 
@@ -332,7 +351,7 @@ function Auction_Application_form() {
                   value={formData.mobile}
                   onChange={onChange}
                   disabled
-                  className="border rounded-[8px] border-gray-300 px-2 py-2 w-[120px] mt-1 disabled:bg-gray-50"
+                  className="border rounded-[8px] border-gray-300 px-1 py-1 w-[120px]  disabled:bg-gray-50"
                 />
               </div>
 
@@ -344,11 +363,10 @@ function Auction_Application_form() {
                   value={formData.landline}
                   onChange={onChange}
                   disabled
-                  className="border rounded-[8px]  border-gray-300 px-2 py-2 w-[150px] mt-1 disabled:bg-gray-50"
+                  className="border rounded-[8px]  border-gray-300 px-1 py-1 w-[150px]  disabled:bg-gray-50"
                 />
               </div>
 
-              {/* Row 2 */}
               <div>
                 <label className="text-sm font-medium">Firm Name*</label>
                 <input
@@ -357,7 +375,7 @@ function Auction_Application_form() {
                   value={formData.firmName}
                   onChange={onChange}
                   disabled
-                  className="border rounded-[8px] border-gray-300 px-2 py-2 w-[250px] mt-1 disabled:bg-gray-50"
+                  className="border rounded-[8px] border-gray-300 px-1 py-1 w-[250px]  disabled:bg-gray-50"
                 />
               </div>
 
@@ -369,14 +387,12 @@ function Auction_Application_form() {
                   value={formData.pan}
                   onChange={onChange}
                   disabled
-                  className="border rounded-[8px] border-gray-300 px-2 py-2 w-[140px] mt-1 disabled:bg-gray-50"
+                  className="border rounded-[8px] border-gray-300 px-1 py-1 w-[140px]  disabled:bg-gray-50"
                 />
+
               </div>
 
-             
-            </div>
-            <div className="flex gap-2 mt-2">
- <div>
+              <div>
                 <p className="text-sm font-medium">Aadhar No*</p>
                 <input
                   type="text"
@@ -384,7 +400,7 @@ function Auction_Application_form() {
                   value={formData.aadhaar}
                   onChange={onChange}
                   disabled
-                  className="border rounded-[8px] border-gray-300 px-2 py-2 w-[150px] mt-1 disabled:bg-gray-50"
+                  className="border rounded-[8px] border-gray-300 px-1 py-1 w-[150px]  disabled:bg-gray-50"
                 />
               </div>
 
@@ -396,12 +412,10 @@ function Auction_Application_form() {
                   value={formData.gst}
                   onChange={onChange}
                   disabled
-                  className="border rounded-[8px] border-gray-300 px-2 py-2 w-[200px]  mt-1 disabled:bg-gray-50"
+                  className="border rounded-[8px] border-gray-300 px-1 py-1 w-[200px]   disabled:bg-gray-50"
                 />
               </div>
             </div>
-
-            {/* Checkbox */}
             <div className="mt-4">
               <label className="flex items-center gap-2">
                 <input type="checkbox" name="confirm" onChange={onChange} />
@@ -410,117 +424,297 @@ function Auction_Application_form() {
                 </span>
               </label>
             </div>
-
-            {/* 🔸 Upload Profile */}
-           
-
-            {/* 🔸 PAYMENT */}
-           
-          </div>
-          <div className='mt-5 p-5'>
-            <p className="font-roboto font-medium text-[16px] leading-[100%] tracking-[3%] text-center">
-              Bidder Profile
-            </p>
-
-            <img
-              src={
-                formData.bidderimg
-                  ? typeof formData.bidderimg === "string"
-                    ? formData.bidderimg // Already a URL from DB
-                    : URL.createObjectURL(formData.bidderimg) // New file preview
-                  : profileempty
-              }
-              alt="Bidder Profile"
-              className="w-[150px] h-[120px] mt-2 object-cover rounded-md"
-            />
-
           </div>
         </div>
 
-         </div>
-      <div className='ml-[110px] mr-[110px] '>
-        <div className='bg-[#F7F7FF] p-5  '>
-<h3 className="text-[#0A2478] font-semibold text-lg  mb-4">
-              Payment
-            </h3>
+      </div> */}
 
-            <div className="flex gap-5">
-              <div>
-                <p className="text-sm font-medium">Auction Fees*</p>
-                <input
-                  type="number"
-                  name="fees"
-                  value={formData.fees}
-                  disabled
-                  onChange={onChange}
-                  className="border rounded-[8px] border-gray-300 px-2 py-2 w-[150px] mt-1 disabled:bg-gray-50"
-                />
-              </div>
 
-              <div>
-                <p className="text-sm font-medium">
-                  Select Payment Method*
-                </p>
+      <div className="mx-[28px] bg-[#FFE6E6] p-4">
+        {/* TOP SECTION: AUCTION DETAILS */}
+        <div className="relative mb-6">
+          <h3 className="text-[#0A2478] font-bold text-[15px] mb-2">Auction Details</h3>
+          <div className="flex items-start gap-4">
+            {/* Input Group */}
+            <div className="flex gap-4 flex-grow">
+              <div className="flex flex-col">
+                <label className="text-[12px] font-semibold mb-1">Select Auction</label>
                 <select
-                  name="paymentMethod"
-                  value={formData.paymentMethod}
-                  onChange={onChangeForaddpaymentata}
-                  className="border rounded-[8px] border-gray-300 px-2 py-2 w-[150px] mt-1 bg-white"
+                  name="auction"
+                  value={formData.auction}
+                  onChange={(e) => handleAuctionSelect(e.target.value)}
+                  className="border border-gray-300 rounded-md px-2 py-1.5 w-[180px] text-xs bg-white focus:outline-none"
                 >
-                  <option value="">Select Method</option>
-                  <option value="UPI">UPI</option>
-                  <option value="Cash">Cash</option>
-                  <option value="Bank">Bank Transfer</option>
+                  <option value="">Select Auction</option>
+                  {auctions.map((auction) => (
+                    <option key={auction.id} value={auction.id}>
+                      {auction.id} | {new Date(auction.date).toLocaleDateString("en-GB")}
+                    </option>
+                  ))}
                 </select>
               </div>
 
-              {/* ---------- Show UTR only for UPI ---------- */}
-              {formData.paymentMethod === "UPI" && (
-                <div>
-                  <p className="text-sm font-medium">UTR Number*</p>
-                  <input
-                    type="text"
-                    name="utr"
-                    value={formData.utr}
-                    onChange={onChange}
-                    className="border rounded-[8px] px-2 py-2 w-[180px] mt-1 bg-white"
-                  />
-                </div>
-              )}
+              <div className="flex flex-col">
+                <label className="text-[12px] font-semibold mb-1">Auction Date</label>
+                <input
+                  type="text"
+                  value={formData.auctionDate || "dd-mm-yy"}
+                  disabled
+                  className="border border-gray-300 rounded-md px-2 py-1.5 w-[140px] text-xs bg-white disabled:bg-white"
+                />
+              </div>
 
-              {/* ---------- Show Bank Transfer Fields ---------- */}
-              {formData.paymentMethod === "Bank" && (
-                <>
-                  <div>
-                    <p className="text-sm font-medium">Bank Name</p>
-                    <input
-                      type="text"
-                      value={formData.bankName}
-                      disabled
-                      className="border rounded-[8px] px-2 py-2 w-[200px] mt-1 bg-gray-50"
-                    />
-                  </div>
+              <div className="flex flex-col">
+                <label className="text-[12px] font-semibold mb-1">Auction Time</label>
+                <input
+                  type="text"
+                  value={formData.auctionTime || "--"}
+                  disabled
+                  className="border border-gray-300 rounded-md px-2 py-1.5 w-[140px] text-xs bg-white disabled:bg-white"
+                />
+              </div>
 
-                  <div>
-                    <label className="text-sm font-medium">
-                      Transaction ID*
-                    </label>
-                    <input
-                      type="text"
-                      name="transactionId"
-                      value={formData.transactionId}
-                      onChange={onChange}
-                      className="border rounded-[8px] px-2 py-2 w-full  bg-white"
-                    />
-                  </div>
-                </>
+              <div className="flex flex-col">
+                <label className="text-[12px] font-semibold mb-1">Auction Venue</label>
+                <input
+                  type="text"
+                  value={formData.auctionVenue}
+                  disabled
+                  className="border border-gray-300 rounded-md px-2 py-1.5 w-[280px] text-xs bg-white disabled:bg-white"
+                />
+              </div>
+            </div>
+
+            {/* Profile Image (Floating Right) */}
+            <div className="flex flex-col items-center absolute right-120 top-0">
+              <p className="text-[12px] font-semibold mb-1">Upload Bidder Profile</p>
+              <div className="w-[110px] h-[100px] border border-blue-300 bg-white rounded-md flex items-center justify-center overflow-hidden">
+                <img
+                  src={
+                    formData.bidderimg
+                      ? typeof formData.bidderimg === "string"
+                        ? formData.bidderimg // Already a URL from DB
+                        : URL.createObjectURL(formData.bidderimg) // New file preview
+                      : profileempty
+                  }
+                  alt="Profile"
+                  className="w-full h-full object-cover"
+                />
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* BOTTOM SECTION: BIDDER DETAILS */}
+        <div className="mt-4">
+          <h3 className="text-[#0A2478] font-bold text-[15px] mb-2">Bidder Details</h3>
+          <div className="flex flex-wrap gap-x-3 gap-y-4">
+            <div className="flex flex-col">
+              <label className="text-[12px] font-semibold mb-1">Bidder Name *</label>
+              <input
+                type="text"
+                name="bidderName"
+                value={formData.bidderName}
+                onChange={onChangeForbidders}
+                className="border border-gray-300 rounded-md px-2 py-1.5 w-[160px] text-xs bg-white"
+              />
+              {suggestions.length > 0 && (
+                <ul className="absolute bg-white border w-[250px] rounded shadow max-h-40 overflow-y-auto z-50">
+                  {suggestions.map((item) => (
+                    <li
+                      key={item.id}
+                      className="px-3 py-2 hover:bg-blue-100 cursor-pointer"
+                      onClick={() => {
+                        setFormData({
+                          ...formData,
+                          bidderId: item.id,
+                          bidderName: item.bidder_name,
+                          mobile: item.mobile_no,
+                          landline: item.landline_no,
+                          firmName: item.firm_name,
+                          pan: item.pan_no,
+                          aadhaar: item.aadhar_no,
+                          gst: item.gst_no,
+                          bidderimg: item.bidder_photo,
+                        });
+                        setselecetdbidder(item);
+                        setSuggestions([]);
+                      }}
+                    >
+                      {item.bidder_name}
+                    </li>
+                  ))}
+                </ul>
               )}
             </div>
+
+            <div className="flex flex-col">
+              <label className="text-[12px] font-semibold mb-1">Bidder ID *</label>
+              <input
+                type="text"
+                value={formData.bidderId}
+                disabled
+                className="border border-gray-300 rounded-md px-2 py-1.5 w-[100px] text-xs bg-white disabled:bg-white"
+              />
+            </div>
+
+            <div className="flex flex-col">
+              <label className="text-[12px] font-semibold mb-1">Mobile Number *</label>
+              <input
+                type="text"
+                value={formData.mobile}
+                disabled
+                className="border border-gray-300 rounded-md px-2 py-1.5 w-[120px] text-xs bg-white disabled:bg-white"
+              />
+            </div>
+
+            <div className="flex flex-col">
+              <label className="text-[12px] font-semibold mb-1">Landline Number</label>
+              <input
+                type="text"
+                value={formData.landline}
+                disabled
+                className="border border-gray-300 rounded-md px-2 py-1.5 w-[120px] text-xs bg-white disabled:bg-white"
+              />
+            </div>
+
+            <div className="flex flex-col">
+              <label className="text-[12px] font-semibold mb-1">Firm Name *</label>
+              <input
+                type="text"
+                value={formData.firmName}
+                disabled
+                className="border border-gray-300 rounded-md px-2 py-1.5 w-[180px] text-xs bg-white disabled:bg-white"
+              />
+            </div>
+
+            <div className="flex flex-col">
+              <label className="text-[12px] font-semibold mb-1">Pan Number *</label>
+              <input
+                type="text"
+                value={formData.pan}
+                disabled
+                className="border border-gray-300 rounded-md px-2 py-1.5 w-[130px] text-xs bg-white disabled:bg-white"
+              />
+            </div>
+
+            <div className="flex flex-col">
+              <label className="text-[12px] font-semibold mb-1">Aadhar Number</label>
+              <input
+                type="text"
+                value={formData.aadhaar}
+                disabled
+                className="border border-gray-300 rounded-md px-2 py-1.5 w-[130px] text-xs bg-white disabled:bg-white"
+              />
+            </div>
+
+            <div className="flex flex-col">
+              <label className="text-[12px] font-semibold mb-1">GST Number</label>
+              <input
+                type="text"
+                value={formData.gst}
+                disabled
+                className="border border-gray-300 rounded-md px-2 py-1.5 w-[200px] text-xs bg-white disabled:bg-white"
+              />
+            </div>
+          </div>
         </div>
-          
-</div>
-         
-     
+
+        {/* CONFIRMATION CHECKBOX */}
+        <div className="mt-6 flex items-center gap-2">
+          <input
+            type="checkbox"
+            name="confirm"
+            className="w-4 h-4 border-gray-300 rounded accent-[#0A2478]"
+          />
+          <span className="text-[13px] font-medium text-gray-800">
+            I confirm these details are correct.
+          </span>
+        </div>
+      </div>
+    
+      <div className='bg-[#E9E9FF] mx-[28px] p-5  '>
+          <h3 className="text-[#0A2478] font-semibold text-lg  mb-4">
+            Payment
+          </h3>
+
+          <div className="flex gap-5">
+            <div>
+              <p className="text-sm font-medium">Auction Fees*</p>
+              <input
+                type="number"
+                name="fees"
+                value={formData.fees}
+                disabled
+                onChange={onChange}
+              className="border border-gray-300 rounded-md px-2 py-1.5 w-[160px] text-xs bg-white"
+              />
+            </div>
+
+            <div>
+              <p className="text-sm font-medium">
+                Select Payment Method*
+              </p>
+              <select
+                name="paymentMethod"
+                value={formData.paymentMethod}
+                onChange={onChangeForaddpaymentata}
+              className="border border-gray-300 rounded-md px-2 py-1.5 w-[160px] text-xs bg-white"
+              >
+                <option value="">Select Method</option>
+                <option value="UPI">UPI</option>
+                <option value="Cash">Cash</option>
+                <option value="Bank">Bank Transfer</option>
+              </select>
+            </div>
+
+            {/* ---------- Show UTR only for UPI ---------- */}
+            {formData.paymentMethod === "UPI" && (
+              <div>
+                <p className="text-sm font-medium">UTR Number*</p>
+                <input
+                  type="text"
+                  name="utr"
+                  value={formData.utr}
+                  onChange={onChange}
+                className="border border-gray-300 rounded-md px-2 py-1.5 w-[160px] text-xs bg-white"
+                />
+              </div>
+            )}
+
+            {/* ---------- Show Bank Transfer Fields ---------- */}
+            {formData.paymentMethod === "Bank" && (
+              <>
+                <div>
+                  <p className="text-sm font-medium">Bank Name</p>
+                  <input
+                    type="text"
+                    value={formData.bankName}
+                    disabled
+                  className="border border-gray-300 rounded-md px-2 py-1.5 w-[160px] text-xs bg-white"
+                  />
+                </div>
+
+                <div className="flex flex-col">
+                  <label className="text-sm font-medium">
+                    Transaction ID*
+                  </label>
+                  <input
+                    type="text"
+                    name="transactionId"
+                    value={formData.transactionId}
+                    onChange={onChange}
+                  className="border border-gray-300 rounded-md px-2 py-1.5 w-[160px] text-xs bg-white"
+                  />
+                </div>
+              </>
+            )}
+          </div>
+        </div>
+
+    
+
+
 
       {showPopup && popupData && (
         <div
