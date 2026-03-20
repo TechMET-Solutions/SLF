@@ -89,8 +89,8 @@ function AuctionCreation() {
   return (
     <div className="min-h-screen w-full">
       {/* 🔹 Header */}
-      <div className="flex justify-center sticky top-[80px] z-40">
-        <div className="flex items-center px-6 py-4 border-b  w-[1462px] h-[50px] border rounded-[11px] border-gray-200 justify-between bg-white">
+      <div className="flex justify-center sticky top-[50px] z-40">
+        <div className="flex items-center px-6 py-4 border-b  w-[1462px] h-[40px] border border-gray-200 justify-between bg-white">
           <h2 className="text-red-600 font-bold text-[20px]">Auction List</h2>
           <div className="flex gap-5">
             <div className="hidden lg:flex items-center gap-3">
@@ -221,8 +221,8 @@ function AuctionCreation() {
 
       {/* 🔹 Table Section */}
       <div className="">
-        <div className="flex ml-[22px]">
-          <div className="overflow-x-auto mt-6 w-[1300px]">
+        <div className="flex ml-[25px]">
+          <div className="overflow-x-auto  w-[1300px]">
             <table className=" border-collapse">
               <thead className="bg-[#0A2478] text-white text-sm">
                 <tr>

@@ -184,8 +184,8 @@ const UserRolePermission = () => {
   return (
     <div className="min-h-screen w-full">
       {/* middletopbar */}
-      <div className="flex justify-center sticky top-[80px] z-40">
-        <div className="flex items-center px-6 py-4 border-b  w-[1462px] h-[50px] border rounded-[11px] border-gray-200 justify-between bg-white">
+      <div className="flex justify-center sticky top-[50px] z-40">
+        <div className="flex items-center px-6 py-4 border-b  w-[1462px] h-[40px] border rounded-[11px] border-gray-200 justify-between bg-white">
           <h2
             style={{
               fontFamily: "Source Sans 3, sans-serif",
@@ -339,7 +339,7 @@ const UserRolePermission = () => {
 
       {/* Table */}
       <div className="flex">
-        <div className="overflow-x-auto mt-4  h-[500px] ml-[22px]">
+        <div className="overflow-x-auto  h-[500px] ml-[25px]">
           <table className="w-full border-collapse">
             <thead className="bg-[#0A2478] text-white text-sm">
               <tr>

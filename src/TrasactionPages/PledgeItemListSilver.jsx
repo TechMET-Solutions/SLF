@@ -230,16 +230,16 @@ debugger
   //   RENDER UI
   // ╚══════════════════════════════════╝
   return (
-    <div className="flex mb-6">
+    <div className="flex ">
       <div className="">
-        <h3 className="font-semibold mb-4 text-blue-900 text-lg">
-          Pledge Item List For Silver
-        </h3>
+        {/* <h3 className="font-semibold  text-blue-900 text-lg">
+          
+        </h3> */}
 
-        <table className=" text-sm">
+        <table className=" text-xs">
           <thead className="bg-[#0A2478] text-white">
              <tr>
-              <th className="px-4 py-2 border-r border-gray-200 w-[200px]">Particulars</th>
+              <th className="px-4 py-2 border-r border-gray-200 w-[200px]">Pledge Item List For Silver</th>
               <th className="px-4 py-2 border-r border-gray-200 w-[50px]">Nos.</th>
               <th className="px-4 py-2 border-r border-gray-200  w-[80px]">Gross</th>
               <th className="px-4 py-2 border-r border-gray-200   w-[80px]">Net Weight</th>

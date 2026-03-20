@@ -300,8 +300,8 @@ const ChargesProfileList = () => {
   return (
     <div className="min-h-screen w-full">
       {/* Header and Add Button */}
-      <div className="flex justify-center sticky top-[80px] z-40">
-        <div className="flex items-center px-6 py-4 border-b mt-2 w-[1462px] h-[50px] border rounded-[11px] border-gray-200 justify-between shadow bg-white">
+      <div className="flex justify-center sticky top-[50px] z-40">
+        <div className="flex items-center px-6 py-4 border-b  w-[1462px] h-[40px] border border-gray-200 justify-between shadow bg-white">
           <h2 className="text-red-600 font-bold text-[20px] leading-[148%] font-source">
             Charges Profile List
           </h2>
@@ -503,8 +503,8 @@ const ChargesProfileList = () => {
       )}
 
       {/* Table */}
-      <div className="flex ml-[22px]">
-        <div className="overflow-x-auto mt-5 w-[1290px] h-[500px]">
+      <div className="flex ml-[25px]">
+        <div className="overflow-x-auto  w-[1290px] h-[500px]">
           <table className="w-full border-collapse">
             <thead className="bg-[#0A2478] text-white text-sm">
               <tr>

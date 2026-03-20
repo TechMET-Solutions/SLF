@@ -175,9 +175,9 @@ console.log(loginUser,"asdfghj")
 
   return (
     <div className=" min-h-screen w-full ">
-      <div className="ml-[22px]">
+      <div className="">
         {/* <div className="flex items-center  border-b mt-2 sm:w-4xl md:w-[1462px] h-[50px] p-1 border rounded-[11px] border-gray-200 justify-between "> */}
-        <div className="flex items-center justify-between w-full max-w-[1462px] mx-auto mt-2 p-2 border border-gray-200 rounded-[11px] overflow-x-auto">
+        <div className="flex items-center justify-between w-full max-w-[1462px] mx-auto p-2 border border-gray-200  h-[40px]">
           {/* Left heading */}
           <h2
             style={{
@@ -267,16 +267,7 @@ console.log(loginUser,"asdfghj")
                     className="flex-grow text-[11px] font-source outline-none h-full"
                   />
 
-                  {/* Search Button */}
-                  {/* <button
-                    onClick={() => {
-                      setIsDropdownOpen(false);
-                      getAccountGroups();
-                    }}
-                    className="ml-2 bg-[#0b2c69] text-white text-[11px] px-4 h-[24px] rounded-[3px] font-source hover:bg-[#071d45]"
-                  >
-                    Search
-                  </button> */}
+                 
 
                   <button
                     onClick={handleSearch} // Use the new search handler
@@ -475,8 +466,8 @@ console.log(loginUser,"asdfghj")
       )}
 
       {/* Table */}
-      <div className="flex ml-[35px] ">
-        <div className="overflow-x-auto mt-2 w-[1290px] h-[500px]">
+      <div className="flex ml-[25px] ">
+        <div className="overflow-x-auto w-[1290px] h-[500px]">
           <table className="w-full border-collapse">
             <thead className="bg-[#0A2478] text-white text-sm">
               <tr>

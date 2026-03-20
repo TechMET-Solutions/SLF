@@ -283,16 +283,16 @@ const BranchProfileList = () => {
   };
   return (
     <>
-      <div className=" w-full ">
+      <div className=" ">
         {/* middletopbar */}
         {/* <div className="flex  sticky top-[80px] z-40 ml-[22px]">
           <div className="z-40 bg-white">
             <div className="flex items-center px-6 py-4 border-b mt-2 w-[1462px] h-[50px] border rounded-[11px] border-gray-200 justify-between shadow-sm">
             */}
         
-        <div className="flex sticky top-[80px] z-40 w-full px-10">
+        <div className="flex sticky top-[50px] z-40 w-full ml-[30px]">
           <div className="z-40 bg-white w-full">
-            <div className="flex items-center px-6 py-4 border-b mt-2 w-full max-w-[1462px] lg:h-[50px] border rounded-[11px] border-gray-200 justify-between">
+            <div className="flex items-center px-6 border-b w-full max-w-[1462px] lg:h-[40px] border rounded-[11px] border-gray-200 justify-between">
               {/* 1. LEFT SIDE: Title */}
               <h2
                 style={{
@@ -358,7 +358,7 @@ const BranchProfileList = () => {
                         ].map((col) => (
                           <label
                             key={col.id}
-                            className="flex items-center gap-2 p-2 hover:bg-gray-50 cursor-pointer rounded"
+                            className="flex items-center gap-2  hover:bg-gray-50 cursor-pointer rounded"
                           >
                             <input
                               type="checkbox"
@@ -692,7 +692,7 @@ const BranchProfileList = () => {
 
         {/* Table */}
         <div className="flex ml-[35px]">
-          <div className="overflow-x-auto mt-5 w-[1290px] h-[500px]">
+          <div className="overflow-x-auto  w-[1290px] h-[500px]">
             <table className="w-full border-collapse">
               <thead className="bg-[#0A2478] text-white text-sm">
                 <tr>

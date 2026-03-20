@@ -2015,7 +2015,22 @@ const AddGoldLoanApplication = () => {
       interestType: scheme?.interestType || "",
     }));
   };
+  const [image, setImage] = useState(null);
+  // 1. Make sure the ref name matches exactly where it is used
+  const fileInputRef2 = useRef(null);
 
+  const handleImageChange = (e) => {
+    const file = e.target.files[0];
+    if (file) {
+      // 2. This creates a URL the browser can display
+      setImage(URL.createObjectURL(file));
+    }
+  };
+
+  const triggerUpload = () => {
+    // 3. This programmatically clicks the hidden <input>
+    fileInputRef2.current.click();
+  };
   const { loginUser } = useAuth();
 
   console.log("Logged in user:", loginUser);
@@ -2107,6 +2122,8 @@ const AddGoldLoanApplication = () => {
     document.title = "SLF | Add Gold Loan Application ";
   }, []);
   const [highlightedIndex, setHighlightedIndex] = useState(-1);
+  const [highlightedIndexForCoborroer, setHighlightedIndexForCoBorrower] =
+    useState(-1);
   const [rows, setRows] = useState([
     {
       id: 1,
@@ -2133,9 +2150,9 @@ const AddGoldLoanApplication = () => {
   console.log(CustomerData, "CustomerData");
   console.log(selectedCustomer, "selectedCustomer");
   const [selectedCoBorrower, setSelectedCoBorrower] = useState(null);
+  console.log(selectedCoBorrower, "selectedCoBorrower");
   const [branchId, setBranchId] = useState("");
   const [branchName, setBranchName] = useState("");
-
   console.log(branchId, branchName);
   const [formData, setFormData] = useState({
     borrowerName: "",
@@ -2249,119 +2266,9 @@ const AddGoldLoanApplication = () => {
     }
   }, [formData.Loan_amount]);
 
-  // useEffect(() => {
-
-  //   let totalGross = 0;
-  //   let totalNet = 0;
-  //   let totalValuation = 0;
-
-  //   PledgeItem.forEach((item) => {
-  //     totalGross += Number(item.gross) || 0;
-  //     totalNet += Number(item.netWeight) || 0;
-  //     totalValuation += Number(item.valuation) || 0;
-  //   });
-
-  //   const maxLoan =
-  //     parseInt(selectedScheme?.maxLoanAmount, 10) || totalValuation;
-
-  //   const loanAmount = totalValuation > maxLoan ? maxLoan : totalValuation;
-
-  //   // ---- Interest calculation for Monthly scheme ----
-  //   let interestAmount = 0;
-
-  //   if (selectedScheme?.calcBasisOn === "Monthly") {
-  //     const tenure = Number(selectedScheme?.loanPeriod) || 0;
-
-  //     const slab = selectedScheme?.interestRates?.[0];
-
-  //     const rate = Number(slab?.addInt || 0);
-
-  //     interestAmount = (loanAmount * rate * tenure) / (12 * 100);
-  //   }
-
-  //   // Document charges on capped loan
-  //   let docCharges = 0;
-
-  //   const loan = Number(loanAmount || 0);
-  //   const docPercent = Number(selectedScheme?.docChargePercent || 0);
-
-  //   if (loan > 0 && docPercent > 0) {
-  //     // Calculate percentage charge
-  //     docCharges = (loan * docPercent) / 100;
-
-  //     // Apply min/max only when loan and percent both > 0
-  //     const minDoc = Number(selectedScheme?.docChargeMin || 0);
-  //     const maxDoc = Number(selectedScheme?.docChargeMax || Infinity);
-
-  //     docCharges = Math.max(minDoc, Math.min(docCharges, maxDoc));
-  //   }
-
-  //   // Net Payable
-  //   const netPayable = loan + interestAmount;
-
-  //   setFormData((prev) => ({
-  //     ...prev,
-  //     Loan_amount: loanAmount.toFixed(2),
-  //     Interest_Amount: interestAmount.toFixed(2),
-  //     Doc_Charges: docCharges.toFixed(2),
-  //     Net_Payable: netPayable.toFixed(2),
-  //   }));
-  // }, [PledgeItem, selectedScheme]);
-  // useEffect(() => {
-  //   let totalValuation = 0;
-
-  //   PledgeItem.forEach((item) => {
-  //     totalValuation += Number(item.valuation) || 0;
-  //   });
-
-  //   const maxLoan =
-  //     parseFloat(selectedScheme?.maxLoanAmount) || totalValuation;
-
-  //   const loanAmount =
-  //     totalValuation > maxLoan ? maxLoan : totalValuation;
-
-  //   // ✅ Admin Charges
-  //   let adminCharges = 0;
-
-  //   if (selectedScheme?.adminChargeType === "percentage") {
-  //     const adminPercent = Number(selectedScheme?.administrativeCharges || 0);
-  //     adminCharges = (loanAmount * adminPercent) / 100;
-  //   } else {
-  //     adminCharges = Number(selectedScheme?.administrativeCharges || 0);
-  //   }
-
-  //   // ✅ Doc Charges
-  //   let docCharges = 0;
-
-  //   if (selectedScheme?.docChargeType === "fixed") {
-  //     docCharges = Number(selectedScheme?.docChargeFixed || 0);
-  //   } else {
-  //     const docPercent = Number(selectedScheme?.docChargePercent || 0);
-  //     docCharges = (loanAmount * docPercent) / 100;
-
-  //     const minDoc = Number(selectedScheme?.docChargeMin || 0);
-  //     const maxDoc = Number(selectedScheme?.docChargeMax || Infinity);
-
-  //     docCharges = Math.max(minDoc, Math.min(docCharges, maxDoc));
-  //   }
-
-  //   // 🔥 FINAL NET PAYABLE (without interest)
-  //   const netPayable = loanAmount + adminCharges + docCharges;
-
-  //   setFormData((prev) => ({
-  //     ...prev,
-  //     Loan_amount: loanAmount.toFixed(2),
-  //     Admin_Charges: adminCharges.toFixed(2),
-  //     Doc_Charges: docCharges.toFixed(2),
-  //     Net_Payable: netPayable.toFixed(2),
-  //   }));
-  // }, [PledgeItem, selectedScheme]);
   useEffect(() => {
     let totalValuation = 0;
 
-    // ---------------------------
-    // TOTAL VALUATION
-    // ---------------------------
     PledgeItem.forEach((item) => {
       totalValuation += Number(item.valuation) || 0;
     });
@@ -2372,9 +2279,6 @@ const AddGoldLoanApplication = () => {
 
     const loan = Number(loanAmount) || 0;
 
-    // ---------------------------
-    // ADMIN CHARGES
-    // ---------------------------
     let adminCharges = 0;
 
     if (selectedScheme?.adminChargeType === "percentage") {
@@ -2489,21 +2393,6 @@ const AddGoldLoanApplication = () => {
     return () => clearTimeout(debounce);
   }, [searchTermForCoBorrower]);
 
-  // ➕ Add new row
-  const handleAddRow = () => {
-    const newRow = {
-      id: Date.now(),
-      particular: "gold",
-      nos: 1,
-      gross: "",
-      netWeight: "",
-      purity: "20k",
-      rate: "",
-      valuation: "",
-      remark: "",
-    };
-    setRows([...rows, newRow]);
-  };
   const Handleclosed = () => {
     setShowCustomerModal(false);
     setCustomerData(null);
@@ -2511,60 +2400,154 @@ const AddGoldLoanApplication = () => {
     setBankDetails(null);
   };
   // ❌ Delete specific row
-  const handleDeleteRow = (id) => {
-    const updatedRows = rows.filter((row) => row.id !== id);
-    setRows(updatedRows);
-  };
+
+  // const handleSelectCustomer = (customer, type) => {
+  //   // 1️⃣ Close dropdown immediately
+  //   setResults([]);
+  //   setLoading(false);
+
+  //   // 2️⃣ Update input text
+  //   setSearchTerm(customer.printName || "");
+
+  //   // 3️⃣ Update borrower remark if Borrower selected
+  //   if (type === "Borrower") {
+  //     setSelectedBorrowerRemark(customer.Remark || "");
+  //   }
+
+  //   // 4️⃣ Update selected customer state
+  //   setSelectedCustomer(customer);
+
+  //   // 5️⃣ Update form data
+  //   setFormData((prev) => ({
+  //     ...prev,
+  //     borrowerName: customer.firstName || "",
+  //     borrowerID: customer.id || null,
+
+  //     printName: customer.printName || "",
+  //     mobile: customer.mobile || "",
+  //     altMobile: customer.altMobile || "",
+  //     email: customer.email || "",
+  //     panNo: customer.panNo || "",
+  //     aadhar: customer.aadhar || "",
+  //     Borrower_ProfileImg: customer.profileImage || "",
+  //     Borrower_signature: customer.signature || "",
+  //     borrowerAddress: `${customer.Permanent_Address || ""}, ${customer.Permanent_City || ""}, ${customer.Permanent_State || ""}, ${customer.Permanent_Country || ""} - ${customer.Permanent_Pincode || ""}`,
+  //     Nominee_Name: customer.Nominee_NomineeName || "",
+  //     NomineeRelation: customer.Nominee_Relation || "",
+  //   }));
+
+  //   // 6️⃣ OPEN REMARK MODAL AFTER UI UPDATE (the real fix)
+  //   setTimeout(() => {
+  //     setSelectedremarkModel(true);
+  //   }, 120);
+  // };
 
   const handleSelectCustomer = (customer, type) => {
+    if (!customer) return;
+
     // 1️⃣ Close dropdown immediately
     setResults([]);
     setLoading(false);
 
-    // 2️⃣ Update input text
-    setSearchTerm(customer.printName || "");
+    // 2️⃣ Show selected customer in input
+    setSearchTerm(`${customer.printName} (Id -${customer.id} )`);
 
-    // 3️⃣ Update borrower remark if Borrower selected
-    if (type === "Borrower") {
-      setSelectedBorrowerRemark(customer.Remark || "");
-    }
-
-    // 4️⃣ Update selected customer state
+    // 3️⃣ Update selected customer
     setSelectedCustomer(customer);
 
-    // 5️⃣ Update form data
+    // 4️⃣ Update borrower remark if borrower selected
+    if (type === "Borrower") {
+      setSelectedBorrowerRemark(customer?.Remark ?? "");
+    }
+
+    // 5️⃣ Build formatted address safely
+    const borrowerAddress = [
+      customer?.Permanent_Address,
+      customer?.Permanent_City,
+      customer?.Permanent_State,
+      customer?.Permanent_Country,
+    ]
+      .filter(Boolean)
+      .join(", ");
+
+    const fullAddress = borrowerAddress
+      ? `${borrowerAddress} - ${customer?.Permanent_Pincode ?? ""}`
+      : "";
+
+    // 6️⃣ Update form data
     setFormData((prev) => ({
       ...prev,
-      borrowerName: customer.firstName || "",
-      borrowerID: customer.id || null,
+      borrowerName: customer?.firstName ?? "",
+      borrowerID: customer?.id ?? null,
 
-      printName: customer.printName || "",
-      mobile: customer.mobile || "",
-      altMobile: customer.altMobile || "",
-      email: customer.email || "",
-      panNo: customer.panNo || "",
-      aadhar: customer.aadhar || "",
-      Borrower_ProfileImg: customer.profileImage || "",
-      Borrower_signature: customer.signature || "",
-      borrowerAddress: `${customer.Permanent_Address || ""}, ${customer.Permanent_City || ""}, ${customer.Permanent_State || ""}, ${customer.Permanent_Country || ""} - ${customer.Permanent_Pincode || ""}`,
-      Nominee_Name: customer.Nominee_NomineeName || "",
-      NomineeRelation: customer.Nominee_Relation || "",
+      printName: customer?.printName ?? "",
+      mobile: customer?.mobile ?? "",
+      altMobile: customer?.altMobile ?? "",
+      email: customer?.email ?? "",
+      panNo: customer?.panNo ?? "",
+      aadhar: customer?.aadhar ?? "",
+
+      Borrower_ProfileImg: customer?.profileImage ?? "",
+      Borrower_signature: customer?.signature ?? "",
+
+      borrowerAddress: fullAddress,
+
+      Nominee_Name: customer?.Nominee_NomineeName ?? "",
+      NomineeRelation: customer?.Nominee_Relation ?? "",
     }));
 
-    // 6️⃣ OPEN REMARK MODAL AFTER UI UPDATE (the real fix)
+    // 7️⃣ Open remark modal smoothly
     setTimeout(() => {
       setSelectedremarkModel(true);
-    }, 120);
+    }, 100);
   };
 
+  // const handleSelectCoborrower = (customer, type) => {
+  //   setSelectedremarkModel(true);
+  //   if (type === "CoBorrower") {
+  //     setSelectedCoBorrowerRemark(customer.Remark);
+  //   }
+  //   setSelectedCoBorrower(customer);
+  //   setSearchTermForCoBorrower(customer.printName); // show name in input
+  //   setResults2([]);
+  // setFormData((prev) => ({
+  //   ...prev,
+  //   CoBorrowerName: customer.firstName || "",
+  //   CoBorrowerID: customer.id || null,
+  //   CoBorrower_ProfileImg: customer.profileImage || "",
+  //   CoBorrower_signature: customer.signature || "",
+  //   CoBorrowerId: customer.id || "",
+  // }));
+  // };
+
   const handleSelectCoborrower = (customer, type) => {
-    setSelectedremarkModel(true);
-    if (type === "CoBorrower") {
-      setSelectedCoBorrowerRemark(customer.Remark);
-    }
-    setSelectedCoBorrower(customer);
-    setSearchTermForCoBorrower(customer.printName); // show name in input
+    if (!customer) return;
+
+    // 1️⃣ Close dropdown immediately
     setResults2([]);
+    setLoading(false);
+
+    // 2️⃣ Show selected customer in input
+    setSearchTermForCoBorrower(`${customer.printName} (Id -${customer.id} )`);
+
+    // 3️⃣ Update selected customer
+    setSelectedCoBorrower(customer);
+
+    // 4️⃣ Update borrower remark if borrower selected
+    if (type === "CoBorrower") {
+      setSelectedBorrowerRemark(customer?.Remark ?? "");
+    }
+
+    // 5️⃣ Build formatted address safely
+    const borrowerAddress = [
+      customer?.Permanent_Address,
+      customer?.Permanent_City,
+      customer?.Permanent_State,
+      customer?.Permanent_Country,
+    ]
+      .filter(Boolean)
+      .join(", ");
+
     setFormData((prev) => ({
       ...prev,
       CoBorrowerName: customer.firstName || "",
@@ -2573,8 +2556,12 @@ const AddGoldLoanApplication = () => {
       CoBorrower_signature: customer.signature || "",
       CoBorrowerId: customer.id || "",
     }));
-  };
 
+    // 7️⃣ Open remark modal smoothly
+    setTimeout(() => {
+      setSelectedremarkModel(true);
+    }, 100);
+  };
   const handleInputChange = (e) => {
     const { name, value } = e.target;
 
@@ -2778,9 +2765,9 @@ const AddGoldLoanApplication = () => {
   };
 
   return (
-    <div className="min-h-screen ml-[22px] ">
-      <div className="flex  sticky top-[80px] z-40">
-        <div className="flex items-center px-6 py-4 border-b  w-[1290px] h-[62px] border rounded-[11px] border-gray-200 justify-between shadow bg-white">
+    <div className="min-h-screen  ml-[22px]">
+      <div className="flex sticky top-[50px] z-40">
+        <div className="flex items-center px-6 py-4 border-b w-[1462px] h-[40px] border border-gray-200 justify-between shadow bg-white">
           <h2 className="text-red-600 text-[20px] font-semibold">
             Add Gold Loan Application
           </h2>
@@ -2802,12 +2789,12 @@ const AddGoldLoanApplication = () => {
         </div>
       </div>
 
-      <div className=" mt-5">
+      <div className=" ">
         <div
-          className="flex  p-3  gap-5 
-bg-[#FFE6E6] "
+          className="flex p-1  gap-5 
+bg-[#FFE6E6] w-[1462px] "
         >
-          <div className="flex gap-2">
+          <div className="flex gap-5">
             <div className="flex flex-col">
               <div className="flex flex-col">
                 <label className="text-[14px] font-medium">
@@ -2816,40 +2803,43 @@ bg-[#FFE6E6] "
                 <div className="flex items-center  w-[280px]">
                   <div className="relative flex-1">
                     <input
-  type="text"
-  placeholder="Enter Borrower Name"
-  name="Borrower_Name"
-  value={searchTerm}
-  onChange={(e) => {
-    setSearchTerm(e.target.value);
-    setSelectedCustomer(null);
-    setHighlightedIndex(-1);
-  }}
-  onKeyDown={(e) => {
-    if (!results.length) return;
+                      type="text"
+                      placeholder="Enter Borrower Name"
+                      name="Borrower_Name"
+                      value={searchTerm}
+                      onChange={(e) => {
+                        setSearchTerm(e.target.value);
+                        setSelectedCustomer(null);
+                        setHighlightedIndex(-1);
+                      }}
+                      onKeyDown={(e) => {
+                        if (!results.length) return;
 
-    if (e.key === "ArrowDown") {
-      e.preventDefault();
-      setHighlightedIndex((prev) =>
-        prev < results.length - 1 ? prev + 1 : 0
-      );
-    }
+                        if (e.key === "ArrowDown") {
+                          e.preventDefault();
+                          setHighlightedIndex((prev) =>
+                            prev < results.length - 1 ? prev + 1 : 0,
+                          );
+                        }
 
-    if (e.key === "ArrowUp") {
-      e.preventDefault();
-      setHighlightedIndex((prev) =>
-        prev > 0 ? prev - 1 : results.length - 1
-      );
-    }
+                        if (e.key === "ArrowUp") {
+                          e.preventDefault();
+                          setHighlightedIndex((prev) =>
+                            prev > 0 ? prev - 1 : results.length - 1,
+                          );
+                        }
 
-    if (e.key === "Enter" && highlightedIndex >= 0) {
-      e.preventDefault();
-      handleSelectCustomer(results[highlightedIndex], "Borrower");
-      setHighlightedIndex(-1);
-    }
-  }}
-  className="border border-gray-300 rounded-l py-1 px-1 w-full focus:outline-none focus:ring-1 focus:ring-blue-500 bg-white"
-/>
+                        if (e.key === "Enter" && highlightedIndex >= 0) {
+                          e.preventDefault();
+                          handleSelectCustomer(
+                            results[highlightedIndex],
+                            "Borrower",
+                          );
+                          setHighlightedIndex(-1);
+                        }
+                      }}
+                      className="border border-gray-300 rounded-l py-1 px-1 w-full focus:outline-none focus:ring-1 focus:ring-blue-500 bg-white h-[30px] text-xs"
+                    />
 
                     {loading && (
                       <div className="absolute right-3 top-2 text-gray-400 text-sm">
@@ -2857,42 +2847,41 @@ bg-[#FFE6E6] "
                       </div>
                     )}
 
-                  {/* Show dropdown only if user typed something */}
-{searchTerm.trim() !== "" && !selectedCustomer && (
-  <ul className="absolute left-0 top-full bg-white border border-gray-200 rounded-md w-full max-h-48 overflow-y-auto mt-1 shadow-lg z-50">
-    
-    {/* If results available */}
-    {results.length > 0 ? (
-      results.map((customer, index) => (
-        <li
-          key={customer.id}
-          onClick={() =>
-            handleSelectCustomer(customer, "Borrower")
-          }
-          className={`px-3 py-2 cursor-pointer ${
-            index === highlightedIndex
-              ? "bg-blue-300"
-              : "hover:bg-blue-100"
-          }`}
-        >
-          {customer.printName}
-          <span className="text-gray-500 text-sm">
-            ({customer.printName})
-          </span>
-        </li>
-      ))
-    ) : (
-      /* If no customer found */
-      <li className="px-3 py-2 text-gray-500 text-sm">
-        Customer not found
-      </li>
-    )}
-  </ul>
-)}
+                    {/* Show dropdown only if user typed something */}
+                    {searchTerm.trim() !== "" && !selectedCustomer && (
+                      <ul className="absolute left-0 top-full bg-white border border-gray-200 rounded-md w-full max-h-48 overflow-y-auto mt-1 shadow-lg z-50 h-[30px] text-xs">
+                        {/* If results available */}
+                        {results.length > 0 ? (
+                          results.map((customer, index) => (
+                            <li
+                              key={customer.id}
+                              onClick={() =>
+                                handleSelectCustomer(customer, "Borrower")
+                              }
+                              className={`px-1 py-1 cursor-pointer ${
+                                index === highlightedIndex
+                                  ? "bg-blue-300"
+                                  : "hover:bg-blue-100"
+                              }`}
+                            >
+                              {customer.printName}
+                              <span className="text-gray-500 text-sm">
+                                ({customer.printName})
+                              </span>
+                            </li>
+                          ))
+                        ) : (
+                          /* If no customer found */
+                          <li className="px-3 py-2 text-gray-500 text-sm">
+                            Customer not found
+                          </li>
+                        )}
+                      </ul>
+                    )}
                   </div>
 
                   <button
-                    className="bg-[#0A2478] text-white px-2 py-2 rounded-r border border-gray-300 border-l-0 hover:bg-[#081c5b]"
+                    className="bg-[#0A2478] text-white px-2 rounded-r border border-gray-300 border-l-0 hover:bg-[#081c5b] h-[30px]"
                     type="button"
                     onClick={() => OpenCustomerModel(selectedCustomer.id)}
                   >
@@ -2901,7 +2890,7 @@ bg-[#FFE6E6] "
                 </div>
               </div>
 
-              <div className="flex flex-col mt-1">
+              {/* <div className="flex flex-col mt-1">
                 <label className="text-[14px] font-medium">
                   Co-Borrower<span className="text-red-500">*</span>
                 </label>
@@ -2953,14 +2942,112 @@ bg-[#FFE6E6] "
                     <img src={timesvg} alt="eye" />
                   </button>
                 </div>
+              </div> */}
+
+              <div className="flex flex-col mt-1">
+                <label className="text-[14px] font-medium">
+                  Co-Borrower<span className="text-red-500">*</span>
+                </label>
+                <div className="flex items-center  w-[280px]">
+                  <div className="relative flex-1">
+                    <input
+                      type="text"
+                      placeholder="Enter Co-Borrower Name"
+                      name="CoBorrowerName"
+                      value={searchTermForCoBorrower}
+                      onChange={(e) => {
+                        setSearchTermForCoBorrower(e.target.value);
+                        setSelectedCoBorrower(null);
+                        setHighlightedIndexForCoBorrower(-1);
+                      }}
+                      onKeyDown={(e) => {
+                        if (!results.length) return;
+
+                        if (e.key === "ArrowDown") {
+                          e.preventDefault();
+                          setHighlightedIndexForCoBorrower((prev) =>
+                            prev < results.length - 1 ? prev + 1 : 0,
+                          );
+                        }
+
+                        if (e.key === "ArrowUp") {
+                          e.preventDefault();
+                          setHighlightedIndexForCoBorrower((prev) =>
+                            prev > 0 ? prev - 1 : results.length - 1,
+                          );
+                        }
+
+                        if (
+                          e.key === "Enter" &&
+                          highlightedIndexForCoborroer >= 0
+                        ) {
+                          e.preventDefault();
+                          handleSelectCoborrower(
+                            results[highlightedIndexForCoborroer],
+                            "CoBorrower",
+                          );
+                          setHighlightedIndexForCoBorrower(-1);
+                        }
+                      }}
+                      className="border border-gray-300 rounded-l py-1 px-1 w-full focus:outline-none focus:ring-1 focus:ring-blue-500 bg-white h-[30px] text-xs"
+                    />
+
+                    {loading && (
+                      <div className="absolute right-3 top-2 text-gray-400 text-sm">
+                        Loading...
+                      </div>
+                    )}
+
+                    {/* Show dropdown only if user typed something */}
+                    {searchTermForCoBorrower.trim() !== "" &&
+                      !selectedCoBorrower && (
+                        <ul className="absolute left-0 top-full bg-white border border-gray-200 rounded-md w-full max-h-48 overflow-y-auto mt-1 shadow-lg z-50 text-xs">
+                          {/* If results available */}
+                          {results2.length > 0 ? (
+                            results2.map((customer, index) => (
+                              <li
+                                key={customer.id}
+                                onClick={() =>
+                                  handleSelectCoborrower(customer, "CoBorrower")
+                                }
+                                className={`px-3 py-2 cursor-pointer ${
+                                  index === highlightedIndexForCoborroer
+                                    ? "bg-blue-300"
+                                    : "hover:bg-blue-100"
+                                }`}
+                              >
+                                {customer.printName}
+                                <span className="text-gray-500 text-sm">
+                                  ({customer.printName})
+                                </span>
+                              </li>
+                            ))
+                          ) : (
+                            /* If no customer found */
+                            <li className="px-3 py-2 text-gray-500 text-sm">
+                              Customer not found
+                            </li>
+                          )}
+                        </ul>
+                      )}
+                  </div>
+
+                  <button
+                    className="bg-[#0A2478] text-white px-2 rounded-r border border-gray-300 border-l-0 hover:bg-[#081c5b] h-[30px]"
+                    type="button"
+                    onClick={() => OpenCustomerModel(selectedCustomer.id)}
+                  >
+                    <img src={timesvg} alt="eye" />
+                  </button>
+                </div>
               </div>
 
-              <div className="mb-6 mt-1">
-                <label className="text-[14px] font-medium block mb-1">
+              <div className=" mt-1">
+                <label className="text-[14px] font-medium block ">
                   Scheme<span className="text-red-500">*</span>
                 </label>
                 <select
-                  className="border border-gray-300 px-1 py-1 w-[280px] bg-white rounded-[8px]  "
+                  className="border border-gray-300 px-1 py-1 w-[280px] bg-white rounded-[8px] h-[30px] text-xs"
                   onChange={handleSchemeChange}
                   defaultValue=""
                 >
@@ -2975,8 +3062,8 @@ bg-[#FFE6E6] "
                 </select>
               </div>
             </div>
-            <div className="border flex gap-10  p-2 border-gray-300">
-              {/* <div className="flex gap-5">
+            {/* <div className="border  gap-10  p-2 border-gray-300">
+              <div className="flex gap-5">
                 <div className="">
                   <div>
                     <label className="text-[14px] font-medium">
@@ -3068,7 +3155,7 @@ bg-[#FFE6E6] "
                     disabled={true}
                     value={formData.CoBorrowerID}
                     onChange={handleInputChange}
-                    className="border border-gray-300 px-3 py-2  w-[120px] rounded-[8px] bg-white h-[40px] disabled:bg-gray-100 "
+                    className="border border-gray-300 px-3 py-2 w-[120px] rounded-[8px] bg-white h-[40px] disabled:bg-gray-100 "
                   />
                 </div>
                 <div className="">
@@ -3138,21 +3225,97 @@ bg-[#FFE6E6] "
                     />
                   </div>
                 </div>
-              </div> */}
-              <div className='p-2'>
-                <p> Borrower Details </p>
-
+              </div>
+            </div> */}
+            <div className="flex gap-10 text-xs">
+              <div>
                 <div>
-
+                  <p className="font bold text-[15px]">Borrower Details</p>
+                </div>
+                <div className="border w-[296px] h-[125px] p-2  overflow-auto">
+                  <p className="text-gray-400">
+                    {selectedCustomer?.printName}{" "}
+                  </p>
+                  <p className="text-gray-400 mt-1">
+                    {selectedCustomer?.mobile}
+                    {selectedCustomer?.altMobile && "/"}
+                    {selectedCustomer?.altMobile}
+                  </p>
+                  <p className="text-gray-400 mt-1">
+                    {selectedCustomer?.Permanent_Address}
+                  </p>
+                  <p className="text-gray-400 mt-1">
+                    {selectedCustomer?.Nominee_NomineeName}
+                  </p>
+                  <p className="text-gray-400 mt-1">
+                    {selectedCustomer?.Nominee_Relation}
+                  </p>
                 </div>
               </div>
-              <div className='p-2'>
-<p> Co-Borrower Details </p>
+              <div>
+                <div>
+                  <p className="font bold text-[15px]">Borrower Details</p>
+                </div>
+                <div className="border w-[296px] h-[125px] p-2 overflow-auto">
+                  <p className="text-gray-400">
+                    {selectedCoBorrower?.printName}{" "}
+                  </p>
+                  <p className="text-gray-400 mt-1">
+                    {selectedCoBorrower?.mobile}
+                    {selectedCoBorrower?.altMobile && "/"}
+                    {selectedCoBorrower?.altMobile}
+                  </p>
+                  <p className="text-gray-400 mt-1">
+                    {selectedCoBorrower?.Permanent_Address}
+                  </p>
+                  <p className="text-gray-400 mt-1">
+                    {selectedCoBorrower?.Nominee_NomineeName}
+                  </p>
+                  <p className="text-gray-400 mt-1">
+                    {selectedCoBorrower?.Nominee_Relation}
+                  </p>
+                </div>
               </div>
+
+              <div></div>
             </div>
           </div>
           <div>
-            <div className="flex  gap-2">
+            <div className="flex gap-2">
+              <div className="flex flex-col items-start">
+                <p className="text-[14px] font-medium mb-1">Ornament Photo</p>
+
+                <div
+                  className="relative cursor-pointer w-[110px] h-[80px]"
+                  onClick={() => fileInputRef.current.click()}
+                >
+                  {/* Image with a simple hover effect */}
+                  <img
+                    src={
+                      formData.OrnamentPhoto
+                        ? formData.OrnamentPhoto
+                        : profileempty
+                    }
+                    alt="Ornament"
+                    className="w-full h-full object-cover rounded-[8px] border border-gray-300 hover:brightness-90 transition-all"
+                  />
+
+                  {/* Pencil Icon Overlay - Placed exactly at the corner */}
+                  <div className="absolute -bottom-1 -right-1 bg-[#0A2478] text-white p-1.5 rounded-full shadow-md border-2 border-white flex items-center justify-center">
+                    <MdEdit size={14} />
+                  </div>
+                </div>
+
+                <input
+                  type="file"
+                  ref={fileInputRef}
+                  id="ornamentFile"
+                  name="OrnamentFile"
+                  accept="image/*"
+                  onChange={(e) => handleOrnamentUpload(e)}
+                  className="hidden"
+                />
+              </div>
               <div className=" h-[130px]  ">
                 {/* Profile Image */}
                 <p className="text-[14px] font-medium">Borrower</p>
@@ -3164,10 +3327,10 @@ bg-[#FFE6E6] "
                       : profileempty // fallback image
                   }
                   alt="profile"
-                  className="w-[100px] h-[80px] rounded-[8px] object-cover border border-gray-100"
+                  className="w-[110px] h-[80px] rounded-[8px] object-cover border border-gray-100"
                 />
 
-                <div className="mt-2 border w-[100px]  flex items-center justify-center bg-white">
+                <div className="mt-2 border w-[100px] h-[20px] flex items-center justify-center bg-white">
                   {formData.Borrower_signature ? (
                     <img
                       src={`${formData.Borrower_signature}`}
@@ -3178,8 +3341,44 @@ bg-[#FFE6E6] "
                     <span className="text-gray-400 text-xs">No Signature</span>
                   )}
                 </div>
+                <div className="flex flex-col items-center">
+                  {/* Hidden File Input - Crucial for the click to work */}
+                  <input
+                    type="file"
+                    ref={fileInputRef2}
+                    onChange={handleImageChange}
+                    className="hidden"
+                    accept="image/*"
+                  />
+
+                  {!image ? (
+                    /* The Upload Button - Shows when 'image' is null */
+                    <div
+                      onClick={triggerUpload}
+                      className="mt-2 border w-[100px] h-[20px] rounded-[8px] flex items-center justify-center bg-[#0A2478] text-white cursor-pointer hover:opacity-90"
+                    >
+                      <span className="text-white text-xs">Upload</span>
+                    </div>
+                  ) : (
+                    /* The Preview - Shows once an image is selected */
+                    <div
+                      className="mt-2 cursor-pointer group relative"
+                      onClick={triggerUpload}
+                    >
+                      <img
+                        src={image}
+                        alt="Preview"
+                        className="w-[100px] h-[20px] object-cover rounded-[8px] border"
+                      />
+                      {/* Hover overlay to indicate 'Click to Update' */}
+                      <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 flex items-center justify-center rounded-[8px] transition-opacity">
+                        <span className="text-white text-[10px]">Change</span>
+                      </div>
+                    </div>
+                  )}
+                </div>
               </div>
-              <div className="w-[100px] h-auto flex flex-col ">
+              <div className="w-[110px] h-auto flex flex-col ">
                 <p className="text-[14px] font-medium">Co-Borrower</p>
 
                 <img
@@ -3192,7 +3391,7 @@ bg-[#FFE6E6] "
                   className="w-[100px] h-[80px] rounded-[8px] object-cover border border-gray-300"
                 />
 
-                <div className="mt-2 w-[100px]  border flex items-center justify-center bg-white ">
+                {/* <div className="mt-2 w-[100px] h-[20px] border flex items-center justify-center bg-white ">
                   {formData.CoBorrower_signature ? (
                     <img
                       src={formData.CoBorrower_signature}
@@ -3202,13 +3401,25 @@ bg-[#FFE6E6] "
                   ) : (
                     <p className="text-gray-400 text-xs">No signature</p>
                   )}
+                </div> */}
+
+                <div className="mt-2 border w-[100px] h-[20px] flex items-center justify-center bg-white">
+                  {formData.CoBorrower_signature ? (
+                    <img
+                      src={`${formData.CoBorrower_signature}`}
+                      alt="CoBorrower signature"
+                      className="w-full h-full object-contain"
+                    />
+                  ) : (
+                    <span className="text-gray-400 text-xs">No Signature</span>
+                  )}
                 </div>
               </div>
             </div>
           </div>
         </div>
 
-        <div className=" gap-10  ml-[110px]  bg-[#F7F7FF] p-2 mr-[110px]">
+        <div className=" gap-10    bg-[#F7F7FF]   w-[1462px]">
           {selectedScheme?.product === "Gold" && (
             <>
               <div className="flex gap-2  mt-2 ">
@@ -3232,11 +3443,11 @@ bg-[#FFE6E6] "
             </>
           )}
 
-          <div className="flex  gap-2 ">
+          <div className="flex gap-2 mt-2 p-1">
             <div>
-              <label className="text-[14px] font-medium">
+              <p className="text-[14px] font-medium">
                 Loan Amount <span className="text-red-500">*</span>
-              </label>
+              </p>
 
               <input
                 type="text"
@@ -3255,48 +3466,48 @@ bg-[#FFE6E6] "
                     Net_Payable: netPayable.toFixed(2),
                   }));
                 }}
-                className="border border-gray-300 px-3 py-2 w-[129px] rounded-[8px] bg-white h-[38px] mt-1"
+                className="border border-gray-300 px-1 py-1 w-[129px] text-xs rounded-[8px] h-[30px] bg-white  mt-1"
               />
             </div>
             <div>
-              <label className="text-[14px] font-medium">Admin Charges</label>
+              <p className="text-[14px] font-medium">Admin Charges</p>
               <input
                 type="text"
                 value={formData.Admin_Charges}
                 readOnly
-                className="border border-gray-300 px-3 py-2 mt-1 w-[129px] rounded-[8px] bg-gray-100 h-[38px]"
+                className="border border-gray-300 px-3 text-xs h-[30px] mt-1 w-[129px] rounded-[8px] bg-gray-100 "
               />
             </div>
 
             <div>
-              <label className="text-[14px] font-medium">Doc Charges</label>
+              <p className="text-[14px] font-medium">Doc Charges</p>
               <input
                 type="text"
                 value={formData.Doc_Charges}
                 readOnly
-                className="border border-gray-300 px-3 py-2 mt-1 w-[129px] rounded-[8px] bg-gray-100 h-[38px]"
+                className="border border-gray-300 px-3 text-xs h-[30px] mt-1 w-[129px] rounded-[8px] bg-gray-100 "
               />
             </div>
 
             <div>
-              <label className="text-[14px] font-medium">Net Payable</label>
+              <p className="text-[14px] font-medium">Net Payable</p>
               <input
                 type="text"
                 value={formData.Net_Payable}
                 readOnly
-                className="border border-gray-300 px-3 py-2 mt-1 w-[129px] rounded-[8px] bg-gray-100 h-[38px]"
+                className="border border-gray-300 px-3 text-xs h-[30px] mt-1 w-[129px] rounded-[8px] bg-gray-100 "
               />
             </div>
 
             <div className="flex flex-col ">
-              <label className="text-[14px] font-medium">
+              <p className="text-[14px] font-medium">
                 Valuer 1<span className="text-red-500">*</span>
-              </label>
+              </p>
               <select
                 name="value1"
                 value={formData.value1}
                 onChange={handleInputChange}
-                className="border border-gray-300 rounded-[8px] px-3 py-2 mt-1 bg-white w-[150px]"
+                className="border border-gray-300 rounded-[8px] px-3 text-xs h-[30px] mt-1 bg-white w-[150px]"
               >
                 <option value="">Select valuer 1</option>
                 {activeEmployees.map((emp) => (
@@ -3315,7 +3526,7 @@ bg-[#FFE6E6] "
                 name="value2"
                 value={formData.value2}
                 onChange={handleInputChange}
-                className="border border-gray-300 rounded-[8px] px-3 py-2 mt-1 w-full bg-white"
+                className="border border-gray-300 rounded-[8px] px-3 text-xs h-[30px] mt-1 w-[150px] bg-white"
               >
                 <option value="">Select valuer 2</option>
                 {activeEmployees.map((emp) => (
@@ -3339,55 +3550,21 @@ bg-[#FFE6E6] "
                 onChange={handleInputChange}
                 min={minDate} // today
                 max={maxDate} // today + 60 days
-                className="border border-gray-300 px-3 py-2 mt-1 w-[136px] rounded-[8px] bg-white h-[38px]"
-              />
-            </div>
-            <div className="flex flex-col items-start">
-              <p className="text-[14px] font-medium mb-1">Ornament Photo</p>
-
-              <div
-                className="relative cursor-pointer w-[100px] h-[80px]"
-                onClick={() => fileInputRef.current.click()}
-              >
-                {/* Image with a simple hover effect */}
-                <img
-                  src={
-                    formData.OrnamentPhoto
-                      ? formData.OrnamentPhoto
-                      : profileempty
-                  }
-                  alt="Ornament"
-                  className="w-full h-full object-cover rounded-[8px] border border-gray-300 hover:brightness-90 transition-all"
-                />
-
-                {/* Pencil Icon Overlay - Placed exactly at the corner */}
-                <div className="absolute -bottom-1 -right-1 bg-[#0A2478] text-white p-1.5 rounded-full shadow-md border-2 border-white flex items-center justify-center">
-                  <MdEdit size={14} />
-                </div>
-              </div>
-
-              <input
-                type="file"
-                ref={fileInputRef}
-                id="ornamentFile"
-                name="OrnamentFile"
-                accept="image/*"
-                onChange={(e) => handleOrnamentUpload(e)}
-                className="hidden"
+                className="border border-gray-300 px-3 text-xs h-[30px] mt-1 w-[136px] rounded-[8px] bg-white"
               />
             </div>
           </div>
 
-          <div className="flex gap-10 ">
-            <p className="mt-2 ">
+          <div className="flex gap-10 mb-2">
+            <p className=" text-xs">
               {numberToWords(Number(formData.Loan_amount) || 0)}
             </p>
           </div>
         </div>
-        <div className="flex mb-10 ml-[110px]    mr-[110px]">
+        <div className="flex mb-10  w-[1462px] bg-[#FFE6E6]">
           <div
             className="flex gap-18   
-bg-[#FFE6E6] p-2"
+ p-2"
           >
             <div className="flex ">
               <div className="">
@@ -3395,29 +3572,29 @@ bg-[#FFE6E6] p-2"
                   Scheme Details
                 </h3>
 
-                <table className="border border-gray-300 text-sm mt-2">
+                <table className="border border-gray-300 text-xs ">
                   <thead className="bg-[#0A2478] text-white">
                     <tr>
-                      <th className="px-4 py-2 border-r border-gray-200 w-[224px]">
+                      <th className=" py-1 border-r border-gray-200 w-[224px]">
                         Loan Tenure (Days)
                       </th>
-                      <th className="px-4 py-2 border-r border-gray-200 w-[173px]">
+                      <th className="py-1 border-r border-gray-200 w-[173px]">
                         Min Loan
                       </th>
-                      <th className="px-4 py-2 border-r border-gray-200 w-[195px]">
+                      <th className=" py-1 border-r border-gray-200 w-[195px]">
                         Max Loan
                       </th>
                     </tr>
                   </thead>
-                  <tbody className="text-gray-700">
+                  <tbody className="text-gray-700 text-xs">
                     <tr className={"bg-gray-50"}>
-                      <td className="px-4 py-2 border border-[#4A4A4A38]">
+                      <td className="px-2 py-1 border border-[#4A4A4A38]">
                         {selectedScheme?.loanPeriod}
                       </td>
-                      <td className="px-4 py-2 border border-[#4A4A4A38]">
+                      <td className="px-2 py-1 border border-[#4A4A4A38]">
                         {selectedScheme?.minLoanAmount}
                       </td>
-                      <td className="px-4 py-2 border border-[#4A4A4A38]">
+                      <td className="px-2 py-1 border border-[#4A4A4A38]">
                         {selectedScheme?.maxLoanAmount}
                       </td>
                     </tr>
@@ -3431,18 +3608,18 @@ bg-[#FFE6E6] p-2"
                   Effective Interest Rates
                 </h3>
 
-                <table className="border border-gray-300 text-sm mt-2">
+                <table className="border border-gray-300 text-xs ">
                   <thead className="bg-[#0A2478] text-white">
                     <tr>
-                      <th className="px-4 py-2 border-r border-gray-200 w-[307px]">
+                      <th className="px-4 py-1 border-r border-gray-200 w-[307px]">
                         Terms
                       </th>
-                      <th className="px-4 py-2 border-r border-gray-200 w-[307px]">
+                      <th className="px-4 py-1 border-r border-gray-200 w-[307px]">
                         Effective Interest Rates
                       </th>
                     </tr>
                   </thead>
-                  <tbody className="text-gray-700">
+                  <tbody className="text-gray-700 text-xs">
                     {selectedScheme?.interestRates &&
                     selectedScheme?.interestRates.length > 0 ? (
                       selectedScheme?.interestRates.map((rate, idx) => (
@@ -3450,13 +3627,13 @@ bg-[#FFE6E6] p-2"
                           key={idx}
                           className={idx % 2 === 0 ? "bg-gray-50" : "bg-white"}
                         >
-                          <td className="px-4 py-2 border border-[#4A4A4A38]">
+                          <td className="px-1 py-1 border border-[#4A4A4A38]">
                             {rate.from} To {rate.to}{" "}
                             {selectedScheme?.calcBasisOn === "Monthly"
                               ? "MONTHS"
                               : "DAYS"}
                           </td>
-                          <td className="px-4 py-2 border border-[#4A4A4A38]">
+                          <td className="px-1 py-1 border border-[#4A4A4A38]">
                             {rate.addInt}%
                           </td>
                         </tr>
@@ -3465,7 +3642,7 @@ bg-[#FFE6E6] p-2"
                       <tr>
                         <td
                           colSpan="2"
-                          className="text-center py-3 text-gray-500 border border-[#4A4A4A38] bg-white"
+                          className="text-center py-1 text-gray-500 border border-[#4A4A4A38] bg-white"
                         >
                           No interest data available
                         </td>
@@ -3692,7 +3869,7 @@ bg-[#FFE6E6] p-2"
           </div>
         )}
 
-        {remarkModel && selectedBorrowerRemark?.trim() !== "" &&(
+        {remarkModel && selectedBorrowerRemark?.trim() !== "" && (
           <div
             className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50"
             style={{

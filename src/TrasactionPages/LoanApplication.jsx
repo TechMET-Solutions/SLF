@@ -759,8 +759,8 @@ const LoanApplication = () => {
 
   return (
     <div>
-      <div className="flex justify-center sticky top-[80px] z-40">
-        <div className="flex items-center px-6 py-4 border-b  w-[1462px] h-[50px] border rounded-[11px] border-gray-200 justify-around bg-white">
+      <div className="flex justify-center sticky top-[10px] z-40">
+        <div className="flex items-center px-6 py-4 border-b  w-[1462px] h-[40px] border border-gray-200 justify-around bg-white">
           <h2
             style={{
               fontFamily: "Source Sans 3, sans-serif",
@@ -1023,7 +1023,7 @@ const LoanApplication = () => {
       )}
 
       <div className="flex ml-[30px]">
-        <div className="overflow-x-auto mt-5 w-[1290px] min-h-[500px]">
+        <div className="overflow-x-auto  w-[1290px] min-h-[500px]">
           {loading ? (
             <div className="flex justify-center items-center h-64">
               <div className="text-lg text-gray-600">

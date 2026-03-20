@@ -171,8 +171,8 @@ function LoanChargesList() {
   return (
     <div className="min-h-screen w-full">
       {/* 🔹 Header */}
-      <div className="flex justify-center sticky top-[80px] z-40 ">
-        <div className="flex items-center px-6 py-4 border-b w-[1462px] h-[50px] border rounded-[11px] border-gray-200 justify-between bg-white ">
+      <div className="flex justify-center sticky top-[50px] z-40 ">
+        <div className="flex items-center px-6 py-4 border-b w-[1462px] h-[40px] border border-gray-200 justify-between bg-white ">
           <h2 className="text-red-600 font-bold text-[20px]">
             Loan Charges List
           </h2>
@@ -284,9 +284,9 @@ function LoanChargesList() {
       </div>
 
       {/* 🔹 Table Section */}
-      <div className='ml-[22px]'>
+      <div className='ml-[25px]'>
         <div className="flex ">
-          <div className="overflow-x-auto mt-5 h-[500px]">
+          <div className="overflow-x-auto  h-[500px]">
             {isLoading ? (
               <p className="text-center text-gray-500 mt-10">Loading...</p>
             ) : (

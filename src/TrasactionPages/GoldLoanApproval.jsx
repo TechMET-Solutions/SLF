@@ -1,10 +1,8 @@
 import axios from "axios";
 import { useEffect, useState } from "react";
-import { IoIosAddCircleOutline, IoIosCloseCircleOutline } from "react-icons/io";
 import { useLocation, useNavigate } from "react-router-dom";
 import { API } from "../api";
 import { useAuth } from "../API/Context/AuthContext";
-import profileempty from "../assets/profileempty.png";
 const GoldLoanApproval = () => {
   const branches = [
     { id: 1, name: "Bhagur" },
@@ -479,8 +477,8 @@ const GoldLoanApproval = () => {
   return (
     <div className="min-h-screen w-full">
       {/* ===== Top Bar ===== */}
-      <div className="flex justify-center sticky top-[80px]">
-        <div className="flex items-center px-6 py-4 border-b mt-5 w-[1290px] h-[62px] border rounded-[11px] border-gray-200 justify-between shadow bg-white">
+      <div className="flex justify-center sticky top-[10px]">
+        <div className="flex items-center px-6 py-4 border-b  w-[1463px] h-[40px] border rounded-[11px] border-gray-200 justify-between shadow bg-white">
           <h2
             style={{
               fontFamily: "Source Sans 3, sans-serif",
@@ -513,11 +511,11 @@ const GoldLoanApproval = () => {
       </div>
 
       {/* ===== FORM SECTIONS ===== */}
-      <div className=" min-h-screen space-y-8 mt-5">
-        <div className="bg-[#FFE6E6] ml-[110px] mr-[110px] ">
-          <div className="flex justify-center p-5">
-            <div className="w-[950px] ">
-              {/* First Row */}
+      <div className="min-h-screen space-y-8 ml-[22px]">
+        {/* <div className="bg-[#FFE6E6] w-[1463px]">
+          <div className="flex justify-center ">
+            <div className="p-5 ">
+            
               <div className="flex gap-7 text-sm mb-8 flex-wrap">
                 <div>
                   <p className="font-semibold">Loan No</p>
@@ -527,9 +525,7 @@ const GoldLoanApproval = () => {
                   <p className="font-semibold">Loan Date</p>
                   <p>
                     {formatDate(loanData.created_at)}
-                    {/* <span className="ml-2">
-                    {formatTime(loanData.created_at)}
-                  </span> */}
+                    
                   </p>
                 </div>
                 <div>
@@ -570,13 +566,13 @@ const GoldLoanApproval = () => {
                 </div>
               </div>
 
-              {/* Second Row */}
+             
               <div className="flex gap-13 text-sm flex-wrap"></div>
             </div>
 
-            {/* ===== Ornament & Profile Photos ===== */}
+           
             <div className="flex  space-x-[1px]">
-              {/* Borrower */}
+              
               <div className="w-[120px] h-auto flex flex-col items-center">
                 <p className="font-medium mb-1 text-xs">Borrower</p>
                 <img
@@ -606,7 +602,6 @@ const GoldLoanApproval = () => {
                 </div>
               </div>
 
-              {/* Co-Borrower */}
               <div className="w-[120px] h-auto flex flex-col items-center">
                 <p className="font-medium mb-1 text-xs">Co-Borrower</p>
                 <img
@@ -634,7 +629,7 @@ const GoldLoanApproval = () => {
                 </div>
               </div>
 
-              {/* Ornament */}
+             
               <div className="w-[120px] h-auto flex flex-col items-center">
                 <p className="font-medium mb-1 text-xs">Ornament Photo</p>
                 <img
@@ -667,12 +662,10 @@ const GoldLoanApproval = () => {
                       readOnly
                       className="border border-gray-300 rounded-md px-2 py-1 mt-1 text-sm focus:outline-none bg-gray-50"
                     />
-                    {/* <div className="text-[12px] mt-2  font-semibold">
-            {numberToWords(loanData.Loan_amount)}
-          </div> */}
+                   
                   </div>
 
-                  {/* Doc Charges */}
+                  
                   <div className="flex flex-col">
                     <label className="text-[13px] font-semibold">
                       Doc Charges
@@ -714,9 +707,9 @@ const GoldLoanApproval = () => {
                 </div>
 
                 <div className="flex gap-2 flex-col mt-2">
-                  {/* Net Payable */}
+                  
 
-                  {/* Valuer 1 */}
+                 
                   <div className="flex flex-col w-50">
                     <label className="text-[13px] font-semibold">
                       Valuer 1 <span className="text-red-500">*</span>
@@ -736,11 +729,11 @@ const GoldLoanApproval = () => {
                   
                 </div>
 
-                {/* Valuer 2 */}
+              
               </div>
             </div>
 
-            {/* Add the payament here  */}
+          
             <div className="p-5 ">
           <h1 className="font-semibold text-[20px] text-[#0A2478] ">
             Payment Details
@@ -751,7 +744,7 @@ const GoldLoanApproval = () => {
                 <tr className="bg-[#0A2478] text-white text-center">
                   <th className="py-1 border w-[80px]">Sr No</th>
                   <th className="py-1 border w-[120px]">Paid By</th>
-                  {/* <th className="py-2 border">UTR Number</th> */}
+                 
                   <th className="py-1 border w-[180px]">Bank</th>
                   <th className="py-1 border w-[180px]">Borrower Bank</th>
                   <th className="py-1 border w-[120px]">Amount</th>
@@ -914,136 +907,135 @@ const GoldLoanApproval = () => {
           </div>
         </div>
           </div>
-        </div>
+        </div> */}
+        <div className="bg-[#FFE6E6] w-[1463px]"></div>
 
         {/* Loan Amount Section */}
 
-       
-
-        <div className=' bg-[#F7F7FF] ml-[110px] mr-[110px] p-2'>
-           <div className="  ">
-              <h3 className="font-semibold  text-[#0A2478] text-lg">
-                Pledge Item List
-              </h3>
-              <div className="w-full text-xs border border-gray-300 mt-2 ">
-                <div className="flex bg-[#0A2478] text-white font-semibold">
-                  <div className="flex-1 p-2 py-3 border-r-2 border-white">
-                    Particulars
-                  </div>
-                  <div className="w-16 p-2 border-r-2 border-white text-center">
-                    Nos.
-                  </div>
-                  <div className="w-24 p-2 border-r-2 border-white text-center">
-                    Gross
-                  </div>
-                  <div className="w-24 p-2 border-r-2 border-white text-center">
-                    Net Weight
-                  </div>
-                  <div className="w-28 p-2 border-r-2 border-white text-center">
-                    Purity
-                  </div>
-                  <div className="w-28 p-2 border-r-2 border-white text-center">
-                    Calculated Purity
-                  </div>
-                  <div className="w-24 p-2 border-r-2 border-white text-center">
-                    Rate
-                  </div>
-                  <div className="w-28 p-2 border-r-2 border-white text-center">
-                    Valuation
-                  </div>
-                  <div className="w-28 p-2 text-center">Remark</div>
+        <div className=" bg-[#F7F7FF] ml-[110px] mr-[110px] p-2">
+          <div className="  ">
+            <h3 className="font-semibold  text-[#0A2478] text-lg">
+              Pledge Item List
+            </h3>
+            <div className="w-full text-xs border border-gray-300 mt-2 ">
+              <div className="flex bg-[#0A2478] text-white font-semibold">
+                <div className="flex-1 p-2 py-3 border-r-2 border-white">
+                  Particulars
                 </div>
-
-                {/* Dynamic Rows */}
-                {pledgeItems.length > 0 ? (
-                  <>
-                    {pledgeItems.map((item, index) => (
-                      <div
-                        key={item.id || index}
-                        className={`flex border-t border-gray-300 ${
-                          index % 2 === 0 ? "bg-gray-50" : "bg-white"
-                        }`}
-                      >
-                        <div className="flex-1 p-2 border-r border-gray-300">
-                          {item.particular || "Gold"}
-                        </div>
-                        <div className="w-16 p-2 border-r border-gray-300 text-center">
-                          {item.nos || 1}
-                        </div>
-                        <div className="w-24 p-2 border-r border-gray-300 text-center">
-                          {formatCurrency(item.gross)}
-                        </div>
-                        <div className="w-24 p-2 border-r border-gray-300 text-center">
-                          {formatCurrency(item.netWeight)}
-                        </div>
-                        <div className="w-28 p-2 border-r border-gray-300 text-center">
-                          {item.purity || ""}
-                        </div>
-                        <div className="w-28 p-2 border-r border-gray-300 text-center">
-                          {item.Calculated_Purity || ""}
-                        </div>
-                        <div className="w-24 p-2 border-r border-gray-300 text-center">
-                          {formatCurrency(item.rate)}
-                        </div>
-                        <div className="w-28 p-2 border-r border-gray-300 text-center">
-                          {formatCurrency(item.valuation)}
-                        </div>
-                        <div className="w-28 p-2 text-center">
-                          {item.remark || "-"}
-                        </div>
-                      </div>
-                    ))}
-
-                    {/* Total Row */}
-                    {/* Total Row */}
-                    <div className="flex border-t bg-white bg-gray-50">
-                      <div className="flex-1 p-2 border-r border-gray-300 font-semibold">
-                        Total
-                      </div>
-
-                      <div className="w-16 p-2 border-r border-gray-300 text-center font-semibold">
-                        {totalNos}
-                      </div>
-
-                      <div className="w-24 p-2 border-r border-gray-300 text-center font-semibold">
-                        {formatCurrency(totalGross)}
-                      </div>
-
-                      <div className="w-24 p-2 border-r border-gray-300 text-center font-semibold">
-                        {formatCurrency(totalNetWeight)}
-                      </div>
-
-                      <div className="w-28 p-2 border-r border-gray-300 text-center">
-                        {/* purity empty */}
-                      </div>
-
-                      <div className="w-28 p-2 border-r border-gray-300 text-center">
-                        {/* calculated purity empty */}
-                      </div>
-
-                      <div className="w-24 p-2 border-r border-gray-300 text-center font-semibold">
-                        {/* Rate total (if needed) */}
-                        {/* Leave empty if not required */}
-                      </div>
-
-                      <div className="w-28 p-2 border-r border-gray-300 text-center font-semibold">
-                        {formatCurrency(totalValuation)}
-                      </div>
-
-                      <div className="w-28 p-2 text-center">{/* remark */}</div>
-                    </div>
-                  </>
-                ) : (
-                  <div className="flex border-t border-gray-300">
-                    <div className="flex-1 p-4 text-center text-gray-500">
-                      No pledge items found
-                    </div>
-                  </div>
-                )}
+                <div className="w-16 p-2 border-r-2 border-white text-center">
+                  Nos.
+                </div>
+                <div className="w-24 p-2 border-r-2 border-white text-center">
+                  Gross
+                </div>
+                <div className="w-24 p-2 border-r-2 border-white text-center">
+                  Net Weight
+                </div>
+                <div className="w-28 p-2 border-r-2 border-white text-center">
+                  Purity
+                </div>
+                <div className="w-28 p-2 border-r-2 border-white text-center">
+                  Calculated Purity
+                </div>
+                <div className="w-24 p-2 border-r-2 border-white text-center">
+                  Rate
+                </div>
+                <div className="w-28 p-2 border-r-2 border-white text-center">
+                  Valuation
+                </div>
+                <div className="w-28 p-2 text-center">Remark</div>
               </div>
-            </div> 
-</div>
-        
+
+              {/* Dynamic Rows */}
+              {pledgeItems.length > 0 ? (
+                <>
+                  {pledgeItems.map((item, index) => (
+                    <div
+                      key={item.id || index}
+                      className={`flex border-t border-gray-300 ${
+                        index % 2 === 0 ? "bg-gray-50" : "bg-white"
+                      }`}
+                    >
+                      <div className="flex-1 p-2 border-r border-gray-300">
+                        {item.particular || "Gold"}
+                      </div>
+                      <div className="w-16 p-2 border-r border-gray-300 text-center">
+                        {item.nos || 1}
+                      </div>
+                      <div className="w-24 p-2 border-r border-gray-300 text-center">
+                        {formatCurrency(item.gross)}
+                      </div>
+                      <div className="w-24 p-2 border-r border-gray-300 text-center">
+                        {formatCurrency(item.netWeight)}
+                      </div>
+                      <div className="w-28 p-2 border-r border-gray-300 text-center">
+                        {item.purity || ""}
+                      </div>
+                      <div className="w-28 p-2 border-r border-gray-300 text-center">
+                        {item.Calculated_Purity || ""}
+                      </div>
+                      <div className="w-24 p-2 border-r border-gray-300 text-center">
+                        {formatCurrency(item.rate)}
+                      </div>
+                      <div className="w-28 p-2 border-r border-gray-300 text-center">
+                        {formatCurrency(item.valuation)}
+                      </div>
+                      <div className="w-28 p-2 text-center">
+                        {item.remark || "-"}
+                      </div>
+                    </div>
+                  ))}
+
+                  {/* Total Row */}
+                  {/* Total Row */}
+                  <div className="flex border-t bg-white bg-gray-50">
+                    <div className="flex-1 p-2 border-r border-gray-300 font-semibold">
+                      Total
+                    </div>
+
+                    <div className="w-16 p-2 border-r border-gray-300 text-center font-semibold">
+                      {totalNos}
+                    </div>
+
+                    <div className="w-24 p-2 border-r border-gray-300 text-center font-semibold">
+                      {formatCurrency(totalGross)}
+                    </div>
+
+                    <div className="w-24 p-2 border-r border-gray-300 text-center font-semibold">
+                      {formatCurrency(totalNetWeight)}
+                    </div>
+
+                    <div className="w-28 p-2 border-r border-gray-300 text-center">
+                      {/* purity empty */}
+                    </div>
+
+                    <div className="w-28 p-2 border-r border-gray-300 text-center">
+                      {/* calculated purity empty */}
+                    </div>
+
+                    <div className="w-24 p-2 border-r border-gray-300 text-center font-semibold">
+                      {/* Rate total (if needed) */}
+                      {/* Leave empty if not required */}
+                    </div>
+
+                    <div className="w-28 p-2 border-r border-gray-300 text-center font-semibold">
+                      {formatCurrency(totalValuation)}
+                    </div>
+
+                    <div className="w-28 p-2 text-center">{/* remark */}</div>
+                  </div>
+                </>
+              ) : (
+                <div className="flex border-t border-gray-300">
+                  <div className="flex-1 p-4 text-center text-gray-500">
+                    No pledge items found
+                  </div>
+                </div>
+              )}
+            </div>
+          </div>
+        </div>
+
         <div className="ml-[110px] mr-[110px] p-5  ">
           {loanSchemeData.calcBasisOn === "Monthly" && (
             <>

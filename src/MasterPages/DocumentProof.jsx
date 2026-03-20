@@ -444,10 +444,10 @@ const DocumentProof = () => {
 
   return (
     <div className=" min-h-screen w-full">
-      <div className="z-40 bg-white w-full px-8">
-        <div className="flex items-center px-6 py-4 border-b mt-2 
-    w-full max-w-[1462px] lg:h-[50px] 
-    border rounded-[11px] border-gray-200 justify-between">
+      <div className="z-40 bg-white w-full px-[25px]">
+        <div className="flex items-center px-6 py-4 border-b 
+    w-full max-w-[1462px] lg:h-[40px] 
+    border  border-gray-200 justify-between">
           {/* LEFT SIDE: Name */}
           <h2
             style={{
@@ -644,8 +644,8 @@ const DocumentProof = () => {
       )}
 
       {/* Table */}
-      <div className="flex ml-[36px] mt-2">
-        <div className="overflow-x-auto mt-2 w-[1290px] h-[500px]">
+      <div className="flex ml-[25px]">
+        <div className="overflow-x-auto  w-[1290px] h-[500px]">
           <table className="w-full border-collapse">
             <thead className="bg-[#0A2478] text-white text-sm">
               <tr>

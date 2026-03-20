@@ -214,12 +214,10 @@ const verifyBankDetails = async () => {
 
   return (
     <div className="flex">
-      <div className="overflow-x-auto mt-5 w-[1250px] h-auto mb-5">
-        {/* Header + Add Button */}
+      <div className="overflow-x-auto w-full h-auto ">
+        
         <div className="flex justify-between">
-          {/* <p className="font-[Source_Sans_3] font-semibold text-[14px] underline">
-            Bank Details
-                  </p> */}
+         
            <p className="font-[Source_Sans_3] font-bold text-[24px] leading-[100%] tracking-[0.03em] text-[#0A2478] mb-4 ">
              Bank Details
           </p>
@@ -240,14 +238,14 @@ const verifyBankDetails = async () => {
         </div>
 
         {/* Table */}
-        <table className="w-full border-collapse mt-5">
+        <table className="w-full border-collapse ">
           <thead className="bg-[#0A2478] text-white text-xs text-left">
             <tr>
               <th className="px-1 py-1 border-r">Bank Name</th>
               <th className="px-1 py-1 border-r">Customer Name</th>
               <th className="px-1 py-1 border-r">Account No</th>
-              <th className="px-1 py-1 border-r">IFSC</th>
-              {/* <th className="px-1 py-1 border-r">Cancelled Cheque</th> */}
+              <th className="px-1 py-1 border-r w-[150px]">IFSC</th>
+              <th className="px-1 py-1 border-r">Cancelled Cheque</th>
               <th className="px-1 py-1 border-r">Bank Address</th>
               <th className="px-1 py-1 border-r">Update By</th>
               <th className="px-1 py-1 border-r">Update On</th>

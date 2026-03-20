@@ -435,7 +435,7 @@ const Navbar = () => {
       {/* Desktop Navbar */}
       <div className="hidden lg:flex justify-center bg-transparent">
         <div
-          className="bg-[#0A2478] text-white flex items-center justify-between relative mt-5 p-5 w-[1460px] h-[50px] rounded-[10px]"
+          className="bg-[#0A2478] text-white flex items-center justify-between relative  p-3 w-[1463px] h-[50px] "
           ref={dropdownRef}
         >
           {/* Left side - Logo */}

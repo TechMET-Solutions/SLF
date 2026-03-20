@@ -65,8 +65,8 @@ const FundTransferList = () => {
 
   return (
     <div className="min-h-screen bg-white font-sans text-gray-800 ">
-      <div className="flex justify-center p-2 ">
-        <div className="flex items-center px-6 py-4 border-b  w-[1462px] h-[50px] border rounded-[11px] border-gray-200 justify-between ">
+      <div className="flex justify-center ">
+        <div className="flex items-center px-6 py-4 border-b  w-[1462px] h-[40px] border  border-gray-200 justify-between ">
           {/* Left heading */}
           <h2
             style={{
@@ -111,7 +111,7 @@ const FundTransferList = () => {
       </div>
       <div className="">
        
-          <div className="overflow-x-auto ml-[22px]">
+          <div className="overflow-x-auto ml-[25px]">
             <table>
               <thead className="bg-[#0A2478] text-white text-sm">
                 <tr className=" text-white text-[12px] font-bold border-b border-gray-300">

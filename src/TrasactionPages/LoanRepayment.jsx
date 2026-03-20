@@ -56,7 +56,7 @@ const LoanRepayment = () => {
       {/* Header Section (UNCHANGED DESIGN) */}
       <div className="flex justify-center">
         <div className="flex justify-center mt-2">
-          <div className="flex items-center px-6 py-4 w-[1462px] h-[50px] rounded-[11px] border border-gray-200 justify-between shadow-sm bg-white">
+          <div className="flex items-center px-6 py-4 w-[1462px] h-[40px] border border-gray-200 justify-between shadow-sm bg-white">
             <h2 className="text-red-600 font-bold text-[20px] whitespace-nowrap">
               Loan-Repayment
             </h2>

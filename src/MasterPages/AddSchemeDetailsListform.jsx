@@ -343,8 +343,8 @@ const AddSchemeDetailsListform = () => {
 
   return (
     <div className="min-h-screen bg-white ">
-      <div className="flex justify-center sticky top-[80px] z-40">
-        <div className="flex items-center px-6 py-4 border-b  w-[1462px] h-[50px] border rounded-[11px] border-gray-200 justify-between shadow bg-white">
+      <div className="flex justify-center sticky top-[50px] z-40">
+        <div className="flex items-center px-6 py-4 border-b  w-[1462px] h-[40px] border rounded-[11px] border-gray-200 justify-between shadow bg-white">
           <h2
             style={{
               fontFamily: "Source Sans 3, sans-serif",
@@ -391,7 +391,7 @@ const AddSchemeDetailsListform = () => {
         </div>
       </div>
 
-      <div className="bg-white rounded-lg mt-5">
+      <div className="bg-white rounded-lg ">
         {/* First Row (ALWAYS VISIBLE) */}
         <div className="flex gap-2 ml-[22px]">
           <div className="w-[739px] h-auto bg-[#FFE6E6] p-[20px]">
@@ -1135,9 +1135,7 @@ const AddSchemeDetailsListform = () => {
             {/* ---------------------- DOCUMENT CHARGE ---------------------- */}
             {isDailyBasis && (
               <>
-                <h3 className="text-[15px] font-semibold text-[#0A2478] mb-4">
-                  Documents Charge
-                </h3>
+                
                 <div className="flex gap-4 items-end">
                   {/* 1. Administrative Charge Type Dropdown */}
                   <div className="flex flex-col">
@@ -1180,8 +1178,12 @@ const AddSchemeDetailsListform = () => {
                     />
                   </div>
                 </div>
-                <div className="flex gap-4 w-full mt-5">
+                <h3 className="text-[15px] font-semibold text-[#0A2478] mt-2">
+                  Documents Charge
+                </h3>
+                <div className="flex gap-4 w-full mt-2 ">
                   {/* % of Loan Amount */}
+                  
                   <div className="flex flex-col">
                     <label className="text-sm font-medium mb-1">
                       {" "}

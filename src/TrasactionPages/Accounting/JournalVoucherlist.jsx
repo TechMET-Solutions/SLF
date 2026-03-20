@@ -120,10 +120,10 @@ const JournalVoucherlist = () => {
   return (
     <div className="min-h-screen ">
       <div className="mx-auto">
-        <div className="flex justify-center sticky top-[80px] z-40">
+        
           {/* <div className="flex justify-center "> */}
-            <div className="flex sticky top-[80px] z-40 w-full px-8">
-              <div className="flex items-center px-6 py-4 border-b my-2 w-full max-w-[1462px] h-[50px] border rounded-[11px] border-gray-200 justify-between  ">
+            <div className="flex sticky top-[50px] z-40 w-full ml-[25px]">
+              <div className="flex items-center px-6 py-4 border-b  w-full max-w-[1462px] h-[40px] border  border-gray-200 justify-between  ">
               <h2 className="text-red-600 font-bold text-[20px] leading-[148%]">
                 Journal Voucher List
               </h2>
@@ -246,9 +246,9 @@ const JournalVoucherlist = () => {
               </div>
             </div>
           </div>
-        </div>
+       
 
-        <div className="mt-5 ml-[22px]">
+        <div className=" ml-[25px]">
           <div>
             <table className="text-left border-collapse ">
               <thead className="bg-[#0A2478] text-white text-sm">

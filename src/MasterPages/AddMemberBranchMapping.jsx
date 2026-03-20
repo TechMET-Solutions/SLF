@@ -90,8 +90,8 @@ const AddMemberBranchMapping = () => {
 
   return (
     <div className="min-h-screen w-full">
-      <div className="flex justify-center sticky top-[80px] z-40">
-        <div className="flex items-center px-6 py-4 border-b w-[1462px] h-[50px] border rounded-[11px] border-gray-200 justify-between shadow">
+      <div className="flex justify-center sticky top-[50px] z-40">
+        <div className="flex items-center px-6 py-4 border-b w-[1462px] h-[40px] border  border-gray-200 justify-between shadow">
           <h2 className="text-red-600 font-bold text-[20px]">
             Member Branch Mapping
           </h2>
@@ -113,7 +113,7 @@ const AddMemberBranchMapping = () => {
         </div>
       </div>
 
-      <div className="mt-5 ml-[22px]">
+      <div className="mt-2 ml-[22px]">
         <div className="flex flex-col gap-2 w-[540px]">
           <label className="text-gray-700 font-medium">Employee Name</label>
           <input

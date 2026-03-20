@@ -152,7 +152,7 @@
 
 // export default RoleMapping;
 import axios from "axios";
-import { useEffect, useState, useCallback } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import { API } from "../api";
 import { fetchRolesApi } from "../API/Master/User_Management/Roles";
@@ -170,7 +170,7 @@ const RoleMapping = () => {
   //   setIsLoading(true);
   //   try {
   //     // Fetch all roles from API
-  //     const response = await fetchRolesApi(1, 100); 
+  //     const response = await fetchRolesApi(1, 100);
   //     const apiItems = response.items || response.roles || [];
 
   //     console.log("DATA", apiItems)
@@ -208,8 +208,7 @@ const RoleMapping = () => {
   //     setIsLoading(false);
   //   }
   // }, [rowData]);
-  
-  
+
   const getRolesFromApi = useCallback(async () => {
     setIsLoading(true);
     try {
@@ -221,7 +220,7 @@ const RoleMapping = () => {
 
       // ✅ Filter only active roles
       const activeRoles = Array.isArray(apiItems)
-        ? apiItems.filter(role => role.is_active === 1)
+        ? apiItems.filter((role) => role.is_active === 1)
         : [];
 
       console.log("DATA AFTER FILTER", activeRoles);
@@ -236,7 +235,7 @@ const RoleMapping = () => {
         } catch (err) {
           console.warn("Could not parse existing roles:", rowData.roles);
           if (typeof rowData.roles === "string") {
-            existingRoleNames = rowData.roles.split(",").map(r => r.trim());
+            existingRoleNames = rowData.roles.split(",").map((r) => r.trim());
           }
         }
       }
@@ -252,7 +251,6 @@ const RoleMapping = () => {
       });
 
       setRoles(mappedRoles);
-
     } catch (error) {
       console.error("❌ Failed to load roles:", error);
     } finally {
@@ -269,8 +267,8 @@ const RoleMapping = () => {
   const toggleRole = (id) => {
     setRoles((prev) =>
       prev.map((role) =>
-        role.id === id ? { ...role, selected: !role.selected } : role
-      )
+        role.id === id ? { ...role, selected: !role.selected } : role,
+      ),
     );
   };
 
@@ -337,7 +335,9 @@ const RoleMapping = () => {
           {isLoading ? (
             <div className="flex flex-col items-center justify-center p-20">
               <div className="animate-spin rounded-full h-10 w-10 border-b-2 border-[#0A2478]"></div>
-              <p className="mt-4 text-gray-600 font-medium">Loading available roles...</p>
+              <p className="mt-4 text-gray-600 font-medium">
+                Loading available roles...
+              </p>
             </div>
           ) : (
             <table className=" border-collapse ml-[22px]">
@@ -373,7 +373,10 @@ const RoleMapping = () => {
                   ))
                 ) : (
                   <tr>
-                    <td colSpan="2" className="text-center py-20 text-gray-500 italic">
+                    <td
+                      colSpan="2"
+                      className="text-center py-20 text-gray-500 italic"
+                    >
                       No roles found in the system.
                     </td>
                   </tr>

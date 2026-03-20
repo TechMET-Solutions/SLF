@@ -218,8 +218,8 @@ const ItemProfileList = () => {
   return (
     <div className="min-h-screen w-full">
       
-      <div className="flex sticky top-[80px] z-40 w-full px-8">
-          <div className="flex items-center px-6 py-4 border-b mt-2 w-full max-w-[1462px] lg:h-[50px] border rounded-[11px] border-gray-200 justify-between">
+      <div className="flex sticky top-[50px] z-40 w-full ml-[22px]">
+          <div className="flex items-center px-6  border-b  w-full max-w-[1462px] lg:h-[40px] border  border-gray-200 justify-between">
 
           {/* LEFT SIDE: Name */}
           <h2
@@ -411,8 +411,8 @@ const ItemProfileList = () => {
       )}
 
       {/* Table */}
-      <div className="flex  mt-2 ml-[35px]">
-        <div className="overflow-x-auto mt-2 w-[1290px] h-[500px]">
+      <div className="flex  ml-[22px]">
+        <div className="overflow-x-auto  w-[1290px] h-[500px]">
           <table className="w-full border-collapse">
             <thead className="bg-[#0A2478] text-white text-sm">
               <tr>

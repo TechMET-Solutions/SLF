@@ -969,8 +969,8 @@ const EmployeeProfile = () => {
   return (
     <div className="min-h-screen w-full">
       {/* Top bar */}
-      <div className="flex justify-center sticky top-[80px] z-40">
-        <div className="flex items-center px-6 py-4 border-b  w-[1462px] h-[50px] border rounded-[11px] border-gray-200 justify-between shadow bg-white">
+      <div className="flex justify-center sticky top-[50px] z-40">
+        <div className="flex items-center px-6 py-4 border-b  w-[1462px] h-[40px] border rounded-[11px] border-gray-200 justify-between shadow bg-white">
           <h2 className="text-red-600 font-bold text-[20px] whitespace-nowrap">
             Employee Profile List
           </h2>
@@ -1906,8 +1906,8 @@ const EmployeeProfile = () => {
       )}
 
       {/* Table */}
-      <div className="flex justify-center mt-2">
-        <div className="overflow-x-auto mt-5 w-[1462px] min-h-[500px]">
+      <div className="flex justify-center ">
+        <div className="overflow-x-auto  w-[1462px] min-h-[500px]">
           {isLoading ? (
             <div className="flex justify-center items-center h-32">
               <p>Loading employees...</p>

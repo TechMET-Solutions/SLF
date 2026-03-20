@@ -227,8 +227,8 @@ const fetchSilverRates = async (page = 1, from = "", to = "") => {
   return (
     <div className="min-h-screen w-full">
       {/* Top Bar */}
-      <div className="flex justify-center sticky top-[80px] z-40">
-        <div className="flex items-center px-6 py-4 border-b mt-5 w-[1462px] h-[50px] border rounded-[11px] border-gray-200 justify-between shadow bg-white">
+      <div className="flex justify-center sticky top-[50px] z-40">
+        <div className="flex items-center px-6 py-4 border-b w-[1462px] h-[40px] border rounded-[11px] border-gray-200 justify-between shadow bg-white">
           <h2 className="text-red-600 font-bold text-[20px] leading-[148%] font-source">
             Rate List
           </h2>
@@ -310,7 +310,7 @@ const fetchSilverRates = async (page = 1, from = "", to = "") => {
         </div>
       </div>
       <div className='ml-[22px] w-[1462px]'>
-<div className="flex flex-col gap-4  mt-5">
+<div className="flex flex-col gap-4 ">
   <div className="flex items-center justify-between bg-gray-50 p-4 rounded-lg border border-gray-200">
     <div className="flex items-center gap-6">
       {/* <p className="font-semibold text-[#0A2478] text-[18px]">Global Date Filter</p> */}
@@ -358,7 +358,7 @@ const fetchSilverRates = async (page = 1, from = "", to = "") => {
       </div>
       <div className="flex ml-[22px]">
         <div className="overflow-x-auto  flex gap-10 h-auto">
-          <div className="mt-2">
+          <div className="">
             
 
             {/* <div className="flex items-center gap-4 mb-2 w-full">
@@ -443,7 +443,7 @@ const fetchSilverRates = async (page = 1, from = "", to = "") => {
               onPageChange={handlePageChange}
             />
           </div>
-          <div className="mt-2 ">
+          <div className=" ">
 
             <div className="overflow-x-auto  w-[620px] h-[500px]">
               <table className="w-[620px] border-collapse mt-2">

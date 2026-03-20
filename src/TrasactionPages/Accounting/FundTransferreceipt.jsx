@@ -317,7 +317,7 @@ const FundTransferReceipt = () => {
     <div className="min-h-screen bg-white font-sans text-gray-800 ">
 
       <div className="flex justify-center  ">
-        <div className="flex items-center px-6 py-4 border-b  w-[1462px] h-[50px] border rounded-[11px] border-gray-200 justify-between mt-2">
+        <div className="flex items-center px-6 py-4 border-b  w-[1462px] h-[40px] border border-gray-200 justify-between ">
           {/* Left heading */}
           <h2
             style={{
@@ -362,10 +362,10 @@ const FundTransferReceipt = () => {
           </div>
         </div>
       </div>
-      <div className="w-full lg:w-[1500px]">
+      <div className="w-full lg:w-[1400px]">
 
         {/* 4. Data Grid */}
-        <div className='overflow-x-auto ml-[22px] mt-2 w-full lg:w-auto' >
+        <div className='overflow-x-auto ml-[25px]  w-full lg:w-auto' >
 
           <table className="w-full min-w-max lg:min-w-0">
             <thead className="bg-[#0A2478] text-white text-sm sticky top-0">

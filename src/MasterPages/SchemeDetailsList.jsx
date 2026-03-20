@@ -116,8 +116,8 @@ const SchemeDetailsList = () => {
   return (
     <div className="min-h-screen w-full">
       {/* Top Bar */}
-      <div className="flex sticky top-[80px] z-40 w-full px-8">
-        <div className="flex items-center px-6 py-4 border-b my-2 w-full max-w-[1462px] h-[50px] border rounded-[11px] border-gray-200 justify-between">
+      <div className="flex sticky top-[50px] z-40 w-full px-6">
+        <div className="flex items-center px-6 py-4 border-b  w-full max-w-[1462px] h-[40px] border border-gray-200 justify-between">
           <h2 className="text-red-600 text-[20px] font-semibold">
             Scheme List
           </h2>
@@ -279,8 +279,8 @@ const SchemeDetailsList = () => {
       </div>
 
       {/* Table */}
-      <div className="flex ml-[32px]">
-        <div className="overflow-x-auto mt-2  h-[500px]">
+      <div className="flex ml-[25px]">
+        <div className="overflow-x-auto   h-[500px]">
           <table className="w-full border-collapse">
             <thead className="bg-[#0A2478] text-white text-sm">
               <tr className='text-left'>

@@ -235,8 +235,8 @@ const CustProfile = () => {
   return (
     <div className="min-h-screen w-full">
       {/* middletopbar */}
-      <div className="flex justify-center sticky top-[80px] z-40">
-        <div className="flex items-center px-6 py-4 border-b  w-[1462px] h-[50px] border rounded-[11px] border-gray-200 justify-between shadow bg-white">
+      <div className="flex justify-center sticky top-[10px] z-40">
+        <div className="flex items-center px-6 py-4 border-b  w-[1462px] h-[40px] border border-gray-200 justify-between shadow bg-white">
           {/* Left heading */}
           <h2
             style={{
@@ -618,7 +618,7 @@ const CustProfile = () => {
 
       {/* Table */}
       <div className="flex ml-[22px]">
-        <div className="overflow-x-auto mt-5 w-[1300px] h-[500px]">
+        <div className="overflow-x-auto  w-[1300px] h-[500px]">
           <table className="w-full border-collapse">
             <thead className="bg-[#0A2478] text-white text-sm">
               <tr>

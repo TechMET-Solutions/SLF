@@ -237,8 +237,8 @@ const Area = () => {
   return (
     <div className="min-h-screen w-full">
       {/* Header */}
-      <div className="flex sticky top-[80px] z-40 w-full px-8">
-          <div className="flex items-center px-6 py-4 border-b my-2 w-full max-w-[1462px] h-[50px] border rounded-[11px] border-gray-200 justify-between  ">
+      <div className="flex sticky top-[50px] z-40 w-full ml-[25px]">
+          <div className="flex items-center px-6 py-4 border-b  w-full max-w-[1462px] h-[40px] border  border-gray-200 justify-between  ">
           <h2 className="text-red-600 font-bold text-[20px] whitespace-nowrap">Area</h2>
           <div className="flex items-center gap-3">
 
@@ -481,8 +481,8 @@ const Area = () => {
       )}
 
       {/* Area Table */}
-      <div className="flex ml-[22px]">
-        <div className="overflow-x-auto mt-5 w-[1290px] h-[500px]">
+      <div className="flex ml-[25px]">
+        <div className="overflow-x-auto  w-[1290px] h-[500px]">
           <table className="w-full border-collapse">
 
             {/* ✅ TABLE HEADER ALWAYS VISIBLE */}

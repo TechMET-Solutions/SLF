@@ -90,10 +90,10 @@ function CreditNote() {
 
   return (
     <div className="min-h-screen w-full">
-      <div className="flex flex-col items-center w-full bg-white">
+      <div className="flex flex-col  w-full bg-white">
         {/* Header */}
-        <div className="z-40 ml-[50px] bg-white w-full">
-          <div className="flex items-center px-6 py-4 border-b my-2 w-full max-w-[1462px] h-[50px] border rounded-[11px] border-gray-200 justify-between  ">
+        <div className="z-40 ml-[25px] bg-white w-full">
+          <div className="flex items-center px-6 py-4 border-b  w-full max-w-[1462px] h-[40px] border  border-gray-200 justify-between  ">
             <h2 className="text-red-600 font-bold text-[20px] whitespace-nowrap">
               Customer Credit Notes
             </h2>
@@ -226,7 +226,7 @@ function CreditNote() {
         </div>
 
         {/* Table */}
-        <div className="px-8 ">
+        <div className="ml-[25px] flex w-[1462px] ">
           <table className="min-w-full border-collapse bg-white text-sm text-gray-700">
             <thead className="text-left bg-[#0A2478] text-white text-sm">
               <tr>
@@ -243,7 +243,7 @@ function CreditNote() {
                 <th className="px-1 py-1 text-left border-r border-gray-300 text-[13px] w-[200px]">
                   Customer Address
                 </th>
-                <th className="px-1 py-1 text-left border-r border-gray-300 text-[13px] w-[120px]">
+                <th className="px-1 py-1 text-left border-r border-gray-300 text-[13px] w-[100px]">
                   Phone No.
                 </th>
                 <th className="px-1 py-1 text-left border-r border-gray-300 text-[13px] w-[120px]">
@@ -283,7 +283,7 @@ function CreditNote() {
 
                     <td className="px-1 py-1">{row.customer_name}</td>
                     <td
-                      className="px-1 py-1 max-w-[500px] truncate"
+                      className="px-1 py-1 max-w-[400px] truncate"
                       title={row.customer_address}
                     >
                       {row.customer_address}
