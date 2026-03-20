@@ -1,9 +1,10 @@
 import axios from "axios";
-import { History } from "lucide-react";
+import { Calendar, History } from "lucide-react";
 import { useEffect, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import { API } from "../api";
 import { useAuth } from "../API/Context/AuthContext";
+import { IoIosAddCircleOutline, IoIosCloseCircleOutline } from "react-icons/io";
 const GoldLoanApproval = () => {
   const branches = [
     { id: 1, name: "Bhagur" },
@@ -88,102 +89,6 @@ const GoldLoanApproval = () => {
       setLoading(false);
     }
   }, [loanId]);
-
-  // const generateEMISchedule = (P, annualRate, months, type) => {
-  //   const r = annualRate / 12 / 100;
-  //   const rows = [];
-
-  //   let emi = 0;
-  //   let balance = P;
-
-  //   // ================= FLAT =================
-  //   if (type === "Flat") {
-  //     const totalInterest = P * r * months;
-  //     const rawEmi = (P + totalInterest) / months;
-
-  //     // 👉 Rounded EMI
-  //     emi = roundToNext10(rawEmi);
-
-  //     const monthlyInterest = totalInterest / months;
-
-  //     for (let i = 1; i <= months; i++) {
-  //       const opening = balance;
-  //       const interest = monthlyInterest;
-
-  //       // last month adjustment
-  //       let principal = emi - interest;
-  //       if (i === months) {
-  //         principal = balance;
-  //         emi = principal + interest;
-  //       }
-
-  //       const closing = opening - principal;
-
-  //       rows.push({
-  //         month: i,
-  //         opening: opening.toFixed(2),
-  //         emi: emi.toFixed(2),
-  //         interest: interest.toFixed(2),
-  //         principal: principal.toFixed(2),
-  //         closing: Math.max(closing, 0).toFixed(2),
-  //       });
-
-  //       balance = closing;
-  //     }
-
-  //     return rows;
-  //   }
-
-  //   // ================= REDUCING =================
-  //   const rawEmi =
-  //     (P * r * Math.pow(1 + r, months)) / (Math.pow(1 + r, months) - 1);
-
-  //   // 👉 Rounded EMI
-  //   emi = roundToNext10(rawEmi);
-
-  //   for (let i = 1; i <= months; i++) {
-  //     const opening = balance;
-  //     const interest = opening * r;
-
-  //     let principal = emi - interest;
-
-  //     // last month adjustment
-  //     if (i === months) {
-  //       principal = balance;
-  //       emi = principal + interest;
-  //     }
-
-  //     const closing = opening - principal;
-
-  //     rows.push({
-  //       month: i,
-  //       opening: opening.toFixed(2),
-  //       emi: emi.toFixed(2),
-  //       interest: interest.toFixed(2),
-  //       principal: principal.toFixed(2),
-  //       closing: Math.max(closing, 0).toFixed(2),
-  //     });
-
-  //     balance = closing;
-  //   }
-
-  //   return rows;
-  // };
-
-  // useEffect(() => {
-  //   debugger;
-  //   if (!loanData || !loanData) return;
-  //   console.log(loanData, "loanData");
-  //   const P = Number(loanData.Loan_amount);
-  //   const tenure = Number(loanData.Loan_Tenure);
-  //   const type = loanData.interestType; // "Flat" or "Reducing"
-
-  //   const slabs = loanData.Effective_Interest_Rates || [];
-  //   const annualRate = slabs.length ? Number(slabs[0].addInt) : 0; // first slab
-
-  //   const rows = generateEMISchedule(P, annualRate, tenure, type);
-  //   setEmiTable(rows);
-  // }, [loanData]);
 
   const generateEMISchedule = (P, annualRate, months, type, firstEmiDate) => {
     const r = annualRate / 12 / 100;
@@ -286,17 +191,44 @@ const GoldLoanApproval = () => {
     setEmiTable(rows);
   }, [loanData]);
 
+  
+
+
+  const [coBorrowerData, setCoBorrowerData] = useState(null);
+
   const fetchLoanData = async () => {
     try {
       setLoading(true);
+
+      // 1️⃣ First API call
       const response = await axios.get(
-        `${API}/Transactions/goldloan/getLoan/${loanId}`,
+        `${API}/Transactions/goldloan/getLoan/${loanId}`
       );
-      setLoanData(response.data.loanApplication); // Access the data property
+
+      const loanApplication = response.data.loanApplication;
+
+      console.log("loanApplication", response.data.borrowerBankDetails)
+
+      setLoanData(loanApplication);
       setLoanSchemeData(response.data.schemeData);
       setcoBorrowerBankDetails(response.data.coborrowerBankDetails);
       setBorrowerBankDetails(response.data.borrowerBankDetails);
+
+      // 2️⃣ Extract CoBorrowerId
+      const coBorrowerId = loanApplication?.CoBorrowerId;
+
+      if (coBorrowerId) {
+        const customerRes = await axios.get(
+          `${API}/Master/doc/get-customer/${coBorrowerId}`
+        );
+
+        console.log(customerRes.data.data, "CoBorrowerData  Data")
+
+        setCoBorrowerData(customerRes.data.data);
+      }
+
       setError(null);
+
     } catch (err) {
       console.error("❌ Error fetching loan data:", err);
       setError("Failed to load loan data");
@@ -304,6 +236,7 @@ const GoldLoanApproval = () => {
       setLoading(false);
     }
   };
+
 
   // Parse JSON strings from API response
   const parseJSONData = (data) => {
@@ -512,127 +445,141 @@ const GoldLoanApproval = () => {
       </div>
 
       {/* ===== FORM SECTIONS ===== */}
-      <div className="min-h-screen space-y-8 ml-[22px]">
-        {/* <div className="bg-[#FFE6E6] w-[1463px]">
-          <div className="flex justify-center ">
-            <div className="p-5 ">
-            
-              <div className="flex gap-7 text-sm mb-8 flex-wrap">
-                <div>
-                  <p className="font-semibold">Loan No</p>
-                  <p>{loanData.id || "N/A"}</p>
-                </div>
-                <div>
-                  <p className="font-semibold">Loan Date</p>
-                  <p>
-                    {formatDate(loanData.created_at)}
-                    
-                  </p>
-                </div>
-                <div>
-                  <p className="font-semibold">Party Name</p>
-                  <p>{loanData.Borrower || "N/A"}</p>
-                </div>
-                <div>
-                  <p className="font-semibold">Scheme</p>
-                  <p>{loanData.Scheme || "N/A"}</p>
-                </div>
-                <div>
-                  <p className="font-semibold">Print Name</p>
-                  <p>{loanData.Print_Name || "N/A"}</p>
-                </div>
-                <div>
-                  <p className="font-semibold">Mobile Number</p>
-                  <p>+91 {loanData.Mobile_Number || "N/A"}</p>
-                </div>
-                <div>
-                  <p className="font-semibold">Co-Borrower</p>
-                  <p>{loanData.Co_Borrower || "N/A"}</p>
-                </div>
-                <div>
-                  <p className="font-semibold">Relation</p>
-                  <p>{loanData.Relation || "N/A"}</p>
-                </div>
-                <div>
-                  <p className="font-semibold">Nominee</p>
-                  <p>{loanData.Nominee || "N/A"}</p>
-                </div>
-                <div>
-                  <p className="font-semibold">Relation</p>
-                  <p>{loanData.Nominee_Relation || "N/A"}</p>
-                </div>
-                <div>
-                  <p className="font-semibold">Address</p>
-                  <p>{loanData.Address || "N/A"}</p>
-                </div>
-              </div>
+      <div className="min-h-screen space-t-8 mx-[30px]">
+        
+        <div className="flex items-start gap-4 bg-[#FFE6E6] py-4 px-4 w-full border-b border-gray-200">
 
-             
-              <div className="flex gap-13 text-sm flex-wrap"></div>
+          {/* 1. Left Column: Input Fields */}
+          <div className="flex flex-col gap-3 w-[350px]">
+            <div>
+              <label className="block font-bold text-[11px] mb-1">Borrower Name<span className="text-red-500">*</span></label>
+              <div className="flex h-8">
+                <input
+                  type="text"
+                  value={loanData.Print_Name || "N/A"}
+                  readOnly
+                  disabled
+                  placeholder="Borrower Name (ID)"
+                  className="w-full border border-gray-300 px-2 rounded-l text-[11px] outline-none bg-white"
+                />
+                <button className="bg-[#002855] text-white px-2 rounded-r flex items-center justify-center">
+                  <History size={14} />
+                </button>
+              </div>
             </div>
 
-           
-            <div className="flex  space-x-[1px]">
-              
-              <div className="w-[120px] h-auto flex flex-col items-center">
-                <p className="font-medium mb-1 text-xs">Borrower</p>
-                <img
-                  src={loanData.borrower_profileImage || profileempty}
-                  alt="Borrower Profile"
-                  className="w-[100px] h-[115px] rounded-[5px] object-cover border border-gray-300"
-                  onError={(e) => {
-                    e.target.src = profileempty;
-                  }}
+            <div>
+              <label className="block font-bold text-[11px] mb-1">Co - Borrower Name<span className="text-red-500">*</span></label>
+              <div className="flex h-8 ">
+                <input
+                  type="text"
+                  value={coBorrowerData?.printName || "N/A"}
+                  readOnly
+                  disabled
+                  placeholder="Enter Co- Borrower Name (ID)"
+                  className="w-full border border-gray-300 px-2 rounded-l text-[11px] outline-none bg-white"
                 />
-                <div className="mt-1 border w-[100px] h-[26px] flex items-center justify-center bg-white rounded-[4px]">
-                  {loanData.borrower_signature ? (
-                    <img
-                      src={loanData.borrower_signature}
-                      alt="Borrower Signature"
-                      className="w-full h-full object-contain"
-                      onError={(e) => {
-                        e.target.style.display = "none";
-                        e.target.nextSibling.style.display = "block";
-                      }}
-                    />
-                  ) : (
-                    <span className="text-gray-400 text-[9px]">
-                      No Signature
-                    </span>
-                  )}
+                <button className="bg-[#002855] text-white px-2 rounded-r flex items-center justify-center">
+                  <History size={14} />
+                </button>
+              </div>
+            </div>
+
+            <div>
+              <label className="block font-bold text-[11px] mb-1">Scheme<span className="text-red-500">*</span></label>
+              <div className="flex h-8 ">
+              <input
+                type="text"
+                value={loanData.Scheme || "N/A"}
+                readOnly
+                disabled
+                placeholder="Enter Co- Borrower Name (ID)"
+                className="w-full border border-gray-300 px-2 rounded-l text-[11px] outline-none bg-white"
+                />
+                </div>
+            </div>
+          </div>
+
+          {/* 2. Middle Column: Borrower Details */}
+          <div className="flex flex-col">
+            <label className="block font-bold text-[11px] mb-1">
+              Borrower Details<span className="text-red-500">*</span>
+            </label>
+
+            <div className="w-[350px] h-[160px] border border-gray-900 p-2 text-xs flex flex-col justify-between">
+
+              {/* Main Borrower Info Group */}
+              <div className="space-y-1">
+                <div className="flex gap-2 items-center justify-start">
+                  <p className="font-bold text-gray-800">{loanData.Print_Name || "N/A"}</p>
+                </div>
+
+                <div className="flex gap-2 items-center justify-start">
+                  <p className="font-semibold text-gray-800">+91 {loanData.Mobile_Number || "N/A"}</p>
+                </div>
+
+                <div className="flex gap-2 items-start  justify-start">
+                  <p className="font-semibold text-gray-800 line-clamp-3">{loanData.Address || "N/A"}</p>
                 </div>
               </div>
 
-              <div className="w-[120px] h-auto flex flex-col items-center">
-                <p className="font-medium mb-1 text-xs">Co-Borrower</p>
-                <img
-                  src={loanData.coborrower_profileImage || profileempty}
-                  alt="Co-Borrower Profile"
-                  className="w-[100px] h-[115px] rounded-[5px] object-cover border border-gray-300"
-                  onError={(e) => {
-                    e.target.src = profileempty;
-                  }}
-                />
-                <div className="mt-1 w-[100px] h-[26px] border flex items-center justify-center bg-white rounded-[4px]">
-                  {loanData.coborrower_signature ? (
-                    <img
-                      src={loanData.coborrower_signature}
-                      alt="Co-Borrower Signature"
-                      className="max-h-[24px] object-contain"
-                      onError={(e) => {
-                        e.target.style.display = "none";
-                        e.target.nextSibling.style.display = "block";
-                      }}
-                    />
-                  ) : (
-                    <p className="text-gray-400 text-[9px]">No signature</p>
-                  )}
+              {/* Nominee Section (Pushed to bottom or separated by margin) */}
+              <div className="pt-2 border-t border-dashed border-gray-300">
+                <div className="flex flex-col gap-2">
+                    <p className="font-semibold text-gray-800">{loanData.Nominee || "N/A"}</p>
+                  
+                    <p className="font-semibold text-gray-800">{loanData.Nominee_Relation || "N/A"}</p>
                 </div>
               </div>
 
-             
-              <div className="w-[120px] h-auto flex flex-col items-center">
-                <p className="font-medium mb-1 text-xs">Ornament Photo</p>
+            </div>
+          </div>
+
+          {/* 3. Middle Column: Co-Borrower Details */}
+          <div className="flex flex-col">
+            <label className="block font-bold text-[11px] mb-1">
+              Co-Borrower Details<span className="text-red-500">*</span>
+            </label>
+
+            <div className="w-[350px] h-[160px] border border-gray-900 p-2 text-xs flex flex-col justify-between">
+
+              {/* Main Borrower Info Group */}
+              <div className="space-y-1">
+                <div className="flex gap-2 items-center justify-start">
+                  <p className="font-bold text-gray-800">{coBorrowerData?.printName || "N/A"}
+
+                  </p>
+                </div>
+
+                <div className="flex gap-2 items-center justify-start">
+                  <p className="font-semibold text-gray-800">+91 {coBorrowerData.mobile || "N/A"}</p>
+                </div>
+
+                <div className="flex gap-2 items-start  justify-start">
+                  <p className="font-semibold text-gray-800 line-clamp-3">{coBorrowerData.Permanent_Address || "N/A"}</p>
+                </div>
+              </div>
+
+              {/* Nominee Section (Pushed to bottom or separated by margin) */}
+              <div className="pt-2 border-t border-dashed border-gray-300">
+                <div className="flex flex-col gap-2">
+                  
+                    <p className="font-semibold text-gray-800">{coBorrowerData.Nominee_NomineeName || "N/A"}</p>
+                 
+                    <p className="font-semibold text-gray-800">{coBorrowerData.Nominee_Relation || "N/A"}</p>
+                  {/* </div> */}
+                </div>
+              </div>
+
+            </div>
+          </div>
+
+          {/* 4. Right Column: Media Section */}
+          <div className="flex gap-4 ml-auto">
+            {/* Ornament Photo */}
+            <div className="flex flex-col items-center">
+              <span className="text-[11px] font-medium mb-1">Ornament Photo</span>
+              <div className="w-24 h-24 border border-blue-300 bg-white/50 rounded flex items-center justify-center overflow-hidden">
                 <img
                   src={
                     loanData.Ornament_Photo
@@ -647,497 +594,390 @@ const GoldLoanApproval = () => {
                 />
               </div>
             </div>
-          </div>
 
-          <div className="flex  gap-2 ">
-            <div className="p-5">
-              <div className="w-full gap-4 text-xs">
-                <div className=" flex gap-2">
-                  <div className="flex flex-col w-30">
-                    <label className="text-[13px] font-semibold">
-                      Loan amount <span className="text-red-500">*</span>
-                    </label>
-                    <input
-                      type="text"
-                      value={formatCurrency(loanData.Loan_amount)}
-                      readOnly
-                      className="border border-gray-300 rounded-md px-2 py-1 mt-1 text-sm focus:outline-none bg-gray-50"
-                    />
-                   
-                  </div>
-
-                  
-                  <div className="flex flex-col">
-                    <label className="text-[13px] font-semibold">
-                      Doc Charges
-                    </label>
-                    <div className="flex mt-1">
-                      <div className="bg-[#0B2B68] text-white px-2 py-1 rounded-l-md text-sm flex items-center justify-center">
-                        {loanSchemeData.docChargePercent}
-                      </div>
-                      <input
-                        type="text"
-                        value={`₹${formatCurrency(loanData.Doc_Charges)}`}
-                        readOnly
-                        className="border border-gray-300 rounded-r-md px-2 py-1 text-sm focus:outline-none w-24 bg-gray-50"
-                      />
-                    </div>
-                  </div>
-                  <div className="flex flex-col w-25">
-                    <label className="text-[13px] font-semibold">
-                      Net Payable
-                    </label>
-                    <input
-                      type="text"
-                      value={formatCurrency(loanData.Net_Payable)}
-                      readOnly
-                      className="border border-gray-300 rounded-md px-2 py-1 mt-1 text-sm focus:outline-none bg-gray-50"
-                    />
-                  </div>
-                  <div className="flex flex-col w-25">
-                    <label className="text-[13px] font-semibold">
-                     Admin Charges
-                    </label>
-                    <input
-                      type="text"
-                      value={formatCurrency(loanData.Admin_Charges)}
-                      readOnly
-                      className="border border-gray-300 rounded-md px-2 py-1 mt-1 text-sm focus:outline-none bg-gray-50"
-                    />
-                  </div>
-                </div>
-
-                <div className="flex gap-2 flex-col mt-2">
-                  
-
-                 
-                  <div className="flex flex-col w-50">
-                    <label className="text-[13px] font-semibold">
-                      Valuer 1 <span className="text-red-500">*</span>
-                    </label>
-                    <div className="border border-gray-300 rounded-md px-2 py-1 mt-1 text-sm bg-gray-50">
-                      {loanData.Valuer_1 || "Not Assigned"}
-                    </div>
-                  </div>
-                  <div className="flex flex-col w-50 ">
-                    <label className="text-[13px] font-semibold">
-                      Valuer 2 <span className="text-red-500">*</span>
-                    </label>
-                    <div className="border border-gray-300 rounded-md px-2 py-1 mt-1 text-sm bg-gray-50">
-                      {loanData.Valuer_2 || "Not Assigned"}
-                    </div>
-                  </div>
-                  
-                </div>
-
-              
+            {/* Borrower Media */}
+            <div className="flex flex-col items-center gap-1">
+              <span className="text-[11px] font-medium ">Borrower</span>
+              <div className="w-24 h-24 border border-blue-300 bg-white/50 rounded">
+                <img
+                  src={loanData.borrower_profileImage || profileempty}
+                  alt="Borrower Profile"
+                  className="w-[100px] h-[120px] rounded-[5px] object-cover border border-gray-300"
+                  onError={(e) => {
+                    e.target.src = profileempty;
+                  }}
+                />
+              </div>
+              <div className="w-24 h-7 border border-blue-200 bg-white rounded flex items-center justify-center italic text-gray-300 text-[10px]">
+                {loanData.borrower_signature ? (
+                  <img
+                    src={loanData.borrower_signature}
+                    alt="Borrower Signature"
+                    className="w-full h-full object-contain"
+                    onError={(e) => {
+                      e.target.style.display = "none";
+                      e.target.nextSibling.style.display = "block";
+                    }}
+                  />
+                ) : (
+                  <span className="text-gray-400 text-[9px]">
+                    No Signature
+                  </span>
+                )}
+              </div>
+              <div className="w-24 h-7 border border-blue-200 bg-white rounded flex items-center justify-center italic text-gray-300 text-[10px]">
+                {loanData.coborrower_signature ? (
+                  <img
+                    src={loanData.coborrower_signature}
+                    alt="Co-Borrower Signature"
+                    className="max-h-[24px] object-contain"
+                    onError={(e) => {
+                      e.target.style.display = "none";
+                      e.target.nextSibling.style.display = "block";
+                    }}
+                  />
+                ) : (
+                  <p className="text-gray-400 text-[9px]">No signature</p>
+                )}
               </div>
             </div>
 
-          
-            <div className="p-5 ">
-          <h1 className="font-semibold text-[20px] text-[#0A2478] ">
-            Payment Details
-          </h1>
-          <div className=" border-gray-300 rounded-md overflow-hidden mt-2">
-            <table className=" border-collapse text-sm">
-              <thead>
-                <tr className="bg-[#0A2478] text-white text-center">
-                  <th className="py-1 border w-[80px]">Sr No</th>
-                  <th className="py-1 border w-[120px]">Paid By</th>
-                 
-                  <th className="py-1 border w-[180px]">Bank</th>
-                  <th className="py-1 border w-[180px]">Borrower Bank</th>
-                  <th className="py-1 border w-[120px]">Amount</th>
-                  <th className="py-1 border w-[100px]">Action</th>
-                </tr>
-              </thead>
-              <tbody>
-                {rows.map((row, index) => (
-                  <tr
-                    key={index}
-                    className={index % 2 === 0 ? "bg-white" : "bg-white"}
+            {/* Co-Borrower Media */}
+            <div className="flex flex-col items-center gap-1">
+              <span className="text-[11px] font-medium">Co-Borrower</span>
+              <div className="w-24 h-24 border border-blue-300 bg-white/50 rounded">
+                <img
+                  src={loanData.coborrower_profileImage || profileempty}
+                  alt="Co-Borrower Profile"
+                  className="w-[100px] h-[120px] rounded-[5px] object-cover border border-gray-300"
+                  onError={(e) => {
+                    e.target.src = profileempty;
+                  }}
+                />
+              </div>
+              <div className="w-24 h-7 border border-blue-200 bg-white rounded flex items-center justify-center italic text-gray-300 text-[10px]">
+                {loanData.coborrower_signature ? (
+                  <img
+                    src={loanData.coborrower_signature}
+                    alt="Co-Borrower Signature"
+                    className="max-h-[24px] object-contain"
+                    onError={(e) => {
+                      e.target.style.display = "none";
+                      e.target.nextSibling.style.display = "block";
+                    }}
+                  />
+                ) : (
+                  <p className="text-gray-400 text-[9px]">No signature</p>
+                )}
+              </div>
+
+            </div>
+          </div>
+
+        </div>
+        {/* Loan Amount Section */}
+
+        <div className=" bg-[#E9E9FF] p-2">
+          <div className="w-full text-xs border border-gray-300 overflow-x-auto">
+            {/* Header */}
+            <div className="flex bg-[#0A2478] text-white font-semibold min-w-max">
+              <div className="flex-1 p-2 py-3 border-r border-white/20">Particulars (Pledge Items)</div>
+              <div className="w-16 p-2 border-r border-white/20 text-center">Nos.</div>
+              <div className="w-24 p-2 border-r border-white/20 text-center">Gross</div>
+              <div className="w-24 p-2 border-r border-white/20 text-center">Net Weight</div>
+              <div className="w-28 p-2 border-r border-white/20 text-center">Purity</div>
+              <div className="w-32 p-2 border-r border-white/20 text-center">Calculated Purity</div>
+              <div className="w-24 p-2 border-r border-white/20 text-center">Rate</div>
+              <div className="w-28 p-2 border-r border-white/20 text-center">Valuation</div>
+              <div className="w-32 p-2 text-center">Remark</div>
+            </div>
+
+            {/* Dynamic Rows */}
+            {pledgeItems.length > 0 ? (
+              <>
+                {pledgeItems.map((item, index) => (
+                  <div
+                    key={item.id || index}
+                    className={`flex border-t border-gray-300 min-w-max ${index % 2 === 0 ? "bg-gray-50" : "bg-white"
+                      }`}
                   >
-                    <td className="py-1 p-1">{index + 1}</td>
-                    <td className="py-1">
-                      <select
-                        value={row.paidBy}
-                        onChange={(e) =>
-                          handleRowChange(index, "paidBy", e.target.value)
-                        }
-                        className="border border-gray-300 rounded-md px-2 py-1 w-[120px] bg-white"
-                      >
-                        <option value="">Select</option>
-                        {paidByOptions.map((option, i) => (
-                          <option key={i} value={option}>
-                            {option}
-                          </option>
-                        ))}
-                      </select>
-                    </td>
+                    <div className="flex-1 p-2 border-r border-gray-300">{item.particular || "Gold"}</div>
+                    <div className="w-16 p-2 border-r border-gray-300 text-center">{item.nos || 1}</div>
+                    <div className="w-24 p-2 border-r border-gray-300 text-center">{formatCurrency(item.gross)}</div>
+                    <div className="w-24 p-2 border-r border-gray-300 text-center">{formatCurrency(item.netWeight)}</div>
+                    <div className="w-28 p-2 border-r border-gray-300 text-center">{item.purity || ""}</div>
+                    <div className="w-32 p-2 border-r border-gray-300 text-center">{item.Calculated_Purity || ""}</div>
+                    <div className="w-24 p-2 border-r border-gray-300 text-center">{formatCurrency(item.rate)}</div>
+                    <div className="w-28 p-2 border-r border-gray-300 text-center">{formatCurrency(item.valuation)}</div>
+                    <div className="w-32 p-2 text-center">{item.remark || "-"}</div>
+                  </div>
+                ))}
 
-                    <td className="py-2 p-2">
-                      {row.paidBy === "Cash" ? (
-                        <td className="py-2">
-                          <select
-                            value={row.bankId}
-                            onChange={(e) => {
-                              const selectedBank = dummyBanks.find(
-                                (b) => String(b.id) === e.target.value,
-                              );
+                {/* Total Row */}
+                <div className="flex border-t bg-gray-100 border-gray-300 min-w-max">
+                  <div className="flex-1 p-2 border-r border-gray-300 font-bold text-right pr-4">Total</div>
+                  <div className="w-16 p-2 border-r border-gray-300 text-center font-bold">{totalNos}</div>
+                  <div className="w-24 p-2 border-r border-gray-300 text-center font-bold">{formatCurrency(totalGross)}</div>
+                  <div className="w-24 p-2 border-r border-gray-300 text-center font-bold">{formatCurrency(totalNetWeight)}</div>
+                  <div className="w-28 p-2 border-r border-gray-300"></div>
+                  <div className="w-32 p-2 border-r border-gray-300"></div>
+                  <div className="w-24 p-2 border-r border-gray-300"></div>
+                  <div className="w-28 p-2 border-r border-gray-300 text-center font-bold">{formatCurrency(totalValuation)}</div>
+                  <div className="w-32 p-2"></div>
+                </div>
+              </>
+            ) : (
+              <div className="p-4 text-center text-gray-500 border-t border-gray-300">No pledge items found</div>
+            )}
+          </div>
+        </div>
 
-                              const updatedRows = [...rows];
+        <div className="flex gap-4 bg-[#FFE6E6] p-4 w-full items-start">
+          <div className="w-1/2 space-y-4">
+            {/* Row 1 */}
+            <div className="grid grid-cols-4 gap-2">
+              <div className="flex flex-col">
+                <label className="text-[11px] font-bold mb-1">Loan Amount <span className="text-red-500">*</span></label>
+                <input type="text"
+                  value={formatCurrency(loanData.Loan_amount)}
+                  readOnly
+                  disabled
+                  className="border border-gray-300 rounded px-2 py-1 text-xs h-8 bg-white" />
+              </div>
+              <div className="flex flex-col">
+                <label className="text-[11px] font-bold mb-1">Admin Charges</label>
+                <input type="text"
+                  value={formatCurrency(loanData.Admin_Charges)}
+                  readOnly
+                  disabled
+                  className="border border-gray-300 rounded px-2 py-1 text-xs h-8 bg-white" />
+              </div>
+              <div className="flex flex-col">
+                <label className="text-[11px] font-bold mb-1">Doc Charges</label>
+                <input type="text"
+                  value={`₹${formatCurrency(loanData.Doc_Charges)}`}
+                  readOnly
+                  disabled
+                  className="border border-gray-300 rounded px-2 py-1 text-xs h-8 bg-white" />
+              </div>
+              <div className="flex flex-col">
+                <label className="text-[11px] font-bold mb-1">Net Payable</label>
+                <input type="text"
+                  value={formatCurrency(loanData.Net_Payable)}
+                  readOnly
+                  disabled
+                  className="border border-gray-300 rounded px-2 py-1 text-xs h-8 bg-white" />
+              </div>
+            </div>
 
-                              updatedRows[index].bankId =
-                                selectedBank?.id || "";
-                              updatedRows[index].bankName =
-                                selectedBank?.name || "";
+            {/* Row 2 */}
+            <div className="grid grid-cols-4 gap-2">
+             
+              <div className="flex flex-col">
+                <label className="text-[11px] font-bold mb-1">Valuer 1</label>
+                <input type="text"
+                  value={loanData.Valuer_1 || "Not Assigned"}
+                  readOnly
+                  disabled
+                  className="border border-gray-300 rounded px-2 py-1 text-xs h-8 bg-white"
+                 
+                />
+              </div>
+              <div className="flex flex-col">
+                <label className="text-[11px] font-bold mb-1">Valuer 2</label>
+                <input type="text"
+                  value={loanData.Valuer_2 || "Not Assigned"}
+                  readOnly
+                  disabled
+                  className="border border-gray-300 rounded px-2 py-1 text-xs h-8 bg-white"
 
-                              setRows(updatedRows);
-                            }}
-                            className="border border-gray-300 rounded-md px-2 py-1 w-[140px] bg-white"
-                          >
-                            <option value="">Select Bank</option>
-                            {dummyBanks.map((b) => (
-                              <option key={b.id} value={b.id}>
-                                {b.name}
-                              </option>
-                            ))}
-                          </select>
-                        </td>
-                      ) : (
-                        <td className="py-2 p-2">
-                          <select
-                            value={row.bankId}
-                            onChange={(e) => {
-                              const selectedBank = dummyBanks.find(
-                                (b) => String(b.id) === e.target.value,
-                              );
+                />
+                 
+              </div>
+              <div className="flex flex-col">
+                <label className="text-[11px] font-bold mb-1">Pay Date</label>
+                <input type="text"
+                  value={loanData.Pay_Date || "Not Assigned"}
+                  readOnly
+                  disabled
+                  className="border border-gray-300 rounded px-2 py-1 text-xs h-8 bg-white"
 
-                              const updatedRows = [...rows];
+                />
+              </div>
+            </div>
+          </div>
 
-                              updatedRows[index].bankId =
-                                selectedBank?.id || "";
-                              updatedRows[index].bankName =
-                                selectedBank?.name || "";
-
-                              setRows(updatedRows);
-                            }}
-                            className="border border-gray-300 rounded-md px-2 py-1 w-[140px] bg-white"
-                          >
-                            <option value="">Select Bank</option>
-                            {dummyBanks.map((b) => (
-                              <option key={b.id} value={b.id}>
-                                {b.name}
-                              </option>
-                            ))}
-                          </select>
-                        </td>
-                      )}
-                    </td>
-
-                    <td className="py-2 p-2">
-                      {row.paidBy === "Cash" ? (
-                        <p>--</p>
-                      ) : (
+          <div className="w-1/2">
+            <div className="border border-gray-300 rounded overflow-hidden">
+              <table className="w-full text-[11px] border-collapse">
+                <thead>
+                  <tr className="bg-[#0A2478] text-white">
+                    <th className="border-r border-white/20 py-1.5 px-1 w-12">Sr No</th>
+                    <th className="border-r border-white/20 py-1.5 px-2">Paid by</th>
+                    <th className="border-r border-white/20 py-1.5 px-2">Bank</th>
+                    <th className="border-r border-white/20 py-1.5 px-2">Borrower Bank</th>
+                    <th className="border-r border-white/20 py-1.5 px-2">Amount</th>
+                    <th className="py-1.5 px-2 w-16">Action</th>
+                  </tr>
+                </thead>
+                <tbody className="bg-white">
+                  {rows.map((row, index) => (
+                    <tr
+                      key={index}
+                      className={index % 2 === 0 ? "bg-white" : "bg-white"}
+                    >
+                      <td className="py-1 p-1">{index + 1}</td>
+                      <td className="py-1">
                         <select
-                          value={row.customerBank}
+                          value={row.paidBy}
                           onChange={(e) =>
-                            handleRowChange(
-                              index,
-                              "customerBank",
-                              e.target.value,
-                            )
+                            handleRowChange(index, "paidBy", e.target.value)
                           }
-                          className="border border-gray-300 rounded-md px-2 py-1 w-[100px] bg-white"
+                          className="border border-gray-300 rounded-md px-1 py-1 w-[120px] bg-white"
                         >
-                          <option value="">Select Customer Bank</option>
-
-                          {BorrowerBankDetails.map((bank) => (
-                            <option key={bank.id} value={bank.id}>
-                              {bank.bankName} — {bank.Account_No}
+                          <option value="">Select</option>
+                          {paidByOptions.map((option, i) => (
+                            <option key={i} value={option}>
+                              {option}
                             </option>
                           ))}
                         </select>
-                      )}
-                    </td>
+                      </td>
 
-                    <td className="py-2">
-                      <input
-                        type="number"
-                        value={row.customerAmount}
-                        onChange={(e) =>
-                          handleRowChange(
-                            index,
-                            "customerAmount",
-                            e.target.value,
-                          )
-                        }
-                        style={{
-                          MozAppearance: "textfield",
-                        }}
-                        onWheel={(e) => e.target.blur()}
-                        className="border border-gray-300 rounded-md px-2 py-1 w-[120px] bg-white"
-                      />
-                    </td>
-                    <td className="py-2 flex justify-center items-center gap-2">
-                      <button
-                        onClick={handleAddRow}
-                        className="bg-[#0A2478] text-white px-2 py-2 rounded hover:bg-blue-700"
-                      >
-                        <IoIosAddCircleOutline size={17} />
-                      </button>
-                      <button
-                        onClick={() => handleRemoveRow(index)}
-                        className="bg-red-600 text-white px-2 py-2 rounded hover:bg-red-700"
-                      >
-                        <IoIosCloseCircleOutline size={17} />
-                      </button>
-                    </td>
-                  </tr>
-                ))}
-                <tr className=" font-semibold bg-gray-100">
-                  <td colSpan="5" className="text-right pr-4 py-2">
-                    Total
-                  </td>
-                  <td className="text-center">{totalAmount.toFixed(2)}</td>
-                  <td></td>
-                </tr>
-              </tbody>
-            </table>
-          </div>
-        </div>
-          </div>
-        </div> */}
-        <div className="grid grid-cols-12 gap-4 bg-[#FFE6E6] w-[1463px] p-5">
-          {/* Left Column: Inputs */}
-          <div className="col-span-3 space-y-4">
-            <div>
-              <label className="block font-semibold mb-1 text-xs">Borrower Name*</label>
-              <div className="flex">
-                <input
-                  type="text"
-                  placeholder="Borrower Name (ID)"
-                  className="w-full border p-1 rounded-l text-xs"
-                />
-                <button className="bg-[#1e3a8a] text-white p-1 rounded-r">
-                  <History size={18} />
-                </button>
-              </div>
-            </div>
-            <div>
-              <label className="block font-semibold mb-1 text-xs">
-                Co - Borrower Name*
-              </label>
-              <div className="flex">
-                <input
-                  type="text"
-                  placeholder="Enter Co-Borrower Name (ID)"
-                  className="w-full border p-1 rounded-l text-xs"
-                />
-                <button className="bg-[#1e3a8a] text-white p-1 rounded-r">
-                  <History size={18} />
-                </button>
-              </div>
-            </div>
-            <div>
-              <label className="block font-semibold mb-1 text-xs">Scheme*</label>
-              <select className="w-full border p-1 rounded bg-white text-xs">
-                <option>Select Scheme</option>
-              </select>
-            </div>
-          </div>
+                      <td className="py-2 p-2">
+                        {row.paidBy === "Cash" ? (
+                          <td className="py-2">
+                            <select
+                              value={row.bankId}
+                              onChange={(e) => {
+                                const selectedBank = dummyBanks.find(
+                                  (b) => String(b.id) === e.target.value,
+                                );
 
-          {/* Middle Column: Details Display */}
-          <div>
+                                const updatedRows = [...rows];
 
-             <h3 className="font-bold text-xs mb-2">Borrower Details*</h3>
-              <div className="col-span-3 p-2 border rounded w-[296px]">
-            <div className="space-y-1 text-xs">
-              <p>Borrower Name</p>
-              <p>Mobile Number / Alt mobile no</p>
-              <p>Address</p>
-              <p className="mt-2 font-semibold">Nominee Name</p>
-              <p>Relation</p>
-            </div>
-          </div>
-          </div>
-         
+                                updatedRows[index].bankId =
+                                  selectedBank?.id || "";
+                                updatedRows[index].bankName =
+                                  selectedBank?.name || "";
 
-         
-           <div>
+                                setRows(updatedRows);
+                              }}
+                              className="border border-gray-300 rounded-md px-1 py-1 w-[140px] bg-white"
+                            >
+                              <option value="">Select Bank</option>
+                              {dummyBanks.map((b) => (
+                                <option key={b.id} value={b.id}>
+                                  {b.name}
+                                </option>
+                              ))}
+                            </select>
+                          </td>
+                        ) : (
+                          <td className="py-2 p-2">
+                            <select
+                              value={row.bankId}
+                              onChange={(e) => {
+                                const selectedBank = dummyBanks.find(
+                                  (b) => String(b.id) === e.target.value,
+                                );
 
-             <h3 className="font-bold text-xs mb-2">Co-Borrower Details*</h3>
-              <div className="col-span-3 p-2 border rounded w-[296px]">
-            <div className="space-y-1 text-xs">
-              <p>Borrower Name</p>
-              <p>Mobile Number / Alt mobile no</p>
-              <p>Address</p>
-              <p className="mt-2 font-semibold">Nominee Name</p>
-              <p>Relation</p>
-            </div>
-          </div>
-          </div>
+                                const updatedRows = [...rows];
 
-          {/* Right Column: Photos and Signatures */}
-          <div className="col-span-3 flex gap-2">
-            <div className="flex flex-col items-center">
-              <span className="text-[10px] mb-1">Ornament Photo</span>
-              <div className="w-20 h-20 border-2 border-dashed border-gray-400 bg-white/30 flex items-center justify-center">
-                <div className="grid grid-cols-2 gap-1 p-1 opacity-20">
-                  <div className="w-4 h-4 bg-gray-400"></div>
-                  <div className="w-4 h-4 bg-gray-400"></div>
-                  <div className="w-4 h-4 bg-gray-400"></div>
-                  <div className="w-4 h-4 bg-gray-400"></div>
-                </div>
-              </div>
-            </div>
+                                updatedRows[index].bankId =
+                                  selectedBank?.id || "";
+                                updatedRows[index].bankName =
+                                  selectedBank?.name || "";
 
-            <div className="flex flex-col items-center">
-              <span className="text-[10px] mb-1">Borrower</span>
-              <div className="w-20 h-20 border-2 border-dashed border-gray-400 bg-white/30 mb-1"></div>
-              <div className="w-20 h-8 border bg-white flex items-center justify-center italic text-gray-400 text-[10px]">
-                Signature
-              </div>
-            </div>
+                                setRows(updatedRows);
+                              }}
+                              className="border border-gray-300 rounded-md px-1 py-1 w-[140px] bg-white"
+                            >
+                              <option value="">Select Bank</option>
+                              {dummyBanks.map((b) => (
+                                <option key={b.id} value={b.id}>
+                                  {b.name}
+                                </option>
+                              ))}
+                            </select>
+                          </td>
+                        )}
+                      </td>
 
-            <div className="flex flex-col items-center">
-              <span className="text-[10px] mb-1">Co-Borrower</span>
-              <div className="w-20 h-20 border-2 border-dashed border-gray-400 bg-white/30 mb-1"></div>
-              <div className="w-20 h-8 border bg-white flex items-center justify-center italic text-gray-400 text-[10px]">
-                Signature
-              </div>
-            </div>
-          </div>
-        </div>
+                      <td className="py-2 p-2">
+                        {row.paidBy === "Cash" ? (
+                          <p>--</p>
+                        ) : (
+                          <select
+                            value={row.customerBank}
+                            onChange={(e) =>
+                              handleRowChange(
+                                index,
+                                "customerBank",
+                                e.target.value,
+                              )
+                            }
+                            className="border border-gray-300 rounded-md px-1 py-1 w-[100px] bg-white"
+                          >
+                            <option value="">Select Customer Bank</option>
 
-        {/* Loan Amount Section */}
+                            {BorrowerBankDetails.map((bank) => (
+                              <option key={bank.id} value={bank.id}>
+                                {bank.bankName} — {bank.Account_No}
+                              </option>
+                            ))}
+                          </select>
+                        )}
+                      </td>
 
-        <div className=" bg-[#F7F7FF] ml-[110px] mr-[110px] p-2">
-          <div className="  ">
-            <h3 className="font-semibold  text-[#0A2478] text-lg">
-              Pledge Item List
-            </h3>
-            <div className="w-full text-xs border border-gray-300 mt-2 ">
-              <div className="flex bg-[#0A2478] text-white font-semibold">
-                <div className="flex-1 p-2 py-3 border-r-2 border-white">
-                  Particulars
-                </div>
-                <div className="w-16 p-2 border-r-2 border-white text-center">
-                  Nos.
-                </div>
-                <div className="w-24 p-2 border-r-2 border-white text-center">
-                  Gross
-                </div>
-                <div className="w-24 p-2 border-r-2 border-white text-center">
-                  Net Weight
-                </div>
-                <div className="w-28 p-2 border-r-2 border-white text-center">
-                  Purity
-                </div>
-                <div className="w-28 p-2 border-r-2 border-white text-center">
-                  Calculated Purity
-                </div>
-                <div className="w-24 p-2 border-r-2 border-white text-center">
-                  Rate
-                </div>
-                <div className="w-28 p-2 border-r-2 border-white text-center">
-                  Valuation
-                </div>
-                <div className="w-28 p-2 text-center">Remark</div>
-              </div>
-
-              {/* Dynamic Rows */}
-              {pledgeItems.length > 0 ? (
-                <>
-                  {pledgeItems.map((item, index) => (
-                    <div
-                      key={item.id || index}
-                      className={`flex border-t border-gray-300 ${
-                        index % 2 === 0 ? "bg-gray-50" : "bg-white"
-                      }`}
-                    >
-                      <div className="flex-1 p-2 border-r border-gray-300">
-                        {item.particular || "Gold"}
-                      </div>
-                      <div className="w-16 p-2 border-r border-gray-300 text-center">
-                        {item.nos || 1}
-                      </div>
-                      <div className="w-24 p-2 border-r border-gray-300 text-center">
-                        {formatCurrency(item.gross)}
-                      </div>
-                      <div className="w-24 p-2 border-r border-gray-300 text-center">
-                        {formatCurrency(item.netWeight)}
-                      </div>
-                      <div className="w-28 p-2 border-r border-gray-300 text-center">
-                        {item.purity || ""}
-                      </div>
-                      <div className="w-28 p-2 border-r border-gray-300 text-center">
-                        {item.Calculated_Purity || ""}
-                      </div>
-                      <div className="w-24 p-2 border-r border-gray-300 text-center">
-                        {formatCurrency(item.rate)}
-                      </div>
-                      <div className="w-28 p-2 border-r border-gray-300 text-center">
-                        {formatCurrency(item.valuation)}
-                      </div>
-                      <div className="w-28 p-2 text-center">
-                        {item.remark || "-"}
-                      </div>
-                    </div>
+                      <td className="py-2">
+                        <input
+                          type="number"
+                          value={row.customerAmount}
+                          onChange={(e) =>
+                            handleRowChange(
+                              index,
+                              "customerAmount",
+                              e.target.value,
+                            )
+                          }
+                          style={{
+                            MozAppearance: "textfield",
+                          }}
+                          onWheel={(e) => e.target.blur()}
+                          className="border border-gray-300 rounded-md px-1 py-1 w-[120px] bg-white"
+                        />
+                      </td>
+                      <td className="py-2 flex justify-center items-center gap-2">
+                        <button
+                          onClick={handleAddRow}
+                          className="bg-[#0A2478] text-white px-1 py-1 rounded hover:bg-blue-700"
+                        >
+                          <IoIosAddCircleOutline size={17} />
+                        </button>
+                        <button
+                          onClick={() => handleRemoveRow(index)}
+                          className="bg-red-600 text-white px-1 py-1 rounded hover:bg-red-700"
+                        >
+                          <IoIosCloseCircleOutline size={17} />
+                        </button>
+                      </td>
+                    </tr>
                   ))}
-
-                  {/* Total Row */}
-                  {/* Total Row */}
-                  <div className="flex border-t bg-white bg-gray-50">
-                    <div className="flex-1 p-2 border-r border-gray-300 font-semibold">
+                  <tr className=" font-semibold bg-gray-100">
+                    <td colSpan="5" className="text-right pr-4 py-2">
                       Total
-                    </div>
-
-                    <div className="w-16 p-2 border-r border-gray-300 text-center font-semibold">
-                      {totalNos}
-                    </div>
-
-                    <div className="w-24 p-2 border-r border-gray-300 text-center font-semibold">
-                      {formatCurrency(totalGross)}
-                    </div>
-
-                    <div className="w-24 p-2 border-r border-gray-300 text-center font-semibold">
-                      {formatCurrency(totalNetWeight)}
-                    </div>
-
-                    <div className="w-28 p-2 border-r border-gray-300 text-center">
-                      {/* purity empty */}
-                    </div>
-
-                    <div className="w-28 p-2 border-r border-gray-300 text-center">
-                      {/* calculated purity empty */}
-                    </div>
-
-                    <div className="w-24 p-2 border-r border-gray-300 text-center font-semibold">
-                      {/* Rate total (if needed) */}
-                      {/* Leave empty if not required */}
-                    </div>
-
-                    <div className="w-28 p-2 border-r border-gray-300 text-center font-semibold">
-                      {formatCurrency(totalValuation)}
-                    </div>
-
-                    <div className="w-28 p-2 text-center">{/* remark */}</div>
-                  </div>
-                </>
-              ) : (
-                <div className="flex border-t border-gray-300">
-                  <div className="flex-1 p-4 text-center text-gray-500">
-                    No pledge items found
-                  </div>
-                </div>
-              )}
+                    </td>
+                    <td className="text-center">{totalAmount.toFixed(2)}</td>
+                    <td></td>
+                  </tr>
+                </tbody>
+              </table>
             </div>
           </div>
         </div>
 
-        <div className="ml-[110px] mr-[110px] p-5  ">
+        <div className="  bg-[#E9E9FF] ">
           {loanSchemeData.calcBasisOn === "Monthly" && (
             <>
               <h3 className="font-semibold  text-[#0A2478] text-lg ">
@@ -1179,9 +1019,8 @@ const GoldLoanApproval = () => {
                         <td className="p-2 border">₹{row.closing}</td>
 
                         <td
-                          className={`p-2 border font-medium ${
-                            isPaid ? "text-green-600" : "text-gray-400"
-                          }`}
+                          className={`p-2 border font-medium ${isPaid ? "text-green-600" : "text-gray-400"
+                            }`}
                         >
                           {isPaid ? "Paid" : "---"}
                         </td>
@@ -1191,34 +1030,40 @@ const GoldLoanApproval = () => {
                 </tbody>
               </table>
             </>
-          )}
+           )} 
         </div>
 
         {/* ===== Scheme Details & Effective Interest Rates ===== */}
-        <div className="flex gap-8 text-xs mx-14 justify-center mb-5">
+
+        <div className="flex bg-[#FFE6E6] px-4 gap-6 text-xs mb-5 py-2 w-full">
+
           {/* Scheme Details Table */}
-          <div className="w-[550px]">
-            <h2 className="font-semibold text-[20px] mb-1 text-[#0A2478]">
+          <div className="w-1/2">
+            <h2 className="font-semibold text-[20px] mb-2 text-[#0A2478]">
               Scheme Details
             </h2>
-            <div className="border border-gray-300">
+
+            <div className="border border-gray-300 rounded overflow-hidden">
               <div className="flex bg-[#0A2478] text-white font-semibold">
-                <div className="flex-1 p-2 py-4 border-r border-white text-center">
+                <div className="flex-1 p-2 border-r border-white text-center">
                   Loan Tenure (Days)
                 </div>
-                <div className="w-40 p-2 py-4 border-r border-white text-center">
+                <div className="flex-1 p-2 border-r border-white text-center">
                   Min Loan
                 </div>
-                <div className="w-40 p-2 py-4 text-center">Max Loan</div>
+                <div className="flex-1 p-2 text-center">
+                  Max Loan
+                </div>
               </div>
-              <div className="flex border-t border-gray-300">
-                <div className="flex-1 p-2 py-4 border-r border-gray-300 text-center">
+
+              <div className="flex border-t border-gray-300 bg-white">
+                <div className="flex-1 p-2 border-r text-center">
                   {loanData.Loan_Tenure || loanData.loanPeriod || "N/A"}
                 </div>
-                <div className="w-40 p-2 py-4 border-r border-gray-300 text-center">
+                <div className="flex-1 p-2 border-r text-center">
                   {formatCurrency(loanData.Min_Loan || loanData.minLoanAmount)}
                 </div>
-                <div className="w-40 p-2 py-4 text-center">
+                <div className="flex-1 p-2 text-center">
                   {formatCurrency(loanData.Max_Loan || loanData.maxLoanAmount)}
                 </div>
               </div>
@@ -1226,44 +1071,47 @@ const GoldLoanApproval = () => {
           </div>
 
           {/* Effective Interest Rates Table */}
-          <div className="w-[700px]">
-            <h2 className="font-semibold text-[20px] mb-1 text-[#0A2478]">
+          <div className="w-1/2 ">
+            <h2 className="font-semibold text-[20px] mb-2 text-[#0A2478]">
               Effective Interest Rates
             </h2>
-            <div className="border border-gray-300">
+
+            <div className="border border-gray-300 rounded overflow-hidden">
               <div className="flex bg-[#0A2478] text-white font-semibold">
                 <div className="flex-1 p-2 border-r border-white text-center">
                   Terms
                 </div>
-                <div className="w-40 p-2 text-center">
-                  Effective Interest Rates
+                <div className="flex-1 p-2  text-center">
+                  Interest Rate
                 </div>
               </div>
 
-              {/* Dynamic Interest Rates */}
               {interestRates.length > 0 ? (
                 interestRates.map((rate, index) => (
                   <div
                     key={index}
-                    className={`flex ${index % 2 === 0 ? "bg-gray-50" : "bg-white"}`}
+                    className={`flex ${index % 2 === 0 ? "bg-gray-50" : "bg-white"
+                      }`}
                   >
-                    <div className="flex-1 p-2 border-r border-white text-center">
+                    <div className="flex-1 p-2 border-r text-center">
                       {rate.from} To {rate.to}{" "}
                       {loanData?.Scheme_type === "Monthly" ? "MONTHS" : "DAYS"}
                     </div>
-                    <div className="w-40 p-2 text-center">{rate.addInt}%</div>
+                    <div className="flex-1 p-2 text-center">
+                      {rate.addInt}%
+                    </div>
                   </div>
                 ))
               ) : (
                 <div className="flex bg-[#FFCDCD]">
-                  <div className="flex-1 p-2 border-r border-white text-center">
+                  <div className="flex-1 p-3 text-center">
                     No rates available
                   </div>
-                  <div className="w-40 p-2 text-center">-</div>
                 </div>
               )}
             </div>
           </div>
+
         </div>
       </div>
     </div>
