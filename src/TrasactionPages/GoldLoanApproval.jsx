@@ -194,7 +194,6 @@ const GoldLoanApproval = () => {
   
 
 
-  const [coBorrowerData, setCoBorrowerData] = useState(null);
 
   const fetchLoanData = async () => {
     try {
@@ -212,22 +211,7 @@ const GoldLoanApproval = () => {
       setLoanData(loanApplication);
       setLoanSchemeData(response.data.schemeData);
       setcoBorrowerBankDetails(response.data.coborrowerBankDetails);
-      setBorrowerBankDetails(response.data.borrowerBankDetails);
-
-      // 2️⃣ Extract CoBorrowerId
-      const coBorrowerId = loanApplication?.CoBorrowerId;
-
-      if (coBorrowerId) {
-        const customerRes = await axios.get(
-          `${API}/Master/doc/get-customer/${coBorrowerId}`
-        );
-
-        console.log(customerRes.data.data, "CoBorrowerData  Data")
-
-        setCoBorrowerData(customerRes.data.data);
-      }
-
-      setError(null);
+      setBorrowerBankDetails(response.data.borrowerBankDetails);      
 
     } catch (err) {
       console.error("❌ Error fetching loan data:", err);
@@ -412,7 +396,7 @@ const GoldLoanApproval = () => {
     <div className="min-h-screen w-full">
       {/* ===== Top Bar ===== */}
       <div className="flex justify-center sticky top-[10px]">
-        <div className="flex items-center px-6 py-4 border-b  w-[1463px] h-[40px] border rounded-[11px] border-gray-200 justify-between shadow bg-white">
+        <div className="flex items-center px-6 py-4  w-[1463px] h-[40px] border border-gray-200 justify-between bg-white">
           <h2
             style={{
               fontFamily: "Source Sans 3, sans-serif",
@@ -452,7 +436,7 @@ const GoldLoanApproval = () => {
           {/* 1. Left Column: Input Fields */}
           <div className="flex flex-col gap-3 w-[350px]">
             <div>
-              <label className="block font-bold text-[11px] mb-1">Borrower Name<span className="text-red-500">*</span></label>
+              <label className="block  font-semibold text-[11px] mb-1">Borrower Name<span className="text-red-500">*</span></label>
               <div className="flex h-8">
                 <input
                   type="text"
@@ -460,7 +444,7 @@ const GoldLoanApproval = () => {
                   readOnly
                   disabled
                   placeholder="Borrower Name (ID)"
-                  className="w-full border border-gray-300 px-2 rounded-l text-[11px] outline-none bg-white"
+                  className="w-full border border-gray-300 px-1 py-1 rounded-l text-[11px] outline-none bg-white"
                 />
                 <button className="bg-[#002855] text-white px-2 rounded-r flex items-center justify-center">
                   <History size={14} />
@@ -469,15 +453,15 @@ const GoldLoanApproval = () => {
             </div>
 
             <div>
-              <label className="block font-bold text-[11px] mb-1">Co - Borrower Name<span className="text-red-500">*</span></label>
+              <label className="block  font-semibold text-[11px] mb-1">Co - Borrower Name<span className="text-red-500">*</span></label>
               <div className="flex h-8 ">
                 <input
                   type="text"
-                  value={coBorrowerData?.printName || "N/A"}
+                  value={loanData?.coborrower_printName || "N/A"}
                   readOnly
                   disabled
                   placeholder="Enter Co- Borrower Name (ID)"
-                  className="w-full border border-gray-300 px-2 rounded-l text-[11px] outline-none bg-white"
+                  className="w-full border border-gray-300 px-1 py-1 rounded-l text-[11px] outline-none bg-white"
                 />
                 <button className="bg-[#002855] text-white px-2 rounded-r flex items-center justify-center">
                   <History size={14} />
@@ -486,7 +470,7 @@ const GoldLoanApproval = () => {
             </div>
 
             <div>
-              <label className="block font-bold text-[11px] mb-1">Scheme<span className="text-red-500">*</span></label>
+              <label className="block font-semibold text-[11px] mb-1">Scheme<span className="text-red-500">*</span></label>
               <div className="flex h-8 ">
               <input
                 type="text"
@@ -494,7 +478,7 @@ const GoldLoanApproval = () => {
                 readOnly
                 disabled
                 placeholder="Enter Co- Borrower Name (ID)"
-                className="w-full border border-gray-300 px-2 rounded-l text-[11px] outline-none bg-white"
+                className="w-full border border-gray-300 px-1 py-1 rounded-l text-[11px] outline-none bg-white"
                 />
                 </div>
             </div>
@@ -502,7 +486,7 @@ const GoldLoanApproval = () => {
 
           {/* 2. Middle Column: Borrower Details */}
           <div className="flex flex-col">
-            <label className="block font-bold text-[11px] mb-1">
+            <label className="block  font-semibold text-[11px] mb-1">
               Borrower Details<span className="text-red-500">*</span>
             </label>
 
@@ -515,20 +499,17 @@ const GoldLoanApproval = () => {
                 </div>
 
                 <div className="flex gap-2 items-center justify-start">
-                  <p className="font-semibold text-gray-800">+91 {loanData.Mobile_Number || "N/A"}</p>
+                  <p className="font-semibold text-gray-800">+91 {loanData.Mobile_Number || "N/A"} | +91 {loanData.Alternate_Number || "N/A"}</p>
                 </div>
 
                 <div className="flex gap-2 items-start  justify-start">
                   <p className="font-semibold text-gray-800 line-clamp-3">{loanData.Address || "N/A"}</p>
                 </div>
-              </div>
-
-              {/* Nominee Section (Pushed to bottom or separated by margin) */}
-              <div className="pt-2 border-t border-dashed border-gray-300">
-                <div className="flex flex-col gap-2">
-                    <p className="font-semibold text-gray-800">{loanData.Nominee || "N/A"}</p>
-                  
-                    <p className="font-semibold text-gray-800">{loanData.Nominee_Relation || "N/A"}</p>
+                <div className="flex gap-2 items-start  justify-start">
+                  <p className="font-semibold text-gray-800 line-clamp-3">Nominee Name : {loanData.Nominee || "N/A"}</p>
+                </div>
+                <div className="flex gap-2 items-start  justify-start">
+                  <p className="font-semibold text-gray-800 line-clamp-3">Nominee Relation : {loanData.Nominee_Relation || "N/A"}</p>
                 </div>
               </div>
 
@@ -537,7 +518,7 @@ const GoldLoanApproval = () => {
 
           {/* 3. Middle Column: Co-Borrower Details */}
           <div className="flex flex-col">
-            <label className="block font-bold text-[11px] mb-1">
+            <label className="block  font-semibold text-[11px] mb-1">
               Co-Borrower Details<span className="text-red-500">*</span>
             </label>
 
@@ -546,28 +527,23 @@ const GoldLoanApproval = () => {
               {/* Main Borrower Info Group */}
               <div className="space-y-1">
                 <div className="flex gap-2 items-center justify-start">
-                  <p className="font-bold text-gray-800">{coBorrowerData?.printName || "N/A"}
+                  <p className="font-bold text-gray-800">{loanData?.coborrower_printName || "N/A"}
 
                   </p>
                 </div>
 
                 <div className="flex gap-2 items-center justify-start">
-                  <p className="font-semibold text-gray-800">+91 {coBorrowerData.mobile || "N/A"}</p>
+                  <p className="font-semibold text-gray-800">+91 {loanData.coBorrower_mobile || "N/A"} |  +91  {loanData.coBorrower_altMobile || "N/A"}</p>
                 </div>
 
                 <div className="flex gap-2 items-start  justify-start">
-                  <p className="font-semibold text-gray-800 line-clamp-3">{coBorrowerData.Permanent_Address || "N/A"}</p>
+                  <p className="font-semibold text-gray-800 line-clamp-3">{loanData.coBorrower_Permanent_Address || "N/A"}</p>
                 </div>
-              </div>
-
-              {/* Nominee Section (Pushed to bottom or separated by margin) */}
-              <div className="pt-2 border-t border-dashed border-gray-300">
-                <div className="flex flex-col gap-2">
-                  
-                    <p className="font-semibold text-gray-800">{coBorrowerData.Nominee_NomineeName || "N/A"}</p>
-                 
-                    <p className="font-semibold text-gray-800">{coBorrowerData.Nominee_Relation || "N/A"}</p>
-                  {/* </div> */}
+                <div className="flex gap-2 items-start  justify-start">
+                  <p className="font-semibold text-gray-800 line-clamp-3">Nominee Name : {loanData.coBorrower_Nominee_NomineeName || "N/A"}</p>
+                </div>
+                <div className="flex gap-2 items-start  justify-start">
+                  <p className="font-semibold text-gray-800 line-clamp-3">Nominee Relation : {loanData.coBorrower_Nominee_Relation || "N/A"}</p>
                 </div>
               </div>
 
@@ -578,7 +554,7 @@ const GoldLoanApproval = () => {
           <div className="flex gap-4 ml-auto">
             {/* Ornament Photo */}
             <div className="flex flex-col items-center">
-              <span className="text-[11px] font-medium mb-1">Ornament Photo</span>
+              <span className="text-[11px]  font-semibold mb-1">Ornament Photo</span>
               <div className="w-24 h-24 border border-blue-300 bg-white/50 rounded flex items-center justify-center overflow-hidden">
                 <img
                   src={
@@ -597,7 +573,7 @@ const GoldLoanApproval = () => {
 
             {/* Borrower Media */}
             <div className="flex flex-col items-center gap-1">
-              <span className="text-[11px] font-medium ">Borrower</span>
+              <span className="text-[11px]  font-semibold ">Borrower</span>
               <div className="w-24 h-24 border border-blue-300 bg-white/50 rounded">
                 <img
                   src={loanData.borrower_profileImage || profileempty}
@@ -644,7 +620,7 @@ const GoldLoanApproval = () => {
 
             {/* Co-Borrower Media */}
             <div className="flex flex-col items-center gap-1">
-              <span className="text-[11px] font-medium">Co-Borrower</span>
+              <span className="text-[11px] font-semibold">Co-Borrower</span>
               <div className="w-24 h-24 border border-blue-300 bg-white/50 rounded">
                 <img
                   src={loanData.coborrower_profileImage || profileempty}
@@ -742,7 +718,7 @@ const GoldLoanApproval = () => {
                   value={formatCurrency(loanData.Loan_amount)}
                   readOnly
                   disabled
-                  className="border border-gray-300 rounded px-2 py-1 text-xs h-8 bg-white" />
+                  className="border border-gray-300 rounded px-1 py-1 text-xs h-8 bg-white" />
               </div>
               <div className="flex flex-col">
                 <label className="text-[11px] font-bold mb-1">Admin Charges</label>
@@ -750,7 +726,7 @@ const GoldLoanApproval = () => {
                   value={formatCurrency(loanData.Admin_Charges)}
                   readOnly
                   disabled
-                  className="border border-gray-300 rounded px-2 py-1 text-xs h-8 bg-white" />
+                  className="border border-gray-300 rounded px-1 py-1 text-xs h-8 bg-white" />
               </div>
               <div className="flex flex-col">
                 <label className="text-[11px] font-bold mb-1">Doc Charges</label>
@@ -758,7 +734,7 @@ const GoldLoanApproval = () => {
                   value={`₹${formatCurrency(loanData.Doc_Charges)}`}
                   readOnly
                   disabled
-                  className="border border-gray-300 rounded px-2 py-1 text-xs h-8 bg-white" />
+                  className="border border-gray-300 rounded px-1 py-1 text-xs h-8 bg-white" />
               </div>
               <div className="flex flex-col">
                 <label className="text-[11px] font-bold mb-1">Net Payable</label>
@@ -766,7 +742,7 @@ const GoldLoanApproval = () => {
                   value={formatCurrency(loanData.Net_Payable)}
                   readOnly
                   disabled
-                  className="border border-gray-300 rounded px-2 py-1 text-xs h-8 bg-white" />
+                  className="border border-gray-300 rounded px-1 py-1 text-xs h-8 bg-white" />
               </div>
             </div>
 
@@ -779,7 +755,7 @@ const GoldLoanApproval = () => {
                   value={loanData.Valuer_1 || "Not Assigned"}
                   readOnly
                   disabled
-                  className="border border-gray-300 rounded px-2 py-1 text-xs h-8 bg-white"
+                  className="border border-gray-300 rounded px-1 py-1 text-xs h-8 bg-white"
                  
                 />
               </div>
@@ -789,7 +765,7 @@ const GoldLoanApproval = () => {
                   value={loanData.Valuer_2 || "Not Assigned"}
                   readOnly
                   disabled
-                  className="border border-gray-300 rounded px-2 py-1 text-xs h-8 bg-white"
+                  className="border border-gray-300 rounded px-1 py-1 text-xs h-8 bg-white"
 
                 />
                  
@@ -800,7 +776,7 @@ const GoldLoanApproval = () => {
                   value={loanData.Pay_Date || "Not Assigned"}
                   readOnly
                   disabled
-                  className="border border-gray-300 rounded px-2 py-1 text-xs h-8 bg-white"
+                  className="border border-gray-300 rounded px-1 py-1 text-xs h-8 bg-white"
 
                 />
               </div>

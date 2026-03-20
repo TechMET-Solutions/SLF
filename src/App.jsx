@@ -264,7 +264,7 @@ import SchemeRoleMapping from "./MasterPages/SchemeRoleMapping";
 import UserPermissions from "./MasterPages/UserPermissions";
 import UserRolePermission from "./MasterPages/UserRolePermission";
 import ViewSchemeDetailsform from "./MasterPages/ViewSchemeDetailsform";
-import EditLoanApplication from "./TrasactionPages/EditLoanApplication";
+import EditGoldLoanApplication from "./TrasactionPages/EditGoldLoanApplication";
 
 // Transaction Pages
 import PrivacyPolicy from "./Component/PrivacyPolicy";
@@ -520,7 +520,7 @@ function App() {
                   />
                   <Route
                     path="/Edit-Loan-Application"
-                    element={<EditLoanApplication />}
+                    element={<EditGoldLoanApplication />}
                   />
                   {/* Loan Routes */}
                   <Route

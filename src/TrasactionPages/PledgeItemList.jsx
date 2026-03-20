@@ -318,11 +318,11 @@ const PledgeItemList = ({ rows, setRows, selectedScheme }) => {
               </th>
               {isEditing && (
 
-<th className="px-4 py-2 border-r border-gray-200 w-[120px]">
-                Assigned Purity
-              </th>
+                <th className="px-4 py-2 border-r border-gray-200 w-[120px]">
+                  Assigned Purity
+                </th>
               )}
-              
+
               <th className="px-4 py-2 border-r border-gray-200">
                 Funding Rate
               </th>
@@ -421,25 +421,25 @@ const PledgeItemList = ({ rows, setRows, selectedScheme }) => {
                   </button>
                 </td>
 
-               {isEditing && (
-  <td className="px-4 py-2 flex justify-center">
-    <select
-      value={selectedValue}
-      autoFocus
-      onChange={(e) => {
-        setSelectedValue(e.target.value);
-      }}
-      className="border border-gray-300 rounded-md px-2 py-1 w-[120px] h-[30px] text-xs bg-white"
-    >
-      <option value="">Select</option>
-      {purities.map((p) => (
-        <option key={p.id} value={p.purity_name}>
-          {p.loan_type} {p.purity_name}
-        </option>
-      ))}
-    </select>
-  </td>
-)}
+                {isEditing && (
+                  <td className="px-4 py-2 flex justify-center">
+                    <select
+                      value={selectedValue}
+                      autoFocus
+                      onChange={(e) => {
+                        setSelectedValue(e.target.value);
+                      }}
+                      className="border border-gray-300 rounded-md px-2 py-1 w-[120px] h-[30px] text-xs bg-white"
+                    >
+                      <option value="">Select</option>
+                      {purities.map((p) => (
+                        <option key={p.id} value={p.purity_name}>
+                          {p.loan_type} {p.purity_name}
+                        </option>
+                      ))}
+                    </select>
+                  </td>
+                )}
                 <td className="px-4 py-2 text-center">
                   {row.purity ? calculateRate(row.purity).rate.toFixed(2) : "—"}
                 </td>
@@ -488,11 +488,11 @@ const PledgeItemList = ({ rows, setRows, selectedScheme }) => {
               <td className="px-4 py-2 text-center">
                 {totalNetWeight.toFixed(2)}
               </td>
-               {isEditing && (
+              {isEditing && (
 
- <td className="px-4 py-2"></td>
+                <td className="px-4 py-2"></td>
               )}
-             
+
               <td className="px-4 py-2"></td>
               <td className="px-4 py-2"></td>
               <td className="px-4 py-2"></td>

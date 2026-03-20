@@ -1073,7 +1073,7 @@
 import axios from "axios";
 import { useEffect, useRef, useState } from "react";
 import { MdEdit } from "react-icons/md";
-import { useNavigate } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import { API } from "../api";
 import { useAuth } from "../API/Context/AuthContext";
 import envImg from "../assets/envImg.jpg";
@@ -1082,7 +1082,14 @@ import timesvg from "../assets/timesvg.svg";
 import { decryptData } from "../utils/cryptoHelper";
 import PledgeItemList from "./PledgeItemList";
 import PledgeItemListSilver from "./PledgeItemListSilver";
+
+
+
 const EditLoanApplication = () => {
+
+    const location = useLocation();
+  const { loanId } = location.state || {};
+  console.log("LOAN ID ",loanId)
   const [schemes, setSchemes] = useState([]); // store all schemes
   const [selectedScheme, setSelectedScheme] = useState(null); // store selected scheme
   console.log(selectedScheme, "selectedScheme");
@@ -1883,9 +1890,7 @@ const EditLoanApplication = () => {
 
       <div className=" ">
         <div
-          className="flex p-1  gap-5 
-bg-[#FFE6E6] w-[1462px] "
-        >
+          className="flex p-1  gap-5 bg-[#FFE6E6] w-[1462px]" >
           <div className="flex gap-5">
             <div className="flex flex-col">
               <div className="flex flex-col">
