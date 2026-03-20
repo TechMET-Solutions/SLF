@@ -1475,7 +1475,7 @@ function AddLoanRepaymentEmi() {
         {/* Installments Table */}
         <div className=' bg-[#FFE6E6] w-[1462px] ml-[40px]'>
            <div className=''>
-           <div className="flex  pl-5 pr-5">
+           <div className="flex  pl-5 pr-5 mt-2 mb-2">
             <div className="w-[1000px]">
              
               <h1 className="text-blue-900 font-semibold text-xl ">

@@ -144,8 +144,8 @@ const AddCreditNotePage = () => {
   return (
     <div>
       {/* HEADER */}
-      <div className="flex justify-center sticky top-[80px] z-40">
-        <div className="flex items-center justify-between border border-gray-300 rounded-[10px] px-4 py-2 mt-4 w-[1290px] h-[62px]  bg-white">
+      <div className="flex justify-center sticky top-[40px] z-40">
+        <div className="flex items-center justify-between border border-gray-300 px-4 py-2  w-[1460px] h-[40px]  bg-white">
           <h2 className="text-[#C1121F] font-bold text-[20px] whitespace-nowrap mr-4">
             Credit Note
           </h2>
@@ -166,52 +166,52 @@ const AddCreditNotePage = () => {
           </div>
         </div>
       </div>
-      <div className="flex justify-center ">
-        <div className=" py-5 ml-[110px] mr-[110px]">
+      <div className="flex   ">
+        <div className="w-[1460px] ml-[35px]">
           {/* Credit Note Details */}
           <section className="
-bg-[#FFE6E6]  p-5 border-gray-300">
+bg-[#FFE6E6] p-5 border-gray-300">
             <h3 className="font-semibold font-weight-600 text-[20px] text-[#0A2478] mb-3">
               Credit Note Details
             </h3>
 
             <div className="flex gap-2 text-sm">
               <div>
-                <div className=" font-semibold mb-1">Date Of Issue</div>
+                <div className=" font-semibold mb-1 text-xs">Date Of Issue</div>
                 <input
                   type="date"
                   name="date_of_issue"
                   value={formData.date_of_issue}
                   onChange={handleChange}
-                  className="w-[120px] font-weight-600 bg-white px-2 py-1 rounded-[8px] border border-gray-300 h-[40px]"
+                  className="w-[120px] font-weight-600 bg-white px-1 py-1 rounded-[8px] border  text-xs border-gray-300 "
                 />
               </div>
 
               {/* REFERENCE INVOICE */}
               <div>
-                <div className=" font-semibold mb-1">Reference Invoice</div>
+                <div className=" font-semibold mb-1 text-xs">Reference Invoice</div>
                 <input
                   name="reference_invoice_no"
                   placeholder="Enter invoice number"
                   value={formData.reference_invoice_no}
                   onChange={handleChange}
-                  className="w-[185px] border border-gray-300 bg-white px-2 py-1 rounded-[8px] h-[40px]"
+                  className="w-[185px] border border-gray-300 bg-white px-1 py-1 rounded-[8px] text-xs"
                 />
               </div>
               <div>
-                <div className=" font-semibold mb-1">Loan No.</div>
+                <div className=" font-semibold mb-1 text-xs">Loan No.</div>
                 <input
                   name="loan_no"
                   placeholder="Loan No"
                   value={formData.loan_no}
                   onChange={handleChange}
-                  className="w-[185px] border border-gray-300 bg-white px-2 py-1 rounded-[8px] h-[40px]"
+                  className="w-[185px] border border-gray-300 bg-white px-1 py-1 rounded-[8px] text-xs "
                 />
               </div>
 
               {/* REFERENCE DATE */}
               <div>
-                <div className="flex items-center gap-2  font-semibold mb-1">
+                <div className="flex items-center gap-2  font-semibold mb-1 text-xs">
                   Reference Date
                 </div>
                 <input
@@ -220,18 +220,18 @@ bg-[#FFE6E6]  p-5 border-gray-300">
                   placeholder="Enter reference_date"
                   value={formData.reference_date}
                   onChange={handleChange}
-                  className="w-[120px] border border-gray-300 px-2 bg-white py-1 rounded-[8px] h-[40px]"
+                  className="w-[120px] border border-gray-300 px-1 bg-white py-1 rounded-[8px] text-xs"
                 />
               </div>
               <div className="flex flex-col">
-                <label className=" font-semibold mb-1">
+                <label className=" font-semibold mb-1 text-xs">
                   Reason for Credit Note <span className="text-red-500">*</span>
                 </label>
                 <select
                   name="reason"
                   value={formData.reason}
                   onChange={handleChange}
-                  className="w-[200px] border bg-white border-gray-300 px-2 py-1 rounded-[8px] h-[38px]"
+                  className="w-[200px] border bg-white border-gray-300 px-1 py-1 rounded-[8px] text-xs"
                 >
                   <option value="">--Select--</option>
                   <option>Excess Payment Received</option>
@@ -242,18 +242,18 @@ bg-[#FFE6E6]  p-5 border-gray-300">
                 </select>
               </div>
               <div>
-                <div className=" font-semibold mb-1">Credit Amount (₹)</div>
+                <div className=" font-semibold mb-1 text-xs">Credit Amount (₹)</div>
                 <input
                   name="reference_invoice_no"
                   value={formData.credit_amount}
                   placeholder="Enter credit amount"
                   onChange={handleChange}
-                  className="w-[120px] border border-gray-300 bg-white px-2 py-1 rounded-[8px] h-[40px]"
+                  className="w-[120px] border border-gray-300 bg-white px-1 py-1 rounded-[8px] text-xs"
                 />
               </div>
 
               <div className="">
-                <div className=" font-semibold mb-1">
+                <div className=" font-semibold mb-1 text-xs">
                   Description / Remarks*
                 </div>
                 <input
@@ -261,7 +261,7 @@ bg-[#FFE6E6]  p-5 border-gray-300">
                   value={formData.description}
                   placeholder="Enter description"
                   onChange={handleChange}
-                  className="w-[260px] border bg-white border-gray-300 px-2 py-1 rounded-[8px] h-[40px]"
+                  className="w-[260px] border bg-white border-gray-300 px-1 py-1 rounded-[8px] text-xs"
                 />
               </div>
             </div>
@@ -275,30 +275,21 @@ bg-[#FFE6E6]  p-5 border-gray-300">
 
             <div className="flex flex-wrap gap-2 text-sm">
               <div>
-                <div className=" font-semibold mb-1">Customer Id</div>
+                <div className=" font-semibold mb-1 text-xs">Customer Id</div>
                 <input
                   name="customer_id"
                   value={formData.customer_id}
                   onChange={handleChange}
                   placeholder="Enter Customer Id"
-                  className="w-[199px] border bg-white border-gray-300 px-2 py-1 rounded-[8px] h-[40px]"
+                  className="w-[150px] border bg-white border-gray-300 px-1 py-1 text-xs rounded-[8px] "
                 />
               </div>
 
-              {/* <div>
-                <div className=" font-semibold mb-1">Customer Name</div>
-                <input
-                  name="customer_name"
-                  value={formData.customer_name}
-                  onChange={handleChange}
-                  placeholder="Enter Name"
-                  className="w-[250px] border bg-white border-gray-300 px-2 py-1 rounded-[8px] h-[40px]"
-                />
-              </div> */}
+              
 
 
               <div className="relative">
-                <div className="font-semibold mb-1">Customer Name</div>
+                <div className="font-semibold mb-1 text-xs">Customer Name</div>
 
                 <input
                   name="customer_name"
@@ -306,7 +297,7 @@ bg-[#FFE6E6]  p-5 border-gray-300">
                   onChange={handleChange}
                   onFocus={() => setShowSuggestions(true)}
                   placeholder="Search customer..."
-                  className="w-[250px] border bg-white border-gray-300 px-2 py-1 rounded-[8px] h-[40px]"
+                  className="w-[180px] border bg-white border-gray-300 px-1 py-1 text-xs rounded-[8px] "
                 />
 
                 {/* 🔽 Suggestion Dropdown */}
@@ -316,7 +307,7 @@ bg-[#FFE6E6]  p-5 border-gray-300">
                       <div
                         key={customer.id}
                         onClick={() => handleSelectCustomer(customer)}
-                        className="px-3 py-2 cursor-pointer hover:bg-gray-100 text-sm"
+                        className="px-1 py-1 text-xs cursor-pointer hover:bg-gray-100 "
                       >
                         <div className="font-medium">{customer.printName}</div>
                         <div className="text-xs text-gray-500">
@@ -335,70 +326,71 @@ bg-[#FFE6E6]  p-5 border-gray-300">
               </div>
 
               <div>
-                <div className=" font-semibold mb-1">Address</div>
+                <div className=" font-semibold mb-1 text-xs">Address</div>
                 <input
                   name="address"
                   value={formData.address}
                   onChange={handleChange}
                   placeholder="Enter Address"
-                  className="w-[310px] border bg-white border-gray-300 px-2 py-1 rounded-[8px] h-[40px]"
+                  className="w-[310px] border bg-white border-gray-300 px-1 py-1 text-xs rounded-[8px] "
                 />
               </div>
 
               <div>
-                <div className=" font-semibold mb-1">City</div>
+                <div className=" font-semibold mb-1 text-xs">City</div>
                 <input
                   name="city"
                   value={formData.city}
                   onChange={handleChange}
                   placeholder="Enter City"
-                  className="w-[140px] border bg-white border-gray-300 px-2 py-1 rounded-[8px] h-[40px]"
+                  className="w-[100px] border bg-white border-gray-300 px-1 py-1 text-xs rounded-[8px]"
                 />
               </div>
 
               <div>
-                <div className=" font-semibold mb-1">State</div>
+                <div className=" font-semibold mb-1 text-xs">State</div>
                 <input
                   name="state"
                   value={formData.state}
                   onChange={handleChange}
                   placeholder="Enter State"
-                  className="w-[190px] border bg-white border-gray-300 px-2 py-1 rounded-[8px] h-[40px]"
+                  className="w-[120px] border bg-white border-gray-300 px-1 py-1 text-xs  rounded-[8px] "
                 />
               </div>
               <div>
-                <div className=" font-semibold mb-1">Pin code</div>
+                <div className=" font-semibold mb-1 text-xs">Pin code</div>
                 <input
                   name="pin_code"
                   value={formData.pin_code}
                   onChange={handleChange}
                   placeholder="Enter Pin code"
-                  className="w-[100px] border bg-white border-gray-300 px-2 py-1 rounded-[8px] h-[40px]"
+                  className="w-[100px] border bg-white border-gray-300 px-1 py-1 text-xs rounded-[8px] "
                 />
               </div>
-            </div>
-            <div className="flex gap-2 mt-3">
-              <div>
-                <div className=" font-semibold mb-1">Mobile Number</div>
+               <div>
+                <div className=" font-semibold mb-1 text-xs">Mobile Number</div>
                 <input
                   name="mobile_number"
                   value={formData.mobile_number}
                   onChange={handleChange}
                   placeholder="Enter Mobile Number"
-                  className="w-[120px] border bg-white border-gray-300 px-2 py-1 rounded-[8px] h-[40px]"
+                  className="w-[80px] border bg-white border-gray-300 px-1 py-1 text-xs rounded-[8px]"
                 />
               </div>
 
               <div>
-                <div className=" font-semibold mb-1">Email ID</div>
+                <div className=" font-semibold mb-1 text-xs">Email ID</div>
                 <input
                   name="email_id"
                   value={formData.email_id}
                   placeholder="Enter Email ID"
                   onChange={handleChange}
-                  className="w-[300px] border bg-white rounded-[8px] border-gray-300 px-2 py-1 h-[40px]"
+                  className="w-[300px] border bg-white rounded-[8px] border-gray-300 px-1 py-1 text-xs "
                 />
               </div>
+            </div>
+            <div className="flex gap-2 mt-3">
+             
             </div>
           </section>
 
@@ -410,29 +402,29 @@ bg-[#FFE6E6]  p-5 border-gray-300">
 
             <div className="flex flex-wrap gap-5 text-sm">
               <div>
-                <div className=" font-semibold mb-1">Prepared By (Name)</div>
+                <div className=" font-semibold mb-1 text-xs">Prepared By (Name)</div>
                 <input
                   name="prepared_by"
                   value={formData.prepared_by}
                   placeholder="Enter Prepared By"
                   onChange={handleChange}
-                  className="w-[263px] border border-gray-300 bg-white px-2 py-1 rounded-[8px] h-[40px]"
+                  className="w-[263px] border border-gray-300 bg-white px-1 py-1 text-xs rounded-[8px] "
                 />
               </div>
 
               <div>
-                <div className=" font-semibold mb-1">Designation</div>
+                <div className=" font-semibold mb-1 text-xs">Designation</div>
                 <input
                   name="designation"
                   value={formData.designation}
                   placeholder="Enter Designation"
                   onChange={handleChange}
-                  className="w-[263px] border border-gray-300 bg-white px-2 py-1 rounded-[8px] h-[40px]"
+                  className="w-[263px] border border-gray-300 bg-white px-1 py-1 rounded-[8px] "
                 />
               </div>
 
               <div>
-                <div className=" font-semibold mb-1">
+                <div className=" font-semibold mb-1 text-xs">
                   Verified By (Accounts Dept.)
                 </div>
                 <input
@@ -440,7 +432,7 @@ bg-[#FFE6E6]  p-5 border-gray-300">
                   value={formData.verified_by}
                   placeholder="Enter Verified By"
                   onChange={handleChange}
-                  className="w-[263px] border border-gray-300 bg-white px-2 py-1 rounded-[8px] h-[40px]"
+                  className="w-[263px] border border-gray-300 bg-white px-1 py-1 rounded-[8px] "
                 />
               </div>
             </div>

@@ -201,8 +201,8 @@ function AddAuctionCreation() {
   return (
     <div className="min-h-screen w-full">
       {/* 🔹 Header */}
-      <div className="flex justify-center sticky top-[80px] z-40">
-        <div className="flex items-center px-6 py-4 border-b mt-5 w-[1462px] h-[50px] border rounded-[11px] border-gray-200 justify-between bg-white">
+      <div className="flex justify-center sticky top-[50px] z-40">
+        <div className="flex items-center px-6 py-4 border-b  w-[1462px] h-[40px] border  border-gray-200 justify-between bg-white">
           <h2 className="text-red-600 font-bold text-[20px]">
             Auction Creation
           </h2>
@@ -320,83 +320,9 @@ function AddAuctionCreation() {
       </div>
 
       {/* 🔹 Form Section */}
-      <div className=" p-4  rounded-md ml-[22px]">
-        {/* <div className="flex  mt-2    gap-2 ">
-          <div className="flex flex-col ">
-            <label className="text-xs font-medium mb-1">
-              Venue <span className="text-red-600">*</span>
-            </label>
-            <input
-              type="text"
-              name="venue"
-              value={formData.venue}
-              onChange={handleInputChange}
-              className="border border-gray-300 rounded px-2  py-2 text-xs focus:outline-none focus:ring-2 focus:ring-blue-500 w-[300px] bg-white"
-              placeholder="Location"
-            />
-          </div>
-
-          <div className="flex flex-col ">
-            <label className="text-xs font-medium mb-1">
-              Date <span className="text-red-600">*</span>
-            </label>
-            <input
-              type="date"
-              name="date"
-              value={formData.date}
-              onChange={handleInputChange}
-              className="border border-gray-300 rounded px-2  py-2 text-xs focus:outline-none focus:ring-2 focus:ring-blue-500  bg-white"
-            />
-          </div>
-
-          <div className="flex flex-col ">
-            <label className="text-xs font-medium mb-1">
-              Time <span className="text-red-600">*</span>
-            </label>
-            <input
-              type="time"
-              name="time"
-              value={formData.time}
-              onChange={handleInputChange}
-              className="border border-gray-300 rounded px-2 py-2 text-xs focus:outline-none focus:ring-2 focus:ring-blue-500  bg-white"
-            />
-          </div>
-
-          <div className="flex flex-col ">
-            <label className="text-xs font-medium mb-1">
-              Fees <span className="text-red-600">*</span>
-            </label>
-            <input
-              type="number"
-              name="fees"
-              value={formData.fees}
-              onChange={handleInputChange}
-              style={{
-                MozAppearance: "textfield",
-              }}
-              onWheel={(e) => e.target.blur()}
-              className=" no-spinner border border-gray-300 rounded px-2 w-30 py-2 text-xs focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white"
-              placeholder="Enter fees"
-            />
-          </div>
-
-          <div className="flex flex-col">
-            <label className="text-xs font-medium mb-1 ">Charges</label>
-            <input
-              type="number"
-              name="charges"
-              value={formData.charges}
-              onChange={handleInputChange}
-              style={{
-                MozAppearance: "textfield",
-              }}
-              onWheel={(e) => e.target.blur()}
-              className="  no-spinner border border-gray-300 rounded px-2 w-30 py-2 text-xs focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white"
-            />
-          </div>
-        </div> */}
-
-        <div className="grid grid-cols-5 sm:grid-cols-5 lg:w-[800px] gap-4 mt-2">
+      <div className="   rounded-md ml-[25px]  ">
+       
+        <div className="flex gap-5 w-[1462px]  bg-[#FFE6E6] p-2 ">
 
           {/* Venue */}
           <div className="flex flex-col">
@@ -473,21 +399,20 @@ function AddAuctionCreation() {
           </div>
 
         </div>
-
-        {/* 🔹 Title */}
-        <h2 className="font-bold text-[20px] text-[#0A2478] mt-2 ">
+        <div className='w-[1462px] bg-[#E9E9FF] p-2'>
+           <h2 className="font-bold text-[20px] text-[#0A2478]  ">
           Add Loans
         </h2>
 
-        {/* 🔹 Table Section */}
         <div className="flex ">
           <div className="overflow-x-auto mt-2 w-[1300px] h-[500px] ">
             <table className="w-full border-collapse">
               <thead className="bg-[#0A2478] text-white text-sm">
                 <tr>
                   <th className="px-1 py-1 text-left border-r">Select</th>
+                    <th className="px-1 py-1 text-left border-r">Loan Scheme</th>
                   <th className="px-1 py-1 text-left border-r">Loan No</th>
-                  <th className="px-1 py-1 text-left border-r">Loan Scheme</th>
+                
 
                   <th className="px-1 py-1 text-left border-r">Loan Date</th>
                   <th className="px-1 py-1 text-left border-r">
@@ -528,8 +453,9 @@ function AddAuctionCreation() {
                         onChange={() => handleSelectLoan(row.id)}
                       />
                     </td>
+                     <td className="px-1 py-1">{row.Scheme}</td>
                     <td className="px-1 py-1">{row.id}</td>
-                    <td className="px-1 py-1">{row.Scheme}</td>
+                   
 
                     <td className="px-1 py-1">
                       {row.approval_date
@@ -565,6 +491,9 @@ function AddAuctionCreation() {
             </table>
           </div>
         </div>
+</div>
+      
+       
       </div>
     </div>
   );

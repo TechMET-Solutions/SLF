@@ -144,7 +144,7 @@ const BidderRegistration = () => {
   return (
     <div className="flex flex-col items-center  ">
       {/* Header Section */}
-      <div className="w-[1459px] bg-white border border-gray-200  mb-6 sticky top-[40px] z-40">
+      <div className="w-[1459px] bg-white border border-gray-200   sticky top-[40px] z-40">
         <div className="flex flex-col sm:flex-row items-center justify-between px-2 py-2 h-[40px]">
           <h2 className="text-red-600 font-bold text-[20px]">
             Bidder Registration
@@ -168,17 +168,15 @@ const BidderRegistration = () => {
 
      
       <div className="w-[1459px]">
-  
-
         <div className="">
           <div className="bg-[#FFE6E6] p-5">
             <h1 className="text-blue-900 font-semibold text-xl  mb-2">
               Bidder Information
             </h1>
             <div className="flex flex-col lg:flex-row gap-4 ">
-              {/* Left Section - Form Fields */}
+             
               <div className="flex-1">
-                <div className="flex flex-wrap -mx-3">
+                <div className="flex flex-wrap ">
                   <div className="px-3 mb-2 w-[340px]">
                     <label className="text-gray-900 font-medium">
                       Bidder Name <span className="text-red-600">*</span>
@@ -193,8 +191,7 @@ const BidderRegistration = () => {
                     />
                   </div>
 
-                  {/* Repeat for all other fields with name/value/onChange */}
-                  {/* Mobile Number */}
+                 
                   <div className="px-3 mb-6 w-[150px]">
                     <label className="text-gray-900 font-medium">
                       Mobile Number <span className="text-red-600">*</span>
@@ -232,7 +229,7 @@ const BidderRegistration = () => {
                     />
                   </div>
 
-                  {/* Email ID */}
+                  
                   <div className="px-3 mb-6 w-[350px]">
                     <label className="text-gray-900 font-medium">
                       Email ID <span className="text-red-600">*</span>
@@ -247,7 +244,7 @@ const BidderRegistration = () => {
                     />
                   </div>
 
-                  {/* Personal Address */}
+                  
                   <div className="px-3 mb-6 w-[340px]">
                     <label className="text-gray-900 font-medium">
                       Personal Address <span className="text-red-600">*</span>
@@ -262,7 +259,7 @@ const BidderRegistration = () => {
                     />
                   </div>
 
-                  {/* Shop Address */}
+                  
                   <div className="px-3 mb-6 w-[340px]">
                     <label className="text-gray-900 font-medium">
                       Shop Address <span className="text-red-600">*</span>
@@ -277,7 +274,7 @@ const BidderRegistration = () => {
                     />
                   </div>
 
-                  {/* Landline No 1 */}
+                 
                   <div className="px-3 mb-6 w-[180px]">
                     <label className="text-gray-900 font-medium">
                       Landline No 1 <span className="text-red-600">*</span>
@@ -296,7 +293,7 @@ const BidderRegistration = () => {
                     />
                   </div>
 
-                  {/* Landline No 2 */}
+                 
                   <div className="px-3 mb-6 w-[180px]">
                     <label className="text-gray-900 font-medium">
                       Landline No 2
@@ -315,7 +312,7 @@ const BidderRegistration = () => {
                     />
                   </div>
 
-                  {/* Firm Name */}
+                  
                   <div className="px-3 mb-6 w-[340px]">
                     <label className="text-gray-900 font-medium">
                       Firm Name <span className="text-red-600">*</span>
@@ -330,7 +327,7 @@ const BidderRegistration = () => {
                     />
                   </div>
 
-                  {/* GST No */}
+                  
                   <div className="px-3 mb-6 w-[200px]">
                     <label className="text-gray-900 font-medium">
                       GST No <span className="text-red-600">*</span>
@@ -345,7 +342,7 @@ const BidderRegistration = () => {
                     />
                   </div>
 
-                  {/* Aadhar No */}
+                 
                   <div className="px-3 mb-6 w-[220px]">
                     <label className="text-gray-900 font-medium">
                       Aadhar No <span className="text-red-600">*</span>
@@ -364,7 +361,7 @@ const BidderRegistration = () => {
                     />
                   </div>
 
-                  {/* Aadhar Document */}
+                 
                   <div className="px-3 mb-6 w-[280px]">
                     <label className="text-gray-900 font-medium">
                       Aadhar Document
@@ -400,7 +397,7 @@ const BidderRegistration = () => {
                       )}
                     </div>
                   </div>
-                  {/* Pan No */}
+              
                   <div className="px-3 mb-6 w-[220px]">
                     <label className="text-gray-900 font-medium">
                       Pan No <span className="text-red-600">*</span>
@@ -415,7 +412,7 @@ const BidderRegistration = () => {
                     />
                   </div>
 
-                  {/* Pan Document */}
+                 
                   <div className="px-3 mb-6 w-[280px]">
                     <label className="text-gray-900 font-medium">
                       Pan Document
@@ -454,7 +451,7 @@ const BidderRegistration = () => {
                 </div>
               </div>
 
-              {/* Right Section - Profile Picture */}
+             
               <div className="lg:w-48 flex flex-col items-center lg:items-start gap-4">
                 <h3 className="font-semibold text-gray-900 text-center lg:text-left">
                   Upload Bidder Profile
@@ -483,7 +480,7 @@ const BidderRegistration = () => {
                       className="absolute bottom-2 right-3 bg-[#0A2478] text-white rounded-sm text-[10px] p-1 cursor-pointer"
                     >
                       Upload from Computer
-                      {/* <MdOutlineFileUpload size={18} /> */}
+                    
                       <input
                         id="photo-file"
                         type="file"
@@ -498,7 +495,7 @@ const BidderRegistration = () => {
             </div>
           </div>
         </div>
-        <div className="ml-[110px] mr-[110px]">
+        <div className="">
           <div className="bg-[#F7F7FF] p-5 ">
             <h1 className="text-blue-900 font-semibold text-xl pb-4 mb-2">
               Add Bank Details

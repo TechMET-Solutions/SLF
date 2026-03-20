@@ -50,8 +50,8 @@ const ViewCreditNote = () => {
   return (
     <div>
       {/* HEADER SECTION */}
-      <div className="flex justify-center sticky top-[80px] z-40">
-        <div className="flex items-center justify-between border border-gray-300 rounded-[10px] px-4 py-2 mt-4 w-[1290px] h-[62px] shadow-lg bg-white">
+      <div className="flex justify-center sticky top-[50px] z-40">
+        <div className="flex items-center justify-between border border-gray-300 px-4 py-2  w-[1462px] h-[40px] bg-white">
           <h2 className="text-[#C1121F] font-bold text-[20px] whitespace-nowrap mr-4">
             View Customer Credit Note
           </h2>
@@ -69,7 +69,7 @@ const ViewCreditNote = () => {
 
       {/* MAIN CONTENT */}
       <div className="flex justify-center">
-        <div className="w-[1290px] bg-white mt-5">
+        <div className="w-[1462px] bg-white">
           {/* CREDIT NOTE DETAILS */}
           <section className="bg-[#ECECF6] p-4  border-gray-300 ">
             <h3 className="font-semibold text-[20px] text-[#0A2478] mb-3">
