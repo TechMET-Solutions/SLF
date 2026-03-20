@@ -2085,7 +2085,7 @@ function AddLoanRepayment() {
                       {row.receiptNo}
                     </td>
                     {/* <td className="p-2 border border-gray-300">
-                      {row.paymentDate}
+                      {row.                                                                                                                                                                                   }
                     </td> */}
                     <td className="p-2 border border-gray-300">
                       {row.paidUpto}
