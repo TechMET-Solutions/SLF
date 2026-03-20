@@ -1,4 +1,5 @@
 import axios from "axios";
+import { History } from "lucide-react";
 import { useEffect, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import { API } from "../api";
@@ -908,7 +909,107 @@ const GoldLoanApproval = () => {
         </div>
           </div>
         </div> */}
-        <div className="bg-[#FFE6E6] w-[1463px]"></div>
+        <div className="grid grid-cols-12 gap-4 bg-[#FFE6E6] w-[1463px] p-5">
+          {/* Left Column: Inputs */}
+          <div className="col-span-3 space-y-4">
+            <div>
+              <label className="block font-semibold mb-1 text-xs">Borrower Name*</label>
+              <div className="flex">
+                <input
+                  type="text"
+                  placeholder="Borrower Name (ID)"
+                  className="w-full border p-1 rounded-l text-xs"
+                />
+                <button className="bg-[#1e3a8a] text-white p-1 rounded-r">
+                  <History size={18} />
+                </button>
+              </div>
+            </div>
+            <div>
+              <label className="block font-semibold mb-1 text-xs">
+                Co - Borrower Name*
+              </label>
+              <div className="flex">
+                <input
+                  type="text"
+                  placeholder="Enter Co-Borrower Name (ID)"
+                  className="w-full border p-1 rounded-l text-xs"
+                />
+                <button className="bg-[#1e3a8a] text-white p-1 rounded-r">
+                  <History size={18} />
+                </button>
+              </div>
+            </div>
+            <div>
+              <label className="block font-semibold mb-1 text-xs">Scheme*</label>
+              <select className="w-full border p-1 rounded bg-white text-xs">
+                <option>Select Scheme</option>
+              </select>
+            </div>
+          </div>
+
+          {/* Middle Column: Details Display */}
+          <div>
+
+             <h3 className="font-bold text-xs mb-2">Borrower Details*</h3>
+              <div className="col-span-3 p-2 border rounded w-[296px]">
+            <div className="space-y-1 text-xs">
+              <p>Borrower Name</p>
+              <p>Mobile Number / Alt mobile no</p>
+              <p>Address</p>
+              <p className="mt-2 font-semibold">Nominee Name</p>
+              <p>Relation</p>
+            </div>
+          </div>
+          </div>
+         
+
+         
+           <div>
+
+             <h3 className="font-bold text-xs mb-2">Co-Borrower Details*</h3>
+              <div className="col-span-3 p-2 border rounded w-[296px]">
+            <div className="space-y-1 text-xs">
+              <p>Borrower Name</p>
+              <p>Mobile Number / Alt mobile no</p>
+              <p>Address</p>
+              <p className="mt-2 font-semibold">Nominee Name</p>
+              <p>Relation</p>
+            </div>
+          </div>
+          </div>
+
+          {/* Right Column: Photos and Signatures */}
+          <div className="col-span-3 flex gap-2">
+            <div className="flex flex-col items-center">
+              <span className="text-[10px] mb-1">Ornament Photo</span>
+              <div className="w-20 h-20 border-2 border-dashed border-gray-400 bg-white/30 flex items-center justify-center">
+                <div className="grid grid-cols-2 gap-1 p-1 opacity-20">
+                  <div className="w-4 h-4 bg-gray-400"></div>
+                  <div className="w-4 h-4 bg-gray-400"></div>
+                  <div className="w-4 h-4 bg-gray-400"></div>
+                  <div className="w-4 h-4 bg-gray-400"></div>
+                </div>
+              </div>
+            </div>
+
+            <div className="flex flex-col items-center">
+              <span className="text-[10px] mb-1">Borrower</span>
+              <div className="w-20 h-20 border-2 border-dashed border-gray-400 bg-white/30 mb-1"></div>
+              <div className="w-20 h-8 border bg-white flex items-center justify-center italic text-gray-400 text-[10px]">
+                Signature
+              </div>
+            </div>
+
+            <div className="flex flex-col items-center">
+              <span className="text-[10px] mb-1">Co-Borrower</span>
+              <div className="w-20 h-20 border-2 border-dashed border-gray-400 bg-white/30 mb-1"></div>
+              <div className="w-20 h-8 border bg-white flex items-center justify-center italic text-gray-400 text-[10px]">
+                Signature
+              </div>
+            </div>
+          </div>
+        </div>
 
         {/* Loan Amount Section */}
 
