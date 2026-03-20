@@ -2336,6 +2336,8 @@ const AddGoldLoanApplication = () => {
           intCompound: item.calcMethod === "Compound",
         }));
 
+        console.log("setSchemes", fetchedSchemes)
+
         setSchemes(fetchedSchemes);
       } catch (err) {
         console.error("❌ Error fetching schemes:", err);
