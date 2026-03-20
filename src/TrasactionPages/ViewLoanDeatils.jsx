@@ -300,8 +300,8 @@ const ViewLoanDetails = () => {
   return (
     <div className="min-h-screen w-full">
       {/* ===== Top Bar ===== */}
-      <div className="flex justify-center sticky top-[80px] z-40 ">
-        <div className="flex items-center px-6 py-4 border-b mt-5 w-[1260px] h-[62px] border rounded-[11px] border-gray-200 justify-between shadow bg-white ">
+      <div className="flex justify-center sticky top-[50px] z-40 ">
+        <div className="flex items-center px-6 py-4 border-b  w-[1462px] h-[40px] border  border-gray-200 justify-between  bg-white ">
           <h2
             style={{
               fontFamily: "Source Sans 3, sans-serif",
@@ -318,7 +318,7 @@ const ViewLoanDetails = () => {
           <div className="flex gap-2 mr-6">
             <button
               onClick={() => navigate("/Loan-Application")}
-              className="bg-[#C1121F] text-white px-6 py-1 text-sm rounded hover:bg-[#a50d18] shadow-lg"
+              className="bg-[#C1121F] text-white px-6 py-1 text-sm rounded hover:bg-[#a50d18]"
             >
               Close
             </button>
@@ -327,58 +327,79 @@ const ViewLoanDetails = () => {
       </div>
 
       {/* ===== FORM SECTIONS ===== */}
-      <div className="p-9 py-6 min-h-screen px-4">
+      <div className="ml-[10px] min-h-screen px-4">
         {/* ===== Loan Details Section ===== */}
-        <div className="flex justify-center  bg-[#FFE6E6] ml-[110px] mr-[110px] p-5">
+        <div className="flex justify-center  w-[1462px] p-5 bg-[#FFE6E6]">
           <div className=" ">
-            {/* First Row */}
-            <div className="flex gap-7 text-sm mb-8 flex-wrap">
-              <div>
-                <p className="font-semibold">Loan No</p>
-                <p>{loanData.id || "N/A"}</p>
-              </div>
-              <div>
-                <p className="font-semibold">Loan Date</p>
-                <p>{formatDate(loanData.created_at)}</p>
-              </div>
-              <div>
-                <p className="font-semibold">Borrower Name</p>
-                <p>{loanData.Borrower || "N/A"}</p>
-              </div>
-              <div>
-                <p className="font-semibold">Scheme</p>
-                <p>{loanData.Scheme || "N/A"}</p>
-              </div>
-              <div>
-                <p className="font-semibold">Print Name</p>
-                <p>{loanData.Print_Name || "N/A"}</p>
-              </div>
-              <div>
-                <p className="font-semibold">Mobile Number</p>
-                <p>+91 {loanData.Mobile_Number || "N/A"}</p>
-              </div>
+            
 
-              <div>
-                <p className="font-semibold">Co-Borrower</p>
-                <p>{loanData.Co_Borrower || "N/A"}</p>
-              </div>
-              <div>
-                <p className="font-semibold">Relation</p>
-                <p>{loanData.Relation || "N/A"}</p>
-              </div>
-              <div>
-                <p className="font-semibold">Nominee</p>
-                <p>{loanData.Nominee || "N/A"}</p>
-              </div>
-              <div>
-                <p className="font-semibold">Relation</p>
-                <p>{loanData.Nominee_Relation || "N/A"}</p>
-              </div>
+            <div className="flex gap-5">
+              <div className="flex gap-10">
+                <div className="space-y-1 ">
+                 
+                  <div>
+                    <label className="block   text-xs">Borrower Name*</label>
+                    <input
+                      type="text"
+                      disabled
+                      value={loanData.Borrower || "N/A"}
+                      className="w-[280px] p-2 bg-white border border-gray-200   cursor-not-allowed focus:outline-none rounded-[8px] text-xs px-1 py-1 mt-1"
+                    />
+                  </div>
 
-              <div>
-                <p className="font-semibold">Address</p>
-                <p>{loanData.Address || "N/A"}</p>
+                
+                  <div>
+                    <label className="block    text-xs">
+                      Co - Borrower Name*
+                    </label>
+                    <input
+                      type="text"
+                      disabled
+                      value={loanData.Co_Borrower || "N/A"}
+                      className="w-[280px] p-2 bg-white border border-gray-200 rounded-[8px]  cursor-not-allowed focus:outline-none text-xs px-1 py-1 mt-1"
+                    />
+                  </div>
+
+                  {/* Address Field */}
+                  <div>
+                    <label className="block text-xs">Scheme*</label>
+                    <input
+                      type="text"
+                      disabled
+                      value={loanData.Scheme || "N/A"}
+                      className="w-full p-2 bg-white border border-gray-200 rounded-[8px]  cursor-not-allowed focus:outline-none text-xs px-1 py-1 mt-1"
+                    />
+                  </div>
+                </div>
+
+                <div className="text-xs text-gray-500">
+                  <p>Borrower Details*</p>
+                  <div className="border w-[296px] h-[140px] p-2 mt-1">
+                    <p>{loanData.Print_Name}</p>
+                    <p>
+                      {loanData.Mobile_Number} / {loanData.Alternate_Number}
+                    </p>
+                    <p>{loanData.Address}</p>
+
+                    <p>Nominee Name: {loanData.Nominee || "N/A"}</p>
+                    <p>Nominee Relation: {loanData.Nominee_Relation || "N/A"}</p>
+                  </div>
+                </div>
+                <div className="text-xs text-gray-500">
+                  <p>Co-Borrower Details*</p>
+                  <div className="border w-[296px] h-[140px] mt-1 p-2">
+
+                    <p>{loanData.coborrower_printName}</p>
+                     <p>
+                      {loanData.coBorrower_mobile} / {loanData.coBorrower_altMobile}
+                    </p>
+                                        <p>{loanData.coBorrower_Permanent_Address}</p>
+                    <p>Nominee Name: {loanData.coBorrower_Nominee_NomineeName}</p>
+                     <p> Nominee Relation: {loanData.coBorrower_Nominee_Relation}</p>
+                  </div>
+                </div>
               </div>
+              <div></div>
             </div>
 
             {/* Second Row */}
@@ -463,336 +484,38 @@ const ViewLoanDetails = () => {
         </div>
 
         {/* ===== Pledge Item List ===== */}
-
-        <div className="ml-[110px] mr-[110px]">
-          <div className="flex justify-center  gap-2 bg-[#F7F7FF] p-5">
-            <div className="">
-              <div className="flex gap-5">
-                <div className="flex flex-col w-30">
-                  <label className="text-[13px] font-semibold">
-                    Loan amount <span className="text-red-500">*</span>
-                  </label>
-                  <input
-                    type="text"
-                    value={formatCurrency(loanData.Loan_amount)}
-                    readOnly
-                    className="border border-gray-300 rounded-md px-2 py-1 mt-1 text-sm focus:outline-none bg-gray-50"
-                  />
-                </div>
-
-                {/* Doc Charges */}
-                <div className="flex flex-col">
-                  <label className="text-[13px] font-semibold">
-                    Doc Charges
-                  </label>
-                  <div className="flex mt-1 ">
-                    <div className="bg-[#0B2B68] text-white px-2 py-1 rounded-l-md text-sm flex items-center justify-center">
-                      2%
-                    </div>
-                    <input
-                      type="text"
-                      value={`₹${formatCurrency(loanData.Doc_Charges)}`}
-                      readOnly
-                      className="border border-gray-300 rounded-r-md px-2 py-1 text-sm focus:outline-none w-20 bg-gray-50"
-                    />
-                  </div>
-                </div>
-                <div className="flex flex-col w-25">
-                  <label className="text-[13px] font-semibold">
-                    Admin Charges
-                  </label>
-                  <input
-                    type="text"
-                    value={formatCurrency(loanData.Admin_Charges)}
-                    readOnly
-                    className="border border-gray-300 rounded-md px-2 py-1 mt-1 text-sm focus:outline-none bg-gray-50"
-                  />
-                </div>
-                <div className="flex flex-col w-25">
-                  <label className="text-[13px] font-semibold">
-                    Net Payable
-                  </label>
-                  <input
-                    type="text"
-                    value={formatCurrency(loanData.Net_Payable)}
-                    readOnly
-                    className="border border-gray-300 rounded-md px-2 py-1 mt-1 text-sm focus:outline-none bg-gray-50"
-                  />
-                </div>
-              </div>
-              <div className="flex gap-2 mt-2">
-                {/* Net Payable */}
-
-                {/* Valuer 1 */}
-                <div className="flex flex-col w-35">
-                  <label className="text-[13px] font-semibold">
-                    Valuer 1 <span className="text-red-500">*</span>
-                  </label>
-                  <div className="border border-gray-300 rounded-md px-2 py-1 mt-1 text-sm bg-gray-50 w-[240px]">
-                    {loanData.Valuer_1 || "Not Assigned"}
-                  </div>
-                </div>
-              </div>
-
-              {/* Valuer 2 */}
-              <div className="flex flex-col w-44 mt-2">
-                <label className="text-[13px] font-semibold">
-                  Valuer 2 <span className="text-red-500">*</span>
-                </label>
-                <div className="border border-gray-300 rounded-md px-2 py-1 mt-1 text-sm bg-gray-50 w-[240px]">
-                  {loanData.Valuer_2 || "Not Assigned"}
-                </div>
-              </div>
-            </div>
-
-            <div
-              className=" 
-"
-            >
-              <h1 className="font-bold text-[20px] text-[#0A2478] mb-4">
-                Payment Details
-              </h1>
-              <div className=" overflow-hidden ">
-                <table className=" border-collapse text-sm">
-                  <thead>
-                    <tr className="bg-[#0A2478] text-white text-center">
-                      {/* <th className="py-2 border w-[100px]">Sr No</th> */}
-                      <th className="py-2 border w-[160px]">Paid By</th>
-                      <th className="py-2 border w-[120px]">UTR Number</th>
-                      <th className="py-2 border w-[200px]">Bank</th>
-                      <th className="py-2 border w-[200px]">Customer Bank</th>
-                      <th className="py-2 border w-[150px]">Customer Amount</th>
-                    </tr>
-                  </thead>
-
-                  <tbody>
-                    {PaymentDataForShow && PaymentDataForShow.length > 0 ? (
-                      <>
-                        {PaymentDataForShow.map((row, index) => (
-                          <tr
-                            key={index}
-                            className={
-                              index % 2 === 0 ? "bg-gray-50" : "bg-white"
-                            }
-                          >
-                            {/* <td className="py-2 text-center">{index + 1}</td> */}
-
-                            <td className="py-2 text-center">
-                              <select
-                                value={row.paidBy}
-                                disabled
-                                className="border rounded px-2 py-1 "
-                              >
-                                <option>{row.paidBy}</option>
-                              </select>
-                            </td>
-
-                            <td className="py-2 text-center">
-                              <input
-                                value={row.utrNumber || "-"}
-                                disabled
-                                className="border rounded px-2 py-1"
-                              />
-                            </td>
-
-                            <td className="py-2 text-center">
-                              <select
-                                value={row.bank}
-                                disabled
-                                className="border rounded px-2 py-1 w-[100px]"
-                              >
-                                <option>{row.bank || "-"}</option>
-                              </select>
-                            </td>
-
-                            <td className="py-2 text-center">
-                              <select
-                                value={row.customerBank || "-"}
-                                disabled
-                                className="border rounded px-2 py-1 w-[100px]"
-                              >
-                                <option>{row.customerBank}</option>
-                              </select>
-                            </td>
-
-                            <td className="py-2 text-center">
-                              <input
-                                value={row.customerAmount}
-                                disabled
-                                className="border rounded px-2 py-1 p-2"
-                              />
-                            </td>
-
-                            <td></td>
-                          </tr>
-                        ))}
-
-                        <tr className="font-semibold bg-gray-100">
-                          <td colSpan="4" className="text-right pr-4 py-2">
-                            Total
-                          </td>
-                          <td className="text-center">
-                            {totalAmountoFTheCustomer.toFixed(2)}
-                          </td>
-                          <td></td>
-                        </tr>
-                      </>
-                    ) : (
-                      <tr>
-                        <td
-                          colSpan="7"
-                          className="text-center py-6 text-gray-500 font-semibold"
-                        >
-                          Data Not Available
-                        </td>
-                      </tr>
-                    )}
-                  </tbody>
-                </table>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        {/* Loan Amount Section */}
-        <div className="mr-[110px] ml-[110px]">
-          {/* <div className=" 
-bg-[#FFE6E6] p-5">
-          <h1 className="font-bold text-[20px] text-[#0A2478] mb-4">
-            Payment Details
-          </h1>
-          <div className=" overflow-hidden ">
-           <table className=" border-collapse text-sm">
-  <thead>
-    <tr className="bg-[#0A2478] text-white text-center">
-      <th className="py-2 border w-[80px]">Sr No</th>
-      <th className="py-2 border w-[160px]">Paid By</th>
-      <th className="py-2 border w-[110px]">UTR Number</th>
-      <th className="py-2 border w-[200px]">Bank</th>
-      <th className="py-2 border w-[200px]">Customer Bank</th>
-      <th className="py-2 border w-[200px]">Customer Amount</th>
-      
-    </tr>
-  </thead>
-
-  <tbody>
-    {PaymentDataForShow && PaymentDataForShow.length > 0 ? (
-      <>
-        {PaymentDataForShow.map((row, index) => (
-          <tr
-            key={index}
-            className={index % 2 === 0 ? "bg-gray-50" : "bg-white"}
-          >
-            <td className="py-2 text-center">{index + 1}</td>
-
-            <td className="py-2 text-center">
-              <select
-                value={row.paidBy}
-                disabled
-                className="border rounded px-2 py-1 w-[120px]"
-              >
-                <option>{row.paidBy}</option>
-              </select>
-            </td>
-
-            <td className="py-2 text-center">
-              <input
-                 value={row.utrNumber || "-"}
-                disabled
-                className="border rounded px-2 py-1"
-              />
-            </td>
-
-            <td className="py-2 text-center">
-              <select
-                value={row.bank}
-                disabled
-                className="border rounded px-2 py-1 w-[150px]"
-              >
-                <option>{row.bank || "-"}</option>
-              </select>
-            </td>
-
-            <td className="py-2 text-center">
-              <select
-                value={row.customerBank || "-"}
-                disabled
-                className="border rounded px-2 py-1 w-[150px]"
-              >
-                <option>{row.customerBank}</option>
-              </select>
-            </td>
-
-            <td className="py-2 text-center">
-              <input
-                value={row.customerAmount}
-                disabled
-                className="border rounded px-2 py-1 p-2"
-              />
-            </td>
-
-            <td></td>
-          </tr>
-        ))}
-
-       
-        <tr className="font-semibold bg-gray-100">
-          <td colSpan="5" className="text-right pr-4 py-2">
-            Total
-          </td>
-          <td className="text-center">
-            {totalAmountoFTheCustomer.toFixed(2)}
-          </td>
-          <td></td>
-        </tr>
-      </>
-    ) : (
-      <tr>
-        <td
-          colSpan="7"
-          className="text-center py-6 text-gray-500 font-semibold"
-        >
-          Data Not Available
-        </td>
-      </tr>
-    )}
-  </tbody>
-</table>
-
-          </div>
-        </div> */}
-
-          <div className="bg-[#FFE6E6] p-5">
-            <h3 className="font-semibold mb-4 text-[#0A2478] text-lg">
+         <div className="w-[1462px] bg-[#E9E9FF] pl-5 pr-5 pb-5">
+          <div className=" ">
+            <h3 className="font-semibold  text-[#0A2478] text-lg">
               Pledge Item List
             </h3>
             <div className="w-full text-xs border border-gray-300">
               <div className="flex bg-[#0A2478] text-white font-semibold">
-                <div className="flex-1 p-2 py-3 border-r-2 border-white">
+                <div className="flex-1 p-1 py-1 border-r-2 border-white">
                   Particulars
                 </div>
-                <div className="w-16 p-2 border-r-2 border-white text-center">
+                <div className="w-16 p-1 border-r-2 border-white text-center">
                   Nos.
                 </div>
-                <div className="w-24 p-2 border-r-2 border-white text-center">
+                <div className="w-24 p-1 border-r-2 border-white text-center">
                   Gross
                 </div>
-                <div className="w-24 p-2 border-r-2 border-white text-center">
+                <div className="w-24 p-1 border-r-2 border-white text-center">
                   Net Weight
                 </div>
-                <div className="w-28 p-2 border-r-2 border-white text-center">
+                <div className="w-28 p-1 border-r-2 border-white text-center">
                   Actual Purity
                 </div>
-                <div className="w-28 p-2 border-r-2 border-white text-center">
+                <div className="w-28 p-1 border-r-2 border-white text-center">
                   Assigned Purity
                 </div>
-                <div className="w-24 p-2 border-r-2 border-white text-center">
+                <div className="w-24 p-1 border-r-2 border-white text-center">
                   Rate
                 </div>
-                <div className="w-28 p-2 border-r-2 border-white text-center">
+                <div className="w-28 p-1 border-r-2 border-white text-center">
                   Valuation
                 </div>
-                <div className="w-28 p-2 text-center">Remark</div>
+                <div className="w-28 p-1 text-center">Remark</div>
               </div>
 
               {/* Dynamic Rows */}
@@ -885,8 +608,196 @@ bg-[#FFE6E6] p-5">
           </div>
         </div>
 
-        <div className="mr-[110px] ml-[110px] bg-[#F7F7FF] ">
-          <div className="flex gap-10 text-xs  justify-center p-5">
+        <div className="w-[1462px]">
+          <div className="flex  gap-2">
+            <div className="bg-[#FFE6E6] pl-5 pr-5 pt-2">
+              <div className="flex gap-2">
+                <div className="flex flex-col w-30">
+                  <label className="text-xs font-semibold">
+                    Loan Amount <span className="text-red-500">*</span>
+                  </label>
+                  <input
+                    type="text"
+                    value={formatCurrency(loanData.Loan_amount)}
+                    readOnly
+                    className="border border-gray-300 rounded-md px-1 py-1  text-xs focus:outline-none bg-gray-50"
+                  />
+                </div>
+ <div className="flex flex-col w-25">
+                  <label className="text-xs font-semibold">
+                    Admin Charges
+                  </label>
+                  <input
+                    type="text"
+                    value={formatCurrency(loanData.Admin_Charges)}
+                    readOnly
+                    className="border border-gray-300 rounded-md px-1 py-1 text-xs focus:outline-none bg-gray-50"
+                  />
+                </div>
+                {/* Doc Charges */}
+                <div className="flex flex-col">
+                  <label className="text-xs font-semibold">
+                    Doc Charges
+                  </label>
+                  <div className="flex">
+                    <div className="bg-[#0B2B68] text-white px-2 py-1 rounded-l-md text-xs flex items-center justify-center">
+                      2%
+                    </div>
+                    <input
+                      type="text"
+                      value={`₹${formatCurrency(loanData.Doc_Charges)}`}
+                      readOnly
+                      className="border border-gray-300 rounded-r-md px-1 py-1  focus:outline-none w-20 bg-gray-50 text-xs"
+                    />
+                  </div>
+                </div>
+               
+                <div className="flex flex-col w-25">
+                  <label className="text-xs font-semibold">
+                    Net Payable
+                  </label>
+                  <input
+                    type="text"
+                    value={formatCurrency(loanData.Net_Payable)}
+                    readOnly
+                    className="border border-gray-300 rounded-md px-1 py-1  text-xs focus:outline-none bg-gray-50"
+                  />
+                </div>
+              </div>
+             
+              <div className='flex gap-2 text-xs'>
+                  <div >
+                  <p className="text-[13px]  mt-2">
+                    Valuer 1 <span className="text-red-500">*</span>
+                  </p>
+                  <div className="border border-gray-300 rounded-md px-1 py-1 mt-1 text-xs bg-gray-50 w-[200px]">
+                    {loanData.Valuer_1 || "Not Assigned"}
+                  </div>
+              </div>
+
+              <div className="flex flex-col w-20 mt-2">
+                <p >
+                  Valuer 2 <span className="text-red-500">*</span>
+                </p>
+                <div className="border border-gray-300 rounded-md px-1 py-1 mt-1 text-xs bg-gray-50 w-[200px]">
+                  {loanData.Valuer_2 || "Not Assigned"}
+                </div>
+              </div>
+              </div>
+            </div>
+
+            <div
+              className=" bg-[#FFE6E6] p-2 text-xs
+"
+            >
+              
+            
+                <table className=" border-collapse text-xs">
+                  <thead>
+                    <tr className="bg-[#0A2478] text-white text-center">
+                      <th className="py-2 border w-[100px]">Sr No</th>
+                      <th className="py-2 border w-[160px]">Paid By</th>
+                      <th className="py-2 border w-[100px]">UTR Number</th>
+                      <th className="py-2 border w-[200px]">Bank</th>
+                      <th className="py-2 border w-[200px]">Customer Bank</th>
+                      <th className="py-2 border w-[150px]">Customer Amount</th>
+                    </tr>
+                  </thead>
+
+                  <tbody>
+                    {PaymentDataForShow && PaymentDataForShow.length > 0 ? (
+                      <>
+                        {PaymentDataForShow.map((row, index) => (
+                          <tr
+                            key={index}
+                            className={
+                              index % 2 === 0 ? "bg-gray-50" : "bg-white"
+                            }
+                          >
+                            <td className="py-2 text-center">{index + 1}</td>
+
+                            <td className="py-2 text-center">
+                              <select
+                                value={row.paidBy}
+                                disabled
+                                className="border rounded px-2 py-1 "
+                              >
+                                <option>{row.paidBy}</option>
+                              </select>
+                            </td>
+
+                            <td className="py-1 text-center">
+                              <input
+                                value={row.utrNumber || "-"}
+                                disabled
+                                className="border rounded px-1 py-1"
+                              />
+                            </td>
+
+                            <td className="py-2 text-center">
+                              <select
+                                value={row.bank}
+                                disabled
+                                className="border rounded px-2 py-1 w-[100px]"
+                              >
+                                <option>{row.bank || "-"}</option>
+                              </select>
+                            </td>
+
+                            <td className="py-2 text-center">
+                              <select
+                                value={row.customerBank || "-"}
+                                disabled
+                                className="border rounded px-2 py-1 w-[100px]"
+                              >
+                                <option>{row.customerBank}</option>
+                              </select>
+                            </td>
+
+                            <td className="py-2 text-center">
+                              <input
+                                value={row.customerAmount}
+                                disabled
+                                className="border rounded px-2 py-1 p-2"
+                              />
+                            </td>
+
+                            <td></td>
+                          </tr>
+                        ))}
+
+                        <tr className="font-semibold bg-gray-100">
+                          <td colSpan="4" className="text-right pr-4 py-2">
+                            Total
+                          </td>
+                          <td className="text-center">
+                            {totalAmountoFTheCustomer.toFixed(2)}
+                          </td>
+                          <td></td>
+                        </tr>
+                      </>
+                    ) : (
+                      <tr>
+                        <td
+                          colSpan="7"
+                          className="text-center py-6 text-gray-500 font-semibold"
+                        >
+                          Data Not Available
+                        </td>
+                      </tr>
+                    )}
+                  </tbody>
+                </table>
+             
+            </div>
+          </div>
+        </div>
+
+       
+       
+
+        <div className=" bg-[#F7F7FF] w-[1462px]">
+          <div className="flex gap-10 text-xs   pl-5 pr-5">
             {/* Scheme Details Table */}
             <div className="w-[550px]">
               <h2 className="font-semibold text-[20px] mb-1 text-[#0A2478]">
@@ -903,15 +814,15 @@ bg-[#FFE6E6] p-5">
                   <div className="w-40 p-2  text-center">Max Loan</div>
                 </div>
                 <div className="flex border-t border-gray-300 bg-gray-50">
-                  <div className="flex-1 p-2 py-4 border-r border-gray-300 text-center ">
+                  <div className="flex-1 p-2 py-2 border-r border-gray-300 text-center ">
                     {loanData.Loan_Tenure || loanData.loanPeriod || "N/A"}
                   </div>
-                  <div className="w-40 p-2 py-4 border-r border-gray-300 text-center">
+                  <div className="w-40 p-2 py-2 border-r border-gray-300 text-center">
                     {formatCurrency(
                       loanData.Min_Loan || loanData.minLoanAmount,
                     )}
                   </div>
-                  <div className="w-40 p-2 py-4 text-center">
+                  <div className="w-40 p-2 py-2 text-center">
                     {formatCurrency(
                       loanData.Max_Loan || loanData.maxLoanAmount,
                     )}
