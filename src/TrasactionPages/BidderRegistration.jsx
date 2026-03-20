@@ -142,23 +142,23 @@ const BidderRegistration = () => {
   };
 
   return (
-    <div className="flex flex-col items-center mt-5 ">
+    <div className="flex flex-col items-center  ">
       {/* Header Section */}
-      <div className="w-full max-w-[1290px] bg-white border border-gray-200 rounded-[11px] shadow-sm mb-6 sticky top-[80px] z-40">
-        <div className="flex flex-col sm:flex-row items-center justify-between px-6 py-4">
+      <div className="w-[1459px] bg-white border border-gray-200  mb-6 sticky top-[40px] z-40">
+        <div className="flex flex-col sm:flex-row items-center justify-between px-2 py-2 h-[40px]">
           <h2 className="text-red-600 font-bold text-[20px]">
             Bidder Registration
           </h2>
           <div className="flex items-center gap-3">
             <button
               onClick={handleSubmit}
-              className="bg-[#0A2478] text-white text-[12px] w-[80px] h-[32px] rounded-[3.75px] transition cursor-pointer"
+              className="bg-[#0A2478] text-white text-[12px] w-[50px] h-[30px] rounded-[3.75px] transition cursor-pointer"
             >
               Submit
             </button>
             <button
               onClick={() => navigate(-1)}
-              className="bg-[#C1121F] text-white text-[12px] w-[80px] h-[32px] rounded-[3.75px] hover:bg-red-700 transition cursor-pointer"
+              className="bg-[#C1121F] text-white text-[12px] w-[50px] h-[30px] rounded-[3.75px] hover:bg-red-700 transition cursor-pointer"
             >
               Exit
             </button>
@@ -166,11 +166,11 @@ const BidderRegistration = () => {
         </div>
       </div>
 
-      {/* Main Content Container */}
-      <div className=" ">
-        {/* Bidder Information Section */}
+     
+      <div className="w-[1459px]">
+  
 
-        <div className="ml-[110px] mr-[110px]">
+        <div className="">
           <div className="bg-[#FFE6E6] p-5">
             <h1 className="text-blue-900 font-semibold text-xl  mb-2">
               Bidder Information

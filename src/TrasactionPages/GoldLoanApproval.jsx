@@ -718,7 +718,7 @@ const GoldLoanApproval = () => {
                   value={formatCurrency(loanData.Loan_amount)}
                   readOnly
                   disabled
-                  className="border border-gray-300 rounded px-1 py-1 text-xs h-8 bg-white" />
+                  className="border border-gray-300 rounded px-1 py-1 text-xs bg-white" />
               </div>
               <div className="flex flex-col">
                 <label className="text-[11px] font-bold mb-1">Admin Charges</label>
