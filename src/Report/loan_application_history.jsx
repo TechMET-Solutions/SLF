@@ -57,21 +57,20 @@ const show = (val) =>
   val === undefined || val === null || val === "" ? "0" : val;
 
   return (
-    <div className="min-h-screen bg-gray-100 p-4 font-sans text-sm">
-
-      {/* ===== Header ===== */}
-      <div className="flex justify-center mt-5 px-4">
-        <div className="flex items-center justify-between px-6 py-4 w-full max-w-[1290px] min-h-[70px] rounded-[11px] border border-gray-200 shadow-sm bg-white gap-4">
+    <div className="min-h-screen w-full">
+      {/* Top Bar */}
+      <div className="flex sticky top-[80px] z-40 w-full px-8">
+        <div className="flex items-center px-6 py-4 border-b w-full max-w-[1462px] h-[50px] border rounded-[11px] border-gray-200 justify-between">
 
           {/* 🔴 Left — Title */}
           <div className="flex-shrink-0">
-            <h2 className="text-red-600 font-bold text-[18px] whitespace-nowrap">
-              Advance Setting List
+            <h2 className="text-red-600  font-bold text-[18px] whitespace-nowrap">
+              Advance Setting List  
             </h2>
           </div>
 
           {/* 🟡 Middle — Filters (Label and Input on same line) */}
-          <div className="flex items-center gap-6 flex-1 justify-center">
+          <div className="hidden lg:flex  items-center gap-6 flex-1 justify-center">
 
             {/* From Date */}
             <div className="flex items-center gap-2">
@@ -137,19 +136,20 @@ const show = (val) =>
           <div className="flex-shrink-0 flex gap-2">
             <button
               onClick={handleView}
-              className="w-[75px] h-[30px] rounded bg-[#0A2478] text-white text-[12px] font-bold hover:bg-[#071d45] transition-colors"
+              className="bg-[#0A2478] text-white w-[74px] h-[24px] rounded text-[10px]"
+
             >
               View
             </button>
             <button
               // onClick={handleView}
-              className="w-[75px] h-[30px] rounded bg-green-600 text-white text-[12px] font-bold hover:bg-green-700 transition-colors"
+              className="bg-green-600 text-white w-[74px] h-[24px] rounded text-[10px]"
             >
               Excel
             </button>
             <button
               // onClick={handleView}
-              className="w-[75px] h-[30px] rounded bg-red-600 text-white text-[12px] font-bold hover:bg-red-700 transition-colors"
+              className="bg-[#C1121F] text-white w-[74px] h-[24px] rounded text-[10px]"
             >
               PDF
             </button>
@@ -233,10 +233,10 @@ const show = (val) =>
           </div> */}
 
           {/* Table */}
-          <div className="overflow-x-auto  mx-24">
-            <div className="overflow-x-auto ">
-              <table className="w-full text-left  rounded-lg border-collapse min-w-[1500px]">
-              <thead className="bg-[#0A2478] text-white text-xs">
+          <div className="flex mx-[32px]">
+            <div className="overflow-x-auto  h-[500px]">
+              <table className="w-full border-collapse">
+                <thead className="bg-[#0A2478] text-white text-[10px] sm:text-[12px] md:text-sm">
                 <tr>
                   <th className="border p-2">SNo</th>
                   <th className="border p-2">Loan No</th>

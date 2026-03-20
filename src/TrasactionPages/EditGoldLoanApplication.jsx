@@ -110,8 +110,8 @@ const EditGoldLoanApplication = () => {
             formDataToSend.append("Doc_Charges", formData.Doc_Charges || 0);
             formDataToSend.append("Admin_Charges", formData.Admin_Charges || 0);
             formDataToSend.append("Net_Payable", formData.Net_Payable || 0);
-            formDataToSend.append("Valuer_1", formData.value1);
-            formDataToSend.append("Valuer_2", formData.value2);
+            formDataToSend.append("Valuer_1", formData.Valuer_1);
+            formDataToSend.append("Valuer_2", formData.Valuer_2);
             formDataToSend.append("Loan_Tenure", selectedScheme?.loanPeriod || "");
             formDataToSend.append("Min_Loan", selectedScheme?.minLoanAmount || "");
             formDataToSend.append("Max_Loan", selectedScheme?.maxLoanAmount || "");
@@ -523,6 +523,8 @@ const EditGoldLoanApplication = () => {
                 Admin_Charges: data.Admin_Charges || "",
                 Net_Payable: data.Net_Payable || "",
                 payDate: data.Pay_Date || "",
+                Valuer1: data.Valuer_1 || "",
+                Valuer2: data.Valuer_2 || "",
                 Borrower_ProfileImg: data.borrower_profileImage,
                 Borrower_signature: data.borrower_signature,
 
@@ -1396,9 +1398,9 @@ const EditGoldLoanApplication = () => {
                             </p>
                             <select
                                 name="value1"
-                                value={formData.value1}
+                                value={formData.Valuer1}
                                 onChange={handleInputChange}
-                                className="border border-gray-300 rounded-[8px] px-3 text-xs h-[30px] mt-1 bg-white w-[150px]"
+                                className="border border-gray-300 rounded-[8px] px-1 text-xs h-[30px] mt-1 bg-white w-[180px]"
                             >
                                 <option value="">Select valuer 1</option>
                                 {activeEmployees.map((emp) => (
@@ -1415,9 +1417,9 @@ const EditGoldLoanApplication = () => {
                             </label>
                             <select
                                 name="value2"
-                                value={formData.value2}
+                                value={formData.Valuer2}
                                 onChange={handleInputChange}
-                                className="border border-gray-300 rounded-[8px] px-3 text-xs h-[30px] mt-1 w-[150px] bg-white"
+                                className="border border-gray-300 rounded-[8px] px-1 text-xs h-[30px] mt-1 w-[180px] bg-white"
                             >
                                 <option value="">Select valuer 2</option>
                                 {activeEmployees.map((emp) => (

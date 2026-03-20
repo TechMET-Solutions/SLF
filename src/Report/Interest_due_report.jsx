@@ -57,10 +57,14 @@ const InterestDueReport = () => {
     }
   };
   return (
-    <div className="min-h-screen bg-gray-100 p-4 font-sans text-sm">
+      <div className="min-h-screen w-full">
       <div className="">
-        <div className="flex justify-center mt-5 px-4">
-          <div className="flex items-center justify-between px-6 py-4 w-full max-w-[1290px] min-h-[75px] rounded-[11px] border border-gray-200 shadow-sm bg-white gap-4">
+        {/* Top Bar */}
+        <div className="flex sticky top-[80px] z-40 w-full px-8">
+          <div className="flex items-center px-6 py-4 border-b w-full max-w-[1462px] h-[50px] border rounded-[11px] border-gray-200 justify-between">
+
+
+
 
             {/* 🔴 Left — Title */}
             <div className="flex-shrink-0">
@@ -70,7 +74,7 @@ const InterestDueReport = () => {
             </div>
 
             {/* 🟡 Middle — Filters (Single Line) */}
-            <div className="flex items-center gap-6 flex-1 justify-center">
+            <div className="hidden lg:flex items-center gap-6 flex-1 justify-center">
 
               {/* As On Section */}
               <div className="flex items-center gap-2">
@@ -160,91 +164,9 @@ const InterestDueReport = () => {
         </div>
 
         <div className="">
-          {/* Filters */}
-          {/* <div className="flex flex-wrap items-center gap-x-8 gap-y-4 mb-4 p-3 border rounded bg-gray-50 text-[13px] text-gray-700">
-
-          
-            <div className="flex items-center gap-2">
-              <label className="whitespace-nowrap">As On</label>
-              <div className="flex items-center">
-                <input
-                  type="date"
-                  className="border border-gray-300 p-1 px-2 rounded-l w-28 bg-white outline-none"
-                  defaultValue="25/01/2026"
-                />
-                
-              </div>
-            </div>
-
-            <div className="flex items-center gap-2">
-              <label>Schemes</label>
-              <select
-                className="border border-gray-300 p-1 rounded w-44 bg-white outline-none focus:border-teal-600"
-                onChange={(e) => setSelectedScheme(e.target.value)}
-              >
-                <option value="">--Select--</option>
-                {loading ? (
-                  <option>Loading...</option>
-                ) : (
-                  schemes.map((s) => (
-                    <option key={s.id} value={s.schemeName}>
-                      {s.schemeName}
-                    </option>
-                  ))
-                )}
-              </select>
-            </div>
-
-            <div className="flex items-center gap-2">
-              <label className="whitespace-nowrap">Loan No</label>
-              <div className="flex items-center">
-                <input
-                  type="text"
-                  placeholder="--Select All--"
-                  className="border border-gray-300 p-1 px-2 rounded-l w-44 bg-white outline-none focus:border-teal-600"
-                  onChange={(e) => setLoanSearch(e.target.value)}
-                />
-                <select
-                  className="border border-l-0 border-gray-300 p-1 rounded-r w-10 bg-white outline-none"
-                  onChange={(e) => setSelectedLoan(e.target.value)}
-                >
-                  <option value=""></option>
-                  {loanNumbers.map((l) => (
-                    <option key={l.id} value={l.id}>
-                      {l.id}
-                    </option>
-                  ))}
-                </select>
-              </div>
-            </div>
-
-            <div className="flex items-center gap-2">
-              <label className="whitespace-nowrap">Due Days</label>
-              <input
-                type="number"
-                className="border border-gray-300 p-1 rounded w-16 text-center outline-none"
-                defaultValue="0"
-              />
-            </div>
-
-          </div>
-
-          <div className="flex gap-2 mb-4 border-b pb-4">
-            <button
-              onClick={handleView}
-              className="bg-blue-700 hover:bg-blue-800 text-white px-8 py-1 rounded flex items-center gap-2 text-xs transition-colors"
-            >
-              💾 View
-            </button>
-
-            <button className="bg-blue-700 text-white px-8 py-1 rounded text-xs">
-              ✖ Exit
-            </button>
-          </div> */}
-
+    
           {/* Table */}
-          <div className="overflow-x-auto mt-6  mx-24">
-            {/* <div className="overflow-x-auto"></div> */}
+          <div className="flex mx-[32px] my-4">            
             <table className="w-full text-left  rounded-lg border-collapse min-w-[1500px]">
               <thead className="bg-[#0A2478] text-white text-xs">
                 <tr className="">

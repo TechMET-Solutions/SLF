@@ -493,23 +493,23 @@ const GoldLoanApproval = () => {
             <div className="w-[350px] h-[160px] border border-gray-900 p-2 text-xs flex flex-col justify-between">
 
               {/* Main Borrower Info Group */}
-              <div className="space-y-1">
+              <div className="space-y-1 text-gray-500">
                 <div className="flex gap-2 items-center justify-start">
-                  <p className="font-bold text-gray-800">{loanData.Print_Name || "N/A"}</p>
+                  <p className="font-mediam ">{loanData.Print_Name || "N/A"}</p>
                 </div>
 
                 <div className="flex gap-2 items-center justify-start">
-                  <p className="font-semibold text-gray-800">+91 {loanData.Mobile_Number || "N/A"} | +91 {loanData.Alternate_Number || "N/A"}</p>
+                  <p className="font-mediam ">+91 {loanData.Mobile_Number || "N/A"} | +91 {loanData.Alternate_Number || "N/A"}</p>
                 </div>
 
                 <div className="flex gap-2 items-start  justify-start">
-                  <p className="font-semibold text-gray-800 line-clamp-3">{loanData.Address || "N/A"}</p>
+                  <p className="font-mediam  line-clamp-3">{loanData.Address || "N/A"}</p>
                 </div>
                 <div className="flex gap-2 items-start  justify-start">
-                  <p className="font-semibold text-gray-800 line-clamp-3">Nominee Name : {loanData.Nominee || "N/A"}</p>
+                  <p className="font-mediam  line-clamp-3">Nominee Name : {loanData.Nominee || "N/A"}</p>
                 </div>
                 <div className="flex gap-2 items-start  justify-start">
-                  <p className="font-semibold text-gray-800 line-clamp-3">Nominee Relation : {loanData.Nominee_Relation || "N/A"}</p>
+                  <p className="font-mediam  line-clamp-3">Nominee Relation : {loanData.Nominee_Relation || "N/A"}</p>
                 </div>
               </div>
 
@@ -525,25 +525,25 @@ const GoldLoanApproval = () => {
             <div className="w-[350px] h-[160px] border border-gray-900 p-2 text-xs flex flex-col justify-between">
 
               {/* Main Borrower Info Group */}
-              <div className="space-y-1">
+              <div className="space-y-1 text-gray-500">
                 <div className="flex gap-2 items-center justify-start">
-                  <p className="font-bold text-gray-800">{loanData?.coborrower_printName || "N/A"}
+                  <p className="font-mediam ">{loanData?.coborrower_printName || "N/A"}
 
                   </p>
                 </div>
 
                 <div className="flex gap-2 items-center justify-start">
-                  <p className="font-semibold text-gray-800">+91 {loanData.coBorrower_mobile || "N/A"} |  +91  {loanData.coBorrower_altMobile || "N/A"}</p>
+                  <p className="font-mediam ">+91 {loanData.coBorrower_mobile || "N/A"} |  +91  {loanData.coBorrower_altMobile || "N/A"}</p>
                 </div>
 
                 <div className="flex gap-2 items-start  justify-start">
-                  <p className="font-semibold text-gray-800 line-clamp-3">{loanData.coBorrower_Permanent_Address || "N/A"}</p>
+                  <p className="font-mediam  line-clamp-3">{loanData.coBorrower_Permanent_Address || "N/A"}</p>
                 </div>
                 <div className="flex gap-2 items-start  justify-start">
-                  <p className="font-semibold text-gray-800 line-clamp-3">Nominee Name : {loanData.coBorrower_Nominee_NomineeName || "N/A"}</p>
+                  <p className="font-mediam  line-clamp-3">Nominee Name : {loanData.coBorrower_Nominee_NomineeName || "N/A"}</p>
                 </div>
                 <div className="flex gap-2 items-start  justify-start">
-                  <p className="font-semibold text-gray-800 line-clamp-3">Nominee Relation : {loanData.coBorrower_Nominee_Relation || "N/A"}</p>
+                  <p className="font-mediam  line-clamp-3">Nominee Relation : {loanData.coBorrower_Nominee_Relation || "N/A"}</p>
                 </div>
               </div>
 
@@ -726,7 +726,7 @@ const GoldLoanApproval = () => {
                   value={formatCurrency(loanData.Admin_Charges)}
                   readOnly
                   disabled
-                  className="border border-gray-300 rounded px-1 py-1 text-xs h-8 bg-white" />
+                  className="border border-gray-300 rounded px-1 py-1 text-xs bg-white" />
               </div>
               <div className="flex flex-col">
                 <label className="text-[11px] font-bold mb-1">Doc Charges</label>
@@ -734,7 +734,7 @@ const GoldLoanApproval = () => {
                   value={`₹${formatCurrency(loanData.Doc_Charges)}`}
                   readOnly
                   disabled
-                  className="border border-gray-300 rounded px-1 py-1 text-xs h-8 bg-white" />
+                  className="border border-gray-300 rounded px-1 py-1 text-xs bg-white" />
               </div>
               <div className="flex flex-col">
                 <label className="text-[11px] font-bold mb-1">Net Payable</label>
@@ -742,7 +742,7 @@ const GoldLoanApproval = () => {
                   value={formatCurrency(loanData.Net_Payable)}
                   readOnly
                   disabled
-                  className="border border-gray-300 rounded px-1 py-1 text-xs h-8 bg-white" />
+                  className="border border-gray-300 rounded px-1 py-1 text-xs bg-white" />
               </div>
             </div>
 
@@ -755,7 +755,7 @@ const GoldLoanApproval = () => {
                   value={loanData.Valuer_1 || "Not Assigned"}
                   readOnly
                   disabled
-                  className="border border-gray-300 rounded px-1 py-1 text-xs h-8 bg-white"
+                  className="border border-gray-300 rounded px-1 py-1 text-xs bg-white"
                  
                 />
               </div>
@@ -765,7 +765,7 @@ const GoldLoanApproval = () => {
                   value={loanData.Valuer_2 || "Not Assigned"}
                   readOnly
                   disabled
-                  className="border border-gray-300 rounded px-1 py-1 text-xs h-8 bg-white"
+                  className="border border-gray-300 rounded px-1 py-1 text-xs bg-white"
 
                 />
                  
@@ -776,7 +776,7 @@ const GoldLoanApproval = () => {
                   value={loanData.Pay_Date || "Not Assigned"}
                   readOnly
                   disabled
-                  className="border border-gray-300 rounded px-1 py-1 text-xs h-8 bg-white"
+                  className="border border-gray-300 rounded px-1 py-1 text-xs bg-white"
 
                 />
               </div>

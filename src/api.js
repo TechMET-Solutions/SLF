@@ -1,6 +1,11 @@
 
+// ====================================
+// For Local Development Base URL
+// ====================================
+//  export const API = "http://localhost:9090";
 
 
-
-//  export const API = "http://localhost:5000";
+// ====================================
+// For Production Base URL
+// ====================================
 export const API = "https://slunawat.co.in"; 
