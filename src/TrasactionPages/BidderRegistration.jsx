@@ -113,12 +113,47 @@ const BidderRegistration = () => {
         alert("Alt Mobile Number must be a valid 10-digit number.");
         return;
       }
+      if (formData.alt_mob_no && formData.mobile_no === formData.alt_mob_no) {
+        alert("Alternate Mobile Number cannot be same as Mobile Number.");
+        return;
+      }
 
       const aadharRegex = /^[0-9]{12}$/;
       if (!aadharRegex.test(formData.aadhar_no)) {
         alert("Aadhaar Number must be a valid 12-digit number.");
         return;
       }
+  if (!formData.bank_name || formData.bank_name.trim().length < 3) {
+      alert("Bank Name must be at least 3 characters.");
+      return;
+    }
+
+    // Account Number (9–18 digits)
+    const accountRegex = /^[0-9]{9,18}$/;
+    if (!accountRegex.test(formData.account_no)) {
+      alert("Account Number must be 9 to 18 digits.");
+      return;
+    }
+
+    // IFSC Code
+    const ifscRegex = /^[A-Z]{4}0[A-Z0-9]{6}$/;
+    if (!ifscRegex.test(formData.ifsc_code.toUpperCase())) {
+      alert("Invalid IFSC Code format (e.g., SBIN0001234).");
+      return;
+    }
+
+    // Account Holder Name
+    const nameRegex = /^[A-Za-z\s]+$/;
+    if (!nameRegex.test(formData.account_holder_name)) {
+      alert("Account Holder Name must contain only letters.");
+      return;
+    }
+
+    // Bank Address
+    if (!formData.bank_address || formData.bank_address.trim().length < 5) {
+      alert("Bank Address is required.");
+      return;
+    }
 
       const data = new FormData();
       Object.entries(formData).forEach(([key, value]) =>
@@ -166,7 +201,6 @@ const BidderRegistration = () => {
         </div>
       </div>
 
-     
       <div className="w-[1459px]">
         <div className="">
           <div className="bg-[#FFE6E6] p-5">
@@ -174,7 +208,6 @@ const BidderRegistration = () => {
               Bidder Information
             </h1>
             <div className="flex flex-col lg:flex-row gap-4 ">
-             
               <div className="flex-1">
                 <div className="flex flex-wrap ">
                   <div className="px-3 mb-2 w-[340px]">
@@ -191,7 +224,6 @@ const BidderRegistration = () => {
                     />
                   </div>
 
-                 
                   <div className="px-3 mb-6 w-[150px]">
                     <label className="text-gray-900 font-medium">
                       Mobile Number <span className="text-red-600">*</span>
@@ -229,7 +261,6 @@ const BidderRegistration = () => {
                     />
                   </div>
 
-                  
                   <div className="px-3 mb-6 w-[350px]">
                     <label className="text-gray-900 font-medium">
                       Email ID <span className="text-red-600">*</span>
@@ -244,7 +275,6 @@ const BidderRegistration = () => {
                     />
                   </div>
 
-                  
                   <div className="px-3 mb-6 w-[340px]">
                     <label className="text-gray-900 font-medium">
                       Personal Address <span className="text-red-600">*</span>
@@ -259,7 +289,6 @@ const BidderRegistration = () => {
                     />
                   </div>
 
-                  
                   <div className="px-3 mb-6 w-[340px]">
                     <label className="text-gray-900 font-medium">
                       Shop Address <span className="text-red-600">*</span>
@@ -274,7 +303,6 @@ const BidderRegistration = () => {
                     />
                   </div>
 
-                 
                   <div className="px-3 mb-6 w-[180px]">
                     <label className="text-gray-900 font-medium">
                       Landline No 1 <span className="text-red-600">*</span>
@@ -293,7 +321,6 @@ const BidderRegistration = () => {
                     />
                   </div>
 
-                 
                   <div className="px-3 mb-6 w-[180px]">
                     <label className="text-gray-900 font-medium">
                       Landline No 2
@@ -312,7 +339,6 @@ const BidderRegistration = () => {
                     />
                   </div>
 
-                  
                   <div className="px-3 mb-6 w-[340px]">
                     <label className="text-gray-900 font-medium">
                       Firm Name <span className="text-red-600">*</span>
@@ -327,7 +353,6 @@ const BidderRegistration = () => {
                     />
                   </div>
 
-                  
                   <div className="px-3 mb-6 w-[200px]">
                     <label className="text-gray-900 font-medium">
                       GST No <span className="text-red-600">*</span>
@@ -342,7 +367,6 @@ const BidderRegistration = () => {
                     />
                   </div>
 
-                 
                   <div className="px-3 mb-6 w-[220px]">
                     <label className="text-gray-900 font-medium">
                       Aadhar No <span className="text-red-600">*</span>
@@ -361,7 +385,6 @@ const BidderRegistration = () => {
                     />
                   </div>
 
-                 
                   <div className="px-3 mb-6 w-[280px]">
                     <label className="text-gray-900 font-medium">
                       Aadhar Document
@@ -397,7 +420,7 @@ const BidderRegistration = () => {
                       )}
                     </div>
                   </div>
-              
+
                   <div className="px-3 mb-6 w-[220px]">
                     <label className="text-gray-900 font-medium">
                       Pan No <span className="text-red-600">*</span>
@@ -412,7 +435,6 @@ const BidderRegistration = () => {
                     />
                   </div>
 
-                 
                   <div className="px-3 mb-6 w-[280px]">
                     <label className="text-gray-900 font-medium">
                       Pan Document
@@ -451,7 +473,6 @@ const BidderRegistration = () => {
                 </div>
               </div>
 
-             
               <div className="lg:w-48 flex flex-col items-center lg:items-start gap-4">
                 <h3 className="font-semibold text-gray-900 text-center lg:text-left">
                   Upload Bidder Profile
@@ -480,7 +501,6 @@ const BidderRegistration = () => {
                       className="absolute bottom-2 right-3 bg-[#0A2478] text-white rounded-sm text-[10px] p-1 cursor-pointer"
                     >
                       Upload from Computer
-                    
                       <input
                         id="photo-file"
                         type="file"

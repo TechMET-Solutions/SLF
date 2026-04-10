@@ -2,11 +2,12 @@ import React, { useEffect, useState } from "react";
 import axios from "axios";
 import { API } from "../api";
 import { useNavigate } from "react-router-dom";
+import { usePermission } from "../API/Context/PermissionContext";
 
 const Accounts_Opening_Balance = () => {
 
   const navigate = useNavigate();
-
+const { permissions, userData } = usePermission();
   const [balances, setBalances] = useState([]);
   const [loading, setLoading] = useState(false);
 
@@ -47,17 +48,21 @@ const Accounts_Opening_Balance = () => {
       alert("Error updating balance");
     }
   };
-
+const hasMiscAccess =
+  userData?.isAdmin ||
+  permissions?.Transaction?.find(
+    item => item.name === "Miscellaneous"
+  )?.add;
   return (
     <div className="min-h-screen font-sans">
       
 
-      <div className="flex justify-center">
-        <div className="flex sticky top-[80px] z-40 w-full px-8">
-          <div className="flex items-center px-6 py-4 border-b my-2 w-full max-w-[1462px] h-[50px] border rounded-[11px] border-gray-200 justify-between  ">
+      <div className="flex ">
+        <div className="flex sticky top-[50px] z-40 w-[1462px] ml-[25px]">
+          <div className="flex items-center px-6 py-4 border-b  w-full  h-[40px] border  border-gray-200 justify-between  ">
             {/* Left Side: Title */}
             <h2 className="text-red-600 font-bold text-[20px] leading-[148%] whitespace-nowrap">
-              Opening Account Balance
+               Account Opening Balance
             </h2>
 
             <div className="flex items-center gap-3  pl-6 border-gray-200">
@@ -72,17 +77,17 @@ const Accounts_Opening_Balance = () => {
         </div>
       </div>
 
-      <div className="flex ml-[38px]">
+      <div className="flex ml-[25px]">
         {loading ? (
           <div className="p-4 text-center">Loading...</div>
         ) : (
-            <div className="overflow-x-auto max-w-3xl h-[600px]">
+            <div className="overflow-x-auto max-w-3xl h-auto">
               <table className="w-full border-collapse text-[12px]">
                 <thead className="bg-[#0A2478] text-white text-sm">
                 <tr>
                     <th className="px-2 py-2 text-center border-r border-gray-300 text-[13px] w-[50px]">ID</th>
-                    <th className="px-2 py-2 text-center border-r border-gray-300 text-[13px] w-[130px]">Account Group</th>
-                    <th className="px-2 py-2 text-center border-r border-gray-300 text-[13px] w-[150px]">Name</th>
+                    <th className="px-2 py-2 text-center border-r border-gray-300 text-[13px] w-[130px]">Group Ledger</th>
+                    <th className="px-2 py-2 text-center border-r border-gray-300 text-[13px] w-[150px]">Ledger</th>
                     <th className="px-2 py-2 text-center border-r border-gray-300 text-[13px] w-[150px]">Opening Balance</th>
                 </tr>
               </thead>
@@ -101,18 +106,23 @@ const Accounts_Opening_Balance = () => {
                       {row.name}
                     </td>
 
-                    <td className="p-2">
-                      <input
-                        type="number"
-                        value={row.opening_balance}
-                        onChange={(e) =>
-                          handleInputChange(row.id, e.target.value)
-                        }
-                        onBlur={() =>
-                          updateOpeningBalance(row.id, row.opening_balance)
-                        }
-                        className="w-full border border-gray-300 rounded px-1 py-0.5 text-right"
-                      />
+                      <td className="p-2">
+                       <input
+  type="number"
+  value={row.opening_balance}
+  onChange={(e) =>
+    handleInputChange(row.id, e.target.value)
+  }
+  onBlur={() =>
+    updateOpeningBalance(row.id, row.opening_balance)
+  }
+  disabled={!hasMiscAccess} // ✅ key line
+  className={`w-full border rounded px-1 py-0.5 text-right ${
+    hasMiscAccess
+      ? "border-gray-300"
+      : "border-gray-200 bg-gray-100 cursor-not-allowed"
+  }`}
+/>    
                     </td>
                   </tr>
                 ))}

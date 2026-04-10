@@ -2,12 +2,13 @@ import { useEffect, useState } from "react";
 import { FiEdit } from "react-icons/fi";
 import { useNavigate } from "react-router-dom";
 import { fetchBidderApi } from "../API/Transaction/Auction/BidderApi";
+import { usePermission } from "../API/Context/PermissionContext";
 
 const BidderRegistrationList = () => {
   const navigate = useNavigate();
   const [data, setData] = useState([]);
   const [loading, setLoading] = useState(true);
-
+const { permissions, userData } = usePermission();
   // 🔹 Fetch bidders from backend
   useEffect(() => {
     const getBidders = async () => {
@@ -32,13 +33,18 @@ const BidderRegistrationList = () => {
         <h2 className="text-red-600 font-semibold text-xl">
           Bidder Registration List 
         </h2>
-<div className="flex gap-3">
-        <button
+        <div className="flex gap-3">
+          {(userData?.isAdmin||permissions?.Transaction?.find(
+  item => item.name === "Bidder Registration"
+)?.add) && (
+   <button
           onClick={() => navigate("/Bidder-Registration")}
           className="bg-[#0A2478] text-white text-[12px] w-[80px] h-[30px] rounded-[3.75px] transition cursor-pointer"
         >
           Add Bidder
         </button>
+)}
+       
         <button onClick={() => navigate("/")} className="bg-[#C1121F] text-white text-[12px] w-[80px] h-[30px] rounded-[3.75px] hover:bg-red-700 transition">
           Exit
           </button>
@@ -84,16 +90,37 @@ const BidderRegistrationList = () => {
                     key={item.id}
                     className={index % 2 === 0 ? "bg-gray-50" : "bg-white"}
                   >
-                    <td
-                      className="px-1 py-1 text-blue-500 cursor-pointer"
-                      onClick={() =>
-                        navigate("/View-Bidder-Details", {
-                          state: { item: item.id },
-                        })
-                      }
-                    >
-                      {item.id}
-                    </td>
+
+                     
+   
+                  <td
+  className={`px-1 py-1 ${
+    (userData?.isAdmin ||
+      permissions?.Transaction?.find(
+        item => item.name === "Bidder Registration"
+      )?.View_BidderDetails)
+      ? "text-blue-500 cursor-pointer"
+      : "text-gray-400 cursor-not-allowed"
+  }`}
+  onClick={() => {
+    if (
+      !(
+        userData?.isAdmin ||
+        permissions?.Transaction?.find(
+          item => item.name === "Bidder Registration"
+        )?.View_BidderDetails
+      )
+    ) {
+      return; // ❌ stop if no permission
+    }
+
+    navigate("/View-Bidder-Details", {
+      state: { item: item.id },
+    });
+  }}
+>
+  {item.id}
+</td>
                     <td className="px-1 py-1">{item.bidder_name}</td>
                     <td className="px-1 py-1">{item.mobile_no}</td>
                     <td
@@ -118,7 +145,10 @@ const BidderRegistrationList = () => {
                       >
                         <FiEye className="text-sm" />
                       </button> */}
-                      <button
+                      {(userData?.isAdmin||permissions?.Transaction?.find(
+  item => item.name === "Bidder Registration"
+)?.edit) && (
+   <button
                         onClick={() =>
                           navigate("/EditBidderDetails", {
                             state: { bidderId: item.id },
@@ -129,6 +159,8 @@ const BidderRegistrationList = () => {
                       >
                         <FiEdit className="text-sm" />
                       </button>
+)}
+                     
                     </td>
                   </tr>
                 ))

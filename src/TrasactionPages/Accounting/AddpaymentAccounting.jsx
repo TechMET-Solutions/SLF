@@ -960,7 +960,7 @@ const fetchBanks = async () => {
 
                 <div className="flex flex-col">
                   <label className="font-semibold text-gray-700 mb-1.5 ml-1">
-                    Contact Number
+                    Contact Number 
                   </label>
                   <input
                     type="tel"

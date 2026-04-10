@@ -8,4 +8,4 @@
 // ====================================
 // For Production Base URL
 // ====================================
-export const API = "https://slunawat.co.in"; 
+export const API = "https://slunawat.co.in/"; 

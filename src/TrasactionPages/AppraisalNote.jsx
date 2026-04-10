@@ -62,8 +62,8 @@ const AppraisalNote = () => {
       </style>
 
       {/* Header Section */}
-      <div className="flex justify-center sticky top-[80px] z-40">
-        <div className="flex items-center justify-between border border-gray-300 rounded-[10px] px-4 py-2 mt-4 w-full max-w-[1290px] h-[62px] shadow-lg bg-white">
+      <div className="flex justify-center sticky top-[50px] z-40">
+        <div className="flex items-center justify-between border border-gray-300  px-4 py-2  w-full max-w-[1462px] h-[40px] shadow-lg bg-white">
           <h2 className="text-red-600 font-bold text-[20px] whitespace-nowrap mr-4">
             APPRAISAL NOTE
           </h2>

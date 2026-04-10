@@ -1,16 +1,23 @@
 import axios from "axios";
 import { useEffect, useState } from "react";
+import { FiEdit } from "react-icons/fi";
+import { MdContentCopy } from "react-icons/md";
 import { useNavigate } from "react-router-dom";
 import { API } from "../api";
 import Pagination from "../Component/Pagination";
 import { formatIndianDate } from "../utils/Helpers";
-import { FiEdit } from "react-icons/fi";
-import { MdContentCopy } from "react-icons/md";
+
+import { FaSort, FaSortDown, FaSortUp } from "react-icons/fa";
+import { usePermission } from "../API/Context/PermissionContext";
+import Loader from "../Component/Loader";
+
 const SchemeDetailsList = () => {
   useEffect(() => {
     document.title = "SLF | Scheme Details List";
   }, []);
-
+  const { permissions, userData } = usePermission();
+const [loading, setLoading] = useState(false);
+  console.log(userData,"userData")
   const navigate = useNavigate();
 
   const [data, setData] = useState([]);
@@ -20,7 +27,10 @@ const SchemeDetailsList = () => {
   const [totalPages, setTotalPages] = useState(1);
 
   // 🔥 Fetch Schemes With Pagination
-
+  const [sortConfig, setSortConfig] = useState({
+    key: "",
+    direction: "asc",
+  });
   const [searchHeaders, setSearchHeaders] = useState([]); // Array of active headers
   const [searchQuery, setSearchQuery] = useState("");
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
@@ -35,34 +45,82 @@ const SchemeDetailsList = () => {
     // setFilteredData(schemes);
   };
 
-  const fetchSchemes = async (page = 1) => {
-    try {
-      const response = await axios.get(`${API}/Scheme/getAllSchemes`, {
-        params: {
-          page,
-          limit: 10,
-          search: searchQuery || undefined,
-          keys: searchHeaders.length ? searchHeaders.join(",") : undefined,
-          appFrom: appFrom || undefined,
-          appTo: appTo || undefined,
-        },
-      });
+  // const fetchSchemes = async (page = 1) => {
+  //   try {
+  //     const response = await axios.get(`${API}/Scheme/getAllSchemes`, {
+  //       params: {
+  //         loginUser: userData?.id, // ✅ add this
+  //         page,
+  //         limit: 10,
+  //         search: searchQuery || undefined,
+  //         keys: searchHeaders.length ? searchHeaders.join(",") : undefined,
+  //         appFrom: appFrom || undefined,
+  //         appTo: appTo || undefined,
+  //         sortKey: sortConfig.key, // ✅ add this
+  //         sortOrder: sortConfig.direction,
+          
+  //       },
+  //     });
 
-      const result = response.data;   // ✅ Correct
+  //     const result = response.data; // ✅ Correct
 
-      setData(result.items);          // ✅ Use items
-      setCurrentPage(result.page);    // ✅ From API
-      setTotalPages(result.totalPages);
+  //     setData(result.items); // ✅ Use items
+  //     setCurrentPage(result.page); // ✅ From API
+  //     setTotalPages(result.totalPages);
+  //   } catch (err) {
+  //     console.error("❌ Error fetching schemes:", err);
+  //   }
+  // };
+const fetchSchemes = async (page = 1) => {
+   setLoading(true);
+  try {
+    // ✅ Decide loginUser value
+    const loginUserValue = userData?.isAdmin
+      ? "admin"        // 👈 Admin case
+      : userData?.id;  // 👈 Employee case (e.g., 80)
 
-    } catch (err) {
-      console.error("❌ Error fetching schemes:", err);
-    }
-  };
+    const response = await axios.get(`${API}/Scheme/getAllSchemes`, {
+      params: {
+        page,
+        limit: 10,
+        search: searchQuery || undefined,
+        keys: searchHeaders.length ? searchHeaders.join(",") : undefined,
+        appFrom: appFrom || undefined,
+        appTo: appTo || undefined,
+        sortKey: sortConfig.key,
+        sortOrder: sortConfig.direction,
+        loginUser: loginUserValue, // ✅ updated here
+      },
+    });
 
+    const result = response.data;
 
+    setData(result.items);
+    setCurrentPage(result.page);
+    setTotalPages(result.totalPages);
+     setLoading(false);
+  } catch (err) {
+    console.error("❌ Error fetching schemes:", err);
+     setLoading(false);
+  }
+};
   useEffect(() => {
+  if (userData && (userData.isAdmin || userData.id)) {
     fetchSchemes(currentPage);
-  }, []);
+  }
+}, [sortConfig, userData]);
+
+  const handleSort = (key) => {
+    setSortConfig((prev) => {
+      let direction = "asc";
+
+      if (prev.key === key && prev.direction === "asc") {
+        direction = "desc";
+      }
+
+      return { key, direction };
+    });
+  };
 
   const toggleHeader = (headerId) => {
     setSearchHeaders((prev) =>
@@ -80,6 +138,7 @@ const SchemeDetailsList = () => {
 
   // 🔹 Toggle Active/Inactive
   const handleStatusToggle = async (row) => {
+     setLoading(true);
     const newStatus = row.status === 1 ? 0 : 1;
 
     try {
@@ -93,9 +152,11 @@ const SchemeDetailsList = () => {
         item.id === row.id ? { ...item, status: newStatus } : item,
       );
       setData(updated);
+       setLoading(false);
     } catch (err) {
       console.error("Error updating scheme status:", err);
       alert("Failed to update status");
+      setLoading(false);
     }
   };
 
@@ -106,18 +167,16 @@ const SchemeDetailsList = () => {
     "maxLoanAmount",
   ];
 
-
   const handleSelectAll = () => {
     const allSelected = allHeaderIds.every((id) => searchHeaders.includes(id));
     setSearchHeaders(allSelected ? [] : [...allHeaderIds]);
   };
 
-
   return (
     <div className="min-h-screen w-full">
       {/* Top Bar */}
       <div className="flex sticky top-[50px] z-40 w-full px-6">
-        <div className="flex items-center px-6 py-4 border-b  w-full max-w-[1462px] h-[40px] border border-gray-200 justify-between">
+        <div className="flex items-center px-6 py-4 border-b  w-full max-w-[1462px] h-[40px] border border-gray-200 justify-between bg-white">
           <h2 className="text-red-600 text-[20px] font-semibold">
             Scheme List
           </h2>
@@ -137,17 +196,19 @@ const SchemeDetailsList = () => {
 
                   {isDropdownOpen && (
                     <div className="absolute top-[35px] left-[-8px] bg-white border-b border-gray-300 shadow-xl rounded-md z-[100] w-[160px] p-2">
-
                       <button
                         onClick={handleSelectAll}
-                        className="flex items-center gap-2 p-2 cursor-pointer border-b border-gray-200 rounded">
+                        className="flex items-center gap-2 p-2 cursor-pointer border-b border-gray-200 rounded"
+                      >
                         <input
                           type="checkbox"
                           checked={searchHeaders.length === allHeaderIds.length}
                           onChange={handleSelectAll}
                           className="w-3 h-3 accent-[#0A2478]"
                         />
-                        <span className="text-[11px] font-source text-gray-700">Select All</span>
+                        <span className="text-[11px] font-source text-gray-700">
+                          Select All
+                        </span>
                       </button>
 
                       {[
@@ -252,20 +313,29 @@ const SchemeDetailsList = () => {
               >
                 Clear
               </button>
+              {(userData?.isAdmin ||
+                permissions?.Master?.find(
+                  (item) => item.name === "Scheme Details",
+                )?.RenewScheme) && (
+                <button
+                  className="bg-[#129121] text-white text-[11.25px] px-4 py-1 rounded"
+                  onClick={() => navigate("/Scheme-Renewal-List")}
+                >
+                  Renew
+                </button>
+              )}
 
-              <button
-                className="bg-[#129121] text-white text-[11.25px] px-4 py-1 rounded"
-                onClick={() => navigate("/Scheme-Renewal-List")}
-              >
-                Renew
-              </button>
-
-              <button
-                className="bg-[#0A2478] text-white text-[11.25px] px-4 py-1 rounded"
-                onClick={() => navigate("/Add-Scheme-Details-Listform")}
-              >
-                Add
-              </button>
+              {(userData?.isAdmin ||
+                permissions?.Master?.find(
+                  (item) => item.name === "Scheme Details",
+                )?.add) && (
+                <button
+                  className="bg-[#0A2478] text-white text-[11.25px] px-4 py-1 rounded"
+                  onClick={() => navigate("/Add-Scheme-Details-Listform")}
+                >
+                  Add
+                </button>
+              )}
 
               <button
                 onClick={() => navigate("/")}
@@ -283,8 +353,24 @@ const SchemeDetailsList = () => {
         <div className="overflow-x-auto   h-[500px]">
           <table className="w-full border-collapse">
             <thead className="bg-[#0A2478] text-white text-sm">
-              <tr className='text-left'>
-                <th className="px-1 py-1 border w-[150px]">Scheme Name</th>
+              <tr className="text-left">
+                <th
+                  className="px-1 py-1 border w-[150px] flex justify-between"
+                  onClick={() => handleSort("schemeName")}
+                >
+                  Scheme Name
+                  {sortConfig.key !== "schemeName" && (
+                    <FaSort className="text-gray-400 text-xs" />
+                  )}
+                  {sortConfig.key === "schemeName" &&
+                    sortConfig.direction === "asc" && (
+                      <FaSortUp className="text-blue-600 text-xs" />
+                    )}
+                  {sortConfig.key === "schemeName" &&
+                    sortConfig.direction === "desc" && (
+                      <FaSortDown className="text-blue-600 text-xs" />
+                    )}
+                </th>
                 <th className="px-1 py-1 border w-[100px]">Product Name</th>
                 <th className="px-1 py-1 border">From Date</th>
                 <th className="px-1 py-1 border">To Date</th>
@@ -295,8 +381,14 @@ const SchemeDetailsList = () => {
 
                 <th className="px-1 py-1 border w-[300px]">Description</th>
                 {/* <th className="px-1 py-1 border">Action</th> */}
+                {(userData?.isAdmin ||
+                permissions?.Master?.find(
+                  (item) => item.name === "Scheme Details",
+                )?.RoleMapping) && (
                 <th className="px-1 py-1 border w-[110px]">Role Mapping</th>
-                <th className="px-1 py-1 border w-[120px]">Active</th>
+              )}
+               
+                <th className="px-1 py-1 border w-[120px]">Action</th>
               </tr>
             </thead>
 
@@ -332,10 +424,12 @@ const SchemeDetailsList = () => {
 
                   <td className="px-1 py-1">{row.description}</td>
 
-
-
                   {/* Role Mapping */}
-                  <td
+                   {(userData?.isAdmin ||
+                permissions?.Master?.find(
+                  (item) => item.name === "Scheme Details",
+                )?.RoleMapping) && (
+                <td
                     className="px-1 py-1 text-[#1883EF] cursor-pointer"
                     onClick={() =>
                       navigate("/Role-Mapping", { state: { data: row } })
@@ -343,23 +437,37 @@ const SchemeDetailsList = () => {
                   >
                     Role Mapping
                   </td>
+              )}
+                 
+                  
 
                   {/* Toggle */}
                   <td className="px-1 py-1 w-[120px]">
                     <div className="flex items-center gap-2">
                       {/* Status Toggle Section */}
-                      <div className="flex flex-col items-start gap-1">
+                      {(userData?.isAdmin ||
+                permissions?.Master?.find(
+                  (item) => item.name === "Scheme Details",
+                )?.status) && (
+                 <div className="flex flex-col items-start gap-1">
                         <button
                           onClick={() => handleStatusToggle(row)}
-                          className={`w-11 h-5 cursor-pointer flex items-center rounded-full p-1 transition-all duration-300 ease-in-out ${row.status === 1 ? "bg-[#0A2478]" : "bg-gray-300"
-                            }`}
+                          className={`w-11 h-5 cursor-pointer flex items-center rounded-full p-1 transition-all duration-300 ease-in-out ${
+                            row.status === 1 ? "bg-[#0A2478]" : "bg-gray-300"
+                          }`}
                         >
                           <div
-                            className={`bg-white w-3 h-3 rounded-full shadow-sm transform transition-transform duration-300 ${row.status === 1 ? "translate-x-6" : "translate-x-0"
-                              }`}
+                            className={`bg-white w-3 h-3 rounded-full shadow-sm transform transition-transform duration-300 ${
+                              row.status === 1
+                                ? "translate-x-6"
+                                : "translate-x-0"
+                            }`}
                           />
                         </button>
                       </div>
+              )}
+                 
+                     
 
                       {/* Vertical Divider */}
                       <div className="h-8 w-[1px] bg-gray-200"></div>
@@ -368,7 +476,11 @@ const SchemeDetailsList = () => {
                       <div className="flex flex-col items-start gap-1">
                         <div className="flex items-center gap-2">
                           {/* Edit Button */}
-                          <button
+                           {(userData?.isAdmin ||
+                permissions?.Master?.find(
+                  (item) => item.name === "Scheme Details",
+                )?.edit) && (
+                 <button
                             onClick={() =>
                               navigate("/Add-Scheme-Details-Listform", {
                                 state: { type: "edit", data: row },
@@ -378,9 +490,12 @@ const SchemeDetailsList = () => {
                           >
                             <FiEdit className="text-white text-sm" />
                           </button>
-
-                          {/* Copy Button */}
-                          <button
+              )}
+                         {(userData?.isAdmin ||
+                permissions?.Master?.find(
+                  (item) => item.name === "Scheme Details",
+                )?.Copy) && (
+                  <button
                             onClick={() =>
                               navigate("/Add-Scheme-Details-Listform", {
                                 state: { type: "copy", data: row },
@@ -390,6 +505,11 @@ const SchemeDetailsList = () => {
                           >
                             <MdContentCopy className="text-white text-sm" />
                           </button>
+              )}
+                   
+
+                          {/* Copy Button */}
+                         
                         </div>
                       </div>
                     </div>
@@ -409,6 +529,8 @@ const SchemeDetailsList = () => {
           onPageChange={handlePageChange}
         />
       )}
+
+      {loading && <Loader />}
     </div>
   );
 };

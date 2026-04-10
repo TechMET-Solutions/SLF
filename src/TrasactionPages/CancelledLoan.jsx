@@ -4,6 +4,7 @@ import { useLocation, useNavigate } from "react-router-dom";
 import { API } from "../api";
 import envImg from "../assets/envImg.jpg";
 import { default as profileempty } from "../assets/profileempty.png";
+import Loader from "../Component/Loader";
 
 const ViewLoanDetails = () => {
   const [loanData, setLoanData] = useState(null);
@@ -34,6 +35,8 @@ const ViewLoanDetails = () => {
       );
       setLoanData(response.data.loanApplication); // Access the data property
       setError(null);
+      
+  setLoading(false);
     } catch (err) {
       console.error("❌ Error fetching loan data:", err);
       setError("Failed to load loan data");
@@ -236,8 +239,8 @@ const ViewLoanDetails = () => {
   return (
     <div className="min-h-screen w-full">
       {/* ===== Top Bar ===== */}
-      <div className="flex justify-center sticky top-[80px] z-40">
-        <div className="flex items-center px-6 py-4 border-b mt-5 w-[1290px] h-[62px] border rounded-[11px] border-gray-200 justify-between shadow bg-white">
+      <div className="flex justify-center sticky top-[50px] z-40">
+        <div className="flex items-center px-6 py-4 border-b w-[1462px] h-[40px] border  border-gray-200 justify-between shadow bg-white">
           <h2
             style={{
               fontFamily: "Source Sans 3, sans-serif",
@@ -263,10 +266,10 @@ const ViewLoanDetails = () => {
       </div>
 
       {/* ===== FORM SECTIONS ===== */}
-      <div className="mt-5 min-h-screen space-y-8  ml-[110px] mr-[110px]">
+      <div className=" min-h-screen space-y-8 w-[1462px] ml-[25px]">
         {/* ===== Loan Details Section ===== */}
-        <div className="flex justify-center  bg-[#FFE6E6] p-2 ">
-          <div className="w-[950px] pt-3 pl-14">
+        <div className="flex bg-[#FFE6E6] p-2 ">
+          <div className="w-[950px] pt-3 ">
             {/* Remark Section */}
             <div className="flex mb-5 justify-center ">
               <div className="flex w-[1050px]  border-2 border-red-500 rounded-md p-3 ">
@@ -291,7 +294,7 @@ const ViewLoanDetails = () => {
             </div>
 
             {/* First Row */}
-            <div className="flex gap-7 text-sm mb-8 flex-wrap">
+            <div className="flex gap-7 text-sm  flex-wrap">
               <div>
                 <p className="font-semibold">Loan No</p>
                 <p>{loanData.id || "N/A"}</p>
@@ -428,7 +431,7 @@ const ViewLoanDetails = () => {
         {/* ===== Pledge Item List ===== */}
         <div className=" bg-[#F7F7FF] p-2 ">
           <div className="w-[1290px]">
-            <h3 className="font-semibold mb-4 text-[#0A2478] text-lg">
+            <h3 className="font-semibold  text-[#0A2478] text-lg">
               Pledge Item List
             </h3>
             <div className="w-full text-xs border border-gray-300">
@@ -688,6 +691,7 @@ const ViewLoanDetails = () => {
           </div>
         </div>
       </div>
+      {loading && <Loader />}
     </div>
   );
 };

@@ -5,7 +5,9 @@ import { FiEdit } from "react-icons/fi";
 import { useNavigate } from "react-router-dom";
 import { API } from "../api";
 import { useAuth } from "../API/Context/AuthContext";
+import { usePermission } from "../API/Context/PermissionContext";
 import Pagination from "../Component/Pagination";
+import Loader from "../Component/Loader";
 const AccountGroupList = () => {
   useEffect(() => {
     document.title = "SLF | Account Group List";
@@ -17,7 +19,11 @@ const AccountGroupList = () => {
     under: "",
     comments: "",
   });
-
+  const { permissions, userData } = usePermission();
+  const { loginUser } = useAuth();
+  console.log("User Data in loginUser:", loginUser);
+  console.log("User Permissions in AccountGroupList:", permissions);
+  console.log("User Data in AccountGroupList:", userData);
   const [isEditMode, setIsEditMode] = useState(false);
   const [selectedId, setSelectedId] = useState(null);
   const [data, setData] = useState([]);
@@ -30,7 +36,7 @@ const AccountGroupList = () => {
     }));
   };
   const navigate = useNavigate();
-
+  const [loading, setLoading] = useState(false);
   // Pagination states
   const [currentPage, setCurrentPage] = useState(1);
   const [totalItems, setTotalItems] = useState(0);
@@ -60,6 +66,7 @@ const AccountGroupList = () => {
   };
 
   const getAccountGroups = async (page = 1) => {
+    setLoading(true);
     try {
       const response = await axios.get(`${API}/api/account-group/list`, {
         params: {
@@ -75,15 +82,26 @@ const AccountGroupList = () => {
       setTotalItems(response.data.pagination.total);
       setShowPagination(response.data.pagination.showPagination);
       setCurrentPage(response.data.pagination.page);
+      setLoading(false);
     } catch (error) {
       console.error("Error fetching account groups:", error);
     }
   };
 
-  const { loginUser } = useAuth();
-console.log(loginUser,"asdfghj")
   const handleSave = async () => {
     try {
+      // ✅ Validation
+      setLoading(true);
+      if (
+        !formData.groupName?.trim() ||
+        !formData.accountType?.trim() ||
+        !formData.under?.trim()
+      ) {
+        alert("All fields are required!");
+        setLoading(false);
+        return;
+      }
+
       const payload = {
         groupName: formData.groupName,
         accountType: formData.accountType,
@@ -102,12 +120,15 @@ console.log(loginUser,"asdfghj")
           `${API}/api/account-group/update/${selectedId}`,
           payload,
         );
+        
         alert("Account Group Updated Successfully");
+        setLoading(false);
       } else {
         await axios.post(`${API}/api/account-group/create`, payload);
         alert("Account Group Created Successfully");
+        setLoading(false);
       }
-
+      setIsModalOpen(false);
       setIsModalOpen(false);
       setIsEditMode(false);
       setSelectedId(null);
@@ -123,6 +144,7 @@ console.log(loginUser,"asdfghj")
     } catch (error) {
       console.error(error);
       alert("Error saving account group");
+      setLoading(false);
     }
   };
 
@@ -160,18 +182,12 @@ console.log(loginUser,"asdfghj")
     setIsModalOpen(true);
   };
 
-  const allHeaderIds = [
-    "group_name",
-    "account_type",
-    "under_type",
-  ];
+  const allHeaderIds = ["group_name", "account_type", "under_type"];
 
-
- const handleSelectAll = () => {
+  const handleSelectAll = () => {
     const allSelected = allHeaderIds.every((id) => searchHeaders.includes(id));
     setSearchHeaders(allSelected ? [] : [...allHeaderIds]);
   };
-
 
   return (
     <div className=" min-h-screen w-full ">
@@ -189,7 +205,7 @@ console.log(loginUser,"asdfghj")
             }}
             className="text-red-600"
           >
-           Group Ledger List
+            Group Ledger List
           </h2>
 
           {/* Right section (search + buttons) */}
@@ -212,11 +228,14 @@ console.log(loginUser,"asdfghj")
                     {isDropdownOpen && (
                       <div className="absolute top-[35px] left-[-8px] bg-white border border-gray-300 shadow-xl rounded-md z-[100] w-[160px] p-2">
                         <button
-                        onClick={handleSelectAll}
-                        className="flex items-center gap-2 p-2 hover:bg-gray-50 cursor-pointer rounded">
+                          onClick={handleSelectAll}
+                          className="flex items-center gap-2 p-2 hover:bg-gray-50 cursor-pointer rounded"
+                        >
                           <input
                             type="checkbox"
-                            checked={allHeaderIds.every((id) => searchHeaders.includes(id))}
+                            checked={allHeaderIds.every((id) =>
+                              searchHeaders.includes(id),
+                            )}
                             onChange={handleSelectAll}
                             className="w-3 h-3 accent-[#0A2478]"
                           />
@@ -224,7 +243,7 @@ console.log(loginUser,"asdfghj")
                             Select All
                           </span>
                         </button>
-                        
+
                         {[
                           { id: "group_name", label: "Group Ledger List" },
                           { id: "account_type", label: "Account Type" },
@@ -261,13 +280,11 @@ console.log(loginUser,"asdfghj")
                   <input
                     type="text"
                     value={searchQuery}
-                     onClick={() => setIsDropdownOpen(false)}
+                    onClick={() => setIsDropdownOpen(false)}
                     onChange={(e) => setSearchQuery(e.target.value)}
                     placeholder="Type multiple items (e.g. Cash, Asset)..."
                     className="flex-grow text-[11px] font-source outline-none h-full"
                   />
-
-                 
 
                   <button
                     onClick={handleSearch} // Use the new search handler
@@ -286,17 +303,22 @@ console.log(loginUser,"asdfghj")
             </div>
             {/* Buttons stuck to right */}
             <div className="flex gap-3">
-              <button
-                style={{
-                  width: "74px",
-                  height: "24px",
-                  borderRadius: "3.75px",
-                }}
-                onClick={() => setIsModalOpen(true)}
-                className="bg-[#0A2478] text-white text-[11.25px] font-source font-normal flex items-center justify-center"
-              >
-                Add
-              </button>
+              {(userData?.isAdmin ||
+                permissions?.Master?.find(
+                  (item) => item.name === "Group Ledger",
+                )?.add) && (
+                <button
+                  style={{
+                    width: "74px",
+                    height: "24px",
+                    borderRadius: "3.75px",
+                  }}
+                  onClick={() => setIsModalOpen(true)}
+                  className="bg-[#0A2478] text-white text-[11.25px] font-source font-normal flex items-center justify-center"
+                >
+                  Add
+                </button>
+              )}
 
               <button
                 onClick={() => navigate("/")}
@@ -355,7 +377,7 @@ console.log(loginUser,"asdfghj")
             <div className="grid grid-cols-2 gap-4">
               <div>
                 <label className="text-[14px] ">
-                 Group Ledger Name <span className="text-red-500">*</span>
+                  Group Ledger Name <span className="text-red-500">*</span>
                 </label>
                 <input
                   type="text"
@@ -393,7 +415,9 @@ console.log(loginUser,"asdfghj")
                 />
               </div>
               <div>
-                <label className="text-[12px] font-medium">Under</label>
+                <label className="text-[12px] font-medium">
+                  Under <span className="text-red-500">*</span>
+                </label>
                 <select
                   name="under"
                   value={formData.under}
@@ -406,7 +430,7 @@ console.log(loginUser,"asdfghj")
                     borderRadius: "5px",
                   }}
                 >
-                  <option value="">Select Under</option>
+                  <option value="">Select Under </option>
                   <option value="Balance Sheet">Balance Sheet</option>
                   <option value="Profit & Loss">Profit & Loss</option>
                 </select>
@@ -472,7 +496,7 @@ console.log(loginUser,"asdfghj")
             <thead className="bg-[#0A2478] text-white text-sm">
               <tr>
                 <th className="px-1 py-1 text-left border-r border-gray-300 text-[13px]">
-                 Group Ledger 
+                  Group Ledger
                 </th>
                 <th className="px-1 py-1 text-left border-r border-gray-300 text-[13px] w-[150px]">
                   Account Type
@@ -520,25 +544,28 @@ console.log(loginUser,"asdfghj")
                   </td>
                   <td className="px-1 py-1">{row.modified_by_email}</td>
 
-                <td className="px-1 py-1">
-  {row.modified_on
-    ? new Date(row.modified_on).toLocaleString("en-IN", {
-        day: "2-digit",
-        month: "2-digit",
-        year: "numeric",
-       
-       
-      })
-    : "-"}
-</td>
+                  <td className="px-1 py-1">
+                    {row.modified_on
+                      ? new Date(row.modified_on).toLocaleString("en-IN", {
+                          day: "2-digit",
+                          month: "2-digit",
+                          year: "numeric",
+                        })
+                      : "-"}
+                  </td>
                   <td className="px-1 py-1">{row.comments}</td>
                   <td className="px-1 py-1 flex gap-2 ">
-                    <div
-                      className="bg-[#3dbd5a] cursor-pointer p-1.5 text-white rounded-sm"
-                      onClick={() => handleEdit(row)}
-                    >
-                      <FiEdit />
-                    </div>
+                    {(userData.isAdmin ||
+                      permissions?.Master?.find(
+                        (item) => item.name === "Group Ledger",
+                      )?.edit) && (
+                      <div
+                        className="bg-[#3dbd5a] cursor-pointer p-1.5 text-white rounded-sm"
+                        onClick={() => handleEdit(row)}
+                      >
+                        <FiEdit />
+                      </div>
+                    )}
                   </td>
                 </tr>
               ))}
@@ -557,6 +584,7 @@ console.log(loginUser,"asdfghj")
           />
         </div>
       )}
+      {loading && <Loader />}
     </div>
   );
 };

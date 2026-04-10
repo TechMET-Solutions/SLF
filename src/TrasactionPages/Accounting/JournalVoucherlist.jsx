@@ -3,32 +3,35 @@ import { Edit, Eye, Trash2 } from "lucide-react";
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { API } from "../../api";
+import { usePermission } from "../../API/Context/PermissionContext";
+import Loader from "../../Component/Loader";
 // import { BASEURL } from "../../url"; // your existing url.jsx
 
 const JournalVoucherlist = () => {
   const navigate = useNavigate();
-
-  const systemBlue = "bg-[#0A2478]";
-  const tealHeader = "bg-[#008b8b]";
-  const tableHeaderBg = "bg-gray-100";
-  const inputClass =
-    "border border-gray-300 rounded-sm px-2 py-1 text-[12px] outline-none";
-
-  // ================= STATES =================
   const [voucherList, setVoucherList] = useState([]);
-
   console.log(voucherList, "voucherList");
   const [loading, setLoading] = useState(false);
-
   const [page, setPage] = useState(1);
-  const [totalPages, setTotalPages] = useState(1);
-
-  const [payMode, setPayMode] = useState("All");
-  const [account, setAccount] = useState("All");
   const [searchHeaders, setSearchHeaders] = useState([]);
   const [searchQuery, setSearchQuery] = useState("");
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const [selectedDate, setSelectedDate] = useState("");
+  const [selectedBankAccount, setSelectedBankAccount] = useState("");
+  const [bankAccounts, setBankAccounts] = useState([]);
+const { permissions, userData } = usePermission();
+
+  
+  const fetchBankAccounts = async () => {
+    try {
+      const res = await fetch(`${API}/account-code/Bank-accounts`);
+      const data = await res.json();
+      setBankAccounts(data);
+    } catch (error) {
+      console.error("Failed to fetch bank accounts", error);
+    }
+  };
+
   const toggleHeader = (headerId) => {
     setSearchHeaders((prev) =>
       prev.includes(headerId)
@@ -36,7 +39,7 @@ const JournalVoucherlist = () => {
         : [...prev, headerId],
     );
   };
-  const allHeaderIds = ["VoucherNo", "subledgerName"];
+  const allHeaderIds = ["voucher_no"];
 
   const handleSelectAll = () => {
     const allSelected = allHeaderIds.every((id) => searchHeaders.includes(id));
@@ -47,20 +50,31 @@ const JournalVoucherlist = () => {
     try {
       setLoading(true);
 
-      const res = await axios.get(`${API}/api/journalVoucher/list`);
+      const queryParams = new URLSearchParams({
+        search: searchQuery || "",
+        headers: searchHeaders.join(",") || "",
+        date: selectedDate || "",
+        sub_ledger_code: selectedBankAccount || "",
+      });
+
+      const res = await axios.get(
+        `${API}/api/journalVoucher/list?${queryParams}`,
+      );
 
       if (res.data.success) {
         setVoucherList(res.data.data);
+        setLoading(false);
       }
     } catch (err) {
       console.error("Fetch Error:", err);
     } finally {
-      setLoading(false);
+       setLoading(false);
     }
   };
 
   useEffect(() => {
     fetchVouchers();
+    fetchBankAccounts();
   }, [page]);
 
   // ================= SEARCH CLICK =================
@@ -92,12 +106,13 @@ const JournalVoucherlist = () => {
     });
   };
   const handleDelete = async (id) => {
+    
     const confirmDelete = window.confirm(
       "Are you sure you want to delete this Journal Voucher?",
     );
 
     if (!confirmDelete) return;
-
+ setLoading(true);
     try {
       const response = await axios.delete(
         `${API}/api/journalVoucher/delete/${id}`,
@@ -107,6 +122,7 @@ const JournalVoucherlist = () => {
         alert("Journal Voucher Deleted Successfully ✅");
 
         // 🔥 Refresh List After Delete
+         setLoading(false);
         fetchVouchers();
       }
     } catch (error) {
@@ -114,54 +130,52 @@ const JournalVoucherlist = () => {
       alert(
         error.response?.data?.message || "Failed to delete Journal Voucher ❌",
       );
+       setLoading(false);
     }
   };
 
   return (
     <div className="min-h-screen ">
       <div className="mx-auto">
-        
-          {/* <div className="flex justify-center "> */}
-            <div className="flex sticky top-[50px] z-40 w-full ml-[25px]">
-              <div className="flex items-center px-6 py-4 border-b  w-full max-w-[1462px] h-[40px] border  border-gray-200 justify-between  ">
-              <h2 className="text-red-600 font-bold text-[20px] leading-[148%]">
-                Journal Voucher List
-              </h2>
+        {/* <div className="flex justify-center "> */}
+        <div className="flex sticky top-[50px] z-40 w-full ml-[25px]">
+          <div className="flex items-center px-6 py-4 border-b  w-full max-w-[1462px] h-[40px] border  border-gray-200 justify-between bg-white ">
+            <h2 className="text-red-600 font-bold text-[20px] leading-[148%]">
+              Journal Voucher List
+            </h2>
 
-              <div className="flex gap-5">
-                <div className="hidden lg:flex gap-2 mt-2">
-                  <div className="flex items-center bg-white border border-gray-400 rounded-[5px] h-[32px] px-2 relative w-[450px]">
-                    <div className="relative border-r border-gray-300 pr-2 mr-2">
-                      <button
-                        onClick={() => setIsDropdownOpen(!isDropdownOpen)}
-                        className="text-[11px] font-bold text-[#0A2478] flex items-center gap-1 outline-none h-full whitespace-nowrap"
-                      >
-                        Headers ({searchHeaders.length}){" "}
-                        <span className="text-[8px]">▼</span>
-                      </button>
+            <div className="flex gap-5">
+              <div className="hidden lg:flex gap-2 mt-2">
+                <div className="flex items-center bg-white border border-gray-400 rounded-[5px] h-[32px] px-2 relative w-[450px]">
+                  <div className="relative border-r border-gray-300 pr-2 mr-2">
+                    <button
+                      onClick={() => setIsDropdownOpen(!isDropdownOpen)}
+                      className="text-[11px] font-bold text-[#0A2478] flex items-center gap-1 outline-none h-full whitespace-nowrap"
+                    >
+                      Headers ({searchHeaders.length}){" "}
+                      <span className="text-[8px]">▼</span>
+                    </button>
 
-                      {isDropdownOpen && (
-                        <div className="absolute top-[35px] left-[-8px] bg-white border border-gray-300 shadow-xl rounded-md z-[100] w-[160px] p-2">
-                          <button
-                            onClick={handleSelectAll}
-                            className="flex items-center gap-2 p-2 hover:bg-blue-50 cursor-pointer rounded border-b border-gray-200 mb-1"
-                          >
-                            <input
-                              type="checkbox"
-                              checked={allHeaderIds.every((id) =>
-                                searchHeaders.includes(id),
-                              )}
-                              onChange={handleSelectAll}
-                              className="w-3 h-3 accent-[#0A2478]"
-                            />
-                            <span className="text-[11px] font-source font-bold text-[#0A2478]">
-                              Select All
-                            </span>
-                          </button>
-                          {[
-                            { id: "VoucherNo", label: "Voucher No" },
-                            { id: "subledgerName", label: "Subledger Name" },
-                          ].map((col) => (
+                    {isDropdownOpen && (
+                      <div className="absolute top-[35px] left-[-8px] bg-white border border-gray-300 shadow-xl rounded-md z-[100] w-[160px] p-2">
+                        <button
+                          onClick={handleSelectAll}
+                          className="flex items-center gap-2 p-2 hover:bg-blue-50 cursor-pointer rounded border-b border-gray-200 mb-1"
+                        >
+                          <input
+                            type="checkbox"
+                            checked={allHeaderIds.every((id) =>
+                              searchHeaders.includes(id),
+                            )}
+                            onChange={handleSelectAll}
+                            className="w-3 h-3 accent-[#0A2478]"
+                          />
+                          <span className="text-[11px] font-source font-bold text-[#0A2478]">
+                            Select All
+                          </span>
+                        </button>
+                        {[{ id: "voucher_no", label: "Voucher No" }].map(
+                          (col) => (
                             <label
                               key={col.id}
                               className="flex items-center gap-2 p-2 hover:bg-gray-50 cursor-pointer rounded"
@@ -176,66 +190,87 @@ const JournalVoucherlist = () => {
                                 {col.label}
                               </span>
                             </label>
-                          ))}
+                          ),
+                        )}
 
-                          <div className="border-t mt-1 pt-1 text-center">
-                            <button
-                              onClick={() => setIsDropdownOpen(false)}
-                              className="text-[10px] text-[#0A2478] font-bold uppercase"
-                            >
-                              Apply
-                            </button>
-                          </div>
+                        <div className="border-t mt-1 pt-1 text-center">
+                          <button
+                            onClick={() => setIsDropdownOpen(false)}
+                            className="text-[10px] text-[#0A2478] font-bold uppercase"
+                          >
+                            Apply
+                          </button>
                         </div>
-                      )}
-                    </div>
-
-                    <input
-                      type="text"
-                      value={searchQuery}
-                      onClick={() => setIsDropdownOpen(false)}
-                      onChange={(e) => setSearchQuery(e.target.value)}
-                      placeholder="Search multiple items..."
-                      className="flex-grow text-[11px] outline-none h-full bg-transparent"
-                    />
+                      </div>
+                    )}
                   </div>
-                  <input
-                    type="date"
-                    value={selectedDate}
-                    onChange={(e) => setSelectedDate(e.target.value)}
-                    className="ml-2 border border-gray-300 text-[11px] px-2 h-[34px] rounded"
-                  />
-                  <button
-                    onClick={() => {
-                      setIsDropdownOpen(false);
-                      // setCurrentPage(1);
-                      // fetchData(1);   // 🔥 API CALL
-                    }}
-                    className="ml-2 bg-[#0b2c69] text-white text-[11px] px-4 h-[24px] rounded-[3px] font-source hover:bg-[#071d45]"
-                  >
-                    Search
-                  </button>
 
-                  <button
-                    onClick={() => {
-                      setSearchQuery("");
-                      setSearchHeaders([]);
-                      setSelectedDate("");
-                      // setCurrentPage(1);
-                      // fetchData(1);
-                    }}
-                    className="ml-2 bg-[#0b2c69] text-white text-[11px] px-4 h-[24px] rounded-[3px] font-source hover:bg-[#071d45]"
-                  >
-                    Clear
-                  </button>
+                  <input
+                    type="text"
+                    value={searchQuery}
+                    onClick={() => setIsDropdownOpen(false)}
+                    onChange={(e) => setSearchQuery(e.target.value)}
+                    placeholder="Search multiple items..."
+                    className="flex-grow text-[11px] outline-none h-full bg-transparent"
+                  />
                 </div>
-                <div className="flex gap-3 py-2">
+                <input
+                  type="date"
+                  value={selectedDate}
+                  onChange={(e) => setSelectedDate(e.target.value)}
+                  className="ml-2 border border-gray-300 text-[11px] px-2 h-[34px] rounded"
+                />
+                <select
+                  value={selectedBankAccount}
+                  onChange={(e) => setSelectedBankAccount(e.target.value)}
+                  className="hidden lg:flex ml-2 border border-gray-300 text-[11px] px-2 h-[30px] rounded w-[200px]"
+                >
+                  <option value="">Select Sub Ledger</option>
+
+                  {bankAccounts.map((acc) => (
+                    <option key={acc.id} value={acc.id}>
+                      {acc.name}
+                    </option>
+                  ))}
+                </select>
+
                 <button
+                  onClick={() => {
+                    setIsDropdownOpen(false);
+                    // setCurrentPage(1);
+                    fetchVouchers(1); // 🔥 API CALL
+                  }}
+                  className="ml-2 bg-[#0b2c69] text-white text-[11px] px-4 h-[28px] rounded-[3px] font-source hover:bg-[#071d45]"
+                >
+                  Search
+                </button>
+
+                <button
+                  onClick={() => {
+                    setSearchQuery("");
+                    setSearchHeaders([]);
+                    setSelectedDate("");
+                    setSelectedBankAccount("");
+                    fetchVouchers(1);
+                  }}
+                  className="ml-2 bg-[#0b2c69] text-white text-[11px] px-4 h-[28px] rounded-[3px] font-source hover:bg-[#071d45]"
+                >
+                  Clear
+                </button>
+              </div>
+              <div className="flex gap-3 py-2">
+                {(userData?.isAdmin||permissions?.Transaction?.find(
+  item => item.name === "Journal Voucher List"
+)?.add) && (
+ <button
                   onClick={() => navigate("/JournalVoucher/create")}
-                    className="ml-2 bg-[#0b2c69] text-white text-sm rounded px-4 py-1 cursor-pointer"
+                  className="ml-2 bg-[#0b2c69] text-white text-sm rounded px-4 py-1 cursor-pointer"
                 >
                   Add
                 </button>
+                  )}
+                
+                
                 <button
                   onClick={() => navigate("/")}
                   className="bg-[#C1121F] text-white text-sm rounded px-4 py-1 cursor-pointer hover:bg-[#8b0a14]"
@@ -243,10 +278,9 @@ const JournalVoucherlist = () => {
                   Exit
                 </button>
               </div>
-              </div>
             </div>
           </div>
-       
+        </div>
 
         <div className=" ml-[25px]">
           <div>
@@ -286,7 +320,7 @@ const JournalVoucherlist = () => {
                       className={index % 2 === 0 ? "bg-gray-50" : "bg-white"}
                     >
                       <td className="p-2 font-bold text-[#0A2478]">
-                        JV-{item.voucher_no}
+                        {item.voucher_no}
                       </td>
 
                       <td className="p-2">{item.deposit_amount}</td>
@@ -296,27 +330,42 @@ const JournalVoucherlist = () => {
 
                       {/* --- Action Buttons Column --- */}
                       <td className="p-2  flex items-center  gap-3">
-                        <button
+                         {(userData?.isAdmin||permissions?.Transaction?.find(
+  item => item.name === "Journal Voucher List"
+)?.view) && (
+  <button
                           onClick={() => handleView(item)}
                           className="bg-blue-500 text-white p-1 rounded"
                           title="View"
                         >
                           <Eye size={14} />
                         </button>
-                        <button
+                  )}
+                        {(userData?.isAdmin||permissions?.Transaction?.find(
+  item => item.name === "Journal Voucher List"
+)?.view) && (
+  <button
                           onClick={() => handleEdit(item)}
                           className="bg-green-600 text-white p-1 rounded"
                           title="Edit"
                         >
                           <Edit size={14} />
                         </button>
-                        <button
+                  )}
+
+                   {(userData?.isAdmin||permissions?.Transaction?.find(
+  item => item.name === "Journal Voucher List"
+)?.delete) && (
+   <button
                           onClick={() => handleDelete(item.id)}
                           className="bg-red-600 text-white p-1 rounded"
                           title="Delete"
                         >
                           <Trash2 size={14} />
                         </button>
+                  )}
+                        
+                       
                       </td>
                     </tr>
                   ))
@@ -326,6 +375,7 @@ const JournalVoucherlist = () => {
           </div>
         </div>
       </div>
+      {loading && <Loader />}
     </div>
   );
 };

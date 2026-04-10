@@ -3,6 +3,7 @@ import { Save, XCircle } from "lucide-react";
 import { useEffect, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import { API } from "../../api";
+import Loader from "../../Component/Loader";
 
 const FundTransferIssueCreate = () => {
   const navigate = useNavigate();
@@ -28,6 +29,9 @@ const isViewMode = editData;
 
   const [selectedBranch, setSelectedBranch] = useState("");
   const [selectedBranchId, setSelectedBranchId] = useState("");
+
+   
+const [loading, setLoading] = useState(false);
 
   const [rows, setRows] = useState([
     {
@@ -127,6 +131,7 @@ const isViewMode = editData;
   };
 
   const handleSave = async () => {
+    setLoading(true)
     if (totalAmount <= 0) return alert("Please enter at least one amount");
     const finalData = { ...formData, transferDetails: rows };
     try {
@@ -136,18 +141,20 @@ const isViewMode = editData;
       );
       if (res.data.success) {
         alert("Fund Transfer Saved Successfully ✅");
+        setLoading(false)
         navigate("/FundTransfer/issue");
       }
     } catch (error) {
       alert("Error while saving data ❌");
+      setLoading(false)
     }
   };
 
   return (
-    <div className="min-h-screen  flex justify-center p-2">
-      <div className="max-w-[1300px] w-full space-y-2 p-6">
+    <div className="min-h-screen  flex justify-center ">
+      <div className="space-y-2  w-[1462px]">
         {/* STICKY HEADER ACTIONS */}
-        <div className="sticky top-0 z-10 bg-white border rounded-lg shadow-sm p-3 flex justify-between items-center">
+        <div className="sticky top-0 z-10 bg-white border-gray-300 border  h-[40px] pl-2 pr-2 flex justify-between items-center">
           <div className="flex items-center gap-2">
             <h2 className="text-red-600 font-bold text-lg">
               Fund Transfer Issue
@@ -177,7 +184,7 @@ const isViewMode = editData;
         </div>
 
         {/* MASTER INFORMATION TABLE */}
-        <div className="bg-white border rounded shadow-sm overflow-hidden mt-5 w-[500px]">
+        <div className="bg-white border  overflow-hidden  w-[500px]">
           <div
             className={`${navyBlue} text-white px-3 py-1 text-[15px] font-bold`}
           >
@@ -210,7 +217,7 @@ const isViewMode = editData;
                 <option value="Net Banking">Net Banking</option>
               </select>
             </div>
-            <div className="flex flex-col gap-1 col-span-2">
+            {/* <div className="flex flex-col gap-1 col-span-2">
               <label className={labelClass}>Bank Account (If Banking)</label>
               <select
                 className={inputClass}
@@ -230,7 +237,7 @@ const isViewMode = editData;
                   </option>
                 ))}
               </select>
-            </div>
+            </div> */}
             {/* <div className="flex flex-col gap-1 col-span-4 mt-1">
               <label className={labelClass}>Remarks</label>
               <textarea value={formData.remarks} onChange={(e) => setFormData({...formData, remarks: e.target.value})} className={`${inputClass} h-8 resize-none`} placeholder="Narrative for this transfer..." />
@@ -362,6 +369,7 @@ const isViewMode = editData;
           </table>
         </div>
       </div>
+      {loading && <Loader />}
     </div>
   );
 };

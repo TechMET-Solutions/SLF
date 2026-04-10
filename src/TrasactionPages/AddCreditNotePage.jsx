@@ -24,7 +24,8 @@ const AddCreditNotePage = () => {
     pin_code: incoming.CustomerData?.Permanent_Pincode,
     mobile_number: incoming.CustomerData?.mobile,
     email_id: incoming.CustomerData?.email,
-    description: "After auction settlement – Credit Note issued to customer.",
+    // description: "After auction settlement – Credit Note issued to customer.",
+    description: "",
     prepared_by: "",
     designation: "",
     verified_by: "",
@@ -43,33 +44,112 @@ const AddCreditNotePage = () => {
     });
   };
 
+
+ const validateForm = (data) => {
+  const mobileRegex = /^[6-9]\d{9}$/;
+  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+  const pincodeRegex = /^\d{6}$/;
+
+  if (!data.date_of_issue) return "Date of issue is required";
+  if (!data.reference_invoice_no) return "Reference invoice is required";
+  if (!data.loan_no) return "Loan number is required";
+  if (!data.reference_date) return "Reference date is required";
+  if (!data.reason) return "Reason is required";
+
+  if (!data.credit_amount)
+    return "Credit amount is required";
+  if (Number(data.credit_amount) <= 0)
+    return "Credit amount must be greater than 0";
+
+  if (!data.customer_name) return "Customer name is required";
+  if (!data.customer_id) return "Customer ID is required";
+  if (!data.address) return "Address is required";
+  if (!data.city) return "City is required";
+  if (!data.state) return "State is required";
+
+  if (!data.pin_code) return "Pincode is required";
+  if (!pincodeRegex.test(data.pin_code)) return "Invalid pincode";
+
+  if (!data.mobile_number) return "Mobile number is required";
+  if (!mobileRegex.test(data.mobile_number))
+    return "Invalid mobile number";
+
+  if (!data.email_id) return "Email is required";
+  if (!emailRegex.test(data.email_id)) return "Invalid email";
+
+  if (!data.prepared_by) return "Prepared by is required";
+  if (!data.designation) return "Designation is required";
+  if (!data.verified_by) return "Verified by is required";
+
+  return null; // ✅ no error
+};
+
+  
   // SUBMIT FUNCTION
+  // const handleSubmit = async () => {
+  //   try {
+  //     const payload = {
+  //       formData: formData,
+  //       pledgeItems: incoming.pledgeItems,
+  //       summary: incoming.summary,
+  //       docChargeAmount: incoming.docChargeAmount || 0,
+  //       docChargeDesc: incoming.docChargeDesc || "",
+  //     };
+
+  //     const response = await axios.post(
+  //       `${API}/generate-bill/create-bill`,
+  //       payload,
+  //     );
+
+  //     if (response.data.status) {
+  //       alert(
+  //         `Credit Note of ₹${formData.credit_amount} has been successfully generated.`,
+  //       );
+  //       navigate("/Auction-Creation");
+  //     } else {
+  //       alert("Failed to generate bill");
+  //     }
+  //   } catch (error) {
+  //     console.log("Error submitting bill:", error);
+  //     alert("Something went wrong");
+  //   }
+  // };
+
   const handleSubmit = async () => {
-    try {
-      const payload = {
-        formData: formData,
-        pledgeItems: incoming.pledgeItems,
-        summary: incoming.summary,
-        docChargeAmount: incoming.docChargeAmount || 0,
-        docChargeDesc: incoming.docChargeDesc || "",
-      };
+  const errorMessage = validateForm(formData);
 
-      const response = await axios.post(
-        `${API}/generate-bill/create-bill`,
-        payload,
+  if (errorMessage) {
+    alert(errorMessage); // ❗ only alert
+    return;
+  }
+
+  try {
+    const payload = {
+      formData: formData,
+      pledgeItems: incoming.pledgeItems,
+      summary: incoming.summary,
+      docChargeAmount: incoming.docChargeAmount || 0,
+      docChargeDesc: incoming.docChargeDesc || "",
+    };
+
+    const response = await axios.post(
+      `${API}/generate-bill/create-bill`,
+      payload
+    );
+
+    if (response.data.status) {
+      alert(
+        `Credit Note of ₹${formData.credit_amount} has been successfully generated.`
       );
-
-      if (response.data.status) {
-      alert(`Credit Note of ₹${formData.credit_amount} has been successfully generated.`);
-        navigate("/Auction-Creation");
-      } else {
-        alert("Failed to generate bill");
-      }
-    } catch (error) {
-      console.log("Error submitting bill:", error);
-      alert("Something went wrong");
+      navigate("/Auction-Creation");
+    } else {
+      alert("Failed to generate bill");
     }
-  };
+  } catch (error) {
+    console.log("Error submitting bill:", error);
+    alert("Something went wrong");
+  }
+};
 
   // CUSTOMER AUTOCOMPLETE
 
@@ -88,7 +168,7 @@ const AddCreditNotePage = () => {
 
       const response = await axios.get(
         // `/Master/doc/searchCustomers&search=${searchValue}`
-        `${API}/Master/doc/Customer_list?search=${searchValue}`
+        `${API}/Master/doc/Customer_list?search=${searchValue}`,
       );
 
       if (response.data && Array.isArray(response.data)) {
@@ -140,7 +220,6 @@ const AddCreditNotePage = () => {
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
 
-
   return (
     <div>
       {/* HEADER */}
@@ -169,9 +248,11 @@ const AddCreditNotePage = () => {
       <div className="flex   ">
         <div className="w-[1460px] ml-[35px]">
           {/* Credit Note Details */}
-          <section className="
-bg-[#FFE6E6] p-5 border-gray-300">
-            <h3 className="font-semibold font-weight-600 text-[20px] text-[#0A2478] mb-3">
+          <section
+            className="
+bg-[#FFE6E6] p-2 border-gray-300"
+          >
+            <h3 className="font-semibold font-weight-600 text-[20px] text-[#0A2478] mb-2">
               Credit Note Details
             </h3>
 
@@ -189,7 +270,9 @@ bg-[#FFE6E6] p-5 border-gray-300">
 
               {/* REFERENCE INVOICE */}
               <div>
-                <div className=" font-semibold mb-1 text-xs">Reference Invoice</div>
+                <div className=" font-semibold mb-1 text-xs">
+                  Reference Invoice
+                </div>
                 <input
                   name="reference_invoice_no"
                   placeholder="Enter invoice number"
@@ -242,9 +325,11 @@ bg-[#FFE6E6] p-5 border-gray-300">
                 </select>
               </div>
               <div>
-                <div className=" font-semibold mb-1 text-xs">Credit Amount (₹)</div>
+                <div className=" font-semibold mb-1 text-xs">
+                  Credit Amount (₹)
+                </div>
                 <input
-                  name="reference_invoice_no"
+                  name="credit_amount"
                   value={formData.credit_amount}
                   placeholder="Enter credit amount"
                   onChange={handleChange}
@@ -254,7 +339,7 @@ bg-[#FFE6E6] p-5 border-gray-300">
 
               <div className="">
                 <div className=" font-semibold mb-1 text-xs">
-                  Description / Remarks*
+                  Description / Remarks
                 </div>
                 <input
                   name="description"
@@ -268,28 +353,16 @@ bg-[#FFE6E6] p-5 border-gray-300">
           </section>
 
           {/* CUSTOMER DETAILS */}
-          <section className="bg-[#F7F7FF]  p-5 border-gray-300">
-            <h3 className="font-semibold text-[20px] text-[#0A2478] mb-3">
+          <section className="bg-[#F7F7FF]  p-2 border-gray-300">
+            <h3 className="font-semibold text-[20px] text-[#0A2478] mb-2">
               Customer Details
             </h3>
 
             <div className="flex flex-wrap gap-2 text-sm">
-              <div>
-                <div className=" font-semibold mb-1 text-xs">Customer Id</div>
-                <input
-                  name="customer_id"
-                  value={formData.customer_id}
-                  onChange={handleChange}
-                  placeholder="Enter Customer Id"
-                  className="w-[150px] border bg-white border-gray-300 px-1 py-1 text-xs rounded-[8px] "
-                />
-              </div>
-
-              
-
+             
 
               <div className="relative">
-                <div className="font-semibold mb-1 text-xs">Customer Name</div>
+                <div className="font-semibold mb-1 text-xs">Customer Name <span className="text-red-500">*</span></div>
 
                 <input
                   name="customer_name"
@@ -309,7 +382,7 @@ bg-[#FFE6E6] p-5 border-gray-300">
                         onClick={() => handleSelectCustomer(customer)}
                         className="px-1 py-1 text-xs cursor-pointer hover:bg-gray-100 "
                       >
-                        <div className="font-medium">{customer.printName}</div>
+                        <div className="font-medium">{customer.printName} ({customer.id})</div>
                         <div className="text-xs text-gray-500">
                           {customer.mobile} • {customer.Permanent_City}
                         </div>
@@ -325,14 +398,28 @@ bg-[#FFE6E6] p-5 border-gray-300">
                 )}
               </div>
 
+             <div>
+  <div className="font-semibold mb-1 text-xs">Customer Id</div>
+  <input
+    name="customer_id"
+    value={formData.customer_id}
+    onChange={handleChange}
+    placeholder="Enter Customer Id"
+    disabled
+    className="w-[150px] border border-gray-300 px-1 py-1 text-xs rounded-[8px] 
+               bg-gray-100 text-gray-500 cursor-not-allowed"
+  />
+</div>
+
               <div>
                 <div className=" font-semibold mb-1 text-xs">Address</div>
                 <input
                   name="address"
                   value={formData.address}
                   onChange={handleChange}
+                  disabled
                   placeholder="Enter Address"
-                  className="w-[310px] border bg-white border-gray-300 px-1 py-1 text-xs rounded-[8px] "
+                  className="w-[310px] border bg-gray-100 border-gray-300 px-1 py-1 text-xs rounded-[8px] "
                 />
               </div>
 
@@ -342,8 +429,9 @@ bg-[#FFE6E6] p-5 border-gray-300">
                   name="city"
                   value={formData.city}
                   onChange={handleChange}
+                      disabled
                   placeholder="Enter City"
-                  className="w-[100px] border bg-white border-gray-300 px-1 py-1 text-xs rounded-[8px]"
+                  className="w-[100px] border bg-gray-100 border-gray-300 px-1 py-1 text-xs rounded-[8px]"
                 />
               </div>
 
@@ -353,8 +441,9 @@ bg-[#FFE6E6] p-5 border-gray-300">
                   name="state"
                   value={formData.state}
                   onChange={handleChange}
+                     disabled
                   placeholder="Enter State"
-                  className="w-[120px] border bg-white border-gray-300 px-1 py-1 text-xs  rounded-[8px] "
+                  className="w-[120px] border bg-gray-100 border-gray-300 px-1 py-1 text-xs  rounded-[8px] "
                 />
               </div>
               <div>
@@ -363,18 +452,20 @@ bg-[#FFE6E6] p-5 border-gray-300">
                   name="pin_code"
                   value={formData.pin_code}
                   onChange={handleChange}
+                   disabled
                   placeholder="Enter Pin code"
-                  className="w-[100px] border bg-white border-gray-300 px-1 py-1 text-xs rounded-[8px] "
+                  className="w-[100px] border bg-gray-100 border-gray-300 px-1 py-1 text-xs rounded-[8px] "
                 />
               </div>
-               <div>
+              <div>
                 <div className=" font-semibold mb-1 text-xs">Mobile Number</div>
                 <input
                   name="mobile_number"
                   value={formData.mobile_number}
                   onChange={handleChange}
+                   disabled
                   placeholder="Enter Mobile Number"
-                  className="w-[80px] border bg-white border-gray-300 px-1 py-1 text-xs rounded-[8px]"
+                  className="w-[80px] border bg-gray-100 border-gray-300 px-1 py-1 text-xs rounded-[8px]"
                 />
               </div>
 
@@ -384,25 +475,26 @@ bg-[#FFE6E6] p-5 border-gray-300">
                   name="email_id"
                   value={formData.email_id}
                   placeholder="Enter Email ID"
+                   disabled
                   onChange={handleChange}
-                  className="w-[300px] border bg-white rounded-[8px] border-gray-300 px-1 py-1 text-xs "
+                  className="w-[300px] border bg-gray-100 rounded-[8px] border-gray-300 px-1 py-1 text-xs "
                 />
               </div>
             </div>
-            <div className="flex gap-2 mt-3">
-             
-            </div>
+            <div className="flex gap-2 mt-3"></div>
           </section>
 
           {/* AUTHORIZATION */}
-          <section className="bg-[#FFE6E6]  p-5 ">
-            <h3 className="font-semibold text-[20px] text-[#0A2478] mb-3">
+          <section className="bg-[#FFE6E6]  p-2 ">
+            <h3 className="font-semibold text-[20px] text-[#0A2478] mb-2">
               Authorization & Verification
             </h3>
 
             <div className="flex flex-wrap gap-5 text-sm">
               <div>
-                <div className=" font-semibold mb-1 text-xs">Prepared By (Name)</div>
+                <div className=" font-semibold mb-1 text-xs">
+                  Prepared By (Name)<span className="text-red-500">*</span>
+                </div>
                 <input
                   name="prepared_by"
                   value={formData.prepared_by}
@@ -413,7 +505,7 @@ bg-[#FFE6E6] p-5 border-gray-300">
               </div>
 
               <div>
-                <div className=" font-semibold mb-1 text-xs">Designation</div>
+                <div className=" font-semibold mb-1 text-xs">Designation <span className="text-red-500">*</span></div>
                 <input
                   name="designation"
                   value={formData.designation}
@@ -425,7 +517,7 @@ bg-[#FFE6E6] p-5 border-gray-300">
 
               <div>
                 <div className=" font-semibold mb-1 text-xs">
-                  Verified By (Accounts Dept.)
+                  Verified By (Accounts Dept.) <span className="text-red-500">*</span>
                 </div>
                 <input
                   name="verified_by"

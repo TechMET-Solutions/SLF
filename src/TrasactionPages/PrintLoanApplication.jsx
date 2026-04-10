@@ -65,8 +65,8 @@ const interestRates = safeParse(loanData.Effective_Interest_Rates);
   return (
     <div>
       {/* 🔹 Header */}
-     <div className="flex justify-center sticky top-[80px] z-40 ">
-        <div className="flex items-center px-6 py-4 border-b mt-5 w-[1260px] h-[62px] border rounded-[11px] border-gray-200 justify-between shadow bg-white ">
+     <div className="flex justify-center sticky top-[50px] z-40 ">
+        <div className="flex items-center px-6 py-4 border-b  w-[1462px] h-[40px] border  border-gray-200 justify-between  bg-white ">
           <h2
             style={{
               fontFamily: "Source Sans 3, sans-serif",

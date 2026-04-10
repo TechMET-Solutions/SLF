@@ -79,8 +79,8 @@ const handleStatusClick = (row) => {
     <div className="min-h-screen w-full">
       
       {/* 🔹 HEADER */}
-      <div className="flex justify-center sticky top-[80px] z-40">
-        <div className="flex items-center px-6 py-4 border-b w-[1462px] h-[50px] border rounded-[11px] border-gray-200 justify-between bg-white">
+      <div className="flex justify-center sticky top-[50px] z-40">
+        <div className="flex items-center px-6 py-4 border-b w-[1462px] h-[40px] border  border-gray-200 justify-between bg-white">
           <h2 className="text-red-600 font-bold text-[20px] ">
             Auction Bidder List (Auction ID: {auctionId})
           </h2>
@@ -104,9 +104,9 @@ const handleStatusClick = (row) => {
       </div>
 
       {/* 🔹 TABLE SECTION */}
-      <div className="flex ml-[22px] mr-[22px]">
-        <div className="overflow-x-auto mt-5 ">
-          <table className="w-full border-collapse">
+      <div className="flex ml-[25px] ">
+        <div className="overflow-x-auto  ">
+          <table className="w-[1462px] border-collapse">
             <thead className="bg-[#0A2478] text-white text-sm">
               <tr>
                 <th className="px-4 py-2 text-left border-r w-[120px]">Bidder ID</th>
@@ -121,7 +121,7 @@ const handleStatusClick = (row) => {
                  <th className="px-4 py-2 text-left border-r w-[100px]">Status</th>
                
                 <th className="px-4 py-2 text-left border-r w-[130px]">Credit Note</th>
-                <th className="px-4 py-2 text-left w-[100px]">Action</th>
+                {/* <th className="px-4 py-2 text-left w-[100px]">Action</th> */}
               </tr>
             </thead>
 
@@ -173,22 +173,17 @@ const handleStatusClick = (row) => {
   />
 </td>
 
-                   <td className="px-4 py-2">
+                   {/* <td className="px-4 py-2">
   {row.credit_status === "active" && (
   <>
-    {/* <img
-      src={Enable}
-      alt="status"
-      className="w-6 h-6"
-    /> */}
-
+    
     <div className="bg-red-500 text-white w-[22px] h-[22px] flex items-center justify-center cursor-pointer">
       <IoMdCloseCircleOutline size={20} />
     </div>
   </>
 )}
 
-</td>
+</td> */}
 
 
                     
@@ -230,9 +225,9 @@ const handleStatusClick = (row) => {
         Credit Note - Bidder Registration Deposit
       </h2>
                       <div className="p-5">
-                           <h3 className="text-[18px] font-bold mt-2 ">Bidder Details</h3>
+                           <h3 className="text-[14px] font-bold mt-2 ">Bidder Details</h3>
 
-      <div className="flex gap-5 mt-2">
+      <div className="flex gap-5 mt-2 text-xs">
       <div><p>Bidder ID:</p> <p> {popupData.bidderId}</p></div>
        
        <div> <p>Bidder Name:</p><p> {popupData.bidderName}</p></div>
@@ -244,7 +239,7 @@ const handleStatusClick = (row) => {
        
 
                           </div>
-                          <div className="flex gap-5 mt-4">
+                          <div className="flex gap-5 mt-4 text-xs">
 
                               <div>
                                   <p>GST No:</p> 
@@ -256,8 +251,8 @@ const handleStatusClick = (row) => {
 
       {/* Credit Details */}
       {/* <h3 className="text-md font-semibold mt-6">Credit Details</h3> */}
-  <h3 className="text-[18px] font-bold mt-2 ">Credit Details</h3>
-      <div className="flex mt-5 gap-5">
+  <h3 className="text-[14px] font-bold mt-2 ">Credit Details</h3>
+      <div className="flex mt-5 gap-5 text-xs">
 
         <div><p>Credit Note ID:</p><p> {popupData.creditNoteID}</p></div>
        <div> <p>Credit Amount (₹):</p><p> {popupData.creditAmount}</p></div>
@@ -267,7 +262,7 @@ const handleStatusClick = (row) => {
        
 
                           </div>
-                          <div className="flex mt-5 gap-5">
+                          <div className="flex mt-5 gap-5 text-xs">
                              <div><p>Status:</p> <p className={popupData.credit_status === "active" ? "text-green-600" : "text-red-600"}>
   {popupData.credit_status === "active"
     ? "Available for Adjustment"

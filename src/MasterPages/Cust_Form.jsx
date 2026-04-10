@@ -3,16 +3,17 @@ import { useEffect, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import { API } from "../api";
 import { formatIndianDate } from "../utils/Helpers";
+import Loader from "../Component/Loader";
 
 export default function Cust_Form() {
   const location = useLocation();
   const row = location.state; // received row id
   const navigate = useNavigate();
-
+const [loading, setLoading] = useState(false);
   console.log("DATA : ", row);
 
   const [data, setData] = useState(null); // 🔹 Store customer data
-  const [loading, setLoading] = useState(true);
+  
 
   useEffect(() => {
     if (!row?.id) {
@@ -23,24 +24,24 @@ export default function Cust_Form() {
 
     const fetchCustomer = async () => {
       try {
+        setLoading(true);
         console.log("Fetching customer with ID:", row.id);
         const res = await axios.get(`${API}/Master/doc/get-customer/${row.id}`);
         setData(res.data.data);
+        setLoading(false);
       } catch (err) {
         console.error(err);
         alert("Failed to fetch customer");
+         setLoading(false);
       } finally {
-        setLoading(false);
+       setLoading(false);
       }
     };
 
     fetchCustomer();
   }, [row, navigate]);
 
-  if (loading) {
-    return <p className="text-center mt-20 text-lg font-bold">Loading...</p>;
-  }
-
+  
   if (!data) return null;
 
   return (
@@ -49,8 +50,8 @@ export default function Cust_Form() {
       {/* <div className="bg-[#0C3C87] text-white p-4 rounded-md mb-6">
         <h1 className="text-xl font-semibold">Customer Profile Form</h1>
       </div> */}
-      <div className="flex justify-center sticky top-[80px] z-40">
-        <div className="flex  items-center px-6 py-4 border-b mt-5 w-[1290px] h-[62px] border rounded-[11px] border-gray-200 justify-between bg-white">
+      <div className="flex justify-center sticky top-[50px] z-40">
+        <div className="flex  items-center px-6 py-4 border-b  w-[1462px] h-[40px] border  border-gray-200 justify-between bg-white">
           <h2
             style={{
               fontFamily: "Source Sans 3, sans-serif",
@@ -66,6 +67,12 @@ export default function Cust_Form() {
 
           <div className="flex gap-3 ">
             <div className="flex justify-between gap-5">
+               <button
+                onClick={() => navigate("/Customer-Profile-List")}
+                className="text-white px-[6.25px] py-[6.25px] rounded-[3.75px] bg-blue-900 w-[74px] h-[24px] opacity-100 text-[10px]"
+              >
+                Print
+              </button>
               <button
                 onClick={() => navigate("/Customer-Profile-List")}
                 className="text-white px-[6.25px] py-[6.25px] rounded-[3.75px] bg-[#C1121F] w-[74px] h-[24px] opacity-100 text-[10px]"
@@ -76,7 +83,7 @@ export default function Cust_Form() {
           </div>
         </div>
       </div>
-      <div className="flex justify-center mt-10   ">
+      <div className="flex  mt-5   ">
         <div className="">
           {/* Personal Information */}
           <div className="mr-[110px] ml-[110px]">
@@ -410,6 +417,7 @@ export default function Cust_Form() {
         
         </div>
       </div>
+      {loading && <Loader />}
     </div>
   );
 }

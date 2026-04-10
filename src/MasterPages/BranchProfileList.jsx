@@ -5,14 +5,12 @@ import { FiEdit } from "react-icons/fi";
 import { useNavigate } from "react-router-dom";
 import { API } from "../api";
 import { useAuth } from "../API/Context/AuthContext";
-import {
-  updateBranchApi,
-  updateBranchStatusApi,
-} from "../API/Master/Master_Profile/Branch_Details";
+import { usePermission } from "../API/Context/PermissionContext";
+import { updateBranchStatusApi } from "../API/Master/Master_Profile/Branch_Details";
+import Loader from "../Component/Loader";
 import Pagination from "../Component/Pagination";
 import { decryptData, encryptData } from "../utils/cryptoHelper";
 import { formatIndianDate } from "../utils/Helpers";
-
 
 const BranchProfileList = () => {
   const navigate = useNavigate();
@@ -21,6 +19,9 @@ const BranchProfileList = () => {
   const [isViewMode, setIsViewMode] = useState(false);
   const [searchCode, setSearchCode] = useState("");
   const [searchName, setSearchName] = useState("");
+  const [loading, setLoading] = useState(false);
+
+  const { permissions, userData } = usePermission();
 
   const [branchData, setBranchData] = useState({
     branch_code: "",
@@ -38,6 +39,22 @@ const BranchProfileList = () => {
     district: "",
     state: "",
   });
+
+  const initialBranchData = {
+    branch_code: "",
+    branch_name: "",
+    print_name: "",
+    address_line1: "",
+    pin_code: "",
+    mobile_no: "",
+    altmobile_no: "",
+    lead_person: "",
+    is_main: false,
+    status: false,
+    city: "",
+    district: "",
+    state: "",
+  };
   console.log(branchData, "branchData");
   const [currentPage, setCurrentPage] = useState(1);
   const [totalRecords, setTotalRecords] = useState(0);
@@ -76,22 +93,154 @@ const BranchProfileList = () => {
     }));
   };
   const { loginUser } = useAuth();
- 
+  const validateForm = () => {
+    const {
+      branch_code,
+      branch_name,
+      print_name,
+      mobile_no,
+      altmobile_no,
+      address_line1,
+      city,
+      district,
+      state,
+      pin_code,
+    } = branchData;
+
+    if (!branch_code.trim()) return "Branch Code is required";
+    if (!branch_name.trim()) return "Branch Name is required";
+    if (!print_name.trim()) return "Print Name is required";
+
+    if (!mobile_no.trim()) return "Mobile Number is required";
+    // if (!altmobile_no.trim()) return "Alt Mobile Number is required";
+    if (!/^\d{10}$/.test(mobile_no)) return "Mobile Number must be 10 digits";
+
+    if (altmobile_no && !/^\d{10}$/.test(altmobile_no))
+      return "Alt Mobile Number must be 10 digits";
+
+    // ✅ NEW CONDITION (IMPORTANT)
+    if (mobile_no && altmobile_no && mobile_no === altmobile_no)
+      return "Mobile Number and Alt Mobile Number must be different";
+
+    if (!address_line1.trim()) return "Address is required";
+    if (!city.trim()) return "City is required";
+    if (!district.trim()) return "District is required";
+    if (!state.trim()) return "State is required";
+
+    if (!pin_code.trim()) return "Pin Code is required";
+    if (!/^\d{6}$/.test(pin_code)) return "Pin Code must be 6 digits";
+
+    return null;
+  };
+  // const handleSave = async () => {
+  //   debugger;
+  //   const payload = {
+  //     ...branchData,
+  //     id: editBranchId,
+  //   };
+
+  //   // ✅ Always send explicitly
+  //   if (isEditMode) {
+  //     payload.modified_by = loginUser;
+  //   } else {
+  //     payload.added_by = loginUser;
+  //   }
+
+  //   console.log("Sending Payload:", payload); // 👈 MUST CHECK
+
+  //   setIsLoading(true);
+
+  //   try {
+  //     const encrypted = encryptData(payload);
+
+  //     const url = isEditMode
+  //       ? `${API}/Master/Master_Profile/update_Branch`
+  //       : `${API}/Master/Master_Profile/add_Branch`;
+
+  //     await axios.post(url, { data: encrypted });
+
+  //     alert(
+  //       isEditMode
+  //         ? "Branch Updated Successfully"
+  //         : "Branch Added Successfully",
+  //     );
+
+  //     fetchBranches();
+  //     setIsModalOpen(false);
+  //   } catch (error) {
+  //     console.error(error);
+  //     alert("Something went wrong");
+  //   } finally {
+  //     setIsLoading(false);
+  //   }
+  // };
+
+  // const handleSave = async () => {
+  //   debugger;
+
+  //   // ✅ CALL VALIDATION HERE
+  //   const errorMsg = validateForm();
+
+  //   if (errorMsg) {
+  //     alert(errorMsg); // 👈 THIS WILL SHOW ALERT
+  //     return; // ❌ STOP EXECUTION
+  //   }
+
+  //   const payload = {
+  //     ...branchData,
+  //     id: editBranchId,
+  //   };
+
+  //   if (isEditMode) {
+  //     payload.modified_by = loginUser;
+  //   } else {
+  //     payload.added_by = loginUser;
+  //   }
+
+  //   console.log("Sending Payload:", payload);
+
+  //   setIsLoading(true);
+
+  //   try {
+  //     const encrypted = encryptData(payload);
+
+  //     const url = isEditMode
+  //       ? `${API}/Master/Master_Profile/update_Branch`
+  //       : `${API}/Master/Master_Profile/add_Branch`;
+
+  //     await axios.post(url, { data: encrypted });
+
+  //     alert(
+  //       isEditMode
+  //         ? "Branch Updated Successfully"
+  //         : "Branch Added Successfully",
+  //     );
+
+  //     fetchBranches();
+  //     setIsModalOpen(false);
+  //   } catch (error) {
+  //     console.error(error);
+  //     alert("Something went wrong");
+  //   } finally {
+  //     setIsLoading(false);
+  //   }
+  // };
+
   const handleSave = async () => {
-    debugger;
+    setLoading(true);
+    const errorMsg = validateForm();
+
+    if (errorMsg) {
+      alert(errorMsg);
+      setLoading(false);
+      return;
+    }
+
     const payload = {
       ...branchData,
       id: editBranchId,
+      ...(isEditMode ? { modified_by: loginUser } : { added_by: loginUser }),
     };
-
-    // ✅ Always send explicitly
-    if (isEditMode) {
-      payload.modified_by = loginUser;
-    } else {
-      payload.added_by = loginUser;
-    }
-
-    console.log("Sending Payload:", payload); // 👈 MUST CHECK
 
     setIsLoading(true);
 
@@ -102,21 +251,34 @@ const BranchProfileList = () => {
         ? `${API}/Master/Master_Profile/update_Branch`
         : `${API}/Master/Master_Profile/add_Branch`;
 
-      await axios.post(url, { data: encrypted });
+      const response = await axios.post(url, { data: encrypted });
 
-      alert(
-        isEditMode
-          ? "Branch Updated Successfully"
-          : "Branch Added Successfully",
-      );
+      if (response.status === 201) {
+        alert("Branch added successfully");
+        setLoading(false);
+      } else {
+        alert("Branch updated successfully");
+        setLoading(false);
+      }
+
+      // ✅ RESET EVERYTHING
+      setBranchData(initialBranchData);
+      setIsModalOpen(false);
+      setIsEditMode(false);
+      setEditBranchId(null);
 
       fetchBranches();
-      setIsModalOpen(false);
     } catch (error) {
-      console.error(error);
-      alert("Something went wrong");
+      if (error.response?.data?.message) {
+        alert(error.response.data.message);
+        setLoading(false);
+      } else {
+        alert("Something went wrong");
+        setLoading(false);
+      }
     } finally {
       setIsLoading(false);
+      setLoading(false);
     }
   };
   const [branches, setBranches] = useState([]);
@@ -141,6 +303,8 @@ const BranchProfileList = () => {
     key: "",
     direction: "asc",
   });
+
+  console.log(sortConfig, "sortConfig");
   const allHeaderIds = [
     "branch_code",
     "branch_name",
@@ -165,8 +329,33 @@ const BranchProfileList = () => {
     setSearchHeaders(allSelected ? [] : [...allHeaderIds]);
   };
 
+  // const fetchBranches = async (page = 1) => {
+  //   setIsLoading(true);
+  //   try {
+  //     const response = await axios.get(
+  //       `${API}/Master/Master_Profile/get_Branches`,
+  //       {
+  //         params: {
+  //           page,
+  //           limit: recordsPerPage,
+  //           headers: searchHeaders.join(","),
+  //           search: searchQuery,
+  //         },
+  //       },
+  //     );
+
+  //     setBranches(response.data.branches);
+  //     setTotalRecords(response.data.total);
+  //   } catch (error) {
+  //     console.error("Error fetching branches:", error);
+  //   } finally {
+  //     setIsLoading(false);
+  //   }
+  // };
+
   const fetchBranches = async (page = 1) => {
     setIsLoading(true);
+    setLoading(true);
     try {
       const response = await axios.get(
         `${API}/Master/Master_Profile/get_Branches`,
@@ -176,22 +365,38 @@ const BranchProfileList = () => {
             limit: recordsPerPage,
             headers: searchHeaders.join(","),
             search: searchQuery,
+            sortKey: sortConfig.key, // ✅ add this
+            sortOrder: sortConfig.direction, // ✅ add this
           },
         },
       );
 
       setBranches(response.data.branches);
       setTotalRecords(response.data.total);
+      setLoading(false);
     } catch (error) {
       console.error("Error fetching branches:", error);
+      setLoading(false);
     } finally {
       setIsLoading(false);
+      setLoading(false);
     }
+  };
+  const handleSort = (key) => {
+    setSortConfig((prev) => {
+      let direction = "asc";
+
+      if (prev.key === key && prev.direction === "asc") {
+        direction = "desc";
+      }
+
+      return { key, direction };
+    });
   };
 
   useEffect(() => {
     fetchBranches(currentPage);
-  }, [currentPage]);
+  }, [currentPage, sortConfig]);
 
   const handleView = (branch) => {
     setBranchData({
@@ -204,6 +409,7 @@ const BranchProfileList = () => {
       district: branch.district || "",
       state: branch.state || "",
       mobile_no: branch.mobile_no || "",
+      altmobile_no: branch.altmobile_no || "",
       lead_person: branch.lead_person || "",
       is_main:
         branch.is_main === 1 ||
@@ -225,7 +431,7 @@ const BranchProfileList = () => {
       console.log("Status updated:", response);
 
       // Refresh branch list
-      fetchBranches();
+      fetchBranches(currentPage);
     } catch (error) {
       console.error("Error updating status:", error);
       alert("Error updating branch status");
@@ -243,6 +449,7 @@ const BranchProfileList = () => {
       district: branch.district || "",
       state: branch.state || "",
       mobile_no: branch.mobile_no || "",
+      altmobile_no: branch.altmobile_no || "",
       lead_person: branch.lead_person || "",
       is_main:
         branch.is_main === 1 ||
@@ -257,30 +464,98 @@ const BranchProfileList = () => {
     setIsModalOpen(true);
   };
 
+  // const handleUpdateBranch = async () => {
+  //   try {
+  //     const errorMsg = validateForm();
+
+  //     if (errorMsg) {
+  //       alert(errorMsg); // 👈 THIS WILL SHOW ALERT
+  //       return; // ❌ STOP EXECUTION
+  //     }
+
+  //     const payload = {
+  //       id: editBranchId,
+  //       ...branchData,
+  //       modified_by: loginUser, // ✅ ADD THIS
+  //     };
+
+  //     console.log("Updating Payload:", payload); // 🔍 check this
+
+  //     const response = await updateBranchApi(payload);
+
+  //     console.log("✅ Branch updated:", response);
+
+  //     alert("Branch updated successfully!");
+  //     setIsModalOpen(false);
+  //     setIsEditMode(false);
+  //     setEditBranchId(null);
+  //     fetchBranches();
+  //   } catch (error) {
+  //     console.error("Error updating branch:", error);
+  //     alert("Failed to update branch");
+  //   }
+  // };
+
   const handleUpdateBranch = async () => {
+    setLoading(true);
+    const errorMsg = validateForm();
+
+    if (errorMsg) {
+      alert(errorMsg);
+      return;
+    }
+
+    const payload = {
+      id: editBranchId,
+      ...branchData,
+      modified_by: loginUser,
+    };
+
+    setIsLoading(true);
+
     try {
-      const payload = {
-        id: editBranchId,
-        ...branchData,
-        modified_by: loginUser,   // ✅ ADD THIS
-      };
+      const encrypted = encryptData(payload);
 
-      console.log("Updating Payload:", payload); // 🔍 check this
+      const response = await axios.post(
+        `${API}/Master/Master_Profile/update_Branch`,
+        { data: encrypted },
+      );
 
-      const response = await updateBranchApi(payload);
+      // ✅ CHECK STATUS
+      if (response.status === 200) {
+        alert("Branch updated successfully");
+        setLoading(false);
+      } else {
+        alert(response.data.message);
+        setLoading(false);
+      }
 
-      console.log("✅ Branch updated:", response);
-
-      alert("Branch updated successfully!");
+      // ✅ RESET STATE
+      setBranchData(initialBranchData); // 🔥 also reset form
       setIsModalOpen(false);
       setIsEditMode(false);
       setEditBranchId(null);
       fetchBranches();
     } catch (error) {
       console.error("Error updating branch:", error);
-      alert("Failed to update branch");
+      setLoading(false);
+
+      if (error.response?.data?.message) {
+        alert(error.response.data.message);
+        setLoading(false);
+      } else {
+        alert("Failed to update branch");
+        setLoading(false);
+      }
+    } finally {
+      setIsLoading(false);
     }
   };
+
+  const canViewBranch =
+    userData?.isAdmin ||
+    permissions?.Master?.find((item) => item.name === "Branch Details")?.view;
+
   return (
     <>
       <div className=" ">
@@ -289,10 +564,10 @@ const BranchProfileList = () => {
           <div className="z-40 bg-white">
             <div className="flex items-center px-6 py-4 border-b mt-2 w-[1462px] h-[50px] border rounded-[11px] border-gray-200 justify-between shadow-sm">
             */}
-        
-        <div className="flex sticky top-[50px] z-40 w-full ml-[30px]">
+
+        <div className="flex sticky top-[50px] z-40 w-full ml-[32px]">
           <div className="z-40 bg-white w-full">
-            <div className="flex items-center px-6 border-b w-full max-w-[1462px] lg:h-[40px] border rounded-[11px] border-gray-200 justify-between">
+            <div className="flex items-center px-6 border-b w-full max-w-[1462px] lg:h-[40px] border  border-gray-200 justify-between">
               {/* 1. LEFT SIDE: Title */}
               <h2
                 style={{
@@ -326,16 +601,21 @@ const BranchProfileList = () => {
                       <div className="absolute top-[35px] left-[-8px] bg-white border border-gray-300 shadow-xl rounded-md z-[100] w-[160px] p-2">
                         {/* Select All */}
                         <button
-                        onClick={handleSelectAll}
-                        className="flex items-center gap-2 p-2 hover:bg-blue-50 cursor-pointer rounded border-b border-gray-200 mb-1">
+                          onClick={handleSelectAll}
+                          className="flex items-center gap-2 p-2 hover:bg-blue-50 cursor-pointer rounded border-b border-gray-200 mb-1"
+                        >
                           <input
                             type="checkbox"
-                            checked={allHeaderIds.every((id) => searchHeaders.includes(id))}
+                            checked={allHeaderIds.every((id) =>
+                              searchHeaders.includes(id),
+                            )}
                             ref={(el) => {
                               if (el) {
                                 el.indeterminate =
                                   searchHeaders.length > 0 &&
-                                  !allHeaderIds.every((id) => searchHeaders.includes(id));
+                                  !allHeaderIds.every((id) =>
+                                    searchHeaders.includes(id),
+                                  );
                               }
                             }}
                             onChange={handleSelectAll}
@@ -416,17 +696,22 @@ const BranchProfileList = () => {
 
                 {/* Action Buttons Group */}
                 <div className="flex items-center gap-4">
-                  <button
-                    style={{
-                      width: "74px",
-                      height: "24px",
-                      borderRadius: "3.75px",
-                    }}
-                    onClick={() => setIsModalOpen(true)}
-                    className="bg-[#0A2478] text-white text-[11.25px] font-source font-normal flex items-center justify-center transition-colors hover:bg-[#071d45]"
-                  >
-                    Add
-                  </button>
+                  {(userData?.isAdmin ||
+                    permissions?.Master?.find(
+                      (item) => item.name === "Branch Details",
+                    )?.add) && (
+                    <button
+                      style={{
+                        width: "74px",
+                        height: "24px",
+                        borderRadius: "3.75px",
+                      }}
+                      onClick={() => setIsModalOpen(true)}
+                      className="bg-[#0A2478] text-white text-[11.25px] font-source font-normal flex items-center justify-center transition-colors hover:bg-[#071d45]"
+                    >
+                      Add
+                    </button>
+                  )}
 
                   <button
                     onClick={() => navigate("/")}
@@ -485,6 +770,7 @@ const BranchProfileList = () => {
                       name="branch_code"
                       value={branchData.branch_code}
                       onChange={handleChange}
+                      disabled={isViewMode}
                       placeholder="Code"
                       className="border border-gray-300 rounded px-3 py-2 mt-1  w-[80px]"
                     />
@@ -499,6 +785,7 @@ const BranchProfileList = () => {
                       name="branch_name"
                       value={branchData.branch_name}
                       onChange={handleChange}
+                      disabled={isViewMode}
                       placeholder="Branch Name"
                       className="border border-gray-300 rounded px-3 py-2 mt-1 w-[200px]"
                     />
@@ -513,6 +800,7 @@ const BranchProfileList = () => {
                       name="print_name"
                       value={branchData.print_name}
                       onChange={handleChange}
+                      disabled={isViewMode}
                       placeholder="Print Name"
                       className="border border-gray-300 rounded px-3 py-2 mt-1 w-full"
                     />
@@ -523,6 +811,7 @@ const BranchProfileList = () => {
                       name="lead_person"
                       value={branchData.lead_person}
                       onChange={handleChange}
+                      disabled={isViewMode}
                       className="border border-gray-300 rounded px-3 py-2 mt-1 w-full"
                     >
                       <option value="">Select Lead Person</option>
@@ -544,21 +833,32 @@ const BranchProfileList = () => {
                       type="text"
                       name="mobile_no"
                       value={branchData.mobile_no}
-                      onChange={handleChange}
-                      placeholder="+91 8456645752"
+                      disabled={isViewMode}
+                      onChange={(e) => {
+                        const value = e.target.value.replace(/\D/g, ""); // only digits
+
+                        if (value.length <= 10) {
+                          setBranchData({
+                            ...branchData,
+                            mobile_no: value,
+                          });
+                        }
+                      }}
+                      placeholder="Mobile no"
+                      maxLength={10} // ✅ extra safety
                       className="border border-gray-300 rounded px-3 py-2 mt-1 w-[110px]"
                     />
                   </div>
                   <div className="flex flex-col gap-1">
-                    <label className="text-[14px]">
-                      Alt Mobile No<span className="text-red-500">*</span>
-                    </label>
+                    <label className="text-[14px]">Alt Mobile No</label>
                     <input
                       type="text"
                       name="altmobile_no"
                       value={branchData.altmobile_no}
+                      disabled={isViewMode}
                       onChange={handleChange}
-                      placeholder="+91 8456645752"
+                      maxLength={10}
+                      placeholder="Altmobile no"
                       className="border border-gray-300 rounded px-3 py-2 mt-1 w-[110px]"
                     />
                   </div>
@@ -570,6 +870,7 @@ const BranchProfileList = () => {
                       type="text"
                       name="address_line1"
                       value={branchData.address_line1}
+                      disabled={isViewMode}
                       onChange={handleChange}
                       placeholder="Address Line 1"
                       className="border border-gray-300 rounded px-3 py-2 mt-2 w-[430px]"
@@ -586,6 +887,7 @@ const BranchProfileList = () => {
                       type="text"
                       name="city"
                       value={branchData.city}
+                      disabled={isViewMode}
                       onChange={handleChange}
                       placeholder="City"
                       className="border border-gray-300 rounded px-3 py-2 mt-1 w-[150px]"
@@ -599,6 +901,7 @@ const BranchProfileList = () => {
                       type="text"
                       name="district"
                       value={branchData.district}
+                      disabled={isViewMode}
                       onChange={handleChange}
                       placeholder="District"
                       className="border border-gray-300 rounded px-3 py-2 mt-2 w-[200px]"
@@ -613,6 +916,7 @@ const BranchProfileList = () => {
                       type="text"
                       name="state"
                       value={branchData.state}
+                      disabled={isViewMode}
                       onChange={handleChange}
                       placeholder="State"
                       className="border border-gray-300 rounded px-3 py-2 mt-2 w-[200px]"
@@ -626,6 +930,7 @@ const BranchProfileList = () => {
                       type="text"
                       name="pin_code"
                       value={branchData.pin_code}
+                      disabled={isViewMode}
                       onChange={handleChange}
                       placeholder="Pin Code"
                       className="border border-gray-300 rounded px-3 py-2 mt-2 w-[100px]"
@@ -639,6 +944,7 @@ const BranchProfileList = () => {
                       type="checkbox"
                       name="is_main"
                       checked={branchData.is_main}
+                      disabled={isViewMode}
                       onChange={handleChange}
                       className="w-4 h-4 accent-blue-900"
                     />
@@ -677,6 +983,7 @@ const BranchProfileList = () => {
                       address_line1: "",
                       // address_line3: "",
                       mobile_no: "",
+                      altmobile_no: "",
                       lead_person: "",
                       is_main: false,
                       status: false,
@@ -691,13 +998,13 @@ const BranchProfileList = () => {
         )}
 
         {/* Table */}
-        <div className="flex ml-[35px]">
+        <div className="flex ml-[32px]">
           <div className="overflow-x-auto  w-[1290px] h-[500px]">
             <table className="w-full border-collapse">
               <thead className="bg-[#0A2478] text-white text-sm">
                 <tr>
                   <th className="px-1 py-1 text-left border-r border-gray-300 text-[13px] w-[80px]">
-                     Code
+                    Code
                   </th>
                   <th
                     onClick={() => handleSort("branchName")}
@@ -718,12 +1025,44 @@ const BranchProfileList = () => {
                         )}
                     </div>
                   </th>
-                  <th className="px-1 py-1 text-left border-r border-gray-300 text-[13px] w-[350px]">
+                  <th
+                    className="px-1 py-1 text-left border-r border-gray-300 text-[13px] w-[350px]"
+                    onClick={() => handleSort("branchAddress")}
+                  >
                     {" "}
-                    Branch Address
+                    <div className="flex items-center gap-2">
+                      Branch Address
+                      {sortConfig.key !== "branchAddress" && (
+                        <FaSort className="text-gray-400 text-xs" />
+                      )}
+                      {sortConfig.key === "branchAddress" &&
+                        sortConfig.direction === "asc" && (
+                          <FaSortUp className="text-blue-600 text-xs" />
+                        )}
+                      {sortConfig.key === "branchAddress" &&
+                        sortConfig.direction === "desc" && (
+                          <FaSortDown className="text-blue-600 text-xs" />
+                        )}
+                    </div>
                   </th>
-                  <th className="px-1 py-1 text-left border-r border-gray-300 text-[13px] w-[110px]">
-                    Branch Lead
+                  <th
+                    className="px-1 py-1 text-left border-r border-gray-300 text-[13px] w-[110px]"
+                    onClick={() => handleSort("branchLead")}
+                  >
+                    <div className="flex items-center gap-2">
+                      Branch Lead
+                      {sortConfig.key !== "branchLead" && (
+                        <FaSort className="text-gray-400 text-xs" />
+                      )}
+                      {sortConfig.key === "branchLead" &&
+                        sortConfig.direction === "asc" && (
+                          <FaSortUp className="text-blue-600 text-xs" />
+                        )}
+                      {sortConfig.key === "branchLead" &&
+                        sortConfig.direction === "desc" && (
+                          <FaSortDown className="text-blue-600 text-xs" />
+                        )}
+                    </div>
                   </th>
                   <th className="px-1 py-1 text-left border-r border-gray-300 text-[13px] w-[110px]">
                     Branch Phone
@@ -755,8 +1094,16 @@ const BranchProfileList = () => {
                     className={index % 2 === 0 ? "bg-gray-50" : "bg-white"}
                   >
                     <td
-                      className="px-1 py-1 text-blue-500 cursor-pointer"
-                      onClick={() => handleView(row)}
+                      className={`px-1 py-1 ${
+                        canViewBranch
+                          ? "text-blue-500 cursor-pointer"
+                          : "text-gray-400 cursor-not-allowed"
+                      }`}
+                      onClick={() => {
+                        if (canViewBranch) {
+                          handleView(row);
+                        }
+                      }}
                     >
                       {row.branch_code}
                     </td>
@@ -775,31 +1122,42 @@ const BranchProfileList = () => {
                     </td>
                     <td className="px-1 py-1 text-[#1883EF] cursor-pointer">
                       <div className="flex gap-2 ">
-                        <button
-                          disabled={isViewMode}
-                          className="bg-[#3dbd5a] cursor-pointer p-1.5 text-white rounded-sm"
-                          onClick={() => handleEdit(row)}
-                          title="Edit"
-                        >
-                          <FiEdit className="text-white text-sm" />
-                        </button>
-                       
+                        {(userData?.isAdmin ||
+                          permissions?.Master?.find(
+                            (item) => item.name === "Branch Details",
+                          )?.edit) && (
+                          <button
+                            disabled={isViewMode}
+                            className="bg-[#3dbd5a] cursor-pointer p-1.5 text-white rounded-sm"
+                            onClick={() => handleEdit(row)}
+                            title="Edit"
+                          >
+                            <FiEdit className="text-white text-sm" />
+                          </button>
+                        )}
                       </div>
                     </td>
 
                     <td className="px-1 py-1 text-[#1883EF] cursor-pointer">
-                      <button
-                        onClick={() => handleToggleStatus(row.id, row.status)}
-                        className={`w-12 h-6 flex items-center rounded-full p-1 transition-colors ${row.status === "1" ? "bg-[#0A2478]" : "bg-gray-300"
+                      {(userData?.isAdmin ||
+                        permissions?.Master?.find(
+                          (item) => item.name === "Branch Details",
+                        )?.status) && (
+                        <button
+                          onClick={() => handleToggleStatus(row.id, row.status)}
+                          className={`w-12 h-6 flex items-center rounded-full p-1 transition-colors ${
+                            row.status === "1" ? "bg-[#0A2478]" : "bg-gray-300"
                           }`}
-                      >
-                        <div
-                          className={`bg-white w-4 h-4 rounded-full shadow-md transform transition-transform ${row.status === "1"
-                            ? "translate-x-6"
-                            : "translate-x-0"
+                        >
+                          <div
+                            className={`bg-white w-4 h-4 rounded-full shadow-md transform transition-transform ${
+                              row.status === "1"
+                                ? "translate-x-6"
+                                : "translate-x-0"
                             }`}
-                        />
-                      </button>
+                          />
+                        </button>
+                      )}
                     </td>
                   </tr>
                 ))}
@@ -817,6 +1175,7 @@ const BranchProfileList = () => {
       {/* <div className=" w-full relative">
         {isLoading && <Loader />}
       </div> */}
+      {loading && <Loader />}
     </>
   );
 };

@@ -3,6 +3,7 @@ import { FileText, Plus, Trash2, X } from "lucide-react";
 import { useEffect, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import { API } from "../../api";
+import Loader from "../../Component/Loader";
 
 const today = () => new Date().toISOString().split("T")[0];
 
@@ -12,7 +13,7 @@ const JournalVoucherCreate = () => {
   // Data States
   const [accountList, setAccountList] = useState([]);
   const [banks, setBanks] = useState([]);
-
+const [loading, setLoading] = useState(false);
   // Modal & Metadata States
   const [isDetailsModalOpen, setIsDetailsModalOpen] = useState(false);
   const [currentRowIndex, setCurrentRowIndex] = useState(null);
@@ -32,6 +33,7 @@ const isViewMode = mode === "view";
     if (!passedId) return;
 
     const fetchVoucherById = async () => {
+      setLoading(true);
       try {
         const res = await axios.get(
           `${API}/api/journalVoucher/details/${passedId}`,
@@ -69,9 +71,13 @@ const isViewMode = mode === "view";
           });
 
           setRowDetails(extraDetailsObj);
+           setLoading(false);
         }
       } catch (error) {
         console.error("Fetch Journal Error:", error);
+         setLoading(false);
+      } finally {
+        setLoading(false);
       }
     };
 
@@ -160,6 +166,7 @@ const isViewMode = mode === "view";
   };
 
   const handleSaveVoucher = async () => {
+    setLoading(true);
     try {
       if (voucherData.diffAmount !== 0) {
         return alert("Deposit and Withdrawal must match");
@@ -191,13 +198,16 @@ const isViewMode = mode === "view";
         alert(
           `Journal Voucher ${mode === "edit" ? "Updated" : "Saved"} Successfully ✅`,
         );
+        setLoading(false);
         navigate("/JournalVoucher/list");
       }
     } catch (error) {
       console.error("Save Voucher Error:", error);
+      setLoading(false);
       alert(
         error.response?.data?.message || "Failed to save Journal Voucher ❌",
       );
+      setLoading(false);
     }
   };
 
@@ -207,10 +217,10 @@ const isViewMode = mode === "view";
     "border border-gray-300 rounded-sm px-2 py-1 text-[11px] w-full outline-none focus:border-blue-500 bg-white";
 
   return (
-    <div className="min-h-screen text-gray-800 flex justify-center p-5 ">
-      <div className="max-w-[1300px] w-full space-y-4">
-        <div className="flex justify-center sticky top-[80px] z-40">
-          <div className="flex items-center px-6 py-4 border-b mt-5 w-[1290px] h-[62px] border rounded-[11px] border-gray-200 justify-between">
+    <div className="min-h-screen text-gray-800 flex justify-center ">
+      <div className=" w-full space-y-4">
+        <div className="flex justify-center sticky top-[50px] z-40">
+          <div className="flex items-center px-6 py-4 border-b  w-[1462px] h-[40px] border  border-gray-200 justify-between">
             <h2
               style={{
                 fontFamily: "Source Sans 3, sans-serif",
@@ -251,7 +261,7 @@ const isViewMode = mode === "view";
             </div>
           </div>
         </div>
-        <div className="flex gap-8 items-center  px-6 py-2 rounded-lg  border-gray-100">
+        <div className="flex gap-8 items-center  px-6 py-2 rounded-lg  border-gray-100 ml-[25px]">
           <div className="text-center">
             <p className="text-[10px] text-gray-500 font-bold uppercase">
               Withdrawal
@@ -295,7 +305,7 @@ const isViewMode = mode === "view";
           </div>
         </div>
         {/* MAIN TABLE */}
-        <div className="bg-white  rounded  overflow-hidden">
+        <div className="bg-white    overflow-hidden ml-[25px]">
           <table className=" text-[15px] border-collapse">
             <thead className={`${navyBlue} text-white `}>
               <tr >
@@ -528,6 +538,7 @@ const isViewMode = mode === "view";
           </div>
         )}
       </div>
+      {loading && <Loader />}
     </div>
   );
 };

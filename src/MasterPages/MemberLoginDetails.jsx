@@ -5,6 +5,8 @@ import { API } from "../api";
 import Pagination from "../Component/Pagination";
 import { TimePicker } from "../Component/TimePicker";
 import { decryptData, encryptData } from "../utils/cryptoHelper";
+import { usePermission } from "../API/Context/PermissionContext";
+import Loader from "../Component/Loader";
 
 const MemberLoginDetails = () => {
   const navigate = useNavigate();
@@ -12,20 +14,21 @@ const MemberLoginDetails = () => {
   const [employeeList, setEmployeeList] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
   const [searchTerm, setSearchTerm] = useState("");
-
-  // Pagination states
   const [currentPage, setCurrentPage] = useState(1);
   const [totalItems, setTotalItems] = useState(0);
   const [showPagination, setShowPagination] = useState(false);
   const itemsPerPage = 10;
   const totalPages = Math.ceil(totalItems / itemsPerPage);
-
+  const { permissions, userData } = usePermission();
+  
+  
   // API Base URL
   const API_BASE = `${API}/Master/Employee_Profile`;
 
   // ✅ Fetch employee list with search
   const fetchEmployeeProfileApi = async (page = 1, limit = 10, search = "") => {
     try {
+      setLoading(true);
       const queryParams = new URLSearchParams({
         page: page.toString(),
         limit: limit.toString(),
@@ -40,10 +43,11 @@ const MemberLoginDetails = () => {
       const response = await axios.get(
         `${API_BASE}/getAll-employees-withSearch?${queryParams.toString()}`,
       );
-
+setLoading(false);
       return response.data; // direct return
     } catch (error) {
       console.error("❌ Error fetching employee profiles:", error);
+      setLoading(false);
       return { items: [], total: 0, page: 1, showPagination: false };
     }
   };
@@ -55,7 +59,7 @@ const MemberLoginDetails = () => {
   }, []);
 
   const fetchEmployee = async (page = 1, search = "") => {
-    setIsLoading(true);
+   setLoading(true);
     try {
       const result = await fetchEmployeeProfileApi(page, itemsPerPage, search);
 
@@ -64,14 +68,17 @@ const MemberLoginDetails = () => {
         setTotalItems(result.total || result.items.length);
         setCurrentPage(result.page || 1);
         setShowPagination(result.showPagination ?? result.total > itemsPerPage);
+        setLoading(false);
       } else {
         setEmployeeList([]);
         setShowPagination(false);
+        setLoading(false);
       }
     } catch (error) {
       console.error("❌ Error fetching employees:", error);
       setEmployeeList([]);
       setShowPagination(false);
+      setLoading(false);
     } finally {
       setIsLoading(false);
     }
@@ -99,14 +106,17 @@ const MemberLoginDetails = () => {
 
 
   const updateSender = async (empId, sm1, sm2) => {
+    setLoading(true);
     try {
       await axios.post(`${API_BASE}/updateSender`, {
         empId,
         sender_mobile1: sm1,
         sender_mobile2: sm2,
       });
+       setLoading(false);
     } catch (e) {
       console.log("Update failed", e);
+       setLoading(false);
     }
   };
   const handleMobileChange = (empId, field, value, row) => {
@@ -137,6 +147,7 @@ const MemberLoginDetails = () => {
 
   // 🔐 Update OTP override
   const updateOTP = async (empId, boolValue) => {
+     setLoading(true);
     try {
       await axios.post(`${API_BASE}/updateOTP`, {
         empId: empId,
@@ -144,9 +155,11 @@ const MemberLoginDetails = () => {
       });
 
       fetchEmployee(currentPage, searchTerm); // refresh with current search
+       setLoading(false);
     } catch (err) {
       console.log(err);
       alert("Update failed");
+       setLoading(false);
     }
   };
 
@@ -328,7 +341,7 @@ const MemberLoginDetails = () => {
     <div className="min-h-screen w-full">
       {/* Top bar */}
       <div className="flex justify-center sticky top-[50px] z-40">
-        <div className="flex items-center px-6 py-4 border-b  w-[1462px] h-[40px] border border-gray-200 justify-between shadow">
+        <div className="flex items-center px-6 py-4 border-b  w-[1462px] h-[40px] border border-gray-200 justify-between shadow bg-white">
           <h2 className="text-red-600 font-bold text-[20px] leading-[148%] font-source">
             Member Details
           </h2>
@@ -401,19 +414,67 @@ const MemberLoginDetails = () => {
               <th className="px-1 py-1 border-r text-left  w-[200px]">
                 User ID
               </th>
-              <th className="px-1 py-1 border-r text-left w-[100px]">
+              {(userData?.isAdmin||permissions?.Master?.find(
+  item => item.name === "Member Details"
+)?.OTPOverride) && (
+  
+                     <th className="px-1 py-1 border-r text-left w-[100px]">
                 OTP Override
               </th>
-              <th className="px-2 py-2 border-r text-left w-[120px] ">
+)}
+             {(userData?.isAdmin||permissions?.Master?.find(
+  item => item.name === "Member Details"
+)?.Manager_Mob_No) && (
+  
+                    <th className="px-2 py-2 border-r text-left w-[120px] ">
                 Manager Mob No
               </th>
-              <th className="px-2 py-2 border-r text-left w-[110px] ">
-                Admin Mob No
+                )}
+              {(userData?.isAdmin||permissions?.Master?.find(
+  item => item.name === "Member Details"
+)?.Admin_Mob_No) && (
+  
+                    <th className="px-2 py-2 border-r text-left w-[120px] ">
+               Admin Mob No
               </th>
-              <th className="px-2 py-2 border-r text-left w-[100px]">Start Time</th>
-              <th className="px-2 py-2 border-r text-left w-[100px]">End Time</th>
-              <th className="px-2 py-2 border-r text-left w-[100px]">IP Address</th>
-              <th className="px-2 py-2 border-r text-left w-[120px]">Branch Mapping</th>
+)}
+              {(userData?.isAdmin||permissions?.Master?.find(
+  item => item.name === "Member Details"
+)?.Start_Time) && (
+  
+                    <th className="px-2 py-2 border-r text-left w-[120px] ">
+             Start Time
+              </th>
+)}
+              {(userData?.isAdmin||permissions?.Master?.find(
+  item => item.name === "Member Details"
+)?.End_Time) && (
+  
+                    <th className="px-2 py-2 border-r text-left w-[120px] ">
+            End Time
+              </th>
+)}
+             
+                {(userData?.isAdmin||permissions?.Master?.find(
+  item => item.name === "Member Details"
+)?.IP_Address) && (
+  
+                    <th className="px-2 py-2 border-r text-left w-[120px] ">
+          IP Address
+              </th>
+)}
+              
+              {(userData?.isAdmin||permissions?.Master?.find(
+  item => item.name === "Member Details"
+)?.BranchMapping) && (
+  
+                    <th className="px-2 py-2 border-r text-left w-[120px] ">
+        Branch Mapping
+              </th>
+)}
+             
+            
+              
             </tr>
           </thead>
 
@@ -447,7 +508,10 @@ const MemberLoginDetails = () => {
                     <td className="px-1 py-1 font-medium">{row.emp_name}</td>
 
                     <td className="px-1 py-1">{row.email}</td>
-
+{(userData?.isAdmin||permissions?.Master?.find(
+  item => item.name === "Member Details"
+)?.OTPOverride) && (
+  
                     <td className="px-1 py-1 text-left">
                       <input
                         type="checkbox"
@@ -456,8 +520,11 @@ const MemberLoginDetails = () => {
                         className="w-5 h-5 accent-blue-900 cursor-pointer"
                       />
                     </td>
-
-                    {/* Sender Mobile 1 */}
+)}
+{(userData?.isAdmin||permissions?.Master?.find(
+  item => item.name === "Member Details"
+)?.Manager_Mob_No) && (
+  
                     <td className="">
                       <div className="flex items-center px-2 gap-2">
                         <input
@@ -476,8 +543,14 @@ const MemberLoginDetails = () => {
                         />
                       </div>
                     </td>
-
-                    <td className="">
+)}
+                    {/* Sender Mobile 1 */}
+                   
+ {(userData?.isAdmin||permissions?.Master?.find(
+  item => item.name === "Member Details"
+)?.Admin_Mob_No) && (
+  
+                     <td className="">
                       <div className="flex items-center px-2 gap-2">
                         <input
                           type="text"
@@ -495,7 +568,11 @@ const MemberLoginDetails = () => {
                         />
                       </div>
                     </td>
-                    {/* Start Time */}
+)}
+                 {(userData?.isAdmin||permissions?.Master?.find(
+  item => item.name === "Member Details"
+)?.Start_Time) && (
+  
                     <td className="px-1 py-1">
                       <TimePicker
                         initialTime={loginData.startDate}
@@ -505,9 +582,16 @@ const MemberLoginDetails = () => {
                         }}
                       />
                     </td>
+)}  
+                    {/* Start Time */}
+                    
 
                     {/* End Time */}
-                    <td className="px-1 py-1">
+                     {(userData?.isAdmin||permissions?.Master?.find(
+  item => item.name === "Member Details"
+)?.End_Time) && (
+  
+                     <td className="px-1 py-1">
                       <TimePicker
                         initialTime={loginData.endDate}
                         onSave={(newTime) => {
@@ -516,9 +600,12 @@ const MemberLoginDetails = () => {
                         }}
                       />
                     </td>
-
-                    {/* ✅ Editable IP Address */}
-                    <td className="px-1 py-2">
+                      )}  
+                     {(userData?.isAdmin||permissions?.Master?.find(
+  item => item.name === "Member Details"
+)?.IP_Address) && (
+  
+                     <td className="px-1 py-2">
                       <input
                         type="text"
                         value={loginData.ipAddress}
@@ -530,14 +617,26 @@ const MemberLoginDetails = () => {
                         className="border border-gray-300 w-[80px] rounded px-2 py-1 text-sm focus:outline-none focus:ring-1 focus:ring-blue-500"
                       />
                     </td>
-                    <td className="px-1 py-1 text-left">
-                      <Link
-                        to={`/Add-Member-Branch-Mapping?id=${row.id}`}
-                        className="text-blue-700"
-                      >
-                        Branch
-                      </Link>
-                    </td>
+)}  
+                  
+                     {(userData?.isAdmin||permissions?.Master?.find(
+  item => item.name === "Member Details"
+)?.BranchMapping) && (
+  
+                      <td className="px-1 py-1 text-left">
+  <Link
+    to={`/Add-Member-Branch-Mapping?id=${row.id}&name=${encodeURIComponent(row.emp_name)}`}
+    className="text-blue-700"
+  >
+    Branch
+  </Link>
+</td>
+)}  
+
+                    {/* ✅ Editable IP Address */}
+                   
+                  
+
                   </tr>
                 );
               })
@@ -567,6 +666,8 @@ const MemberLoginDetails = () => {
           />
         </div>
       )}
+
+      {loading && <Loader />}
     </div>
   );
 };

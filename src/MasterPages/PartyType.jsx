@@ -3,6 +3,8 @@ import { useEffect, useState } from "react";
 import { FiEdit } from "react-icons/fi";
 import { useNavigate } from "react-router-dom";
 import { API } from "../api";
+import { usePermission } from "../API/Context/PermissionContext";
+import Loader from "../Component/Loader";
 
 const BASEURL = `${API}/api/party-types`;
 
@@ -16,13 +18,13 @@ function PartyType() {
   const [editId, setEditId] = useState(null);
   const [partyName, setPartyName] = useState("");
   const [status, setStatus] = useState(1);
-
+const { permissions, userData } = usePermission();
   // ===============================
   // Fetch All Party Types
   // ===============================
   const fetchPartyTypes = async () => {
     try {
-      setLoading(true);
+     setLoading(true);
 
       const res = await axios.get(`${BASEURL}/list`);
 
@@ -30,8 +32,10 @@ function PartyType() {
 
       // ✅ Only actual array set karo
       setPartyTypes(res.data.data);
+      setLoading(false);
     } catch (error) {
       console.error(error);
+      setLoading(false);
     } finally {
       setLoading(false);
     }
@@ -65,7 +69,9 @@ function PartyType() {
   // Save (Create / Update)
   // ===============================
   const handleSave = async () => {
+     setModalOpen(true);
     try {
+     
       if (!partyName.trim()) {
         alert("Party Type is required");
         return;
@@ -83,10 +89,13 @@ function PartyType() {
         });
       }
 
-      setModalOpen(false);
+     
       fetchPartyTypes();
+      setLoading(false);
+       setModalOpen(false);
     } catch (error) {
       alert(error.response?.data?.message || "Error occurred");
+      setLoading(false);
     }
   };
 
@@ -94,11 +103,14 @@ function PartyType() {
   // Toggle Status
   // ===============================
   const handleToggleStatus = async (id) => {
+     setLoading(true);
     try {
       await axios.patch(`${BASEURL}/toggle-status/${id}`);
       fetchPartyTypes();
+       setLoading(false);
     } catch (error) {
       console.error(error);
+      setLoading(false);
     }
   };
 
@@ -115,12 +127,18 @@ function PartyType() {
 
           {/* Buttons */}
           <div className="flex items-center gap-4">
-            <button
+            
+{(userData?.isAdmin||permissions?.Master?.find(
+  item => item.name === "Party Type"
+)?.add) && (
+   <button
               onClick={handleAdd}
               className="bg-[#0A2478] text-white text-[12px] rounded hover:bg-[#071d45] transition-colors px-4 py-1"
             >
               Add
             </button>
+)}
+           
 
             <button
               onClick={() => navigate("/")}
@@ -174,16 +192,24 @@ function PartyType() {
                   <td className="p-1">{party.party_type}</td>
 
                   <td className="p-1 text-left">
-                    <button
+                    {(userData?.isAdmin||permissions?.Master?.find(
+  item => item.name === "Party Type"
+)?.edit) && (
+    <button
                       onClick={() => handleEdit(party)}
                       className="bg-green-500 p-1 text-white rounded"
                     >
                       <FiEdit size={14} />
                     </button>
+)}
+                   
                   </td>
 
                   <td className="p-1 text-left">
-                    <button
+                    {(userData?.isAdmin||permissions?.Master?.find(
+  item => item.name === "Party Type"
+)?.status) && (
+    <button
                       onClick={() => handleToggleStatus(party.id)}
                       className={`w-12 h-6 flex items-center rounded-full p-1 transition-colors ${
                         party.status === 1 ? "bg-[#0A2478]" : "bg-gray-400"
@@ -195,6 +221,8 @@ function PartyType() {
                         }`}
                       />
                     </button>
+)}
+                   
                   </td>
                 </tr>
               ))
@@ -225,24 +253,27 @@ function PartyType() {
               className="w-full border p-2 rounded mb-4"
             />
 
-            <div className="flex justify-end gap-3">
-              <button
-                onClick={() => setModalOpen(false)}
-                className="px-4 py-1 bg-gray-400 text-white rounded"
-              >
-                Cancel
-              </button>
-
-              <button
+                      <div className="flex justify-center gap-3">
+                           <button
                 onClick={handleSave}
                 className="px-4 py-1 bg-[#0A2478] text-white rounded"
               >
                 {editId ? "Update" : "Save"}
               </button>
+              <button
+                onClick={() => setModalOpen(false)}
+                className="px-4 py-1 bg-[#C1121F] text-white rounded"
+              >
+                Cancel
+              </button>
+
+             
             </div>
           </div>
         </div>
       )}
+
+      {loading && <Loader />}
     </div>
   );
 }

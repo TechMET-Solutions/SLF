@@ -1,14 +1,19 @@
 import axios from "axios";
- // adjust path as needed
+// adjust path as needed
 import { API } from "../../../api";
 import { decryptData, encryptData } from "../../../utils/cryptoHelper";
 
-
 // ✅ Fetch branches API function (with search support)
-export const fetchBranchesApi = async (page = 1, limit = 10, search = "") => {
+export const fetchBranchesApi = async (
+  page = 1,
+  limit = 10,
+  // search = "",
+  key,
+  direction,
+) => {
   try {
-    const res = await axios.get(`${API}/Master/Master_Profile/get_Branches`, {
-      params: { page, limit, search },
+    const res = await axios.get(`${API}/Master/Master_Profile/getBranchesWithPagination`, {
+      params: { page, limit, key, direction },
     });
 
     // Based on your response JSON:
@@ -20,13 +25,12 @@ export const fetchBranchesApi = async (page = 1, limit = 10, search = "") => {
     }
 
     // Return the object your frontend expects
-    return { 
-      branches: branches || [], 
-      total: total || 0, 
-      page, 
-      limit 
+    return {
+      branches: branches || [],
+      total: total || 0,
+      page,
+      limit,
     };
-
   } catch (error) {
     console.error("Error fetching branches:", error);
     throw error;
@@ -39,7 +43,7 @@ export const updateBranchStatusApi = async (id, status) => {
 
     const res = await axios.post(
       `${API}/Master/Master_Profile/update_Branch_Status`,
-      { data: encryptedPayload }
+      { data: encryptedPayload },
     );
 
     const decrypted = decryptData(res.data.data);
@@ -51,7 +55,6 @@ export const updateBranchStatusApi = async (id, status) => {
 };
 
 export const updateBranchApi = async (branchData) => {
-    
   try {
     const encrypted = encryptData(branchData);
     const res = await axios.post(`${API}/Master/Master_Profile/update_Branch`, {

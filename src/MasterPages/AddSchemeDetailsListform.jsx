@@ -3,6 +3,7 @@ import { useEffect, useState } from "react";
 import { IoIosCloseCircleOutline, IoMdAddCircleOutline } from "react-icons/io";
 import { useLocation, useNavigate } from "react-router-dom";
 import { API } from "../api";
+import Loader from "../Component/Loader";
 
 const FormField = ({
   field,
@@ -115,9 +116,10 @@ const AddSchemeDetailsListform = () => {
   const navigate = useNavigate();
   const location = useLocation();
   const { type, data } = location.state || {};
+  console.log(data, " ------------shceme data------------- ");
   const isViewMode = type === "view";
   const isCopyMode = type === "copy";
-
+const [loading, setLoading] = useState(false);
   // ===============================
   // Party Types – dynamic (active only)
   // ===============================
@@ -141,11 +143,11 @@ const AddSchemeDetailsListform = () => {
   const [formData, setFormData] = useState({
     schemeName: "",
     description: "",
-    product: "Gold",
+    product: "",
     applicableFrom: "",
     applicableTo: "",
     calcBasisOn: "Daily",
-    adminChargeType: "fixed",
+    adminChargeType: "percentage",
     calcMethod: "",
     paymentFrequency: "",
     interestInAdvance: "",
@@ -158,13 +160,15 @@ const AddSchemeDetailsListform = () => {
     paymentBasisOn: "",
     goldApprovePercent: "",
     maxLoanAmount: "",
-    partyType: "individual",
+    partyType: "",
     administrativeCharges: "",
-    interestType: "Floating",
+    interestType: "",
     docChargePercent: "",
     docChargeFixed: "",
     docChargeMin: "",
     docChargeMax: "",
+    AdminChargeMin: "",
+    AdminChargeMax: "",
     docChargeType: "percentage",
   });
   const [openSlabModal, setOpenSlabModal] = useState(false);
@@ -172,12 +176,15 @@ const AddSchemeDetailsListform = () => {
 
   useEffect(() => {
     if (data) {
+      setLoading(true);
       // For copy mode, strip `id` so Save creates a new record
       const { id: _omitId, ...dataWithoutId } = data;
       const baseData = isCopyMode ? dataWithoutId : data;
 
       setFormData({
         ...baseData,
+        AdminChargeMin: baseData.adminChargeMin || 0.0,
+        AdminChargeMax: baseData.adminChargeMax || 0.0,
         applicableFrom: baseData.applicableFrom
           ? baseData.applicableFrom.split("T")[0]
           : "",
@@ -200,6 +207,7 @@ const AddSchemeDetailsListform = () => {
             : data.precloser,
         );
       }
+       setLoading(false);
     }
   }, [data, isCopyMode]);
   console.log(formData, "formData");
@@ -209,7 +217,7 @@ const AddSchemeDetailsListform = () => {
   const [precloser, setPrecloser] = useState([
     { fromMonth: "", toMonth: "", charges: "" },
     { fromMonth: "", toMonth: "", charges: "" },
-  ]); // only 2 rows
+  ]);
   console.log(precloser, "precloser");
   const handleChange = (index, field, value) => {
     const updated = [...precloser];
@@ -220,7 +228,7 @@ const AddSchemeDetailsListform = () => {
   const handleInputChange = (e) => {
     const { name, value } = e.target;
 
-    // when calcBasisOn changes – auto update paymentBasisOn
+    // ✅ calcBasisOn logic
     if (name === "calcBasisOn") {
       setFormData((prev) => ({
         ...prev,
@@ -229,11 +237,22 @@ const AddSchemeDetailsListform = () => {
       }));
 
       if (errors[name]) setErrors((prev) => ({ ...prev, [name]: false }));
-
-      return; // stop here (we already set)
+      return;
     }
 
-    // normal update
+    // ✅ FIXED: adminChargeType logic
+    if (name === "adminChargeType") {
+      setFormData((prev) => ({
+        ...prev,
+        adminChargeType: value,
+        administrativeCharges: "", // 🔥 reset
+      }));
+
+      if (errors[name]) setErrors((prev) => ({ ...prev, [name]: false }));
+      return;
+    }
+
+    // ✅ normal update
     setFormData((prev) => ({ ...prev, [name]: value }));
 
     if (errors[name]) setErrors((prev) => ({ ...prev, [name]: false }));
@@ -247,43 +266,140 @@ const AddSchemeDetailsListform = () => {
     );
   };
 
-  const handleSave = async () => {
-    try {
-      if (type === "edit") {
-        const response = await axios.put(`${API}/Scheme/updateScheme`, {
-          id: data.id,
-          formData,
-          interestRates,
-          precloser,
-        });
-        alert("✅ Scheme updated successfully!");
-      } else {
-        // Both "add" and "copy" create a new record via POST
-        const response = await axios.post(`${API}/Scheme/addScheme`, {
-          formData,
-          interestRates,
-          precloser,
-        });
-        alert(
-          isCopyMode
-            ? "✅ Scheme copied and saved successfully!"
-            : "✅ Scheme added successfully!",
-        );
-      }
+  // const handleSave = async () => {
+  //   try {
+  //     if (type === "edit") {
+  //       const response = await axios.put(`${API}/Scheme/updateScheme`, {
+  //         id: data.id,
+  //         formData,
+  //         interestRates,
+  //         precloser,
+  //       });
+  //       alert("✅ Scheme updated successfully!");
+  //     } else {
+  //       // Both "add" and "copy" create a new record via POST
+  //       const response = await axios.post(`${API}/Scheme/addScheme`, {
+  //         formData,
+  //         interestRates,
+  //         precloser,
+  //       });
+  //       alert(
+  //         isCopyMode
+  //           ? "✅ Scheme copied and saved successfully!"
+  //           : "✅ Scheme added successfully!",
+  //       );
+  //     }
 
-      navigate("/Scheme-Details-List");
-    } catch (error) {
-      console.error("Error saving scheme:", error);
-      alert("❌ Failed to save scheme.");
-    }
-  };
-
-  // const addRow = () => {
-  //   setInterestRates((prev) => [
-  //     ...prev,
-  //     { id: Date.now(), from: "", to: "", type: "", addInt: "" },
-  //   ]);
+  //     navigate("/Scheme-Details-List");
+  //   } catch (error) {
+  //     console.error("Error saving scheme:", error);
+  //     alert("❌ Failed to save scheme.");
+  //   }
   // };
+const validateForm2 = () => {
+  let newErrors = {};
+
+  if (!formData.schemeName?.trim())
+    newErrors.schemeName = "Scheme Name is required";
+
+  if (!formData.product)
+    newErrors.product = "Product is required";
+
+  if (!formData.partyType)
+    newErrors.partyType = "Party Type is required";
+
+  if (!formData.description?.trim())
+    newErrors.description = "Description is required";
+
+  if (!formData.applicableFrom)
+    newErrors.applicableFrom = "Applicable From is required";
+
+  if (!formData.applicableTo)
+    newErrors.applicableTo = "Applicable To is required";
+
+  if (!formData.calcBasisOn)
+    newErrors.calcBasisOn = "Calculation Basis is required";
+
+  // if (!formData.addOneDay)
+  //   newErrors.addOneDay = "Add One Day is required";
+
+  if (!formData.calcMethod)
+    newErrors.calcMethod = "Calculation Method is required";
+
+  if (!formData.paymentFrequency)
+    newErrors.paymentFrequency = "Payment Frequency is required";
+
+  if (!formData.loanPeriod)
+    newErrors.loanPeriod = "Loan Period is required";
+
+  // if (!formData.preCloserMinDays)
+  //   newErrors.preCloserMinDays = "Pre-closer days required";
+
+  if (!formData.penaltyType)
+    newErrors.penaltyType = "Penalty Type is required";
+
+  if (!formData.penalty)
+    newErrors.penalty = "Penalty is required";
+
+  if (!formData.goldApprovePercent)
+    newErrors.goldApprovePercent = "Gold approve % required";
+
+  if (!formData.minLoanAmount)
+    newErrors.minLoanAmount = "Min loan amount required";
+
+  if (!formData.maxLoanAmount)
+    newErrors.maxLoanAmount = "Max loan amount required";
+
+  setErrors(newErrors);
+
+  // ✅ SHOW ALERT HERE
+  if (Object.keys(newErrors).length > 0) {
+    alert(
+      "⚠️ Please fill all required fields:\n\n• " +
+        Object.values(newErrors).join("\n• ")
+    );
+    return false;
+  }
+
+  return true; // ✅ valid
+};
+
+  const handleSave = async () => {
+  // ✅ validation handles alert itself
+  if (!validateForm2()) return;
+  setLoading(true);
+  try {
+    if (type === "edit") {
+      await axios.put(`${API}/Scheme/updateScheme`, {
+        id: data.id,
+        formData,
+        interestRates,
+        precloser,
+      });
+ 
+      alert("✅ Scheme updated successfully!");
+       setLoading(false);
+    } else {
+      await axios.post(`${API}/Scheme/addScheme`, {
+        formData,
+        interestRates,
+        precloser,
+      });
+  
+      alert(
+        isCopyMode
+          ? "✅ Scheme copied and saved successfully!"
+          : "✅ Scheme added successfully!"
+      );
+      setLoading(false);
+    }
+
+    navigate("/Scheme-Details-List");
+  } catch (error) {
+    console.error("Error saving scheme:", error);
+    alert("❌ Failed to save scheme.");
+  }
+};
   const addRow = () => {
     setInterestRates((prev) => {
       // Get the last row in the current list
@@ -326,25 +442,40 @@ const AddSchemeDetailsListform = () => {
     setFormData((prev) => {
       const updated = {
         ...prev,
-        calcBasisOn: prev.calcBasisOn === value ? "" : value,
-      };
 
-      // Clear Interest Type when Daily is selected, as it will be hidden.
-      if (value === "Daily") {
-        updated.interestType = "";
-      }
+        // toggle same click
+        calcBasisOn: prev.calcBasisOn === value ? "" : value,
+
+        // 🔥 RESET THESE FIELDS
+        paymentFrequency: "",
+        loanPeriod: "",
+        preCloserMinDays: "",
+        penaltyType: "",
+        penalty: "",
+        interestType: "",
+        calcMethod: "",
+        addOneDay: "",
+        interestInAdvance: "",
+      };
 
       return updated;
     });
+
+    // 🔥 RESET ARRAYS ALSO
+    setInterestRates([{}]);
+
+    setPrecloser([
+      { fromMonth: "", toMonth: "", charges: "" },
+      { fromMonth: "", toMonth: "", charges: "" },
+    ]);
   };
 
-  // Define a constant for the conditional check
   const isDailyBasis = formData.calcBasisOn === "Daily";
 
   return (
     <div className="min-h-screen bg-white ">
       <div className="flex justify-center sticky top-[50px] z-40">
-        <div className="flex items-center px-6 py-4 border-b  w-[1462px] h-[40px] border rounded-[11px] border-gray-200 justify-between shadow bg-white">
+        <div className="flex items-center px-6 py-4 border-b  w-[1462px] h-[40px] border  border-gray-200 justify-between  bg-white">
           <h2
             style={{
               fontFamily: "Source Sans 3, sans-serif",
@@ -358,9 +489,9 @@ const AddSchemeDetailsListform = () => {
             {isCopyMode
               ? "Copy Scheme Details"
               : type === "edit"
-                ? "Edit Scheme Details"
+                ? `Edit Scheme Details (ID: ${data?.id || ""})`
                 : type === "view"
-                  ? "View Scheme Details"
+                  ? `View Scheme Details (ID: ${data?.id || ""})`
                   : "Add Scheme Details Form"}
           </h2>
 
@@ -393,7 +524,7 @@ const AddSchemeDetailsListform = () => {
 
       <div className="bg-white rounded-lg ">
         {/* First Row (ALWAYS VISIBLE) */}
-        <div className="flex gap-2 ml-[22px]">
+        <div className="flex gap-2 ml-[25px]">
           <div className="w-[739px] h-auto bg-[#FFE6E6] p-[20px]">
             <div className="flex gap-[12px] ">
               <div className="flex flex-col">
@@ -424,8 +555,9 @@ const AddSchemeDetailsListform = () => {
                   value={formData.product}
                   onChange={handleInputChange}
                   disabled={isViewMode || isCopyMode}
-                  className="border p-2 rounded-[8px] w-[90px] h-[30px] text-xs bg-white border-gray-300 mt-1"
+                  className="border p-1 rounded-[8px] w-[90px] h-[30px] text-xs bg-white border-gray-300 mt-1"
                 >
+                  <option value="">Select Product Type</option>
                   <option value="Gold">Gold</option>
                   <option value="Silver">Silver</option>
                 </select>
@@ -651,7 +783,7 @@ const AddSchemeDetailsListform = () => {
                 </div>
               )}
 
-              {!isDailyBasis && (
+              {isDailyBasis && (
                 <div className="flex flex-col ">
                   <label className="text-[14px] font-medium">
                     Interest in Advance <span className="text-red-500">*</span>
@@ -663,6 +795,7 @@ const AddSchemeDetailsListform = () => {
                     disabled={isViewMode || isCopyMode}
                     className="border rounded-[8px] px-3 h-[30px] mt-1 text-xs bg-white w-[126px] "
                   >
+                    <option value="">Select</option>
                     <option value="Yes">Yes</option>
                     <option value="No">No</option>
                   </select>
@@ -694,24 +827,7 @@ const AddSchemeDetailsListform = () => {
                 </div>
               </div>
 
-              {isDailyBasis && (
-                <div className="flex flex-col ">
-                  <label className="text-[14px] font-medium">
-                    Fore Closure Min Days{" "}
-                    <span className="text-red-600">*</span>
-                  </label>
-                  <input
-                    type="number"
-                    name="preCloserMinDays"
-                    value={formData.preCloserMinDays || ""}
-                    onChange={handleInputChange}
-                    disabled={isViewMode || isCopyMode}
-                    placeholder="e.g 15 days"
-                    onWheel={(e) => e.target.blur()}
-                    className="border border-gray-300 rounded-[8px] px-2 h-[30px] mt-1 text-xs  bg-white w-[130px] "
-                  />
-                </div>
-              )}
+              
 
               <div className="flex flex-col ">
                 <label className="text-[14px] font-medium">
@@ -806,7 +922,24 @@ const AddSchemeDetailsListform = () => {
                       className="border border-gray-300 rounded-[8px] px-3 py-2 h-[38px] bg-white w-[125px]"
                     />
                   </div> */}
-
+{isDailyBasis && (
+                <div className="flex flex-col ">
+                  <label className="text-[14px] font-medium">
+                    Fore Closure Min Days{" "}
+                    <span className="text-red-600">*</span>
+                  </label>
+                  <input
+                    type="number"
+                    name="preCloserMinDays"
+                    value={formData.preCloserMinDays || ""}
+                    onChange={handleInputChange}
+                    disabled={isViewMode || isCopyMode}
+                    placeholder="e.g 15 days"
+                    onWheel={(e) => e.target.blur()}
+                    className="border border-gray-300 rounded-[8px] px-2 h-[30px] mt-1 text-xs  bg-white w-[130px] "
+                  />
+                </div>
+              )}
                   <div className="flex flex-col">
                     <label className="text-[14px] font-medium">
                       Product approve % <span className="text-red-500">*</span>
@@ -932,7 +1065,7 @@ const AddSchemeDetailsListform = () => {
             {!isDailyBasis && (
               <>
                 <h3 className="text-[15px] font-semibold text-[#0A2478]  mt-3">
-                  Document Charge
+                  Admin Charges
                 </h3>
                 <div className="flex gap-5 mt-2">
                   <div className="flex flex-col">
@@ -941,17 +1074,16 @@ const AddSchemeDetailsListform = () => {
                     </label>
                     <select
                       name="adminChargeType"
-                      value={formData.adminChargeType || "fixed"}
+                      value={formData.adminChargeType || "percentage"}
                       disabled={isViewMode}
                       onChange={handleInputChange}
                       className="border border-gray-300 rounded-[8px] px-2 text-xs h-[30px] w-[130px] bg-white outline-none "
                     >
-                      <option value="fixed">Fixed Amount</option>
                       <option value="percentage">Percentage (%)</option>
+                      <option value="fixed">Fixed Amount</option>
                     </select>
                   </div>
 
-                  {/* 2. Dynamic Input: Percentage or Amount */}
                   <div className="flex flex-col">
                     <label className="text-[14px] font-medium mb-1">
                       {formData.adminChargeType === "percentage"
@@ -972,6 +1104,57 @@ const AddSchemeDetailsListform = () => {
                       style={{ MozAppearance: "textfield" }}
                       onWheel={(e) => e.target.blur()}
                       className="border border-gray-300 rounded-[8px] px-2  text-xs h-[30px] w-[100px] bg-white outline-none"
+                    />
+                  </div>
+
+                  <div className="flex flex-col">
+                    <label
+                      className={`text-sm font-medium ${formData.adminChargeType === "fixed" ? "text-gray-400" : ""}`}
+                    >
+                      Min
+                    </label>
+                    <input
+                      type="number"
+                      name="AdminChargeMin"
+                      value={formData.AdminChargeMin}
+                      onChange={handleInputChange}
+                      disabled={
+                        isViewMode || formData.adminChargeType === "fixed"
+                      }
+                      style={{ MozAppearance: "textfield" }}
+                      onWheel={(e) => e.target.blur()}
+                      className={`p-2 border border-gray-300 mt-1 rounded-[8px] text-xs h-[30px] w-[100px] outline-none transition-colors ${
+                        formData.adminChargeType === "fixed"
+                          ? "bg-gray-100 cursor-not-allowed"
+                          : "bg-white"
+                      }`}
+                    />
+                  </div>
+                  <div className="flex flex-col">
+                    <label
+                      className={`text-sm font-medium ${formData.adminChargeType === "fixed" ? "text-gray-400" : ""}`}
+                    >
+                      Max
+                    </label>
+                    <input
+                      type="number"
+                      name="AdminChargeMax"
+                      value={
+                        formData.adminChargeType === "fixed"
+                          ? ""
+                          : formData.AdminChargeMax
+                      }
+                      onChange={handleInputChange}
+                      // Disabled if in View Mode OR if Charge Type is Fixed Amount
+                      disabled={
+                        isViewMode || formData.adminChargeType === "fixed"
+                      }
+                      onWheel={(e) => e.target.blur()}
+                      className={`p-2 border border-gray-300 mt-1 rounded-[8px] text-xs h-[30px] w-[100px] outline-none transition-colors ${
+                        formData.adminChargeType === "fixed"
+                          ? "bg-gray-100 cursor-not-allowed"
+                          : "bg-white"
+                      }`}
                     />
                   </div>
                 </div>
@@ -1021,7 +1204,9 @@ const AddSchemeDetailsListform = () => {
                     />
                   </div>
                 </div> */}
-
+                <h3 className="text-[15px] font-semibold text-[#0A2478]  mt-3">
+                  Document Charge
+                </h3>
                 <div className="flex gap-4 w-full mt-3">
                   {/* % of Loan Amount */}
                   <div className="flex flex-col">
@@ -1135,22 +1320,28 @@ const AddSchemeDetailsListform = () => {
             {/* ---------------------- DOCUMENT CHARGE ---------------------- */}
             {isDailyBasis && (
               <>
-                
-                <div className="flex gap-4 items-end">
+                {/* <label className="text-[14px] font-medium mb-1">
+                      Admin Charges
+                    </label> */}
+                <h3 className="text-[15px] font-semibold text-[#0A2478]">
+                  Admin Charges
+                </h3>
+                <div className="flex gap-4 items-end mt-2">
                   {/* 1. Administrative Charge Type Dropdown */}
+
                   <div className="flex flex-col">
                     <label className="text-[14px] font-medium mb-1">
                       Admin Charge Type
                     </label>
                     <select
                       name="adminChargeType"
-                      value={formData.adminChargeType || "fixed"}
+                      value={formData.adminChargeType || "percentage"}
                       disabled={isViewMode}
                       onChange={handleInputChange}
                       className="border border-gray-300 rounded-[8px]  text-xs h-[30px] w-[130px] bg-white outline-none"
                     >
-                      <option value="fixed">Fixed Amount</option>
                       <option value="percentage">Percentage (%)</option>
+                      <option value="fixed">Fixed Amount</option>
                     </select>
                   </div>
 
@@ -1177,13 +1368,69 @@ const AddSchemeDetailsListform = () => {
                       className="border border-gray-300 rounded-[8px] px-3 text-xs  h-[30px] w-[100px] bg-white outline-none"
                     />
                   </div>
+                  <div className="flex flex-col">
+                    <label
+                      className={`text-sm font-medium ${formData.adminChargeType === "fixed" ? "text-gray-400" : ""}`}
+                    >
+                      Min
+                    </label>
+                    <input
+                      type="number"
+                      name="AdminChargeMin"
+                      value={
+                        formData.adminChargeType === "fixed"
+                          ? ""
+                          : formData.AdminChargeMin
+                      }
+                      onChange={handleInputChange}
+                      // Disabled if in View Mode OR if Charge Type is Fixed Amount
+                      disabled={
+                        isViewMode || formData.adminChargeType === "fixed"
+                      }
+                      onWheel={(e) => e.target.blur()}
+                      className={`p-2 border border-gray-300 mt-1 rounded-[8px] text-xs h-[30px] w-[100px] outline-none transition-colors ${
+                        formData.adminChargeType === "fixed"
+                          ? "bg-gray-100 cursor-not-allowed"
+                          : "bg-white"
+                      }`}
+                    />
+                  </div>
+
+                  {/* Max Field */}
+                  <div className="flex flex-col">
+                    <label
+                      className={`text-sm font-medium ${formData.adminChargeType === "fixed" ? "text-gray-400" : ""}`}
+                    >
+                      Max
+                    </label>
+                    <input
+                      type="number"
+                      name="AdminChargeMax"
+                      value={
+                        formData.adminChargeType === "fixed"
+                          ? ""
+                          : formData.AdminChargeMax
+                      }
+                      onChange={handleInputChange}
+                      // Disabled if in View Mode OR if Charge Type is Fixed Amount
+                      disabled={
+                        isViewMode || formData.adminChargeType === "fixed"
+                      }
+                      onWheel={(e) => e.target.blur()}
+                      className={`p-2 border border-gray-300 mt-1 rounded-[8px] text-xs h-[30px] w-[100px] outline-none transition-colors ${
+                        formData.adminChargeType === "fixed"
+                          ? "bg-gray-100 cursor-not-allowed"
+                          : "bg-white"
+                      }`}
+                    />
+                  </div>
                 </div>
                 <h3 className="text-[15px] font-semibold text-[#0A2478] mt-2">
                   Documents Charge
                 </h3>
                 <div className="flex gap-4 w-full mt-2 ">
                   {/* % of Loan Amount */}
-                  
+
                   <div className="flex flex-col">
                     <label className="text-sm font-medium mb-1">
                       {" "}
@@ -1499,26 +1746,26 @@ const AddSchemeDetailsListform = () => {
         <div>
           {type === "edit" && (
             <>
-              <div className="flex  mt-5 ml-[100px] ">
+              <div className="flex   ml-[25px] ">
                 <div className="">
-                  <h3 className="text-[15px] font-semibold text-[#0A2478] mb-4">
+                  <h3 className="text-[15px] font-semibold text-[#0A2478] ">
                     Renewal List
                   </h3>
 
                   <div className="  overflow-hidden">
                     <table className="w-[614px] border-collapse bg-white">
                       <thead>
-                        <tr className="bg-[#0A2478] text-white text-sm">
-                          <th className="p-3 border w-[80px]">App. From</th>
-                          <th className="p-3 border w-[80px]">App. To</th>
-                          <th className="p-3 border w-[70px]">Interest</th>
-                          <th className="p-3 border w-[70px]">Approval %</th>
-                          <th className="p-3 border w-[70px]">Renewal Date</th>
+                        <tr className="bg-[#0A2478] text-white text-xs">
+                          <th className="p-1 border w-[80px]">App. From</th>
+                          <th className="p-1 border w-[80px]">App. To</th>
+                          <th className="p-1 border w-[70px]">Interest</th>
+                          <th className="p-1 border w-[70px]">Approval %</th>
+                          <th className="p-1 border w-[70px]">Renewal Date</th>
                         </tr>
                       </thead>
 
                       <tbody>
-                        {data?.renewalHistory?.map((item) => {
+                        {data?.renewalHistory?.map((item, index) => {
                           const slabs =
                             typeof item.interest_json === "string"
                               ? JSON.parse(item.interest_json)
@@ -1527,9 +1774,11 @@ const AddSchemeDetailsListform = () => {
                           return (
                             <tr
                               key={item.id}
-                              className="bg-white border border-gray-300"
+                              className={
+                                index % 2 === 0 ? "bg-gray-100" : "bg-white"
+                              }
                             >
-                              <td className="p-2 text-center">
+                              <td className="p-1 text-xs text-center">
                                 {
                                   new Date(item.app_from)
                                     .toISOString()
@@ -1537,7 +1786,7 @@ const AddSchemeDetailsListform = () => {
                                 }
                               </td>
 
-                              <td className="p-2 text-center">
+                              <td className="p-1 text-center text-xs">
                                 {
                                   new Date(item.app_to)
                                     .toISOString()
@@ -1546,7 +1795,7 @@ const AddSchemeDetailsListform = () => {
                               </td>
 
                               <td
-                                className="p-2 text-center text-blue-600 underline cursor-pointer"
+                                className="p-1 text-center text-blue-600 underline cursor-pointer text-xs"
                                 onClick={() => {
                                   setSelectedSlabs(slabs);
                                   setOpenSlabModal(true);
@@ -1555,11 +1804,11 @@ const AddSchemeDetailsListform = () => {
                                 {slabs?.length || 0} Slabs
                               </td>
 
-                              <td className="p-2 text-center">
+                              <td className="p-1 text-center text-xs">
                                 {item.gold_approve_percent}%
                               </td>
 
-                              <td className="p-2 text-center">
+                              <td className="p-1 text-center text-xs">
                                 {new Date(item.renewal_date).toLocaleDateString(
                                   "en-IN",
                                 )}
@@ -1625,6 +1874,8 @@ const AddSchemeDetailsListform = () => {
           </div>
         </div>
       )}
+
+      {loading && <Loader />}
     </div>
   );
 };

@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { API } from "../api";
+import { usePermission } from "../API/Context/PermissionContext";
 import profileempty from "../assets/profileempty.png";
 function Auction_Application_form() {
   useEffect(() => {
@@ -8,7 +9,7 @@ function Auction_Application_form() {
   }, []);
 
   const navigate = useNavigate();
-
+  const { permissions, userData } = usePermission();
   const [formData, setFormData] = useState({
     auction: "",
     auctionDate: "",
@@ -44,7 +45,7 @@ function Auction_Application_form() {
   const [popupData, setPopupData] = useState(null);
   console.log(popupData, "popupData");
   useEffect(() => {
-    fetch(`${API}/Transactions/GetAuction`)
+    fetch(`${API}/Transactions/open-auctions`)
       .then((res) => res.json())
       .then((data) => {
         if (data.success) {
@@ -174,12 +175,18 @@ function Auction_Application_form() {
           </h2>
 
           <div className="flex gap-3">
-            <button
-              onClick={() => handleSubmit()}
-              className="bg-[#0A2478] text-white text-sm rounded px-5 py-2 cursor-pointer"
-            >
-              Submit
-            </button>
+            {(userData?.isAdmin ||
+              permissions?.Transaction?.find(
+                (item) => item.name === "Auction Application",
+              )?.Submit) && (
+              <button
+                onClick={() => handleSubmit()}
+                className="bg-[#0A2478] text-white text-sm rounded px-5 py-2 cursor-pointer"
+              >
+                Submit
+              </button>
+            )}
+
             <button
               onClick={() => navigate("/Auction-Creation")}
               className="bg-[#C1121F] text-white text-sm rounded px-5 py-2 cursor-pointer"
@@ -429,16 +436,19 @@ function Auction_Application_form() {
 
       </div> */}
 
-
       <div className="mx-[28px] bg-[#FFE6E6] p-4">
         {/* TOP SECTION: AUCTION DETAILS */}
         <div className="relative mb-6">
-          <h3 className="text-[#0A2478] font-bold text-[15px] mb-2">Auction Details</h3>
+          <h3 className="text-[#0A2478] font-bold text-[15px] mb-2">
+            Auction Details
+          </h3>
           <div className="flex items-start gap-4">
             {/* Input Group */}
             <div className="flex gap-4 flex-grow">
               <div className="flex flex-col">
-                <label className="text-[12px] font-semibold mb-1">Select Auction</label>
+                <label className="text-[12px] font-semibold mb-1">
+                  Select Auction
+                </label>
                 <select
                   name="auction"
                   value={formData.auction}
@@ -448,14 +458,17 @@ function Auction_Application_form() {
                   <option value="">Select Auction</option>
                   {auctions.map((auction) => (
                     <option key={auction.id} value={auction.id}>
-                      {auction.id} | {new Date(auction.date).toLocaleDateString("en-GB")}
+                      {auction.id} |{" "}
+                      {new Date(auction.date).toLocaleDateString("en-GB")}
                     </option>
                   ))}
                 </select>
               </div>
 
               <div className="flex flex-col">
-                <label className="text-[12px] font-semibold mb-1">Auction Date</label>
+                <label className="text-[12px] font-semibold mb-1">
+                  Auction Date
+                </label>
                 <input
                   type="text"
                   value={formData.auctionDate || "dd-mm-yy"}
@@ -465,7 +478,9 @@ function Auction_Application_form() {
               </div>
 
               <div className="flex flex-col">
-                <label className="text-[12px] font-semibold mb-1">Auction Time</label>
+                <label className="text-[12px] font-semibold mb-1">
+                  Auction Time
+                </label>
                 <input
                   type="text"
                   value={formData.auctionTime || "--"}
@@ -475,7 +490,9 @@ function Auction_Application_form() {
               </div>
 
               <div className="flex flex-col">
-                <label className="text-[12px] font-semibold mb-1">Auction Venue</label>
+                <label className="text-[12px] font-semibold mb-1">
+                  Auction Venue
+                </label>
                 <input
                   type="text"
                   value={formData.auctionVenue}
@@ -487,7 +504,9 @@ function Auction_Application_form() {
 
             {/* Profile Image (Floating Right) */}
             <div className="flex flex-col items-center absolute right-120 top-0">
-              <p className="text-[12px] font-semibold mb-1">Upload Bidder Profile</p>
+              <p className="text-[12px] font-semibold mb-1">
+                 Bidder Profile
+              </p>
               <div className="w-[110px] h-[100px] border border-blue-300 bg-white rounded-md flex items-center justify-center overflow-hidden">
                 <img
                   src={
@@ -507,10 +526,14 @@ function Auction_Application_form() {
 
         {/* BOTTOM SECTION: BIDDER DETAILS */}
         <div className="mt-4">
-          <h3 className="text-[#0A2478] font-bold text-[15px] mb-2">Bidder Details</h3>
+          <h3 className="text-[#0A2478] font-bold text-[15px] mb-2">
+            Bidder Details
+          </h3>
           <div className="flex flex-wrap gap-x-3 gap-y-4">
             <div className="flex flex-col">
-              <label className="text-[12px] font-semibold mb-1">Bidder Name *</label>
+              <label className="text-[12px] font-semibold mb-1">
+                Bidder Name *
+              </label>
               <input
                 type="text"
                 name="bidderName"
@@ -549,7 +572,9 @@ function Auction_Application_form() {
             </div>
 
             <div className="flex flex-col">
-              <label className="text-[12px] font-semibold mb-1">Bidder ID *</label>
+              <label className="text-[12px] font-semibold mb-1">
+                Bidder ID *
+              </label>
               <input
                 type="text"
                 value={formData.bidderId}
@@ -559,7 +584,9 @@ function Auction_Application_form() {
             </div>
 
             <div className="flex flex-col">
-              <label className="text-[12px] font-semibold mb-1">Mobile Number *</label>
+              <label className="text-[12px] font-semibold mb-1">
+                Mobile Number *
+              </label>
               <input
                 type="text"
                 value={formData.mobile}
@@ -569,7 +596,9 @@ function Auction_Application_form() {
             </div>
 
             <div className="flex flex-col">
-              <label className="text-[12px] font-semibold mb-1">Landline Number</label>
+              <label className="text-[12px] font-semibold mb-1">
+                Landline Number
+              </label>
               <input
                 type="text"
                 value={formData.landline}
@@ -579,7 +608,9 @@ function Auction_Application_form() {
             </div>
 
             <div className="flex flex-col">
-              <label className="text-[12px] font-semibold mb-1">Firm Name *</label>
+              <label className="text-[12px] font-semibold mb-1">
+                Firm Name *
+              </label>
               <input
                 type="text"
                 value={formData.firmName}
@@ -589,7 +620,9 @@ function Auction_Application_form() {
             </div>
 
             <div className="flex flex-col">
-              <label className="text-[12px] font-semibold mb-1">Pan Number *</label>
+              <label className="text-[12px] font-semibold mb-1">
+                Pan Number *
+              </label>
               <input
                 type="text"
                 value={formData.pan}
@@ -599,7 +632,9 @@ function Auction_Application_form() {
             </div>
 
             <div className="flex flex-col">
-              <label className="text-[12px] font-semibold mb-1">Aadhar Number</label>
+              <label className="text-[12px] font-semibold mb-1">
+                Aadhar Number
+              </label>
               <input
                 type="text"
                 value={formData.aadhaar}
@@ -609,7 +644,9 @@ function Auction_Application_form() {
             </div>
 
             <div className="flex flex-col">
-              <label className="text-[12px] font-semibold mb-1">GST Number</label>
+              <label className="text-[12px] font-semibold mb-1">
+                GST Number
+              </label>
               <input
                 type="text"
                 value={formData.gst}
@@ -621,100 +658,88 @@ function Auction_Application_form() {
         </div>
 
         {/* CONFIRMATION CHECKBOX */}
-        <div className="mt-6 flex items-center gap-2">
-          <input
-            type="checkbox"
-            name="confirm"
-            className="w-4 h-4 border-gray-300 rounded accent-[#0A2478]"
-          />
-          <span className="text-[13px] font-medium text-gray-800">
-            I confirm these details are correct.
-          </span>
+        <div className="mt-4">
+          <label className="flex items-center gap-2">
+            <input type="checkbox" name="confirm" onChange={onChange} />
+            <span className="text-sm">
+              I confirm these details are correct.
+            </span>
+          </label>
         </div>
       </div>
-    
-      <div className='bg-[#E9E9FF] mx-[28px] p-5  '>
-          <h3 className="text-[#0A2478] font-semibold text-lg  mb-4">
-            Payment
-          </h3>
 
-          <div className="flex gap-5">
-            <div>
-              <p className="text-sm font-medium">Auction Fees*</p>
-              <input
-                type="number"
-                name="fees"
-                value={formData.fees}
-                disabled
-                onChange={onChange}
+      <div className="bg-[#E9E9FF] mx-[28px] p-5  ">
+        <h3 className="text-[#0A2478] font-semibold text-lg  mb-4">Payment</h3>
+
+        <div className="flex gap-5">
+          <div>
+            <p className="text-sm font-medium">Auction Fees*</p>
+            <input
+              type="number"
+              name="fees"
+              value={formData.fees}
+              disabled
+              onChange={onChange}
               className="border border-gray-300 rounded-md px-2 py-1.5 w-[160px] text-xs bg-white"
+            />
+          </div>
+
+          <div>
+            <p className="text-sm font-medium">Select Payment Method*</p>
+            <select
+              name="paymentMethod"
+              value={formData.paymentMethod}
+              onChange={onChangeForaddpaymentata}
+              className="border border-gray-300 rounded-md px-2 py-1.5 w-[160px] text-xs bg-white"
+            >
+              <option value="">Select Method</option>
+              <option value="UPI">UPI</option>
+              <option value="Cash">Cash</option>
+              <option value="Bank">Bank Transfer</option>
+            </select>
+          </div>
+
+          {/* ---------- Show UTR only for UPI ---------- */}
+          {formData.paymentMethod === "UPI" && (
+            <div>
+              <p className="text-sm font-medium">UTR Number*</p>
+              <input
+                type="text"
+                name="utr"
+                value={formData.utr}
+                onChange={onChange}
+                className="border border-gray-300 rounded-md px-2 py-1.5 w-[160px] text-xs bg-white"
               />
             </div>
+          )}
 
-            <div>
-              <p className="text-sm font-medium">
-                Select Payment Method*
-              </p>
-              <select
-                name="paymentMethod"
-                value={formData.paymentMethod}
-                onChange={onChangeForaddpaymentata}
-              className="border border-gray-300 rounded-md px-2 py-1.5 w-[160px] text-xs bg-white"
-              >
-                <option value="">Select Method</option>
-                <option value="UPI">UPI</option>
-                <option value="Cash">Cash</option>
-                <option value="Bank">Bank Transfer</option>
-              </select>
-            </div>
-
-            {/* ---------- Show UTR only for UPI ---------- */}
-            {formData.paymentMethod === "UPI" && (
+          {/* ---------- Show Bank Transfer Fields ---------- */}
+          {formData.paymentMethod === "Bank" && (
+            <>
               <div>
-                <p className="text-sm font-medium">UTR Number*</p>
+                <p className="text-sm font-medium">Bank Name</p>
                 <input
                   type="text"
-                  name="utr"
-                  value={formData.utr}
-                  onChange={onChange}
-                className="border border-gray-300 rounded-md px-2 py-1.5 w-[160px] text-xs bg-white"
+                  value={formData.bankName}
+                  disabled
+                  className="border border-gray-300 rounded-md px-2 py-1.5 w-[160px] text-xs bg-white"
                 />
               </div>
-            )}
 
-            {/* ---------- Show Bank Transfer Fields ---------- */}
-            {formData.paymentMethod === "Bank" && (
-              <>
-                <div>
-                  <p className="text-sm font-medium">Bank Name</p>
-                  <input
-                    type="text"
-                    value={formData.bankName}
-                    disabled
+              <div className="flex flex-col">
+                <label className="text-sm font-medium">Transaction ID*</label>
+                <input
+                  type="text"
+                  name="transactionId"
+                  value={formData.transactionId}
+                  onChange={onChange}
                   className="border border-gray-300 rounded-md px-2 py-1.5 w-[160px] text-xs bg-white"
-                  />
-                </div>
-
-                <div className="flex flex-col">
-                  <label className="text-sm font-medium">
-                    Transaction ID*
-                  </label>
-                  <input
-                    type="text"
-                    name="transactionId"
-                    value={formData.transactionId}
-                    onChange={onChange}
-                  className="border border-gray-300 rounded-md px-2 py-1.5 w-[160px] text-xs bg-white"
-                  />
-                </div>
-              </>
-            )}
-          </div>
+                />
+              </div>
+            </>
+          )}
         </div>
-
-    
-
-
+      </div>
 
       {showPopup && popupData && (
         <div
@@ -746,7 +771,7 @@ function Auction_Application_form() {
             <div className="p-2">
               <h3 className="text-[18px] font-bold mt-2">Bidder Details</h3>
 
-              <div className="flex gap-5 mt-2">
+              <div className="flex gap-5 mt-2 text-xs">
                 <div>
                   <p>Bidder ID:</p> <p> {popupData.bidderId}</p>
                 </div>
@@ -770,7 +795,7 @@ function Auction_Application_form() {
                   <p>Email Id:</p> <p>{popupData.email}</p>
                 </div>
               </div>
-              <div className="flex gap-5 mt-4">
+              <div className="flex gap-5 mt-4 text-xs">
                 <div>
                   <p>GST No:</p>
                   <p>{popupData.gst}</p>
@@ -789,7 +814,7 @@ function Auction_Application_form() {
               {/* Credit Details */}
               {/* <h3 className="text-md font-semibold mt-6">Credit Details</h3> */}
               <h3 className="text-[18px] font-bold mt-2 ">Credit Details</h3>
-              <div className="flex mt-5 gap-5">
+              <div className="flex mt-5 gap-5 text-xs">
                 <div>
                   <p>Credit Note ID:</p>
                   <p> {popupData.creditNoteID}</p>
@@ -806,7 +831,7 @@ function Auction_Application_form() {
                   <p> Registration / EMD Deposit Received</p>
                 </div>
               </div>
-              <div className="flex mt-5 gap-5">
+              <div className="flex mt-5 gap-5 text-xs">
                 <div>
                   <p>Status:</p> <p> Available for Adjustment </p>
                 </div>

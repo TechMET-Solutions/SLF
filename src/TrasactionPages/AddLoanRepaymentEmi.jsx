@@ -2,8 +2,9 @@ import axios from "axios";
 import { useEffect, useState } from "react";
 import "react-datepicker/dist/react-datepicker.css";
 import { IoMdDownload, IoMdPrint } from "react-icons/io";
-import { useLocation, useNavigate } from "react-router-dom";
+import { useLocation, useNavigate, useParams } from "react-router-dom";
 import { API } from "../api";
+import { usePermission } from "../API/Context/PermissionContext";
 import profileempty from "../assets/profileempty.png";
 
 const ItemList = [{}];
@@ -19,10 +20,12 @@ function AddLoanRepaymentEmi() {
     CoBorrower_signature: "",
     OrnamentPhoto: "",
   });
+  const { permissions, userData } = usePermission();
   const [installments, setInstallments] = useState([]);
   console.log(installments, "installments");
+  const { loanId } = useParams(); // ✅ from URL
   const location = useLocation();
-  const { loanId, loanData } = location.state || {}; // <-- here you get it from navigate
+  const { loanData } = location.state || {}; // <-- here you get it from navigate
   const navigate = useNavigate();
   const [data, setData] = useState(null);
   console.log(data, "data");
@@ -30,7 +33,10 @@ function AddLoanRepaymentEmi() {
   const [error, setError] = useState(null);
   const [isClose, setIsClose] = useState(false);
   const [isAdvInt, setIsAdvInt] = useState(false);
-  const [isAdvIntCheck, setIsAdvIntCheck] = useState(false);
+  const [pendingLoanAmount, setPendingLoanAmount] = useState(0);
+
+  const [PendingEmi, setPendingEmi] = useState(0);
+  const [penaltyAmount, setPenaltyAmount] = useState(0);
   useEffect(() => {
     if (loanId) {
       fetchLoanData();
@@ -38,7 +44,7 @@ function AddLoanRepaymentEmi() {
   }, [loanId]);
 
   const [loanInfo, setLoanInfo] = useState({
-    emiAmount: 0, // One month EMI
+    emiAmount: PendingEmi, // One month EMI
     interestAmount: 0, // Interest part of current EMI
     payAmount: 0, // = emiAmount (auto)
     emiPaidCount: 0, // Already paid EMI count
@@ -48,7 +54,100 @@ function AddLoanRepaymentEmi() {
     interestPercent: 0, // Current slab %
     roundedPayAmount: 0, // e.g. 250
     roundOffAmount: 0,
+    chargesAmount: 0,
   });
+
+  //   useEffect(() => {
+  //     debugger;
+  //     if (!data?.loanApplication?.EMI_Details) {
+  //       setPendingLoanAmount(0);
+  //       setPendingEmi(0);
+  //       return;
+  //     }
+
+  //     const emiDetails = data.loanApplication.EMI_Details || [];
+
+  //     // ✅ Get FIRST pending EMI
+  //     const firstPendingEMI = emiDetails
+  //       .filter((emi) => emi.status === "Pending")
+  //       .sort((a, b) => new Date(a.emiDate) - new Date(b.emiDate))[0];
+
+  //     const emiValue = firstPendingEMI ? Number(firstPendingEMI.emi) : 0;
+
+  //     // 👉 Charges from API
+  //     const charges = Number(data?.loanApplication?.total_unpaid_charges || 0);
+
+  //     // ✅ Set values
+  //     setPendingLoanAmount(firstPendingEMI ? Number(firstPendingEMI.opening) : 0);
+
+  //     // 🔥 EMI + Charges
+
+  //    const dueEmiCount = getDueEMI();
+
+  // // ✅ EMI multiplied by due count
+  // const totalEmi = emiValue * dueEmiCount;
+
+  // // ✅ FINAL (with charges if needed)
+  // const finalEmiWithCharges = totalEmi + charges;
+
+  // setPendingEmi(finalEmiWithCharges);
+  //   }, [data]);
+
+  useEffect(() => {
+    debugger;
+
+    if (!data?.loanApplication?.EMI_Details) {
+      setPendingLoanAmount(0);
+      setPendingEmi(0);
+      setPenaltyAmount(0);
+      return;
+    }
+
+    const emiDetails = data.loanApplication.EMI_Details || [];
+
+    // ✅ Get all pending EMIs sorted by date
+    const pendingEmis = emiDetails
+      .filter((emi) => emi.status === "Pending")
+      .sort((a, b) => new Date(a.emiDate) - new Date(b.emiDate));
+
+    // ✅ First pending EMI → Opening balance
+    const firstPendingEMI = pendingEmis[0];
+
+    setPendingLoanAmount(firstPendingEMI ? Number(firstPendingEMI.opening) : 0);
+
+    // ✅ Get due EMI count
+    const dueEmiCount = getDueEMI();
+
+    // ✅ If no due EMI → take 1 EMI
+    const dueEmiList =
+      dueEmiCount > 0
+        ? pendingEmis.slice(0, dueEmiCount)
+        : pendingEmis.length > 0
+          ? [pendingEmis[0]]
+          : [];
+
+    // ✅ EMI total (REAL calculation)
+    const totalEmi = dueEmiList.reduce(
+      (sum, emi) => sum + Number(emi.emi || 0),
+      0,
+    );
+
+    // 👉 Charges
+    const charges = Number(data?.loanApplication?.total_unpaid_charges || 0);
+
+    // 👉 Penalty (FIXED per EMI)
+    const penaltyPerEmi = Number(data?.schemeData?.penalty || 0);
+
+    const totalPenalty =
+      dueEmiCount > 0 ? dueEmiList.length * penaltyPerEmi : 0;
+
+    // ✅ FINAL TOTAL
+    const finalEmiWithCharges = totalEmi + totalPenalty + charges;
+
+    // ✅ Store values
+    setPendingEmi(finalEmiWithCharges);
+    setPenaltyAmount(totalPenalty);
+  }, [data]);
 
   console.log(loanInfo, "loanInfo");
   const [intrestPercentage, setintrestPercentage] = useState(null);
@@ -82,16 +181,52 @@ function AddLoanRepaymentEmi() {
   });
   console.log(paymentInfo, "paymentInfo");
   const [bankList, setBankList] = useState([]);
-  const fetchBanks = async () => {
-    try {
-      const res = await axios.get(`${API}/api/banks/list`);
-      setBankList(res.data);
-    } catch (err) {
-      console.error(err);
-    }
-  };
+  // const fetchBanks = async () => {
+  //   try {
+  //     const res = await axios.get(`${API}/api/banks/list`);
+  //     setBankList(res.data);
+  //   } catch (err) {
+  //     console.error(err);
+  //   }
+  // };
+
+  // useEffect(() => {
+  //   fetchBanks();
+  // }, []);
 
   useEffect(() => {
+    const fetchBanks = async () => {
+      debugger;
+      try {
+        const userData = JSON.parse(sessionStorage.getItem("userData"));
+
+        const branchId =
+          typeof userData?.branchId === "object"
+            ? userData?.branchId?.id
+            : userData?.branchId;
+
+        console.log("BranchId:", branchId);
+
+        if (!branchId) {
+          console.error("BranchId missing!");
+          return;
+        }
+
+        const res = await axios.get(`${API}/api/banks/GetBanklist`, {
+          params: { branchId },
+        });
+
+        const formattedBanks = res.data.map((bank) => ({
+          id: bank.id,
+          name: bank.name,
+        }));
+
+        setBankList(formattedBanks);
+      } catch (error) {
+        console.error("Error fetching banks:", error);
+      }
+    };
+
     fetchBanks();
   }, []);
 
@@ -103,7 +238,7 @@ function AddLoanRepaymentEmi() {
   useEffect(() => {
     if (!data?.loanApplication || !data?.schemeData) return;
 
-    const P = Number(data.loanApplication.Loan_amount);
+    const P = Number(data.loanApplication.Net_Payable);
     const tenure = Number(data.loanApplication.Loan_Tenure);
     const type = data.schemeData.interestType; // "Flat" or "Reducing"
 
@@ -233,8 +368,24 @@ function AddLoanRepaymentEmi() {
     return { rounded, roundOff };
   };
 
-  useEffect(() => {
+  const getDueEMI = () => {
     debugger;
+    if (!data?.loanApplication?.EMI_Details) return 0;
+
+    const today = new Date();
+    today.setHours(0, 0, 0, 0); // remove time
+
+    const dueCount = data.loanApplication.EMI_Details.filter((emi) => {
+      const emiDate = new Date(emi.emiDate);
+      emiDate.setHours(0, 0, 0, 0); // remove time
+
+      return emi.status === "Pending" && emiDate < today; // ✅ ONLY past dates
+    }).length;
+
+    return dueCount;
+  };
+
+  useEffect(() => {
     if (!data?.loanApplication || !data?.schemeData) return;
 
     const pending = Number(data.loanApplication.LoanPendingAmount || 0);
@@ -262,7 +413,7 @@ function AddLoanRepaymentEmi() {
 
     const approvalDate = new Date(data.loanApplication.approval_date);
     const today = new Date();
-
+    const charges = Number(data.loanApplication.total_unpaid_charges || 0);
     const elapsedMonths =
       (today.getFullYear() - approvalDate.getFullYear()) * 12 +
       (today.getMonth() - approvalDate.getMonth());
@@ -311,12 +462,25 @@ function AddLoanRepaymentEmi() {
     paidUpto.setMonth(paidUpto.getMonth() + paidCount + 1);
     const rawPay = emi.toFixed(2);
     const { rounded, roundOff } = roundUpAmount(rawPay);
+
+    const dueEmiCount = getDueEMI();
+    // const emiAmountNum = Number(emi);
+    // const dueEmiAmount = dueEmiCount * emiAmountNum;
+
+    //     const penaltyPerEmi = Number(data?.schemeData?.penalty || 0);
+    //       const totalPenalty = dueEmiCount * penaltyPerEmi;
+
+    // const penaltyPerEmi = 100;
+    // const totalPenalty = dueEmiCount * penaltyPerEmi;
+
     setLoanInfo({
       emiAmount: emi.toFixed(2),
       interestAmount: currentInterest.toFixed(2),
       payAmount: emi.toFixed(2),
       // 🔥 new stored values
-      roundedPayAmount: rounded.toFixed(2),
+      // roundedPayAmount: rounded.toFixed(2),
+      chargesAmount: charges,
+      roundedPayAmount: (PendingEmi + charges * dueEmiCount).toFixed(2),
       roundOffAmount: roundOff.toFixed(2),
       emiPaidCount: paidCount,
       interestPaidFor: paidCount,
@@ -472,23 +636,7 @@ function AddLoanRepaymentEmi() {
 
   console.log(loanInfo, "loanInfo");
 
-  // const fetchLoanData = async () => {
-  //   try {
-  //     setLoading(true);
-  //     const res = await axios.get(
-  //       `${API}/Transactions/goldloan/getLoanRepayment/${loanId}`,
-  //     );
-  //     setData(res.data);
-  //     setInstallments(res.data.installments || []);
-  //   } catch (err) {
-  //     setError("Failed to load loan data");
-  //   } finally {
-  //     setLoading(false);
-  //   }
-  // };
-
   const fetchLoanData = async () => {
-    debugger;
     try {
       setLoading(true);
 
@@ -500,7 +648,7 @@ function AddLoanRepaymentEmi() {
       setData(res.data);
 
       // Store installments properly
-      setInstallments(res.data?.loanApplication?.installments || []);
+      setInstallments(res.data?.loanApplication?.emi_installments || []);
     } catch (err) {
       setError("Failed to load loan data");
     } finally {
@@ -565,81 +713,6 @@ function AddLoanRepaymentEmi() {
     0,
   );
 
-  // const handleRepaymentSubmit = async () => {
-  //   debugger;
-  //   if (!data?.loanApplication) return;
-
-  //   const today = new Date().toISOString().slice(0, 10);
-
-  //   const paidUptoText = isCloseLoan
-  //     ? getPaidUptoFromTenure(
-  //         data.loanApplication.ApprovalDate,
-  //         data.loanApplication.Tenure,
-  //       )
-  //     : loanInfo.intPaidUptoText;
-
-  //   const payload = {
-  //     loanId: data.loanApplication.id,
-
-  //     // Loan status fields
-  //     pendingLoanAmount: data.loanApplication.LoanPendingAmount,
-  //     pendingEMICount: data.loanApplication.PendingEMICount,
-  //     emiPaidCount: loanInfo.emiPaidCount,
-  //     lastEmiPaidDate: today,
-  //     lastEmiPaidUpto: paidUptoText,
-
-  //     // Current payment calculation
-  //     payAmount: isCloseLoan
-  //       ? loanInfo.payAmount // full closing amount
-  //       : loanInfo.emiAmount,
-  //     interestAmount: loanInfo.interestAmount,
-  //     balanceLoanAmount: loanInfo.balanceLoanAmt,
-  //     LastInterestPaidPercentage: intrestPercentage,
-  //     isCloseLoan: isCloseLoan,
-  //     // Payment info
-  //     paymentInfo: {
-  //       mode: paymentInfo.mode,
-  //       type: paymentInfo.type,
-  //       refNo: paymentInfo.refNo,
-  //       madeBy: paymentInfo.madeBy,
-  //       creditNote: paymentInfo.creditNote,
-  //       creditNoteAmount: paymentInfo.creditNoteAmount,
-  //       utilizedAmount: paymentInfo.utilizedAmount,
-  //       unutilizedAmount: paymentInfo.unutilizedAmount,
-  //     },
-  //   };
-
-  //   console.log("SUBMIT JSON:", payload);
-
-  //   try {
-  //     const res = await axios.post(
-  //       `${API}/Transactions/loan-repayment`,
-  //       payload,
-  //     );
-
-  //     if (res.data?.success) {
-  //       alert("Repayment Saved Successfully!");
-  //       // redirect if needed
-  //       // navigate("/Loan-Application");
-  //       setPaymentInfo({
-  //         mode: "",
-  //         type: "",
-  //         refNo: "",
-  //         madeBy: "",
-  //         creditNote: "",
-  //         creditNoteAmount: 0,
-  //         utilizedAmount: 0,
-  //         unutilizedAmount: 0,
-  //       });
-  //       fetchLoanData();
-  //     } else {
-  //       alert("Failed to save repayment");
-  //     }
-  //   } catch (err) {
-  //     console.error("Repayment Error:", err);
-  //     alert("Something went wrong while saving repayment");
-  //   }
-  // };
   const getPaidUptoFromTenure = (approvalDate, tenure) => {
     if (!approvalDate || !tenure) return "";
 
@@ -654,9 +727,23 @@ function AddLoanRepaymentEmi() {
   };
 
   const handleRepaymentSubmit = async () => {
-    debugger;
     if (!data?.loanApplication) return;
+    if (!paymentInfo.mode?.trim()) {
+      alert("Payment Mode is required");
+      return;
+    }
 
+    if (!paymentInfo.refNo?.trim()) {
+      alert("Reference Number is required");
+      return;
+    }
+
+    if (!paymentInfo.madeBy?.trim()) {
+      alert("Made By is required");
+      return;
+    }
+
+    const dueEmiCount = getDueEMI();
     const today = new Date().toISOString().slice(0, 10);
 
     const paidUptoText = isCloseLoan
@@ -674,22 +761,17 @@ function AddLoanRepaymentEmi() {
 
     const payload = {
       loanId: data.loanApplication.id,
-
-      pendingLoanAmount: data.loanApplication.LoanPendingAmount,
+      pendingLoanAmount: pendingLoanAmount,
       pendingEMICount: data.loanApplication.PendingEMICount,
       emiPaidCount: loanInfo.emiPaidCount,
       lastEmiPaidDate: today,
       lastEmiPaidUpto: paidUptoText,
-
-      // Current payment calculation
-      payAmount: isCloseLoan ? loanInfo.payAmount : loanInfo.roundedPayAmount,
-
+      payAmount: isCloseLoan ? loanInfo.payAmount : PendingEmi,
       interestAmount: loanInfo.interestAmount,
-
-      // 🔥 send correct balances from EMI table
+      chargesAmount: loanInfo.chargesAmount,
       openingBalance,
       closingBalance,
-
+      dueEmiCount: dueEmiCount,
       LastInterestPaidPercentage: intrestPercentage,
       isCloseLoan,
 
@@ -737,8 +819,6 @@ function AddLoanRepaymentEmi() {
   };
 
   const handleCreditNoteSelect = (creditNoteId) => {
-    debugger;
-
     const selected = creditNotes.find(
       (item) => item.credit_note_id === creditNoteId,
     );
@@ -760,9 +840,9 @@ function AddLoanRepaymentEmi() {
     if (isClose) {
       payAmount = Number(loanInfo?.payAmount || 0);
     } else if (isAdvInt) {
-      payAmount = Number(loanInfoForAdj?.payAmount || 0);
+      payAmount = Number(PendingEmi || 0);
     } else {
-      payAmount = Number(loanInfo?.payAmount || 0);
+      payAmount = Number(PendingEmi || 0);
     }
 
     // 2️⃣ Credit Note Amount
@@ -793,31 +873,6 @@ function AddLoanRepaymentEmi() {
       unutilizedAmount: unutilized,
     }));
   };
-  const getDueEMI = () => {
-    if (!data?.loanApplication) return 0;
-
-    const approvalDate = new Date(data.loanApplication.approval_date);
-
-    const lastPaidUpto = data.loanApplication.LastEmiPaidUpto
-      ? new Date(data.loanApplication.LastEmiPaidUpto)
-      : approvalDate;
-
-    const today = new Date();
-
-    // Completed months from approval till today
-    const totalMonths =
-      (today.getFullYear() - approvalDate.getFullYear()) * 12 +
-      (today.getMonth() - approvalDate.getMonth());
-
-    // Months already covered till LastEmiPaidUpto
-    const paidMonths =
-      (lastPaidUpto.getFullYear() - approvalDate.getFullYear()) * 12 +
-      (lastPaidUpto.getMonth() - approvalDate.getMonth());
-
-    const due = totalMonths - paidMonths;
-
-    return Math.max(due, 0);
-  };
 
   const dueEmiCount = getDueEMI(); // your earlier function
   const formatDate = (date) => {
@@ -833,12 +888,16 @@ function AddLoanRepaymentEmi() {
         </h2>
 
         <div className="flex items-center gap-5">
-          <button
-            className="bg-[#0A2478] text-white text-[10px] w-[74px] h-[24px] rounded-[3.75px] transition"
-            onClick={handleRepaymentSubmit}
-          >
-            Submit
-          </button>
+          {(userData?.isAdmin ||
+            permissions?.Transaction?.find((item) => item.name === "Repay")
+              ?.add) && (
+            <button
+              className="bg-[#0A2478] text-white text-[10px] w-[74px] h-[24px] rounded-[3.75px] transition"
+              onClick={handleRepaymentSubmit}
+            >
+              Submit
+            </button>
+          )}
 
           <button
             onClick={() => navigate("/Loan-Application")}
@@ -967,7 +1026,7 @@ function AddLoanRepaymentEmi() {
                   </label>
                   <input
                     type="text"
-                    value={loanInfo.emiAmount} // 👈 always EMI only
+                    value={PendingEmi} // 👈 always EMI only
                     disabled
                     className="border border-gray-300 bg-gray-100 rounded-md px-1 py-1 text-xs"
                   />
@@ -995,8 +1054,7 @@ function AddLoanRepaymentEmi() {
                     type="text"
                     name="pendingLoanAmount"
                     disabled
-                    value={data?.loanApplication?.LoanPendingAmount}
-                    onChange={handleChange}
+                    value={pendingLoanAmount}
                     className="border border-gray-300 disabled:bg-gray-100 rounded-md px-1 py-1 focus:ring-1 focus:ring-blue-500 focus:outline-none w-[140px] text-xs"
                   />
                 </div>
@@ -1039,7 +1097,7 @@ function AddLoanRepaymentEmi() {
                 {/* Loan Amount Paid */}
                 <div className="flex flex-col" style={{ width: "120px" }}>
                   <label className="text-gray-800 font-medium text-xs">
-                    Loan Amount Paid
+                    Total Amount Paid
                   </label>
                   <input
                     type="text"
@@ -1192,27 +1250,27 @@ function AddLoanRepaymentEmi() {
         {/* Payment Section */}
         <div className="flex  justify-between ml-[40px] gap-2 bg-[#F7F7FF] p-5 w-[1462px]  ">
           <div className=" flex gap-5 rounded-md ">
-           <div className="border-r-2 border-gray-400 pr-6">
-  <h1 className="text-blue-900 font-semibold text-xl pb-2">
-    Payment
-  </h1>
+            <div className="border-r-2 border-gray-400 pr-6">
+              <h1 className="text-blue-900 font-semibold text-xl pb-2">
+                Payment
+              </h1>
 
-  <div className="flex items-center gap-2 mb-2">
-    <input
-      type="checkbox"
-      id="closeLoan"
-      checked={isCloseLoan}
-      onChange={handleCloseLoanChange}
-      className="h-4 w-4"
-    />
-    <label
-      htmlFor="closeLoan"
-      className="text-gray-800 font-medium text-xs"
-    >
-      Close Loan
-    </label>
-  </div>
-</div>
+              <div className="flex items-center gap-2 mb-2">
+                <input
+                  type="checkbox"
+                  id="closeLoan"
+                  checked={isCloseLoan}
+                  onChange={handleCloseLoanChange}
+                  className="h-4 w-4"
+                />
+                <label
+                  htmlFor="closeLoan"
+                  className="text-gray-800 font-medium text-xs"
+                >
+                  Close Loan
+                </label>
+              </div>
+            </div>
             <div>
               <div className="flex gap-4 mt-2 text-sm">
                 {/* Payable Amount */}
@@ -1226,7 +1284,7 @@ function AddLoanRepaymentEmi() {
                     value={(() => {
                       const val = isCloseLoan
                         ? Number(loanInfo.payAmount)
-                        : Number(loanInfo.roundedPayAmount);
+                        : Number(PendingEmi);
 
                       return Number.isFinite(val) ? val.toFixed(2) : "0.00";
                     })()}
@@ -1257,13 +1315,15 @@ function AddLoanRepaymentEmi() {
                   <input
                     type="text"
                     value={
-                      dueEmiCount > 0 ? loanInfo.duePenalty || "0.00" : "0.00"
+                      dueEmiCount > 0 && penaltyAmount > 0
+                        ? Number(penaltyAmount).toFixed(2)
+                        : "0.00"
                     }
                     disabled
                     className="border border-gray-300 bg-gray-100 rounded-md px-1 py-1 text-xs"
                   />
                 </div>
-                <div className="flex flex-col gap-1 w-[80px]  text-xs">
+                {/* <div className="flex flex-col gap-1 w-[80px]  text-xs">
                   <label className="text-gray-900 font-medium">Round Off</label>
                   <input
                     type="text"
@@ -1271,23 +1331,23 @@ function AddLoanRepaymentEmi() {
                     value={loanInfo.roundOffAmount}
                     className="border border-gray-300 bg-gray-100 rounded-md px-1 py-1 text-xs"
                   />
-                </div>
+                </div> */}
                 {isReducing && (
                   <div className="flex flex-col gap-1 w-[120px]">
-                    <label className="text-gray-900 font-medium">
+                    <label className="text-gray-900 font-medium text-xs">
                       Interest Amount
                     </label>
                     <input
                       type="text"
                       value={loanInfo.interestAmount}
                       disabled
-                      className="border border-gray-300 bg-gray-100 rounded-md px-3 py-2"
+                      className="border border-gray-300 bg-gray-100 rounded-md px-3 py-1 text-xs"
                     />
                   </div>
                 )}
                 <div className="flex flex-col gap-1 w-[130px]">
                   <label className="text-gray-900 font-medium text-xs">
-                    Mode of Payment
+                    Mode of Payment <span className="text-red-500"> *</span>
                   </label>
                   <select
                     className="border border-gray-300 rounded-md px-1 py-1 focus:ring-1 focus:ring-blue-500 focus:outline-none bg-white text-xs"
@@ -1326,7 +1386,7 @@ function AddLoanRepaymentEmi() {
                     <option value="">--Select Bank--</option>
                     {bankList.map((b) => (
                       <option key={b.id} value={b.id}>
-                        {b.bank_name}
+                        {b.name}
                       </option>
                     ))}
                   </select>
@@ -1358,20 +1418,20 @@ function AddLoanRepaymentEmi() {
                   paymentInfo.creditNote && (
                     <div className="flex gap-3 ">
                       {/* Utilized Amount */}
-                      <div className="flex flex-col gap-1 w-[200px]">
-                        <label className="text-gray-900 font-medium">
+                      <div className="flex flex-col gap-1 w-[100px]">
+                        <label className="text-gray-900 font-medium text-xs">
                           Utilized Amount
                         </label>
                         <input
                           type="text"
                           value={paymentInfo.utilizedAmount}
                           disabled
-                          className="border border-gray-300 rounded-md px-3 py-2 bg-gray-100"
+                          className="border border-gray-300 rounded-md px-1 py-1 bg-gray-100 text-xs"
                         />
                       </div>
 
                       {/* Unutilized Amount */}
-                      <div className="flex flex-col gap-1 w-[200px]">
+                      <div className="flex flex-col gap-1 w-[120px]  text-xs">
                         <label className="text-gray-900 font-medium">
                           Unutilized Amount
                         </label>
@@ -1379,7 +1439,7 @@ function AddLoanRepaymentEmi() {
                           type="text"
                           value={paymentInfo.unutilizedAmount}
                           disabled
-                          className="border border-gray-300 rounded-md px-3 py-2 bg-gray-100"
+                          className="border border-gray-300 rounded-md px-1 py-1 bg-gray-100  text-xs"
                         />
                       </div>
                     </div>
@@ -1388,7 +1448,7 @@ function AddLoanRepaymentEmi() {
                 {/* Payment Ref. No */}
                 <div className="flex flex-col gap-1 w-[120px]">
                   <label className="text-gray-900 font-medium text-xs">
-                    Payment Ref. No
+                    Payment Ref. No <span className="text-red-500"> *</span>
                   </label>
                   <input
                     type="text"
@@ -1404,7 +1464,7 @@ function AddLoanRepaymentEmi() {
                 {/* Payment Made By */}
                 <div className="flex flex-col gap-1 w-[150px]">
                   <label className="text-gray-900 font-medium text-xs">
-                    Payment Made By
+                    Payment Made By <span className="text-red-500"> *</span>
                   </label>
                   <input
                     type="text"
@@ -1425,8 +1485,6 @@ function AddLoanRepaymentEmi() {
 
             <div className="flex flex-wrap gap-x-6 gap-y-4 mt-4"></div>
           </div>
-
-         
         </div>
 
         {/* <h3 className="font-semibold mb-4 text-[#0A2478] text-lg mt-5">
@@ -1473,130 +1531,121 @@ function AddLoanRepaymentEmi() {
         {/* Pledge Item List */}
 
         {/* Installments Table */}
-        <div className=' bg-[#FFE6E6] w-[1462px] ml-[40px]'>
-           <div className=''>
-           <div className="flex  pl-5 pr-5 mt-2 mb-2">
-            <div className="w-[1000px]">
-             
-              <h1 className="text-blue-900 font-semibold text-xl ">
-                {" "}
-                
-              </h1>
-              <div className="w-[1100px] text-xs border border-gray-300">
-                
-                <div className="flex bg-[#0A2478] text-white font-semibold">
-                  <div className="flex-1 p-3 border-r border-white text-center w-[150px]">
-                    Particulars( Pledge Item)
-                  </div>
-                  <div className="w-20 p-3 border-r border-white text-center">
-                    Nos.
-                  </div>
-                  <div className="w-20 p-3 border-r border-white text-center">
-                    Gross
-                  </div>
-                  <div className="w-30 p-3 border-r border-white text-center">
-                    Net Weight
+        <div className=" bg-[#FFE6E6] w-[1462px] ml-[40px]">
+          <div className="">
+            <div className="flex  pl-5 pr-5 mt-2 mb-2">
+              <div className="w-[1000px]">
+                <h1 className="text-blue-900 font-semibold text-xs "> </h1>
+                <div className="w-[1100px] text-xs border border-gray-300">
+                  <div className="flex bg-[#0A2478] text-white font-semibold">
+                    <div className="flex-1 p-1 border-r border-white text-center w-[150px]">
+                      Particulars( Pledge Item)
+                    </div>
+                    <div className="w-20 p-1 border-r border-white text-center">
+                      Nos.
+                    </div>
+                    <div className="w-20 p-1 border-r border-white text-center">
+                      Gross
+                    </div>
+                    <div className="w-30 p-1 border-r border-white text-center">
+                      Net Weight
+                    </div>
+
+                    <div className="w-20 p-1 border-r border-white text-center">
+                      Actual Purity
+                    </div>
+                    <div className="w-30 p-1 border-r border-white text-center">
+                      Assigned Purity
+                    </div>
+
+                    <div className="w-16 p-1 border-r border-white text-center">
+                      Rate
+                    </div>
+                    <div className="w-24 p-1 border-r border-white text-center">
+                      Valuation
+                    </div>
+                    <div className="w-28 p-1 text-center">Remark</div>
                   </div>
 
-                 
-                  <div className="w-20 p-3 border-r border-white text-center">
-               Actual Purity
-                  </div>
-                  <div className="w-30 p-3 border-r border-white text-center">
-                   Assigned Purity
-                  </div>
+                  {pledgeItems?.length > 0 ? (
+                    <>
+                      {pledgeItems.map((item, index) => (
+                        <div
+                          key={item.id || index}
+                          className={`flex border-t border-gray-300 ${
+                            index % 2 === 0 ? "bg-gray-50" : "bg-white"
+                          }`}
+                        >
+                          <div className="flex-1 p-1 border-r border-gray-300 w-[150px]">
+                            {item.particular || "Gold"}
+                          </div>
+                          <div className="w-20 p-1 border-r border-gray-300 text-center">
+                            {item.nos || 1}
+                          </div>
+                          <div className="w-20 p-1 border-r border-gray-300 text-center">
+                            {formatCurrency(item.gross)}
+                          </div>
+                          <div className="w-30 p-1 border-r border-gray-300 text-center">
+                            {formatCurrency(item.netWeight)}
+                          </div>
 
-                  <div className="w-16 p-3 border-r border-white text-center">
-                    Rate
-                  </div>
-                  <div className="w-24 p-3 border-r border-white text-center">
-                    Valuation
-                  </div>
-                  <div className="w-28 p-3 text-center">Remark</div>
-                </div>
+                          <div className="w-20 p-1 border-r border-gray-300 text-center">
+                            {item.purity}
+                          </div>
+                          <div className="w-30 p-1 border-r border-gray-300 text-center">
+                            {item.Calculated_Purity || "---"}
+                          </div>
 
-              
-                {pledgeItems?.length > 0 ? (
-                  <>
-                    {pledgeItems.map((item, index) => (
-                      <div
-                        key={item.id || index}
-                        className={`flex border-t border-gray-300 ${
-                          index % 2 === 0 ? "bg-gray-50" : "bg-white"
-                        }`}
-                      >
-                        <div className="flex-1 p-1 border-r border-gray-300 w-[150px]">
-                          {item.particular || "Gold"}
+                          <div className="w-16 p-1 border-r border-gray-300 text-center">
+                            {formatCurrency(item.rate)}
+                          </div>
+                          <div className="w-24 p-1 border-r border-gray-300 text-center">
+                            {formatCurrency(item.valuation)}
+                          </div>
+                          <div className="w-28 p-1 text-center">
+                            {item.remark || "-"}
+                          </div>
+                        </div>
+                      ))}
+
+                      <div className="flex border-t border-gray-300 bg-white font-semibold">
+                        <div className="flex-1 p-1 border-r border-gray-300 text-left">
+                          Total
                         </div>
                         <div className="w-20 p-1 border-r border-gray-300 text-center">
-                          {item.nos || 1}
+                          {totalNos}
                         </div>
                         <div className="w-20 p-1 border-r border-gray-300 text-center">
-                          {formatCurrency(item.gross)}
+                          {formatCurrency(totalGross)}
                         </div>
                         <div className="w-30 p-1 border-r border-gray-300 text-center">
-                          {formatCurrency(item.netWeight)}
+                          {formatCurrency(totalNetWeight)}
                         </div>
 
-                        <div className="w-20 p-1 border-r border-gray-300 text-center">
-                          {item.purity}
-                        </div>
-                        <div className="w-30 p-1 border-r border-gray-300 text-center">
-                          {item.Calculated_Purity}
-                        </div>
+                        <div className="w-20 p-1 border-r border-gray-300"></div>
+                        <div className="w-30 p-1 border-r border-gray-300"></div>
 
-                        <div className="w-16 p-1 border-r border-gray-300 text-center">
-                          {formatCurrency(item.rate)}
-                        </div>
+                        <div className="w-16 p-1 border-r border-gray-300"></div>
                         <div className="w-24 p-1 border-r border-gray-300 text-center">
-                          {formatCurrency(item.valuation)}
+                          {formatCurrency(totalValuation)}
                         </div>
-                        <div className="w-28 p-1 text-center">
-                          {item.remark || "-"}
-                        </div>
+                        <div className="w-28 p-1"></div>
                       </div>
-                    ))}
-
-                   
-                    <div className="flex border-t border-gray-300 bg-white font-semibold">
-                      <div className="flex-1 p-1 border-r border-gray-300 text-left">
-                        Total
+                    </>
+                  ) : (
+                    <div className="flex border-t border-gray-300">
+                      <div className="flex-1 p-4 text-center text-gray-500">
+                        No pledge items found
                       </div>
-                      <div className="w-20 p-1 border-r border-gray-300 text-center">
-                        {totalNos}
-                      </div>
-                      <div className="w-20 p-1 border-r border-gray-300 text-center">
-                        {formatCurrency(totalGross)}
-                      </div>
-                      <div className="w-30 p-1 border-r border-gray-300 text-center">
-                        {formatCurrency(totalNetWeight)}
-                      </div>
-
-                    
-                      <div className="w-20 p-1 border-r border-gray-300"></div>
-                      <div className="w-30 p-1 border-r border-gray-300"></div>
-
-                      <div className="w-16 p-1 border-r border-gray-300"></div>
-                      <div className="w-24 p-1 border-r border-gray-300 text-center">
-                        {formatCurrency(totalValuation)}
-                      </div>
-                      <div className="w-28 p-1"></div>
                     </div>
-                  </>
-                ) : (
-                  <div className="flex border-t border-gray-300">
-                    <div className="flex-1 p-4 text-center text-gray-500">
-                      No pledge items found
-                    </div>
-                  </div>
-                )}
+                  )}
+                </div>
               </div>
             </div>
           </div>
         </div>
-</div>
-       
-        <div className=" bg-[#F7F7FF] pr-5 pl-5 w-[1462px] ml-[40px]">
+
+        <div className=" bg-[#F7F7FF] pr-5 pl-5 w-[1462px] ml-[40px] mb-10">
           <h1 className="text-blue-900 font-semibold text-xl py-2">
             Installments
           </h1>
@@ -1604,91 +1653,95 @@ function AddLoanRepaymentEmi() {
             <table className="w-full border-collapse">
               <thead>
                 <tr className="bg-blue-900 text-white text-xs">
-                  <th className="p-2 border border-gray-300">Sr. No</th>
-                  <th className="p-2 border border-gray-300">Receipt No</th>
-                  <th className="p-2 border border-gray-300">Payment Date</th>
-                  <th className="p-2 border border-gray-300">Paid Upto</th>
-                  <th className="p-2 border border-gray-300">Mode</th>
-                  <th className="p-2 border border-gray-300">Ref No</th>
-                  <th className="p-2 border border-gray-300">Amount</th>
-                  <th className="p-2 border border-gray-300">Interest %</th>
-                  <th className="p-2 border border-gray-300">Loan Adj</th>
-                  <th className="p-2 border border-gray-300">Int Days</th>
-                  <th className="p-2 border border-gray-300">Action</th>
+                  <th className="p-1 border border-gray-300">Sr. No</th>
+                  <th className="p-1 border border-gray-300">Receipt No</th>
+                  <th className="p-1 border border-gray-300">Payment Date</th>
+                  <th className="p-1 border border-gray-300">Paid Upto</th>
+                  <th className="p-1 border border-gray-300">Mode</th>
+                  <th className="p-1 border border-gray-300">Ref No</th>
+                  <th className="p-1 border border-gray-300">Amount</th>
+                  {/* <th className="p-1 border border-gray-300">Interest %</th> */}
+                  {/* <th className="p-1 border border-gray-300">Loan Adj</th>
+                  <th className="p-1 border border-gray-300">Int Days</th> */}
+                  <th className="p-1 border border-gray-300">Action</th>
                 </tr>
               </thead>
 
               <tbody>
                 {installments.length > 0 ? (
-                  installments.map((row, index) => (
-                    <tr
-                      key={row.id}
-                      className={index % 2 === 0 ? "bg-gray-50" : "bg-white"}
-                    >
-                      {/* Sr No */}
-                      <td className="p-2 border border-gray-300 text-center">
-                        {index + 1}
-                      </td>
+                  installments.map((row, index) => {
+                    const isEMI = row.type === "EMI";
 
-                      {/* Receipt No */}
-                      <td className="p-2 border border-gray-300 text-center">
-                        {row.id}
-                      </td>
+                    return (
+                      <tr
+                        key={row.id}
+                        className={index % 2 === 0 ? "bg-gray-50" : "bg-white"}
+                      >
+                        {/* Sr No */}
+                        <td className="p-1 border text-center text-xs">
+                          {index + 1}
+                        </td>
 
-                      {/* Payment Date */}
-                      <td className="p-2 border border-gray-300 text-center">
-                        {formatDate(row.transaction_date)}
-                      </td>
+                        {/* Receipt No */}
+                        <td className="p-1 border text-center text-xs">
+                          {isEMI ? row.receiptNumber : row.id}
+                        </td>
 
-                      {/* Paid Upto */}
-                      <td className="p-2 border border-gray-300 text-center">
-                        {formatDate(row.intPaidUpto)}
-                      </td>
+                        {/* Payment Date */}
+                        <td className="p-1 border text-center text-xs">
+                          {formatDate(
+                            isEMI ? row.created_at : row.transaction_date,
+                          )}
+                        </td>
 
-                      {/* Mode */}
-                      <td className="p-2 border border-gray-300 text-center">
-                        {row.paymentInfo?.mode || "-"}
-                      </td>
+                        {/* Paid Upto */}
+                        <td className="p-1 border text-center text-xs">
+                          {isEMI
+                            ? "-" // EMI doesn't have intPaidUpto
+                            : formatDate(row.intPaidUpto)}
+                        </td>
 
-                      {/* Ref No */}
-                      <td className="p-2 border border-gray-300 text-center">
-                        {row.paymentInfo?.refNo || "-"}
-                      </td>
+                        {/* Mode */}
+                        <td className="p-1 border text-center text-xs">
+                          {isEMI
+                            ? row.payment_mode
+                            : row.paymentInfo?.mode || "-"}
+                        </td>
 
-                      {/* Amount */}
-                      <td className="p-2 border border-gray-300 text-right">
-                        ₹ {row.payAmount?.toLocaleString()}
-                      </td>
+                        {/* Ref No */}
+                        <td className="p-1 border text-center text-xs">
+                          {isEMI ? row.ref_no : row.paymentInfo?.refNo || "-"}
+                        </td>
 
-                      {/* Interest % */}
-                      <td className="p-2 border border-gray-300 text-center">
-                        {row.interestPercent}%
-                      </td>
+                        {/* Amount */}
+                        <td className="p-1 border text-center text-xs">
+                          ₹{" "}
+                          {(isEMI
+                            ? row.pay_amount
+                            : row.payAmount
+                          )?.toLocaleString()}
+                        </td>
 
-                      {/* Loan Adj */}
-                      <td className="p-2 border border-gray-300 text-right">
-                        ₹ {row.loanAmountPaid?.toLocaleString()}
-                      </td>
+                        {/* Interest % */}
+                        {/* <td className="p-1 border text-center text-xs">
+            {isEMI ? "-" : `${row.interestPercent}%`}
+          </td> */}
 
-                      {/* Int Days */}
-                      <td className="p-2 border border-gray-300 text-center">
-                        {row.pendingDays || 0}
-                      </td>
-
-                      {/* Action */}
-                      <td className="p-2 border border-gray-300">
-                        <div className="flex gap-4 text-lg items-center justify-center cursor-pointer">
-                          <IoMdDownload className="text-blue-600 hover:text-blue-800" />
-                          <IoMdPrint className="text-green-600 hover:text-green-800" />
-                        </div>
-                      </td>
-                    </tr>
-                  ))
+                        {/* Action */}
+                        <td className="p-1 border text-xs">
+                          <div className="flex gap-4 justify-center cursor-pointer">
+                            <IoMdDownload className="text-blue-600 hover:text-blue-800" />
+                            <IoMdPrint className="text-green-600 hover:text-green-800" />
+                          </div>
+                        </td>
+                      </tr>
+                    );
+                  })
                 ) : (
                   <tr>
                     <td
                       colSpan="11"
-                      className="text-center p-4 text-gray-500 font-medium text-xs"
+                      className="text-center p-4 text-gray-500 text-xs"
                     >
                       No Installments Found
                     </td>

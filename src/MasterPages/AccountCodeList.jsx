@@ -7,11 +7,14 @@ import { useAuth } from "../API/Context/AuthContext";
 import { formatIndianDate } from "../utils/Helpers";
 // Ensure this import exists
 import Pagination from "../Component/Pagination";
+import { usePermission } from "../API/Context/PermissionContext";
+import Loader from "../Component/Loader";
 
 const AccountCodeList = () => {
   const navigate = useNavigate();
   const { loginUser } = useAuth();
-
+const { permissions, userData } = usePermission();
+  const [loading, setLoading] = useState(false);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [data, setData] = useState([]);
   const [editMode, setEditMode] = useState(false);
@@ -36,6 +39,13 @@ const AccountCodeList = () => {
     type: "Sub Ledger",
     addedBy: loginUser,
   });
+const initialFormState = {
+  name: "",
+  accountGroup: "",
+  financialDate: "",
+  type: "Sub Ledger",
+  addedBy: loginUser,
+};
 
   useEffect(() => {
     document.title = "SLF | Account Code List";
@@ -74,6 +84,7 @@ const AccountCodeList = () => {
 
   // 🔹 FIXED: API Call with Pagination
   const fetchData = async (page = 1) => {
+    setLoading(true);
     try {
       const res = await axios.get(`${API}/account-code/get`, {
         params: {
@@ -90,9 +101,11 @@ const AccountCodeList = () => {
         setTotalItems(res.data.pagination?.total || 0);
         setShowPagination(res.data.pagination?.showPagination || false);
         setCurrentPage(res.data.pagination?.page || 1);
+        setLoading(false);
       }
     } catch (error) {
       console.error("Error fetching account codes:", error);
+      setLoading(false);
     }
   };
 
@@ -104,15 +117,18 @@ const AccountCodeList = () => {
     }
 
     const payload = { ...formData };
+    setLoading(true);
     try {
       if (editMode) {
         payload.modifiedBy = loginUser;
         await axios.put(`${API}/account-code/update/${selectedId}`, payload);
         alert(" Ledger Updated ✅");
+        setLoading(false);
       } else {
         payload.addedBy = loginUser;
         await axios.post(`${API}/account-code/create`, payload);
         alert(" Ledger Created ✅");
+        setLoading(false);
       }
 
       setIsModalOpen(false);
@@ -125,8 +141,10 @@ const AccountCodeList = () => {
         type: "",
         addedBy: loginUser,
       });
+      setLoading(false);
     } catch (err) {
       console.error("Error saving account:", err);
+      setLoading(false);
     }
   };
 
@@ -256,8 +274,12 @@ const AccountCodeList = () => {
               </div>
 
               <div className="flex items-center gap-3 pl-4 border-gray-200">
-
-                <button onClick={() => setIsModalOpen(true)} className="w-[70px] h-[26px] rounded-[4px] bg-[#0A2478] text-white text-[11px]">Add</button>
+{(userData?.isAdmin||permissions?.Master?.find(
+  item => item.name === "Ledger"
+)?.add) && (
+  <button onClick={() => setIsModalOpen(true)} className="w-[70px] h-[26px] rounded-[4px] bg-[#0A2478] text-white text-[11px]">Add</button>
+)}
+               
                 <button onClick={() => navigate("/")} className="w-[70px] h-[26px] rounded-[4px] bg-[#C1121F] text-white text-[11px]">Exit</button>
               </div>
             </div>
@@ -273,7 +295,7 @@ const AccountCodeList = () => {
             <h2 className="text-[#0A2478] mb-6 font-semibold text-xl">
               {editMode ? "Edit Ledger" : "Create Ledger"}
             </h2>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-2 mb-6">
               <div>
                 <label className="text-sm font-medium text-gray-700 mb-2 block">Ledger <span className="text-red-500">*</span></label>
                 <input
@@ -307,19 +329,7 @@ const AccountCodeList = () => {
                 </select>
               </div>
 
-              {/* <div>
-                <label className="text-sm font-medium text-gray-700 mb-2 block">Financial <span className="text-red-500">*</span></label>
-                <select
-                  value={formData.financialDate}
-                  onChange={(e) => setFormData({ ...formData, financialDate: e.target.value })}
-                  className="w-full h-10 px-3 rounded-lg border border-gray-300 text-sm bg-white"
-                  required
-                >
-                  <option value="">Select Financial Type</option>
-                  <option value="Balance Sheet">Balance Sheet</option>
-                  <option value="Profit & Loss">Profit & Loss</option>
-                </select>
-              </div> */}
+             
 
               <div>
                 <label className="text-sm font-medium text-gray-700 mb-2 block">Type</label>
@@ -333,6 +343,8 @@ const AccountCodeList = () => {
                   <option value="General">General</option>
                   <option value="Sub Ledger">Sub Ledger</option>
                   <option value="Cash">Cash</option>
+                   <option value="Petty Cash">Petty Cash</option>
+                   <option value="Card">Card</option>
                   <option value="Bank">Bank</option>
                 </select>
               </div>
@@ -340,7 +352,15 @@ const AccountCodeList = () => {
 
             <div className="flex justify-center gap-3">
               <button className="h-10 px-6 rounded-lg bg-[#0A2478] text-white text-sm" onClick={handleSave}>Save</button>
-              <button className="h-10 px-6 rounded-lg bg-[#C1121F] text-white text-sm" onClick={() => setIsModalOpen(false)}>Exit</button>
+              <button
+                  className="h-10 px-6 rounded-lg bg-[#C1121F] text-white text-sm"
+                  onClick={() => {
+                    setFormData(initialFormState); // 🔥 reset form
+                    setIsModalOpen(false); // close modal
+                  }}
+                >
+                  Exit
+                </button>
             </div>
           </div>
         </div>
@@ -375,10 +395,18 @@ const AccountCodeList = () => {
                   <td className="px-1 py-1">{row.modifiedBy || "-"}</td>
                   <td className="px-1 py-1">{formatIndianDate(row.updated_at)}</td>
                   <td className="px-1 py-1 flex gap-2 ">
-                    <div className="bg-[#3dbd5a] cursor-pointer p-1.5 text-white rounded-sm" onClick={() => handleEdit(row)}>
+                    
+
+                    {(userData?.isAdmin||permissions?.Master?.find(
+  item => item.name === "Ledger"
+)?.edit) && (
+  <div className="bg-[#3dbd5a] cursor-pointer p-1.5 text-white rounded-sm" onClick={() => handleEdit(row)}>
                       <FiEdit />
                     </div>
+)}
                   </td>
+
+                  
                 </tr>
               ))}
             </tbody>
@@ -396,8 +424,11 @@ const AccountCodeList = () => {
           />
         </div>
       )}
+      {loading && <Loader />}
     </div>
+    
   );
+  
 };
 
 export default AccountCodeList;

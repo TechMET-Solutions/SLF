@@ -102,11 +102,17 @@ const Print_Cash_Balance = () => {
 
   const currentDate = new Date().toLocaleDateString("en-GB");
   const printTime = new Date().toLocaleTimeString();
+const formatDate = (dateString) => {
+  if (!dateString) return "";
 
+  const date = new Date(dateString);
+
+  return date.toLocaleDateString("en-GB"); // DD/MM/YYYY
+};
   return (
     <div className="min-h-screen w-full">
-      <div className="flex justify-center ">
-        <div className="flex items-center px-6 py-3 w-[1462px] bg-white border border-gray-200 rounded-xl shadow-sm justify-between mt-2">
+      <div className="flex justify-center">
+        <div className="flex items-center px-6 py-1 w-[1462px] bg-white border border-gray-200 shadow-sm justify-between ">
           <h2 className="text-red-600 font-bold text-xl tracking-tight uppercase">
             Print Cash Balance
           </h2>
@@ -131,14 +137,14 @@ const Print_Cash_Balance = () => {
          <div className="  text-black print:p-4">
         {/* Header */}
         <div className="flex justify-end text-xs mb-2">
-          Date: {currentDate} | Time: {printTime}
+          Date: {formatDate(cashData.created_at)} 
         </div>
 
         <hr className="border-black mb-3" />
 
-        <h2 className="text-lg font-bold text-blue-700 mb-4">
-          Cash Scroll For Date : {currentDate}
-        </h2>
+       <h2 className="text-lg font-bold text-blue-700 mb-4">
+  Cash Scroll For Date : {formatDate(cashData.created_at)}
+</h2>
 
         {/* Tables */}
         <div className="grid grid-cols-2 gap-4">

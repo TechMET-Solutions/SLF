@@ -15,7 +15,9 @@ import { API } from "../api";
 const Navbar = () => {
   const [openMenu, setOpenMenu] = useState(null);
   const [openSubMenu, setOpenSubMenu] = useState(null);
+  const [permissions, setPermissions] = useState(null);
 
+  console.log(permissions, "permissions");
   const [openMasterSubMenu, setOpenMasterSubMenu] = useState(null);
   const [openTransactionSubMenu, setOpenTransactionSubMenu] = useState(null);
   const [openReportSubMenu, setOpenReportSubMenu] = useState(null);
@@ -44,23 +46,23 @@ const Navbar = () => {
 
   const [selectedYear, setSelectedYear] = useState("2025");
 
-
+  console.log(selectedYear, "selectedYear");
   const [tempBranch, setTempBranch] = useState("");
   const [tempYear, setTempYear] = useState("");
 
   const [selectedBranch, setSelectedBranch] = useState("");
-
+  const [tempLogin, setTempLogin] = useState(null);
   useEffect(() => {
-    // debugger;
     const userData = JSON.parse(sessionStorage.getItem("userData"));
-
-    if (userData && userData.branchId) {
-      console.log("Branch ID:", userData.branchId.branch_code);
-      console.log("Branch Name:", userData.branchId.branch_name);
+    const userPermissions = userData.permissions || {};
+    setPermissions(userPermissions);
+    if (userData) {
+      console.log("Branch ID:", userData.branchId);
+      console.log("Branch Name:", userData.branchName);
+      setTempLogin(userData);
       setSelectedYear(userData.financialYear);
-      setSelectedBranch(userData.branchId.branch_name);
-      setTempBranch(userData.branchId.id);
-      setSelectedYear(userData.financialYear);
+      setSelectedBranch(userData.branchName); // ✅ FIX
+      setTempBranch(userData.branchId); // ✅ FIX
     }
   }, []);
 
@@ -79,7 +81,7 @@ const Navbar = () => {
     // 🔹 Update userData object
     const updatedUser = {
       ...storedUser,
-      branchId: selectedBranchObj.id,
+      // branchId: selectedBranchObj.id,
       branchName: selectedBranchObj.branch_name,
       branchId: {
         id: selectedBranchObj.id,
@@ -98,43 +100,27 @@ const Navbar = () => {
 
     // 🔹 Close modal
     setIsBranchModelOpen(false);
-
-    // 🔹 Optional: Reload page to refresh data everywhere
     window.location.reload();
   };
-  // Masters
-  // const [isMasterOpen, setIsMasterOpen] = useState(false);
-  // const [isReportsOpen, setIsReportsOpen] = useState(false);
-  // const [isMiscellaneous, setIsMiscellaneous] = useState(false);
-  // const [isMasterProfileOpen, setIsMasterProfileOpen] = useState(false);
-  // const [isReportsTransaction, setIsReportsTransaction] = useState(false);
-  // const [isCashBankFinancialReport, setIsCashBankFinancialReport] =
-  //   useState(false);
-  // const [ismisReports, setIsMisReports] = useState(false);
-  // const [isMasterSchemeMaster, setIsMasterSchemeMaster] = useState(false);
-  // const [isMasterSchemeEmployeeProfile, setIsMasterSchemeEmployeeProfile] =
-  //   useState(false);
-  // const [isMasterSchemeUserManagement, setIsMasterSchemeUserManagement] =
-  //   useState(false);
 
-  // // Transactions
-  // const [isTransactionsOpen, setIsTransactionsOpen] = useState(false);
-  // const [isGoldLoanOpen, setIsGoldLoanOpen] = useState(false);
-  // const [Accounting, setIsAccounting] = useState(false);
-  // const [isAuctionOpen, setIsAuctionOpen] = useState(false);
-
-  // // Tools/Utilities
-  // const [isToolsOpen, setIsToolsOpen] = useState(false);
-  // const [isSettingsOpen, setIsSettingsOpen] = useState(false);
-  // const [isSystemTools, setIsSystemTools] = useState(false);
   const [branches, setBranches] = useState([]);
 
-  const fetchBranches = async () => {
+  const fetchBranches = async (user) => {
     try {
-      const res = await axios.get(`${API}/Master/Master_Profile/Branchess`);
+      let res;
+
+      if (user?.isAdmin || user?.role_id === "static") {
+        // ✅ ADMIN → get all branches
+        res = await axios.get(`${API}/Master/Master_Profile/Branchess`);
+      } else {
+        // ✅ EMPLOYEE → get only assigned branches
+        res = await axios.get(
+          `${API}/Master/Master_Profile/EmployeeBranchess/${user.id}`,
+        );
+      }
 
       if (res.data.success) {
-        setBranches(res.data.data); // store branches
+        setBranches(res.data.data);
       }
     } catch (error) {
       console.error("Error fetching branches:", error);
@@ -142,8 +128,10 @@ const Navbar = () => {
   };
 
   useEffect(() => {
-    fetchBranches();
-  }, []);
+    if (tempLogin) {
+      fetchBranches(tempLogin);
+    }
+  }, [tempLogin]);
   const dropdownRef = useRef(null);
   const navigate = useNavigate();
   function convertPermissions(permissions) {
@@ -152,7 +140,6 @@ const Navbar = () => {
     if (!permissions || typeof permissions !== "object") return result;
 
     Object.keys(permissions)?.forEach((section) => {
-      // ensure section is an array
       if (!Array.isArray(permissions[section])) return;
 
       result[section] = {};
@@ -172,16 +159,11 @@ const Navbar = () => {
   }
 
   const userData = JSON.parse(sessionStorage.getItem("userData") || "{}");
-
-  // If Admin → FULL ACCESS
   if (userData.isAdmin || userData.permissions === "all") {
     window.userIsAdmin = true;
-    // Skip conversion
     console.log("ADMIN → FULL ACCESS ENABLED");
   } else {
     window.userIsAdmin = false;
-
-    // Convert array-based permissions → object format
     userData.permissions = convertPermissions(userData.permissions);
   }
 
@@ -189,11 +171,9 @@ const Navbar = () => {
 
   console.log("Converted Permissions", userPermissions);
 
-  // ✅ Close sidebar when clicking outside
   useEffect(() => {
     const handleClickOutside = (event) => {
       if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
-        // 🔥 Close ALL menus
         setOpenMenu(null);
         setOpenSubMenu(null);
         setOpenMasterSubMenu(null);
@@ -214,7 +194,90 @@ const Navbar = () => {
     sessionStorage.clear(); // remove all saved data
     window.location.href = "/login"; // redirect to login
   };
+  // useEffect(() => {
+  //   const SESSION_LIMIT = 10 * 60 * 1000; // 2 minutes
 
+  //   const handleLogout = () => {
+  //     localStorage.clear();
+  //     sessionStorage.clear();
+  //     window.location.href = "/login";
+  //   };
+
+  //   const checkSession = () => {
+  //     const raw = sessionStorage.getItem("userData"); // ✅ FIXED
+
+  //     if (!raw) return;
+
+  //     let userData;
+  //     try {
+  //       userData = JSON.parse(raw);
+  //     } catch {
+  //       return;
+  //     }
+
+  //     if (!userData.loginTime) return;
+
+  //     const loginTime = new Date(userData.loginTime).getTime();
+  //     if (isNaN(loginTime)) return;
+
+  //     const currentTime = Date.now();
+
+  //     if (currentTime - loginTime >= SESSION_LIMIT) {
+  //       handleLogout();
+  //     }
+  //   };
+
+  //   const interval = setInterval(checkSession, 1000);
+
+  //   return () => clearInterval(interval);
+  // }, []); // ✅ VERY IMPORTANT
+  
+  useEffect(() => {
+    const SESSION_LIMIT = 10 * 60 * 1000; // 10 minutes
+
+    const handleLogout = () => {
+      localStorage.clear();
+      sessionStorage.clear();
+      window.location.href = "/login";
+    };
+
+    // ✅ Update last activity time
+    const updateActivity = () => {
+      sessionStorage.setItem("lastActivityTime", Date.now());
+    };
+
+    // ✅ Check inactivity
+    const checkSession = () => {
+      const lastActivity = sessionStorage.getItem("lastActivityTime");
+
+      if (!lastActivity) return;
+
+      const currentTime = Date.now();
+
+      if (currentTime - lastActivity >= SESSION_LIMIT) {
+        handleLogout();
+      }
+    };
+
+    // ✅ Events to track user activity
+    window.addEventListener("mousemove", updateActivity);
+    window.addEventListener("keydown", updateActivity);
+    window.addEventListener("click", updateActivity);
+    window.addEventListener("scroll", updateActivity);
+
+    // ✅ Initialize activity time on load
+    updateActivity();
+
+    const interval = setInterval(checkSession, 1000);
+
+    return () => {
+      clearInterval(interval);
+      window.removeEventListener("mousemove", updateActivity);
+      window.removeEventListener("keydown", updateActivity);
+      window.removeEventListener("click", updateActivity);
+      window.removeEventListener("scroll", updateActivity);
+    };
+  }, []);
   const isAdmin = window.userIsAdmin;
 
   const masterPermissions = isAdmin ? "all" : userPermissions.Master || {};
@@ -242,32 +305,148 @@ const Navbar = () => {
     "Area",
     "Party Type",
   ];
+  // const masterProfileList = [
+  //   { name: "Group Ledger", path: "/account-groups" },
+  //   { name: "Ledger ", path: "/account-code-list" },
+  //   { name: "Branch Details", path: "/Branch-Profile-List" },
+  //   { name: "Item Profile", path: "/Item-Profile-List" },
+  //   { name: "Product Purity", path: "/Product-Purity" },
+  //   { name: "Document Proof", path: "/Document-Proof-List" },
+  //   { name: "Push Rate", path: "/Push-Rate-List" },
+  //   { name: "Charges Profile", path: "/Charges-Profile-List" },
+  //   { name: "Area", path: "/Area" },
+  //   { name: "Party Type", path: "/Party-Type" },
+  // ];
 
-  const canSeeMasterProfile = isAdmin
-    ? true
-    : masterProfileItems.some((name) => masterPermissions[name]?.view === true);
+  //   const masterProfileList = [
+  //   {
+  //     name: "Group Ledger",
+  //     path: "/account-groups",
+  //     show: permissions?.Master?.find(p => p.name === "Group Ledger")?.view === true
+  //   },
+  //   {
+  //     name: "Ledger",
+  //     path: "/account-code-list",
+  //     show: permissions?.Master?.find(p => p.name === "Ledger")?.view === true
+  //   },
+  //   {
+  //     name: "Branch Details",
+  //     path: "/Branch-Profile-List",
+  //     show: permissions?.Master?.find(p => p.name === "Branch Details")?.view === true
+  //   },
+  //   {
+  //     name: "Item Profile",
+  //     path: "/Item-Profile-List",
+  //     show: permissions?.Master?.find(p => p.name === "Item Profile")?.view === true
+  //   },
+  //   {
+  //     name: "Product Purity",
+  //     path: "/Product-Purity",
+  //     show: permissions?.Master?.find(p => p.name === "Product Purity")?.view === true
+  //   },
+  //   {
+  //     name: "Document Proof",
+  //     path: "/Document-Proof-List",
+  //     show: permissions?.Master?.find(p => p.name === "Document Proof")?.view === true
+  //   },
+  //   {
+  //     name: "Push Rate",
+  //     path: "/Push-Rate-List",
+  //     show: permissions?.Master?.find(p => p.name === "Push Rate")?.view === true
+  //   },
+  //   {
+  //     name: "Charges Profile",
+  //     path: "/Charges-Profile-List",
+  //     show: permissions?.Master?.find(p => p.name === "Charges Profile")?.view === true
+  //   },
+  //   {
+  //     name: "Area",
+  //     path: "/Area",
+  //     show: permissions?.Master?.find(p => p.name === "Area")?.view === true
+  //   },
+  //   {
+  //     name: "Party Type",
+  //     path: "/Party-Type",
+  //     show: permissions?.Master?.find(p => p.name === "Party Type")?.view === true
+  //   },
+  // ];
+  const hasNavbarAccess = (name) => {
+    return (
+      permissions?.Master?.find((item) => item.name === name)?.Navbar === true
+    );
+  };
 
-  console.log(canSeeMasterProfile, "canSeeMasterProfile");
+  const hasNavbarAccessForTransaction = (name) => {
+    return (
+      permissions?.Transaction?.find((item) => item.name === name)?.Navbar ===
+      true
+    );
+  };
 
+   const hasNavbarAccessForMiscellaneous = (name) => {
+    return (
+      permissions?.Miscellaneous?.find((item) => item.name === name)?.Navbar ===
+      true
+    );
+  };
   const masterProfileList = [
-    { name: "Group Ledger", path: "/account-groups" },
-    { name: "Ledger ", path: "/account-code-list" },
-    { name: "Branch Details", path: "/Branch-Profile-List" },
-    { name: "Item Profile", path: "/Item-Profile-List" },
-    { name: "Product Purity", path: "/Product-Purity" },
-    { name: "Document Proof", path: "/Document-Proof-List" },
-    { name: "Push Rate", path: "/Push-Rate-List" },
-    { name: "Charges Profile", path: "/Charges-Profile-List" },
-    { name: "Area", path: "/Area" },
-    { name: "Party Type", path: "/Party-Type" },
+    {
+      name: "Group Ledger",
+      path: "/account-groups",
+      show: hasNavbarAccess("Group Ledger"),
+    },
+    {
+      name: "Ledger",
+      path: "/account-code-list",
+      show: hasNavbarAccess("Ledger"),
+    },
+    {
+      name: "Branch Details",
+      path: "/Branch-Profile-List",
+      show: hasNavbarAccess("Branch Details"),
+    },
+    {
+      name: "Item Profile",
+      path: "/Item-Profile-List",
+      show: hasNavbarAccess("Item Profile"),
+    },
+    {
+      name: "Product Purity",
+      path: "/Product-Purity",
+      show: hasNavbarAccess("Product Purity"),
+    },
+    {
+      name: "Document Proof",
+      path: "/Document-Proof-List",
+      show: hasNavbarAccess("Document Proof"),
+    },
+    {
+      name: "Push Rate",
+      path: "/Push-Rate-List",
+      show: hasNavbarAccess("Push Rate"),
+    },
+    {
+      name: "Charges Profile",
+      path: "/Charges-Profile-List",
+      show: hasNavbarAccess("Charges Profile"),
+    },
+    {
+      name: "Area",
+      path: "/Area",
+      show: hasNavbarAccess("Area"),
+    },
+    {
+      name: "Party Type",
+      path: "/Party-Type",
+      show: hasNavbarAccess("Party Type"),
+    },
   ];
+
   const masterMiscellaneousList = [
-    // { name: "Cash Balance", path: "/Cash_Balance" },
-    // { name: "Print Cash Balance", path: "/Print_Cash_Balance" },
-    { name: "Application Setting", path: "/Application_Setting" },
-    { name: "Bank Branch Mapping", path: "/Bank_Branch_Mapping" },
-    { name: "Accounts Opening Balance", path: "/Accounts_Opening_Balance" },
-    // { name: "Sub Ledger Opening Balance", path: "/Sub_Ledger_Opening_Balance" },
+    // { name: "Application Setting", path: "/Application_Setting" },
+    { name: "Bank Branch Mapping", path: "/Bank_Branch_Mapping", show: hasNavbarAccessForMiscellaneous("Bank Branch Mapping") },
+    { name: "Accounts Opening Balance", path: "/Accounts_Opening_Balance", show: hasNavbarAccessForMiscellaneous("Account Opening Balance ") },
+    { name: "Day End Process", path: "/Day-End-Process", show:true },
   ];
 
   const ReportTrasaction = [
@@ -284,28 +463,32 @@ const Navbar = () => {
     { name: "Loan Details", path: "/loan-details" },
     { name: "Legal Notice Report", path: "/legal-notice-report" },
   ];
+
   const filteredMasterProfile = isAdmin
     ? masterProfileList
-    : masterProfileList.filter(
-      (item) => masterPermissions[item.name]?.view === true,
-    );
+    : masterProfileList.filter((item) => item.show);
+
   const filteredReporttrasaction = isAdmin
     ? ReportTrasaction
-    : ReportTrasaction.filter(
-      (item) => masterPermissions[item.name]?.view === true,
-    );
+    : ReportTrasaction;
+
   const filteredMiscellaneousrasaction = isAdmin
     ? masterMiscellaneousList
-    : masterMiscellaneousList.filter(
-      (item) => masterPermissions[item.name]?.view === true,
-    );
+    : masterMiscellaneousList.filter((item) => item.show);
   const schemeMasterItems = [
-    { name: "Scheme Details", path: "/Scheme-Details-List" },
-    { name: "Scheme Branch Mapping", path: "/Branch-Scheme-Mapping-List" },
+    {
+      name: "Scheme Details",
+      path: "/Scheme-Details-List",
+      show: hasNavbarAccess("Scheme Details"),
+    },
+    {
+      name: "Scheme Branch Mapping",
+      path: "/Branch-Scheme-Mapping-List",
+      show: hasNavbarAccess("Scheme Branch Mapping"),
+    },
   ];
   const cashBankFinancialReport = [
     { name: "Bank Book Report", path: "/Bank-Book-Report" },
-    // { name: "Cash Book Report", path: "/Cash-Book-Report" },
     { name: "Day Book Report", path: "/Day-Book-Report" },
     { name: "Trial Balance", path: "/Trial-Balance" },
     { name: "Customer Ledger", path: "/Customer-Ledger" },
@@ -326,39 +509,46 @@ const Navbar = () => {
   ];
   const filteredSchemeMaster = isAdmin
     ? schemeMasterItems
-    : schemeMasterItems.filter(
-      (item) => masterPermissions[item.name]?.view === true,
-    );
+    : schemeMasterItems.filter((item) => item.show);
+
   const cashfinancialreport = isAdmin
     ? cashBankFinancialReport
-    : cashBankFinancialReport.filter(
-      (item) => masterPermissions[item.name]?.view === true,
-    );
+    : cashBankFinancialReport;
 
-  const misreportsection = isAdmin
-    ? misreporttab
-    : misreporttab.filter(
-      (item) => masterPermissions[item.name]?.view === true,
-    );
-
+  const misreportsection = isAdmin ? misreporttab : misreporttab;
   const canSeeSchemeMaster = filteredSchemeMaster.length > 0;
 
   const employeeProfileItems = [
-    { name: "Employee Profile", path: "/Employee-Profile-list" },
-    // { name: "Member Login Period", path: "/Member-Login-Period" },
-    // { name: "Member Login Details", path: "/Member-Login-Details" },
-    { name: "Employee Member Details", path: "/Member-Details" },
-    { name: "Employee Attendance", path: "/Employee-Attendance" },
-    { name: "Designation", path: "/Employee-Designation" },
-    { name: "Employee Role Permission", path: "/User-Role-Permission" },
-
+    {
+      name: "Employee Profile",
+      path: "/Employee-Profile-list",
+      show: hasNavbarAccess("Employee Profile"),
+    },
+    {
+      name: "Employee Member Details",
+      path: "/Member-Details",
+      show: hasNavbarAccess("Member Details"),
+    },
+    {
+      name: "Employee Attendance",
+      path: "/Employee-Attendance",
+      show: hasNavbarAccess("Employee Attendance"),
+    },
+    {
+      name: "Designation",
+      path: "/Employee-Designation",
+      show: hasNavbarAccess("Employee Designation"),
+    },
+    {
+      name: "Employee Role Permission",
+      path: "/User-Role-Permission",
+      show: hasNavbarAccess("User Role Permission"),
+    },
   ];
 
   const filteredEmployeeProfile = isAdmin
     ? employeeProfileItems
-    : employeeProfileItems.filter(
-      (item) => masterPermissions[item.name]?.view === true,
-    );
+    : employeeProfileItems.filter((item) => item.show);
 
   const canSeeEmployeeProfile = filteredEmployeeProfile.length > 0;
 
@@ -369,24 +559,34 @@ const Navbar = () => {
 
   const filteredUserManagement = isAdmin
     ? userManagementItems
-    : userManagementItems.filter(
-      (item) => masterPermissions[item.name]?.view === true,
-    );
+    : userManagementItems;
 
   const canSeeUserManagement = filteredUserManagement.length > 0;
 
   const loanItems = [
-    { name: "Loan Application", path: "/Loan-Application" },
-    { name: "Loan Repayment", path: "/Loan-Repayment" },
-    { name: "Loan Charges List", path: "/Loan-Charges-List" },
+    {
+      name: "Loan Application",
+      path: "/Loan-Application",
+      show: hasNavbarAccessForTransaction("Loan Application"),
+    },
+    {
+      name: "Loan Repayment",
+      path: "/Loan-Repayment",
+      show: hasNavbarAccessForTransaction("Loan Repayment"),
+    },
+    {
+      name: "Loan Charges List",
+      path: "/Loan-Charges-List",
+      show: hasNavbarAccessForTransaction("Loan Charges List"),
+    },
   ];
 
   const AccountingItems = [
-    { name: "Expense ", path: "/Expences_list" },
-    { name: "Receipt", path: "/Receipt_List" },
-    { name: "Journal Voucher", path: "/JournalVoucher/List" },
-    { name: "FT Issue", path: "/FundTransfer/issue" },
-    { name: "FT Receipt", path: "/FundTransfer/receipt" },
+    { name: "Expense ", path: "/Expences_list", show: hasNavbarAccessForTransaction("Expense List") },
+    { name: "Receipt", path: "/Receipt_List", show: hasNavbarAccessForTransaction("Receipt List")  },
+    { name: "Journal Voucher", path: "/JournalVoucher/List", show: hasNavbarAccessForTransaction("Journal Voucher List") },
+    { name: "FT Issue", path: "/FundTransfer/issue" , show: hasNavbarAccessForTransaction("FT Issue") },
+    { name: "FT Receipt", path: "/FundTransfer/receipt", show: hasNavbarAccessForTransaction("FT Receipt") },
   ];
 
   const customerProfileItem = {
@@ -395,33 +595,26 @@ const Navbar = () => {
   };
 
   const auctionItems = [
-    { name: "Auction Creation", path: "/Auction-Creation" },
-    { name: "Bidder Registration", path: "/Bidder-Registration-List" },
-    { name: "Auction Application", path: "/Auction_Application_form" },
-    { name: "Credit Note", path: "/Credit-Note" },
+    { name: "Auction Creation", path: "/Auction-Creation",show: hasNavbarAccessForTransaction("Auction List") },
+    { name: "Bidder Registration", path: "/Bidder-Registration-List",show: hasNavbarAccessForTransaction("Bidder Registration") },
+    { name: "Auction Application", path: "/Auction_Application_form",show: hasNavbarAccessForTransaction("Auction Application") },
+    { name: "Credit Note", path: "/Credit-Note",show: hasNavbarAccessForTransaction("Credit Note") },
   ];
 
   const filteredLoan = isAdmin
     ? loanItems
-    : loanItems.filter(
-      (item) => TrasactionPermissions[item.name]?.view === true,
-    );
-  const filteredAccounting = isAdmin
-    ? AccountingItems
-    : AccountingItems.filter(
-      (item) => TrasactionPermissions[item.name]?.view === true,
-    );
+    : loanItems.filter((item) => item.show);
+
+  console.log(filteredLoan, loanItems);
+
+  const filteredAccounting = isAdmin ? AccountingItems : AccountingItems.filter((item) => item.show);
   const canSeeLoan = filteredLoan.length > 0;
 
   const canSeeCustomerProfile = isAdmin
     ? true
     : TrasactionPermissions["Customer Profile"]?.view === true;
 
-  const filteredAuction = isAdmin
-    ? auctionItems
-    : auctionItems.filter(
-      (item) => TrasactionPermissions[item.name]?.view === true,
-    );
+  const filteredAuction = isAdmin ? auctionItems : auctionItems.filter((item) => item.show);
 
   const canSeeAuction = filteredAuction.length > 0;
 
@@ -450,285 +643,428 @@ const Navbar = () => {
           </div>
 
           {/* Center Menu */}
-          <div
-            className="absolute left-1/2 transform -translate-x-1/2 flex gap-8"
-          >
+          <div className="absolute left-1/2 transform -translate-x-1/2 flex gap-8">
             {/* ================== MASTERS ================== */}
             <div className="relative">
-              {canSeeMaster && (
-                <button
-                  className="hover:underline text-[20px] flex items-center gap-1"
-                  onClick={() => {
-                    toggleMenu("masters");
-                    setOpenMasterSubMenu(null);
-                  }}
-                >
-                  Masters
-                  {openMenu === "masters" ? <FiChevronUp /> : <FiChevronDown />}
-                </button>
-              )}
+              <button
+                className="hover:underline text-[20px] flex items-center gap-1"
+                onClick={() => {
+                  toggleMenu("masters");
+                  setOpenMasterSubMenu(null);
+                }}
+              >
+                Masters
+                {openMenu === "masters" ? <FiChevronUp /> : <FiChevronDown />}
+              </button>
 
               {openMenu === "masters" && (
                 <div className="absolute top-full left-0 mt-2 bg-white text-black rounded shadow-lg w-[200px] z-50">
                   {/* Master Profile */}
-                  {canSeeMasterProfile && (
-                    <div className="relative">
-                      <button
-                        className="w-full text-left px-4 py-2 hover:bg-gray-100 flex justify-between items-center"
-                        onClick={() => toggleMasterSubMenu("profile")}
-                      >
-                        Master Profile
-                        {openMasterSubMenu === "profile" ? (
-                          <FiChevronDown />
-                        ) : (
-                          <FiChevronRight />
-                        )}
-                      </button>
 
-                      {openMasterSubMenu === "profile" && (
-                        <div className="absolute top-0 left-full ml-1 w-[200px] bg-white text-black rounded shadow-lg flex flex-col text-sm">
-                          {filteredMasterProfile.map((item) => (
-                            <Link
-                              key={item.path}
-                              to={item.path}
-                              className="px-4 py-2 hover:bg-gray-100"
-                              onClick={() => {
-                                setOpenMenu(null);
-                                setOpenMasterSubMenu(null);
-                              }}
-                            >
-                              {item.name}
-                            </Link>
-                          ))}
-                        </div>
+                  <div className="relative">
+                    <button
+                      className="w-full text-left px-4 py-2 hover:bg-gray-100 flex justify-between items-center"
+                      onClick={() => toggleMasterSubMenu("profile")}
+                    >
+                      Master Profile
+                      {openMasterSubMenu === "profile" ? (
+                        <FiChevronDown />
+                      ) : (
+                        <FiChevronRight />
                       )}
-                    </div>
-                  )}
+                    </button>
 
-                  {/* Scheme Master */}
-                  {canSeeSchemeMaster && (
-                    <div className="relative">
-                      <button
-                        className="w-full text-left px-4 py-2 hover:bg-gray-100 flex justify-between items-center"
-                        onClick={() => toggleMasterSubMenu("scheme")}
-                      >
-                        Scheme Master
-                        {openMasterSubMenu === "scheme" ? (
-                          <FiChevronDown />
-                        ) : (
-                          <FiChevronRight />
-                        )}
-                      </button>
+                    {openMasterSubMenu === "profile" && (
+                      <div className="absolute top-0 left-full ml-1 w-[200px] bg-white text-black rounded shadow-lg flex flex-col text-sm">
+                        {filteredMasterProfile.map((item) => (
+                          <Link
+                            key={item.path}
+                            to={item.path}
+                            className="px-4 py-2 hover:bg-gray-100"
+                            onClick={() => {
+                              setOpenMenu(null);
+                              setOpenMasterSubMenu(null);
+                            }}
+                          >
+                            {item.name}
+                          </Link>
+                        ))}
+                      </div>
+                    )}
+                  </div>
 
-                      {openMasterSubMenu === "scheme" && (
-                        <div className="absolute top-0 left-full ml-1 w-[200px] bg-white text-black rounded shadow-lg flex flex-col text-sm">
-                          {filteredSchemeMaster.map((item) => (
-                            <Link
-                              key={item.path}
-                              to={item.path}
-                              className="px-4 py-2 hover:bg-gray-100"
-                              onClick={() => {
-                                setOpenMenu(null);
-                                setOpenMasterSubMenu(null);
-                              }}
-                            >
-                              {item.name}
-                            </Link>
-                          ))}
-                        </div>
+                  <div className="relative">
+                    <button
+                      className="w-full text-left px-4 py-2 hover:bg-gray-100 flex justify-between items-center"
+                      onClick={() => toggleMasterSubMenu("scheme")}
+                    >
+                      Scheme Master
+                      {openMasterSubMenu === "scheme" ? (
+                        <FiChevronDown />
+                      ) : (
+                        <FiChevronRight />
                       )}
-                    </div>
-                  )}
+                    </button>
 
-                  {/* Employee Profile */}
-                  {canSeeEmployeeProfile && (
-                    <div className="relative">
-                      <button
-                        className="w-full text-left px-4 py-2 hover:bg-gray-100 flex justify-between items-center"
-                        onClick={() => toggleMasterSubMenu("employee")}
-                      >
-                        Employee Profile
-                        {openMasterSubMenu === "employee" ? (
-                          <FiChevronDown />
-                        ) : (
-                          <FiChevronRight />
-                        )}
-                      </button>
+                    {openMasterSubMenu === "scheme" && (
+                      <div className="absolute top-0 left-full ml-1 w-[200px] bg-white text-black rounded shadow-lg flex flex-col text-sm">
+                        {filteredSchemeMaster.map((item) => (
+                          <Link
+                            key={item.path}
+                            to={item.path}
+                            className="px-4 py-2 hover:bg-gray-100"
+                            onClick={() => {
+                              setOpenMenu(null);
+                              setOpenMasterSubMenu(null);
+                            }}
+                          >
+                            {item.name}
+                          </Link>
+                        ))}
+                      </div>
+                    )}
+                  </div>
 
-                      {openMasterSubMenu === "employee" && (
-                        <div className="absolute top-0 left-full ml-1 w-[200px] bg-white text-black rounded shadow-lg flex flex-col text-sm">
-                          {filteredEmployeeProfile.map((item) => (
-                            <Link
-                              key={item.path}
-                              to={item.path}
-                              className="px-4 py-2 hover:bg-gray-100"
-                              onClick={() => {
-                                setOpenMenu(null);
-                                setOpenMasterSubMenu(null);
-                              }}
-                            >
-                              {item.name}
-                            </Link>
-                          ))}
-                        </div>
+                  <div className="relative">
+                    <button
+                      className="w-full text-left px-4 py-2 hover:bg-gray-100 flex justify-between items-center"
+                      onClick={() => toggleMasterSubMenu("employee")}
+                    >
+                      Employee Profile
+                      {openMasterSubMenu === "employee" ? (
+                        <FiChevronDown />
+                      ) : (
+                        <FiChevronRight />
                       )}
-                    </div>
-                  )}
+                    </button>
+
+                    {openMasterSubMenu === "employee" && (
+                      <div className="absolute top-0 left-full ml-1 w-[200px] bg-white text-black rounded shadow-lg flex flex-col text-sm">
+                        {filteredEmployeeProfile.map((item) => (
+                          <Link
+                            key={item.path}
+                            to={item.path}
+                            className="px-4 py-2 hover:bg-gray-100"
+                            onClick={() => {
+                              setOpenMenu(null);
+                              setOpenMasterSubMenu(null);
+                            }}
+                          >
+                            {item.name}
+                          </Link>
+                        ))}
+                      </div>
+                    )}
+                  </div>
                 </div>
               )}
             </div>
 
             {/* ================== TRANSACTIONS ================== */}
             <div className="relative">
-              {canSeeScheme && (
-                <button
-                  className="hover:underline text-[20px] flex items-center gap-1"
-                  onClick={() => {
-                    toggleMenu("transactions");
-                    setOpenTransactionSubMenu(null);
-                  }}
-                >
-                  Transactions
-                  {openMenu === "transactions" ? (
-                    <FiChevronUp />
-                  ) : (
-                    <FiChevronDown />
-                  )}
-                </button>
-              )}
+              <button
+                className="hover:underline text-[20px] flex items-center gap-1"
+                onClick={() => {
+                  toggleMenu("transactions");
+                  setOpenTransactionSubMenu(null);
+                }}
+              >
+                Transactions
+                {openMenu === "transactions" ? (
+                  <FiChevronUp />
+                ) : (
+                  <FiChevronDown />
+                )}
+              </button>
 
-              {openMenu === "transactions" && canSeeTransactions && (
+              {openMenu === "transactions" && (
                 <div className="absolute top-full left-0 mt-2 bg-white text-black rounded shadow-lg w-[200px] z-50">
                   {/* Loan */}
-                  {canSeeLoan && (
-                    <div className="relative">
-                      <button
-                        className="w-full text-left px-4 py-2 hover:bg-gray-100 flex justify-between items-center"
-                        onClick={() => toggleTransactionSubMenu("loan")}
-                      >
-                        Loan
-                        {openTransactionSubMenu === "loan" ? (
-                          <FiChevronDown />
-                        ) : (
-                          <FiChevronRight />
-                        )}
-                      </button>
 
-                      {openTransactionSubMenu === "loan" && (
-                        <div className="absolute top-0 left-full ml-1 w-[200px] bg-white text-black rounded shadow-lg flex flex-col text-sm">
-                          {filteredLoan.map((item) => (
-                            <Link
-                              key={item.path}
-                              to={item.path}
-                              className="px-4 py-2 hover:bg-gray-100"
-                              onClick={() => {
-                                setOpenMenu(null);
-                                setOpenTransactionSubMenu(null);
-                              }}
-                            >
-                              {item.name}
-                            </Link>
-                          ))}
-                        </div>
+                  {/* <div className="relative">
+                    <button
+                      className="w-full text-left px-4 py-2 hover:bg-gray-100 flex justify-between items-center"
+                      onClick={() => toggleTransactionSubMenu("loan")}
+                    >
+                      Loan
+                      {openTransactionSubMenu === "loan" ? (
+                        <FiChevronDown />
+                      ) : (
+                        <FiChevronRight />
                       )}
-                    </div>
-                  )}
+                    </button>
+
+                    {openTransactionSubMenu === "loan" && (
+                      <div className="absolute top-0 left-full ml-1 w-[200px] bg-white text-black rounded shadow-lg flex flex-col text-sm">
+                        {filteredLoan.map((item) => (
+                          <Link
+                            key={item.path}
+                            to={item.path}
+                            className="px-4 py-2 hover:bg-gray-100"
+                            onClick={() => {
+                              setOpenMenu(null);
+                              setOpenTransactionSubMenu(null);
+                            }}
+                          >
+                            {item.name}
+                          </Link>
+                        ))}
+                      </div>
+                    )}
+                  </div> */}
+
+                  <div className="relative">
+                    {(isAdmin ||
+                      permissions?.Transaction?.some(
+                        (item) =>
+                          item.name === "Loan Application" &&
+                          item.Navbar === true,
+                      )) && (
+                      <>
+                        <button
+                          className="w-full text-left px-4 py-2 hover:bg-gray-100 flex justify-between items-center"
+                          onClick={() => toggleTransactionSubMenu("loan")}
+                        >
+                          Loan
+                          {openTransactionSubMenu === "loan" ? (
+                            <FiChevronDown />
+                          ) : (
+                            <FiChevronRight />
+                          )}
+                        </button>
+
+                        {openTransactionSubMenu === "loan" && (
+                          <div className="absolute top-0 left-full ml-1 w-[200px] bg-white text-black rounded shadow-lg flex flex-col text-sm">
+                            {filteredLoan.map((item) => (
+                              <Link
+                                key={item.path}
+                                to={item.path}
+                                className="px-4 py-2 hover:bg-gray-100"
+                                onClick={() => {
+                                  setOpenMenu(null);
+                                  setOpenTransactionSubMenu(null);
+                                }}
+                              >
+                                {item.name}
+                              </Link>
+                            ))}
+                          </div>
+                        )}
+                      </>
+                    )}
+                  </div>
 
                   {/* Customer Profile */}
-                  {canSeeCustomerProfile && (
-                    <Link
-                      to={customerProfileItem.path}
-                      className="block px-4 py-2 hover:bg-gray-100"
-                      onClick={() => {
-                        setOpenMenu(null);
-                        setOpenTransactionSubMenu(null);
-                      }}
-                    >
-                      Customer Profile
-                    </Link>
-                  )}
 
-                  {/* Accounting */}
-                  {canSeeLoan && (
-                    <div className="relative">
-                      <button
-                        className="w-full text-left px-4 py-2 hover:bg-gray-100 flex justify-between items-center"
-                        onClick={() => toggleTransactionSubMenu("accounting")}
-                      >
-                        Accounting
-                        {openTransactionSubMenu === "accounting" ? (
-                          <FiChevronDown />
-                        ) : (
-                          <FiChevronRight />
-                        )}
-                      </button>
-
-                      {openTransactionSubMenu === "accounting" && (
-                        <div className="absolute top-0 left-full ml-1 w-[200px] bg-white text-black rounded shadow-lg flex flex-col text-sm">
-                          {filteredAccounting.map((item) => (
-                            <Link
-                              key={item.path}
-                              to={item.path}
-                              className="px-4 py-2 hover:bg-gray-100"
-                              onClick={() => {
-                                setOpenMenu(null);
-                                setOpenTransactionSubMenu(null);
-                              }}
-                            >
-                              {item.name}
-                            </Link>
-                          ))}
-                        </div>
-                      )}
-                    </div>
-                  )}
-
-                  {/* Auction */}
-                  {canSeeAuction && (
-                    <div className="relative">
-                      <button
-                        className="w-full text-left px-4 py-2 hover:bg-gray-100 flex justify-between items-center"
-                        onClick={() => toggleTransactionSubMenu("auction")}
-                      >
-                        Auction
-                        {openTransactionSubMenu === "auction" ? (
-                          <FiChevronDown />
-                        ) : (
-                          <FiChevronRight />
-                        )}
-                      </button>
-
-                      {openTransactionSubMenu === "auction" && (
-                        <div className="absolute top-0 left-full ml-1 w-[200px] bg-white text-black rounded shadow-lg flex flex-col text-sm">
-                          {filteredAuction.map((item) => (
-                            <Link
-                              key={item.path}
-                              to={item.path}
-                              className="px-4 py-2 hover:bg-gray-100"
-                              onClick={() => {
-                                setOpenMenu(null);
-                                setOpenTransactionSubMenu(null);
-                              }}
-                            >
-                              {item.name}
-                            </Link>
-                          ))}
-                        </div>
-                      )}
-                    </div>
-                  )}
-
-                  {/* Cash Balance */}
-                  <Link
-                    to="/Cash_Balance"
+                  {/* <Link
+                    to={customerProfileItem.path}
                     className="block px-4 py-2 hover:bg-gray-100"
                     onClick={() => {
                       setOpenMenu(null);
                       setOpenTransactionSubMenu(null);
                     }}
                   >
-                    Cash Balance
-                  </Link>
+                    Customer Profile
+                  </Link> */}
+                  {
+                    //                     permissions?.Transaction?.find(
+                    //   item => item.name === "Customer Profile" && item.Navbar === true
+                    // )
+                    (isAdmin ||
+                      permissions?.Transaction?.some(
+                        (item) =>
+                          item.name === "Customer Profile" &&
+                          item.Navbar === true,
+                      )) && (
+                      <Link
+                        to={customerProfileItem.path}
+                        className="block px-4 py-2 hover:bg-gray-100"
+                        onClick={() => {
+                          setOpenMenu(null);
+                          setOpenTransactionSubMenu(null);
+                        }}
+                      >
+                        Customer Profile
+                      </Link>
+                    )
+                  }
+
+                  {/* <div className="relative">
+                    <button
+                      className="w-full text-left px-4 py-2 hover:bg-gray-100 flex justify-between items-center"
+                      onClick={() => toggleTransactionSubMenu("accounting")}
+                    >
+                      Accounting
+                      {openTransactionSubMenu === "accounting" ? (
+                        <FiChevronDown />
+                      ) : (
+                        <FiChevronRight />
+                      )}
+                    </button>
+
+                    {openTransactionSubMenu === "accounting" && (
+                      <div className="absolute top-0 left-full ml-1 w-[200px] bg-white text-black rounded shadow-lg flex flex-col text-sm">
+                        {filteredAccounting.map((item) => (
+                          <Link
+                            key={item.path}
+                            to={item.path}
+                            className="px-4 py-2 hover:bg-gray-100"
+                            onClick={() => {
+                              setOpenMenu(null);
+                              setOpenTransactionSubMenu(null);
+                            }}
+                          >
+                            {item.name}
+                          </Link>
+                        ))}
+                      </div>
+                    )}
+                  </div> */}
+                  <div className="relative">
+                    {
+                      //                   permissions?.Transaction?.some(
+                      // item => item.name === "Accounting" && item.Navbar === true
+                      (isAdmin ||
+                        permissions?.Transaction?.some(
+                          (item) =>
+                            item.name === "Accounting" && item.Navbar === true,
+                        )) && (
+                        <>
+                          <button
+                            className="w-full text-left px-4 py-2 hover:bg-gray-100 flex justify-between items-center"
+                            onClick={() =>
+                              toggleTransactionSubMenu("accounting")
+                            }
+                          >
+                            Accounting
+                            {openTransactionSubMenu === "accounting" ? (
+                              <FiChevronDown />
+                            ) : (
+                              <FiChevronRight />
+                            )}
+                          </button>
+
+                          {openTransactionSubMenu === "accounting" && (
+                            <div className="absolute top-0 left-full ml-1 w-[200px] bg-white text-black rounded shadow-lg flex flex-col text-sm">
+                              {filteredAccounting.map((item) => (
+                                <Link
+                                  key={item.path}
+                                  to={item.path}
+                                  className="px-4 py-2 hover:bg-gray-100"
+                                  onClick={() => {
+                                    setOpenMenu(null);
+                                    setOpenTransactionSubMenu(null);
+                                  }}
+                                >
+                                  {item.name}
+                                </Link>
+                              ))}
+                            </div>
+                          )}
+                        </>
+                      )
+                    }
+                  </div>
+
+                  {/* <div className="relative">
+                    <button
+                      className="w-full text-left px-4 py-2 hover:bg-gray-100 flex justify-between items-center"
+                      onClick={() => toggleTransactionSubMenu("auction")}
+                    >
+                      Auction
+                      {openTransactionSubMenu === "auction" ? (
+                        <FiChevronDown />
+                      ) : (
+                        <FiChevronRight />
+                      )}
+                    </button>
+
+                    {openTransactionSubMenu === "auction" && (
+                      <div className="absolute top-0 left-full ml-1 w-[200px] bg-white text-black rounded shadow-lg flex flex-col text-sm">
+                        {filteredAuction.map((item) => (
+                          <Link
+                            key={item.path}
+                            to={item.path}
+                            className="px-4 py-2 hover:bg-gray-100"
+                            onClick={() => {
+                              setOpenMenu(null);
+                              setOpenTransactionSubMenu(null);
+                            }}
+                          >
+                            {item.name}
+                          </Link>
+                        ))}
+                      </div>
+                    )}
+                  </div> */}
+
+                  <div className="relative">
+                    {
+                      //                   permissions?.Transaction?.some(
+                      // item => item.name === "Auction" && item.Navbar === true
+                      //                 )
+                      (isAdmin ||
+                        permissions?.Transaction?.some(
+                          (item) =>
+                            item.name === "Auction" && item.Navbar === true,
+                        )) && (
+                        <>
+                          <button
+                            className="w-full text-left px-4 py-2 hover:bg-gray-100 flex justify-between items-center"
+                            onClick={() => toggleTransactionSubMenu("auction")}
+                          >
+                            Auction
+                            {openTransactionSubMenu === "auction" ? (
+                              <FiChevronDown />
+                            ) : (
+                              <FiChevronRight />
+                            )}
+                          </button>
+
+                          {openTransactionSubMenu === "auction" && (
+                            <div className="absolute top-0 left-full ml-1 w-[200px] bg-white text-black rounded shadow-lg flex flex-col text-sm">
+                              {filteredAuction.map((item) => (
+                                <Link
+                                  key={item.path}
+                                  to={item.path}
+                                  className="px-4 py-2 hover:bg-gray-100"
+                                  onClick={() => {
+                                    setOpenMenu(null);
+                                    setOpenTransactionSubMenu(null);
+                                  }}
+                                >
+                                  {item.name}
+                                </Link>
+                              ))}
+                            </div>
+                          )}
+                        </>
+                      )
+                    }
+                  </div>
+
+                  {/* Cash Balance */}
+                  {
+                    //                   permissions?.Transaction?.some(
+                    // item => item.name === "Cash Balance" && item.Navbar === true
+                    //                   )
+                    (isAdmin ||
+                      permissions?.Transaction?.some(
+                        (item) =>
+                          item.name === "Cash Balance" && item.Navbar === true,
+                      )) && (
+                      <Link
+                        to="/Cash_Balance"
+                        className="block px-4 py-2 hover:bg-gray-100"
+                        onClick={() => {
+                          setOpenMenu(null);
+                          setOpenTransactionSubMenu(null);
+                        }}
+                      >
+                        Cash Balance
+                      </Link>
+                    )
+                  }
                 </div>
               )}
             </div>
@@ -776,111 +1112,105 @@ const Navbar = () => {
               {openMenu === "reports" && (
                 <div className="absolute top-full left-0 mt-2 bg-white text-black rounded shadow-lg w-[200px] z-50">
                   {/* Transaction Reports */}
-                  {canSeeMasterProfile && (
-                    <div className="relative">
-                      <button
-                        className="w-full text-left px-4 py-2 hover:bg-gray-100 flex justify-between items-center"
-                        onClick={() => toggleReportSubMenu("transaction")}
-                      >
-                        Transaction Reports
-                        {openReportSubMenu === "transaction" ? (
-                          <FiChevronDown />
-                        ) : (
-                          <FiChevronRight />
-                        )}
-                      </button>
 
-                      {openReportSubMenu === "transaction" && (
-                        <div className="absolute top-0 left-full ml-1 w-[200px] bg-white text-black rounded shadow-lg flex flex-col text-sm">
-                          {filteredReporttrasaction.map((item) => (
-                            <Link
-                              key={item.path}
-                              to={item.path}
-                              className="px-4 py-2 hover:bg-gray-100"
-                              onClick={() => {
-                                setOpenMenu(null);
-                                setOpenReportSubMenu(null);
-                              }}
-                            >
-                              {item.name}
-                            </Link>
-                          ))}
-                        </div>
+                  <div className="relative">
+                    <button
+                      className="w-full text-left px-4 py-2 hover:bg-gray-100 flex justify-between items-center"
+                      onClick={() => toggleReportSubMenu("transaction")}
+                    >
+                      Transaction Reports
+                      {openReportSubMenu === "transaction" ? (
+                        <FiChevronDown />
+                      ) : (
+                        <FiChevronRight />
                       )}
-                    </div>
-                  )}
+                    </button>
 
-                  {/* Cash/Bank/Financial */}
-                  {canSeeSchemeMaster && (
-                    <div className="relative">
-                      <button
-                        className="w-full text-left px-4 py-2 hover:bg-gray-100 flex justify-between items-center"
-                        onClick={() => toggleReportSubMenu("financial")}
-                      >
-                        Cash/Bank/Financial Report
-                        {openReportSubMenu === "financial" ? (
-                          <FiChevronDown />
-                        ) : (
-                          <FiChevronRight />
-                        )}
-                      </button>
+                    {openReportSubMenu === "transaction" && (
+                      <div className="absolute top-0 left-full ml-1 w-[200px] bg-white text-black rounded shadow-lg flex flex-col text-sm">
+                        {filteredReporttrasaction.map((item) => (
+                          <Link
+                            key={item.path}
+                            to={item.path}
+                            className="px-4 py-2 hover:bg-gray-100"
+                            onClick={() => {
+                              setOpenMenu(null);
+                              setOpenReportSubMenu(null);
+                            }}
+                          >
+                            {item.name}
+                          </Link>
+                        ))}
+                      </div>
+                    )}
+                  </div>
 
-                      {openReportSubMenu === "financial" && (
-                        <div className="absolute top-0 left-full ml-1 w-[200px] bg-white text-black rounded shadow-lg flex flex-col text-sm">
-                          {cashfinancialreport.map((item) => (
-                            <Link
-                              key={item.path}
-                              to={item.path}
-                              className="px-4 py-2 hover:bg-gray-100"
-                              onClick={() => {
-                                setOpenMenu(null);
-                                setOpenReportSubMenu(null);
-                              }}
-                            >
-                              {item.name}
-                            </Link>
-                          ))}
-                        </div>
+                  <div className="relative">
+                    <button
+                      className="w-full text-left px-4 py-2 hover:bg-gray-100 flex justify-between items-center"
+                      onClick={() => toggleReportSubMenu("financial")}
+                    >
+                      Cash/Bank/Financial Report
+                      {openReportSubMenu === "financial" ? (
+                        <FiChevronDown />
+                      ) : (
+                        <FiChevronRight />
                       )}
-                    </div>
-                  )}
+                    </button>
+
+                    {openReportSubMenu === "financial" && (
+                      <div className="absolute top-0 left-full ml-1 w-[200px] bg-white text-black rounded shadow-lg flex flex-col text-sm">
+                        {cashfinancialreport.map((item) => (
+                          <Link
+                            key={item.path}
+                            to={item.path}
+                            className="px-4 py-2 hover:bg-gray-100"
+                            onClick={() => {
+                              setOpenMenu(null);
+                              setOpenReportSubMenu(null);
+                            }}
+                          >
+                            {item.name}
+                          </Link>
+                        ))}
+                      </div>
+                    )}
+                  </div>
 
                   {/* MIS Report */}
-                  {canSeeSchemeMaster && (
-                    <div className="relative">
-                      <button
-                        className="w-full text-left px-4 py-2 hover:bg-gray-100 flex justify-between items-center"
-                        onClick={() => toggleReportSubMenu("mis")}
-                      >
-                        MIS Report
-                        {openReportSubMenu === "mis" ? (
-                          <FiChevronDown />
-                        ) : (
-                          <FiChevronRight />
-                        )}
-                      </button>
 
-                      {openReportSubMenu === "mis" && (
-                        <div className="absolute top-0 left-full ml-1 w-[200px] bg-white text-black rounded shadow-lg flex flex-col text-sm">
-                          {misreportsection.map((item) => (
-                            <Link
-                              key={item.path}
-                              to={item.path}
-                              className="px-4 py-2 hover:bg-gray-100"
-                              onClick={() => {
-                                setOpenMenu(null);
-                                setOpenReportSubMenu(null);
-                              }}
-                            >
-                              {item.name}
-                            </Link>
-                          ))}
-                        </div>
+                  <div className="relative">
+                    <button
+                      className="w-full text-left px-4 py-2 hover:bg-gray-100 flex justify-between items-center"
+                      onClick={() => toggleReportSubMenu("mis")}
+                    >
+                      MIS Report
+                      {openReportSubMenu === "mis" ? (
+                        <FiChevronDown />
+                      ) : (
+                        <FiChevronRight />
                       )}
-                    </div>
-                  )}
+                    </button>
 
-                  {/* Direct Links */}
+                    {openReportSubMenu === "mis" && (
+                      <div className="absolute top-0 left-full ml-1 w-[200px] bg-white text-black rounded shadow-lg flex flex-col text-sm">
+                        {misreportsection.map((item) => (
+                          <Link
+                            key={item.path}
+                            to={item.path}
+                            className="px-4 py-2 hover:bg-gray-100"
+                            onClick={() => {
+                              setOpenMenu(null);
+                              setOpenReportSubMenu(null);
+                            }}
+                          >
+                            {item.name}
+                          </Link>
+                        ))}
+                      </div>
+                    )}
+                  </div>
+
                   {[
                     { name: "Loan Follow Up", path: "/loan_follow_up" },
                     { name: "Customer History", path: "/Customer_history" },
@@ -1318,9 +1648,7 @@ const Navbar = () => {
                         <div>
                           <button
                             className="w-full text-left px-4 py-2 hover:bg-[#2d5aa0] rounded flex justify-between items-center"
-                            onClick={() =>
-                              toggleTransactionSubMenu("auction")
-                            }
+                            onClick={() => toggleTransactionSubMenu("auction")}
                           >
                             Auction
                             {openTransactionSubMenu === "auction" ? (
@@ -1406,9 +1734,7 @@ const Navbar = () => {
                       <div>
                         <button
                           className="w-full text-left px-4 py-2 hover:bg-[#2d5aa0] rounded flex justify-between items-center"
-                          onClick={() =>
-                            toggleReportSubMenu("transaction")
-                          }
+                          onClick={() => toggleReportSubMenu("transaction")}
                         >
                           Transaction Reports
                           {openReportSubMenu === "transaction" ? (
@@ -1440,9 +1766,7 @@ const Navbar = () => {
                       <div>
                         <button
                           className="w-full text-left px-4 py-2 hover:bg-[#2d5aa0] rounded flex justify-between items-center"
-                          onClick={() =>
-                            toggleReportSubMenu("financial")
-                          }
+                          onClick={() => toggleReportSubMenu("financial")}
                         >
                           Cash/Bank/Financial Report
                           {openReportSubMenu === "financial" ? (
@@ -1654,7 +1978,6 @@ const Navbar = () => {
               Change Branch
             </h1>
 
-            {/* Change Branch Dropdown */}
             <div className="mb-4">
               <label
                 htmlFor="branch"
@@ -1683,23 +2006,25 @@ const Navbar = () => {
 
             {/* Change Year Dropdown */}
             <div className="mb-6">
-              <label
+              {/* <label
                 htmlFor="year"
                 className="block text-sm font-medium text-gray-700 mb-1"
               >
                 Select Year
-              </label>
+              </label> */}
 
-              <select
-                name="year"
-                value={selectedYear} // ✅ bind state
-                onChange={(e) => setSelectedYear(e.target.value)} // ✅ update state
-                className="w-full border border-gray-300 text-black rounded px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#0A2478]"
-              >
-                <option value="">Select</option>
-                <option value="2023-2024">01/04/2023 - 31/03/2024</option>
-                <option value="2025-2026">01/01/2025 - 31/12/2026</option>
-              </select>
+              <div className="mb-6">
+                <label
+                  htmlFor="year"
+                  className="block text-sm font-medium text-gray-700 mb-1"
+                >
+                  Select Year
+                </label>
+
+                <div className="w-full border border-gray-300 bg-gray-100 text-black rounded px-3 py-2 text-sm">
+                  {selectedYear || "N/A"}
+                </div>
+              </div>
             </div>
 
             {/* Buttons */}
@@ -1720,6 +2045,8 @@ const Navbar = () => {
           </div>
         </div>
       )}
+
+    
     </div>
   );
 };

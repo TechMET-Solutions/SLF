@@ -40,12 +40,17 @@ const API_BASE = `${API}/Master/Employee_Profile`;
 export const fetchEmployeeProfileApi = async (
   page = 1,
   limit = 10,
-  filters = {}
+  filters = {},
+  key,
+  direction
+
 ) => {
   try {
     const queryParams = new URLSearchParams({
       page: page.toString(),
       limit: limit.toString(),
+      key,
+     direction
     });
 
     // ✅ Search text

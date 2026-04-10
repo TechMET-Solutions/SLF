@@ -300,25 +300,20 @@ export default function GenerateBill() {
     <div className="w-full min-h-screen bg-white">
       {/* Header */}
       <div className="flex justify-center">
-        <div className="flex items-center px-6 py-4 border-b mt-5 w-[1290px] h-[62px] border rounded-[11px] border-gray-200 justify-between">
+        <div className="flex items-center px-6 py-4 border-b  w-[1462px] h-[40px] border border-gray-200 justify-between">
           <h2 className="text-red-600 font-bold text-[20px]">Generate Bill</h2>
 
           <div className="flex gap-3">
-            {/* <button
-              className="bg-[#0A2478] text-white text-sm rounded px-4 py-2 cursor-pointer"
-            //   onClick={handleSubmit}
-            >
-              Submit
-            </button> */}
+            
             <button
-              className="bg-[#0A2478] text-white text-sm rounded px-4 py-2 cursor-pointer"
+              className="bg-[#0A2478] text-white text-xs rounded px-4 py-1 cursor-pointer"
               onClick={() => setIsModalOpen(true)}
             >
               Submit
             </button>
 
             <button
-              className="bg-[#C1121F] text-white text-sm rounded px-4 py-1 cursor-pointer"
+              className="bg-[#C1121F] text-white text-xs rounded px-4 py-1 cursor-pointer"
               onClick={() => {
                 navigate("/Auction-Items-List", {
                   state: {
@@ -333,78 +328,78 @@ export default function GenerateBill() {
           </div>
         </div>
       </div>
-      <div className="flex   ml-[110px] mr-[100px]">
+      <div className="flex   ml-[25px]">
         <div className=" ">
           {/* Invoice Details */}
-          <div className="bg-[#ECECF6] mt-2 p-5">
-            <h2 className="text-lg font-semibold text-[#0A2478] mb-4">
+          <div className="bg-[#ECECF6] p-2">
+            <h2 className="text-lg font-semibold text-[#0A2478] ">
               Invoice Details
             </h2>
 
             <div className="flex gap-10">
               <div>
-                <p className="font-medium">Date of Invoice</p>
+                <p className="font-medium text-sm">Date of Invoice</p>
                 <input
                   type="date"
                   name="invoiceDate"
                   value={formData.invoiceDate}
                   onChange={handleChange}
-                  className="w-[138px] h-[38px] p-2 border border-gray-300 rounded-md bg-white"
+                  className="w-[100px] h-[30px] p-1 border border-gray-300 rounded-md bg-white text-xs"
                 />
               </div>
 
               <div>
-                <p className="font-medium">Loan No.</p>
+                <p className="font-medium text-sm">Loan No</p>
                 <input
                   type="text"
                   name="loanNo"
                   value={formData.loanNo}
                   onChange={handleChange}
-                  className="w-[207px] h-[38px] p-2 border rounded-md bg-white border-gray-300"
+                  className="w-[150px] h-[30px] p-1 border rounded-md bg-white border-gray-300 text-xs"
                   placeholder="00000000000"
                 />
               </div>
 
               <div>
-                <p className="font-medium">Auction Date</p>
+                <p className="font-medium text-sm">Auction Date</p>
                 <input
                   type="date"
                   name="auctionDate"
                   value={formData.auctionDate}
                   onChange={handleChange}
-                  className="w-[138px] p-2 border rounded-md bg-white border-gray-300"
+                  className="w-[100px] p-1 border rounded-md bg-white border-gray-300 text-xs"
                 />
               </div>
             </div>
           </div>
 
           {/* Bidder Details */}
-          <div className="bg-red-50 p-5">
-            <h2 className="text-lg font-semibold text-[#0A2478] mb-4">
+          <div className="bg-red-50 p-2">
+            <h2 className="text-lg font-semibold text-[#0A2478] ">
               Bidder Details
             </h2>
 
             <div className="flex gap-5">
               <div className="">
-                <p className="font-medium">Name</p>
+                <p className="font-medium text-sm">Name</p>
 
                 <input
                   type="text"
                   name="bidderName"
                   value={formData.bidderName}
                   onChange={onChangeForbidders}
-                  className="w-[220px] p-2 border rounded-md bg-white border-gray-300"
+                  className="w-[220px] h-[30px] p-1 border rounded-md bg-white border-gray-300 text-xs"
                   placeholder="Name"
                   autoComplete="off"
                 />
 
                 {/* Suggestion Dropdown */}
                 {suggestions.length > 0 && (
-                  <ul className="absolute bg-white border w-[220px] rounded shadow-md max-h-40 overflow-y-auto z-50">
+                  <ul className="absolute bg-white border w-[220px] rounded shadow-md max-h-40 overflow-y-auto z-50 text-xs">
                     {suggestions.map((item) => (
                       <li
                         key={item.id}
-                        className="px-3 py-2 cursor-pointer hover:bg-blue-100"
+                        className="px-3 py-2 cursor-pointer hover:bg-blue-100 text-xs"
                         onClick={() => {
                           setFormData((prev) => ({
                             ...prev,
@@ -426,49 +421,53 @@ export default function GenerateBill() {
               </div>
 
               <div>
-                <p className="font-medium">Bidder ID</p>
+                <p className="font-medium text-sm">Bidder ID</p>
                 <input
                   type="text"
                   name="bidderId"
                   value={formData.bidderId}
+                  disabled
                   onChange={handleChange}
-                  className="w-[150px] p-2 border rounded-md bg-white border-gray-300"
+                  className="w-[150px] p-2 h-[30px] border rounded-md bg-white border-gray-300 text-xs disabled:bg-gray-200"
                   placeholder="Bidder ID"
                 />
               </div>
 
               <div>
-                <p className="font-medium">Contact No</p>
+                <p className="font-medium text-sm">Contact No</p>
                 <input
                   type="text"
                   name="bidderContact"
                   value={formData.bidderContact}
+                  disabled
                   onChange={handleChange}
-                  className="w-[150px] p-2 border rounded-md bg-white border-gray-300"
+                  className="w-[150px] p-1 h-[30px] border rounded-md bg-white border-gray-300 text-xs disabled:bg-gray-200"
                   placeholder="0000000000"
                 />
               </div>
 
               <div>
-                <label className="font-medium">Email ID</label>
+                <label className="font-medium text-sm">Email ID</label>
                 <input
                   type="email"
                   name="bidderEmail"
+                  disabled
                   value={formData.bidderEmail}
                   onChange={handleChange}
-                  className="w-full p-2 border rounded-md bg-white border-gray-300"
+                  className="w-full p-1 border rounded-md bg-white border-gray-300 text-xs h-[30px] disabled:bg-gray-200"
                   placeholder="abc@gmail.com"
                 />
               </div>
 
               <div>
-                <p className="font-medium">Address</p>
+                <p className="font-medium text-sm">Address</p>
                 <input
                   type="text"
                   name="bidderAddress"
+disabled
                   value={formData.bidderAddress}
                   onChange={handleChange}
-                  className="w-[400px] p-2 border rounded-md bg-white border-gray-300"
+                  className="w-[400px] p-1 border rounded-md bg-white border-gray-300 text-xs h-[30px] disabled:bg-gray-200"
                   placeholder="Address"
                 />
               </div>
@@ -476,15 +475,15 @@ export default function GenerateBill() {
           </div>
 
           {/* EMD Credit Note */}
-          <div className="bg-[#ECECF6] p-5">
-            <h2 className="text-lg font-semibold text-[#0A2478] mb-4">
+          <div className="bg-[#ECECF6] p-2">
+            <h2 className="text-lg font-semibold text-[#0A2478] ">
               Credit Note Amount
             </h2>
 
             <div className="flex items-end gap-10 w-full">
               {/* Credit Note Dropdown */}
               <div className="flex flex-col">
-                <label className="font-medium mb-1">Credit Note ID</label>
+                <label className="font-medium mb-1 text-sm">Credit Note ID</label>
                 <select
                   name="creditNoteId"
                   value={formData.creditNoteId}
@@ -515,7 +514,7 @@ export default function GenerateBill() {
                       setSummary((prev) => ({ ...prev, total: newTotal }));
                     }
                   }}
-                  className="w-[300px] p-2 border rounded-md bg-white  border-gray-300"
+                  className="w-[300px] p-1 h-[30px] border rounded-md bg-white  border-gray-300 text-xs"
                 >
                   <option value="">Select Credit Note</option>
                   {activeCredit?.map((item) => (
@@ -528,14 +527,14 @@ export default function GenerateBill() {
 
               {/* Adjustment Amount */}
               <div className="flex flex-col">
-                <label className="font-medium mb-1">Credit Note Amount</label>
+                <label className="font-medium mb-1 text-sm">Credit Note Amount</label>
                 <input
                   type="number"
                   name="adjustmentAmount"
                   disabled
                   value={formData.adjustmentAmount}
                   onChange={handleChange}
-                  className="w-[250px] p-2 border rounded-md bg-white  border-gray-300"
+                  className="w-[250px] p-1 border rounded-md bg-white  border-gray-300 text-xs h-[30px]"
                   placeholder="₹ 500.00"
                 />
               </div>
@@ -545,12 +544,12 @@ export default function GenerateBill() {
           {/* Gold Table */}
 
           <div className='flex gap-10 justify-between p-2 bg-[#F7F7FF] '>
-<div className=" mt-5">
-            <h2 className="text-lg font-semibold text-[#0A2478] mb-4">
+<div className=" ">
+            <h2 className="text-lg font-semibold text-[#0A2478] ">
               Gold Purchase Details
             </h2>
 
-            <table className="w-[800px]  text-sm">
+            <table className="w-[800px]  text-xs">
               <thead className="bg-[#0A2478] text-white">
                 <tr>
                   <th className="p-2 border">Sr. No</th>
@@ -624,8 +623,8 @@ export default function GenerateBill() {
             </table>
           </div>
 
-          <div className="flex justify-end mt-6 mb-5">
-            <div className="w-80 bg-white shadow-md p-4  border text-sm">
+          <div className="flex justify-end mt-6 mb-2">
+            <div className="w-80 bg-white shadow-md p-2  border text-sm">
               <p className="flex justify-between">
                 <span>Subtotal</span> <span>₹ {summary.subtotal}</span>
               </p>

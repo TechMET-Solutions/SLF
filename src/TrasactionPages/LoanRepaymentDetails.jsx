@@ -1,520 +1,568 @@
 import axios from "axios";
 import { useEffect, useState } from "react";
+import { FaDownload, FaPrint } from "react-icons/fa";
 import { useLocation, useNavigate } from "react-router-dom";
 import { API } from "../api";
 
 const LoanRepaymentDetails = () => {
   const location = useLocation();
   const navigate = useNavigate();
-  const { loanId, loanType } = location.state || {};
-
+  const { loanId, loanType, receiptNumber } = location.state || {};
+  console.log(loanType, "loanType");
   const [loanData, setLoanData] = useState(null);
   const [loading, setLoading] = useState(true);
-  const loanApplication = loanData?.loanApplication || {};
-  const installments = loanData?.installments || [];
+  const [loanMaster, setLoanMaster] = useState(null);
 
-  console.log(loanApplication, installments);
+  console.log(loanMaster, "loanMaster");
+
+  const masterApp = loanMaster?.loanApplication || {};
   useEffect(() => {
-    if (!loanId) {
-      navigate("/loan-repayment");
-      return;
-    }
-
-    const fetchDetails = async () => {
+    const fetchAllData = async () => {
       try {
         setLoading(true);
 
-        const { data } = await axios.get(
-          `${API}/Transactions/loan-details/${loanId}`,
-          {
-            params: { type: loanType },
-          },
-        );
-
-        if (data.success) {
-          setLoanData(data);
-        }
-      } catch (error) {
-        console.error("Error fetching details:", error);
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchDetails();
-  }, [loanId, loanType, navigate]);
-  useEffect(() => {
-    if (!loanId) {
-      navigate("/loan-repayment");
-      return;
-    }
-    const fetchDetails = async () => {
-      try {
-        setLoading(true);
-        const response = await axios.get(
+        // 1. Fetch Repayment Details (Installments & Application summary)
+        const repaymentRes = await axios.get(
           `${API}/Transactions/loan-details/${loanId}?type=${loanType}`,
         );
-        setLoanData(response.data);
+
+        // 2. Fetch Master Loan Details (Personal info, Status, Nominee)
+        const masterRes = await axios.get(
+          `${API}/Transactions/goldloan/getLoan/${loanId}`,
+        );
+
+        setLoanData(repaymentRes.data);
+        setLoanMaster(masterRes.data); // This holds the detailed borrower info
       } catch (error) {
-        console.error("Error fetching details:", error);
+        console.error("Error fetching data:", error);
       } finally {
         setLoading(false);
       }
     };
-    fetchDetails();
-  }, [loanId, loanType, navigate]);
 
-    if (loading) return <div className="p-4">Loading Application Data...</div>;
-    
+    if (loanId) fetchAllData();
+  }, [loanId, loanType]);
 
-const getFirstInterestRate = (ratesString) => {
-  if (!ratesString) return "";
+  if (loading)
+    return (
+      <div className="p-4 bg-gray-100 min-h-screen">
+        Loading Application Data...
+      </div>
+    );
 
+  // --- DATA MAPPING ---
+  const loanApplication = loanData?.loanApplication || {};
+  const installmentList = loanData?.installments || [];
+
+  console.log(loanApplication, installmentList);
+
+  // Parse the items from the stringified field in the JSON
+  let pledgeItems = [];
   try {
-    const parsed = JSON.parse(ratesString);
-    return parsed.length > 0 ? parsed[0].addInt : "";
-  } catch (error) {
-    console.error("Invalid JSON:", error);
-    return "";
+    pledgeItems = loanApplication.Pledge_Item_List
+      ? JSON.parse(loanApplication.Pledge_Item_List)
+      : [];
+  } catch (e) {
+    console.error("Error parsing pledge items", e);
   }
-    };
-    
-    const getTenure = (schemeType, ratesString) => {
-  if (!ratesString) return "";
-
+  console.log(pledgeItems, "pledgeItems");
+  // Extract Interest Rate from the first range of Effective_Interest_Rates
+  let interestRate = "0";
   try {
-    const parsed = JSON.parse(ratesString);
-    if (parsed.length === 0) return "";
+    const rates = JSON.parse(loanApplication.Effective_Interest_Rates || "[]");
+    interestRate = rates[0]?.addInt || "0";
+  } catch (e) {}
 
-    const lastRecord = parsed[parsed.length - 1];
-    const tenureValue = lastRecord.to;
+  const selectedPayment =
+    installmentList.find((inst) => inst.receiptNumber === receiptNumber) ||
+    installmentList[0] ||
+    {};
+  console.log(selectedPayment, "selectedPayment");
 
-    if (schemeType === "Daily") {
-      return `${tenureValue} Days`;
-    }
-
-    if (schemeType === "Monthly") {
-      return `${tenureValue} Months`;
-    }
-
-    return tenureValue;
-  } catch (error) {
-    console.error("Invalid JSON:", error);
-    return "";
-  }
-};
   return (
-    <div className="min-h-screen mt-5 font-sans text-[11px] leading-tight">
-      {/* Top Navbar */}
+    <div className="min-h-screen bg-white font-sans text-[11px] pb-10">
+      <div className="flex justify-between items-center px-2 py-1 border w-[1462px] ml-[25px] sticky-top">
+        <h1 className="text-red-600 font-bold text-lg">
+          Loan-Repayment Details
+        </h1>
 
-      <div className="flex justify-center">
-        <div className="flex justify-center ">
-          <div className="flex items-center px-6 py-4 w-[1290px] h-[62px] rounded-[11px] border border-gray-200 justify-between shadow-sm bg-white">
-            <h2 className="text-red-600 font-bold text-[20px] whitespace-nowrap">
-              Loan Repayment Details
-            </h2>
-
-            <div className="flex justify-center gap-5 items-center">
-              <div className="flex justify-end gap-3 mt-6 item-center">
-                <button
-                  className="text-white"
-                  style={{
-                    backgroundColor: "#C1121F",
-                    width: "92.66px",
-                    height: "30.57px",
-                    borderRadius: "4.67px",
-                    opacity: 1,
-                  }}
-                  onClick={() => navigate("/Loan-Repayment")}
-                >
-                  Exit
-                </button>
-              </div>
-            </div>
-          </div>
-        </div>
+        <button
+          onClick={() => navigate("/")}
+          className="w-[74px] h-[24px] cursor-pointer  rounded bg-[#C1121F] text-white text-[10px] "
+        >
+          Exit
+        </button>
       </div>
 
-      <div className=" bg-white border border-gray-300 p-4 ml-[110px] mr-[110px] mt-5">
-        {/* --- LOAN INFORMATION SECTION --- */}
-        {/* --- LOAN INFORMATION SECTION --- */}
-        <fieldset className="border border-[#00a0a0] rounded px-4 pb-4 pt-1 mb-4 relative">
-          <legend className="text-[#008080] font-bold px-1 ml-2 bg-white">
+      <div className="ml-[25px] w-[1462px]">
+        {/* Section 1: Loan Information */}
+        <div className="bg-[#FFEFEF] p-4 border border-pink-100 flex gap-4">
+          <div>
+ <h2 className="text-[#3F51B5] font-bold mb-3 text-lg">
             Loan Information
-          </legend>
-
+          </h2>
           <div className="flex gap-4">
-            <div className="flex-grow grid grid-cols-3 gap-x-6 gap-y-2">
-              {/* Loan No */}
-              <div className="flex items-center gap-2">
-                <label className="w-32 text-gray-700">Loan No</label>
-                <input
-                  type="text"
-                  value={loanApplication.id}
-                  readOnly
-                  className="bg-[#e8e8e8] border border-gray-400 p-0.5 px-2 w-full rounded"
-                />
+            <div className="flex-1 grid grid-cols-7 gap-3">
+              <InputField label="Loan No" value={loanApplication.id} />
+              <InputField
+  label="Borrower Name"
+  value={`${loanApplication.Print_Name || ""} (${loanApplication.BorrowerId || ""})`}
+/>
+              <InputField
+                label="Mobile Number"
+                value={loanApplication.Mobile_Number}
+              />
+              <InputField label="Loan Date" value={loanApplication.Pay_Date} />
+              <div className="flex flex-col">
+                <label className="text-gray-600 mb-0.5">Loan Amount</label>
+                <div className="flex">
+                  <input
+                    readOnly
+                    className="w-full border border-gray-300 p-1 bg-white"
+                    value={loanApplication.Loan_amount}
+                  />
+                  <span className="bg-[#001440] text-white px-2 flex items-center text-[9px]">
+                    {interestRate}%
+                  </span>
+                </div>
               </div>
 
-              {/* Branch Code */}
-              <div className="flex items-center gap-2">
-                <label className="w-32 text-gray-700">Branch Code</label>
-                <input
-                  type="text"
-                  value={loanApplication.branch_id}
-                  readOnly
-                  className="bg-[#e8e8e8] border border-gray-400 p-0.5 px-2 w-full rounded"
-                />
-              </div>
-
-              {/* Branch Name */}
-              <div className="flex items-center gap-2">
-                <label className="w-32 text-gray-700">Branch Name</label>
-                <input
-                  type="text"
-                  value={loanData?.branch_name || ""}
-                  readOnly
-                  className="bg-[#e8e8e8] border border-gray-400 p-0.5 px-2 w-full rounded"
-                />
-              </div>
-
-              {/* Customer Name */}
-              <div className="flex items-center gap-2 col-span-2">
-                <label className="w-32 text-gray-700">Customer Name</label>
-                <input
-                  type="text"
-                  value={loanApplication?.Print_Name || ""}
-                  readOnly
-                  className="bg-[#e8e8e8] border border-gray-400 p-0.5 px-2 w-full rounded"
-                />
-              </div>
-
-              {/* Mobile No */}
-              <div className="flex items-center gap-2">
-                <label className="w-32 text-gray-700">Mobile No</label>
-                <input
-                  type="text"
-                  value={loanApplication?.Mobile_Number || ""}
-                  readOnly
-                  className="bg-[#e8e8e8] border border-gray-400 p-0.5 px-2 w-full rounded"
-                />
-              </div>
-
-              {/* Loan Date */}
-           <div className="flex items-center gap-2 relative">
-  <label className="w-32 text-gray-700">Loan Date</label>
-  <input
-    type="text"
-    value={
-      loanApplication?.created_at
-        ? new Date(loanApplication.created_at).toLocaleDateString("en-GB")
-        : ""
-    }
-    readOnly
-    className="bg-[#e8e8e8] border border-gray-400 p-0.5 px-2 w-full rounded"
-  />
-  <span className="absolute right-2 text-[#8b4513] text-xs">
-    📅
-  </span>
-</div>
-
-              {/* Loan Amount */}
-              <div className="flex items-center gap-2">
-                <label className="w-32 text-gray-700">Loan Amt</label>
-                <input
-                  type="text"
-                  value={loanApplication?.Loan_amount || "0.00"}
-                  readOnly
-                  className="bg-[#e8e8e8] border border-gray-400 p-0.5 px-2 w-full rounded"
-                />
-              </div>
-
-              {/* Rate Of Interest */}
-             <div className="flex items-center gap-2">
-  <label className="w-32 text-gray-700">Rate Of Int</label>
-  <input
-    type="text"
-    value={getFirstInterestRate(loanApplication?.Effective_Interest_Rates)}
-    readOnly
-    className="bg-[#e8e8e8] border border-gray-400 p-0.5 px-2 w-full rounded"
-  />
-</div>
-
-              {/* Tenure */}
-             <div className="flex items-center gap-2">
-  <label className="w-32 text-gray-700">Tenure</label>
-  <input
-    type="text"
-    value={getTenure(
-      loanApplication?.Scheme_type,
-      loanApplication?.Effective_Interest_Rates
-    )}
-    readOnly
-    className="bg-[#e8e8e8] border border-gray-400 p-0.5 px-2 w-full rounded"
-  />
-</div>
-            </div>
-
-            {/* Photo Box */}
-            <div className="w-24 h-28 border border-blue-900 flex items-center justify-center bg-white shrink-0 mt-2">
-              <img
-                src="/placeholder-user.png"
-                alt=""
-                className="opacity-20 w-12"
+              <InputField
+                label="Under the Scheme"
+                value={loanApplication.Scheme}
               />
-            </div>
-          </div>
-        </fieldset>
-
-        {/* --- PAYMENT SECTION --- */}
-        <fieldset className="border border-[#00a0a0] rounded px-4 pb-4 pt-1 mb-4 relative">
-          <legend className="text-[#008080] font-bold px-1 ml-2 bg-white">
-            Payment
-          </legend>
-
-          <div className="grid grid-cols-4 gap-x-8 gap-y-2">
-            {/* Is Close */}
-            <div className="flex items-center gap-2">
-              <input type="checkbox" />
-              <label>Is Close</label>
-            </div>
-
-            {/* Pay Amount */}
-            <div className="flex items-center gap-2">
-              <label className="w-32 text-gray-700">Pay Amount</label>
-              <input
-                type="text"
-                defaultValue="10380.00"
-                className="bg-white border border-gray-400 p-0.5 px-2 w-full rounded focus:outline-blue-500"
+              <InputField
+                label="Pending Loan Amount"
+                value={loanApplication.LoanPendingAmount}
               />
             </div>
 
-            {/* Interest Adjusted */}
-            <div className="flex items-center gap-2">
-              <label className="w-32 text-gray-700">Interest Adjusted</label>
-              <input
-                type="text"
-                value="380.00"
-                readOnly
-                className="bg-[#e8e8e8] border border-gray-400 p-0.5 px-2 w-full rounded"
-              />
-            </div>
-
-            {/* Loan Amount Adjusted */}
-            <div className="flex items-center gap-2">
-              <label className="w-32 text-gray-700">Loan Amt. Adjusted</label>
-              <input
-                type="text"
-                value="10000.00"
-                readOnly
-                className="bg-[#e8e8e8] border border-gray-400 p-0.5 px-2 w-full rounded"
-              />
-            </div>
-
-            <div className="hidden lg:block"></div>
-
-            {/* Mode Of Payment */}
-            <div className="flex items-center gap-2">
-              <label className="w-32 text-gray-700">Mode Of Payment</label>
-              <select className="border border-gray-400 p-0.5 px-2 w-full rounded bg-white">
-                <option>CASH</option>
-                <option>CHEQUE</option>
-                <option>ONLINE</option>
-              </select>
-            </div>
-
-            {/* Bank Name */}
-            <div className="flex items-center gap-2">
-              <label className="w-32 text-gray-700">Bank Name</label>
-              <input
-                type="text"
-                value="Cash"
-                readOnly
-                className="bg-[#e8e8e8] border border-gray-400 p-0.5 px-2 w-full rounded"
-              />
-            </div>
-
-            {/* Payment Ref No */}
-            <div className="flex items-center gap-2">
-              <label className="w-32 text-gray-700">Payment Ref No</label>
-              <input
-                type="text"
-                className="bg-white border border-gray-400 p-0.5 px-2 w-full rounded focus:outline-blue-500"
-              />
-            </div>
-
-            {/* Enhancement / Modification */}
-            <div className="flex items-center gap-2">
-              <input type="checkbox" />
-              <label>Enhancement/ Modification</label>
-            </div>
-
-            {/* Cash In Transit */}
-           
-
-            {/* Payment Made By */}
-            <div className="flex items-center gap-2">
-              <label className="w-32 text-gray-700">Payment Made By</label>
-              <input
-                type="text"
-                defaultValue="self"
-                className="bg-white border border-gray-400 p-0.5 px-2 w-full rounded focus:outline-blue-500"
-              />
-            </div>
-
-            {/* Interest Paid For */}
-            <div className="flex items-center gap-2">
-              <label className="w-32 text-gray-700">Interest Paid For</label>
-              <div className="flex items-center gap-1 w-full">
-                <input
-                  type="text"
-                  value="15.00"
-                  readOnly
-                  className="bg-[#e8e8e8] border border-gray-400 p-0.5 w-12 text-center"
-                />
-                <span>Day(S)</span>
-              </div>
-            </div>
-
-            <div className="col-span-3"></div>
-
-            {/* Int Paid Upto */}
-            <div className="flex items-center gap-2 relative">
-              <label className="w-32 text-gray-700">Int Paid Upto</label>
-              <input
-                type="text"
-                value="24/09/2025"
-                readOnly
-                className="bg-[#e8e8e8] border border-gray-400 p-0.5 px-2 w-full rounded"
-              />
-              <span className="absolute right-2 text-[#8b4513] text-xs">
-                📅
-              </span>
-            </div>
           </div>
 
-          {/* Amount in words bar */}
-          <div className="mt-4 flex items-center border border-gray-300 rounded overflow-hidden">
-            <div className="bg-gray-100 px-2 py-1 border-r border-gray-300 font-bold whitespace-nowrap">
-              Amount Paid (In Words) :
-            </div>
-            <div className="bg-white px-2 py-1 w-full italic">
-              Ten Thousand Three Hundred and Eighty
+          </div>
+          <div>
+<div className="flex gap-2">
+  {/* Borrower Section: Passes both Profile Image and Signature */}
+  <PhotoBox 
+    label="Borrower" 
+    imageUrl={masterApp.borrower_profileImage} 
+    signatureUrl={masterApp.borrower_signature} 
+  />
+
+  {/* Co-Borrower Section: Passes both Profile Image and Signature */}
+  <PhotoBox 
+    label="Co-Borrower" 
+    imageUrl={masterApp.coborrower_profileImage} 
+    signatureUrl={masterApp.coborrower_signature} 
+  />
+
+  {/* Ornament Section: Only Profile Image (Signatures are hidden via isOrnament) */}
+  <PhotoBox 
+    label="Ornament Photo" 
+    isOrnament={true} 
+    imageUrl={masterApp.Ornament_Photo} 
+  />
+</div>
+          </div>
+        </div>
+
+        {/* Section 2: Payment */}
+        {loanType === "Bullet" && (
+          <div className="bg-[#F5F8FF] p-4 rounded-sm border border-blue-50">
+            <h2 className="text-[#3F51B5] font-bold mb-3 text-lg">
+              Payment Details
+            </h2>
+
+            <div className="flex flex-col gap-4">
+              {/* Row 1: Checkboxes and Mode */}
+              <div className="flex gap-10 items-end">
+                <div className="space-y-1">
+                  <label className="flex items-center gap-2">
+                    <input
+                      type="checkbox"
+                      checked={selectedPayment?.isLoanClosed === 1}
+                      readOnly
+                    />
+                    Is Close
+                  </label>
+                  <label className="flex items-center gap-2">
+                    <input
+                      type="checkbox"
+                      checked={selectedPayment?.isLoanClosed === 0}
+                      readOnly
+                    />
+                    Is Adv. Int
+                  </label>
+                </div>
+
+                 <InputField
+                  label="Total Paid Amount"
+                  value={selectedPayment?.payAmount}
+                  isEditable={false}
+                />
+                <InputField
+                  label="Interest Adjusted"
+                  value={selectedPayment?.pendingInt}
+                  isEditable={false}
+                />
+                <InputField
+                  label="Principal Adjusted"
+                  value={selectedPayment?.loanAmountPaid}
+                  isEditable={false}
+                />
+                <InputField
+                  label="Balance Loan Amount"
+                  value={selectedPayment?.balanceLoanAmt}
+                  isEditable={false}
+                />
+                <InputField
+                  label="Interest Paid Upto"
+                  value={selectedPayment?.intPaidUpto}
+                  isEditable={false}
+                />
+
+               
+              </div>
+
+              {/* Row 2: Financial Breakdown using InputFields */}
+              <div className="flex  gap-3 border-t border-blue-100 pt-3">
+                <div className="flex flex-col">
+                  <label className="text-gray-600 mb-0.5">
+                    Mode of Payment <span className="text-red-500">*</span>
+                  </label>
+                  <select
+                    className="border border-gray-300 p-1 bg-white outline-none"
+                    value={selectedPayment?.paymentInfo?.mode || ""}
+                    disabled
+                  >
+                    <option value="">--Select--</option>
+                    <option value="Cash">Cash</option>
+                    <option value="Bank/Online">Bank/Online</option>
+                  </select>
+                </div>
+
+                <InputField
+                  label="Payment Ref. No *"
+                  value={selectedPayment?.paymentInfo?.refNo}
+                  isEditable={false}
+                />
+                <InputField
+                  label="Payment Made By *"
+                  value={selectedPayment?.paymentInfo?.madeBy}
+                  isEditable={false}
+                />
+                <InputField
+                  label="Receipt Number"
+                  value={selectedPayment?.receiptNumber}
+                  isEditable={false}
+                />
+              </div>
             </div>
           </div>
-        </fieldset>
+        )}
 
-        {/* --- INSTALLMENTS TABLE --- */}
-        <fieldset className="border border-[#00a0a0] rounded px-4 pb-4 pt-1 mb-4 relative">
-          <legend className="text-[#008080] font-bold px-1 ml-2 bg-white">
-            Installments
-          </legend>
+     {loanType === "EMI" && (
+  <div className="bg-[#F5F8FF] p-4 rounded-sm border border-blue-50">
+    <h2 className="text-[#3F51B5] font-bold mb-3 text-lg">
+      Payment Details (EMI Receipt)
+    </h2>
 
-          <div className="overflow-x-auto border border-gray-300 mt-2">
-            <table className="w-full text-left border-collapse text-[10px]">
-              <thead className="bg-[#f8f8f8] border-b border-gray-300">
-                <tr className="divide-x divide-gray-300">
-                  <th className="p-1 font-normal w-8">Sr.</th>
-                  <th className="p-1 font-normal">Receipt No</th>
-                  <th className="p-1 font-normal">Payment Date</th>
-                  <th className="p-1 font-normal">Paid Upto</th>
-                  <th className="p-1 font-normal">Mode Of Payment</th>
-                  <th className="p-1 font-normal">Payment Ref No</th>
-                  <th className="p-1 font-normal text-right">Amount</th>
-                  <th className="p-1 font-normal text-right">Interest</th>
-                  <th className="p-1 font-normal text-right">Loan Amt. Adj.</th>
-                  <th className="p-1 font-normal text-center">
-                    Int. Paid Days
-                  </th>
+    <div className="flex flex-col gap-4">
+      {/* Row 1: Status and Financials */}
+      <div className="flex gap-10 items-end">
+       <div className="space-y-1">
+  <label className="flex items-center gap-2">
+    <input
+      type="checkbox"
+      // ✅ Now checks if the is_closed property is exactly the string "true"
+      checked={selectedPayment?.is_closed === "true"}
+      readOnly
+      className="cursor-not-allowed" // Good practice for readOnly inputs
+    />
+    Is Close
+  </label>
+</div>
+
+        <InputField
+          label="Total Paid Amount"
+          value={selectedPayment?.pay_amount}
+          isEditable={false}
+        />
+        <InputField
+          label="Interest Portion"
+          value={selectedPayment?.interest_amount}
+          isEditable={false}
+        />
+        <InputField
+          label="Opening Balance"
+          value={selectedPayment?.opening_balance}
+          isEditable={false}
+        />
+        <InputField
+          label="Closing Balance"
+          value={selectedPayment?.closing_balance}
+          isEditable={false}
+        />
+        <InputField
+          label="Payment Date"
+          value={selectedPayment?.created_at ? new Date(selectedPayment.created_at).toLocaleDateString() : ""}
+          isEditable={false}
+        />
+      </div>
+
+      {/* Row 2: Transaction Info */}
+      <div className="flex gap-3 border-t border-blue-100 pt-3">
+        <div className="flex flex-col w-40">
+          <label className="text-gray-600 mb-0.5">
+            Mode of Payment 
+          </label>
+          <select
+            className="border border-gray-300 p-1 bg-white outline-none"
+            value={selectedPayment?.payment_mode || ""}
+            disabled
+          >
+            <option value="">--Select--</option>
+            <option value="Cash">Cash</option>
+            <option value="Bank/Online">Bank/Online</option>
+          </select>
+        </div>
+
+        <InputField
+          label="Payment Ref. No "
+          value={selectedPayment?.ref_no}
+          isEditable={false}
+        />
+        <InputField
+          label="Payment Made By "
+          value={selectedPayment?.made_by}
+          isEditable={false}
+        />
+        <InputField
+          label="Receipt Number"
+          value={selectedPayment?.receiptNumber}
+          isEditable={false}
+        />
+        <InputField
+          label="Bank Name"
+          value={selectedPayment?.bank_name}
+          isEditable={false}
+        />
+      </div>
+    </div>
+  </div>
+)}
+
+        {/* Section 3: Particulars Table (Items) */}
+        <div className="border border-gray-200">
+          <table className="w-full text-center border-collapse">
+            <thead className="bg-[#00215E] text-white text-[10px]">
+              <tr className="divide-x divide-white">
+                <th className="py-1 px-2 font-normal">
+                  Particulars( Pledge Item )
+                </th>
+                <th className="py-1 px-2 font-normal">Nos.</th>
+                <th className="py-1 px-2 font-normal">Gross</th>
+                <th className="py-1 px-2 font-normal">Net Weight</th>
+                <th className="py-1 px-2 font-normal">Actual Purity</th>
+                <th className="py-1 px-2 font-normal">Assigned Purity</th>
+                <th className="py-1 px-2 font-normal">Rate</th>
+                <th className="py-1 px-2 font-normal">Valuation</th>
+                <th className="py-1 px-2 font-normal">Remark</th>
+              </tr>
+            </thead>
+            <tbody className="divide-y divide-gray-200">
+              {pledgeItems.map((item, index) => (
+                <tr key={index} className="bg-white divide-x divide-gray-100">
+                  <td className="p-1.5 text-left pl-4">{item.particular}</td>
+                  <td>{item.nos}</td>
+                  <td>{item.gross}</td>
+                  <td>{item.netWeight}</td>
+                  <td>{item.purity}</td>
+                  <td>{item.Calculated_Purity || "--"}</td>
+                  <td>{item.rate?.toLocaleString()}</td>
+                  <td>{item.valuation?.toLocaleString()}</td>
+                  <td>{item.remark}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+
+        {/* Section 4: Installments History */}
+        {loanType === "Bullet" && (
+           <div className="space-y-2 mt-2">
+          <h2 className="text-[#3F51B5] font-bold text-lg">Installments</h2>
+          <div className="border border-gray-200">
+            <table className="w-full text-center border-collapse">
+              <thead className="bg-[#00215E] text-white text-[10px]">
+                <tr className="divide-x divide-white">
+                  <th className="py-1 px-2 font-normal">Sr. No</th>
+                  <th className="py-1 px-2 font-normal">Receipt No</th>
+                  <th className="py-1 px-2 font-normal">Payment Date</th>
+                  <th className="py-1 px-2 font-normal">Mode of Payment</th>
+                  <th className="py-1 px-2 font-normal">Payment Ref. No</th>
+                  <th className="py-1 px-2 font-normal">Amount</th>
+                  <th className="py-1 px-2 font-normal">Interest</th>
+                  <th className="py-1 px-2 font-normal">Loan Amt. Adj</th>
+                  <th className="py-1 px-2 font-normal">Int Paid Days</th>
+                  <th className="py-1 px-2 font-normal">Action</th>
                 </tr>
               </thead>
-
-              <tbody className="bg-white divide-y divide-gray-200">
-                {loanData?.installments && loanData.installments.length > 0 ? (
-                  loanData.installments.map((item, index) => (
-                    <tr key={index} className="divide-x divide-gray-200">
-                      <td className="p-1 text-center">{index + 1}</td>
-
-                      <td className="p-1">{item.receipt_no}</td>
-
-                      <td className="p-1">
-                        {item.payment_date
-                          ? new Date(item.payment_date).toLocaleDateString()
-                          : ""}
-                      </td>
-
-                      <td className="p-1">
-                        {item.paid_upto
-                          ? new Date(item.paid_upto).toLocaleDateString()
-                          : ""}
-                      </td>
-
-                      <td className="p-1">{item.mode}</td>
-
-                      <td className="p-1">{item.ref_no || "-"}</td>
-
-                      <td className="p-1 text-right">
-                        {Number(item.amount || 0).toFixed(2)}
-                      </td>
-
-                      <td className="p-1 text-right">
-                        {Number(item.interest || 0).toFixed(2)}
-                      </td>
-
-                      <td className="p-1 text-right">
-                        {Number(item.principal || 0).toFixed(2)}
-                      </td>
-
-                      <td className="p-1 text-center">{item.paid_days || 0}</td>
-                    </tr>
-                  ))
-                ) : (
+              <tbody>
+                {installmentList.map((inst, index) => (
+                  <tr
+                    key={inst.id}
+                    className="bg-white divide-x divide-gray-100 border-b"
+                  >
+                    <td className="p-1.5">{index + 1}</td>
+                    <td>{inst.receiptNumber}</td>
+                    <td>
+                      {new Date(inst.transaction_date).toLocaleDateString()}
+                    </td>
+                    <td>{inst.paymentInfo?.mode}</td>
+                    <td>{inst.paymentInfo?.refNo}</td>
+                    <td>{inst.payAmount}</td>
+                    <td>{inst.pendingInt}</td>
+                    <td>{inst.loanAmountPaid}</td>
+                    <td>{inst.pendingDays}</td>
+                    <td className="flex justify-center gap-3 py-1.5 text-gray-700">
+                      <FaDownload
+                        className="cursor-pointer hover:text-blue-600"
+                        size={12}
+                      />
+                      <FaPrint
+                        className="cursor-pointer hover:text-blue-600"
+                        size={12}
+                      />
+                    </td>
+                  </tr>
+                ))}
+                {installmentList.length === 0 && (
                   <tr>
-                    <td colSpan="10" className="p-4 text-center text-gray-500">
-                      No Installments Found
+                    <td colSpan="10" className="p-4 text-gray-400">
+                      No installments found
                     </td>
                   </tr>
                 )}
               </tbody>
             </table>
           </div>
-        </fieldset>
+        </div>
+        )}
+        {loanType === "EMI" && (
+  <div className="space-y-2 mt-2">
+    <h2 className="text-[#3F51B5] font-bold text-lg">Installment History (EMI)</h2>
+    <div className="border border-gray-200">
+      <table className="w-full text-center border-collapse">
+        <thead className="bg-[#00215E] text-white text-[10px]">
+          <tr className="divide-x divide-white">
+            <th className="py-1 px-2 font-normal">Sr. No</th>
+            <th className="py-1 px-2 font-normal">Receipt No</th>
+            <th className="py-1 px-2 font-normal">Payment Date</th>
+            <th className="py-1 px-2 font-normal">Mode</th>
+            <th className="py-1 px-2 font-normal">Ref. No</th>
+            <th className="py-1 px-2 font-normal">Total Paid</th>
+            <th className="py-1 px-2 font-normal">Interest</th>
+            <th className="py-1 px-2 font-normal">Principal Adj.</th>
+            <th className="py-1 px-2 font-normal">Balance</th>
+            <th className="py-1 px-2 font-normal">Action</th>
+          </tr>
+        </thead>
+        <tbody>
+          {installmentList.map((inst, index) => {
+            // Principal Adjusted = Total Paid - Interest
+            const principalAdj = (parseFloat(inst.pay_amount) - parseFloat(inst.interest_amount)).toFixed(2);
+            
+            return (
+              <tr
+                key={inst.id}
+                className={`divide-x divide-gray-100 border-b text-[10px] ${
+                  inst.receiptNumber === receiptNumber ? "bg-blue-50" : "bg-white"
+                }`}
+              >
+                <td className="p-1.5">{index + 1}</td>
+                <td className="font-medium text-blue-700">{inst.receiptNumber}</td>
+                <td>{new Date(inst.created_at).toLocaleDateString()}</td>
+                <td>{inst.payment_mode}</td>
+                <td>{inst.ref_no || "N/A"}</td>
+                <td className="font-bold">{inst.pay_amount}</td>
+                <td className="text-red-600">{inst.interest_amount}</td>
+                <td className="text-green-700">{principalAdj}</td>
+                <td>{inst.closing_balance}</td>
+                <td className="flex justify-center gap-3 py-1.5 text-gray-700">
+                  <FaDownload className="cursor-pointer hover:text-blue-600" size={12} />
+                  <FaPrint className="cursor-pointer hover:text-blue-600" size={12} />
+                </td>
+              </tr>
+            );
+          })}
+          {installmentList.length === 0 && (
+            <tr>
+              <td colSpan="10" className="p-4 text-gray-400">No EMI installments found</td>
+            </tr>
+          )}
+        </tbody>
+      </table>
+    </div>
+  </div>
+)}
+       
       </div>
     </div>
   );
 };
 
-// Reusable Helper Component for fields to keep code clean
-const Field = ({
-  label,
-  value,
-  span = "",
-  isDate = false,
-  isEditable = false,
-  isSelect = false,
-  options = [],
-}) => (
-  <div className={`flex items-center gap-2 ${span}`}>
-    <label className="w-32 text-gray-700 shrink-0">{label}</label>
-    <div className="relative w-full flex items-center">
-      {isSelect ? (
-        <select className="border border-gray-400 p-0.5 px-2 w-full rounded bg-white">
-          {options.map((opt) => (
-            <option key={opt}>{opt}</option>
-          ))}
-        </select>
-      ) : (
-        <input
-          type="text"
-          readOnly={!isEditable}
-          defaultValue={value}
-          className={`${isEditable ? "bg-white" : "bg-[#e8e8e8]"} border border-gray-400 p-0.5 px-2 w-full rounded focus:outline-blue-500`}
+// --- Sub-Components (Keep as is) ---
+const InputField = ({ label, value, placeholder, isEditable = false }) => (
+  <div className="flex flex-col">
+    <label className="text-gray-600 mb-0.5">{label}</label>
+    <input
+      readOnly={!isEditable}
+      placeholder={placeholder}
+      className="border border-gray-300 p-1 text-[11px] outline-none bg-white"
+      value={value || ""}
+    />
+  </div>
+);
+
+const PhotoBox = ({ label, imageUrl, signatureUrl, isOrnament = false }) => (
+  <div className="flex flex-col items-center">
+    <span className="text-[10px] text-gray-500 mb-1">{label}</span>
+    
+    {/* Main Photo Box */}
+    <div className="w-20 h-24 border border-gray-300 bg-gray-50 flex items-center justify-center overflow-hidden relative">
+      {imageUrl ? (
+        <img 
+          src={imageUrl} 
+          alt={label} 
+          className="w-full h-full object-cover"
+          onError={(e) => { e.target.style.display = 'none'; }} 
         />
-      )}
-      {isDate && (
-        <span className="absolute right-1 text-[#8b4513] text-xs">📅</span>
+      ) : (
+        <div className="flex flex-col items-center">
+          {isOrnament ? (
+            <div className="w-full h-full opacity-20 bg-[url('https://www.transparenttextures.com/patterns/cubes.png')]"></div>
+          ) : (
+            <div className="w-12 h-12 bg-gray-300 rounded-full"></div>
+          )}
+        </div>
       )}
     </div>
+
+    {/* Signature Box (Hidden for Ornaments) */}
+    {!isOrnament && (
+      <div className="mt-1 w-20 border border-gray-300 h-8 bg-white flex items-center justify-center overflow-hidden">
+        {signatureUrl ? (
+          <img 
+            src={signatureUrl} 
+            alt="Signature" 
+            className="max-h-full max-w-full object-contain p-0.5" 
+          />
+        ) : (
+          <span className="italic text-gray-400 text-[8px]">Signature</span>
+        )}
+      </div>
+    )}
   </div>
 );
 

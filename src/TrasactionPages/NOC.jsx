@@ -73,9 +73,9 @@ function NOC() {
         .filter(p => p.paidBy?.toLowerCase() !== "cash")
         .reduce((sum, p) => sum + Number(p.customerAmount || 0), 0);
     return (
-        <div className="flex flex-col items-center mb-10 mt-5">
+        <div className="flex flex-col items-center ">
             {/* Header Section */}
-            <div className="flex items-center justify-between px-6 py-4 w-[1290px] h-[62px] border border-gray-200 rounded-[11px] shadow-sm">
+            <div className="flex items-center justify-between px-6 py-4 w-[1462px] h-[40px] border border-gray-200">
                 <h2 className="text-red-600 font-bold text-[20px] font-['Source_Sans_3']">
                     S. Lunawat Finance Pvt. Ltd.
                 </h2>

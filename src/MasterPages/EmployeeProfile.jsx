@@ -1,10 +1,10 @@
 import axios from "axios";
+import { Eye, EyeOff } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import { FaPaperclip } from "react-icons/fa";
 import { FiEdit, FiTrash2 } from "react-icons/fi";
 import { useNavigate } from "react-router-dom";
 import { API } from "../api";
-
 import {
   deleteEmployeeApi,
   fetchEmployeeProfileApi,
@@ -13,16 +13,19 @@ import blockimg from "../assets/blockimg.png";
 import Pagination from "../Component/Pagination";
 import { encryptData } from "../utils/cryptoHelper";
 
+import { FaSort, FaSortDown, FaSortUp } from "react-icons/fa";
 import profileempty from "../assets/profileempty.png";
 import MultiSelect from "../Component/MultiSelect";
-
+import { usePermission } from "../API/Context/PermissionContext";
+import Loader from "../Component/Loader";
 
 const EmployeeProfile = () => {
   useEffect(() => {
     document.title = "SLF | Employee Profile";
   }, []);
-
+  const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
+  const { permissions, userData } = usePermission();
 
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [employeeList, setEmployeeList] = useState([]);
@@ -34,7 +37,12 @@ const EmployeeProfile = () => {
   const [deleteId, setDeleteId] = useState(null);
   const [searchTerm, setSearchTerm] = useState({ empId: "", empName: "" });
   console.log(searchTerm, "searchTerm");
+  const [showPassword, setShowPassword] = useState(false);
   const [errors, setErrors] = useState({});
+  const [sortConfig, setSortConfig] = useState({
+    key: "",
+    direction: "asc",
+  });
 
   const [formData, setFormData] = useState({
     id: null,
@@ -65,19 +73,23 @@ const EmployeeProfile = () => {
     status: true,
     salary: null,
   });
+  console.log(formData, "formData");
   const [documents, setDocuments] = useState([]); // main list from API
   const [idProofList, setIdProofList] = useState([]); // filtered only id proof
   const [addrProofList, setAddrProofList] = useState([]); // filtered only address proof
 
   const fetchDocuments = async () => {
+    setLoading(true);
     try {
       const response = await axios.get(`${API}/Master/getAllDocumentProofs`);
       const docs = response.data.data;
       setDocuments(docs);
       setIdProofList(docs.filter((x) => x.is_id_proof === 1));
       setAddrProofList(docs.filter((x) => x.is_address_proof === 1));
+      setLoading(false);
     } catch (err) {
       console.error("Error fetching documents:", err);
+      setLoading(false);
     }
   };
 
@@ -98,6 +110,18 @@ const EmployeeProfile = () => {
     fetchBranches();
     fetchDesignations();
   }, []);
+
+  const handleSort = (key) => {
+    setSortConfig((prev) => {
+      let direction = "asc";
+
+      if (prev.key === key && prev.direction === "asc") {
+        direction = "desc";
+      }
+
+      return { key, direction };
+    });
+  };
 
   const fetchAllRoles = async () => {
     try {
@@ -217,7 +241,7 @@ const EmployeeProfile = () => {
   };
 
   const fetchEmployee = async (page = 1, searchQuery, searchHeaders) => {
-    setIsLoading(true);
+    setLoading(true);
 
     const filters = {
       search: searchQuery,
@@ -225,30 +249,40 @@ const EmployeeProfile = () => {
     };
 
     try {
-      const result = await fetchEmployeeProfileApi(page, itemsPerPage, filters);
+      const result = await fetchEmployeeProfileApi(
+        page,
+        itemsPerPage,
+        filters,
+        sortConfig.key,
+        sortConfig.direction,
+      );
 
       if (result?.items) {
         setEmployeeList(result.items);
         setTotalItems(result.total || 0);
         setCurrentPage(result.page);
         setShowPagination(result.showPagination || false);
+        setLoading(false);
       } else {
         setEmployeeList([]);
         setShowPagination(false);
+        setLoading(false);
       }
     } catch (error) {
       console.error("❌ Error fetching employees:", error);
+      setLoading(false);
     } finally {
       setIsLoading(false);
+      setLoading(false);
     }
   };
 
   useEffect(() => {
     fetchEmployee(searchQuery, searchHeaders);
-  }, []);
+  }, [sortConfig]);
 
   const updateEmployeeStatus = async (id, status) => {
-    debugger;
+    setLoading(true);
     try {
       const payload = { id, status };
       const encryptedData = encryptData(JSON.stringify(payload));
@@ -256,14 +290,16 @@ const EmployeeProfile = () => {
       const res = await axios.post(`${API}/Master/updateEmployeeStatus`, {
         data: encryptedData,
       });
-
+      setLoading(false);
       return res.data;
     } catch (error) {
       console.error("Error updating employee status:", error);
+      setLoading(false);
     }
   };
 
   const handleToggleStatus = async (emp) => {
+    setLoading(true);
     try {
       const newStatus = emp.status ? 0 : 1;
       const response = await updateEmployeeStatus(emp.id, newStatus);
@@ -271,8 +307,10 @@ const EmployeeProfile = () => {
       setEmployeeList((prev) =>
         prev.map((e) => (e.id === emp.id ? { ...e, status: newStatus } : e)),
       );
+      setLoading(false);
     } catch (error) {
       console.error("❌ Error toggling employee status:", error);
+      setLoading(false);
     }
   };
 
@@ -284,58 +322,82 @@ const EmployeeProfile = () => {
 
   // 🟥 Confirm delete
   const handleDeleteConfirm = async () => {
+    setLoading(true);
     try {
       await deleteEmployeeApi(deleteId);
       setDeleteModalOpen(false);
       setDeleteId(null);
       fetchEmployee(currentPage, searchQuery, searchHeaders);
+      setLoading(false);
     } catch (error) {
       console.error("❌ Error deleting employee:", error);
       alert("Error deleting employee");
+      setLoading(false);
     }
   };
 
   // const handleView = (employee) => {
   //   setMode("view");
-  //   setFormData(employee);
+
+  //   setFormData({
+  //     ...employee,
+  //     branch_id: Array.isArray(employee.branch_id)
+  //       ? employee.branch_id
+  //       : employee.branch_id
+  //         ? [employee.branch_id]
+  //         : [],
+  //   });
+
   //   setIsModalOpen(true);
   // };
-
-  // const handleEdit = (employee) => {
-  //   setMode("edit");
-  //   setFormData(employee);
-  //   setIsModalOpen(true);
-  // };
-
-
   const handleView = (employee) => {
+    setLoading(true);
+    debugger;
     setMode("view");
+
+    let branches = employee.assign_branch;
+
+    // जर string "[21,22]" असेल तर parse कर
+    if (typeof branches === "string") {
+      try {
+        branches = JSON.parse(branches);
+      } catch (e) {
+        branches = [];
+      }
+    }
 
     setFormData({
       ...employee,
-      branch_id: Array.isArray(employee.branch_id)
-        ? employee.branch_id
-        : employee.branch_id
-          ? [employee.branch_id]
-          : [],
+      branch_id: Array.isArray(branches) ? branches : [],
     });
 
     setIsModalOpen(true);
+    setLoading(false);
   };
 
   const handleEdit = (employee) => {
+    debugger;
+    setLoading(true);
     setMode("edit");
+
+    let branches = employee.assign_branch;
+
+    // जर string "[21,22]" असेल तर parse कर
+    if (typeof branches === "string") {
+      try {
+        branches = JSON.parse(branches);
+      } catch (e) {
+        branches = [];
+      }
+    }
 
     setFormData({
       ...employee,
-      branch_id: Array.isArray(employee.branch_id)
-        ? employee.branch_id
-        : employee.branch_id
-          ? [employee.branch_id]
-          : [],
+      branch_id: Array.isArray(branches) ? branches : [],
     });
 
     setIsModalOpen(true);
+    setLoading(false);
   };
 
   const handleAddNew = () => {
@@ -383,8 +445,6 @@ const EmployeeProfile = () => {
   }
   const validateForm = () => {
     const {
-      pan_card,
-      aadhar_card,
       emp_name,
       mobile_no,
       email,
@@ -397,25 +457,36 @@ const EmployeeProfile = () => {
       assign_role_id,
       password,
     } = formData;
-
-    const panRegex = /^[A-Z]{5}[0-9]{4}[A-Z]{1}$/;
-    const aadharRegex = /^[0-9]{12}$/;
     const mobileRegex = /^[6-9][0-9]{9}$/;
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     const nameRegex = /^[A-Za-z ]{3,}$/;
 
     // PAN
-    if (!panRegex.test(pan_card?.toUpperCase())) {
-      alert("PAN must be valid (Example: ABCDE1234F)");
+    if (!formData.pan_card && !formData.panFile) {
+      alert("Either PAN Number or PAN File is required");
       return false;
     }
 
-    // Aadhaar
-    if (!aadharRegex.test(aadhar_card)) {
-      alert("Aadhaar must be 12 digits");
+    // Validate only if number is entered
+    if (formData.pan_card) {
+      const pan = formData.pan_card.toUpperCase();
+      if (!/^[A-Z]{5}[0-9]{4}[A-Z]{1}$/.test(pan)) {
+        alert("Invalid PAN format (Example: ABCDE1234F)");
+        return false;
+      }
+    }
+    if (!formData.aadhar_card && !formData.aadharFile) {
+      alert("Either Aadhaar Number or Aadhaar File is required");
       return false;
     }
 
+    // Validate only if number is entered
+    if (formData.aadhar_card) {
+      if (!/^[0-9]{12}$/.test(formData.aadhar_card)) {
+        alert("Aadhaar must be 12 digits");
+        return false;
+      }
+    }
     // Name
     if (!nameRegex.test(emp_name)) {
       alert("Name must contain only letters and minimum 3 characters");
@@ -425,6 +496,15 @@ const EmployeeProfile = () => {
     // Mobile
     if (!mobileRegex.test(mobile_no)) {
       alert("Mobile must be valid 10-digit Indian number");
+      return false;
+    }
+    if (!formData.Alternate_Mobile || formData.Alternate_Mobile.length !== 10) {
+      alert("Alert Mobile must be exactly 10 digits");
+      return false;
+    }
+    // ❗ Check both numbers are different
+    if (mobile_no === formData.Alternate_Mobile) {
+      alert("Mobile Number and Alert Mobile Number must be different");
       return false;
     }
 
@@ -503,25 +583,80 @@ const EmployeeProfile = () => {
     return true;
   };
 
+  // const handleSave = async () => {
+  //   debugger;
+  //   try {
+  //     if (!validateForm()) return;
+  //     setIsLoading(true);
+
+  //     const mobileRegex = /^[0-9]{10}$/;
+  //     const aadharRegex = /^[0-9]{12}$/;
+
+  //     if (!mobileRegex.test(formData.mobile_no)) {
+  //       alert("Mobile Number must be a valid 10-digit number.");
+  //       return;
+  //     }
+
+  //     if (!aadharRegex.test(formData.aadhar_card)) {
+  //       alert("Aadhar Number must be a valid 12-digit number.");
+  //       return;
+  //     }
+
+  //     const payload = {
+  //       pan_card: formData.pan_card,
+  //       aadhar_card: formData.aadhar_card,
+  //       emp_name: formData.emp_name,
+  //       mobile_no: formData.mobile_no,
+  //       Alternate_Mobile: formData.Alternate_Mobile,
+  //       email: formData.email,
+  //       corresponding_address: formData.corresponding_address,
+  //       permanent_address: formData.permanent_address,
+  //       branch: formData.branch || "",
+  //       branch_id: formData.branch_id,
+  //       // branch_id: formData.branch_id.join(","),
+  //       joining_date: formatDateToMySQL(formData.joining_date),
+  //       designation: formData.designation,
+  //       date_of_birth: formatDateToMySQL(formData.date_of_birth),
+  //       assign_role: formData.assign_role,
+  //       assign_role_id: formData.assign_role_id,
+  //       password: formData.password,
+  //       fax: formData.fax,
+  //       addressProfiletype: formData.addressProfiletype,
+  //       IdProoftype: formData.IdProoftype,
+  //       status: formData.status,
+  //       salary: formData.salary,
+  //     };
+
+  //     const encryptedData = encryptData(JSON.stringify(payload));
+  //     const formDataToSend = new FormData();
+  //     formDataToSend.append("data", encryptedData);
+  //     if (profileImage) formDataToSend.append("emp_image", profileImage);
+  //     if (addressProof) formDataToSend.append("emp_add_prof", addressProof);
+  //     if (idProof) formDataToSend.append("emp_id_prof", idProof);
+
+  //     await axios.post(
+  //       `${API}/Master/Employee_Profile/add-employee`,
+  //       formDataToSend,
+  //       {
+  //         headers: { "Content-Type": "multipart/form-data" },
+  //       },
+  //     );
+
+  //     alert("✅ Employee created successfully!");
+  //     setIsModalOpen(false);
+  //     fetchEmployee(currentPage, searchQuery, searchHeaders);
+  //   } catch (error) {
+  //     console.error("❌ Error saving employee:", error);
+  //     alert(error.response?.data?.message || "Error saving employee");
+  //   } finally {
+  //     setIsLoading(false);
+  //   }
+  // };
   const handleSave = async () => {
     debugger;
     try {
       if (!validateForm()) return;
-      setIsLoading(true);
-
-      const mobileRegex = /^[0-9]{10}$/;
-      const aadharRegex = /^[0-9]{12}$/;
-
-      if (!mobileRegex.test(formData.mobile_no)) {
-        alert("Mobile Number must be a valid 10-digit number.");
-        return;
-      }
-
-      if (!aadharRegex.test(formData.aadhar_card)) {
-        alert("Aadhar Number must be a valid 12-digit number.");
-        return;
-      }
-
+      setLoading(true);
       const payload = {
         pan_card: formData.pan_card,
         aadhar_card: formData.aadhar_card,
@@ -531,52 +666,66 @@ const EmployeeProfile = () => {
         email: formData.email,
         corresponding_address: formData.corresponding_address,
         permanent_address: formData.permanent_address,
-        branch: formData.branch || "",
-        // branch_id: formData.branch_id,
-        branch_id: formData.branch_id.join(","),
+        branch: formData.branch,
         joining_date: formatDateToMySQL(formData.joining_date),
         designation: formData.designation,
         date_of_birth: formatDateToMySQL(formData.date_of_birth),
         assign_role: formData.assign_role,
         assign_role_id: formData.assign_role_id,
         password: formData.password,
-        fax: formData.fax,
-        addressProfiletype: formData.addressProfiletype,
-        IdProoftype: formData.IdProoftype,
-        status: formData.status,
-        salary: formData.salary,
+        assign_branch: formData.branch_id,
+        status: formData.status ? 1 : 0,
       };
 
-      const encryptedData = encryptData(JSON.stringify(payload));
       const formDataToSend = new FormData();
-      formDataToSend.append("data", encryptedData);
-      if (profileImage) formDataToSend.append("emp_image", profileImage);
+
+      // ✅ append normal fields
+      Object.keys(payload).forEach((key) => {
+        if (Array.isArray(payload[key])) {
+          formDataToSend.append(key, JSON.stringify(payload[key]));
+        } else {
+          formDataToSend.append(key, payload[key] ?? "");
+        }
+      });
+
+      // ✅ profile image
+      if (profileImage) {
+        formDataToSend.append("emp_image", profileImage);
+      }
+
+      // ✅ address proof (multiple)
       if (addressProof) formDataToSend.append("emp_add_prof", addressProof);
       if (idProof) formDataToSend.append("emp_id_prof", idProof);
+      if (formData.panFile) {
+        formDataToSend.append("pan_file", formData.panFile);
+      }
 
-      await axios.post(
+      // ✅ Aadhaar file
+      if (formData.aadharFile) {
+        formDataToSend.append("aadhar_file", formData.aadharFile);
+      }
+      // 🔥 IMPORTANT: NO HEADERS HERE
+      const res = await axios.post(
         `${API}/Master/Employee_Profile/add-employee`,
         formDataToSend,
-        {
-          headers: { "Content-Type": "multipart/form-data" },
-        },
       );
 
-      alert("✅ Employee created successfully!");
-      setIsModalOpen(false);
-      fetchEmployee(currentPage, searchQuery, searchHeaders);
-    } catch (error) {
-      console.error("❌ Error saving employee:", error);
-      alert(error.response?.data?.message || "Error saving employee");
-    } finally {
-      setIsLoading(false);
+      if (res.status === 200) {
+        alert(res.data.message);
+        setIsModalOpen(false);
+        setLoading(false);
+      }
+    } catch (err) {
+      console.error(err);
+      alert(err.response?.data?.message || "Error");
+      setLoading(false);
     }
   };
-
   const handleUpdate = async () => {
     debugger;
     try {
       if (!validateForm()) return;
+ setLoading(true);
       const payload = {
         id: formData.id,
         pan_card: formData.pan_card,
@@ -594,17 +743,29 @@ const EmployeeProfile = () => {
         assign_role: formData.assign_role,
         assign_role_id: formData.assign_role_id,
         password: formData.password,
-        status: formData.status,
+        assign_branch: formData.branch_id,
+        status: formData.status ? 1 : 0,
       };
 
-      const encryptedData = encryptData(JSON.stringify(payload));
       const formDataToSend = new FormData();
-      formDataToSend.append("data", encryptedData);
-      if (profileImage) formDataToSend.append("emp_image", profileImage);
+
+      Object.keys(payload).forEach((key) => {
+        if (Array.isArray(payload[key])) {
+          formDataToSend.append(key, JSON.stringify(payload[key]));
+        } else {
+          formDataToSend.append(key, payload[key] ?? "");
+        }
+      });
+
+      // ✅ FILES SAME AS SAVE
+      if (profileImage) {
+        formDataToSend.append("emp_image", profileImage);
+      }
+
       if (addressProof) formDataToSend.append("emp_add_prof", addressProof);
       if (idProof) formDataToSend.append("emp_id_prof", idProof);
 
-      await axios.put(
+      const res = await axios.put(
         `${API}/Master/Employee_Profile/update-employee`,
         formDataToSend,
         {
@@ -612,12 +773,22 @@ const EmployeeProfile = () => {
         },
       );
 
-      alert("✅ Employee updated successfully!");
-      setIsModalOpen(false);
-      fetchEmployee(currentPage, searchQuery, searchHeaders);
+      if (res.status === 200) {
+        alert(res.data.message || "Employee updated successfully");
+
+        setIsModalOpen(false); // ✅ CLOSE MODAL
+        fetchEmployee(currentPage, searchQuery, searchHeaders);
+         setLoading(false);
+      }
     } catch (err) {
       console.error("❌ Error updating employee:", err);
-      alert(err.response?.data?.message || "Error updating employee");
+
+      alert(
+        err.response?.data?.message ||
+          err.response?.data?.error ||
+          "Error updating employee",
+      );
+       setLoading(false);
     }
   };
 
@@ -632,7 +803,6 @@ const EmployeeProfile = () => {
     fetchEmployee(currentPage, searchQuery, searchHeaders);
   };
 
-  // 🔄 Handle Clear Search
   const handleClearSearch = () => {
     setSearchTerm({ empId: "", empName: "" });
     setSearchHeaders([]); // ✅ Clear selected headers
@@ -641,12 +811,6 @@ const EmployeeProfile = () => {
 
     fetchEmployee(currentPage, searchQuery, searchHeaders);
   };
-  // useEffect(() => {
-  //   fetchEmployee(currentPage);
-  // }, [currentPage, searchTerm, searchHeaders, searchQuery]);
-  // useEffect(() => {
-  //   fetchEmployee(currentPage);
-  // }, [searchTerm, currentPage]);
 
   const handleInputChange = (e) => {
     const { name, value, type, checked } = e.target;
@@ -736,8 +900,8 @@ const EmployeeProfile = () => {
         const response = await fetch(fileUrl, {
           mode: "cors",
           headers: {
-            "Accept": "*/*"
-          }
+            Accept: "*/*",
+          },
         });
 
         if (!response.ok) {
@@ -947,30 +1111,37 @@ const EmployeeProfile = () => {
 
     // 3. Fallback to default
     return profileempty;
-
-
   };
 
-  const allHeaderIds = [
-    "id",
-    "emp_name",
-    "email",
-    "mobile_no",
-    "branch"
-  ];
-
+  const allHeaderIds = ["id", "emp_name", "email", "mobile_no", "branch"];
 
   const handleSelectAll = () => {
     const allSelected = allHeaderIds.every((id) => searchHeaders.includes(id));
     setSearchHeaders(allSelected ? [] : [...allHeaderIds]);
   };
 
+  const formatCurrency = (value) => {
+    if (!value) return "";
+
+    const number = value.replace(/,/g, "");
+    return new Intl.NumberFormat("en-IN").format(number);
+  };
+
+  const handleChange = (e) => {
+    const rawValue = e.target.value.replace(/[^0-9]/g, "");
+    setValuationAmount(rawValue);
+  };
+
+  const canDoValuation =
+    userData?.isAdmin ||
+    permissions?.Master?.find((item) => item.name === "Employee Profile")
+      ?.valuation;
 
   return (
     <div className="min-h-screen w-full">
       {/* Top bar */}
       <div className="flex justify-center sticky top-[50px] z-40">
-        <div className="flex items-center px-6 py-4 border-b  w-[1462px] h-[40px] border rounded-[11px] border-gray-200 justify-between shadow bg-white">
+        <div className="flex items-center px-6 py-4 border-b  w-[1462px] h-[40px] border border-gray-200 justify-between shadow bg-white">
           <h2 className="text-red-600 font-bold text-[20px] whitespace-nowrap">
             Employee Profile List
           </h2>
@@ -989,8 +1160,8 @@ const EmployeeProfile = () => {
 
                   {isDropdownOpen && (
                     <div className="absolute top-[35px] left-[-8px] bg-white border border-gray-300 shadow-xl rounded-md z-[100] w-[160px] p-2">
-
-                      <button onClick={handleSelectAll}
+                      <button
+                        onClick={handleSelectAll}
                         className="flex items-center gap-2 p-2 hover:bg-gray-50 cursor-pointer rounded"
                       >
                         <input
@@ -998,7 +1169,9 @@ const EmployeeProfile = () => {
                           checked={searchHeaders.length === allHeaderIds.length}
                           className="w-3 h-3 accent-[#0A2478]"
                         />
-                        <span className="text-[10px] text-[#0A2478] font-bold">Select All</span>
+                        <span className="text-[10px] text-[#0A2478] font-bold">
+                          Select All
+                        </span>
                       </button>
 
                       {[
@@ -1069,23 +1242,30 @@ const EmployeeProfile = () => {
               </div>
             </div>
 
-            <div className="flex gap-3">
+            {canDoValuation && (
+              <div className="flex gap-3">
+                <button
+                  onClick={handleValuationClick}
+                  className="bg-[#129121] text-white text-[11.25px] w-[74px] h-[24px] rounded flex items-center justify-center"
+                >
+                  Valuation
+                </button>
+              </div>
+            )}
 
-              <button
-                onClick={handleValuationClick}
-                className="bg-[#129121] text-white text-[11.25px] w-[74px] h-[24px] rounded flex items-center justify-center"
-              >
-                Valuation
-              </button>
-            </div>
-
             <div className="flex gap-3">
-              <button
-                onClick={handleAddNew}
-                className="bg-[#0A2478] text-white text-[11.25px] w-[74px] h-[24px] rounded flex items-center justify-center"
-              >
-                Add
-              </button>
+              {(userData?.isAdmin ||
+                permissions?.Master?.find(
+                  (item) => item.name === "Employee Profile",
+                )?.add) && (
+                <button
+                  onClick={handleAddNew}
+                  className="bg-[#0A2478] text-white text-[11.25px] w-[74px] h-[24px] rounded flex items-center justify-center"
+                >
+                  Add
+                </button>
+              )}
+
               <button
                 onClick={() => navigate("/")}
                 className="bg-[#C1121F] text-white text-[10px] w-[74px] h-[24px] rounded"
@@ -1124,7 +1304,7 @@ const EmployeeProfile = () => {
                           type="text"
                           placeholder="Enter PAN"
                           name="pan_card"
-                          disabled={mode === "view" || mode === "edit"}
+                          disabled={mode === "view"}
                           value={formData.pan_card}
                           onChange={handleInputChange}
                           // Set to 140px to match Aadhaar
@@ -1154,6 +1334,18 @@ const EmployeeProfile = () => {
                         Verify
                       </button>
                     </div>
+                    {formData.panFile ? (
+                      <p className="text-[12px] text-gray-600 mt-1 truncate w-[200px]">
+                        📎 {formData.panFile.name}
+                      </p>
+                    ) : formData.pan_file ? (
+                      <p
+                        className="text-[12px] text-blue-600 mt-1 cursor-pointer underline"
+                        onClick={() => window.open(formData.pan_file, "_blank")}
+                      >
+                        👁 View PAN File
+                      </p>
+                    ) : null}
                   </div>
 
                   {/* Aadhaar */}
@@ -1212,6 +1404,20 @@ const EmployeeProfile = () => {
                         verify
                       </button>
                     </div>
+                    {formData.aadharFile ? (
+                      <p className="text-[12px] text-gray-600 mt-1 truncate w-[200px]">
+                        📎 {formData.aadharFile.name}
+                      </p>
+                    ) : formData.aadhar_file ? (
+                      <p
+                        className="text-[12px] text-blue-600 mt-1 cursor-pointer underline"
+                        onClick={() =>
+                          window.open(formData.aadhar_file, "_blank")
+                        }
+                      >
+                        👁 View Aadhaar File
+                      </p>
+                    ) : null}
                   </div>
 
                   {/* Name */}
@@ -1283,8 +1489,9 @@ const EmployeeProfile = () => {
                       onChange={handleInputChange}
                       disabled={mode === "view"}
                       placeholder="Email ID"
-                      className={`border rounded px-3 py-2  w-[203px] bg-white ${errors.email ? "border-red-500" : "border-gray-300"
-                        }`}
+                      className={`border rounded px-3 py-2  w-[203px] bg-white ${
+                        errors.email ? "border-red-500" : "border-gray-300"
+                      }`}
                     />
                     {errors.email && (
                       <span className="text-red-500 text-[12px] mt-1">
@@ -1302,8 +1509,8 @@ const EmployeeProfile = () => {
                       value={
                         formData.date_of_birth
                           ? new Date(formData.date_of_birth)
-                            .toISOString()
-                            .split("T")[0]
+                              .toISOString()
+                              .split("T")[0]
                           : ""
                       }
                       disabled={mode === "view"}
@@ -1322,8 +1529,8 @@ const EmployeeProfile = () => {
                       value={
                         formData.joining_date
                           ? new Date(formData.joining_date)
-                            .toISOString()
-                            .split("T")[0]
+                              .toISOString()
+                              .split("T")[0]
                           : ""
                       }
                       disabled={mode === "view"}
@@ -1361,7 +1568,7 @@ const EmployeeProfile = () => {
                       checked={
                         formData.corresponding_address &&
                         formData.corresponding_address ===
-                        formData.permanent_address
+                          formData.permanent_address
                       }
                       onChange={(e) => {
                         if (e.target.checked) {
@@ -1409,25 +1616,6 @@ const EmployeeProfile = () => {
                     <label className="text-gray-700 font-medium">
                       Branch <span className="text-red-500">*</span>
                     </label>
-                    {/* <select
-                      name="branch"
-                      value={formData.branch_id}
-                      onChange={handleInputChange}
-                      disabled={mode === "view"}
-                      className="border border-[#C4C4C4] rounded-[8px] px-3 py-2 focus:outline-none focus:ring-1 focus:ring-blue-500 w-[280px]"
-                    >
-                      <option value="" disabled>
-                        {" "}
-                        Branch
-                      </option>
-                      {branches.map((branch) => (
-                        <option key={branch.id} value={branch.id}>
-                          {branch.branch_name} ({branch.branch_code})
-                        </option>
-                      ))}
-                    </select> */}
-
-
 
                     <MultiSelect
                       options={branches.map((branch) => ({
@@ -1435,22 +1623,18 @@ const EmployeeProfile = () => {
                         label: `${branch.branch_name} (${branch.branch_code})`,
                       }))}
                       selectedValues={formData.branch_id || []}
-
                       onChange={(newValues) => {
-
                         const selectedBranchNames = branches
-                          .filter(branch => newValues.includes(branch.id))
-                          .map(branch => branch.branch_name)
+                          .filter((branch) => newValues.includes(branch.id))
+                          .map((branch) => branch.branch_name)
                           .join(", ");
 
                         setFormData((prev) => ({
                           ...prev,
                           branch_id: newValues,
-                          branch: selectedBranchNames
+                          branch: selectedBranchNames,
                         }));
-
                       }}
-
                       placeholder="Branch"
                       disabled={mode === "view"}
                     />
@@ -1500,21 +1684,29 @@ const EmployeeProfile = () => {
                     </select>
                   </div>
 
-                  <div className="flex flex-col gap-1">
+                  <div className="flex flex-col gap-1 relative">
                     <label className="text-gray-700 font-medium">
                       Password <span className="text-red-500">*</span>
                     </label>
+
                     <input
-                      type="password"
+                      type={showPassword ? "text" : "password"}
                       name="password"
                       value={formData.password}
                       disabled={mode === "view" || mode === "edit"}
                       onChange={handleInputChange}
                       placeholder="*******"
-                      className="border border-[#C4C4C4] rounded-md px-3 py-2 focus:outline-none focus:ring-1 focus:ring-blue-500 w-[140px]"
+                      className="border border-[#C4C4C4] rounded-md px-3 py-2 pr-10 focus:outline-none focus:ring-1 focus:ring-blue-500 w-[140px]"
                     />
-                  </div>
 
+                    {/* 👁 Lucide Eye Icon */}
+                    <span
+                      className="absolute right-2 top-[34px] cursor-pointer text-gray-500"
+                      onClick={() => setShowPassword(!showPassword)}
+                    >
+                      {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
+                    </span>
+                  </div>
                 </div>
 
                 <div className="flex gap-2"></div>
@@ -1606,6 +1798,7 @@ const EmployeeProfile = () => {
                         <input
                           id="addressProofInput"
                           type="file"
+                          accept=".png,.jpg,.jpeg,.pdf"
                           className="hidden"
                           onChange={(e) =>
                             handleFileChangeForAddProof(e, setAddressProof)
@@ -1645,6 +1838,7 @@ const EmployeeProfile = () => {
                         <input
                           id="idProofInput"
                           type="file"
+                          accept=".png,.jpg,.jpeg,.pdf"
                           className="hidden"
                           onChange={(e) =>
                             handleFileChangeForIdProof(e, setIdProof)
@@ -1732,7 +1926,7 @@ const EmployeeProfile = () => {
           {/* Increased width to 800px or max-w-4xl for better two-column spacing */}
           <div className="bg-white rounded-xl w-full max-w-4xl max-h-[85vh] shadow-2xl p-8 overflow-y-auto mx-4">
             <div className="flex justify-between items-center mb-4">
-              <h2 className="text-2xl font-bold text-[#1B2C79]">
+              <h2 className="text-xl font-bold text-[#1B2C79]">
                 Uploaded Document History
               </h2>
               <button
@@ -1745,7 +1939,6 @@ const EmployeeProfile = () => {
 
             {/* Documents Grid - Changed to 2 columns */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-
               {/* Left Side: Address Proof */}
               <div className="border border-gray-300 rounded-lg p-5 hover:shadow-md transition-shadow flex flex-col h-full">
                 <div className="flex-1">
@@ -1761,9 +1954,12 @@ const EmployeeProfile = () => {
                   {formData.emp_add_prof ? (
                     <div className="space-y-4">
                       <div className="flex items-center justify-between">
-                        <p className="text-xs text-gray-600">
-                          Status: <span className="text-green-600 font-semibold">✓ Uploaded</span>
-                        </p>
+                        {/* <p className="text-xs text-gray-600">
+                          Status:{" "}
+                          <span className="text-green-600 font-semibold">
+                            ✓ Uploaded
+                          </span>
+                        </p> */}
                         {Array.isArray(formData.emp_add_prof) && (
                           <span className="text-xs bg-gray-100 text-gray-700 px-2 py-1 rounded">
                             {formData.emp_add_prof.length} file(s)
@@ -1776,7 +1972,12 @@ const EmployeeProfile = () => {
                           formData.emp_add_prof.map((file, index) => (
                             <button
                               key={index}
-                              onClick={() => handleForceDownload(file, `Address_Proof_${index + 1}`)}
+                              onClick={() =>
+                                handleForceDownload(
+                                  file,
+                                  `Address_Proof_${index + 1}`,
+                                )
+                              }
                               className="w-full bg-[#0A2478] text-white text-sm font-medium px-4 py-2 rounded hover:bg-[#081c5b] transition-colors flex items-center justify-between"
                             >
                               <span>Download </span>
@@ -1784,7 +1985,12 @@ const EmployeeProfile = () => {
                           ))
                         ) : (
                           <button
-                            onClick={() => handleForceDownload(formData.emp_add_prof, `Address_Proof_${formData.addressProfiletype || "Document"}`)}
+                            onClick={() =>
+                              handleForceDownload(
+                                formData.emp_add_prof,
+                                `Address_Proof_${formData.addressProfiletype || "Document"}`,
+                              )
+                            }
                             className="w-full bg-[#0A2478] text-white text-sm font-medium px-4 py-2 rounded hover:bg-[#081c5b] transition-colors flex items-center justify-center"
                           >
                             🔽 Download Document
@@ -1794,7 +2000,9 @@ const EmployeeProfile = () => {
                     </div>
                   ) : (
                     <div className="flex flex-col items-center justify-center py-6 border-2 border-dashed border-gray-100 rounded">
-                      <span className="text-sm text-gray-400 italic">No file uploaded</span>
+                      <span className="text-sm text-gray-400 italic">
+                        No file uploaded
+                      </span>
                     </div>
                   )}
                 </div>
@@ -1815,9 +2023,12 @@ const EmployeeProfile = () => {
                   {formData.emp_id_prof ? (
                     <div className="space-y-4">
                       <div className="flex items-center justify-between">
-                        <p className="text-xs text-gray-600">
-                          Status: <span className="text-green-600 font-semibold">✓ Uploaded</span>
-                        </p>
+                        {/* <p className="text-xs text-gray-600">
+                          Status:{" "}
+                          <span className="text-green-600 font-semibold">
+                            ✓ Uploaded
+                          </span>
+                        </p> */}
                         {Array.isArray(formData.emp_id_prof) && (
                           <span className="text-xs bg-gray-100 text-gray-700 px-2 py-1 rounded">
                             {formData.emp_id_prof.length} file(s)
@@ -1830,7 +2041,12 @@ const EmployeeProfile = () => {
                           formData.emp_id_prof.map((file, index) => (
                             <button
                               key={index}
-                              onClick={() => handleForceDownload(file, `ID_Proof_${index + 1}`)}
+                              onClick={() =>
+                                handleForceDownload(
+                                  file,
+                                  `ID_Proof_${index + 1}`,
+                                )
+                              }
                               className="w-full bg-[#0A2478] text-white text-sm font-medium px-4 py-2 rounded hover:bg-[#081c5b] transition-colors flex items-center justify-between"
                             >
                               <span> Download </span>
@@ -1838,7 +2054,12 @@ const EmployeeProfile = () => {
                           ))
                         ) : (
                           <button
-                            onClick={() => handleForceDownload(formData.emp_id_prof, `ID_Proof_${formData.IdProoftype || "Document"}`)}
+                            onClick={() =>
+                              handleForceDownload(
+                                formData.emp_id_prof,
+                                `ID_Proof_${formData.IdProoftype || "Document"}`,
+                              )
+                            }
                             className="w-full bg-[#0A2478] text-white text-sm font-medium px-4 py-2 rounded hover:bg-[#081c5b] transition-colors flex items-center justify-center"
                           >
                             Download Document
@@ -1848,7 +2069,9 @@ const EmployeeProfile = () => {
                     </div>
                   ) : (
                     <div className="flex flex-col items-center justify-center py-6 border-2 border-dashed border-gray-100 rounded">
-                      <span className="text-sm text-gray-400 italic">No file uploaded</span>
+                      <span className="text-sm text-gray-400 italic">
+                        No file uploaded
+                      </span>
                     </div>
                   )}
                 </div>
@@ -1859,7 +2082,7 @@ const EmployeeProfile = () => {
             <div className="flex justify-center mt-6">
               <button
                 onClick={() => setIsDocumentHistory(false)}
-                className="bg-[#D32F2F] text-white font-semibold px-5 py-1.5api rounded-lg hover:bg-[#B71C1C] transition-colors shadow-lg"
+                className="bg-[#D32F2F] text-white font-semibold px-5 py-1.5 rounded-lg hover:bg-[#B71C1C] transition-colors shadow-lg"
               >
                 Close
               </button>
@@ -1880,11 +2103,13 @@ const EmployeeProfile = () => {
             </label>
 
             <input
-              type="number"
-              value={valuationAmount}
-              onChange={(e) => setValuationAmount(e.target.value)}
+              type="text"
+              value={
+                valuationAmount ? `₹ ${formatCurrency(valuationAmount)}` : ""
+              }
+              onChange={handleChange}
               className="border w-full mt-1 mb-4 px-2 py-1 rounded"
-              placeholder="e.g. ₹ 1,00,000.00"
+              placeholder="e.g. ₹ 1,00,000"
             />
 
             <div className="flex justify-center gap-3 mt-5">
@@ -1919,7 +2144,23 @@ const EmployeeProfile = () => {
                   <th className="px-1 py-1 text-left border-r">Select</th>
                   <th className="px-1 py-1 text-left border-r">Emp ID</th>
                   <th className="px-1 py-1 text-left border-r">Profile</th>
-                  <th className="px-1 py-1 text-left border-r">Name</th>
+                  <th
+                    className="px-1 py-1 text-left border-r flex justify-between"
+                    onClick={() => handleSort("emp_name")}
+                  >
+                    Name
+                    {sortConfig.key !== "emp_name" && (
+                      <FaSort className="text-gray-400 text-xs" />
+                    )}
+                    {sortConfig.key === "emp_name" &&
+                      sortConfig.direction === "asc" && (
+                        <FaSortUp className="text-blue-600 text-xs" />
+                      )}
+                    {sortConfig.key === "emp_name" &&
+                      sortConfig.direction === "desc" && (
+                        <FaSortDown className="text-blue-600 text-xs" />
+                      )}
+                  </th>
                   <th className="px-1 py-1 text-left border-r w-[211px]">
                     Email
                   </th>
@@ -1931,9 +2172,15 @@ const EmployeeProfile = () => {
                   <th className="px-1 py-1 text-left border-r w-[313px]">
                     Address
                   </th>
-                  <th className="px-1 py-1 text-left border-r w-[81px]">
-                    Valuation
-                  </th>
+                  {(userData?.isAdmin ||
+                    permissions?.Master?.find(
+                      (item) => item.name === "Employee Profile",
+                    )?.valuation) && (
+                    <th className="px-1 py-1 text-left border-r w-[81px]">
+                      Valuation
+                    </th>
+                  )}
+
                   <th className="px-1 py-1 text-left border-r">Action</th>
                   <th className="px-1 py-1 text-left border-r">Active</th>
                 </tr>
@@ -1952,8 +2199,15 @@ const EmployeeProfile = () => {
                           checked={selectedEmployees.some(
                             (e) => e.id === emp.id,
                           )}
-                          onChange={() => handleCheckboxChange(emp)}
-                          className="w-4 h-4 cursor-pointer"
+                          onChange={() => {
+                            if (canDoValuation) handleCheckboxChange(emp);
+                          }}
+                          disabled={!canDoValuation}
+                          className={`w-4 h-4 ${
+                            canDoValuation
+                              ? "cursor-pointer"
+                              : "cursor-not-allowed opacity-50"
+                          }`}
                         />
                       </td>
                       <td className="px-1 py-1">{emp.id}</td>
@@ -1981,43 +2235,64 @@ const EmployeeProfile = () => {
                       >
                         {emp.permanent_address}
                       </td>
-                      <td
-                        className="px-1 py-1 text-blue-700 cursor-pointer underline"
-                        onClick={() => openValuationModal(emp)}
-                      >
-                        {emp.Valuer_Valuation?.trim() || "---"}
-                      </td>
+                      {(userData?.isAdmin ||
+                        permissions?.Master?.find(
+                          (item) => item.name === "Employee Profile",
+                        )?.valuation) && (
+                        <td
+                          className="px-1 py-1 text-blue-700 cursor-pointer underline"
+                          onClick={() => openValuationModal(emp)}
+                        >
+                          {emp.Valuer_Valuation?.trim() || "---"}
+                        </td>
+                      )}
 
                       <td className="px-1 py-1">
                         <div className="flex gap-2 justify-center">
-
-                          <button
-                            title="Edit"
-                            className="bg-green-500 p-1.5 rounded text-white hover:bg-green-600 cursor-pointer"
-                            onClick={() => handleEdit(emp)}
-                          >
-                            <FiEdit />
-                          </button>
-                          <button
-                            title="Delete"
-                            className="bg-red-600 p-1.5 rounded text-white hover:bg-red-700 cursor-pointer"
-                            onClick={() => handleDeleteClick(emp.id)}
-                          >
-                            <FiTrash2 title="Delete" />
-                          </button>
+                          {(userData?.isAdmin ||
+                            permissions?.Master?.find(
+                              (item) => item.name === "Employee Profile",
+                            )?.edit) && (
+                            <button
+                              title="Edit"
+                              className="bg-green-500 p-1.5 rounded text-white hover:bg-green-600 cursor-pointer"
+                              onClick={() => handleEdit(emp)}
+                            >
+                              <FiEdit />
+                            </button>
+                          )}
+                          {(userData?.isAdmin ||
+                            permissions?.Master?.find(
+                              (item) => item.name === "Employee Profile",
+                            )?.delete) && (
+                            <button
+                              title="Delete"
+                              className="bg-red-600 p-1.5 rounded text-white hover:bg-red-700 cursor-pointer"
+                              onClick={() => handleDeleteClick(emp.id)}
+                            >
+                              <FiTrash2 title="Delete" />
+                            </button>
+                          )}
                         </div>
                       </td>
                       <td className="px-1 py-1">
-                        <button
-                          onClick={() => handleToggleStatus(emp)}
-                          className={`w-12 h-6 flex items-center rounded-full p-1 transition-colors ${emp.status ? "bg-[#0A2478]" : "bg-gray-300"
+                        {(userData?.isAdmin ||
+                          permissions?.Master?.find(
+                            (item) => item.name === "Employee Profile",
+                          )?.status) && (
+                          <button
+                            onClick={() => handleToggleStatus(emp)}
+                            className={`w-12 h-6 flex items-center rounded-full p-1 transition-colors ${
+                              emp.status ? "bg-[#0A2478]" : "bg-gray-300"
                             }`}
-                        >
-                          <div
-                            className={`bg-white w-4 h-4 rounded-full shadow-md transform transition-transform ${emp.status ? "translate-x-6" : "translate-x-0"
+                          >
+                            <div
+                              className={`bg-white w-4 h-4 rounded-full shadow-md transform transition-transform ${
+                                emp.status ? "translate-x-6" : "translate-x-0"
                               }`}
-                          />
-                        </button>
+                            />
+                          </button>
+                        )}
                       </td>
                     </tr>
                   ))
@@ -2045,6 +2320,7 @@ const EmployeeProfile = () => {
           onPageChange={handlePageChange}
         />
       )}
+      {loading && <Loader />}
     </div>
   );
 };

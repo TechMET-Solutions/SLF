@@ -1,126 +1,31 @@
-// import React, { useEffect, useState } from "react";
-// import { useNavigate } from "react-router-dom";
-// import { fetchBranchesApi } from "../API/Master/Master_Profile/Branch_Details";
 
-// const BranchSchemeMappingList = () => {
-//   const navigate = useNavigate();
-//   const [branches, setBranches] = useState([]);
-//   const [page, setPage] = useState(1);
-//   const [total, setTotal] = useState(0);
-//   const limit = 10;
-
-//   useEffect(() => {
-//     document.title = "SLF | Branch Scheme Mapping List";
-//     fetchBranches(page);
-//   }, [page]);
-
-//   const fetchBranches = async (pageNum) => {
-//     const result = await fetchBranchesApi(pageNum, limit);
-//     if (result) {
-//       setBranches(result.branches);
-//       setTotal(result.total);
-//     }
-//   };
-
-//   const totalPages = Math.ceil(total / limit);
-
-//   return (
-//     <div className="min-h-screen w-full">
-//       {/* Topbar */}
-//       <div className="flex justify-center sticky top-[80px] z-40">
-//         <div className="flex items-center px-6 py-4 border-b mt-5 w-[1290px] h-[62px] border rounded-[11px] border-gray-200 justify-between shadow bg-white">
-//           <h2 className="text-red-600 font-bold text-[20px]">
-//             Branch Scheme Mapping List (User List)
-//           </h2>
-//           <button
-//           onClick={() => navigate("/")}
-//           className="text-white px-[6.25px] py-[6.25px] rounded-[3.75px] bg-[#C1121F] w-[74px] h-[24px] opacity-100 text-[10px]">
-//             Exit
-//           </button>
-//         </div>
-//       </div>
-
-//       {/* Table */}
-//       <div className="flex pl-[115px]">
-//         <div className="overflow-x-auto mt-5  h-[500px]">
-//           <table className="w-full border-collapse">
-//             <thead className="bg-[#0A2478] text-white text-sm">
-//               <tr>
-//                 {/* <th className="px-4 py-2 text-left border-r text-[13px]">Branch Id</th> */}
-//                 <th className="px-4 py-2 text-left border-r text-[13px]"> Branch Code</th>
-//                 <th className="px-4 py-2 text-left border-r text-[13px]">Name</th>
-
-//                 <th className="px-4 py-2 text-left border-r text-[13px] w-[350px]">Address</th>
-
-//                 <th className="px-4 py-2 text-left text-[13px]">Scheme Mapping</th>
-//               </tr>
-//             </thead>
-//             <tbody className="text-[12px]">
-//               {branches.map((row, index) => (
-//                 <tr
-//                   key={row.id}
-//                   className={index % 2 === 0 ? "bg-gray-50" : "bg-white"}
-//                 >
-//                   {/* <td className="px-4 py-2">{row.id}</td> */}
-//                   <td className="px-4 py-2">{row.branch_code}</td>
-//                   <td className="px-4 py-2">{row.branch_name}</td>
-
-//                   <td className="px-4 py-2">{row.address_line1}, {row.address_line3}</td>
-
-//                   <td
-//                     className="px-4 py-2 text-blue-600 font-medium cursor-pointer"
-//                     onClick={() => navigate("/Scheme-Role-Mapping", { state: row })}
-//                   >
-//                     Map
-//                   </td>
-//                 </tr>
-//               ))}
-//             </tbody>
-//           </table>
-//         </div>
-//       </div>
-
-//       {/* Pagination */}
-//       <div className="flex justify-center items-center px-6 py-3 border-t gap-2">
-//         <button
-//           disabled={page <= 1}
-//           onClick={() => setPage((p) => p - 1)}
-//           className="px-3 py-1 border rounded-md disabled:opacity-50"
-//         >
-//           Previous
-//         </button>
-
-//         <span className="px-3 py-1 border rounded-md bg-[#0b2c69] text-white">
-//           {page}
-//         </span>
-//         <span>/ {totalPages}</span>
-
-//         <button
-//           disabled={page >= totalPages}
-//           onClick={() => setPage((p) => p + 1)}
-//           className="px-3 py-1 border rounded-md disabled:opacity-50"
-//         >
-//           Next
-//         </button>
-//       </div>
-//     </div>
-//   );
-// };
-
-// export default BranchSchemeMappingList;
 import axios from "axios";
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { fetchBranchesApi } from "../API/Master/Master_Profile/Branch_Details";
 import { API } from "../api";
-import { encryptData } from "../utils/cryptoHelper";
+
+import { FaSort, FaSortDown, FaSortUp } from "react-icons/fa";
+import { usePermission } from "../API/Context/PermissionContext";
+import Loader from "../Component/Loader";
 
 const BranchSchemeMappingList = () => {
   const navigate = useNavigate();
   const [branches, setBranches] = useState([]);
   const [page, setPage] = useState(1);
   const [total, setTotal] = useState(0);
-  const limit = 10;
+  const limit = 15;
+  const [sortConfig, setSortConfig] = useState({
+    key: "",
+    direction: "asc",
+  });
+
+  const [loading, setLoading] = useState(false);
+  const { permissions, userData } = usePermission();
+
+  const [currentPage, setCurrentPage] = useState(1);
+  // const [limit] = useState(10);
+  const [totalPagesForModel, setTotalPagesForModel] = useState(1);
 
   // --- Modal & Mapping States ---
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -132,46 +37,95 @@ const BranchSchemeMappingList = () => {
   useEffect(() => {
     document.title = "SLF | Branch Scheme Mapping List";
     fetchBranches(page);
-  }, [page]);
+  }, [page, sortConfig]);
 
   const fetchBranches = async (pageNum) => {
-    const result = await fetchBranchesApi(pageNum, limit);
+   setLoading(true);
+    const result = await fetchBranchesApi(
+      pageNum,
+      limit,
+      sortConfig.key,
+      sortConfig.direction,
+    );
     if (result) {
       setBranches(result.branches);
       setTotal(result.total);
+      setLoading(false);
     }
   };
 
-  // --- Modal Logic ---
+  const fetchSchemes = async (page = 1, search = "") => {
+     setLoading(true);
+    try {
+      const response = await axios.get(
+        `${API}/Scheme/getActiveSchemesWithPagination`,
+        {
+          params: {
+            page,
+            limit,
+            search,
+            keys: "schemeName,product,description", // 👈 searchable fields
+          },
+        },
+      );
+
+      const data = response.data;
+
+      setAllSchemes(data.items || []);
+      setTotalPagesForModel(data.totalPages || 1);
+      setCurrentPage(data.page || 1);
+       setLoading(false);
+    } catch (error) {
+      console.error("Error loading schemes:", error);
+       setLoading(false);
+    } finally {
+       setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    const delayDebounce = setTimeout(() => {
+      fetchSchemes(1, searchTerm); // reset to page 1 on search
+    }, 500);
+
+    return () => clearTimeout(delayDebounce);
+  }, [searchTerm]);
+
   const openMappingModal = async (branch) => {
     setSelectedBranch(branch);
     setIsModalOpen(true);
-    setLoadingSchemes(true);
+    setSearchTerm("");
 
-    try {
-      // 1. Fetch all available schemes
-      const response = await axios.get(`${API}/Scheme/getAllSchemes`);
-      const schemes = response.data.items || [];
-      setAllSchemes(schemes);
+    // Reset pagination
+    setCurrentPage(1);
 
-      // 2. Handle "Already Checked" logic
-      // Assuming branch.schemes contains the mapped schemes for this branch
-      if (branch.schemes) {
-        const parsedMapped =
-          typeof branch.schemes === "string"
-            ? JSON.parse(branch.schemes)
-            : branch.schemes;
+    // Fetch first page
+    await fetchSchemes(1);
 
-        const mappedIds = parsedMapped.map((s) => s.id);
-        setSelectedSchemeIds(mappedIds);
-      } else {
-        setSelectedSchemeIds([]);
-      }
-    } catch (error) {
-      console.error("Error loading schemes:", error);
-    } finally {
-      setLoadingSchemes(false);
+    // Handle already mapped schemes
+    if (branch.schemes) {
+      const parsedMapped =
+        typeof branch.schemes === "string"
+          ? JSON.parse(branch.schemes)
+          : branch.schemes;
+
+      const mappedIds = parsedMapped.map((s) => s.id);
+      setSelectedSchemeIds(mappedIds);
+    } else {
+      setSelectedSchemeIds([]);
     }
+  };
+
+  const handleSort = (key) => {
+    setSortConfig((prev) => {
+      let direction = "asc";
+
+      if (prev.key === key && prev.direction === "asc") {
+        direction = "desc";
+      }
+
+      return { key, direction };
+    });
   };
 
   const toggleScheme = (id) => {
@@ -182,28 +136,40 @@ const BranchSchemeMappingList = () => {
 
   const handleSaveMapping = async () => {
     try {
+       setLoading(true);
       const payload = {
         branchId: selectedBranch.id,
-        schemes: allSchemes
-          .filter((s) => selectedSchemeIds.includes(s.id))
-          .map((s) => ({ id: s.id, schemeName: s.schemeName })),
+
+        // ✅ IMPORTANT: use selectedSchemeIds (not filtered list)
+        schemes: selectedSchemeIds.map((id) => {
+          const scheme = allSchemes.find((s) => Number(s.id) === Number(id));
+setLoading(false);
+          return {
+            id: Number(id),
+            schemeName: scheme?.schemeName || "",
+          };
+        }),
       };
 
-      const encryptedData = encryptData(JSON.stringify(payload));
-      await axios.post(`${API}/Master/Master_Profile/updateBranchSchemes`, {
-        data: encryptedData,
-      });
+      console.log("FINAL PAYLOAD:", payload);
+
+      await axios.post(
+        `${API}/Master/Master_Profile/updateBranchSchemes`,
+        payload,
+      );
 
       alert("Mapping updated successfully!");
       setIsModalOpen(false);
-      fetchBranches(page); // Refresh list to show updated mappings
+      fetchBranches(page);
       setSearchTerm("");
+      setSelectedSchemeIds([]);
+      setLoading(false);
     } catch (error) {
       console.error("Save error:", error);
       alert("Failed to update mapping");
+      setLoading(false);
     }
   };
-
   const totalPages = Math.ceil(total / limit);
   const filteredSchemes = allSchemes.filter((scheme) =>
     scheme.schemeName.toLowerCase().includes(searchTerm.toLowerCase()),
@@ -212,7 +178,7 @@ const BranchSchemeMappingList = () => {
     <div className="min-h-screen w-full relative">
       {/* Topbar */}
       <div className="flex justify-center sticky top-[50px] z-40">
-        <div className="flex items-center px-6 py-4 border-b  w-[1462px] h-[40px] border rounded-[11px] border-gray-200 justify-between shadow bg-white">
+        <div className="flex items-center px-6 py-4 border-b w-[1462px] h-[40px] border border-gray-200 justify-between shadow bg-white">
           <h2 className="text-red-600 font-bold text-[20px]">
             Branch Scheme Mapping List
           </h2>
@@ -234,7 +200,23 @@ const BranchSchemeMappingList = () => {
                 <th className="px-1 py-1 text-left border-r w-[100px]">
                   Branch Code
                 </th>
-                <th className="px-1 py-1 text-left border-r w-[250px]">Name</th>
+                <th
+                  className="px-1 py-1 text-left border-r w-[250px] flex justify-between"
+                  onClick={() => handleSort("branchName")}
+                >
+                  Name{" "}
+                  {sortConfig.key !== "branch_name" && (
+                    <FaSort className="text-gray-400 text-xs" />
+                  )}
+                  {sortConfig.key === "branch_name" &&
+                    sortConfig.direction === "asc" && (
+                      <FaSortUp className="text-blue-600 text-xs" />
+                    )}
+                  {sortConfig.key === "branch_name" &&
+                    sortConfig.direction === "desc" && (
+                      <FaSortDown className="text-blue-600 text-xs" />
+                    )}
+                </th>
                 <th className="px-1 py-1 text-left border-r w-[350px]">
                   Address
                 </th>
@@ -245,19 +227,24 @@ const BranchSchemeMappingList = () => {
               {branches.map((row, index) => (
                 <tr
                   key={row.id}
-                   className={index % 2 === 0 ? "bg-gray-50" : "bg-white"}
+                  className={index % 2 === 0 ? "bg-gray-50" : "bg-white"}
                 >
                   <td className="px-1 py-1">{row.branch_code}</td>
                   <td className="px-1 py-1">{row.branch_name}</td>
                   <td className="px-1 py-1">
                     {row.address_line1}, {row.address_line3}
                   </td>
-                  <td
-                    className="px-1 py-1 text-blue-600 font-medium cursor-pointer hover:underline"
-                    onClick={() => openMappingModal(row)}
-                  >
-                    Map
-                  </td>
+                  {(userData?.isAdmin ||
+                    permissions?.Master?.find(
+                      (item) => item.name === "Scheme Branch Mapping",
+                    )?.Mapping) && (
+                    <td
+                      className="px-1 py-1 text-blue-600 font-medium cursor-pointer hover:underline"
+                      onClick={() => openMappingModal(row)}
+                    >
+                      Map
+                    </td>
+                  )}
                 </tr>
               ))}
             </tbody>
@@ -407,10 +394,30 @@ const BranchSchemeMappingList = () => {
                 </div>
               )}
             </div>
+            <div className="flex justify-center items-center gap-2 mt-4">
+              <button
+                disabled={currentPage === 1}
+                onClick={() => fetchSchemes(currentPage - 1, searchTerm)}
+                className="px-3 py-1 border rounded disabled:opacity-50"
+              >
+                Prev
+              </button>
 
+              <span className="text-sm font-medium">
+                Page {currentPage} of {totalPagesForModel}
+              </span>
+
+              <button
+                disabled={currentPage === totalPagesForModel}
+                onClick={() => fetchSchemes(currentPage + 1, searchTerm)}
+                className="px-3 py-1 border rounded disabled:opacity-50"
+              >
+                Next
+              </button>
+            </div>
             {/* Footer */}
             <div className="p-4  flex justify-center items-center gap-3 bg-white rounded-b-xl">
-               <button
+              <button
                 onClick={handleSaveMapping}
                 style={{
                   width: "92.66px",
@@ -439,12 +446,12 @@ const BranchSchemeMappingList = () => {
               >
                 Exit
               </button>
-
-             
             </div>
           </div>
         </div>
       )}
+
+      {loading && <Loader />}
     </div>
   );
 };

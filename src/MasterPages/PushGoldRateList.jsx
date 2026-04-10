@@ -10,17 +10,20 @@ import {
 } from "../API/Master/Master_Profile/Silver_Rate_Details";
 import Pagination from "../Component/Pagination";
 import { formatIndianDate } from "../utils/Helpers";
+import { usePermission } from "../API/Context/PermissionContext";
+import Loader from "../Component/Loader";
 
 const PushGoldRateList = () => {
   useEffect(() => {
     document.title = "SLF | Push Gold Rate List ";
   }, []);
+  const { permissions, userData } = usePermission();
   const [data, setData] = useState([]);
   const [Silverdata, setSilverData] = useState([]);
   const [pushDate, setPushDate] = useState(
     new Date().toISOString().split("T")[0]
   );
-
+const [loading, setLoading] = useState(false);
   const [goldRate, setGoldRate] = useState("");
 
   // Pagination states
@@ -82,7 +85,7 @@ const handleGlobalReset = () => {
   // };
 
   const fetchGoldRates = async (page = 1, from = "", to = "") => {
-  setIsLoading(true);
+ setLoading(true);
   try {
     const result = await fetchGoldRatesApi(
       page,
@@ -96,16 +99,20 @@ const handleGlobalReset = () => {
       setTotalItems(result.total);
       setCurrentPage(result.page);
       setShowPagination(result.showPagination || false);
+      setLoading(false);
     } else {
       setData([]);
       setShowPagination(false);
+       setLoading(false);
     }
   } catch (err) {
     console.error("❌ Fetch Error:", err);
     setData([]);
     setShowPagination(false);
+    setLoading(false);
   } finally {
     setIsLoading(false);
+    setLoading(false);
   }
 };
   // const fetchSilverRates = async (page = 1) => {
@@ -135,7 +142,7 @@ const handleGlobalReset = () => {
   //   }
   // };
 const fetchSilverRates = async (page = 1, from = "", to = "") => {
-  setIsLoading(true);
+  setLoading(true);
   try {
     const result = await fetchSilverRatesApi(
       page,
@@ -149,16 +156,20 @@ const fetchSilverRates = async (page = 1, from = "", to = "") => {
       setTotalItemsForSilver(result.total);
       setCurrentPageForSilver(result.page);
       setShowPaginationForSilver(result.showPagination || false);
+       setLoading(false);
     } else {
       setSilverData([]);
       setShowPaginationForSilver(false);
+       setLoading(false);
     }
   } catch (err) {
     console.error("❌ Fetch Error:", err);
     setSilverData([]);
     setShowPaginationForSilver(false);
+     setLoading(false);
   } finally {
     setIsLoading(false);
+     setLoading(false);
   }
   };
   
@@ -168,41 +179,110 @@ const fetchSilverRates = async (page = 1, from = "", to = "") => {
 };
 
   
-  const handleSave = async () => {
-    debugger;
-    if (!pushDate || !goldRate) return;
+  // const handleSave = async () => {
+  //   debugger;
+  //   if (!pushDate || !goldRate) return;
 
-    const payload = {
-      push_date: pushDate,
-      gold_rate: goldRate,
-      actual_rate: actualRate,
-      metalType: metalType,
-      added_on: new Date().toISOString(),
-      added_by: loginUser,
-    };
+  //   const payload = {
+  //     push_date: pushDate,
+  //     gold_rate: goldRate,
+  //     actual_rate: actualRate,
+  //     metalType: metalType,
+  //     added_on: new Date().toISOString(),
+  //     added_by: loginUser,
+  //   };
 
-    try {
-      if (metalType === "Gold") {
-        // Save gold
-        await addGoldRateApi(payload);
-        fetchGoldRates(currentPage); // refresh gold table
-      } else {
-        // Save silver
-        await addSilverRateApi(payload);
-        fetchSilverRates(currentPage); // refresh silver table
-      }
+  //   try {
+  //     if (metalType === "Gold") {
+  //       // Save gold
+  //       await addGoldRateApi(payload);
+  //       fetchGoldRates(currentPage); // refresh gold table
+  //     } else {
+  //       // Save silver
+  //       await addSilverRateApi(payload);
+  //       fetchSilverRates(currentPage); // refresh silver table
+  //     }
 
-      // Reset fields
-      setGoldRate("");
-      setPushDate("");
-      setActualRate("");
-      setMetalType("Gold");
-    } catch (err) {
-      console.error("❌ Save Error:", err.response?.data || err.message);
-    }
-  };
+  //     // Reset fields
+  //     setGoldRate("");
+  //     setPushDate("");
+  //     setActualRate("");
+  //     setMetalType("Gold");
+  //   } catch (err) {
+  //     console.error("❌ Save Error:", err.response?.data || err.message);
+  //   }
+  // };
 
   // 🔹 Pagination Controls
+ 
+ const handleSave = async () => {
+  debugger;
+
+  // ✅ Validation with alerts
+  if (!pushDate) {
+    alert("Please select Push Date");
+    return;
+  }
+
+  if (!goldRate) {
+    alert("Please enter Funding Rate ");
+    return;
+  }
+
+  if (isNaN(goldRate) || Number(goldRate) <= 0) {
+    alert("Please enter valid Gold Rate");
+    return;
+  }
+
+  if (!actualRate) {
+    alert("Please enter Valuation Rate ");
+    return;
+  }
+
+  if (isNaN(actualRate) || Number(actualRate) <= 0) {
+    alert("Please enter valid Actual Rate");
+    return;
+  }
+
+  if (!metalType) {
+    alert("Please select Metal Type");
+    return;
+  }
+ setLoading(true);
+  const payload = {
+    push_date: pushDate,
+    gold_rate: goldRate,
+    actual_rate: actualRate,
+    metalType: metalType,
+    added_on: new Date().toISOString(),
+    added_by: loginUser,
+  };
+
+  try {
+    if (metalType === "Gold") {
+      await addGoldRateApi(payload);
+      fetchGoldRates(currentPage);
+    } else {
+      await addSilverRateApi(payload);
+      fetchSilverRates(currentPage);
+    }
+
+    alert("✅ Data saved successfully");
+
+    // Reset fields
+    setGoldRate("");
+    setPushDate("");
+    setActualRate("");
+    setMetalType("Gold");
+     setLoading(false);
+
+  } catch (err) {
+    console.error("❌ Save Error:", err.response?.data || err.message);
+    alert("❌ Failed to save data");
+     setLoading(false);
+  }
+};
+ 
   const totalPages = Math.ceil(totalItems / itemsPerPage);
   const totalPagesForSilver = Math.ceil(
     totalItemsForSilver / itemsPerPageForSilver,
@@ -228,7 +308,7 @@ const fetchSilverRates = async (page = 1, from = "", to = "") => {
     <div className="min-h-screen w-full">
       {/* Top Bar */}
       <div className="flex justify-center sticky top-[50px] z-40">
-        <div className="flex items-center px-6 py-4 border-b w-[1462px] h-[40px] border rounded-[11px] border-gray-200 justify-between shadow bg-white">
+        <div className="flex items-center px-6 py-4 border-b w-[1462px] h-[40px] border  border-gray-200 justify-between shadow bg-white">
           <h2 className="text-red-600 font-bold text-[20px] leading-[148%] font-source">
             Rate List
           </h2>
@@ -293,12 +373,17 @@ const fetchSilverRates = async (page = 1, from = "", to = "") => {
             </div>
 
             <div className="flex gap-3">
-              <button
+              {(userData?.isAdmin||permissions?.Master?.find(
+  item => item.name === "Push Rate"
+)?.add) && (
+  <button
                 onClick={handleSave}
                 className="bg-[#0A2478] cursor-pointer text-white text-[11.25px] w-[74px] h-[24px] rounded flex items-center justify-center"
               >
                 Save
               </button>
+)}
+             
               <button
                 className="bg-[#C1121F] cursor-pointer text-white text-[10px] w-[74px] h-[24px] rounded"
                 onClick={() => window.history.back()}
@@ -309,7 +394,7 @@ const fetchSilverRates = async (page = 1, from = "", to = "") => {
           </div>
         </div>
       </div>
-      <div className='ml-[22px] w-[1462px]'>
+      <div className='ml-[25px] w-[1462px]'>
 <div className="flex flex-col gap-4 ">
   <div className="flex items-center justify-between bg-gray-50 p-4 rounded-lg border border-gray-200">
     <div className="flex items-center gap-6">
@@ -356,7 +441,7 @@ const fetchSilverRates = async (page = 1, from = "", to = "") => {
   </div>
 </div>
       </div>
-      <div className="flex ml-[22px]">
+      <div className="flex ml-[25px]">
         <div className="overflow-x-auto  flex gap-10 h-auto">
           <div className="">
             
@@ -488,6 +573,8 @@ const fetchSilverRates = async (page = 1, from = "", to = "") => {
           </div>
         </div>
       </div>
+
+      {loading && <Loader />}
     </div>
   );
 };

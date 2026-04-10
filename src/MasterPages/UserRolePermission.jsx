@@ -5,6 +5,7 @@ import { addRolesApi, fetchRolesApi, updateRolesApi, updateRolesStatusApi } from
 import Rights from "../assets/Rights.png";
 import Loader from "../Component/Loader";
 import Pagination from "../Component/Pagination";
+import { usePermission } from "../API/Context/PermissionContext";
 
 
 const UserRolePermission = () => {
@@ -12,7 +13,7 @@ const UserRolePermission = () => {
   useEffect(() => {
     document.title = "SLF | User Role Permission";
   }, []);
-  
+  // const [loading, setLoading] = useState(false);
   const [roles, setRoles] = useState([]);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isEditMode, setIsEditMode] = useState(false);
@@ -21,7 +22,7 @@ const UserRolePermission = () => {
   const [totalItems, setTotalItems] = useState(0);
   const [showPagination, setShowPagination] = useState(false);
   const itemsPerPage = 10;
-
+const { permissions, userData } = usePermission();
   const navigate = useNavigate();
 
   const [formData, setFormData] = useState({
@@ -42,14 +43,17 @@ const UserRolePermission = () => {
         setTotalItems(result.total);
         setCurrentPage(result.page);
         setShowPagination(result.showPagination || false);
+          setLoading(false);
       } else {
         setRoles([]);
         setShowPagination(false);
+          setLoading(false);
       }
     } catch (err) {
       console.error("❌ Error fetching:", err);
       setRoles([]);
       setShowPagination(false);
+      setLoading(false);
     } finally {
       setLoading(false);
     }
@@ -79,33 +83,9 @@ const UserRolePermission = () => {
     }));
   };
 
-  // 🔹 Handle form submission
-  // const handleSubmit = async (e) => {
-  //   e.preventDefault();
-  //   try {
-  //     if (isEditMode) {
-  //       await updateRolesApi(formData);
-  //     } else {
-  //       await addRolesApi(formData);
-  //     }
-  //     setIsModalOpen(false);
-  //     setFormData({
-  //       id: null,
-  //       role_name: "",
-  //       system_name: "",
-  //       is_system_role: false,
-  //       is_active: true,
-  //     });
-  //     setIsEditMode(false);
-  //     fetchRoles(currentPage);
-  //   } catch (error) {
-  //     console.error("❌ Error submitting form:", error);
-  //   }
-  // };
-
   const handleSubmit = async (e) => {
     e.preventDefault();
-
+setLoading(true);
     try {
       if (isEditMode) {
         await updateRolesApi(formData);
@@ -115,7 +95,7 @@ const UserRolePermission = () => {
 
       // ✅ Success
       alert("✅ Role saved successfully");
-
+setLoading(false);
       setIsModalOpen(false);
 
       setFormData({
@@ -185,7 +165,7 @@ const UserRolePermission = () => {
     <div className="min-h-screen w-full">
       {/* middletopbar */}
       <div className="flex justify-center sticky top-[50px] z-40">
-        <div className="flex items-center px-6 py-4 border-b  w-[1462px] h-[40px] border rounded-[11px] border-gray-200 justify-between bg-white">
+        <div className="flex items-center px-6 py-4 border-b  w-[1462px] h-[40px] border border-gray-200 justify-between bg-white">
           <h2
             style={{
               fontFamily: "Source Sans 3, sans-serif",
@@ -201,7 +181,10 @@ const UserRolePermission = () => {
 
           <div className="flex gap-3">
             <div className="flex justify-between gap-5">
-              <button
+              {(userData?.isAdmin||permissions?.Master?.find(
+  item => item.name === "User Role Permission"
+)?.add) && (
+  <button
                 style={{
                   width: "74px",
                   height: "24px",
@@ -213,6 +196,8 @@ const UserRolePermission = () => {
               >
                 Add
               </button>
+)}
+              
 
               <button
                 className="text-white px-[6.25px] py-[6.25px] rounded-[3.75px] bg-[#C1121F] w-[74px] h-[24px] opacity-100 text-[10px]"
@@ -360,7 +345,10 @@ const UserRolePermission = () => {
                     <td className="px-4 py-2">{row.name || row.role_name}</td>
                     {/* <td className="px-4 py-2">{row.SystemName || row.system_name}</td> */}
                     <td className="px-4 py-2">
-                      <button
+                       {(userData?.isAdmin||permissions?.Master?.find(
+  item => item.name === "User Role Permission"
+)?.status) && (
+   <button
                         onClick={() => handleToggleStatus(row)}
                         className={`w-12 h-6 flex items-center rounded-full p-1 transition-colors duration-300 ease-in-out ${row.is_active === 1 ? "bg-[#0A2478]" : "bg-gray-400"
                           }`}
@@ -370,9 +358,14 @@ const UserRolePermission = () => {
                             }`}
                         />
                       </button>
+)}
+                    
                     </td>
                     <td className="px-4 py-2">
-                      <div className="flex gap-2 justify-center">
+                        {(userData?.isAdmin||permissions?.Master?.find(
+  item => item.name === "User Role Permission"
+)?.edit) && (
+   <div className="flex gap-2 justify-center">
                         <button
                           title="Edit"
                           className="bg-[#3dbd5a] cursor-pointer p-1.5 text-white rounded-sm"
@@ -382,10 +375,15 @@ const UserRolePermission = () => {
                           <FiEdit />
                         </button>
                       </div>
+)}
+                     
                     </td>
                    <td className="px-4 py-2">
-  <div className="flex gap-2 justify-center">
-    <button
+                      <div className="flex gap-2 justify-center">
+                          {(userData?.isAdmin||permissions?.Master?.find(
+  item => item.name === "User Role Permission"
+)?.rights) && (
+   <button
       className="bg-[#56A869] rounded-[2.31px] flex items-center justify-center p-0.5"
                           onClick={() => navigate(`/User-Role`, { state: { row } })}
                           title='Rights'
@@ -396,6 +394,8 @@ const UserRolePermission = () => {
         className="w-[18px] h-[18px] cursor-pointer"
       />
     </button>
+)}
+   
   </div>
 </td>
 

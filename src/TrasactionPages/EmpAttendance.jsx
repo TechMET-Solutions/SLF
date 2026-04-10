@@ -1,8 +1,9 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { API } from "../api";
-import { decryptData } from "../utils/cryptoHelper";
+import { usePermission } from "../API/Context/PermissionContext";
 import { formatIndianDate } from "../utils/Helpers";
+import Loader from "../Component/Loader";
 // <-- your decode function import
 
 const EmpAttendance = () => {
@@ -13,41 +14,44 @@ const EmpAttendance = () => {
   console.log(employees, "employees");
   const [showModal, setShowModal] = useState(false);
   const [selectedEmp, setSelectedEmp] = useState(null);
-
+  const { permissions, userData } = usePermission();
   const [month, setMonth] = useState(new Date().getMonth() + 1);
   const [year, setYear] = useState(new Date().getFullYear());
   const [attendanceData, setAttendanceData] = useState([]);
   const [showPagination, setShowPagination] = useState(false);
 
   console.log(attendanceData, "attendanceData");
-
+const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
   useEffect(() => {
     fetchEmployees();
   }, [page]);
 
- const fetchEmployees = async () => {
-  try {
-    const res = await fetch(
-      `${API}/Master/Employee_Profile/getAll-employees?page=${page}&limit=${limit}`
-    );
+  const fetchEmployees = async () => {
+   setLoading(true);
+    try {
+      const res = await fetch(
+        `${API}/Master/Employee_Profile/getAll-employees?page=${page}&limit=${limit}`,
+      );
 
-    const response = await res.json();
+      const response = await res.json();
 
-    // console.log(response, "employee response");
+      // console.log(response, "employee response");
 
-    // 🔥 Direct use response
-    setEmployees(response.items);
-    setTotalPages(response.total);
-    setShowPagination(response.pagination.showPagination);
-
-  } catch (error) {
-    console.error("Error fetching employees:", error);
-  }
-};
+      // 🔥 Direct use response
+      setEmployees(response.items);
+      setTotalPages(response.total);
+      setShowPagination(response.pagination.showPagination);
+      setLoading(false);
+    } catch (error) {
+      console.error("Error fetching employees:", error);
+      setLoading(false);
+    }
+  };
 
   const getMonthlyAttendance = async () => {
     debugger;
+    setLoading(true);
     try {
       const res = await fetch(
         `${API}/Transactions/monthly?emp_id=${selectedEmp.id}&month=${month}&year=${year}`,
@@ -57,11 +61,14 @@ const EmpAttendance = () => {
 
       if (data.status) {
         setAttendanceData(data.data);
+         setLoading(false);
       } else {
         setAttendanceData([]);
+         setLoading(false);
       }
     } catch (err) {
       console.error("Error fetching monthly attendance:", err);
+       setLoading(false);
     }
   };
   useEffect(() => {
@@ -73,8 +80,8 @@ const EmpAttendance = () => {
   return (
     <div className="">
       {/* Header */}
-      <div className="flex justify-center sticky top-[80px] z-40">
-        <div className="flex items-center px-6 py-4  w-[1462px] h-[50px] border rounded-[11px] border-gray-200 justify-between shadow">
+      <div className="flex justify-center sticky top-[50px] z-40">
+        <div className="flex items-center px-6 py-4  w-[1462px] h-[40px] border  border-gray-200 justify-between shadow">
           <h2
             style={{
               fontFamily: "Source Sans 3, sans-serif",
@@ -96,16 +103,22 @@ const EmpAttendance = () => {
       </div>
 
       {/* Table */}
-      <div className="flex  mt-4 mx-auto w-[1462px] ">
+      <div className="flex   mx-auto w-[1462px] ">
         <table className=" ">
           <thead className="bg-[#0A2478] text-white text-sm">
-            <tr className='text-left'>
+            <tr className="text-left">
               <th className="px-1 py-1 border w-[80px]">Emp Id</th>
               <th className="px-1 py-1 border w-[250px]"> Emp Name</th>
               <th className="px-1 py-1 border w-[250px]"> Emp Email</th>
               <th className="px-1 py-1 border w-[100px]">Emp Mobile</th>
               <th className="px-1 py-1 border w-[200px]">Emp Branch</th>
-              <th className="px-1 py-1 border w-[100px]">Action</th>
+              {(userData?.isAdmin ||
+                    permissions?.Master?.find(
+                      (item) => item.name === "Employee Attendance",
+                    )?.view) && (
+                    <th className="px-1 py-1 border w-[100px]">Action</th>
+                  )}
+             
             </tr>
           </thead>
 
@@ -123,15 +136,20 @@ const EmpAttendance = () => {
                   <td className="px-1 py-1 ">{emp.email}</td>
                   <td className="px-1 py-1 ">{emp.mobile_no}</td>
                   <td className="px-1 py-1 ">{emp.branch}</td>
-                  <td
-                    className="px-1 py-1 text-blue-500 hover:underline cursor-pointer"
-                    onClick={() => {
-                      setSelectedEmp(emp);
-                      setShowModal(true);
-                    }}
-                  >
-                     Attendance
-                  </td>
+                  {(userData?.isAdmin ||
+                    permissions?.Master?.find(
+                      (item) => item.name === "Employee Attendance",
+                    )?.view) && (
+                    <td
+                      className="px-1 py-1 text-blue-500 hover:underline cursor-pointer"
+                      onClick={() => {
+                        setSelectedEmp(emp);
+                        setShowModal(true);
+                      }}
+                    >
+                      Attendance
+                    </td>
+                  )}
                 </tr>
               ))
             ) : (
@@ -294,6 +312,8 @@ const EmpAttendance = () => {
           </div>
         </div>
       )}
+
+      {loading && <Loader />}
     </div>
   );
 };

@@ -1,5 +1,6 @@
 import axios from "axios";
 import { useEffect, useRef, useState } from "react";
+import { FaSort, FaSortDown, FaSortUp } from "react-icons/fa";
 import { FiEdit } from "react-icons/fi";
 import { IoMdPrint } from "react-icons/io";
 import { MdMessage } from "react-icons/md";
@@ -8,6 +9,8 @@ import { API } from "../api";
 import blockimg from "../assets/blockimg.png";
 import envImg from "../assets/envImg.jpg";
 import { formatIndianDate } from "../utils/Helpers";
+import { usePermission } from "../API/Context/PermissionContext";
+import Loader from "../Component/Loader";
 const CustProfile = () => {
   const navigate = useNavigate();
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -18,7 +21,7 @@ const CustProfile = () => {
   const [data, setData] = useState([]);
   const [isModalOpenForBlock, setIsModalOpenForblock] = useState(false);
   const [selectedCustomer, setSelectedCustomer] = useState(null);
-
+const { permissions, userData } = usePermission();
   // State for search
   const [searchValue, setSearchValue] = useState("");
   const [searchField, setSearchField] = useState("partyUID"); // default search by Party UID
@@ -30,6 +33,10 @@ const CustProfile = () => {
   const [searchQuery, setSearchQuery] = useState("");
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
 
+const [loading, setLoading] = useState(false);
+
+
+  
   const toggleHeader = (headerId) => {
     setSearchHeaders((prev) =>
       prev.includes(headerId)
@@ -37,26 +44,25 @@ const CustProfile = () => {
         : [...prev, headerId],
     );
   };
+  const [sortConfig, setSortConfig] = useState({
+    key: "",
+    direction: "asc",
+  });
 
-  // Fetch function with search
-  // const fetchCustomers = async (
-  //   pageNumber = 1,
-  //   search = searchValue,
-  //   field = searchField,
-  // ) => {
+ 
+  // const fetchCustomers = async (pageNumber = 1) => {
   //   try {
   //     const params = {
   //       page: pageNumber,
   //       limit: 10,
-  //       searchField: field,
+  //       headers: searchHeaders.join(","), // 👈 multiple headers
+  //       search: searchQuery, // 👈 search value
   //     };
-
-  //     // Add search if provided
-  //     if (search) params.searchValue = search;
 
   //     const response = await axios.get(`${API}/Master/doc/searchCustomers`, {
   //       params,
   //     });
+
   //     setData(response.data.data);
   //     setTotalPages(response.data.totalPages);
   //     setPage(response.data.currentPage);
@@ -64,60 +70,51 @@ const CustProfile = () => {
   //     console.error("❌ Error fetching customers:", error);
   //   }
   // };
+
   const fetchCustomers = async (pageNumber = 1) => {
-    try {
-      const params = {
-        page: pageNumber,
-        limit: 10,
-        headers: searchHeaders.join(","), // 👈 multiple headers
-        search: searchQuery, // 👈 search value
-      };
+     setLoading(true);
 
-      const response = await axios.get(`${API}/Master/doc/searchCustomers`, {
-        params,
-      });
+  try {
+    const params = {
+      page: pageNumber,
+      limit: 10,
+      headers: searchHeaders.join(","),
+      search: searchQuery,
+      sortKey: sortConfig.key,          // ✅ send column
+      sortDirection: sortConfig.direction, // ✅ send asc/desc
+    };
 
-      setData(response.data.data);
-      setTotalPages(response.data.totalPages);
-      setPage(response.data.currentPage);
-    } catch (error) {
-      console.error("❌ Error fetching customers:", error);
-    }
-  };
+    const response = await axios.get(`${API}/Master/doc/searchCustomers`, {
+      params,
+    });
 
+    setData(response.data.data);
+    setTotalPages(response.data.totalPages);
+    setPage(response.data.currentPage);
+     setLoading(false);
+
+  } catch (error) {
+    console.error("❌ Error fetching customers:", error);
+     setLoading(false);
+  }
+};
+
+ const handleSort = (key) => {
+  let direction = "asc";
+
+  if (sortConfig.key === key && sortConfig.direction === "asc") {
+    direction = "desc";
+  }
+
+  setSortConfig({ key, direction });
+  fetchCustomers(1);
+};
   const [pendingRow, setPendingRow] = useState(null);
 
   // Handle search
   const handleSearch = () => {
     setPage(1); // Reset to first page when searching
     fetchCustomers(1, searchValue, searchField);
-  };
-
-  // Handle search field change
-  const handleSearchFieldChange = (e) => {
-    const field = e.target.value;
-    setSearchField(field);
-    setSearchValue(""); // Clear search value when field changes
-  };
-
-  // Handle search input change
-  const handleSearchInputChange = (e) => {
-    setSearchValue(e.target.value);
-  };
-
-  // Handle enter key in search input
-  const handleKeyPress = (e) => {
-    if (e.key === "Enter") {
-      handleSearch();
-    }
-  };
-
-  // Clear search
-  const handleClearSearch = () => {
-    setSearchField("partyUID");
-    setSearchValue("");
-    setPage(1);
-    fetchCustomers(1, "", "partyUID");
   };
 
   useEffect(() => {
@@ -218,7 +215,7 @@ const CustProfile = () => {
     "firstName",
     "middleName",
     "lastName",
-    "Corresponding_City",
+    "Permanent_City",
     "mobile",
     "panNo",
     "aadhar",
@@ -273,7 +270,9 @@ const CustProfile = () => {
                       >
                         <input
                           type="checkbox"
-                          checked={allHeaderIds.every((id) => searchHeaders.includes(id))}
+                          checked={allHeaderIds.every((id) =>
+                            searchHeaders.includes(id),
+                          )}
                           onChange={handleSelectAll}
                           className="w-3 h-3 accent-[#0A2478]"
                         />
@@ -287,7 +286,7 @@ const CustProfile = () => {
                         { id: "firstName", label: "F Name" },
                         { id: "middleName", label: "M Name" },
                         { id: "lastName", label: "L Name" },
-                        { id: "Corresponding_City", label: "City" },
+                        { id: "Permanent_City", label: "City" },
                         { id: "mobile", label: "Mobile Number" },
                         { id: "panNo", label: "Pan Card" },
                         { id: "aadhar", label: "Aadhar Card" },
@@ -329,8 +328,6 @@ const CustProfile = () => {
                   className="flex-grow text-[11px] font-source outline-none h-full"
                 />
 
-
-
                 <button
                   className="ml-2 bg-[#0b2c69] text-white text-[11px] px-4 h-[24px] rounded-[3px] font-source hover:bg-[#071d45]"
                   onClick={() => {
@@ -355,7 +352,11 @@ const CustProfile = () => {
 
             {/* Buttons stuck to right */}
             <div className="flex gap-3">
-              <button
+
+              {(userData?.isAdmin||permissions?.Transaction?.find(
+  item => item.name === "Customer Profile"
+)?.add) && (
+    <button
                 style={{
                   width: "74px",
                   height: "24px",
@@ -366,6 +367,8 @@ const CustProfile = () => {
               >
                 Add
               </button>
+)}
+            
 
               <button
                 onClick={() => navigate("/")}
@@ -506,7 +509,6 @@ const CustProfile = () => {
         </div>
       )}
 
-
       {isModalOpenForRemark && (
         <div
           className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50"
@@ -617,7 +619,7 @@ const CustProfile = () => {
       )}
 
       {/* Table */}
-      <div className="flex ml-[22px]">
+      <div className="flex ml-[25px]">
         <div className="overflow-x-auto  w-[1300px] h-[500px]">
           <table className="w-full border-collapse">
             <thead className="bg-[#0A2478] text-white text-sm">
@@ -625,20 +627,105 @@ const CustProfile = () => {
                 <th className="px-1 py-1 text-left border-r border-gray-300 text-[13px]">
                   Customer
                 </th>
-                <th className="px-1 py-1 text-left border-r border-gray-300 text-[13px]">
-                  Party UID
+
+                <th
+                  onClick={() => handleSort("id")}
+                  className="px-1 py-1 text-left border-r border-gray-300 text-[13px] w-[120px] cursor-pointer select-none"
+                >
+                  <div className="flex items-center gap-2">
+                    Party UID
+                    {sortConfig.key !== "id" && (
+                      <FaSort className="text-gray-400 text-xs" />
+                    )}
+                    {sortConfig.key === "id" &&
+                      sortConfig.direction === "asc" && (
+                        <FaSortUp className="text-blue-600 text-xs" />
+                      )}
+                    {sortConfig.key === "id" &&
+                      sortConfig.direction === "desc" && (
+                        <FaSortDown className="text-blue-600 text-xs" />
+                      )}
+                  </div>
                 </th>
-                <th className="px-1 py-1 text-left border-r border-gray-300 text-[13px]">
-                  F Name
+                
+                <th
+                  onClick={() => handleSort("firstName")}
+                  className="px-1 py-1 text-left border-r border-gray-300 text-[13px] w-[120px] cursor-pointer select-none"
+                >
+                  <div className="flex items-center gap-2">
+                    F Name
+                    {sortConfig.key !== "firstName" && (
+                      <FaSort className="text-gray-400 text-xs" />
+                    )}
+                    {sortConfig.key === "firstName" &&
+                      sortConfig.direction === "asc" && (
+                        <FaSortUp className="text-blue-600 text-xs" />
+                      )}
+                    {sortConfig.key === "firstName" &&
+                      sortConfig.direction === "desc" && (
+                        <FaSortDown className="text-blue-600 text-xs" />
+                      )}
+                  </div>
                 </th>
-                <th className="px-1 py-1 text-left border-r border-gray-300 text-[13px]">
+               
+                 <th
+                  onClick={() => handleSort("middleName")}
+                  className="px-1 py-1 text-left border-r border-gray-300 text-[13px] w-[120px] cursor-pointer select-none"
+                >
+                  <div className="flex items-center gap-2">
                   M Name
+                    {sortConfig.key !== "middleName" && (
+                      <FaSort className="text-gray-400 text-xs" />
+                    )}
+                    {sortConfig.key === "middleName" &&
+                      sortConfig.direction === "asc" && (
+                        <FaSortUp className="text-blue-600 text-xs" />
+                      )}
+                    {sortConfig.key === "middleName" &&
+                      sortConfig.direction === "desc" && (
+                        <FaSortDown className="text-blue-600 text-xs" />
+                      )}
+                  </div>
                 </th>
-                <th className="px-1 py-1 text-left border-r border-gray-300 text-[13px]">
+               
+                <th
+                  onClick={() => handleSort("lastName")}
+                  className="px-1 py-1 text-left border-r border-gray-300 text-[13px] w-[120px] cursor-pointer select-none"
+                >
+                  <div className="flex items-center gap-2">
                   L Name
+                    {sortConfig.key !== "lastName" && (
+                      <FaSort className="text-gray-400 text-xs" />
+                    )}
+                    {sortConfig.key === "lastName" &&
+                      sortConfig.direction === "asc" && (
+                        <FaSortUp className="text-blue-600 text-xs" />
+                      )}
+                    {sortConfig.key === "lastName" &&
+                      sortConfig.direction === "desc" && (
+                        <FaSortDown className="text-blue-600 text-xs" />
+                      )}
+                  </div>
                 </th>
-                <th className="px-1 py-1 text-left border-r border-gray-300 text-[13px]">
-                  City
+               
+                <th
+                  // onClick={() => handleSort("lastName")}
+                  className="px-1 py-1 text-left border-r border-gray-300 text-[13px] w-[120px] cursor-pointer select-none"
+                >
+                  <div className="flex items-center gap-2">
+                 City
+                    {/* {sortConfig.key !== "lastName" && (
+                      <FaSort className="text-gray-400 text-xs" />
+                    )}
+                    {sortConfig.key === "lastName" &&
+                      sortConfig.direction === "asc" && (
+                        <FaSortUp className="text-blue-600 text-xs" />
+                      )}
+                    {sortConfig.key === "lastName" &&
+                      sortConfig.direction === "desc" && (
+                        <FaSortDown className="text-blue-600 text-xs" />
+                      )} */}
+                  </div>
                 </th>
                 <th className="px-1 py-1 text-left border-r border-gray-300 text-[13px]">
                   Mobile Number
@@ -662,12 +749,13 @@ const CustProfile = () => {
                 <tr
                   key={index}
                   className={`
-              ${row.badDebtor
-                      ? "bg-red-100 text-red-700 font-semibold"
-                      : index % 2 === 0
-                        ? "bg-gray-50"
-                        : "bg-white"
-                    }
+              ${
+                row.badDebtor
+                  ? "bg-red-100 text-red-700 font-semibold"
+                  : index % 2 === 0
+                    ? "bg-gray-50"
+                    : "bg-white"
+              }
             `}
                 >
                   <td className="px-1 py-1 flex items-center gap-3">
@@ -696,7 +784,10 @@ const CustProfile = () => {
                   <td className="px-1 py-1">{row.Added_By}</td>
 
                   <td className="px-1 py-1">
-                    <input
+                    {(userData?.isAdmin||permissions?.Transaction?.find(
+  item => item.name === "Customer Profile"
+)?.Block) && (
+   <input
                       type="checkbox"
                       className="w-[20px] h-[20px]"
                       checked={checkedRows[row.id] ?? row.block === 1}
@@ -704,6 +795,8 @@ const CustProfile = () => {
                         handleCheckboxChange(row, e.target.checked)
                       }
                     />
+)}
+                    
                   </td>
 
                   <td className=" text-[#1883EF] cursor-pointer">
@@ -714,8 +807,10 @@ const CustProfile = () => {
                       >
                         <MdMessage className="text-white text-sm" />
                       </div>
-
-                      <div
+ {(userData?.isAdmin||permissions?.Transaction?.find(
+  item => item.name === "Customer Profile"
+)?.edit) && (
+    <div
                         className="bg-green-500 p-1 text-white rounded cursor-pointer"
                         onClick={() => handleNavigateToProfile(row)}
                       >
@@ -727,8 +822,12 @@ const CustProfile = () => {
                           title="Edit"
                         /> */}
                       </div>
-
-                      <div
+)}
+                     
+{(userData?.isAdmin||permissions?.Transaction?.find(
+  item => item.name === "Customer Profile"
+)?.print) && (
+   <div
                         className=" bg-red-600 p-1 text-white rounded cursor-pointer"
                         onClick={() =>
                           navigate("/Customer_Form", { state: row })
@@ -742,6 +841,8 @@ const CustProfile = () => {
                           title="Print"
                         /> */}
                       </div>
+)}
+                      
                     </div>
                   </td>
                 </tr>
@@ -773,8 +874,9 @@ const CustProfile = () => {
                 setPage(i + 1);
                 fetchCustomers(i + 1, searchValue, searchField);
               }}
-              className={`px-3 py-1 border rounded-md ${page === i + 1 ? "bg-[#0b2c69] text-white" : ""
-                }`}
+              className={`px-3 py-1 border rounded-md ${
+                page === i + 1 ? "bg-[#0b2c69] text-white" : ""
+              }`}
             >
               {i + 1}
             </button>
@@ -793,6 +895,8 @@ const CustProfile = () => {
           Next
         </button>
       </div>
+
+      {loading && <Loader />}
     </div>
   );
 };

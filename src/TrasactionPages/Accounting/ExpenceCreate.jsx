@@ -3,6 +3,7 @@ import { CheckCircle2, Plus, Trash2, UserPlus, X } from "lucide-react";
 import { useEffect, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import { API } from "../../api";
+import Loader from "../../Component/Loader";
 
 const ExpenceCreate = () => {
   const navigate = useNavigate();
@@ -11,7 +12,7 @@ const ExpenceCreate = () => {
   const isViewMode = location.state?.view;
 
   // Modals State
-
+const [loading, setLoading] = useState(false);
   const [isModalOpen, setIsModalOpen] = useState(false); // Party Modal
   const [isDetailsModalOpen, setIsDetailsModalOpen] = useState(false); // Details Modal
   const [banks, setBanks] = useState([]);
@@ -19,6 +20,7 @@ const ExpenceCreate = () => {
   const [showDropdownForEmployee, setShowDropdownForemployee] = useState(false);
 
   const fetchExpenseById = async (id) => {
+    setLoading(true)
     try {
       const res = await axios.get(`${API}/api/expense/details/${id}`);
 
@@ -55,9 +57,11 @@ const ExpenceCreate = () => {
             employeeId: d.employee_id,
           })),
         });
+        setLoading(false)
       }
     } catch (error) {
       console.error("Fetch Expense Error:", error);
+      setLoading(false)
     }
   };
 
@@ -66,18 +70,43 @@ const ExpenceCreate = () => {
       fetchExpenseById(expenseId);
     }
   }, [expenseId]);
-  useEffect(() => {
-    fetchBanks();
-  }, []);
+  
 
+  useEffect(() => {
   const fetchBanks = async () => {
+    debugger
     try {
-      const res = await axios.get(`${API}/api/banks/list`);
-      setBanks(res.data); // assuming API returns array
-    } catch (err) {
-      console.error(err);
+      const userData = JSON.parse(sessionStorage.getItem("userData"));
+
+      const branchId =
+        typeof userData?.branchId === "object"
+          ? userData?.branchId?.id
+          : userData?.branchId;
+
+      console.log("BranchId:", branchId);
+
+      if (!branchId) {
+        console.error("BranchId missing!");
+        return;
+      }
+
+      const res = await axios.get(`${API}/api/banks/GetBanklist`, {
+        params: { branchId },
+      });
+
+      const formattedBanks = res.data.map((bank) => ({
+        id: bank.id,
+        name: bank.name,
+      }));
+
+      setBanks(formattedBanks);
+    } catch (error) {
+      console.error("Error fetching banks:", error);
     }
   };
+
+  fetchBanks();
+}, []);
   const todayDate = new Date().toISOString().split("T")[0];
   // Main Data State
   const [bankAccounts, setBankAccounts] = useState([]);
@@ -222,63 +251,9 @@ const ExpenceCreate = () => {
     }
   };
 
-  // --- Row Details Logic ---
-  // const openDetailsModal = (index) => {
-  //   setCurrentRowIndex(index);
-  //   // Load existing details if they exist, else reset
-  //   if (rowDetails[index]) {
-  //     setDetailForm(rowDetails[index]);
-  //   } else {
-  //     setDetailForm({
-  //       billNumber: "",
-  //       billAmount: voucherRows[index].amount || "",
-  //       payMode: "Cash",
-  //       bankId: "",
-  //       billImage: null,
-  //       partyName: "",
-  //       employeeName: "",
-  //     });
-  //   }
-  //   setIsDetailsModalOpen(true);
-  // };
-
-  //  const handleSaveDetails = () => {
-  //   setRowDetails((prev) => {
-  //     const existing = prev[currentRowIndex] || [];
-
-  //     const updatedDetails = [...existing, detailForm];
-
-  //     return {
-  //       ...prev,
-  //       [currentRowIndex]: updatedDetails,
-  //     };
-  //   });
-
-  //   // Calculate total amount of all bills for this ledger
-  //   const existingBills = rowDetails[currentRowIndex] || [];
-
-  //   const total =
-  //     existingBills.reduce(
-  //       (sum, item) => sum + Number(item.billAmount || 0),
-  //       0
-  //     ) + Number(detailForm.billAmount || 0);
-
-  //   handleVoucherChange(currentRowIndex, "amount", total);
-
-  //   setIsDetailsModalOpen(false);
-
-  //   // Reset form for next bill entry
-  //   setDetailForm({
-  //     billNumber: "",
-  //     billAmount: "",
-  //     payMode: "Cash",
-  //     bankId: "",
-  //     billImage: null,
-  //     partyName: "",
-  //     employeeName: "",
-  //   });
-  // };
+ 
   const handleSaveDetails = () => {
+    
     setRowDetails((prev) => {
       const existing = prev[currentRowIndex] || [];
 
@@ -324,42 +299,46 @@ const ExpenceCreate = () => {
     setVoucherRows(updatedRows);
   };
 
-  // const handleMainSave = async () => {
-  //   debugger;
-  //   try {
-  //     const finalPayload = {
-  //       expenses: voucherRows.map((row, index) => ({
-  //         ...row,
-  //         details: rowDetails[index] || [],
-  //       })),
-  //     };
+  
+  const validateDetailForm = () => {
+  let errors = [];
 
-  //     console.log("Sending Data:", finalPayload);
+  if (!detailForm.billNumber) errors.push("Bill Number");
+  if (!detailForm.billAmount) errors.push("Bill Amount");
+  if (!detailForm.billPaidAmount) errors.push("Paid Amount");
+  if (!detailForm.partyName) errors.push("Party Name");
+  if (!detailForm.employeeName) errors.push("Employee Name");
 
-  //     const response = await axios.post(
-  //       "http://localhost:5000/api/expense/create-expense",
-  //       finalPayload,
-  //     );
+  if (detailForm.payMode === "Bank" && !detailForm.bankId) {
+    errors.push("Bank");
+  }
 
-  //     if (response.data.success) {
-  //       alert("Expense Saved Successfully ✅");
-  //     }
-  //   } catch (error) {
-  //     console.error("Save Error:", error);
-  //     alert("Something went wrong ❌");
-  //   }
-  // };
+  if (errors.length > 0) {
+    alert(`❌ Please fill: ${errors.join(", ")}`);
+    return false;
+  }
+
+  return true;
+};
 
   const handleMainSave = async () => {
     debugger;
+
+    // ✅ VALIDATION FIRST
+    if (!validateDetailForm()) {
+      return; // ⛔ stop if invalid
+    }
+setLoading(true)
     try {
       const formData = new FormData();
 
       const cleanedExpenses = voucherRows.map((row, index) => ({
         ...row,
-        date: row.date ? (typeof row.date === 'string' && row.date.includes('T')
-          ? row.date.split('T')[0]
-          : row.date) : '',
+        date: row.date
+          ? typeof row.date === "string" && row.date.includes("T")
+            ? row.date.split("T")[0]
+            : row.date
+          : "",
         details:
           rowDetails[index]?.map((detail) => ({
             ...detail,
@@ -399,7 +378,6 @@ const ExpenceCreate = () => {
           employeeName: "",
         });
 
-        // Optional: reset main rows also
         setVoucherRows([
           {
             subLedgerCode: "",
@@ -410,22 +388,28 @@ const ExpenceCreate = () => {
             amount: "",
           },
         ]);
+setLoading(false)
+        navigate("/Expences_list");
       }
     } catch (error) {
       console.error("Save Error:", error);
+      setLoading(false)
     }
   };
 
   const handleUpdate = async (expenseId) => {
     try {
       const formData = new FormData();
-
+setLoading(true)
       const cleanedExpenses = [
         {
           ...voucherRows[0],
-          date: voucherRows[0].date ? (typeof voucherRows[0].date === 'string' && voucherRows[0].date.includes('T')
-            ? voucherRows[0].date.split('T')[0]
-            : voucherRows[0].date) : '',
+          date: voucherRows[0].date
+            ? typeof voucherRows[0].date === "string" &&
+              voucherRows[0].date.includes("T")
+              ? voucherRows[0].date.split("T")[0]
+              : voucherRows[0].date
+            : "",
           details:
             rowDetails[0]?.map((detail) => ({
               ...detail,
@@ -465,15 +449,18 @@ const ExpenceCreate = () => {
           partyName: "",
           employeeName: "",
         });
+        setLoading(false)
         navigate("/Expences_list");
       }
     } catch (error) {
       console.error("Update Error:", error);
+      setLoading(false)
       alert("Failed to update expense ❌");
     }
   };
 
   const handlePartySave = async () => {
+      setLoading(true)
     try {
       if (!partyData.partyName) {
         alert("Party Name is required");
@@ -490,9 +477,11 @@ const ExpenceCreate = () => {
           partyName: "",
           shopName: "" /* reset other fields... */,
         });
+         setLoading(false)
       }
     } catch (error) {
       alert("Error saving party");
+      setLoading(false)
     }
   };
 
@@ -546,9 +535,9 @@ const ExpenceCreate = () => {
   };
 
   return (
-    <div className="min-h-screen bg-white font-sans text-[#333] ml-[110px] mr-[110px]">
-      <div className="mx-auto p-6 mt-5">
-        <div className="flex items-center justify-between px-6 py-4 border-b w-[1290px] h-[61px] border rounded-[11px] border-gray-200 bg-white">
+    <div className="min-h-screen bg-white font-sans text-[#333] ">
+      <div className="mx-auto ml-[25px]">
+        <div className="flex items-center justify-between px-6 py-4 border-b w-[1462px] h-[40px] border  border-gray-200 bg-white">
           <h1 className="text-[#D32F2F] text-xl font-bold">Add Expenses</h1>
           <div className="flex space-x-2">
             {!expenseId && !isViewMode && (
@@ -594,23 +583,19 @@ const ExpenceCreate = () => {
         </div>
       </div>
 
-      <div className="p-5">
+      <div className="ml-[25px]">
         <div className="border-[#008080] rounded-sm overflow-hidden">
-          <p className="font-[Source_Sans_3] font-bold text-[18px] leading-[100%] tracking-[0.03em] text-[#0A2478] mb-4">
+          <p className="font-[Source_Sans_3] font-bold text-[18px] leading-[100%] tracking-[0.03em] text-[#0A2478] mt-2 mb-2">
             Expense Voucher Details
           </p>
 
           <table className=" text-left border-collapse bg-white">
             <thead>
-              <tr className="bg-[#0A2478] text-white text-[11px] uppercase">
-                <th className="p-2 border-r font-bold w-18 text-center">No</th>
-                <th className="p-2 border-r font-bold">Sub Ledger Name</th>
-                <th className="p-2 border-r font-bold w-28 text-center">
-                  Date
-                </th>
-                {/* <th className="p-2 border-r font-bold w-28 text-center">
-                  Amount
-                </th> */}
+              <tr className="bg-[#0A2478] text-white text-xs">
+                <th className="p-1 border-r font-bold w-18 ">No</th>
+                <th className="p-1 border-r font-bold">Sub Ledger Name</th>
+                <th className="p-1 border-r font-bold w-28 ">Date</th>
+
                 <th className="p-2 font-bold w-[400px]">Remark & Details</th>
               </tr>
             </thead>
@@ -620,10 +605,10 @@ const ExpenceCreate = () => {
                   key={index}
                   className={index % 2 === 0 ? "bg-gray-50" : "bg-white"}
                 >
-                  <td className="p-1 border-r border-gray-300 text-center">
+                  <td className="p-1 border-r border-gray-300 text-xs">
                     {index + 1}
                   </td>
-                  <td className="p-1 border-r border-gray-300">
+                  <td className="p-1 border-r border-gray-300 text-xs">
                     <div className="flex flex-col gap-1">
                       <select
                         value={row.subLedgerCode}
@@ -633,14 +618,18 @@ const ExpenceCreate = () => {
                           const bank = bankAccounts.find(
                             (b) => b.id.toString() === selectedId,
                           );
-                          handleVoucherChange(index, "subLedgerCode", selectedId);
+                          handleVoucherChange(
+                            index,
+                            "subLedgerCode",
+                            selectedId,
+                          );
                           handleVoucherChange(
                             index,
                             "ledgerName",
                             bank?.name || "",
                           );
                         }}
-                        className="w-full border border-gray-300 rounded-sm px-1 py-1 outline-none bg-white text-[12px]"
+                        className="w-full border border-gray-300 rounded-sm px-1 py-1 outline-none bg-whitev"
                       >
                         <option value="">Select Account</option>
                         {bankAccounts?.map((bank) => (
@@ -656,7 +645,7 @@ const ExpenceCreate = () => {
                       )} */}
                     </div>
                   </td>
-                  <td className="p-1 border-r border-gray-300">
+                  <td className="p-1 border-r border-gray-300 text-xs">
                     <input
                       type="date"
                       disabled={isViewMode}
@@ -668,23 +657,12 @@ const ExpenceCreate = () => {
                       onChange={(e) =>
                         handleVoucherChange(index, "date", e.target.value)
                       }
-                      className="w-full bg-white border border-gray-300 rounded-sm px-1 py-0.5 outline-none text-center"
+                      className="w-full bg-white border border-gray-300 rounded-sm px-1 py-1 outline-none text-xs"
                     />
                   </td>
 
-                  {/* <td className="p-1 border-r border-gray-300">
-                    <input
-                      type="text"
-                      disabled={isViewMode}
-                      value={row.amount}
-                      onChange={(e) =>
-                        handleVoucherChange(index, "amount", e.target.value)
-                      }
-                      className="w-full bg-white border border-gray-300 rounded-sm px-1 py-0.5 outline-none text-right"
-                    />
-                  </td> */}
                   <td className="p-1 ">
-                    <div className="flex gap-1 items-center">
+                    <div className="flex gap-1 items-center text-xs">
                       <input
                         type="text"
                         disabled={isViewMode}
@@ -692,7 +670,7 @@ const ExpenceCreate = () => {
                         onChange={(e) =>
                           handleVoucherChange(index, "remark", e.target.value)
                         }
-                        className="flex-1 bg-white border border-gray-300 rounded-sm px-1 py-0.5 outline-none"
+                        className="flex-1 bg-white border border-gray-300 rounded-sm px-1 py-1 outline-none text-xs"
                         placeholder="Remark"
                       />
 
@@ -713,10 +691,11 @@ const ExpenceCreate = () => {
 
                       <button
                         onClick={() => openDetailsModal(index)}
-                        className={`px-2 py-1 rounded-sm flex items-center font-bold uppercase text-[10px] transition-colors shadow-sm ${rowDetails[index]
-                          ? "bg-green-600 text-white"
-                          : "bg-[#0A2478] text-white"
-                          }`}
+                        className={`px-2 py-1 rounded-sm flex items-center font-bold uppercase text-[10px] transition-colors shadow-sm ${
+                          rowDetails[index]
+                            ? "bg-green-600 text-white"
+                            : "bg-[#0A2478] text-white"
+                        }`}
                       >
                         {rowDetails[index] ? (
                           <CheckCircle2 size={10} className="mr-1" />
@@ -864,7 +843,7 @@ const ExpenceCreate = () => {
                     {banks && banks.length > 0 ? (
                       banks.map((bank) => (
                         <option key={bank.id} value={bank.id}>
-                          {bank.bank_name}
+                          {bank.name}
                         </option>
                       ))
                     ) : (
@@ -1088,7 +1067,7 @@ const ExpenceCreate = () => {
 
                 <div className="flex flex-col">
                   <label className="font-semibold text-gray-700 mb-1.5 ml-1">
-                    Contact Number
+                    Contact Number <span className="text-red-500">*</span>
                   </label>
                   <input
                     type="tel"
@@ -1301,6 +1280,8 @@ const ExpenceCreate = () => {
           </div>
         </div>
       )}
+
+      {loading && <Loader />}
     </div>
   );
 };

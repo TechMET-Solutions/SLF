@@ -1,27 +1,64 @@
-import { useEffect, useMemo, useState } from "react";
+import axios from "axios";
+import { useEffect, useState } from "react";
 import { FiEdit, FiTrash2 } from "react-icons/fi";
 import { useNavigate } from "react-router-dom";
+import { API } from "../api";
 import {
   addAreaApi,
   deleteAreaApi,
-  fetchAreasApi,
-  updateAreaApi,
+  updateAreaApi
 } from "../API/Master/Master_Profile/Area_Details";
 import blockimg from "../assets/blockimg.png";
-import Loader from "../Component/Loader";
 import Pagination from "../Component/Pagination";
-import axios from "axios";
-import { API } from "../api";
+import { usePermission } from "../API/Context/PermissionContext";
+import Loader from "../Component/Loader";
 
 const indianStatesAndUTs = [
-  "Andhra Pradesh", "Arunachal Pradesh", "Assam", "Bihar", "Chhattisgarh", "Goa", "Gujarat", "Haryana", "Himachal Pradesh", "Jharkhand", "Karnataka", "Kerala", "Madhya Pradesh", "Maharashtra", "Manipur", "Meghalaya", "Mizoram", "Nagaland", "Odisha", "Punjab", "Rajasthan", "Sikkim", "Tamil Nadu", "Telangana", "Tripura", "Uttar Pradesh", "Uttarakhand", "West Bengal",
-  "Andaman and Nicobar Islands", "Chandigarh", "Dadra and Nagar Haveli and Daman and Diu", "Delhi", "Jammu and Kashmir", "Ladakh", "Lakshadweep", "Puducherry"
+  "Andhra Pradesh",
+  "Arunachal Pradesh",
+  "Assam",
+  "Bihar",
+  "Chhattisgarh",
+  "Goa",
+  "Gujarat",
+  "Haryana",
+  "Himachal Pradesh",
+  "Jharkhand",
+  "Karnataka",
+  "Kerala",
+  "Madhya Pradesh",
+  "Maharashtra",
+  "Manipur",
+  "Meghalaya",
+  "Mizoram",
+  "Nagaland",
+  "Odisha",
+  "Punjab",
+  "Rajasthan",
+  "Sikkim",
+  "Tamil Nadu",
+  "Telangana",
+  "Tripura",
+  "Uttar Pradesh",
+  "Uttarakhand",
+  "West Bengal",
+  "Andaman and Nicobar Islands",
+  "Chandigarh",
+  "Dadra and Nagar Haveli and Daman and Diu",
+  "Delhi",
+  "Jammu and Kashmir",
+  "Ladakh",
+  "Lakshadweep",
+  "Puducherry",
 ];
 
 const Area = () => {
   useEffect(() => {
     document.title = "SLF | Area";
   }, []);
+  
+const [loading, setLoading] = useState(false);
+const { permissions, userData } = usePermission();
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [area, setArea] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
@@ -46,85 +83,55 @@ const Area = () => {
   const [searchQuery, setSearchQuery] = useState("");
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
 
-  // const filteredData = useMemo(() => {
-  //   if (!searchQuery.trim()) return area;
-
-  //   const keywords = searchQuery.toLowerCase().split(",").map(k => k.trim()).filter(k => k);
-
-  //   return area.filter((row) => {
-  //     // Check if any keyword matches any of the checked headers
-  //     return keywords.some((keyword) =>
-  //       searchHeaders.some((header) => 
-  //         row[header]?.toString().toLowerCase().includes(keyword)
-  //       )
-  //     );
-  //   });
-  // }, [area, searchQuery, searchHeaders]);
-
   const toggleHeader = (headerId) => {
-    setSearchHeaders(prev =>
+    setSearchHeaders((prev) =>
       prev.includes(headerId)
-        ? prev.filter(id => id !== headerId)
-        : [...prev, headerId]
+        ? prev.filter((id) => id !== headerId)
+        : [...prev, headerId],
     );
   };
   const itemsPerPage = 10;
 
   const navigate = useNavigate();
 
-  // 🟢 Fetch Area Data with Pagination
-  // const fetchArea = async (page = 1) => {
-  //   setIsLoading(true);
-  //   try {
-  //     const result = await fetchAreasApi(page, itemsPerPage);
-  //     if (result?.items) {
-  //       setArea(result.items);
-  //       setTotalItems(result.total);
-  //       setCurrentPage(result.page);
-  //       setShowPagination(result.showPagination || false);
-  //     } else {
-  //       setArea([]);
-  //       setShowPagination(false);
-  //     }
-  //   } catch (error) {
-  //     console.error("❌ Error fetching areas:", error);
-  //     setArea([]);
-  //     setShowPagination(false);
-  //   } finally {
-  //     setIsLoading(false);
-  //   }
-  // };
-
   const fetchArea = async (page = 1) => {
-    setIsLoading(true);
+ 
+  setLoading(true);
     try {
-      const response = await axios.get(`${API}/Master/Master_Profile/get-area`, {
-        params: {
-          page,
-          limit: itemsPerPage,
-          searchQuery,
-          searchHeaders: searchHeaders.join(","), // send as comma string
+      const response = await axios.get(
+        `${API}/Master/Master_Profile/get-area`,
+        {
+          params: {
+            page,
+            limit: itemsPerPage,
+            searchQuery,
+            searchHeaders: searchHeaders.join(","), // send as comma string
+          },
         },
-      });
+      );
 
       if (response.status === 200) {
         setArea(response.data.items || []);
         setTotalItems(response.data.total);
         setCurrentPage(response.data.page);
         setShowPagination(response.data.showPagination || false);
+        
+  setLoading(false);
       } else {
         setArea([]);
         setShowPagination(false);
+        setLoading(false);
       }
     } catch (error) {
       console.error("❌ Error fetching areas:", error);
       setArea([]);
       setShowPagination(false);
+      setLoading(false);
     } finally {
       setIsLoading(false);
+      setLoading(false);
     }
   };
-
 
   useEffect(() => {
     fetchArea();
@@ -155,39 +162,87 @@ const Area = () => {
     }
     setIsModalOpen(true);
   };
+  const validateForm = () => {
+    if (!formData.area_locality?.trim()) {
+      return "Area / Locality is required";
+    }
 
+    if (!formData.city?.trim()) {
+      return "City is required";
+    }
+
+    if (!formData.state?.trim()) {
+      return "State is required";
+    }
+
+    if (!formData.pincode?.trim()) {
+      return "Pincode is required";
+    }
+
+    
+
+    return null;
+  };
   // 💾 Save or Update
   const handleSave = async () => {
-    if (!formData.area_locality || !formData.city || !formData.state || !formData.pincode) {
-      alert("Please fill all required fields");
-      return;
+  const errorMsg = validateForm();
+
+  if (errorMsg) {
+    alert(`❌ ${errorMsg}`);
+    setLoading(false);
+    return;
+  }
+
+  if (
+    !formData.area_locality ||
+    !formData.city ||
+    !formData.state ||
+    !formData.pincode
+  ) {
+    alert("Please fill all required fields");
+    setLoading(false);
+    return;
+  }
+
+ setLoading(true);
+  try {
+    const payload = {
+      area_locality: formData.area_locality,
+      city: formData.city,
+      state: formData.state,
+      pincode: formData.pincode,
+      landmark: formData.landmark,
+    };
+
+    if (isEditMode && formData.id) {
+      payload.id = formData.id;
+      await updateAreaApi(payload);
+
+      // ✅ Update Alert
+      alert("✅ Area updated successfully");
+      setLoading(false);
+    } else {
+      await addAreaApi(payload);
+
+      // ✅ Add Alert
+      alert("✅ Area added successfully");
+       setLoading(false);
     }
 
-    setIsLoading(true);
-    try {
-      const payload = {
-        area_locality: formData.area_locality,
-        city: formData.city,
-        state: formData.state,
-        pincode: formData.pincode,
-        landmark: formData.landmark,
-      };
+    setIsModalOpen(false);
+    fetchArea(currentPage);
+     setLoading(false);
+  } catch (error) {
+    console.error("❌ Error saving area:", error);
 
-      if (isEditMode && formData.id) {
-        payload.id = formData.id;
-        await updateAreaApi(payload);
-      } else {
-        await addAreaApi(payload);
-      }
-
-      setIsModalOpen(false);
-      fetchArea(currentPage);
-    } catch (error) {
-      console.error("❌ Error saving area:", error);
-    } finally {
-      setIsLoading(false);
-    }
-  };
+    // ❌ Error Alert
+    alert("Something went wrong while saving area");
+     setLoading(false);
+  } finally {
+    setIsLoading(false);
+     setLoading(false);
+  }
+};
 
   // 🗑️ Show delete confirmation modal
   const handleDeleteClick = (id) => {
@@ -197,14 +252,17 @@ const Area = () => {
 
   // 🟥 Confirm delete
   const handleDeleteConfirm = async () => {
+     setLoading(true);
     try {
       await deleteAreaApi(deleteId);
       setDeleteModalOpen(false);
       setDeleteId(null);
       fetchArea(currentPage);
+       setLoading(false);
     } catch (error) {
       console.error("❌ Error deleting area:", error);
       alert("Error deleting area");
+       setLoading(false);
     }
   };
 
@@ -226,65 +284,69 @@ const Area = () => {
     "landmark",
   ];
 
-
- const handleSelectAll = () => {
+  const handleSelectAll = () => {
     const allSelected = allHeaderIds.every((id) => searchHeaders.includes(id));
     setSearchHeaders(allSelected ? [] : [...allHeaderIds]);
   };
-
-
 
   return (
     <div className="min-h-screen w-full">
       {/* Header */}
       <div className="flex sticky top-[50px] z-40 w-full ml-[25px]">
-          <div className="flex items-center px-6 py-4 border-b  w-full max-w-[1462px] h-[40px] border  border-gray-200 justify-between  ">
-          <h2 className="text-red-600 font-bold text-[20px] whitespace-nowrap">Area</h2>
+        <div className="flex items-center px-6 py-4 border-b  w-full max-w-[1462px] h-[40px] border  border-gray-200 justify-between  ">
+          <h2 className="text-red-600 font-bold text-[20px] whitespace-nowrap">
+            Area
+          </h2>
           <div className="flex items-center gap-3">
-
             <div className="flex items-center gap-3">
               <div className="hidden lg:flex items-center bg-white border border-gray-400 rounded-[5px] h-[32px] px-1 relative w-[500px]">
-
                 {/* Multi-Select Header Dropdown */}
                 <div className="relative border-r border-gray-300 pr-2 mr-2">
                   <button
                     onClick={() => setIsDropdownOpen(!isDropdownOpen)}
                     className="text-[11px] font-source font-bold text-[#0A2478] flex items-center gap-1 outline-none h-full"
                   >
-                    Headers ({searchHeaders.length}) <span className="text-[8px]">▼</span>
+                    Headers ({searchHeaders.length}){" "}
+                    <span className="text-[8px]">▼</span>
                   </button>
 
                   {isDropdownOpen && (
                     <div className="absolute top-[35px] left-[-8px] bg-white border border-gray-300 shadow-xl rounded-md z-[100] w-[160px] p-2">
-                      
                       <button
-                      onClick={handleSelectAll}
-                      className="flex items-center gap-2 p-2 hover:bg-gray-50 cursor-pointer rounded">
+                        onClick={handleSelectAll}
+                        className="flex items-center gap-2 p-2 hover:bg-gray-50 cursor-pointer rounded"
+                      >
                         <input
                           type="checkbox"
                           checked={searchHeaders.length === allHeaderIds.length}
                           onChange={handleSelectAll}
                           // className="rounded border-gray-300 text-teal-600 focus:ring-teal-500"
-                           className="w-3 h-3 accent-[#0A2478]"
+                          className="w-3 h-3 accent-[#0A2478]"
                         />
-                        <span className="text-[11px] font-source text-gray-700">Select All</span>
+                        <span className="text-[11px] font-source text-gray-700">
+                          Select All
+                        </span>
                       </button>
-                      
+
                       {[
                         { id: "area_locality", label: "Area/Locality" },
                         { id: "city", label: "City" },
                         { id: "state", label: "State" },
                         { id: "pincode", label: "Pincode" },
-                       
                       ].map((col) => (
-                        <label key={col.id} className="flex items-center gap-2 p-2 hover:bg-gray-50 cursor-pointer rounded">
+                        <label
+                          key={col.id}
+                          className="flex items-center gap-2 p-2 hover:bg-gray-50 cursor-pointer rounded"
+                        >
                           <input
                             type="checkbox"
                             checked={searchHeaders.includes(col.id)}
                             onChange={() => toggleHeader(col.id)}
                             className="w-3 h-3 accent-[#0A2478]"
                           />
-                          <span className="text-[11px] font-source text-gray-700">{col.label}</span>
+                          <span className="text-[11px] font-source text-gray-700">
+                            {col.label}
+                          </span>
                         </label>
                       ))}
                       <div className="border-t mt-1 pt-1 text-center">
@@ -333,14 +395,17 @@ const Area = () => {
               </div>
             </div>
             <div className="flex gap-3">
-
-
-              <button
+              {(userData?.isAdmin||permissions?.Master?.find(
+  item => item.name === "Area"
+)?.add) && (
+    <button
                 className="bg-[#0A2478] text-white text-sm rounded px-4 py-1 cursor-pointer"
                 onClick={() => handleOpenModal(null)}
               >
                 Add
               </button>
+)}
+            
               <button
                 className="bg-[#C1121F] text-white text-sm rounded px-4 py-1 cursor-pointer"
                 onClick={() => navigate("/")}
@@ -348,41 +413,49 @@ const Area = () => {
                 Exit
               </button>
             </div>
-
           </div>
-
         </div>
       </div>
 
       {/* Modal for Add/Edit */}
       {isModalOpen && (
         <div className="fixed inset-0 flex items-center justify-center z-50 bg-[#0101017A] backdrop-blur-md">
-          <div className='flex justify-center items-center h-full'>
-
-            <div className="bg-white w-[717px] rounded-lg shadow-lg h-[400px] p-10">
+          <div className="flex justify-center items-center h-full">
+            <div className="bg-white w-[717px] rounded-lg shadow-lg h-[300px] p-10">
               <h2 className="text-[#0A2478] font-semibold text-[20px] mb-4">
                 {isEditMode ? "Edit Area" : "Add Area"}
               </h2>
 
               <div className="flex gap-4">
                 <div>
-                  <p className="text-[14px]">Area / Locality <span className="text-red-500">*</span></p>
+                  <p className="text-[14px]">
+                    Area / Locality <span className="text-red-500">*</span>
+                  </p>
                   <input
                     type="text"
                     placeholder="Enter area or locality"
                     className="border border-gray-300 rounded px-3 py-2 w-[240px]"
                     value={formData.area_locality}
-                    onChange={(e) => setFormData({ ...formData, area_locality: e.target.value })}
+                    onChange={(e) =>
+                      setFormData({
+                        ...formData,
+                        area_locality: e.target.value,
+                      })
+                    }
                   />
                 </div>
                 <div>
-                  <p className="text-[14px]">City <span className="text-red-500">*</span></p>
+                  <p className="text-[14px]">
+                    City <span className="text-red-500">*</span>
+                  </p>
                   <input
                     type="text"
                     placeholder="Eg. Nashik"
                     className="border border-gray-300 rounded px-3 py-2 w-[150px]"
                     value={formData.city}
-                    onChange={(e) => setFormData({ ...formData, city: e.target.value })}
+                    onChange={(e) =>
+                      setFormData({ ...formData, city: e.target.value })
+                    }
                   />
                 </div>
                 <div>
@@ -392,7 +465,9 @@ const Area = () => {
                   <select
                     className="border border-gray-300 rounded px-3 py-2 w-[180px]"
                     value={formData.state}
-                    onChange={(e) => setFormData({ ...formData, state: e.target.value })}
+                    onChange={(e) =>
+                      setFormData({ ...formData, state: e.target.value })
+                    }
                   >
                     <option value="">Select State</option>
                     {indianStatesAndUTs.map((state) => (
@@ -402,18 +477,20 @@ const Area = () => {
                     ))}
                   </select>
                 </div>
-
-
               </div>
               <div className="flex gap-4 mt-5">
                 <div>
-                  <p className="text-[14px]">Pincode <span className="text-red-500">*</span></p>
+                  <p className="text-[14px]">
+                    Pincode <span className="text-red-500">*</span>
+                  </p>
                   <input
                     type="text"
                     placeholder="Pincode"
                     className="border border-gray-300 rounded px-3 py-2 w-[180px]"
                     value={formData.pincode}
-                    onChange={(e) => setFormData({ ...formData, pincode: e.target.value })}
+                    onChange={(e) =>
+                      setFormData({ ...formData, pincode: e.target.value })
+                    }
                   />
                 </div>
                 <div>
@@ -423,31 +500,29 @@ const Area = () => {
                     placeholder="landmark"
                     className="border border-gray-300 rounded px-3 py-2 w-[405px]"
                     value={formData.landmark}
-                    onChange={(e) => setFormData({ ...formData, landmark: e.target.value })}
+                    onChange={(e) =>
+                      setFormData({ ...formData, landmark: e.target.value })
+                    }
                   />
                 </div>
-
               </div>
 
               <div className="flex justify-center items-center gap-4 mt-6">
                 <button
-                  className="bg-[#0A2478] text-white px-1 py-1 rounded cursor-pointer"
+                  className="bg-[#0A2478] text-white px-2 py-2 rounded cursor-pointer"
                   onClick={handleSave}
                 >
                   Submit
                 </button>
                 <button
-                  className="bg-[#C1121F] text-white px-1 py-1 rounded cursor-pointer"
+                  className="bg-[#C1121F] text-white px-2 py-2 rounded cursor-pointer"
                   onClick={() => setIsModalOpen(false)}
                 >
                   Close
                 </button>
               </div>
             </div>
-
-
           </div>
-
         </div>
       )}
 
@@ -459,8 +534,12 @@ const Area = () => {
               <img src={blockimg} alt="block" className="w-[113px] h-[113px]" />
             </div>
             <div className="mt-10 text-center">
-              <p className="text-[22px] font-medium">Are you sure to delete this List?</p>
-              <p className="text-[17px] text-gray-600 mt-2">You won't be able to revert this action.</p>
+              <p className="text-[22px] font-medium">
+                Are you sure to delete this List?
+              </p>
+              <p className="text-[17px] text-gray-600 mt-2">
+                You won't be able to revert this action.
+              </p>
             </div>
             <div className="mt-6 flex flex-col items-center gap-4">
               <button
@@ -484,17 +563,30 @@ const Area = () => {
       <div className="flex ml-[25px]">
         <div className="overflow-x-auto  w-[1290px] h-[500px]">
           <table className="w-full border-collapse">
-
             {/* ✅ TABLE HEADER ALWAYS VISIBLE */}
             <thead className="bg-[#0A2478] text-white text-sm">
               <tr>
-                <th className="px-1 py-1 border-r-2 text-left w-[60px]">Sr No</th>
-                <th className="px-1 py-1 border-r-2 text-left w-[300px]">Area/Locality</th>
-                <th className="px-1 py-1 border-r-2 text-left w-[100px]">City</th>
-                <th className="px-1 py-1 border-r-2 text-left w-[100px]">State</th>
-                <th className="px-1 py-1 border-r-2 text-left w-[100px]">Pincode</th>
-                <th className="px-1 py-1 border-r-2 text-left w-[300px]">Landmark</th>
-                <th className="px-1 py-1 border-r-2 text-center w-[100px]">Action</th>
+                <th className="px-1 py-1 border-r-2 text-left w-[60px]">
+                  Sr No
+                </th>
+                <th className="px-1 py-1 border-r-2 text-left w-[300px]">
+                  Area/Locality
+                </th>
+                <th className="px-1 py-1 border-r-2 text-left w-[100px]">
+                  City
+                </th>
+                <th className="px-1 py-1 border-r-2 text-left w-[100px]">
+                  State
+                </th>
+                <th className="px-1 py-1 border-r-2 text-left w-[100px]">
+                  Pincode
+                </th>
+                <th className="px-1 py-1 border-r-2 text-left w-[300px]">
+                  Landmark
+                </th>
+                <th className="px-1 py-1 border-r-2 text-center w-[100px]">
+                  Action
+                </th>
               </tr>
             </thead>
 
@@ -521,27 +613,36 @@ const Area = () => {
                     <td className="px-1 py-1">{row.landmark}</td>
                     <td className="px-1 py-1 text-center">
                       <div className="flex gap-2">
-                        <button
+                        {(userData?.isAdmin||permissions?.Master?.find(
+  item => item.name === "Area"
+)?.edit) && (
+     <button
                           className="bg-green-500 p-1.5 text-white rounded cursor-pointer"
                           onClick={() => handleOpenModal(row)}
                           title="Edit"
                         >
                           <FiEdit className="text-white text-sm" />
                         </button>
-                        <button
+)}
+                       
+                          {(userData?.isAdmin||permissions?.Master?.find(
+  item => item.name === "Area"
+)?.delete) && (
+      <button
                           className="bg-red-600 p-1.5 text-white rounded cursor-pointer"
                           onClick={() => handleDeleteClick(row.id)}
                           title="Delete"
                         >
                           <FiTrash2 className="text-white text-sm" />
                         </button>
+)}
+                       
                       </div>
                     </td>
                   </tr>
                 ))
               )}
             </tbody>
-
           </table>
         </div>
       </div>
@@ -552,6 +653,7 @@ const Area = () => {
         onPageChange={handlePageChange}
       />
 
+      {loading && <Loader />}
     </div>
   );
 };

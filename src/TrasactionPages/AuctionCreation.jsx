@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { API } from "../api";
+import { usePermission } from "../API/Context/PermissionContext";
 
 function AuctionCreation() {
   useEffect(() => {
@@ -9,7 +10,7 @@ function AuctionCreation() {
 
   const navigate = useNavigate();
   const [selectedDate, setSelectedDate] = useState("");
-
+const { permissions, userData } = usePermission();
   const [formData, setFormData] = useState({
     venue: "",
     date: "",
@@ -202,12 +203,17 @@ function AuctionCreation() {
             </div>
 
             <div className="flex gap-2 mt-0.5">
-              <button
+              {(userData?.isAdmin||permissions?.Transaction?.find(
+  item => item.name === "Auction Lis"
+)?.add) && (
+   <button
                 onClick={() => navigate("/Add-Auction-Creation")}
                 className="bg-[#0A2478] text-white text-[11px] px-4  h-[28px] rounded-[3px] cursor-pointer"
               >
                 Add
               </button>
+)}
+             
               <button
                 onClick={() => navigate("/")}
                 className="bg-[#C1121F] text-white text-[11px] px-4 h-[28px] rounded-[3px] cursor-pointer"
@@ -248,19 +254,34 @@ function AuctionCreation() {
                     className={`${index % 2 === 0 ? "bg-gray-50" : "bg-white"} hover:bg-gray-100 transition`}
                   >
                     {/* Auction ID + Navigation */}
-                    <td
-                      className="px-1 py-1 cursor-pointer text-blue-400"
-                      onClick={() =>
-                        navigate("/Auction-Items-List", {
-                          state: {
-                            loanIds: row.loanDetails.map((d) => d.loanId),
-                            AuctionData: row,
-                          },
-                        })
-                      }
-                    >
-                      {row.id}
-                    </td>
+                   <td
+  className={`px-1 py-1 ${
+    (userData?.isAdmin ||
+      permissions?.Transaction?.find(
+        item => item.name === "Auction List"
+      )?.Auction_Details)
+      ? "cursor-pointer text-blue-400"
+      : "cursor-not-allowed text-gray-400"
+  }`}
+  onClick={() => {
+    const hasAccess =
+      userData?.isAdmin ||
+      permissions?.Transaction?.find(
+        item => item.name === "Auction List"
+      )?.Auction_Details;
+
+    if (!hasAccess) return; // ❌ रोक दो navigation
+
+    navigate("/Auction-Items-List", {
+      state: {
+        loanIds: row.loanDetails.map((d) => d.loanId),
+        AuctionData: row,
+      },
+    });
+  }}
+>
+  {row.id}
+</td>
                     <td className="px-1 py-1">
                       {row.loanDetails && row.loanDetails.length > 0
                         ? row.loanDetails.map((d) => d.loanId).join(", ")

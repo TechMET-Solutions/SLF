@@ -19,13 +19,16 @@ import {
 } from "../API/Master/Master_Profile/Purity_Details_silver";
 import blockimg from "../assets/blockimg.png";
 import Pagination from "../Component/Pagination";
+import { usePermission } from "../API/Context/PermissionContext";
+import Loader from "../Component/Loader";
 
 const PurityProfile = () => {
   useEffect(() => {
     document.title = "SLF | Purity Profile ";
   }, []);
   const navigate = useNavigate();
-
+  const { permissions, userData } = usePermission();
+  const [loading, setLoading] = useState(false);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [deleteModalOpen, setDeleteModalOpen] = useState(false);
   const [deleteId, setDeleteId] = useState(null);
@@ -57,6 +60,7 @@ const PurityProfile = () => {
   // 📌 Fetch all records with pagination
   const fetchPurities = async (page = 1) => {
     setIsLoading(true);
+      setLoading(true);
     try {
       const result = await fetchPuritiesApi(page, itemsPerPage);
       // console.log("Fetched purities:", result);
@@ -65,21 +69,26 @@ const PurityProfile = () => {
         setTotalItems(result.total);
         setCurrentPage(result.page);
         setShowPagination(result.showPagination || false);
+          setLoading(false);
       } else {
         setData([]);
         setShowPagination(false);
+          setLoading(false);
       }
     } catch (err) {
       console.error("❌ Error fetching:", err);
       setData([]);
       setShowPagination(false);
+        setLoading(false);
     } finally {
       setIsLoading(false);
+        setLoading(false);
     }
   };
 
   const fetchPuritiesForSilver = async (page = 1) => {
     setIsLoading(true);
+      setLoading(true);
     try {
       const result = await fetchPuritiesApiForSilver(
         page,
@@ -90,16 +99,21 @@ const PurityProfile = () => {
         setTotalItemsForSilver(result.total);
         setCurrentPageForSilver(result.page);
         setShowPaginationForSilver(result.showPagination || false);
+          setLoading(false);
       } else {
         setSilverData([]);
         setShowPaginationForSilver(false);
+          setLoading(false);
       }
     } catch (err) {
       console.error("❌ Error fetching:", err);
+       
       setSilverData([]);
       setShowPaginationForSilver(false);
+       setLoading(false);
     } finally {
       setIsLoading(false);
+       setLoading(false);
     }
   };
   useEffect(() => {
@@ -119,11 +133,14 @@ const PurityProfile = () => {
   };
   const handleToggleStatusForSilver = async (item) => {
     try {
+       setLoading(true);
       const newStatus = item.status === 1 ? 0 : 1;
       await updatePurityStatusApiForSilver(item.id, newStatus);
       fetchPuritiesForSilver(currentPageForSilver);
+       setLoading(false);
     } catch (error) {
       console.error("❌ Error toggling status:", error);
+       setLoading(false);
     }
   };
 
@@ -157,6 +174,7 @@ const PurityProfile = () => {
   console.log("Logged in user:", loginUser);
   // 💾 Save or Update
   const handleSave = async () => {
+     
     if (!formData.purity_name?.trim()) {
       alert("Please enter the Purity Name.");
       return;
@@ -172,7 +190,7 @@ const PurityProfile = () => {
       return;
     }
 
-    setIsLoading(true);
+    setLoading(true);
     try {
       const payload = {
         purity_name: formData.purity_name,
@@ -201,10 +219,13 @@ const PurityProfile = () => {
       setIsModalOpen(false);
       fetchPurities(currentPageForSilver);
       fetchPuritiesForSilver();
+      setLoading(false);
     } catch (error) {
       console.error("❌ Error saving item:", error);
+      setLoading(false);
     } finally {
       setIsLoading(false);
+      setLoading(false);
     }
   };
 
@@ -218,6 +239,7 @@ const PurityProfile = () => {
 
   // 🟥 Confirm delete
   const handleDeleteConfirm = async () => {
+    setLoading(true);
     try {
       if (productfordelete === "Silver") {
         await deletePurityApiSilver(deleteId);
@@ -230,9 +252,11 @@ const PurityProfile = () => {
       setIsProductForDelete("");
       fetchPurities(currentPage);
       fetchPuritiesForSilver(currentPage);
+      setLoading(false);
     } catch (error) {
       console.error("❌ Error deleting purity:", error);
       alert("Error deleting purity");
+      setLoading(false);
     }
   };
 
@@ -262,12 +286,17 @@ const PurityProfile = () => {
               Product Purity
             </h2>
             <div className="flex gap-5">
-              <button
+              {(userData?.isAdmin||permissions?.Master?.find(
+  item => item.name === "Product Purity"
+)?.add) && (
+ <button
                 onClick={() => handleOpenModal()}
                 className="w-[74px] h-[24px]  cursor-pointer rounded bg-[#0A2478] text-white text-[11.25px] flex items-center justify-center"
               >
                 Add
               </button>
+)}
+              
               <button
                 onClick={() => navigate("/")}
                 className="w-[74px] h-[24px] cursor-pointer  rounded bg-[#C1121F] text-white text-[10px]"
@@ -324,19 +353,23 @@ const PurityProfile = () => {
                 <label className="text-[14px] font-medium">
                   Purity % <span className="text-red-500">*</span>
                 </label>
-                <input
-                  type="number"
-                  placeholder="Purity Percent"
-                  value={formData.purity_percent}
-                  onChange={(e) =>
-                    setFormData({ ...formData, purity_percent: e.target.value })
-                  }
-                  style={{
-                    MozAppearance: "textfield",
-                  }}
-                  onWheel={(e) => e.target.blur()}
-                  className="border border-gray-300 rounded px-3 py-2 mt-1 w-full focus:outline-none focus:ring-2 focus:ring-[#0A2478]"
-                />
+               <input
+  type="text"
+  placeholder="Purity %"
+  value={formData.purity_percent}
+  onChange={(e) => {
+    let value = e.target.value;
+
+    // ✅ Allow only digits
+    if (/^\d*$/.test(value)) {
+      // ✅ Optional: limit between 0–100
+      if (value === "" || (Number(value) >= 0 && Number(value) <= 100)) {
+        setFormData({ ...formData, purity_percent: value });
+      }
+    }
+  }}
+  className="border border-gray-300 rounded px-3 py-2 mt-1 w-full focus:outline-none focus:ring-2 focus:ring-[#0A2478]"
+/>
               </div>
             </div>
 
@@ -450,24 +483,36 @@ const PurityProfile = () => {
                       <td className="px-1 py-1">{row.added_by}</td>
                       <td className="px-1 py-1 text-center">
                         <div className="flex gap-2 justify-center">
-                          <button
+                           {(userData?.isAdmin||permissions?.Master?.find(
+  item => item.name === "Product Purity"
+)?.edit) && (
+<button
                             className="bg-[#3dbd5a] cursor-pointer p-1.5 text-white rounded-sm"
                             onClick={() => handleOpenModal(row)}
                             title="Edit"
                           >
                             <FiEdit />
                           </button>
-                          <button
+)}
+                           {(userData?.isAdmin||permissions?.Master?.find(
+  item => item.name === "Product Purity"
+)?.delete) && (
+ <button
                             className="bg-[#f51111ec] cursor-pointer p-1.5 text-white rounded-sm"
                             onClick={() => handleDeleteClick(row.id, row.loan_type)}
                             title="Delete"
                           >
                             <FiTrash2 />
                           </button>
+)}
+                         
                         </div>
                       </td>
                       <td className="px-1 py-1">
-                        <button
+                         {(userData?.isAdmin||permissions?.Master?.find(
+  item => item.name === "Product Purity"
+)?.status) && (
+  <button
                           onClick={() => handleToggleStatus(row)}
                           className={`w-12 h-6 flex items-center rounded-full p-1 transition-colors duration-300 ease-in-out ${row.status === 1 ? "bg-[#0A2478]" : "bg-gray-400"
                             }`}
@@ -477,6 +522,8 @@ const PurityProfile = () => {
                               }`}
                           />
                         </button>
+)}
+                       
                       </td>
                     </tr>
                   ))
@@ -531,24 +578,37 @@ const PurityProfile = () => {
                       <td className="px-1 py-1">{row.added_by}</td>
                       <td className="px-1 py-1 text-center">
                         <div className="flex gap-2 justify-center">
-                          <button
+{(userData?.isAdmin||permissions?.Master?.find(
+  item => item.name === "Product Purity"
+)?.edit) && (
+   <button
                             className="bg-[#3dbd5a] cursor-pointer p-1.5 text-white rounded-sm"
                             onClick={() => handleOpenModal(row)}
                             title="Edit"
                           >
                             <FiEdit />
                           </button>
-                          <button
+)}
+                          
+                        {(userData?.isAdmin||permissions?.Master?.find(
+  item => item.name === "Product Purity"
+)?.delete) && (
+    <button
                             className="bg-[#f51111ec] cursor-pointer p-1.5 text-white rounded-sm"
                             onClick={() => handleDeleteClick(row.id, row.loan_type)}
                             title="Delete"
                           >
                             <FiTrash2 />
                           </button>
+)} 
+                         
                         </div>
                       </td>
                       <td className="px-1 py-1">
-                        <button
+                         {(userData?.isAdmin||permissions?.Master?.find(
+  item => item.name === "Product Purity"
+)?.status) && (
+   <button
                           onClick={() => handleToggleStatusForSilver(row)}
                           className={`w-12 h-6 flex items-center rounded-full p-1 transition-colors duration-300 ease-in-out ${row.status === 1 ? "bg-[#0A2478]" : "bg-gray-400"
                             }`}
@@ -558,6 +618,8 @@ const PurityProfile = () => {
                               }`}
                           />
                         </button>
+)} 
+                        
                       </td>
                     </tr>
                   ))
@@ -572,6 +634,8 @@ const PurityProfile = () => {
           />
         </div>
       </div>
+
+      {loading && <Loader />}
     </div>
   );
 };

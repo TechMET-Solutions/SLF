@@ -12,6 +12,7 @@ import profileempty from "../assets/profileempty.png";
 import righttick from "../assets/righttick.png";
 import { encryptData } from "../utils/cryptoHelper";
 import CustBankDetails from "./CustBankDetails";
+import Loader from "../Component/Loader";
 
 const AddCustProfile = () => {
   const navigate = useNavigate();
@@ -20,6 +21,7 @@ const AddCustProfile = () => {
   const editor = useRef(null);
   const signatureCanvasRef = useRef(null);
 
+const [loading, setLoading] = useState(false);
   const customerData = location.state?.customerData;
   const modedata = location.state?.type;
   console.log(customerData, "customerData");
@@ -72,8 +74,6 @@ const AddCustProfile = () => {
     pep: "",
     profileImage: null,
     signature: null,
-
-    //Permanent
     Permanent_Area: "",
     Permanent_Address: "",
     Permanent_Pincode: "",
@@ -86,19 +86,12 @@ const AddCustProfile = () => {
     Permanent_CompanyType: "",
     Permanent_IndustryType: "",
     Permanent_Businessworkingsince: "",
-
-    //  Corresponding
-
     Corresponding_Address: "",
     Corresponding_Pincode: "",
-
     Corresponding_State: "",
     Corresponding_City: "",
     Corresponding_Country: "India",
     Corresponding_Area: "",
-
-    //Additional Documents
-
     Additional_AddressProof: "",
     Additional_AnyDetails1: "",
     Additional_IDProof: "",
@@ -107,8 +100,6 @@ const AddCustProfile = () => {
     Additional_Reference2: "",
     Additional_UploadDocumentFile1: null,
     Additional_UploadDocumentFile2: null,
-
-    //Nominee
     Nominee_NomineeName: "",
     Nominee_Relation: "",
     Nominee_Address: "",
@@ -281,131 +272,6 @@ const AddCustProfile = () => {
   const panFileInputRef = useRef(null);
   const aadharFileInputRef = useRef(null);
 
-  // Validation function for required fields
-  const validateRequiredFields = () => {
-    const newErrors = {};
-    let hasErrors = false;
-
-    // Define required fields for Personal Information
-    const personalInfoFields = {
-      aadhar: "Aadhar Number",
-      printName: "Print Name",
-      email: "Email Id",
-      dob: "DOB",
-      mobile: "Mobile No",
-      gender: "Gender",
-      panNo: "PAN No",
-    };
-
-    // Define required fields for Permanent Address
-    const permanentAddressFields = {
-      Permanent_Address: "Address",
-      Permanent_City: "City",
-      Permanent_State: "State",
-      Permanent_Country: "Country",
-      Permanent_Pincode: "Pincode",
-    };
-
-    // Check Personal Information fields
-    Object.entries(personalInfoFields).forEach(([field, label]) => {
-      if (!formData[field] || formData[field].toString().trim() === "") {
-        newErrors[field] = `${label} is required`;
-        hasErrors = true;
-      }
-    });
-
-    // Check Permanent Address fields
-    Object.entries(permanentAddressFields).forEach(([field, label]) => {
-      if (!formData[field] || formData[field].toString().trim() === "") {
-        newErrors[field] = `${label} is required`;
-        hasErrors = true;
-      }
-    });
-
-    // Email validation
-    if (formData.email && formData.email.trim() !== "") {
-      const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-      if (!emailRegex.test(formData.email)) {
-        newErrors.email = "Please enter a valid email address";
-        hasErrors = true;
-      }
-    }
-
-    // Mobile validation
-    if (formData.mobile && formData.mobile.trim() !== "") {
-      const mobileRegex = /^[6-9]\d{9}$/;
-      // Starts with 6-9 and total 10 digits
-
-      if (!mobileRegex.test(formData.mobile)) {
-        newErrors.mobile = "Please enter a valid 10-digit mobile number";
-        hasErrors = true;
-      }
-    }
-
-    setErrors(newErrors);
-    return !hasErrors;
-  };
-
-  // Handle input changes
-  // const handleChange = (e) => {
-  //   const { name, value } = e.target;
-
-  //   setFormData((prev) => ({
-  //     ...prev,
-  //     [name]: value,
-  //   }));
-
-  //   // Clear field-level error when user starts typing
-  //   if (errors[name]) {
-  //     setErrors((prev) => ({
-  //       ...prev,
-  //       [name]: "",
-  //     }));
-  //   }
-
-  //   // PAN validation
-  //   if (formData.panNo && formData.panNo.trim() !== "") {
-  //     const panRegex = /^[A-Z]{5}[0-9]{4}[A-Z]{1}$/;
-  //     if (!panRegex.test(formData.panNo)) {
-  //       newErrors.panNo = "Please enter a valid PAN number";
-  //       hasErrors = true;
-  //     }
-  //   }
-
-  //   // Live email validation
-  //   if (name === "email") {
-  //     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-
-  //     if (!emailRegex.test(value) && value.trim() !== "") {
-  //       setErrors((prev) => ({
-  //         ...prev,
-  //         email: "Please enter a valid email address",
-  //       }));
-  //     } else {
-  //       setErrors((prev) => ({
-  //         ...prev,
-  //         email: "",
-  //       }));
-  //     }
-  //   }
-  // };
-  const toCamelCase = (text) => {
-    return text
-      .toLowerCase()
-      .split(" ")
-      .map((word, index) =>
-        index === 0 ? word : word.charAt(0).toUpperCase() + word.slice(1),
-      )
-      .join("");
-  };
-  const toTitleCase = (text = "") => {
-    return text
-      .toLowerCase()
-      .trim()
-      .split(/\s+/)
-      .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
-      .join(" ");
-  };
   const handleChange = (e) => {
     const { name, value } = e.target;
 
@@ -446,35 +312,6 @@ const AddCustProfile = () => {
     }
   };
 
-  const handlePanFileChange = (e) => {
-    const file = e.target.files[0];
-    if (file) {
-      setFormData((prev) => ({
-        ...prev,
-        panFile: file,
-      }));
-    }
-  };
-
-  const handleAdharFileChange = (e) => {
-    const file = e.target.files[0];
-    if (file) {
-      setFormData((prev) => ({
-        ...prev,
-        aadharFile: file,
-      }));
-    }
-  };
-
-  // Handle file upload
-  const handleFileChange = (e) => {
-    const { name, files } = e.target;
-    setFormData((prev) => ({
-      ...prev,
-      [name]: files[0],
-    }));
-  };
-
   const handleFileChange1 = (e) => {
     const { name, files } = e.target;
     setFormData((prev) => ({
@@ -505,7 +342,8 @@ const AddCustProfile = () => {
               Corresponding_Pincode: prevData.Permanent_Pincode,
               Corresponding_State: prevData.Permanent_State,
               Corresponding_City: prevData.Permanent_City,
-              Corresponding_Country: prevData.Permanent_Country,
+            Corresponding_Country: prevData.Permanent_Country,
+              Corresponding_Area: prevData.Permanent_Area
             }
           : {
               // ❌ Clear Corresponding when unchecked (optional)
@@ -535,13 +373,160 @@ const AddCustProfile = () => {
   const { loginUser } = useAuth();
 
   console.log("Logged in user:", loginUser);
+
+  const requiredFields = {
+  // 🔴 Personal Info
+  // panNo: "PAN No",
+  aadhar: "Aadhar Number",
+  printName: "Print Name",
+  email: "Email Id",
+  mobile: "Mobile No",
+  dob: "Date of Birth",
+  gender: "Gender",
+  marital: "marital",
+  partyType: "partyType",
+  occupation: "occupation",
+  firstName: "firstName",
+  lastName: "lastName",
+    pep: "PEP Status",
+  
+
+  // 🔴 Permanent Address
+  Permanent_Address: "Permanent Address",
+  Permanent_Area: "Area",
+  Permanent_City: "City",
+  Permanent_State: "State",
+  Permanent_Pincode: "Pincode",
+
+  Corresponding_Address: "Current Address",
+  Corresponding_Area: "Area",
+  Corresponding_City: "City",
+  Corresponding_State: "State",
+  Corresponding_Pincode: "Pincode",
+
+  // 🔴 Nominee
+  Nominee_NomineeName: "Nominee Name",
+  Nominee_Relation: "Nominee Relation",
+  Nominee_Address: "Nominee Address",
+  Nominee_State: "Nominee State",
+  Nominee_City: "Nominee City",
+
+  // 🔴 Additional Docs
+  Additional_AddressProof: "Address Proof",
+  Additional_IDProof: "ID Proof",
+  Additional_UploadDocumentFile1: "Address Proof Document",
+  Additional_UploadDocumentFile2: "ID Proof Document",
+};
+
+  const validateRequiredFields = () => {
+  let errors = {};
+  let messages = [];
+
+  // 🔹 Required fields check
+  Object.entries(requiredFields).forEach(([field, label]) => {
+    if (!formData[field] || formData[field].toString().trim() === "") {
+      errors[field] = `${label} is required`;
+      messages.push(`${label} is required`);
+    }
+  });
+
+  // 🔹 Email validation
+  if (formData.email) {
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(formData.email)) {
+      errors.email = "Invalid email format";
+      messages.push("Invalid email format");
+    }
+  }
+
+  // 🔹 Mobile validation
+  if (formData.mobile) {
+    const mobileRegex = /^[6-9]\d{9}$/;
+    if (!mobileRegex.test(formData.mobile)) {
+      errors.mobile = "Invalid mobile number";
+      messages.push("Mobile must be 10 digits & start with 6-9");
+    }
+    }
+    
+    if (
+  formData.mobile &&
+  formData.altMobile &&
+  formData.mobile === formData.altMobile
+) {
+  errors.altMobile = "Alternate mobile must be different from mobile";
+  messages.push("Mobile and Alternate Mobile cannot be the same");
+}
+
+  // 🔹 PAN validation
+  if (formData.panNo) {
+    const panRegex = /^[A-Z]{5}[0-9]{4}[A-Z]{1}$/;
+    if (!panRegex.test(formData.panNo)) {
+      errors.panNo = "Invalid PAN format";
+      messages.push("Invalid PAN format (ABCDE1234F)");
+    }
+  }
+
+  // 🔹 Aadhar validation
+  if (formData.aadhar) {
+    const aadharRegex = /^\d{12}$/;
+    if (!aadharRegex.test(formData.aadhar)) {
+      errors.aadhar = "Aadhar must be 12 digits";
+      messages.push("Aadhar must be 12 digits");
+    }
+  }
+
+  // 🔹 File validations
+  if (!formData.profileImage) {
+    errors.profileImage = "Customer photo required";
+    messages.push("Customer photo is required");
+  }
+
+  if (!formData.signature) {
+    errors.signature = "Signature required";
+    messages.push("Customer signature is required");
+  }
+
+  // 🔹 PEP restriction
+  if (formData.pep === "yes") {
+    errors.pep = "PEP not allowed";
+    messages.push("PEP customers are not allowed");
+  }
+
+  setErrors(errors);
+
+  // 🔥 Focus first error
+  const firstErrorField = Object.keys(errors)[0];
+  if (firstErrorField) {
+    document.querySelector(`[name="${firstErrorField}"]`)?.focus();
+  }
+
+  return {
+    isValid: Object.keys(errors).length === 0,
+    messages,
+  };
+};
+
+  
   const handleSubmit = async () => {
     debugger;
+      setLoading(true);
     try {
       // Validate all required fields before submission
-      if (!validateRequiredFields()) {
-        alert("❌ Please fill all required fields");
-        return; // ⛔ STOP execution
+     const validation = validateRequiredFields();
+
+if (!validation.isValid) {
+  alert("❌ " + validation.messages[0]); // ✅ show FIRST error only
+  return;
+}
+      if (!formData.profileImage) {
+        alert("❌ Customer photo is required");
+        return;
+      }
+
+      // ✅ 🆕 Signature validation
+      if (!formData.signature) {
+        alert("❌ Customer signature is required");
+        return;
       }
 
       if (formData.pep === "yes") {
@@ -617,18 +602,27 @@ const AddCustProfile = () => {
         } else {
           await addBankDetails(customerId);
         }
-
+       setLoading(false);
         navigate("/Customer-Profile-List");
       } else {
         alert(
-          "❌ Something went wrong: " +
+          " Something went wrong: " +
             (response.data.message || "Unknown error"),
         );
+        setLoading(false);
       }
-    } catch (error) {
-      console.error("❌ Error submitting form:", error);
-      alert("An error occurred while saving the customer.");
-    }
+    }catch (error) {
+  console.error("❌ Error submitting form:", error);
+
+  // ✅ Extract backend message safely
+  const backendMessage =
+    error?.response?.data?.message ||
+    error?.response?.data?.error ||
+    "An error occurred while saving the customer.";
+
+      alert("❌ " + backendMessage);
+        setLoading(false);
+}
   };
 
   const addBankDetails = async (customerId) => {
@@ -680,15 +674,7 @@ const AddCustProfile = () => {
     }
   };
 
-  const splitFullName = (fullName) => {
-    const parts = fullName.trim().split(" ");
-
-    return {
-      firstName: parts[0] || "",
-      middleName: parts.length === 3 ? parts[1] : "",
-      lastName: parts.length === 3 ? parts[2] : parts[1] || "",
-    };
-  };
+  
 
   const verifyPan = async () => {
     debugger;
@@ -696,7 +682,7 @@ const AddCustProfile = () => {
       alert("Enter PAN Number");
       return;
     }
-
+   setLoading(true);
     try {
       const res = await axios.post(`${API}/kyc/pan/verify`, {
         pan: formData.panNo,
@@ -745,9 +731,11 @@ const AddCustProfile = () => {
       }));
       setAdharMaskingData(lastFourDigits);
       alert(`PAN Verified!`);
+      setLoading(false);
     } catch (error) {
       console.error("Verification Error:", error);
       alert("PAN Verification Failed");
+       setLoading(false);
     }
   };
 
@@ -907,41 +895,43 @@ const AddCustProfile = () => {
   return (
     <div>
       <div className="flex justify-center sticky top-0 md:top-[50px] z-40 px-4">
-        <div className="flex flex-col md:flex-row items-center justify-between w-full max-w-[1462px] min-h-[40px]  md:py-0  md:px-6 border  border-gray-200 shadow bg-white gap-4">
+        <div className="flex flex-col md:flex-row items-center justify-between w-full max-w-[1462px] min-h-[40px]  md:py-0  md:px-6 border  border-gray-200  bg-white gap-4">
           {/* Left heading */}
           <h2
             style={{
               fontFamily: "Source Sans 3, sans-serif",
               fontWeight: 700,
-              fontSize: "clamp(16px, 4vw, 20px)", // Fluid typography
+              fontSize: "clamp(16px, 4vw, 20px)",
               lineHeight: "148%",
             }}
             className="text-red-600 whitespace-nowrap"
           >
-            Add Customer Profile Form
+            {modedata === "edit"
+              ? "Edit Customer Profile Form"
+              : "Add Customer Profile Form"}
           </h2>
 
           {/* Right section (search + buttons) */}
           <div className="flex flex-wrap items-center justify-center md:justify-end gap-4 md:gap-6 w-full md:w-auto">
             {/* Bad Debtor Checkbox */}
-           <label className="flex items-center gap-2 font-['Roboto'] text-xs">
-  <span className="font-['Roboto'] text-xs text-[#000000]">
-    Mobile access
-  </span>
+            <label className="flex items-center gap-2 font-['Roboto'] text-xs">
+              <span className="font-['Roboto'] text-xs text-[#000000]">
+                Mobile access
+              </span>
 
-  <input
-    type="checkbox"
-    name="access"
-    className="accent-[#0A2478]"
-    checked={formData.access === "Yes"}
-    onChange={(e) =>
-      setFormData({
-        ...formData,
-        access: e.target.checked ? "Yes" : "No",
-      })
-    }
-  />
-</label>
+              <input
+                type="checkbox"
+                name="access"
+                className="accent-[#0A2478]"
+                checked={formData.access === "Yes"}
+                onChange={(e) =>
+                  setFormData({
+                    ...formData,
+                    access: e.target.checked ? "Yes" : "No",
+                  })
+                }
+              />
+            </label>
             <div className="flex items-center gap-2">
               <label
                 htmlFor="badDebtor"
@@ -992,7 +982,7 @@ const AddCustProfile = () => {
 
       {/* personal information */}
       <div className="flex mx-auto  w-[1462px]">
-        <div className="bg-[#FFE6E6] pl-5 pr-5 rounded-md w-full mx-auto ">
+        <div className="bg-[#FFE6E6] pl-2 pr-2  w-full mx-auto ">
           <p className="font-[Source_Sans_3] font-bold text-[24px] leading-[100%] tracking-[0.03em] text-[#0A2478] mt-1">
             Personal Information
           </p>
@@ -1002,9 +992,7 @@ const AddCustProfile = () => {
               <div className="flex flex-row items-start gap-4 w-full overflow-x-auto pb-2">
                 {/* 1. PAN Number */}
                 <div className="flex flex-col flex-shrink-0">
-                  <label className="text-[14px] font-medium">
-                    PAN No <span className="text-red-500">*</span>
-                  </label>
+                  <label className="text-[14px] font-medium">PAN No.</label>
                   <div className="flex items-stretch  w-[170px] h-[30px]">
                     <div className="relative flex-1">
                       <input
@@ -1013,9 +1001,7 @@ const AddCustProfile = () => {
                         name="panNo"
                         value={formData.panNo}
                         onChange={handleChange}
-                        className={`border border-r-0 rounded-l-[8px] px-2 w-full h-full focus:outline-none focus:ring-1 focus:ring-blue-500 bg-white text-xs ${
-                          errors.panNo ? "border-red-500" : "border-gray-300"
-                        }`}
+                        className={`border border-r-0 rounded-l-[8px] px-2 w-full h-full focus:outline-none focus:ring-1 focus:ring-blue-500 bg-white text-xs `}
                       />
                       <FaPaperclip
                         className="absolute right-2 top-1/2 -translate-y-1/2 text-gray-400 cursor-pointer"
@@ -1031,17 +1017,17 @@ const AddCustProfile = () => {
                       Verify
                     </button>
                   </div>
-                  {errors.panNo && (
+                  {/* {errors.panNo && (
                     <p className="text-red-500 text-[11px] mt-1">
                       {errors.panNo}
                     </p>
-                  )}
+                  )} */}
                 </div>
 
                 {/* 2. Aadhaar Number */}
                 <div className="flex flex-col flex-shrink-0">
                   <label className="text-[14px] font-medium">
-                    Aadhar <span className="text-red-500">*</span>
+                    Aadhar No <span className="text-red-500">*</span>
                   </label>
                   <div className="flex items-stretch  w-[180px] h-[30px]">
                     <div className="relative flex-1">
@@ -1051,9 +1037,7 @@ const AddCustProfile = () => {
                         name="aadhar"
                         value={formData.aadhar}
                         onChange={handleChange}
-                        className={`border border-r-0 rounded-l-[8px] px-2 w-full h-full focus:outline-none focus:ring-1 focus:ring-blue-500 bg-white text-xs ${
-                          errors.aadhar ? "border-red-500" : "border-gray-300"
-                        }`}
+                        className={`border border-r-0 rounded-l-[8px] px-2 w-full h-full focus:outline-none focus:ring-1 focus:ring-blue-500 bg-white text-xs `}
                       />
                       <FaPaperclip
                         className="absolute right-2 top-1/2 -translate-y-1/2 text-gray-400 cursor-pointer"
@@ -1069,11 +1053,11 @@ const AddCustProfile = () => {
                       verify
                     </button>
                   </div>
-                  {errors.aadhar && (
+                  {/* {errors.aadhar && (
                     <p className="text-red-500 text-[11px] mt-1">
                       {errors.aadhar}
                     </p>
-                  )}
+                  )} */}
                 </div>
 
                 {/* 3. Print Name */}
@@ -1087,15 +1071,13 @@ const AddCustProfile = () => {
                     value={formData.printName}
                     onChange={handleChange}
                     placeholder="Customer Full Name"
-                    className={`border px-2  w-[180px] h-[30px] rounded-[8px] bg-white text-xs focus:outline-none ${
-                      errors.printName ? "border-red-500" : "border-gray-300"
-                    }`}
+                    className={`border px-2  w-[180px] h-[30px] rounded-[8px] bg-white text-xs focus:outline-none `}
                   />
-                  {errors.printName && (
+                  {/* {errors.printName && (
                     <p className="text-red-500 text-[11px] mt-1">
                       {errors.printName}
                     </p>
-                  )}
+                  )} */}
                 </div>
 
                 {/* 4. Email Id */}
@@ -1109,19 +1091,17 @@ const AddCustProfile = () => {
                     value={formData.email}
                     onChange={handleChange}
                     placeholder="Enter Email"
-                    className={`border rounded-[8px] px-2  w-[150px] h-[30px] bg-white text-xs focus:outline-none ${
-                      errors.email ? "border-red-500" : "border-gray-300"
-                    }`}
+                    className={`border rounded-[8px] px-2  w-[150px] h-[30px] bg-white text-xs focus:outline-none `}
                   />
-                  {errors.email && (
+                  {/* {errors.email && (
                     <p className="text-red-500 text-[11px] mt-1">
                       {errors.email}
                     </p>
-                  )}
+                  )} */}
                 </div>
 
                 {/* 5. DOB */}
-                <div className="flex flex-col flex-shrink-0">
+                {/* <div className="flex flex-col flex-shrink-0">
                   <label className="text-[14px] font-medium">
                     DOB <span className="text-red-500">*</span>
                   </label>
@@ -1139,6 +1119,29 @@ const AddCustProfile = () => {
                       {errors.dob}
                     </p>
                   )}
+                </div> */}
+                <div className="flex flex-col flex-shrink-0">
+                  <label className="text-[14px] font-medium">
+                    Date of Birth <span className="text-red-500">*</span>
+                  </label>
+
+                  <input
+                    type="date"
+                    name="dob"
+                    value={
+                      formData.dob
+                        ? formData.dob.split("T")[0] // ✅ convert here directly
+                        : ""
+                    }
+                    onChange={handleChange}
+                    className={`border rounded-[8px] px-2 w-[120px] h-[30px] bg-white text-xs focus:outline-none `}
+                  />
+
+                  {/* {errors?.dob && (
+                    <p className="text-red-500 text-[11px] mt-1">
+                      {errors.dob}
+                    </p>
+                  )} */}
                 </div>
                 <div className="flex flex-col flex-shrink-0">
                   <label className="text-[14px] font-medium">
@@ -1159,7 +1162,7 @@ const AddCustProfile = () => {
                         isMobileVerified
                           ? "bg-gray-100 cursor-not-allowed"
                           : "bg-white"
-                      } ${errors.mobile ? "border-red-500" : "border-gray-300"}`}
+                      } `}
                     />
 
                     <button
@@ -1177,11 +1180,11 @@ const AddCustProfile = () => {
                     </button>
                   </div>
 
-                  {errors.mobile && (
+                  {/* {errors.mobile && (
                     <p className="text-red-500 text-[11px] mt-1 font-medium">
                       {errors.mobile}
                     </p>
-                  )}
+                  )} */}
                 </div>
 
                 <div className="flex flex-col flex-shrink-0">
@@ -1236,11 +1239,11 @@ const AddCustProfile = () => {
                       errors.altMobile ? "border-red-500" : "border-gray-300"
                     }`}
                   />
-                  {errors.altMobile && (
+                  {/* {errors.altMobile && (
                     <p className="text-red-500 text-xs mt-1">
                       {errors.altMobile}
                     </p>
-                  )}
+                  )} */}
                 </div>
 
                 <div className="flex flex-col">
@@ -1269,22 +1272,20 @@ const AddCustProfile = () => {
                     name="gender"
                     value={formData.gender}
                     onChange={handleChange}
-                    className={`border rounded-[8px] px-1 text-xs h-[30px]  w-[100px] bg-white ${
-                      errors.gender ? "border-red-500" : "border-gray-300"
-                    }`}
+                    className={`border rounded-[8px] px-1 text-xs h-[30px]  w-[100px] bg-white `}
                   >
                     <option value="">Select</option>
                     <option value="Male">Male</option>
                     <option value="Female">Female</option>
                     <option value="Other">Other</option>
                   </select>
-                  {errors.gender && (
+                  {/* {errors.gender && (
                     <p className="text-red-500 text-xs mt-1">{errors.gender}</p>
-                  )}
+                  )} */}
                 </div>
                 <div className="flex flex-col">
                   <label className="text-[14px] font-medium">
-                    Marital Status
+                    Marital Status <span className="text-red-500">*</span>
                   </label>
                   <select
                     name="marital"
@@ -1298,7 +1299,9 @@ const AddCustProfile = () => {
                   </select>
                 </div>
                 <div className="flex flex-col">
-                  <label className="text-[14px] font-medium">Party Type</label>
+                  <label className="text-[14px] font-medium">
+                    Party Type <span className="text-red-500">*</span>
+                  </label>
                   <select
                     name="partyType"
                     value={formData.partyType}
@@ -1411,7 +1414,7 @@ const AddCustProfile = () => {
                 </div>
               </div>
 
-              <div className="flex items-end gap-4 w-full mt-1">
+              <div className="flex items-end gap-4 w-full mt-2">
                 <div className="flex flex-col ">
                   <label className="text-[14px] font-medium">
                     Occupation <span className="text-red-500">*</span>
@@ -1677,8 +1680,8 @@ const AddCustProfile = () => {
       )}
       <div className="flex justify-center gap-1">
         <div>
-          <div className="flex mx-auto w-[728px]">
-            <div className="bg-[#F7F7FF] p-1 rounded-md w-full mx-auto ">
+          <div className="flex mx-auto w-[745px]">
+            <div className="bg-[#F7F7FF] p-1  w-full mx-auto ">
               <p className="font-[Source_Sans_3] font-bold text-[24px] leading-[100%] tracking-[0.03em] text-[#0A2478]  ">
                 Permanent Address
               </p>
@@ -1698,17 +1701,13 @@ const AddCustProfile = () => {
                         value={formData.Permanent_Address}
                         onChange={handleChange}
                         placeholder="Address"
-                        className={`border px-1 text-xs h-[87px]  w-[312px] bg-white rounded-[8px] ${
-                          errors.Permanent_Address
-                            ? "border-red-500"
-                            : "border-gray-300"
-                        }`}
+                        className={`border px-1 text-xs h-[87px]  w-[312px] bg-white rounded-[8px] `}
                       />
-                      {errors.Permanent_Address && (
+                      {/* {errors.Permanent_Address && (
                         <p className="text-red-500 text-xs mt-1">
                           {errors.Permanent_Address}
                         </p>
-                      )}
+                      )} */}
                     </div>
                   </div>
                 </div>
@@ -1727,44 +1726,13 @@ const AddCustProfile = () => {
                         value={formData.Permanent_Area}
                         onChange={handleChange}
                         placeholder="Area"
-                        className={`border px-1 text-xs h-[30px]  w-[100px] rounded-[8px] bg-white ${
-                          errors.Permanent_Area
-                            ? "border-red-500"
-                            : "border-gray-300"
-                        }`}
+                        className={`border px-1 text-xs h-[30px]  w-[160px] rounded-[8px] bg-white `}
                       />
-                      {errors.Permanent_Area && (
+                      {/* {errors.Permanent_Area && (
                         <p className="text-red-500 text-xs mt-1">
                           {errors.Permanent_Area}
                         </p>
-                      )}
-                    </div>
-                    <div>
-                      <div className="">
-                        <div>
-                          <label className="text-[14px] font-medium">
-                            Pincode <span className="text-red-500">*</span>
-                          </label>
-                        </div>
-
-                        <input
-                          type="text"
-                          name="Permanent_Pincode"
-                          value={formData.Permanent_Pincode}
-                          onChange={handleChange}
-                          placeholder="Pincode"
-                          className={`border px-1 text-xs h-[30px]  w-[100px] rounded-[8px] bg-white ${
-                            errors.Permanent_Pincode
-                              ? "border-red-500"
-                              : "border-gray-300"
-                          }`}
-                        />
-                        {errors.Permanent_Pincode && (
-                          <p className="text-red-500 text-xs mt-1">
-                            {errors.Permanent_Pincode}
-                          </p>
-                        )}
-                      </div>
+                      )} */}
                     </div>
                     <div>
                       <div className="">
@@ -1780,17 +1748,37 @@ const AddCustProfile = () => {
                           value={formData.Permanent_City}
                           onChange={handleChange}
                           placeholder="City"
-                          className={`border px-1 text-xs h-[30px]  w-[110px] rounded-[8px] bg-white ${
-                            errors.Permanent_City
-                              ? "border-red-500"
-                              : "border-gray-300"
-                          }`}
+                          className={`border px-1 text-xs h-[30px]  w-[110px] rounded-[8px] bg-white `}
                         />
-                        {errors.Permanent_City && (
+                        {/* {errors.Permanent_City && (
                           <p className="text-red-500 text-xs mt-1">
                             {errors.Permanent_City}
                           </p>
-                        )}
+                        )} */}
+                      </div>
+                    </div>
+
+                    <div>
+                      <div className="">
+                        <div>
+                          <label className="text-[14px] font-medium">
+                            Pincode <span className="text-red-500">*</span>
+                          </label>
+                        </div>
+
+                        <input
+                          type="text"
+                          name="Permanent_Pincode"
+                          value={formData.Permanent_Pincode}
+                          onChange={handleChange}
+                          placeholder="Pincode"
+                          className={`border px-1 text-xs h-[30px]  w-[100px] rounded-[8px] bg-white `}
+                        />
+                        {/* {errors.Permanent_Pincode && (
+                          <p className="text-red-500 text-xs mt-1">
+                            {errors.Permanent_Pincode}
+                          </p>
+                        )} */}
                       </div>
                     </div>
                   </div>
@@ -1807,11 +1795,7 @@ const AddCustProfile = () => {
                           name="Permanent_State"
                           value={formData.Permanent_State}
                           onChange={handleChange}
-                          className={`border px-1 text-xs h-[30px]  w-[150px] bg-white rounded-[8px] ${
-                            errors.Permanent_State
-                              ? "border-red-500"
-                              : "border-gray-300"
-                          }`}
+                          className={`border px-1 text-xs h-[30px]  w-[150px] bg-white rounded-[8px] `}
                         >
                           <option value="">Select State</option>
                           <option value="Andhra Pradesh">Andhra Pradesh</option>
@@ -1861,11 +1845,11 @@ const AddCustProfile = () => {
                           <option value="Lakshadweep">Lakshadweep</option>
                           <option value="Puducherry">Puducherry</option>
                         </select>
-                        {errors.Permanent_State && (
+                        {/* {errors.Permanent_State && (
                           <p className="text-red-500 text-xs mt-1">
                             {errors.Permanent_State}
                           </p>
-                        )}
+                        )} */}
                       </div>
                     </div>
                     <div>
@@ -2013,7 +1997,7 @@ const AddCustProfile = () => {
                     />
                   </div>
                 </div>
-                <div>
+                {/* <div>
                   <div className="">
                     <div>
                       <label className="text-[14px] font-medium">
@@ -2039,15 +2023,15 @@ const AddCustProfile = () => {
                       </p>
                     )}
                   </div>
-                </div>
+                </div> */}
               </div>
 
               <div className="flex gap-3 mt-2"></div>
             </div>
           </div>
 
-          <div className="flex mx-auto  w-[728px]">
-            <div className="bg-[#FFE6E6]  p-1 rounded-md w-full mx-auto ">
+          <div className="flex mx-auto  w-[745px]">
+            <div className="bg-[#FFE6E6]  p-1  w-full mx-auto ">
               <p className="font-[Source_Sans_3] font-bold text-[24px] leading-[100%] tracking-[0.03em] text-[#0A2478]  ">
                 Additional Documents
               </p>
@@ -2090,7 +2074,7 @@ const AddCustProfile = () => {
                 {/* Address Details */}
                 <div className="flex flex-col">
                   <label className="text-[14px] font-medium">
-                    Any Details <span className="text-red-500">*</span>
+                    Any Details 
                   </label>
                   <input
                     type="text"
@@ -2176,7 +2160,7 @@ const AddCustProfile = () => {
                 </div>
                 <div className="flex flex-col">
                   <label className="text-[14px] font-medium">
-                    Any Details <span className="text-red-500">*</span>
+                    Any Details 
                   </label>
                   <input
                     type="text"
@@ -2235,7 +2219,7 @@ const AddCustProfile = () => {
                     value={formData.Additional_Reference2}
                     onChange={handleChange}
                     placeholder="Reference"
-                    className="border border-gray-300 px-1 text-xs h-[30px] mt-1 w-[150px]  mt-1  rounded-[8px] bg-white"
+                    className="border border-gray-300 px-1 text-xs h-[30px]  w-[150px]  mt-1  rounded-[8px] bg-white"
                   />
                 </div>
               </div>
@@ -2254,7 +2238,7 @@ const AddCustProfile = () => {
         </div>
         <div>
           <div className="flex mx-auto  w-[710px]">
-            <div className="bg-[#F7F7FF]  p-1 rounded-md w-full mx-auto ">
+            <div className="bg-[#F7F7FF]  p-1  w-full mx-auto ">
               <div className="flex justify-between">
                 <p className="font-[Source_Sans_3] font-bold text-[24px] leading-[100%] tracking-[0.03em] text-[#0A2478]  ">
                   Current Address
@@ -2269,7 +2253,7 @@ const AddCustProfile = () => {
                       className="accent-[#0A2478]"
                     />
                     <span className="text-[16px] text-red-700">
-                      Permanent Address same as Current Address?
+                      Current Address same as Permanent Address?
                     </span>
                   </label>
                 </p>
@@ -2295,7 +2279,7 @@ const AddCustProfile = () => {
                 <div>
                   <div>
                     <div className="flex gap-2">
-                      <div className="">
+                      {/* <div className="">
                         <div>
                           <label className="text-[14px] font-medium">
                             Area<span className="text-red-500">*</span>
@@ -2319,12 +2303,33 @@ const AddCustProfile = () => {
                             <option disabled>Loading areas...</option>
                           )}
                         </select>
+                      </div> */}
+                      <div className="">
+                        <div>
+                          <label className="text-[14px] font-medium">
+                            Area <span className="text-red-500">*</span>
+                          </label>
+                        </div>
+
+                        <input
+                          type="text"
+                          name="Corresponding_Area"
+                          value={formData.Corresponding_Area}
+                          onChange={handleChange}
+                          placeholder="Area"
+                          className={`border px-1 text-xs h-[30px]  w-[100px] rounded-[8px] bg-white `}
+                        />
+                        {/* {errors.Corresponding_Area && (
+                          <p className="text-red-500 text-xs mt-1">
+                            {errors.Corresponding_Area}
+                          </p>
+                        )} */}
                       </div>
 
                       <div className="">
                         <div>
                           <label className="text-[14px] font-medium">
-                            City
+                            City <span className="text-red-500">*</span>
                           </label>
                         </div>
 
@@ -2344,7 +2349,7 @@ const AddCustProfile = () => {
                         <div className="">
                           <div>
                             <label className="text-[14px] font-medium">
-                              Pincode*
+                              Pincode <span className="text-red-500">*</span>
                             </label>
                           </div>
 
@@ -2362,7 +2367,7 @@ const AddCustProfile = () => {
                         <div>
                           {" "}
                           <label className="text-[14px] font-medium">
-                            State
+                            State <span className="text-red-500">*</span>
                           </label>
                         </div>
 
@@ -2370,7 +2375,7 @@ const AddCustProfile = () => {
                           name="Corresponding_State"
                           value={formData.Corresponding_State}
                           onChange={handleChange}
-                          className="border border-gray-300 px-1 text-xs h-[30px] mt-1 w-[120px] bg-white rounded-[8px]"
+                          className="border border-gray-300 px-1 text-xs h-[30px] mt-1 w-[150px] bg-white rounded-[8px]"
                         >
                           <option value="">Select State</option>
                           <option value="Andhra Pradesh">Andhra Pradesh</option>
@@ -2449,119 +2454,12 @@ const AddCustProfile = () => {
           </div>
 
           <div className="flex mx-auto w-[710px]">
-            <div className="bg-[#FFE6E6] rounded-md w-full mx-auto p-1">
+            <div className="bg-[#FFE6E6] w-full mx-auto p-1">
               <p className="font-[Source_Sans_3] font-bold text-[24px] leading-[100%] tracking-[0.03em] text-[#0A2478]">
                 Nominee Details
               </p>
 
-              {/* <div className="flex gap-3">
-
-                
-            
-
-            <div>
-              <div className="">
-                <div>
-                  <label className="text-[14px] font-medium">
-                    Address <span className="text-red-500">*</span>
-                  </label>
-                </div>
-
-                <input
-                  type="text"
-                  name="Nominee_Address"
-                  value={formData.Nominee_Address}
-                  onChange={handleChange}
-                  placeholder="Address"
-                  className="border border-gray-300 px-1 text-xs h-[30px] mt-1 w-[300px] rounded-[8px] bg-white"
-                />
-              </div>
-                </div>
-               
-            
-
-          </div> */}
-              {/* <div className='flex gap-4 mt-2'>
-
-<div>
-              <div className=" ">
-                <div>
-                  <label className="text-[14px] font-medium">
-                    City <span className="text-red-500">*</span>
-                  </label>
-                </div>
-
-                <input
-                  type="text"
-                  name="Nominee_City"
-                  value={formData.Nominee_City}
-                  onChange={handleChange}
-                  placeholder="City"
-                  className="border border-gray-300 px-1 text-xs h-[30px] mt-1 w-[131px] rounded-[8px] bg-white"
-                />
-              </div>
-            </div>
-            <div>
-              <div className="">
-                <div>
-                  {" "}
-                  <label className="text-[14px] font-medium">
-                    State <span className="text-red-500">*</span>
-                  </label>
-                </div>
-
-                <select
-                  name="Nominee_State"
-                  value={formData.Nominee_State}
-                  onChange={handleChange}
-                  className="border border-gray-300 px-1 text-xs h-[30px] mt-1 w-[220px] bg-white rounded-[8px]"
-                >
-                  <option value="">Select State</option>
-                  <option value="Andhra Pradesh">Andhra Pradesh</option>
-                  <option value="Arunachal Pradesh">Arunachal Pradesh</option>
-                  <option value="Assam">Assam</option>
-                  <option value="Bihar">Bihar</option>
-                  <option value="Chhattisgarh">Chhattisgarh</option>
-                  <option value="Goa">Goa</option>
-                  <option value="Gujarat">Gujarat</option>
-                  <option value="Haryana">Haryana</option>
-                  <option value="Himachal Pradesh">Himachal Pradesh</option>
-                  <option value="Jharkhand">Jharkhand</option>
-                  <option value="Karnataka">Karnataka</option>
-                  <option value="Kerala">Kerala</option>
-                  <option value="Madhya Pradesh">Madhya Pradesh</option>
-                  <option value="Maharashtra">Maharashtra</option>
-                  <option value="Manipur">Manipur</option>
-                  <option value="Meghalaya">Meghalaya</option>
-                  <option value="Mizoram">Mizoram</option>
-                  <option value="Nagaland">Nagaland</option>
-                  <option value="Odisha">Odisha</option>
-                  <option value="Punjab">Punjab</option>
-                  <option value="Rajasthan">Rajasthan</option>
-                  <option value="Sikkim">Sikkim</option>
-                  <option value="Tamil Nadu">Tamil Nadu</option>
-                  <option value="Telangana">Telangana</option>
-                  <option value="Tripura">Tripura</option>
-                  <option value="Uttar Pradesh">Uttar Pradesh</option>
-                  <option value="Uttarakhand">Uttarakhand</option>
-                  <option value="West Bengal">West Bengal</option>
-                  <option value="Andaman and Nicobar Islands">
-                    Andaman and Nicobar Islands
-                  </option>
-                  <option value="Chandigarh">Chandigarh</option>
-                  <option value="Dadra and Nagar Haveli and Daman and Diu">
-                    Dadra and Nagar Haveli and Daman and Diu
-                  </option>
-                  <option value="Delhi">Delhi</option>
-                  <option value="Jammu and Kashmir">Jammu and Kashmir</option>
-                  <option value="Ladakh">Ladakh</option>
-                  <option value="Lakshadweep">Lakshadweep</option>
-                  <option value="Puducherry">Puducherry</option>
-                </select>
-              </div>
-            </div>
-
-                </div> */}
+             
 
               <div className="flex gap-5">
                 <div>
@@ -2599,7 +2497,7 @@ const AddCustProfile = () => {
                           value={formData.Nominee_Relation}
                           onChange={handleChange}
                           placeholder="Relation"
-                          className="border border-gray-300 px-1 text-xs h-[30px] mt-1 w-[90px] rounded-[8px] bg-white"
+                          className="border border-gray-300 px-1 text-xs h-[30px] mt-1 w-[170px] rounded-[8px] bg-white"
                         />
                       </div>
                     </div>
@@ -2713,7 +2611,7 @@ const AddCustProfile = () => {
           </div>
 
           <div className="flex mx-auto  w-[710px]">
-            <div className="p-1 rounded-md w-full bg-[#F7F7FF]  flex gap-2">
+            <div className="p-1  w-full bg-[#F7F7FF]  flex gap-2">
               <p className="font-[Source_Sans_3] font-bold text-[20px] leading-none tracking-[0.03em] text-[#0A2478] mb-3">
                 Remark
               </p>
@@ -2740,7 +2638,7 @@ const AddCustProfile = () => {
       </div>
 
       <div className="  w-[1470px] ">
-        <div className=" bg-[#FFE6E6] ml-[35px] ">
+        <div className=" bg-[#FFE6E6] ml-[28px] ">
           <div>
             <CustBankDetails
               bankData={bankData}
@@ -2825,6 +2723,8 @@ const AddCustProfile = () => {
           </div>
         </div>
       )}
+
+      {loading && <Loader />}
     </div>
   );
 };

@@ -11,23 +11,33 @@ import envImg from "../assets/envImg.jpg";
 import goldlogo from "../assets/gold_print.svg";
 
 import { CgSoftwareUpload } from "react-icons/cg";
+import { FaSort, FaSortDown, FaSortUp } from "react-icons/fa";
 import { PiPrinterLight } from "react-icons/pi";
 import { RiMessage2Line } from "react-icons/ri";
 import { API } from "../api";
 import { formatIndianDate } from "../utils/Helpers";
-
+import { usePermission } from "../API/Context/PermissionContext";
+import Loader from "../Component/Loader";
 const LoanApplication = () => {
   useEffect(() => {
     document.title = "SLF | Loan Application";
   }, []);
 
+  const [branch, setBranch] = useState("");
+   const [financial_year, setFinancialYear] = useState("");
+const [loading, setLoading] = useState(false);
+  console.log("Financial Year from context:", financial_year);
+  const [branchId, setBranchId] = useState("");
+const { permissions, userData } = usePermission();
+
+  console.log("Branch from context:", branch, branchId);
   const navigate = useNavigate();
   const [isOpen, setIsOpen] = useState(false);
   const [selectedScheme, setSelectedScheme] = useState("");
   const [selectedDate, setSelectedDate] = useState(null);
   const [open, setOpen] = useState(false);
   const [isRemarkOpen, setIsRemarkOpen] = useState(false);
-  const [loading, setLoading] = useState(false);
+  // const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   const [deleteModalOpen, setDeleteModalOpen] = useState(false);
   const editor = useRef(null);
@@ -44,6 +54,10 @@ const LoanApplication = () => {
   const [uploadLoading, setUploadLoading] = useState(false);
   const [uploadedDocuments, setUploadedDocuments] = useState([]);
   const [documentsLoading, setDocumentsLoading] = useState(false);
+  const [sortConfig, setSortConfig] = useState({
+    key: "",
+    direction: "asc",
+  });
 
   // State for API data and pagination
   const [loanApplication, setLoanApplication] = useState([]);
@@ -52,7 +66,7 @@ const LoanApplication = () => {
     page: 1,
     totalPages: 1,
     total: 0,
-    limit: 10,
+    limit: 15,
   });
 
   const [filters, setFilters] = useState({
@@ -91,6 +105,32 @@ const LoanApplication = () => {
         : [...prev, headerId],
     );
   };
+
+  const handleSort = (key) => {
+    setSortConfig((prev) => {
+      let direction = "asc";
+
+      if (prev.key === key && prev.direction === "asc") {
+        direction = "desc";
+      }
+
+      return { key, direction };
+    });
+  };
+  useEffect(() => {
+    try {
+      const data = sessionStorage.getItem("userData");
+      const userData = data ? JSON.parse(data) : null;
+
+      if (userData) {
+        setBranch(userData.branchName || "");
+        setBranchId(userData.branchId || "");
+        setFinancialYear(userData.financialYear || "");
+      }
+    } catch (err) {
+      console.error("Error parsing userData:", err);
+    }
+  }, []);
   // Fetch active schemes from server
   useEffect(() => {
     let mounted = true;
@@ -156,6 +196,86 @@ const LoanApplication = () => {
     },
   });
 
+  // const fetchLoanApplications = async (
+  //   page = 1,
+  //   immediateFilters = null,
+  //   immediateDate = undefined,
+  //   immediateScheme = undefined,
+  // ) => {
+  //   setLoading(true);
+  //   setError("");
+
+  //   try {
+  //     const activeFilters =
+  //       immediateFilters !== null ? immediateFilters : filters;
+
+  //     const activeDate =
+  //       immediateDate !== undefined ? immediateDate : selectedDate;
+
+  //     const activeScheme =
+  //       immediateScheme !== undefined ? immediateScheme : selectedScheme;
+
+  //     const params = new URLSearchParams({
+  //       page: page.toString(),
+  //       limit: pagination.limit.toString(),
+  //       sortKey: sortConfig.key, // ✅ add this
+  //       sortOrder: sortConfig.direction,
+  //     });
+
+  //     // ----------------------------
+  //     // ✅ NORMAL FILTERS
+  //     // ----------------------------
+  //     Object.entries(activeFilters).forEach(([key, value]) => {
+  //       if (value && key !== "field" && key !== "search") {
+  //         params.append(key, value);
+  //       }
+  //     });
+
+  //     // ----------------------------
+  //     // ✅ MULTI HEADER SEARCH
+  //     // ----------------------------
+  //     if (searchQuery && searchHeaders.length > 0) {
+  //       params.append("search", searchQuery);
+  //       params.append("fields", searchHeaders.join(","));
+  //     }
+
+  //     // ----------------------------
+  //     // DATE FILTER
+  //     // ----------------------------
+  //     if (activeDate) {
+  //       // params.append("loan_date", activeDate.toISOString().split("T")[0]);
+  //       const year = activeDate.getFullYear();
+  //       const month = String(activeDate.getMonth() + 1).padStart(2, "0");
+  //       const day = String(activeDate.getDate()).padStart(2, "0");
+
+  //       const formattedDate = `${year}-${month}-${day}`;
+
+  //       params.append("loan_date", formattedDate);
+  //     }
+
+  //     const response = await apiClient.get(
+  //       `/Transactions/goldloan/all?${params.toString()}`,
+  //     );
+
+  //     if (response.data.success) {
+  //       setLoanApplication(response.data.data);
+  //       setPagination({
+  //         page: response.data.page,
+  //         totalPages: response.data.totalPages,
+  //         total: response.data.total,
+  //         limit: pagination.limit,
+  //       });
+  //     } else {
+  //       throw new Error(response.data.message || "No loan applications");
+  //     }
+  //   } catch (err) {
+  //     console.error("Error fetching loan applications:", err);
+  //     setError("No loan applications");
+  //     setLoanApplication([]);
+  //   } finally {
+  //     setLoading(false);
+  //   }
+  // };
   const fetchLoanApplications = async (
     page = 1,
     immediateFilters = null,
@@ -178,37 +298,31 @@ const LoanApplication = () => {
       const params = new URLSearchParams({
         page: page.toString(),
         limit: pagination.limit.toString(),
+        sortKey: sortConfig.key,
+        sortOrder: sortConfig.direction,
+        branch_id: branchId.id, // ✅ IMPORTANT
+         financial_year: financial_year,
       });
 
-      // ----------------------------
-      // ✅ NORMAL FILTERS
-      // ----------------------------
+      // filters
       Object.entries(activeFilters).forEach(([key, value]) => {
         if (value && key !== "field" && key !== "search") {
           params.append(key, value);
         }
       });
 
-      // ----------------------------
-      // ✅ MULTI HEADER SEARCH
-      // ----------------------------
+      // search
       if (searchQuery && searchHeaders.length > 0) {
         params.append("search", searchQuery);
         params.append("fields", searchHeaders.join(","));
       }
 
-      // ----------------------------
-      // DATE FILTER
-      // ----------------------------
+      // date filter
       if (activeDate) {
-        // params.append("loan_date", activeDate.toISOString().split("T")[0]);
         const year = activeDate.getFullYear();
         const month = String(activeDate.getMonth() + 1).padStart(2, "0");
         const day = String(activeDate.getDate()).padStart(2, "0");
-
-        const formattedDate = `${year}-${month}-${day}`;
-
-        params.append("loan_date", formattedDate);
+        params.append("loan_date", `${year}-${month}-${day}`);
       }
 
       const response = await apiClient.get(
@@ -223,22 +337,29 @@ const LoanApplication = () => {
           total: response.data.total,
           limit: pagination.limit,
         });
+        setLoading(false);
       } else {
-        throw new Error(response.data.message || "No loan applications");
+        setLoading(false);
+        throw new Error(response.data.message);
+         
       }
     } catch (err) {
-      console.error("Error fetching loan applications:", err);
+      console.error(err);
       setError("No loan applications");
+      setLoading(false);
       setLoanApplication([]);
     } finally {
       setLoading(false);
     }
   };
-
+  // useEffect(() => {
+  //   fetchLoanApplications();
+  // }, [sortConfig, branchId]);
   useEffect(() => {
-    fetchLoanApplications();
-  }, []);
-
+    if (branchId) {
+      fetchLoanApplications(1);
+    }
+  }, [branchId, sortConfig]);
   // Handle filter changes - only update state, don't call API
   const handleFilterChange = (key, value) => {
     setFilters((prev) => ({
@@ -247,35 +368,6 @@ const LoanApplication = () => {
     }));
   };
 
-  // Handle search button click - call API with updated filters
-  const handleSearch = () => {
-    if (filters.field && filters.search) {
-      const searchValue = filters.search;
-      const fieldMappings = {
-        loan_no: "loan_no",
-        party_name: "party_name",
-        added_by: "added_by",
-        approved_by: "approved_by",
-        Scheme: "scheme", // ⭐ New
-      };
-
-      if (fieldMappings[filters.field]) {
-        const updatedFilters = {
-          ...filters,
-          [fieldMappings[filters.field]]: searchValue,
-        };
-
-        setFilters(updatedFilters);
-        // Pass the updated filters directly to the API call
-        fetchLoanApplications(1, updatedFilters, selectedDate, selectedScheme);
-      }
-    } else {
-      // If no search criteria, just refresh with current filters
-      fetchLoanApplications(1, filters, selectedDate, selectedScheme);
-    }
-  };
-
-  // Handle status filter change - immediate API call with new status
   const handleStatusFilterChange = (status) => {
     const updatedFilters = {
       ...filters,
@@ -287,16 +379,7 @@ const LoanApplication = () => {
     fetchLoanApplications(1, updatedFilters, selectedDate, selectedScheme);
   };
 
-  // Scheme selection - immediate API call with new scheme
-  const handleSchemeSelect = (schemeLabel) => {
-    setSelectedScheme(schemeLabel);
-    setIsOpen(false);
 
-    // Pass scheme directly as override parameter
-    fetchLoanApplications(1, filters, selectedDate, schemeLabel);
-  };
-
-  // Date selection - immediate API call with new date
   const handleDateSelect = (date) => {
     setSelectedDate(date);
     setOpen(false);
@@ -312,14 +395,6 @@ const LoanApplication = () => {
     fetchLoanApplications(1, filters, null, selectedScheme);
   };
 
-  // Clear scheme filter
-  const clearSchemeFilter = () => {
-    setSelectedScheme("");
-    // Pass empty string to ensure scheme is cleared
-    fetchLoanApplications(1, filters, selectedDate, "");
-  };
-
-  // Clear all filters
   const clearAllFilters = () => {
     const clearedFilters = {
       status: "",
@@ -348,6 +423,7 @@ const LoanApplication = () => {
   // Fetch uploaded documents for a loan
   const fetchLoanDocuments = async (loanId) => {
     setDocumentsLoading(true);
+    setLoading(true);
     try {
       const response = await apiClient.get(
         `/Transactions/get-loan-documents/${loanId}`,
@@ -355,13 +431,17 @@ const LoanApplication = () => {
 
       if (response.data.success) {
         setUploadedDocuments(response.data.data || []);
+         setLoading(false);
       } else {
+         setLoading(false);
         throw new Error(response.data.message || "Failed to fetch documents");
       }
     } catch (err) {
+       setLoading(false);
       console.error("Error fetching loan documents:", err);
       setUploadedDocuments([]);
     } finally {
+       setLoading(false);
       setDocumentsLoading(false);
     }
   };
@@ -406,6 +486,7 @@ const LoanApplication = () => {
 
   // Handle delete confirmation using Axios
   const handleDeleteConfirm = async () => {
+     setLoading(true);
     if (!selectedCancelLoan) return;
 
     const plainTextRemark = cancelRemark;
@@ -445,7 +526,9 @@ const LoanApplication = () => {
         setCancelRemark("");
         setSuccessMessage("Loan application cancelled successfully");
         setTimeout(() => setSuccessMessage(""), 3000);
+         setLoading(false);
       } else {
+         setLoading(false);
         throw new Error(
           response.data.message || "Failed to cancel loan application",
         );
@@ -458,8 +541,9 @@ const LoanApplication = () => {
         errorMessage =
           err.response.data?.message || `Server error: ${err.response.status}`;
         if (err.response.status === 400) {
-          errorMessage = `Bad Request: ${err.response.data?.message || "Invalid data sent to server"
-            }`;
+          errorMessage = `Bad Request: ${
+            err.response.data?.message || "Invalid data sent to server"
+          }`;
         }
       } else if (err.request) {
         errorMessage = "No response from server. Please check your connection.";
@@ -468,7 +552,9 @@ const LoanApplication = () => {
       }
 
       alert(`Error: ${errorMessage}`);
+       setLoading(false);
     } finally {
+       setLoading(false);
       setCancelLoading(false);
     }
   };
@@ -501,7 +587,7 @@ const LoanApplication = () => {
       alert("Please enter a file description");
       return;
     }
-
+ setLoading(true);
     setUploadLoading(true);
     try {
       const formData = new FormData();
@@ -533,6 +619,7 @@ const LoanApplication = () => {
         if (fileInput) fileInput.value = "";
 
         setTimeout(() => setSuccessMessage(""), 3000);
+         setLoading(false);
       } else {
         throw new Error(response.data.message || "Upload failed");
       }
@@ -551,8 +638,10 @@ const LoanApplication = () => {
       }
 
       alert(`Error: ${errorMessage}`);
+      setLoading(false);
     } finally {
       setUploadLoading(false);
+      setLoading(false);
     }
   };
 
@@ -628,98 +717,66 @@ const LoanApplication = () => {
     const totalPages = pagination.totalPages;
     const currentPage = pagination.page;
 
+    const pageLimit = 2; // how many pages before/after current
+
+    // ✅ Previous Button
     buttons.push(
       <button
         key="prev"
-        className="px-3 py-1 border rounded-md disabled:opacity-50 disabled:cursor-not-allowed"
         onClick={() => handlePageChange(currentPage - 1)}
         disabled={currentPage === 1}
+        className="px-3 py-1 border rounded-md disabled:opacity-50"
       >
         Previous
       </button>,
     );
 
-    if (totalPages <= 5) {
-      for (let i = 1; i <= totalPages; i++) {
-        buttons.push(
-          <button
-            key={i}
-            className={`px-3 py-1 border rounded-md ${currentPage === i
-              ? "bg-[#0b2c69] text-white"
-              : "hover:bg-gray-100"
-              }`}
-            onClick={() => handlePageChange(i)}
-          >
-            {i}
-          </button>,
-        );
-      }
-    } else {
-      buttons.push(
-        <button
-          key={1}
-          className={`px-3 py-1 border rounded-md ${currentPage === 1 ? "bg-[#0b2c69] text-white" : "hover:bg-gray-100"
-            }`}
-          onClick={() => handlePageChange(1)}
-        >
-          1
-        </button>,
-      );
+    // ✅ Helper to create page button
+    const createPageButton = (page) => (
+      <button
+        key={page}
+        onClick={() => handlePageChange(page)}
+        className={`px-3 py-1 border rounded-md ${
+          currentPage === page ? "bg-[#0b2c69] text-white" : "hover:bg-gray-100"
+        }`}
+      >
+        {page}
+      </button>
+    );
 
-      if (currentPage > 3) {
-        buttons.push(
-          <span key="ellipsis1" className="px-2 py-1">
-            ...
-          </span>,
-        );
-      }
+    // ✅ Always show first page
+    buttons.push(createPageButton(1));
 
-      const startPage = Math.max(2, currentPage - 1);
-      const endPage = Math.min(totalPages - 1, currentPage + 1);
-
-      for (let i = startPage; i <= endPage; i++) {
-        buttons.push(
-          <button
-            key={i}
-            className={`px-3 py-1 border rounded-md ${currentPage === i
-              ? "bg-[#0b2c69] text-white"
-              : "hover:bg-gray-100"
-              }`}
-            onClick={() => handlePageChange(i)}
-          >
-            {i}
-          </button>,
-        );
-      }
-
-      if (currentPage < totalPages - 2) {
-        buttons.push(
-          <span key="ellipsis2" className="px-2 py-1">
-            ...
-          </span>,
-        );
-      }
-
-      buttons.push(
-        <button
-          key={totalPages}
-          className={`px-3 py-1 border rounded-md ${currentPage === totalPages
-            ? "bg-[#0b2c69] text-white"
-            : "hover:bg-gray-100"
-            }`}
-          onClick={() => handlePageChange(totalPages)}
-        >
-          {totalPages}
-        </button>,
-      );
+    // ✅ Left Ellipsis
+    if (currentPage > pageLimit + 2) {
+      buttons.push(<span key="left-ellipsis">...</span>);
     }
 
+    // ✅ Middle Pages
+    const start = Math.max(2, currentPage - pageLimit);
+    const end = Math.min(totalPages - 1, currentPage + pageLimit);
+
+    for (let i = start; i <= end; i++) {
+      buttons.push(createPageButton(i));
+    }
+
+    // ✅ Right Ellipsis
+    if (currentPage < totalPages - pageLimit - 1) {
+      buttons.push(<span key="right-ellipsis">...</span>);
+    }
+
+    // ✅ Always show last page
+    if (totalPages > 1) {
+      buttons.push(createPageButton(totalPages));
+    }
+
+    // ✅ Next Button
     buttons.push(
       <button
         key="next"
-        className="px-3 py-1 border rounded-md disabled:opacity-50 disabled:cursor-not-allowed"
         onClick={() => handlePageChange(currentPage + 1)}
         disabled={currentPage === totalPages}
+        className="px-3 py-1 border rounded-md disabled:opacity-50"
       >
         Next
       </button>,
@@ -742,20 +799,12 @@ const LoanApplication = () => {
     fetchLoanApplications(1, updatedFilters);
   };
 
-  const allHeaderIds = [
-    "id",
-    "Print_Name",
-    "Scheme",
-    "Loan_amount",
-    
-  ];
-
+  const allHeaderIds = ["id", "Print_Name", "Scheme", "Net_Payable"];
 
   const handleSelectAll = () => {
     const allSelected = allHeaderIds.every((id) => searchHeaders.includes(id));
     setSearchHeaders(allSelected ? [] : [...allHeaderIds]);
   };
-
 
   return (
     <div>
@@ -776,8 +825,6 @@ const LoanApplication = () => {
 
           <div className="flex gap-3">
             <div className="flex gap-5 items-center">
-
-
               <div className="flex items-center gap-3">
                 <div className="flex items-center bg-white border border-gray-400 rounded-[5px] h-[32px] px-2 relative w-[380px]">
                   {/* Multi-Select Header Dropdown */}
@@ -792,14 +839,15 @@ const LoanApplication = () => {
 
                     {isDropdownOpen && (
                       <div className="absolute top-[35px] left-[-8px] bg-white border border-gray-300 shadow-xl rounded-md z-[100] w-[160px] p-2">
-
                         <button
                           onClick={handleSelectAll}
                           className="flex items-center gap-2 p-2 hover:bg-blue-50 cursor-pointer rounded border-b border-gray-200 mb-1"
                         >
                           <input
                             type="checkbox"
-                            checked={allHeaderIds.every((id) => searchHeaders.includes(id))}
+                            checked={allHeaderIds.every((id) =>
+                              searchHeaders.includes(id),
+                            )}
                             onChange={handleSelectAll}
                             className="w-3 h-3 accent-[#0A2478]"
                           />
@@ -812,7 +860,7 @@ const LoanApplication = () => {
                           { id: "id", label: "Loan No" },
                           { id: "Print_Name", label: "Party Name" },
                           { id: "Scheme", label: "Scheme" },
-                          { id: "Loan_amount", label: "Loan Amount" },
+                          { id: "Net_Payable", label: "Loan Amount" },
                         ].map((col) => (
                           <label
                             key={col.id}
@@ -953,18 +1001,21 @@ const LoanApplication = () => {
                 Object.values(filters).some(
                   (val) => val && val !== "field" && val !== "search",
                 )) && (
-                  <button
-                    onClick={clearAllFilters}
-                    className="ml-2 bg-[#0b2c69] text-white text-[11px] px-4 h-[24px] rounded-[3px] font-source hover:bg-[#071d45]"
-                  >
-                    Clear All
-                  </button>
-                )}
+                <button
+                  onClick={clearAllFilters}
+                  className="ml-2 bg-[#0b2c69] text-white text-[11px] px-4 h-[24px] rounded-[3px] font-source hover:bg-[#071d45]"
+                >
+                  Clear All
+                </button>
+              )}
             </div>
           </div>
 
           <div className="flex justify-center item-center gap-5">
-            <button
+            {(userData?.isAdmin||permissions?.Transaction?.find(
+  item => item.name === "Loan Application"
+)?.add) && (
+  <button
               style={{
                 width: "74px",
                 height: "24px",
@@ -976,6 +1027,8 @@ const LoanApplication = () => {
             >
               Add
             </button>
+)}
+           
             <button
               className="w-[74px] h-[24px] rounded-[3.75px] bg-[#C1121F] text-white text-[10px]"
               onClick={() => navigate("/")}
@@ -1022,8 +1075,8 @@ const LoanApplication = () => {
         </div>
       )}
 
-      <div className="flex ml-[30px]">
-        <div className="overflow-x-auto  w-[1290px] min-h-[500px]">
+      <div className="flex ml-[32px]">
+        <div className="overflow-x-auto  w-[1400px] min-h-[500px]">
           {loading ? (
             <div className="flex justify-center items-center h-64">
               <div className="text-lg text-gray-600">
@@ -1032,15 +1085,29 @@ const LoanApplication = () => {
             </div>
           ) : (
             <table className="w-full border-collapse  border-gray-300">
-              <thead className="bg-[#0A2478] text-white text-sm">
+              <thead className="bg-[#0A2478] text-white text-sm text-left">
                 <tr>
-                  <th className="px-1 py-1 border-r border-gray-300 text-[14px] w-[103px]">
+                  <th className="px-1 py-1 border-r border-gray-300 text-[14px] w-[120px]">
                     Loan No
                   </th>
-                  <th className="px-1 py-1 border-r border-gray-300 text-[14px] w-[350px]">
-                    Party Name
+                  <th
+                    className="px-1 py-1 border-r border-gray-300 text-[14px] w-[350px] flex justify-between"
+                    onClick={() => handleSort("Party_Name")}
+                  >
+                    Party Name{" "}
+                    {sortConfig.key !== "Party_Name" && (
+                      <FaSort className="text-gray-400 text-xs" />
+                    )}
+                    {sortConfig.key === "Party_Name" &&
+                      sortConfig.direction === "asc" && (
+                        <FaSortUp className="text-blue-600 text-xs" />
+                      )}
+                    {sortConfig.key === "Party_Name" &&
+                      sortConfig.direction === "desc" && (
+                        <FaSortDown className="text-blue-600 text-xs" />
+                      )}
                   </th>
-                  <th className="px-1 py-1 border-r border-gray-300 text-[14px] w-[101px]">
+                  <th className="px-1 py-1 border-r border-gray-300 text-sm w-[121px]">
                     Loan Date
                   </th>
                   <th className="px-1 py-1 border-r border-gray-300 text-[14px] w-[160px]">
@@ -1069,6 +1136,9 @@ const LoanApplication = () => {
                       </option>
                       <option value="Closed" className="text-black bg-white">
                         Closed
+                      </option>
+                      <option value="Auction" className="text-black bg-white">
+                        Auction
                       </option>
                     </select>
                   </th>
@@ -1177,20 +1247,30 @@ const LoanApplication = () => {
                         if (st === "approved") {
                           return (
                             <div className="flex gap-2 justify-center">
-                              <IconButton
+                               {(userData?.isAdmin||permissions?.Transaction?.find(
+  item => item.name === "Loan Applicationr"
+)?.Print) && (
+   <IconButton
                                 onClick={goPrint(row)}
                                 title="Print"
                                 bg="bg-blue-500 text-white"
                               >
                                 <PiPrinterLight className="w-[20px] h-[20px]" />
                               </IconButton>
-                              <IconButton
+)}
+ {(userData?.isAdmin||permissions?.Transaction?.find(
+  item => item.name === "Loan Application"
+)?.Upload_Documents) && (
+   <IconButton
                                 onClick={goUpload(row)}
                                 title="Upload"
                                 bg="bg-green-600 text-white"
                               >
                                 <CgSoftwareUpload className="w-[20px] h-[20px]" />
                               </IconButton>
+)}
+                            
+                            
                               <IconButton
                                 onClick={() => handleOpenRemark(row)}
                                 title="Message"
@@ -1198,6 +1278,8 @@ const LoanApplication = () => {
                               >
                                 <RiMessage2Line className="w-[20px] h-[20px]" />
                               </IconButton>
+
+                               
                               <IconButton
                                 onClick={goGold(row)}
                                 title="Gold Details"
@@ -1223,20 +1305,29 @@ const LoanApplication = () => {
                         if (st === "pending") {
                           return (
                             <div className="flex gap-2 justify-center">
-                              <IconButton
+                              {(userData?.isAdmin||permissions?.Transaction?.find(
+  item => item.name === "Loan Application"
+)?.edit) && (
+  <IconButton
                                 onClick={goEdit(row)}
                                 title="Edit"
                                 bg="bg-blue-500 text-white"
                               >
                                 <CiEdit className="w-[20px] h-[20px]" />
                               </IconButton>
-                              <IconButton
+)} 
+                               {(userData?.isAdmin||permissions?.Transaction?.find(
+  item => item.name === "Loan Application"
+)?.Upload_Documents) && (
+   <IconButton
                                 onClick={goUpload(row)}
                                 title="Upload"
                                 bg="bg-green-600 text-white"
                               >
                                 <CgSoftwareUpload className="w-[20px] h-[20px]" />
                               </IconButton>
+)} 
+                             
                               <IconButton
                                 onClick={() => handleOpenRemark(row)}
                                 title="Message"
@@ -1255,13 +1346,18 @@ const LoanApplication = () => {
                                   className="w-[20px] h-[20px]"
                                 />
                               </IconButton>
-                              <IconButton
+                              {(userData?.isAdmin||permissions?.Transaction?.find(
+  item => item.name === "Loan Application"
+)?.Cancelled) && (
+    <IconButton
                                 onClick={goCancel(row)}
                                 title="Cancel"
                                 bg="bg-red-600 text-white"
                               >
                                 <MdOutlineCancel className="w-[20px] h-[20px]" />
                               </IconButton>
+)} 
+                             
                             </div>
                           );
                         }
@@ -1283,20 +1379,6 @@ const LoanApplication = () => {
                         if (st === "closed") {
                           return (
                             <div className="flex gap-2 justify-center">
-                              {/* <IconButton
-                                onClick={goEdit(row)}
-                                title="Edit"
-                                bg="bg-blue-500 text-white"
-                              >
-                                <CiEdit className="w-[20px] h-[20px]" />
-                              </IconButton> */}
-                              {/* <IconButton
-                                onClick={goUpload(row)}
-                                title="Upload"
-                                bg="bg-green-600 text-white"
-                              >
-                                <CgSoftwareUpload className="w-[20px] h-[20px]" />
-                              </IconButton> */}
                               <IconButton
                                 onClick={() => handleOpenRemark(row)}
                                 title="Message"
@@ -1304,13 +1386,18 @@ const LoanApplication = () => {
                               >
                                 <RiMessage2Line className="w-[20px] h-[20px]" />
                               </IconButton>
-                              <IconButton
+                              {(userData?.isAdmin||permissions?.Transaction?.find(
+  item => item.name === "Loan Application"
+)?.Print) && (
+    <IconButton
                                 onClick={goPrint(row)}
                                 title="Print"
                                 bg="bg-blue-300 text-white"
                               >
                                 <PiPrinterLight className="w-[20px] h-[20px]" />
                               </IconButton>
+)} 
+                              
                               <IconButton
                                 onClick={goGold(row)}
                                 title="Gold Details"
@@ -1348,63 +1435,87 @@ const LoanApplication = () => {
                     </td>
 
                     {/* Payment column */}
-                    <td className="px-1 py-1 text-center">
-                      {(() => {
-                        const st = (row.Status || "").toLowerCase();
-                        if (st === "approved") {
-                          return (
-                            <span
-                              className="text-blue-600 cursor-pointer hover:underline"
-                              onClick={() =>
-                                navigate(`/NOC`, {
-                                  state: {
-                                    loanId: row.Loan_No,
-                                    loanData: row,
-                                  },
-                                })
-                              }
-                            >
-                              NOC
-                            </span>
-                          );
-                        }
-                        if (st === "closed" || st === "cancelled") {
-                          return <span className="text-gray-500">NA</span>;
-                        }
-                        if (st === "pending") {
-                          return (
-                            <span
-                              className="text-blue-600 cursor-pointer hover:underline"
-                              onClick={() =>
-                                navigate(`/Gold-Loan-Approval`, {
-                                  state: {
-                                    loanId: row.Loan_No,
-                                    loanData: row,
-                                  },
-                                })
-                              }
-                            >
-                              Approve
-                            </span>
-                          );
-                        }
-                        return (
-                          <span
-                            className="text-blue-600 cursor-pointer hover:underline"
-                            onClick={() =>
-                              navigate(`/Loan-Enquiry`, {
-                                state: {
-                                  loanId: row.Loan_No,
-                                  loanData: row,
-                                },
-                              })
-                            }
-                          >
-                            view
-                          </span>
-                        );
-                      })()}
-                    </td>
+                   <td className="px-1 py-1 text-center">
+  {(() => {
+    const st = (row.Status || "").toLowerCase();
+
+    const permission = permissions?.Transaction?.find(
+      (item) => item.name === "Loan Application"
+    );
+
+    // 👉 NA statuses
+    const disabledStatuses = ["closed", "cancelled", "auction"];
+
+    if (disabledStatuses.includes(st)) {
+      return <span className="text-gray-500">NA</span>;
+    }
+
+    // 👉 Approved → NOC
+    if (st === "approved") {
+      if (userData?.isAdmin || permission?.Noc) {
+        return (
+          <span
+            className="text-blue-600 cursor-pointer hover:underline"
+            onClick={() =>
+              navigate(`/NOC`, {
+                state: {
+                  loanId: row.Loan_No,
+                  loanData: row,
+                },
+              })
+            }
+          >
+            NOC
+          </span>
+        );
+      }
+      return null;
+    }
+
+    // 👉 Pending → Approve
+    if (st === "pending") {
+      if (userData?.isAdmin || permission?.Approve) {
+        return (
+          <span
+            className="text-blue-600 cursor-pointer hover:underline"
+            onClick={() =>
+              navigate(`/Gold-Loan-Approval`, {
+                state: {
+                  loanId: row.Loan_No,
+                  loanData: row,
+                },
+              })
+            }
+          >
+            Approve
+          </span>
+        );
+      }
+      return null;
+    }
+
+    // 👉 Default → View
+    if (userData?.isAdmin || permission?.view) {
+      return (
+        <span
+          className="text-blue-600 cursor-pointer hover:underline"
+          onClick={() =>
+            navigate(`/Loan-Enquiry`, {
+              state: {
+                loanId: row.Loan_No,
+                loanData: row,
+              },
+            })
+          }
+        >
+          View
+        </span>
+      );
+    }
+
+    return null;
+  })()}
+</td>
 
                     {/* Loan Repayment column */}
                     <td className="px-1 py-1 text-center">
@@ -1412,24 +1523,51 @@ const LoanApplication = () => {
                         const st = (row.Status || "").toLowerCase();
                         if (st === "approved") {
                           return (
-                            <button
-                              className="bg-[#0A2478] text-white px-3 py-1 rounded text-[11px] hover:bg-[#091f6c]"
-                              onClick={() => {
-                                const path =
-                                  row.Scheme_type === "Monthly"
-                                    ? "/Emi_Loan-Repayment"
-                                    : "/Add-Loan-Repayment";
+                            <>
+                             {(userData?.isAdmin||permissions?.Transaction?.find(
+  item => item.name === "Loan Application"
+)?.Repay) && (
+    //  <button
+    //                           className="bg-[#0A2478] text-white px-3 py-1 rounded text-[11px] hover:bg-[#091f6c]"
+    //                           onClick={() => {
+    //                             const path =
+    //                               row.Scheme_type === "Monthly"
+    //                                 ? "/Emi_Loan-Repayment"
+    //                                 : "/Add-Loan-Repayment";
 
-                                navigate(path, {
-                                  state: {
-                                    loanId: row.Loan_No,
-                                    loanData: row,
-                                  },
-                                });
-                              }}
-                            >
-                              Repay
-                            </button>
+    //                             navigate(path, {
+    //                               state: {
+    //                                 loanId: row.Loan_No,
+    //                                 loanData: row,
+    //                               },
+    //                             });
+    //                           }}
+    //                         >
+    //                           Repay
+    //                         </button>
+
+    <button
+  className="bg-[#0A2478] text-white px-3 py-1 rounded text-[11px] hover:bg-[#091f6c]"
+  onClick={() => {
+    const path =
+      row.Scheme_type === "Monthly"
+        ? `/Emi_Loan-Repayment/${row.Loan_No}`
+        : `/Add-Loan-Repayment/${row.Loan_No}`;
+
+    navigate(path, {
+      state: {
+        loanData: row, // ✅ only data in state
+      },
+    });
+  }}
+>
+  Repay
+</button>
+)} 
+                            
+                            
+                            </>
+                           
                           );
                         }
                         return <span className="text-gray-500">NA</span>;
@@ -1548,7 +1686,7 @@ const LoanApplication = () => {
                   value={cancelRemark}
                   config={editorConfig}
                   onBlur={(newContent) => setCancelRemark(newContent)}
-                  onChange={(newContent) => { }}
+                  onChange={(newContent) => {}}
                 />
               </div>
               <p className="text-xs text-gray-500 mt-1">
@@ -1705,6 +1843,8 @@ const LoanApplication = () => {
           </div>
         </div>
       )}
+
+      {loading && <Loader />}
     </div>
   );
 };

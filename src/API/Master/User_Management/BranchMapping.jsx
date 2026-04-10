@@ -1,10 +1,8 @@
 import axios from "axios";
-import { encryptData, decryptData } from "../../../utils/cryptoHelper";
 import { API } from "../../../api";
+import { decryptData } from "../../../utils/cryptoHelper";
 
 const API_BASE = `${API}/Master/Employee_Profile`;
-
-
 
 export const getAssignBranchApi = async (id) => {
   const res = await axios.get(`${API_BASE}/assign-branch/${id}`);
@@ -13,7 +11,9 @@ export const getAssignBranchApi = async (id) => {
 
 // 🔹 Update assigned branches
 export const updateAssignBranchApi = async (payload) => {
-  const encryptedPayload = encryptData(payload);
-  const res = await axios.patch(`${API_BASE}/assign-branch`, { data: encryptedPayload });
-  return decryptData(res.data.data);
+  const res = await axios.patch(
+    `${API}Master/Employee_Profile/Update_assign_branch`,
+    payload,
+  );
+  return res.data;
 };

@@ -3,21 +3,17 @@ import { useEffect, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import { API } from "../api";
 import profileempty from "../assets/profileempty.png";
+import Loader from "../Component/Loader";
 const ViewLoanDetails = () => {
   const [loanData, setLoanData] = useState(null);
   console.log(loanData, "loanData");
-  const [loading, setLoading] = useState(true);
+
+  const [emiTable, setEmiTable] = useState([]);
+const [loading, setLoading] = useState(false);
+  // const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const navigate = useNavigate();
   const location = useLocation();
-
-  const dummyBanks = [
-    { id: 1, name: "HDFC Bank" },
-    { id: 2, name: "SBI Bank" },
-    { id: 3, name: "ICICI Bank" },
-  ];
-
-  const paidByOptions = ["Cash", "Bank Transfer", "UPI", "Online Payment"];
 
   const [rows, setRows] = useState([
     { paidBy: "", utrNumber: "", bank: "", customerAmount: "" },
@@ -76,8 +72,9 @@ const ViewLoanDetails = () => {
   }, [loanId]);
 
   const fetchLoanData = async () => {
+    debugger;
     try {
-      setLoading(true);
+        setLoading(true);
       const response = await axios.get(
         `${API}/Transactions/goldloan/getLoan/${loanId}`,
       );
@@ -93,14 +90,19 @@ const ViewLoanDetails = () => {
           }
         } catch (e) {
           console.warn("JSON parse failed on payments_Details", e);
+           setLoading(false);
         }
       }
 
       setLoanData(data);
+      setEmiTable(data.EMI_Details);
+      setLoading(false);
       setError(null);
+      
     } catch (err) {
       console.error("❌ Error fetching loan data:", err);
       setError("Failed to load loan data");
+        setLoading(false);
     } finally {
       setLoading(false);
     }
@@ -329,14 +331,11 @@ const ViewLoanDetails = () => {
       {/* ===== FORM SECTIONS ===== */}
       <div className="ml-[10px] min-h-screen px-4">
         {/* ===== Loan Details Section ===== */}
-        <div className="flex justify-center  w-[1462px] p-5 bg-[#FFE6E6]">
-          <div className=" ">
-            
-
+        <div className="flex justify-center  w-[1462px] pl-5 pr-5 bg-[#FFE6E6] ">
+          <div className="mt-2 ">
             <div className="flex gap-5">
               <div className="flex gap-10">
                 <div className="space-y-1 ">
-                 
                   <div>
                     <label className="block   text-xs">Borrower Name*</label>
                     <input
@@ -347,7 +346,6 @@ const ViewLoanDetails = () => {
                     />
                   </div>
 
-                
                   <div>
                     <label className="block    text-xs">
                       Co - Borrower Name*
@@ -372,7 +370,7 @@ const ViewLoanDetails = () => {
                   </div>
                 </div>
 
-                <div className="text-xs text-gray-500">
+                <div className="text-xs ">
                   <p>Borrower Details*</p>
                   <div className="border w-[296px] h-[140px] p-2 mt-1">
                     <p>{loanData.Print_Name}</p>
@@ -382,20 +380,27 @@ const ViewLoanDetails = () => {
                     <p>{loanData.Address}</p>
 
                     <p>Nominee Name: {loanData.Nominee || "N/A"}</p>
-                    <p>Nominee Relation: {loanData.Nominee_Relation || "N/A"}</p>
+                    <p>
+                      Nominee Relation: {loanData.Nominee_Relation || "N/A"}
+                    </p>
                   </div>
                 </div>
-                <div className="text-xs text-gray-500">
+                <div className="text-xs ">
                   <p>Co-Borrower Details*</p>
                   <div className="border w-[296px] h-[140px] mt-1 p-2">
-
                     <p>{loanData.coborrower_printName}</p>
-                     <p>
-                      {loanData.coBorrower_mobile} / {loanData.coBorrower_altMobile}
+                    <p>
+                      {loanData.coBorrower_mobile} /{" "}
+                      {loanData.coBorrower_altMobile}
                     </p>
-                                        <p>{loanData.coBorrower_Permanent_Address}</p>
-                    <p>Nominee Name: {loanData.coBorrower_Nominee_NomineeName}</p>
-                     <p> Nominee Relation: {loanData.coBorrower_Nominee_Relation}</p>
+                    <p>{loanData.coBorrower_Permanent_Address}</p>
+                    <p>
+                      Nominee Name: {loanData.coBorrower_Nominee_NomineeName}
+                    </p>
+                    <p>
+                      {" "}
+                      Nominee Relation: {loanData.coBorrower_Nominee_Relation}
+                    </p>
                   </div>
                 </div>
               </div>
@@ -423,6 +428,22 @@ const ViewLoanDetails = () => {
                 {loanData.borrower_signature ? (
                   <img
                     src={loanData.borrower_signature}
+                    alt="Borrower Signature"
+                    className="w-full h-full object-contain"
+                    onError={(e) => {
+                      e.target.style.display = "none";
+                      e.target.nextSibling.style.display = "block";
+                    }}
+                  />
+                ) : (
+                  <span className="text-gray-400 text-[9px]">No Signature</span>
+                )}
+              </div>
+
+              <div className="mt-1 border w-[100px] h-[26px] flex items-center justify-center bg-white rounded-[4px]">
+                {loanData.Signature_Image ? (
+                  <img
+                    src={loanData.Signature_Image}
                     alt="Borrower Signature"
                     className="w-full h-full object-contain"
                     onError={(e) => {
@@ -484,7 +505,7 @@ const ViewLoanDetails = () => {
         </div>
 
         {/* ===== Pledge Item List ===== */}
-         <div className="w-[1462px] bg-[#E9E9FF] pl-5 pr-5 pb-5">
+        <div className="w-[1462px] bg-[#E9E9FF] pl-5 pr-5 pb-5">
           <div className=" ">
             <h3 className="font-semibold  text-[#0A2478] text-lg">
               Pledge Item List
@@ -623,10 +644,8 @@ const ViewLoanDetails = () => {
                     className="border border-gray-300 rounded-md px-1 py-1  text-xs focus:outline-none bg-gray-50"
                   />
                 </div>
- <div className="flex flex-col w-25">
-                  <label className="text-xs font-semibold">
-                    Admin Charges
-                  </label>
+                <div className="flex flex-col w-25">
+                  <label className="text-xs font-semibold">Admin Charges</label>
                   <input
                     type="text"
                     value={formatCurrency(loanData.Admin_Charges)}
@@ -636,9 +655,7 @@ const ViewLoanDetails = () => {
                 </div>
                 {/* Doc Charges */}
                 <div className="flex flex-col">
-                  <label className="text-xs font-semibold">
-                    Doc Charges
-                  </label>
+                  <label className="text-xs font-semibold">Doc Charges</label>
                   <div className="flex">
                     <div className="bg-[#0B2B68] text-white px-2 py-1 rounded-l-md text-xs flex items-center justify-center">
                       2%
@@ -651,11 +668,9 @@ const ViewLoanDetails = () => {
                     />
                   </div>
                 </div>
-               
+
                 <div className="flex flex-col w-25">
-                  <label className="text-xs font-semibold">
-                    Net Payable
-                  </label>
+                  <label className="text-xs font-semibold">Net Payable</label>
                   <input
                     type="text"
                     value={formatCurrency(loanData.Net_Payable)}
@@ -664,25 +679,25 @@ const ViewLoanDetails = () => {
                   />
                 </div>
               </div>
-             
-              <div className='flex gap-2 text-xs'>
-                  <div >
+
+              <div className="flex gap-2 text-xs">
+                <div>
                   <p className="text-[13px]  mt-2">
                     Valuer 1 <span className="text-red-500">*</span>
                   </p>
                   <div className="border border-gray-300 rounded-md px-1 py-1 mt-1 text-xs bg-gray-50 w-[200px]">
-                    {loanData.Valuer_1 || "Not Assigned"}
+                    {loanData.Valuer1_Name || "Not Assigned"}
                   </div>
-              </div>
-
-              <div className="flex flex-col w-20 mt-2">
-                <p >
-                  Valuer 2 <span className="text-red-500">*</span>
-                </p>
-                <div className="border border-gray-300 rounded-md px-1 py-1 mt-1 text-xs bg-gray-50 w-[200px]">
-                  {loanData.Valuer_2 || "Not Assigned"}
                 </div>
-              </div>
+
+                <div className="flex flex-col w-20 mt-2">
+                  <p>
+                    Valuer 2 <span className="text-red-500">*</span>
+                  </p>
+                  <div className="border border-gray-300 rounded-md px-1 py-1 mt-1 text-xs bg-gray-50 w-[200px]">
+                    {loanData.Valuer2_Name || "Not Assigned"}
+                  </div>
+                </div>
               </div>
             </div>
 
@@ -690,111 +705,165 @@ const ViewLoanDetails = () => {
               className=" bg-[#FFE6E6] p-2 text-xs
 "
             >
-              
-            
-                <table className=" border-collapse text-xs">
-                  <thead>
-                    <tr className="bg-[#0A2478] text-white text-center">
-                      <th className="py-2 border w-[100px]">Sr No</th>
-                      <th className="py-2 border w-[160px]">Paid By</th>
-                      <th className="py-2 border w-[100px]">UTR Number</th>
-                      <th className="py-2 border w-[200px]">Bank</th>
-                      <th className="py-2 border w-[200px]">Customer Bank</th>
-                      <th className="py-2 border w-[150px]">Customer Amount</th>
-                    </tr>
-                  </thead>
+              <table className=" border-collapse text-xs">
+                <thead>
+                  <tr className="bg-[#0A2478] text-white text-center">
+                    <th className="py-2 border w-[100px]">Sr No</th>
+                    <th className="py-2 border w-[160px]">Paid By</th>
+                    <th className="py-2 border w-[100px]">UTR Number</th>
+                    <th className="py-2 border w-[200px]">Bank</th>
+                    <th className="py-2 border w-[200px]">Customer Bank</th>
+                    <th className="py-2 border w-[150px]">Customer Amount</th>
+                  </tr>
+                </thead>
 
-                  <tbody>
-                    {PaymentDataForShow && PaymentDataForShow.length > 0 ? (
-                      <>
-                        {PaymentDataForShow.map((row, index) => (
-                          <tr
-                            key={index}
-                            className={
-                              index % 2 === 0 ? "bg-gray-50" : "bg-white"
-                            }
-                          >
-                            <td className="py-2 text-center">{index + 1}</td>
+                <tbody>
+                  {PaymentDataForShow && PaymentDataForShow.length > 0 ? (
+                    <>
+                      {PaymentDataForShow.map((row, index) => (
+                        <tr
+                          key={index}
+                          className={
+                            index % 2 === 0 ? "bg-gray-50" : "bg-white"
+                          }
+                        >
+                          <td className="py-2 text-center">{index + 1}</td>
 
-                            <td className="py-2 text-center">
-                              <select
-                                value={row.paidBy}
-                                disabled
-                                className="border rounded px-2 py-1 "
-                              >
-                                <option>{row.paidBy}</option>
-                              </select>
-                            </td>
-
-                            <td className="py-1 text-center">
-                              <input
-                                value={row.utrNumber || "-"}
-                                disabled
-                                className="border rounded px-1 py-1"
-                              />
-                            </td>
-
-                            <td className="py-2 text-center">
-                              <select
-                                value={row.bank}
-                                disabled
-                                className="border rounded px-2 py-1 w-[100px]"
-                              >
-                                <option>{row.bank || "-"}</option>
-                              </select>
-                            </td>
-
-                            <td className="py-2 text-center">
-                              <select
-                                value={row.customerBank || "-"}
-                                disabled
-                                className="border rounded px-2 py-1 w-[100px]"
-                              >
-                                <option>{row.customerBank}</option>
-                              </select>
-                            </td>
-
-                            <td className="py-2 text-center">
-                              <input
-                                value={row.customerAmount}
-                                disabled
-                                className="border rounded px-2 py-1 p-2"
-                              />
-                            </td>
-
-                            <td></td>
-                          </tr>
-                        ))}
-
-                        <tr className="font-semibold bg-gray-100">
-                          <td colSpan="4" className="text-right pr-4 py-2">
-                            Total
+                          <td className="py-2 text-center">
+                             <input
+                              value={row.paidBy || "-"}
+                              disabled
+                              className="border rounded px-1 py-1"
+                            />
+                            {/* <select
+                              value={row.paidBy}
+                              disabled
+                              className="border rounded px-2 py-1 "
+                            >
+                              <option>{row.paidBy}</option>
+                            </select> */}
                           </td>
-                          <td className="text-center">
-                            {totalAmountoFTheCustomer.toFixed(2)}
+
+                          <td className="py-1 text-center">
+                            <input
+                              value={row.utrNumber || "-"}
+                              disabled
+                              className="border rounded px-1 py-1"
+                            />
                           </td>
+
+                          <td className="py-2 text-center">
+                            <input
+                              value={row.bankName || "-"}
+                              disabled
+                              className="border rounded px-1 py-1"
+                            />
+                            
+                          </td>
+
+                          
+
+                           <td className="py-2 text-center">
+                            <input
+                              value={row.customerBank || "-"}
+                              disabled
+                              className="border rounded px-2 py-1 p-2"
+                            />
+                          </td>
+
+                          <td className="py-2 text-center">
+                            <input
+                              value={row.customerAmount}
+                              disabled
+                              className="border rounded px-2 py-1 p-2"
+                            />
+                          </td>
+
                           <td></td>
                         </tr>
-                      </>
-                    ) : (
-                      <tr>
-                        <td
-                          colSpan="7"
-                          className="text-center py-6 text-gray-500 font-semibold"
-                        >
-                          Data Not Available
+                      ))}
+
+                      <tr className="font-semibold bg-gray-100">
+                        <td colSpan="4" className="text-right pr-4 py-2">
+                          Total
                         </td>
+                        <td className="text-center">
+                          {totalAmountoFTheCustomer.toFixed(2)}
+                        </td>
+                        <td></td>
                       </tr>
-                    )}
-                  </tbody>
-                </table>
-             
+                    </>
+                  ) : (
+                    <tr>
+                      <td
+                        colSpan="7"
+                        className="text-center py-6 text-gray-500 font-semibold"
+                      >
+                        Data Not Available
+                      </td>
+                    </tr>
+                  )}
+                </tbody>
+              </table>
             </div>
           </div>
         </div>
 
-       
-       
+        <div className="  bg-[#E9E9FF] p-4 ">
+          {loanData.Scheme_type === "Monthly" && (
+            <>
+              <h3 className="font-semibold  text-[#0A2478] text-lg ">
+                Loan Details table
+              </h3>
+
+              <table className="w-full border text-xs ">
+                <thead className="bg-[#0A2478] text-white">
+                  <tr>
+                    <th className="p-2 border">Month</th>
+                    <th className="p-2 border">EMI Date</th> {/* ✅ NEW */}
+                    <th className="p-2 border">Opening Balance</th>
+                    <th className="p-2 border">EMI</th>
+                    <th className="p-2 border">Interest</th>
+                    <th className="p-2 border">Principal</th>
+                    <th className="p-2 border">Closing Balance</th>
+                    <th className="p-2 border">Status</th>
+                  </tr>
+                </thead>
+
+                <tbody>
+                  {emiTable?.map((row) => {
+                    const isPaid =
+                      Number(loanData?.EMIPaidCount || 0) >= row.month;
+
+                    return (
+                      <tr key={row.month} className="text-center bg-white">
+                        <td className="p-1 border">{row.month}</td>
+
+                        <td className="p-1 border">
+                          {new Date(row.emiDate).toLocaleDateString("en-IN")}
+                        </td>
+
+                        <td className="p-1 border">₹{row.opening}</td>
+                        <td className="p-1 border">₹{row.emi}</td>
+                        <td className="p-1 border">₹{row.interest}</td>
+                        <td className="p-1 border">₹{row.principal}</td>
+                        <td className="p-1 border">₹{row.closing}</td>
+
+                       <td
+  className={`p-1 border font-medium ${
+    row.status === "Paid" ? "text-green-600" : "text-gray-400"
+  }`}
+>
+  {row.status}
+</td>
+                      </tr>
+                    );
+                  })}
+                </tbody>
+              </table>
+            </>
+          )}
+        </div>
 
         <div className=" bg-[#F7F7FF] w-[1462px]">
           <div className="flex gap-10 text-xs   pl-5 pr-5">
@@ -885,6 +954,8 @@ const ViewLoanDetails = () => {
         </div>
         {/* ===== Scheme Details & Effective Interest Rates ===== */}
       </div>
+
+      {loading && <Loader />}
     </div>
   );
 };

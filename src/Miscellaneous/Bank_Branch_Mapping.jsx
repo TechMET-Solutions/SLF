@@ -1,161 +1,22 @@
-// import axios from "axios";
-// import { useEffect, useState } from "react";
-// import { useNavigate } from "react-router-dom";
-
-// const Bank_Branch_Mapping = () => {
-//   const [page, setPage] = useState(1);
-//   const [limit, setLimit] = useState(10);
-//   const [total, setTotal] = useState(0);
-//   const [branchData, setBranchData] = useState([]);
-
-//   const navigate = useNavigate();
-
-//   const handleBankClick = (branch) => {
-//     navigate("/BankBranchMapping", { state: { branch } });
-//   };
-
-//   // ✅ Correct fetch function
-//   const fetchBranches = async (pageNo = page, pageSize = limit) => {
-//     try {
-//       const res = await axios.get(
-//         `${API}/Master/Master_Profile/get_Branches?page=${pageNo}&limit=${pageSize}&search=`
-//       );
-
-//       const data = res.data;
-
-//       console.log(data)
-
-//       if (data) {
-//         setBranchData(data.branches || []);
-//         setPage(data.page || 1);
-//         setLimit(data.limit || 10);
-//         setTotal(data.total || 0);
-//       }
-//     } catch (error) {
-//       console.error("API Error:", error);
-//     }
-//   };
-
-//   // ✅ Only ONE correct useEffect
-//   useEffect(() => {
-//     fetchBranches(page, limit);
-//   }, [page, limit]);
-
-//   const totalPages = Math.ceil(total / limit);
-
-
-
-//   return (
-    // <div className="bg-white shadow-sm font-sans">
-    //   {/* Title Bar */}
-    //   <div className="flex justify-center mb-2">
-    //     <div className="flex justify-center mt-5">
-    //       <div className="flex items-center px-6 py-4 w-[1290px] h-[62px] rounded-[11px] border border-gray-200 justify-between shadow-sm bg-white">
-    //         {/* Left Side: Title */}
-    //         <h2 className="text-red-600 font-bold text-[20px] leading-[148%] whitespace-nowrap">
-    //           Branch List
-    //         </h2>
-    //       </div>
-    //     </div>
-    //   </div>
-
-    //   <div className="flex justify-start ml-30">
-    //     {/* Table Section */}
-    //     <div className="overflow-x-auto mt-2 max-w-3xl h-[500px]">
-    //       <table className="w-full border-collapse text-[12px]">
-    //         <thead className="bg-[#0A2478] text-white text-sm">
-    //           <tr>
-    //             <th className="px-2 py-2 text-center border-r border-gray-300 text-[13px] w-[100px]">
-    //               Branch Id
-    //             </th>
-    //             <th className="px-2 py-2 text-center border-r border-gray-300 text-[13px] w-[80px]">
-    //               Code
-    //             </th>
-    //             <th className="px-2 py-2 text-center border-r border-gray-300 text-[13px] w-[180px]">
-    //               Name
-    //             </th>
-    //             <th className="px-2 py-2 text-center border-r border-gray-300 text-[13px] w-[280px]">
-    //               Address 1
-    //             </th>
-    //             <th className="px-2 py-2 text-center border-r border-gray-300 text-[13px] w-[280px]">
-    //               Address 2
-    //             </th>
-    //             <th className="px-2 py-2 text-center border-r border-gray-300 text-[13px] w-[180px]">
-    //               Branch Mapping
-    //             </th>
-    //           </tr>
-    //         </thead>
-    //         <tbody>
-    //           {branchData.map((branch, index) => (
-    //             <tr
-    //               key={branch.id}
-    //               className={index % 2 === 0 ? "bg-gray-100" : "bg-white"}
-    //             >
-    //               {/* Branch Id */}
-    //               <td className="px-4 py-2 text-center">{branch.id}</td>
-
-    //               {/* Code */}
-    //               <td className="px-4 py-2 text-center">
-    //                 {branch.branch_code}
-    //               </td>
-
-    //               {/* Name */}
-    //               <td className="px-4 py-2 text-center">
-    //                 {branch.branch_name}
-    //               </td>
-
-    //               {/* Address 1 */}
-    //               <td className="px-4 py-2 text-left text-gray-600">
-    //                 {branch.address_line1}
-    //               </td>
-
-    //               {/* Address 2 (we don’t have, so show print_name / lead_person nicely) */}
-    //               <td className="px-4 py-2 text-left text-gray-600">
-    //                 <div>{branch.print_name}</div>
-    //                 <div className="text-[11px] text-gray-400">
-    //                   {branch.lead_person}
-    //                 </div>
-    //               </td>
-
-    //               {/* Branch Mapping */}
-    //               <td className="p-2 text-center">
-    //                 <button
-    //                   onClick={() => handleBankClick(branch)}
-    //                   className="text-blue-600 hover:underline font-bold"
-    //                 >
-    //                   Bank
-    //                 </button>
-    //               </td>
-    //             </tr>
-    //           ))}
-    //         </tbody>
-    //       </table>
-    //     </div>
-    //   </div>
-//     </div>
-//   );
-// };
-
-// export default Bank_Branch_Mapping;
-
 import axios from "axios";
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { API } from "../api"; // Ensure this path is correct
+import { usePermission } from "../API/Context/PermissionContext";
 
 const Bank_Branch_Mapping = () => {
+  const navigate = useNavigate();
 
-    const navigate = useNavigate();
-  
   const [page, setPage] = useState(1);
   const [limit, setLimit] = useState(10);
   const [total, setTotal] = useState(0);
   const [branchData, setBranchData] = useState([]);
-
+  const { permissions, userData } = usePermission();
   // Modal & Selection States
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedBranch, setSelectedBranch] = useState(null);
   const [bankList, setBankList] = useState([]);
+  console.log(bankList, "bankList");
   const [selectedBanks, setSelectedBanks] = useState([]);
   const [loadingBanks, setLoadingBanks] = useState(false);
 
@@ -163,7 +24,7 @@ const Bank_Branch_Mapping = () => {
   const fetchBranches = async (pageNo = page, pageSize = limit) => {
     try {
       const res = await axios.get(
-        `${API}/Master/Master_Profile/get_Branches?page=${pageNo}&limit=${pageSize}&search=`
+        `${API}/Master/Master_Profile/get_Branches?page=${pageNo}&limit=${pageSize}&search=`,
       );
       if (res.data) {
         setBranchData(res.data.branches || []);
@@ -212,11 +73,14 @@ const Bank_Branch_Mapping = () => {
 
   const toggleBank = (bankId) => {
     setSelectedBanks((prev) =>
-      prev.includes(bankId) ? prev.filter((id) => id !== bankId) : [...prev, bankId]
+      prev.includes(bankId)
+        ? prev.filter((id) => id !== bankId)
+        : [...prev, bankId],
     );
   };
 
   const handleSaveMapping = async () => {
+    debugger;
     try {
       await axios.post(`${API}/api/banks/assign-banks`, {
         branchId: selectedBranch.id,
@@ -229,18 +93,43 @@ const Bank_Branch_Mapping = () => {
       alert("Failed to save mapping");
     }
   };
+  const totalPages = Math.ceil(total / limit);
 
+  const getPagination = () => {
+    const delta = 1; // how many pages around current
+    const range = [];
+    const rangeWithDots = [];
+
+    for (let i = 1; i <= totalPages; i++) {
+      if (
+        i === 1 || // first
+        i === totalPages || // last
+        (i >= page - delta && i <= page + delta) // around current
+      ) {
+        range.push(i);
+      }
+    }
+
+    let last = 0;
+    for (let i of range) {
+      if (i - last > 1) {
+        rangeWithDots.push("...");
+      }
+      rangeWithDots.push(i);
+      last = i;
+    }
+
+    return rangeWithDots;
+  };
   return (
-
-
     <div className="bg-white shadow-sm font-sans">
       {/* Title Bar */}
-      <div className="flex justify-center ">
-        <div className="flex sticky top-[80px] z-40 w-full px-10">
-          <div className="flex items-center px-6 py-4 border-b my-2 w-full max-w-[1462px] h-[50px] border rounded-[11px] border-gray-200 justify-between  ">
+      <div className="flex ">
+        <div className="flex sticky top-[50px] z-40 w-full ml-[32px]">
+          <div className="flex items-center px-6 py-4 border-b w-full max-w-[1462px] h-[40px] border  border-gray-200 justify-between  ">
             {/* Left Side: Title */}
             <h2 className="text-red-600 font-bold text-[20px] leading-[148%] whitespace-nowrap">
-              Branch List
+              Bank Branch Mapping
             </h2>
             <div className="flex items-center gap-3  pl-6 border-gray-200">
               <button
@@ -251,11 +140,10 @@ const Bank_Branch_Mapping = () => {
               </button>
             </div>
           </div>
-         
         </div>
       </div>
 
-      <div className="flex ml-[38px]">
+      <div className="flex ml-[32px]">
         {/* Table Section */}
         <div className="overflow-x-auto max-w-3xl h-[500px]">
           <table className="w-full border-collapse text-[12px]">
@@ -268,7 +156,7 @@ const Bank_Branch_Mapping = () => {
                   Code
                 </th>
                 <th className="px-2 py-2 text-center border-r border-gray-300 text-[13px] w-[180px]">
-                  Name
+                  Branch Name
                 </th>
                 <th className="px-2 py-2 text-center border-r border-gray-300 text-[13px] w-[280px]">
                   Address 1
@@ -276,9 +164,14 @@ const Bank_Branch_Mapping = () => {
                 {/* <th className="px-2 py-2 text-center border-r border-gray-300 text-[13px] w-[280px]">
                   Address 2
                 </th> */}
-                <th className="px-2 py-2 text-center border-r border-gray-300 text-[13px] w-[180px]">
-                  Branch Mapping
-                </th>
+                {(userData?.isAdmin ||
+                  permissions?.Miscellaneous?.find(
+                    (item) => item.name === "Bank Branch Mapping",
+                  )?.Branch_Mapping) && (
+                  <th className="px-2 py-2 text-center border-r border-gray-300 text-[13px] w-[180px]">
+                    Bank Mapping
+                  </th>
+                )}
               </tr>
             </thead>
             <tbody>
@@ -291,37 +184,29 @@ const Bank_Branch_Mapping = () => {
                   {/* <td className="px-4 py-2 text-left">{branch.id}</td> */}
 
                   {/* Code */}
-                  <td className="px-4 py-2 text-left">
-                    {branch.branch_code}
-                  </td>
+                  <td className="px-4 py-2 text-left">{branch.branch_code}</td>
 
                   {/* Name */}
-                  <td className="px-4 py-2 text-left">
-                    {branch.branch_name}
-                  </td>
+                  <td className="px-4 py-2 text-left">{branch.branch_name}</td>
 
                   {/* Address 1 */}
                   <td className="px-4 py-2 text-left text-gray-600">
                     {branch.address_line1}
                   </td>
 
-                  {/* Address 2 (we don’t have, so show print_name / lead_person nicely) */}
-                  {/* <td className="px-4 py-2 text-left text-gray-600">
-                    <div>{branch.print_name}</div>
-                    <div className="text-[11px] text-gray-400">
-                      {branch.lead_person}
-                    </div>
-                  </td> */}
-
-                  {/* Branch Mapping */}
-                  <td className="p-2 text-center">
-                    <button
-                      onClick={() => handleBankClick(branch)}
-                      className="text-blue-600 hover:underline font-bold"
-                    >
-                      Bank
-                    </button>
-                  </td>
+                  {(userData?.isAdmin ||
+                    permissions?.Miscellaneous?.find(
+                      (item) => item.name === "Bank Branch Mapping",
+                    )?.Branch_Mapping) && (
+                    <td className="p-2 text-center">
+                      <button
+                        onClick={() => handleBankClick(branch)}
+                        className="text-blue-600 hover:underline font-bold"
+                      >
+                        Bank
+                      </button>
+                    </td>
+                  )}
                 </tr>
               ))}
             </tbody>
@@ -329,21 +214,19 @@ const Bank_Branch_Mapping = () => {
         </div>
       </div>
 
+      
       {/* Integrated Modal */}
       {isModalOpen && (
         <div className="fixed inset-0 flex items-center justify-center z-50 bg-black/50 backdrop-blur-sm p-6">
           <div className="bg-white w-full max-w-xl rounded-lg shadow-xl overflow-hidden">
-
             {/* Modal Header */}
             <div className="text-[#0A2478] px-6 py-3 text-lg font-semibold ">
               Branch Bank Mapping - {selectedBranch?.branch_name}
             </div>
 
             <div className="px-6 space-y-6">
-
               {/* 🔹 Branch Info — One Line */}
               <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-
                 {/* Branch Code */}
                 <div>
                   <label className="text-xs font-medium text-gray-500 mb-1 block">
@@ -425,18 +308,17 @@ const Bank_Branch_Mapping = () => {
                         <input
                           type="checkbox"
                           className="w-4 h-4 accent-[#0A2478]"
-                          checked={selectedBanks.includes(bank.id)}
-                          onChange={() => toggleBank(bank.id)}
+                          checked={selectedBanks.includes(bank.id)} // ✅ ID check
+                          onChange={() => toggleBank(bank.id)} // ✅ toggle by ID
                         />
 
                         <span className="text-xs text-gray-700 font-medium truncate">
-                          {bank.bank_name}
+                          {bank.name} {/* ✅ FIXED */}
                         </span>
                       </label>
                     ))}
                   </div>
                 </div>
-
               </div>
 
               {/* 🔹 Action Buttons */}
@@ -459,7 +341,34 @@ const Bank_Branch_Mapping = () => {
           </div>
         </div>
       )}
-
+      <div className="flex  items-center mt-4 px-2 mb-5 text-xs gap-2 ml-[250px]">
+        <div className="flex items-center gap-2">
+          {/* Prev Button */}
+          {getPagination().map((item, index) =>
+            item === "..." ? (
+              <span key={index} className="px-2">
+                ...
+              </span>
+            ) : (
+              <button
+                key={index}
+                onClick={() => setPage(item)}
+                className={`px-3 py-1 rounded border ${
+                  page === item
+                    ? "bg-[#0A2478] text-white"
+                    : "bg-white hover:bg-gray-100"
+                }`}
+              >
+                {item}
+              </button>
+            ),
+          )}
+        </div>
+        <div>
+          Showing {(page - 1) * limit + 1} to {Math.min(page * limit, total)} of{" "}
+          {total} entries
+        </div>
+      </div>
     </div>
   );
 };

@@ -19,7 +19,7 @@ function AddAuctionCreation() {
   const [loanData, setLoanData] = useState([]);
   console.log(loanData, "loanData");
   const [page, setPage] = useState(1);
-  const [limit] = useState(10);
+  const [limit] = useState(15);
   const [totalPages, setTotalPages] = useState(1);
   const [loading, setLoading] = useState(false);
   const [search, setSearch] = useState("");
@@ -28,7 +28,7 @@ function AddAuctionCreation() {
   const [searchQuery, setSearchQuery] = useState("");
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const [selectedDate, setSelectedDate] = useState("");
-
+  const [totalRecords, setTotalRecords] = useState(0);
   const toggleHeader = (headerId) => {
     setSearchHeaders((prev) =>
       prev.includes(headerId)
@@ -55,7 +55,23 @@ function AddAuctionCreation() {
   //   try {
   //     setLoading(true);
 
-  //     const url = `${API}/Transactions/getApprovedLoanApplications/all?page=${page}&limit=${limit}&search=${search}`;
+  //     const params = new URLSearchParams();
+  //     params.append("page", page);
+  //     params.append("limit", limit);
+
+  //     if (searchQuery.trim()) {
+  //       params.append("search", searchQuery);
+  //     }
+
+  //     if (searchHeaders.length > 0) {
+  //       params.append("headers", searchHeaders.join(","));
+  //     }
+
+  //     if (selectedDate) {
+  //       params.append("loan_date", selectedDate);
+  //     }
+
+  //     const url = `${API}/Transactions/getApprovedLoanApplications/all?${params.toString()}`;
 
   //     const res = await fetch(url);
   //     const json = await res.json();
@@ -70,12 +86,12 @@ function AddAuctionCreation() {
 
   //   setLoading(false);
   // };
-  const fetchLoans = async () => {
+  const fetchLoans = async (pageNo = page) => {
     try {
       setLoading(true);
 
       const params = new URLSearchParams();
-      params.append("page", page);
+      params.append("page", pageNo);
       params.append("limit", limit);
 
       if (searchQuery.trim()) {
@@ -90,7 +106,7 @@ function AddAuctionCreation() {
         params.append("loan_date", selectedDate);
       }
 
-      const url = `${API}/Transactions/getApprovedLoanApplications/all?${params.toString()}`;
+      const url = `${API}/Transactions/getAuctionLoanApplications/all?${params.toString()}`;
 
       const res = await fetch(url);
       const json = await res.json();
@@ -98,18 +114,17 @@ function AddAuctionCreation() {
       if (json.success) {
         setLoanData(json.data);
         setTotalPages(json.totalPages || 1);
+        setTotalRecords(json.total || 0);
+        setPage(json.page || 1);
       }
-
     } catch (err) {
       console.log("Error fetching loans", err);
     }
 
     setLoading(false);
   };
-
-
   useEffect(() => {
-    fetchLoans();
+    fetchLoans(page);
   }, [page]);
   const parsePledgeItems = (value) => {
     try {
@@ -197,6 +212,15 @@ function AddAuctionCreation() {
       console.log(err);
     }
   };
+  const allHeaderIds = ["id", "Scheme", "Borrower", "Mobile_Number"];
+
+  const handleSelectAll = () => {
+    if (searchHeaders.length === allHeaderIds.length) {
+      setSearchHeaders([]);
+    } else {
+      setSearchHeaders(allHeaderIds);
+    }
+  };
 
   return (
     <div className="min-h-screen w-full">
@@ -221,6 +245,22 @@ function AddAuctionCreation() {
 
                   {isDropdownOpen && (
                     <div className="absolute top-[35px] left-[-8px] bg-white border border-gray-300 shadow-xl rounded-md z-[100] w-[160px] p-2">
+                      <button
+                        onClick={handleSelectAll}
+                        className="flex items-center gap-2 p-2 hover:bg-blue-50 cursor-pointer rounded border-b border-gray-200 mb-1"
+                      >
+                        <input
+                          type="checkbox"
+                          checked={allHeaderIds.every((id) =>
+                            searchHeaders.includes(id),
+                          )}
+                          onChange={handleSelectAll}
+                          className="w-3 h-3 accent-[#0A2478]"
+                        />
+                        <span className="text-[11px] font-source font-bold text-[#0A2478]">
+                          Select All
+                        </span>
+                      </button>
                       {[
                         { id: "id", label: "Loan No" },
                         { id: "Scheme", label: "Loan Scheme" },
@@ -264,7 +304,6 @@ function AddAuctionCreation() {
                 />
 
                 {/* Search Button */}
-
               </div>
             </div>
             <input
@@ -282,26 +321,21 @@ function AddAuctionCreation() {
                 }}
                 className="ml-2 hidden lg:flex bg-[#0b2c69] text-white text-[11px] px-4 h-[30px] rounded-[3px] font-source hover:bg-[#071d45] "
               >
-                <span className="mt-1.5">
-                Search
-                </span>
+                <span className="mt-1.5">Search</span>
               </button>
               <button
                 onClick={() => {
                   setSearchQuery("");
                   setSearchHeaders([]);
-                  setSelectedDate("")
+                  setSelectedDate("");
                   fetchLoans();
                 }}
                 className="ml-2 hidden lg:flex  bg-[#0b2c69] text-white text-[11px] px-4 h-[30px] rounded-[3px] font-source hover:bg-[#071d45] "
               >
-                <span className="mt-1.5">
-                  Clear
-                </span>
+                <span className="mt-1.5">Clear</span>
               </button>
             </div>
             <div className="flex gap-3">
-              
               <button
                 className="ml-2 bg-[#0b2c69] text-white text-[11px] px-4 h-[30px] rounded-[3px] font-source hover:bg-[#071d45]"
                 onClick={handleSubmitAuction}
@@ -321,9 +355,7 @@ function AddAuctionCreation() {
 
       {/* 🔹 Form Section */}
       <div className="   rounded-md ml-[25px]  ">
-       
         <div className="flex gap-5 w-[1462px]  bg-[#FFE6E6] p-2 ">
-
           {/* Venue */}
           <div className="flex flex-col">
             <label className="text-xs font-medium mb-1">
@@ -385,9 +417,7 @@ function AddAuctionCreation() {
 
           {/* Charges */}
           <div className="flex flex-col">
-            <label className="text-xs font-medium mb-1">
-              Charges
-            </label>
+            <label className="text-xs font-medium mb-1">Charges</label>
             <input
               type="number"
               name="charges"
@@ -397,103 +427,145 @@ function AddAuctionCreation() {
               className="border border-gray-300 rounded px-1.5 py-1.5 text-xs focus:outline-none focus:ring-2 focus:ring-blue-500 w-full bg-white"
             />
           </div>
-
         </div>
-        <div className='w-[1462px] bg-[#E9E9FF] p-2'>
-           <h2 className="font-bold text-[20px] text-[#0A2478]  ">
-          Add Loans
-        </h2>
+        <div className="w-[1462px] bg-[#E9E9FF] p-2">
+          <h2 className="font-bold text-[20px] text-[#0A2478]  ">Add Loans</h2>
 
-        <div className="flex ">
-          <div className="overflow-x-auto mt-2 w-[1300px] h-[500px] ">
-            <table className="w-full border-collapse">
-              <thead className="bg-[#0A2478] text-white text-sm">
-                <tr>
-                  <th className="px-1 py-1 text-left border-r">Select</th>
-                    <th className="px-1 py-1 text-left border-r">Loan Scheme</th>
-                  <th className="px-1 py-1 text-left border-r">Loan No</th>
-                
-
-                  <th className="px-1 py-1 text-left border-r">Loan Date</th>
-                  <th className="px-1 py-1 text-left border-r">
-                    Extended Date
-                  </th>
-                  <th className="px-1 py-1 text-left border-r">
-                    Customer Name
-                  </th>
-                  <th className="px-1 py-1 text-left border-r">Valuation</th>
-                  <th className="px-1 py-1 text-left border-r">Mobile No.</th>
-
-                  {[
-                    "Total Amt",
-                    "Loan Amt Paid",
-                    "Outstanding Amt",
-                    "Branch",
-                  ].map((label, i) => (
-                    <th key={i} className="px-2 py-2 text-left border-r">
-                      <div className="flex items-center gap-1">
-                        {label}
-                        {/* <HiMiniArrowsUpDown className="inline w-4 h-4" /> */}
-                      </div>
+          <div className="flex ">
+            <div className="overflow-x-auto mt-2 w-[1300px] h-[500px] ">
+              <table className="w-full border-collapse">
+                <thead className="bg-[#0A2478] text-white text-sm">
+                  <tr>
+                    <th className="px-1 py-1 text-left border-r">Select</th>
+                    <th className="px-1 py-1 text-left border-r">
+                      Loan Scheme
                     </th>
-                  ))}
-                </tr>
-              </thead>
+                    <th className="px-1 py-1 text-left border-r">Loan No</th>
 
-              <tbody className="text-[12px]">
-                {loanData?.map((row, index) => (
-                  <tr
-                    key={row.id}
-                    className={index % 2 === 0 ? "bg-gray-50" : "bg-white"}
-                  >
-                    <td className="px-1 py-1 flex items-center justify-center">
-                      <input
-                        type="checkbox"
-                        checked={selectedLoans.includes(row.id)}
-                        onChange={() => handleSelectLoan(row.id)}
-                      />
-                    </td>
-                     <td className="px-1 py-1">{row.Scheme}</td>
-                    <td className="px-1 py-1">{row.id}</td>
-                   
+                    <th className="px-1 py-1 text-left border-r">Loan Date</th>
+                    <th className="px-1 py-1 text-left border-r">
+                      Extended Date
+                    </th>
+                    <th className="px-1 py-1 text-left border-r">
+                      Customer Name
+                    </th>
+                    <th className="px-1 py-1 text-left border-r">Valuation</th>
+                    <th className="px-1 py-1 text-left border-r">Mobile No.</th>
 
-                    <td className="px-1 py-1">
-                      {row.approval_date
-                        ? new Date(row.approval_date).toLocaleDateString(
-                          "en-GB",
-                        )
-                        : "-"}
-                    </td>
-
-                    <td className="px-1 py-1">-</td>
-                    <td className="px-1 py-1">{row.Print_Name}</td>
-                    <td className="px-1 py-1">
-                      {(() => {
-                        try {
-                          const items = JSON.parse(
-                            JSON.parse(row.Pledge_Item_List),
-                          );
-                          return items[0]?.valuation || "--";
-                        } catch (e) {
-                          return "--";
-                        }
-                      })()}
-                    </td>
-
-                    <td className="px-1 py-1">{row.Mobile_Number}</td>
-                    <td className="px-1 py-1">{row.Loan_amount}</td>
-                    <td className="px-1 py-1">{row.LoanAmountPaid}</td>
-                    <td className="px-1 py-1">{row.LoanPendingAmount}</td>
-                    <td className="px-1 py-1">{row.branch_id}</td>
+                    {[
+                      "Total Amt",
+                      "Loan Amt Paid",
+                      "Outstanding Amt",
+                      "Branch",
+                    ].map((label, i) => (
+                      <th key={i} className="px-2 py-2 text-left border-r">
+                        <div className="flex items-center gap-1">
+                          {label}
+                          {/* <HiMiniArrowsUpDown className="inline w-4 h-4" /> */}
+                        </div>
+                      </th>
+                    ))}
                   </tr>
-                ))}
-              </tbody>
-            </table>
+                </thead>
+
+                <tbody className="text-[12px]">
+                  {loanData?.map((row, index) => (
+                    <tr
+                      key={row.id}
+                      className={index % 2 === 0 ? "bg-gray-50" : "bg-white"}
+                    >
+                      <td className="px-1 py-1 flex items-center justify-center">
+                        <input
+                          type="checkbox"
+                          checked={selectedLoans.includes(row.id)}
+                          onChange={() => handleSelectLoan(row.id)}
+                        />
+                      </td>
+                      <td className="px-1 py-1">{row.Scheme}</td>
+                      <td className="px-1 py-1">{row.id}</td>
+
+                      <td className="px-1 py-1">
+                        {row.approval_date
+                          ? new Date(row.approval_date).toLocaleDateString(
+                              "en-GB",
+                            )
+                          : "-"}
+                      </td>
+
+                      <td className="px-1 py-1">-</td>
+                      <td className="px-1 py-1">{row.Print_Name}</td>
+                      <td className="px-1 py-1">
+                        {(() => {
+                          try {
+                            const items = JSON.parse(
+                              JSON.parse(row.Pledge_Item_List),
+                            );
+                            return items[0]?.valuation || "--";
+                          } catch (e) {
+                            return "--";
+                          }
+                        })()}
+                      </td>
+
+                      <td className="px-1 py-1">{row.Mobile_Number}</td>
+                      <td className="px-1 py-1">{row.Loan_amount}</td>
+                      <td className="px-1 py-1">{row.LoanAmountPaid}</td>
+                      <td className="px-1 py-1">{row.LoanPendingAmount}</td>
+                      <td className="px-1 py-1">{row.branch_id}</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+              <div className="flex justify-between items-center mt-3 px-2">
+                {/* LEFT INFO */}
+                <div className="text-[12px] text-gray-600">
+                  Page <b>{page}</b> of <b>{totalPages}</b> | Total Records:{" "}
+                  <b>{totalRecords}</b>
+                </div>
+
+                {/* BUTTONS */}
+                <div className="flex gap-1">
+                  {/* PREV */}
+                  <button
+                    disabled={page === 1}
+                    onClick={() => setPage((prev) => prev - 1)}
+                    className="px-3 py-1 bg-gray-200 rounded disabled:opacity-40"
+                  >
+                    Prev
+                  </button>
+
+                  {/* PAGE NUMBERS */}
+                  {[...Array(Math.min(totalPages, 5))].map((_, i) => {
+                    const pageNum = i + 1;
+
+                    return (
+                      <button
+                        key={pageNum}
+                        onClick={() => setPage(pageNum)}
+                        className={`px-3 py-1 rounded ${
+                          page === pageNum
+                            ? "bg-[#0A2478] text-white"
+                            : "bg-gray-200"
+                        }`}
+                      >
+                        {pageNum}
+                      </button>
+                    );
+                  })}
+
+                  {/* NEXT */}
+                  <button
+                    disabled={page === totalPages}
+                    onClick={() => setPage((prev) => prev + 1)}
+                    className="px-3 py-1 bg-gray-200 rounded disabled:opacity-40"
+                  >
+                    Next
+                  </button>
+                </div>
+              </div>
+            </div>
           </div>
         </div>
-</div>
-      
-       
       </div>
     </div>
   );

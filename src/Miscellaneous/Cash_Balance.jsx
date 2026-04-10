@@ -2,6 +2,7 @@ import axios from "axios";
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { API } from "../api";
+import { usePermission } from "../API/Context/PermissionContext";
 
 // Sub-component for the tables
 const TableSection = ({ title, type, denominations, counts, onUpdate }) => (
@@ -60,7 +61,7 @@ const TableSection = ({ title, type, denominations, counts, onUpdate }) => (
 
 const Cash_Balance = () => {
   const navigate = useNavigate();
-
+const { permissions, userData } = usePermission();
   // State
   const [noteCounts, setNoteCounts] = useState({
     10: "",
@@ -168,17 +169,22 @@ const Cash_Balance = () => {
       {/* Top Navbar */}
       <div className="flex justify-center ">
         <div className="flex items-center px-5 py-2 w-[1462px] bg-white border border-gray-200 shadow-sm justify-between h-[40px]">
-          <h2 className="text-red-600 font-bold text-xl tracking-tight uppercase">
+          <h2 className="text-red-600 font-bold text-xl tracking-tight ">
             Cash Balance
           </h2>
 
           <div className="flex gap-3">
-            <button
+            {(userData?.isAdmin||permissions?.Transaction?.find(
+  item => item.name === "Cash Balance"
+)?.add) && (
+    <button
               onClick={() => navigate("/Print_Cash_Balance")}
               className="bg-blue-900 text-white px-5 py-2 rounded shadow-sm hover:bg-blue-800 transition-colors text-xs font-medium"
             >
               Print Cash Balance
             </button>
+)}
+          
             <button
               onClick={() => navigate("/")}
               className="bg-red-700 text-white px-6 py-2 rounded shadow-sm hover:bg-red-800 transition-colors text-xs font-medium"

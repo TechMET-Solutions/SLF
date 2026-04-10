@@ -4,10 +4,11 @@ import { useEffect, useState } from "react";
 import { IoMdAddCircleOutline } from "react-icons/io";
 import { MdOutlineCancel } from "react-icons/md";
 import { API } from "../api";
+import { usePermission } from "../API/Context/PermissionContext";
 import { decryptData } from "../utils/cryptoHelper"; // adjust the import path as needed
 
 const PledgeItemList = ({ rows, setRows, selectedScheme }) => {
-  console.log(selectedScheme, "selectedScheme ");
+  console.log(rows, "rows ");
   const [pledgeItems, setPledgeItems] = useState([]); // dynamic list of item names
   const [goldRate, setGoldRate] = useState(null);
   console.log(goldRate, "goldRate");
@@ -15,6 +16,8 @@ const PledgeItemList = ({ rows, setRows, selectedScheme }) => {
   const [error, setError] = useState(null);
   const [isEditing, setIsEditing] = useState(false);
   const [selectedValue, setSelectedValue] = useState(null);
+
+  const { permissions, userData } = usePermission();
   useEffect(() => {
     // Fetch latest gold rate
     const fetchGoldRate = async () => {
@@ -104,125 +107,61 @@ const PledgeItemList = ({ rows, setRows, selectedScheme }) => {
     const updatedRows = rows.filter((row) => row.id !== id);
     setRows(updatedRows);
   };
-  // Assuming you have goldRate, purities, selectedScheme, and rows
-
-  //   const calculateRate = (purityName) => {
-  //     debugger
-
+  // const calculateRate = (purityName) => {
   //   // Check if any data is missing
-  //   if (!goldRate || !goldRate.gold_rate || !selectedScheme || !purityName) return 0;
+  //   if (!goldRate || !goldRate.gold_rate || !selectedScheme || !purityName) {
+  //     return { rate: 0, actualRate: 0 };
+  //   }
 
   //   // Convert gold_rate string to number
   //   const rateValue = parseFloat(goldRate.gold_rate);
-  //    const actualRate = parseFloat(goldRate.actual_rate);
+  //   const actualRateValue = parseFloat(goldRate.actual_rate);
+
   //   // Approved gold price per gram
   //   const approvedGoldPrice =
   //     rateValue * (parseFloat(selectedScheme.goldApprovePercent) / 100);
 
-  //      const approvedGoldPriceforActualRate =
-  //     actualRate * (parseFloat(selectedScheme.goldApprovePercent) / 100);
+  //   const approvedGoldPriceForActualRate =
+  //     actualRateValue * (parseFloat(selectedScheme.goldApprovePercent) / 100);
 
   //   // Convert purity name like "22k" to number
   //   const purityValue = parseInt(purityName.replace("k", "").trim());
-  //   if (isNaN(purityValue)) return 0;
+  //   if (isNaN(purityValue)) {
+  //     return { rate: 0, actualRate: 0 };
+  //   }
 
-  //   // Calculate rate based on purity
+  //   // Calculate rates
   //   const rate = (purityValue / 24) * approvedGoldPrice;
-  // const Actualrate = (purityValue / 24) * approvedGoldPriceforActualRate;
-  //   return rate;
+  //   const actualRate = (purityValue / 24) * approvedGoldPriceForActualRate;
+
+  //   return {
+  //     rate: Math.round(rate), // no decimal
+  //     actualRate: Math.round(actualRate),
+  //   };
   // };
-
-  const calculateRate = (purityName) => {
+  const calculateRate = (purityPercent) => {
     debugger;
-
-    // Check if any data is missing
-    if (!goldRate || !goldRate.gold_rate || !selectedScheme || !purityName) {
+    if (!goldRate || !selectedScheme || !purityPercent) {
       return { rate: 0, actualRate: 0 };
     }
 
-    // Convert gold_rate string to number
-    const rateValue = parseFloat(goldRate.gold_rate);
-    const actualRateValue = parseFloat(goldRate.actual_rate);
+    const goldRateValue = parseFloat(goldRate.gold_rate) || 0;
+    const actualGoldRateValue = parseFloat(goldRate.actual_rate) || 0;
+    const approvePercent =
+      parseFloat(selectedScheme.goldApprovePercent) / 100 || 0;
 
-    // Approved gold price per gram
-    const approvedGoldPrice =
-      rateValue * (parseFloat(selectedScheme.goldApprovePercent) / 100);
+    const approvedGoldPrice = goldRateValue * approvePercent;
+    const approvedActualPrice = actualGoldRateValue * approvePercent;
 
-    const approvedGoldPriceForActualRate =
-      actualRateValue * (parseFloat(selectedScheme.goldApprovePercent) / 100);
-
-    // Convert purity name like "22k" to number
-    const purityValue = parseInt(purityName.replace("k", "").trim());
-    if (isNaN(purityValue)) {
-      return { rate: 0, actualRate: 0 };
-    }
-
-    // Calculate rates
-    const rate = (purityValue / 24) * approvedGoldPrice;
-    const actualRate = (purityValue / 24) * approvedGoldPriceForActualRate;
+    // ✅ MAIN FIX: USE PERCENTAGE
+    const rate = (purityPercent / 100) * approvedGoldPrice;
+    const actualRate = (purityPercent / 100) * approvedActualPrice;
 
     return {
-      rate: Math.round(rate), // no decimal
+      rate: Math.round(rate),
       actualRate: Math.round(actualRate),
     };
   };
-
-  //   const handleChange = (index, field, value) => {
-  //     debugger
-  //   const updatedRows = [...rows];
-
-  //   // Convert value to number if it's numeric
-  //   const numericValue = field === "gross" || field === "netWeight" ? parseFloat(value) || 0 : value;
-
-  //   if (field === "netWeight") {
-  //     // Ensure netWeight is less than or equal to gross
-  //     if (numericValue > updatedRows[index].gross) {
-  //       alert("Net Weight cannot be greater than Gross");
-  //       return;
-  //     }
-  //   }
-
-  //   // Update the value
-  //   // updatedRows[index][field] = numericValue;
-
-  //   // // If purity changes, recalculate rate & valuation
-  //   // if (field === "purity" || field === "netWeight") {
-  //   //   const rate = updatedRows[index].purity ? calculateRate(updatedRows[index].purity) : 0;
-  //   //   updatedRows[index].rate = rate;
-  //   //   updatedRows[index].valuation = updatedRows[index].netWeight
-  //   // ? Math.round(updatedRows[index].netWeight * rate)
-  //   // : 0;
-
-  //   // }
-
-  //   // setRows(updatedRows);
-
-  //   updatedRows[index][field] = numericValue;
-
-  // // If purity or netWeight changes, recalculate rate & valuation
-  // if (field === "purity" || field === "netWeight") {
-  //   const { rate, actualRate } = updatedRows[index].purity
-  //     ? calculateRate(updatedRows[index].purity)
-  //     : { rate: 0, actualRate: 0 };
-
-  //   // Store both rates
-  //   updatedRows[index].rate = rate;
-  //   updatedRows[index].actualRate = actualRate;
-
-  //   // Valuation based on approved rate
-  //   updatedRows[index].valuation = updatedRows[index].netWeight
-  //     ? Math.round(updatedRows[index].netWeight * rate)
-  //     : 0;
-
-  //   // (Optional) If you also want valuation using actual rate
-  //   updatedRows[index].actualValuation = updatedRows[index].netWeight
-  //     ? Math.round(updatedRows[index].netWeight * actualRate)
-  //     : 0;
-  // }
-
-  // setRows(updatedRows);
-  // };
-
   const totalGross = rows.reduce(
     (sum, row) => sum + parseFloat(row.gross || 0),
     0,
@@ -244,44 +183,51 @@ const PledgeItemList = ({ rows, setRows, selectedScheme }) => {
       valuation: totalValuation,
     },
   };
+ 
   const handleChange = (index, field, value) => {
+    debugger;
     const updatedRows = [...rows];
 
-    // Convert value to number if it's numeric field
+    const currentRow = updatedRows[index];
+
+    // Numeric fields
     const numericFields = ["gross", "netWeight", "nos"];
-    const numericValue = numericFields.includes(field)
+
+    let updatedValue = numericFields.includes(field)
       ? parseFloat(value) || 0
       : value;
 
-    // Validation: Net Weight cannot exceed Gross
-    if (field === "netWeight" && numericValue > updatedRows[index].gross) {
+    // ❌ Validation: Net weight > gross
+    if (field === "netWeight" && updatedValue > (currentRow.gross || 0)) {
       alert("Net Weight cannot be greater than Gross");
       return;
     }
 
-    // Update the specific field
-    updatedRows[index][field] = numericValue;
+    // ✅ Handle purity separately (OBJECT SUPPORT)
+    if (field === "purity") {
+      currentRow.purity = value?.purity_name || "";
+      currentRow.purityPercent = parseFloat(value?.purity_percent) || 0;
+    } else {
+      currentRow[field] = updatedValue;
+    }
 
-    // Recalculate if any value affecting valuation changes
-    if (
-      field === "purity" ||
-      field === "netWeight" ||
-      field === "nos" ||
-      field === "Calculated_Purity"
-    ) {
-      // Use 'purity' for calculation as per your existing logic
-      const { rate, actualRate } = updatedRows[index].purity
-        ? calculateRate(updatedRows[index].purity)
-        : { rate: 0, actualRate: 0 };
+    // ✅ Recalculate when needed
+    if (field === "purity" || field === "netWeight" || field === "nos") {
+      const purityPercent = currentRow.purityPercent || 0;
 
+      const { rate = 0, actualRate = 0 } =
+        purityPercent > 0
+          ? calculateRate(purityPercent)
+          : { rate: 0, actualRate: 0 };
+
+      currentRow.rate = rate;
+      currentRow.actualRate = actualRate;
       updatedRows[index].rate = rate;
       updatedRows[index].actualRate = actualRate;
+      const quantity = parseFloat(currentRow.nos) || 0;
+      const weight = parseFloat(currentRow.netWeight) || 0;
 
-      // 💡 VALUATION = Quantity (nos) * Net Weight * Rate
-      const quantity = parseFloat(updatedRows[index].nos) || 0;
-      const weight = parseFloat(updatedRows[index].netWeight) || 0;
-
-      updatedRows[index].valuation = Math.round(quantity * weight * rate);
+      updatedRows[index].valuation = Math.round(quantity * weight * actualRate);
       updatedRows[index].actualValuation = Math.round(
         quantity * weight * actualRate,
       );
@@ -289,6 +235,7 @@ const PledgeItemList = ({ rows, setRows, selectedScheme }) => {
 
     setRows(updatedRows);
   };
+
   return (
     <div className="flex ">
       <div className="">
@@ -317,7 +264,6 @@ const PledgeItemList = ({ rows, setRows, selectedScheme }) => {
                 Actual Purity
               </th>
               {isEditing && (
-
                 <th className="px-4 py-2 border-r border-gray-200 w-[120px]">
                   Assigned Purity
                 </th>
@@ -400,10 +346,13 @@ const PledgeItemList = ({ rows, setRows, selectedScheme }) => {
                 <td className="px-4 py-2 ">
                   <select
                     value={row.purity}
-                    onChange={(e) =>
-                      handleChange(index, "purity", e.target.value)
-                    }
-                    className="border border-gray-300 rounded-md px-2 py-1 w-[120px] focus:outline-none focus:ring-1 focus:ring-blue-500 bg-white"
+                    onChange={(e) => {
+                      const selected = purities.find(
+                        (p) => p.purity_name === e.target.value,
+                      );
+                      handleChange(index, "purity", selected);
+                    }}
+                    className="border border-gray-300 rounded-md px-2 py-1 w-[120px]"
                   >
                     <option value="">Select Purity</option>
                     {purities.map((p) => (
@@ -412,13 +361,17 @@ const PledgeItemList = ({ rows, setRows, selectedScheme }) => {
                       </option>
                     ))}
                   </select>
-
-                  <button
-                    onClick={() => setIsEditing(true)}
-                    className="text-blue-500 ml-[8px]"
-                  >
-                    <Pencil size={14} />
-                  </button>
+                  {(userData?.isAdmin ||
+                    permissions?.Transaction?.find(
+                      (item) => item.name === "Add Loan Application",
+                    )?.AssignedPurity) && (
+                    <button
+                      onClick={() => setIsEditing(true)}
+                      className="text-blue-500 ml-[8px]"
+                    >
+                      <Pencil size={14} />
+                    </button>
+                  )}
                 </td>
 
                 {isEditing && (
@@ -441,13 +394,11 @@ const PledgeItemList = ({ rows, setRows, selectedScheme }) => {
                   </td>
                 )}
                 <td className="px-4 py-2 text-center">
-                  {row.purity ? calculateRate(row.purity).rate.toFixed(2) : "—"}
+                  {row.rate ? row.rate.toFixed(2) : "—"}
                 </td>
 
                 <td className="px-4 py-2 text-center">
-                  {row.purity
-                    ? calculateRate(row.purity).actualRate.toFixed(2)
-                    : "—"}
+                  {row.actualRate ? row.actualRate.toFixed(2) : "—"}
                 </td>
                 <td className="px-4 py-2 text-center">
                   {row.valuation ? row.valuation.toLocaleString() : "—"}
@@ -488,10 +439,7 @@ const PledgeItemList = ({ rows, setRows, selectedScheme }) => {
               <td className="px-4 py-2 text-center">
                 {totalNetWeight.toFixed(2)}
               </td>
-              {isEditing && (
-
-                <td className="px-4 py-2"></td>
-              )}
+              {isEditing && <td className="px-4 py-2"></td>}
 
               <td className="px-4 py-2"></td>
               <td className="px-4 py-2"></td>

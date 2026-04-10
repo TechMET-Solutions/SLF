@@ -4,6 +4,7 @@ import { LuPrinter } from "react-icons/lu";
 import { useNavigate } from "react-router-dom";
 import { API } from "../api";
 import { formatIndianDate } from "../utils/Helpers";
+import { usePermission } from "../API/Context/PermissionContext";
 
 function CreditNote() {
   const navigate = useNavigate();
@@ -13,7 +14,7 @@ function CreditNote() {
   const [searchQuery, setSearchQuery] = useState("");
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const [selectedDate, setSelectedDate] = useState("");
-
+const { permissions, userData } = usePermission();
   const toggleHeader = (headerId) => {
     setSearchHeaders((prev) =>
       prev.includes(headerId)
@@ -26,16 +27,7 @@ function CreditNote() {
     fetchCreditNotes();
   }, []);
 
-  // FETCH ALL CREDIT NOTES
-  // const fetchCreditNotes = async () => {
-  //   try {
-  //     const res = await axios.get(`${API}/credit-note/credit-notes`);
-  //     setData(res.data.data || []);
-  //   } catch (err) {
-  //     console.error(err);
-  //     alert("Failed to fetch credit notes");
-  //   }
-  // };
+ 
   const fetchCreditNotes = async () => {
     try {
       const params = {};
@@ -208,13 +200,17 @@ function CreditNote() {
                   Clear
                 </span>
               </button>
-
-              <button
+{(userData?.isAdmin||permissions?.Transaction?.find(
+  item => item.name === "Credit Note"
+)?.add) && (
+  <button
                 onClick={() => navigate("/add-credit-note-page")}
                 className="bg-[#0b2c69] text-white text-[11px] px-2 h-[28px] rounded-[3px] font-source hover:bg-[#071d45]"
               >
                 Add Credit Note
               </button>
+)}
+              
               <button
                 onClick={() => navigate("/")}
                 className="bg-red-600 w-[46px] text-white text-[11px] px-2 h-[28px] rounded-[3px] font-source"
@@ -271,14 +267,20 @@ function CreditNote() {
                     key={row.id}
                     className={index % 2 === 0 ? "bg-gray-50" : "bg-white"}
                   >
-                    <td
-                      className="px-1 py-1 text-blue-500 hover:cursor-pointer"
-                      onClick={() =>
-                        navigate("/View-Credit-Note", { state: { id: row.id } })
-                      }
-                    >
-                      {row.credit_note_no}
-                    </td>
+                   <td
+  className="px-1 py-1 text-blue-500 cursor-pointer"
+  onClick={() =>
+    (userData?.isAdmin ||
+      permissions?.Transaction?.find(
+        item => item.name === "Credit Note"
+      )?.CreditNote_View) &&
+    navigate("/View-Credit-Note", {
+      state: { id: row.id },
+    })
+  }
+>
+  {row.credit_note_no}
+</td>
                     <td className="px-1 py-1">{row.customer_no}</td>
 
                     <td className="px-1 py-1">{row.customer_name}</td>
@@ -294,10 +296,10 @@ function CreditNote() {
                     <td className="px-1 py-1">{row.Unutilized_Amount}</td>
                     <td className="px-1 py-1">{formatIndianDate(row.date)}</td>
                     <td className="px-1 py-1 flex justify-center gap-2">
-                      {/* VIEW BUTTON (passing id via state instead of URL param) */}
-
-                      {/* PRINT BUTTON (passing id via state instead of URL param) */}
-                      <button
+                     {(userData?.isAdmin||permissions?.Transaction?.find(
+  item => item.name === "Credit Note"
+)?.print) && (
+   <button
                         onClick={() =>
                           navigate("/Print-Credit-Note", {
                             state: { id: row.id },
@@ -307,6 +309,8 @@ function CreditNote() {
                       >
                         <LuPrinter size={12} />
                       </button>
+)}
+                     
                     </td>
                   </tr>
                 ))

@@ -1,21 +1,23 @@
 import axios from "axios";
 import { useEffect, useState } from "react";
+import { FiEdit, FiTrash2 } from "react-icons/fi";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../API/Context/AuthContext";
-import { API } from "../api";
-import GroupData from "../assets/Group 124.svg";
-import DeleteData from "../assets/deletimg.png";
-import { decryptData, encryptData } from "../utils/cryptoHelper";
-import { FiEdit, FiTrash2 } from "react-icons/fi";
+import { usePermission } from "../API/Context/PermissionContext";
 import Pagination from "../Component/Pagination";
+import { API } from "../api";
+import { decryptData, encryptData } from "../utils/cryptoHelper";
+import Loader from "../Component/Loader";
 
 const ChargesProfileList = () => {
   const navigate = useNavigate();
+  const { permissions, userData } = usePermission();
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [data, setData] = useState([]);
   const [editingId, setEditingId] = useState(null); // To track which profile is being edited
   const [isview, setIsview] = useState(null);
   const [accountList, setAccountList] = useState([]);
+  const [loading, setLoading] = useState(false);
   const [formData, setFormData] = useState({
     code: "",
     description: "",
@@ -59,8 +61,6 @@ const ChargesProfileList = () => {
 
   console.log("Logged in user:", loginUser);
 
- 
-
   useEffect(() => {
     const fetchAccounts = async () => {
       try {
@@ -73,7 +73,6 @@ const ChargesProfileList = () => {
 
     fetchAccounts();
   }, []);
-  
 
   const [currentPage, setCurrentPage] = useState(1);
   const [totalItems, setTotalItems] = useState(0);
@@ -83,18 +82,16 @@ const ChargesProfileList = () => {
   const itemsPerPage = 10;
 
   const fetchChargeProfiles = async (page = 1) => {
+     setLoading(true);
     try {
-      const response = await axios.get(
-        `${API}/Master/GetChargesProfile/get`,
-        {
-          params: {
-            code: searchFilters.code,
-            description: searchFilters.Description,
-            page: page,
-            limit: itemsPerPage,
-          },
-        }
-      );
+      const response = await axios.get(`${API}/Master/GetChargesProfile/get`, {
+        params: {
+          code: searchFilters.code,
+          description: searchFilters.Description,
+          page: page,
+          limit: itemsPerPage,
+        },
+      });
 
       if (response.status === 200) {
         setData(response.data.data || []);
@@ -108,10 +105,12 @@ const ChargesProfileList = () => {
           setShowPagination(pagination.showPagination);
           setCurrentPage(pagination.page);
         }
+         setLoading(false);
       }
     } catch (error) {
       console.error("❌ Error fetching charge profiles:", error);
       alert("❌ Failed to fetch charge profiles");
+       setLoading(false);
     }
   };
 
@@ -128,28 +127,45 @@ const ChargesProfileList = () => {
       [name]: type === "checkbox" ? checked : value,
     }));
   };
+  const validateForm = () => {
+    const { code, description, amount, account } = formData;
 
+    if (!code?.trim()) return "Code is required";
+    if (!description?.trim()) return "Description is required";
+    if (!amount || isNaN(amount)) return "Valid amount is required";
+    if (!account?.trim()) return "Account is required";
+
+    return null;
+  };
   const handleSave = async () => {
+      setLoading(true);
     try {
+      const errorMsg = validateForm();
+      if (errorMsg) {
+        alert(`❌ ${errorMsg}`);
+         setLoading(false);
+        return;
+      }
+
       let payloadObj;
 
       if (editingId) {
-        // 🟡 UPDATE
         payloadObj = {
           ...formData,
           id: editingId,
         };
       } else {
-        // 🟢 ADD
         payloadObj = {
           ...formData,
-          addedBy: loginUser, // ⭐ Add logged-in user on save
+          addedBy: loginUser,
         };
       }
 
+      // 🔐 Keep request encrypted
       const encryptedPayload = encryptData(JSON.stringify(payloadObj));
 
       let response;
+
       if (editingId) {
         response = await axios.put(`${API}/Master/updateChargesProfile`, {
           data: encryptedPayload,
@@ -160,14 +176,10 @@ const ChargesProfileList = () => {
         });
       }
 
+      // ✅ NOW RESPONSE IS NORMAL JSON (NO DECRYPT)
       if (response.status === 200 || response.status === 201) {
-        const decryptedText = decryptData(response.data.data);
-        const parsedData =
-          typeof decryptedText === "string"
-            ? JSON.parse(decryptedText)
-            : decryptedText;
+        alert(` ${response.data.message}`);
 
-        alert(`✅ ${parsedData.message}`);
         setIsModalOpen(false);
         setEditingId(null);
 
@@ -179,18 +191,26 @@ const ChargesProfileList = () => {
           isActive: true,
           addedBy: "",
         });
-
+    
         fetchChargeProfiles();
+          setLoading(false);
       }
     } catch (error) {
       console.error("❌ Error saving/updating charge profile:", error);
-      alert("❌ Failed to save/update. Please try again.");
+
+      // ✅ Show backend error message
+      const message =
+        error.response?.data?.message ||
+        "❌ Failed to save/update. Please try again.";
+
+      alert(message);
+        setLoading(false);
     }
   };
 
-  useEffect(() => {
-    fetchChargeProfiles(currentPage);
-  }, [currentPage]);
+ useEffect(() => {
+  fetchChargeProfiles(currentPage);
+}, [searchFilters, currentPage]);
 
   // ✅ Edit a profile
   const handleEdit = (profile) => {
@@ -219,9 +239,12 @@ const ChargesProfileList = () => {
   };
   const handleDelete = async (profile) => {
     debugger;
+
+    setLoading(true);
     if (
       !window.confirm("Are you sure you want to delete this charge profile?")
     ) {
+      setLoading(false);
       return;
     }
 
@@ -255,15 +278,18 @@ const ChargesProfileList = () => {
         // setChargeProfiles((prev) => prev.filter((p) => p.id !== profile.id));
         alert(result.message);
         fetchChargeProfiles();
+        setLoading(false);
       }
     } catch (err) {
       console.error("Error deleting charge profile:", err);
       alert("Failed to delete charge profile");
+      setLoading(false);
     }
   };
 
   // ✅ Toggle active state
   const handleToggle = async (id, currentState) => {
+    setLoading(true);
     try {
       const payload = encryptData(
         JSON.stringify({ id, isActive: !currentState }),
@@ -279,23 +305,33 @@ const ChargesProfileList = () => {
           typeof decrypted === "string" ? JSON.parse(decrypted) : decrypted;
         // alert(`✅ ${parsed.message}`);
         fetchChargeProfiles();
+        setLoading(false);
       }
     } catch (error) {
       console.error("❌ Error updating status:", error);
       alert("❌ Failed to update status");
+      setLoading(false);
     }
   };
-  const handleClearSearch = () => {
-    // 1️⃣ Reset search fields
-    setSearchFilters({
-      code: "",
-      Description: "",
-    });
+  // const handleClearSearch = () => {
+  //   // 1️⃣ Reset search fields
+  //   setSearchFilters({
+  //     code: "",
+  //     Description: "",
+  //   });
 
-    // 2️⃣ Call API again (fetch all data)
-    setCurrentPage(1);
-    fetchChargeProfiles(1);
-  };
+  //   // 2️⃣ Call API again (fetch all data)
+  //   setCurrentPage(1);
+  //   fetchChargeProfiles(1);
+  // };
+  const handleClearSearch = () => {
+  setSearchFilters({
+    code: "",
+    Description: "",
+  });
+
+  setCurrentPage(1);
+};
 
   return (
     <div className="min-h-screen w-full">
@@ -340,7 +376,7 @@ const ChargesProfileList = () => {
               </div>
 
               {/* Buttons */}
-              <button
+              {/* <button
                 onClick={() => {
                   setCurrentPage(1);
                   fetchChargeProfiles(1);
@@ -348,7 +384,7 @@ const ChargesProfileList = () => {
                 className="bg-[#0b2c69] text-white text-[11px] px-4 py-1 rounded"
               >
                 Search
-              </button>
+              </button> */}
 
               <button
                 onClick={handleClearSearch}
@@ -358,23 +394,29 @@ const ChargesProfileList = () => {
               </button>
             </div>
             <div className="flex gap-3">
-              <button
-                onClick={() => {
-                  setEditingId(null);
-                  setFormData({
-                    code: "",
-                    description: "",
-                    amount: "",
-                    account: "",
-                    isActive: false,
-                    addedBy: "",
-                  });
-                  setIsModalOpen(true);
-                }}
-                className="bg-[#0A2478] cursor-pointer text-white text-[11.25px] w-[74px] h-[24px] rounded flex items-center justify-center"
-              >
-                Add
-              </button>
+              {(userData?.isAdmin ||
+                permissions?.Master?.find(
+                  (item) => item.name === "Charges Profile",
+                )?.add) && (
+                <button
+                  onClick={() => {
+                    setEditingId(null);
+                    setFormData({
+                      code: "",
+                      description: "",
+                      amount: "",
+                      account: "",
+                      isActive: false,
+                      addedBy: "",
+                    });
+                    setIsModalOpen(true);
+                  }}
+                  className="bg-[#0A2478] cursor-pointer text-white text-[11.25px] w-[74px] h-[24px] rounded flex items-center justify-center"
+                >
+                  Add
+                </button>
+              )}
+
               <button
                 onClick={() => navigate("/")}
                 className="bg-[#C1121F] text-white text-[10px] px-4 py-1 rounded cursor-pointer"
@@ -408,9 +450,9 @@ const ChargesProfileList = () => {
                   type="text"
                   name="code"
                   value={formData.code}
-                  disabled={isview}
+                  disabled={isview || editingId}
                   onChange={handleChange}
-                  className="border border-gray-300 rounded w-[120px] h-[38px] px-3"
+                  className="border border-gray-300 rounded w-[120px] h-[38px] px-3 disabled:bg-gray-200 disabled:cursor-not-allowed"
                 />
               </div>
 
@@ -448,7 +490,7 @@ const ChargesProfileList = () => {
               </div>
               <div>
                 <p className="text-[12px] font-medium">
-                  Leader <span className="text-red-500">*</span>
+                  Ledger <span className="text-red-500">*</span>
                 </p>
                 <select
                   name="account"
@@ -504,21 +546,21 @@ const ChargesProfileList = () => {
 
       {/* Table */}
       <div className="flex ml-[25px]">
-        <div className="overflow-x-auto  w-[1290px] h-[500px]">
+        <div className="overflow-x-auto  w-[800px] h-[500px]">
           <table className="w-full border-collapse">
             <thead className="bg-[#0A2478] text-white text-sm">
               <tr>
                 <th className="px-1 py-1 text-left border-r w-[80px]">Code</th>
-                <th className="px-1 py-1 text-left border-r w-[500px]">
+                <th className="px-1 py-1 text-left border-r w-[400px]">
                   Description
                 </th>
                 <th className="px-1 py-1 text-left border-r w-[100px]">
                   Amount
                 </th>
-                <th className="px-1 py-1 text-left border-r w-[250px]">
+                <th className="px-1 py-1 text-left border-r w-[180px]">
                   Added By
                 </th>
-                <th className="px-1 py-1 text-left border-r w-[150px]">
+                <th className="px-1 py-1 text-left border-r w-[100px]">
                   Added On
                 </th>
                 <th className="px-1 py-1 text-left border-r w-[100px]">
@@ -547,31 +589,49 @@ const ChargesProfileList = () => {
                   </td>
                   <td className="px-1 py-1 text-[#1883EF] cursor-pointer">
                     <div className="flex gap-2">
-                      <div
-                        className="bg-[#3dbd5a] cursor-pointer p-1.5 text-white rounded-sm"
-                        onClick={() => handleEdit(row)}
-                      >
-                        <FiEdit className="text-white text-[11px]" />
-                      </div>
-                      <div
-                        className="bg-[#f51111ec] cursor-pointer p-1.5 text-white rounded-sm"
-                        onClick={() => handleDelete(row)}
-                      >
-                        <FiTrash2 className="text-white text-[11px]" />
-                      </div>
+                      {(userData?.isAdmin ||
+                        permissions?.Master?.find(
+                          (item) => item.name === "Charges Profile",
+                        )?.edit) && (
+                        <div
+                          className="bg-[#3dbd5a] cursor-pointer p-1.5 text-white rounded-sm"
+                          onClick={() => handleEdit(row)}
+                        >
+                          <FiEdit className="text-white text-[11px]" />
+                        </div>
+                      )}
+
+                      {(userData?.isAdmin ||
+                        permissions?.Master?.find(
+                          (item) => item.name === "Charges Profile",
+                        )?.delete) && (
+                        <div
+                          className="bg-[#f51111ec] cursor-pointer p-1.5 text-white rounded-sm"
+                          onClick={() => handleDelete(row)}
+                        >
+                          <FiTrash2 className="text-white text-[11px]" />
+                        </div>
+                      )}
                     </div>
                   </td>
                   <td className="px-1 py-1">
-                    <button
-                      onClick={() => handleToggle(row.id, row.isActive)}
-                      className={`w-12 h-6 flex cursor-pointer items-center rounded-full p-1 transition-colors ${row.isActive ? "bg-[#0A2478]" : "bg-gray-300"
+                    {(userData?.isAdmin ||
+                      permissions?.Master?.find(
+                        (item) => item.name === "Charges Profile",
+                      )?.status) && (
+                      <button
+                        onClick={() => handleToggle(row.id, row.isActive)}
+                        className={`w-12 h-6 flex cursor-pointer items-center rounded-full p-1 transition-colors ${
+                          row.isActive ? "bg-[#0A2478]" : "bg-gray-300"
                         }`}
-                    >
-                      <div
-                        className={`bg-white w-4 h-4 rounded-full shadow-md transform transition-transform ${row.isActive ? "translate-x-6" : "translate-x-0"
+                      >
+                        <div
+                          className={`bg-white w-4 h-4 rounded-full shadow-md transform transition-transform ${
+                            row.isActive ? "translate-x-6" : "translate-x-0"
                           }`}
-                      />
-                    </button>
+                        />
+                      </button>
+                    )}
                   </td>
                 </tr>
               ))}
@@ -589,6 +649,8 @@ const ChargesProfileList = () => {
           />
         </div>
       )}
+
+      {loading && <Loader />}
     </div>
   );
 };

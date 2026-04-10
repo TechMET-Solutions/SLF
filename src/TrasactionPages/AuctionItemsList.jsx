@@ -16,6 +16,7 @@ function AuctionItemsList() {
   console.log(AuctionData, "AuctionData")
   const [data, setData] = useState([]);
   const [dataWithBidderCost, setDataWithBidderCost] = useState([]);
+  console.log(dataWithBidderCost, "dataWithBidderCost")
   const [isPaymentModalOpen, setIsPaymentModalOpen] = useState(false);
   const [selectedLoan, setSelectedLoan] = useState(null);
   console.log(selectedLoan, "selecetdloans")
@@ -61,9 +62,7 @@ function AuctionItemsList() {
           dueAmount = totalBidAmount;
         }
 
-        // ---------------------------
-        // CASE 2: Payments exist
-        // ---------------------------
+      
         else {
           dueAmount = totalBidAmount - totalPaid;
         }
@@ -88,10 +87,6 @@ function AuctionItemsList() {
     try {
       const dueAmount = Number(paymentData.due_amount);
       const payAmount = Number(paymentData.paid_amount);
-
-      // =============================
-      // VALIDATION: AMOUNT MUST BE <= DUE
-      // =============================
       if (!payAmount || payAmount <= 0) {
         alert("Please enter a valid payment amount");
         return;
@@ -116,10 +111,6 @@ function AuctionItemsList() {
         alert("UTR / Transaction No is required for online methods");
         return;
       }
-
-      // =============================
-      // PAYLOAD
-      // =============================
       const payload = {
         loan_id: selectedLoan.id,
         invoice_id: selectedLoan.bill_details.id,
@@ -158,14 +149,6 @@ function AuctionItemsList() {
 
 
 
-  // 🔹 Update bidder amount for a specific row
-  const handleBidderCostChange = (itemId, value) => {
-    setDataWithBidderCost((prev) =>
-      prev.map((row) =>
-        row.id === itemId ? { ...row, biddingCloseAmount: value } : row
-      )
-    );
-  };
   const handleChange = (e) => {
     setPaymentData({ ...paymentData, [e.target.name]: e.target.value });
   };
@@ -230,8 +213,8 @@ function AuctionItemsList() {
   return (
     <div className="min-h-screen w-full">
       {/* Header */}
-      <div className="flex justify-center sticky top-[80px] z-40">
-        <div className="flex items-center px-6 py-4 border-b  w-[1462px] h-[50px] border rounded-[11px] border-gray-200 justify-between">
+      <div className="flex justify-center sticky top-[50px] z-40">
+        <div className="flex items-center px-6 py-4 border-b  w-[1462px] h-[40px] border  border-gray-200 justify-between bg-white">
           <h2 className="text-red-600 font-bold text-[20px]">Auction ID: {AuctionData.id} — Loans Details</h2>
 
           <div className="flex gap-3">
@@ -260,10 +243,10 @@ function AuctionItemsList() {
       </div>
 
       {/* Table */}
-      <div className="flex justify-center">
-        <div className="overflow-x-auto mt-5 ">
+      <div className="flex ml-[25px]">
+        <div className="overflow-x-auto  ">
           <table className="border-collapse text-left">
-            <thead className="bg-[#0A2478] text-white text-sm">
+            <thead className="bg-[#0A2478] text-white text-xs">
               <tr className=" [&>th]:border-r">
                 <th className='w-[120px] p-1'>Loan No.</th>
                 <th className='w-[200px] p-1' >Item Name</th>
@@ -277,10 +260,11 @@ function AuctionItemsList() {
                 <th className='w-[60px] p-1'>Invoice</th>
                 <th className='w-[60px] p-1'>Payment</th>
                 <th className='w-[180px] p-1'>Remark</th>
+                <th className='w-[180px] p-1'>Status</th>
               </tr>
             </thead>
 
-            <tbody className="text-[13px] divide-y">
+            <tbody className="text-xs divide-y">
               {dataWithBidderCost?.map((item, index) => {
                 let list = [];
 
@@ -335,13 +319,14 @@ function AuctionItemsList() {
                     {/* You can fill these later */}
                     <td className="px-1 py-1">{item.AssignBidderName ? item.AssignBidderName : "---"}</td>
 
-                    <td className="px-1 py-1">
+                    <td className="px-1 py-1 flex justify-center">
                       {item.AuctionStatus === 0 ? (
                         // Show Pending Invoice (Auction not closed yet)
-                        <img
+                        <div>
+ <img
                           src={PendingInvoice}
                           alt="Pending Invoice"
-                          className="w-6 h-6 cursor-pointer"
+                          className="w-[24px] h-[24px] cursor-pointer"
                           onClick={() => {
 
                             navigate("/Generate_Bill", {
@@ -353,6 +338,8 @@ function AuctionItemsList() {
                             });
                           }}
                         />
+                        </div>
+                       
                       ) : item.AuctionStatus === 1 ? (
                         // Show Generate Invoice (Auction completed)
                         <img
@@ -395,8 +382,12 @@ function AuctionItemsList() {
                       )}
                     </td>
 
-                    <td className="px-1 py-1">--</td>
-
+                    <td className="px-1 py-1">{item.remark}</td>
+<td className={`px-1 py-1 font-medium ${
+  item.AuctionStatus === 1 ? "text-red-600" : "text-green-600"
+}`}>
+  {item.AuctionStatus === 1 ? "Closed" : "Open"}
+</td>
                   </tr>
                 );
               })}

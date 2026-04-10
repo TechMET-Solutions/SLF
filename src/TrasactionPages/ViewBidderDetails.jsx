@@ -60,10 +60,10 @@ const ViewBidderDetails = () => {
   if (error) return <p className="text-center text-red-500">{error}</p>;
 
   return (
-    <div className="flex flex-col items-center mt-5">
+    <div className="flex flex-col items-center">
       {/* Header Section */}
-      <div className="flex items-center justify-between px-6 py-4 w-[1290px] h-[62px] border border-gray-200 rounded-[11px] shadow-sm sticky top-[80px] z-40">
-        <h2 className="text-red-600 font-bold text-[20px] leading-[1.48] font-['Source_Sans_3']">
+      <div className="flex items-center justify-between px-6 py-4 w-[1462px] h-[40px] border border-gray-200  shadow-sm sticky top-[50px] z-40">
+        <h2 className="text-red-600 font-bold text-[20px] leading-[1.48] font-['Source_Sans_3'] bg-white">
           View Bidder Details
         </h2>
         <div className="flex items-center gap-5">

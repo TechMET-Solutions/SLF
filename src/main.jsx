@@ -1,11 +1,17 @@
-import React, { StrictMode } from 'react'
-import { createRoot } from 'react-dom/client'
-import './index.css'
-import App from './App.jsx'
-import { AuthProvider } from './API/Context/AuthContext.jsx'
+import { createRoot } from "react-dom/client";
+import { AuthProvider } from "./API/Context/AuthContext.jsx";
+import App from "./App.jsx";
+import "./index.css";
+import { PermissionProvider } from "./API/Context/PermissionContext.jsx";
 
-createRoot(document.getElementById('root')).render(
+createRoot(document.getElementById("root")).render(
+  // <AuthProvider>
+  //   <App />
+  //  </AuthProvider>
+
+<PermissionProvider>
   <AuthProvider>
     <App />
-   </AuthProvider>
-)
+  </AuthProvider>
+</PermissionProvider>
+);

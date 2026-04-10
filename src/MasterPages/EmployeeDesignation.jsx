@@ -5,6 +5,8 @@ import { useNavigate } from "react-router-dom";
 import { API } from "../api";
 import blockimg from "../assets/blockimg.png";
 import Pagination from "../Component/Pagination";
+import { usePermission } from "../API/Context/PermissionContext";
+import Loader from "../Component/Loader";
 
 
 function EmployeeDesignation() {
@@ -17,32 +19,38 @@ function EmployeeDesignation() {
     const [deleteId, setDeleteId] = useState(null);
     const [error, setError] = useState("");
     const [currentPage, setCurrentPage] = useState(1);
-    const itemsPerPage = 5;
+    const itemsPerPage = 15;
     const navigate = useNavigate();
-
+const [totalRecords, setTotalRecords] = useState(0);
     const BASE_URL = `${API}/Master/Employee_Profile`;
+const { permissions, userData } = usePermission();
+const [loading, setLoading] = useState(false);
+    
+  const fetchDesignations = async () => {
+    try {
+       setLoading(true);
 
+        const response = await axios.get(
+            `${BASE_URL}/get-designation?page=${currentPage}&limit=${itemsPerPage}`
+        );
+        setData(response.data.data || []);
+        // ✅ FIX HERE
+        setTotalRecords(response.data.total_records || 0);
+        setLoading(false);
+
+    } catch (err) {
+        console.error("Fetch Designations Error:", err);
+        setError("Failed to fetch designations");
+        setLoading(false);
+    } finally {
+        setIsLoading(false);
+        setLoading(false);
+    }
+};
     useEffect(() => {
         document.title = "SLF | Employee Designation";
         fetchDesignations();
     }, [currentPage]);
-
-    // 🟦 Fetch designations
-    const fetchDesignations = async () => {
-        try {
-            setIsLoading(true);
-            const response = await axios.get(
-                `${BASE_URL}/get-designation?page=${currentPage}&limit=${itemsPerPage}`
-            );
-            setData(response.data.data || []);
-        } catch (err) {
-            console.error("Fetch Designations Error:", err);
-            setError("Failed to fetch designations");
-        } finally {
-            setIsLoading(false);
-        }
-    };
-
     // 🟧 Open Edit Modal
     const handleEditClick = (row) => {
         setSelectedDesignation(row);
@@ -54,7 +62,7 @@ function EmployeeDesignation() {
             alert("Please enter a designation");
             return;
         }
-
+setLoading(true);
         try {
             const response = await axios.post(
                 `${BASE_URL}/create-designation`,
@@ -65,7 +73,7 @@ function EmployeeDesignation() {
 
             setDesignation("");
             fetchDesignations();
-
+setLoading(false);
         } catch (err) {
 
             console.error("Add Designation Error:", err);
@@ -73,15 +81,18 @@ function EmployeeDesignation() {
             // ✅ Show duplicate designation error
             if (err?.response?.data?.error?.includes("Designation already exists")) {
                 alert("❌ Designation already exists");
+                setLoading(false);
             }
+            
             else {
-                alert("Error adding designation");
+        alert("Error adding designation");
+        setLoading(false);
             }
         }
     };
 
     const handleEditConfirm = async () => {
-
+setLoading(true);
         if (!selectedDesignation.designation.trim()) {
             alert("Designation name cannot be empty");
             return;
@@ -97,7 +108,7 @@ function EmployeeDesignation() {
 
             setEditModalOpen(false);
             fetchDesignations();
-
+            setLoading(false);
         } catch (err) {
 
             console.error("Edit Error:", err);
@@ -105,23 +116,28 @@ function EmployeeDesignation() {
             // ✅ Show duplicate designation error
             if (err?.response?.data?.error?.includes("Designation already exists")) {
                 alert("❌ Designation already exists");
+                setLoading(false);
             }
             else {
                 alert("Error updating designation");
+                setLoading(false);
             }
         }
     };
 
     // 🟥 Delete
     const handleDeleteConfirm = async () => {
+        setLoading(true);
         try {
             await axios.delete(`${BASE_URL}/delete-designation/${deleteId}`);
             alert("Designation deleted successfully!");
             setDeleteModalOpen(false);
             fetchDesignations();
+            setLoading(false);
         } catch (err) {
             console.error("Delete Error:", err);
             alert("Error deleting designation");
+            setLoading(false);
         }
     };
 
@@ -134,14 +150,100 @@ function EmployeeDesignation() {
         setCurrentPage(pageNumber);
     };
 
-    const totalPages = Math.ceil(data.length / itemsPerPage);
+const handlePrevious = () => {
+    if (currentPage > 1) {
+        setCurrentPage(currentPage - 1);
+    }
+};
 
+const handleNext = () => {
+    if (currentPage < totalPages) {
+        setCurrentPage(currentPage + 1);
+    }
+};
+
+const totalPages = Math.ceil(totalRecords / itemsPerPage);
+
+const renderPaginationButtons = () => {
+  const buttons = [];
+  const totalPages = Math.ceil(totalRecords / itemsPerPage);
+  const currentPageLocal = currentPage;
+
+  const pageLimit = 2;
+
+  // ✅ Previous
+  buttons.push(
+    <button
+      key="prev"
+      onClick={() => handlePageChange(currentPageLocal - 1)}
+      disabled={currentPageLocal === 1}
+      className="px-3 py-1 border rounded-md disabled:opacity-50"
+    >
+      Previous
+    </button>
+  );
+
+  // ✅ Page Button
+  const createPageButton = (page) => (
+    <button
+      key={page}
+      onClick={() => handlePageChange(page)}
+      className={`px-3 py-1 border rounded-md ${
+        currentPageLocal === page
+          ? "bg-[#0b2c69] text-white"
+          : "hover:bg-gray-100"
+      }`}
+    >
+      {page}
+    </button>
+  );
+
+  // ✅ First Page
+  buttons.push(createPageButton(1));
+
+  // ✅ Left ...
+  if (currentPageLocal > pageLimit + 2) {
+    buttons.push(<span key="left">...</span>);
+  }
+
+  // ✅ Middle Pages
+  const start = Math.max(2, currentPageLocal - pageLimit);
+  const end = Math.min(totalPages - 1, currentPageLocal + pageLimit);
+
+  for (let i = start; i <= end; i++) {
+    buttons.push(createPageButton(i));
+  }
+
+  // ✅ Right ...
+  if (currentPageLocal < totalPages - pageLimit - 1) {
+    buttons.push(<span key="right">...</span>);
+  }
+
+  // ✅ Last Page
+  if (totalPages > 1) {
+    buttons.push(createPageButton(totalPages));
+  }
+
+  // ✅ Next
+  buttons.push(
+    <button
+      key="next"
+      onClick={() => handlePageChange(currentPageLocal + 1)}
+      disabled={currentPageLocal === totalPages}
+      className="px-3 py-1 border rounded-md disabled:opacity-50"
+    >
+      Next
+    </button>
+  );
+
+  return buttons;
+};
     return (
         <div className="min-h-screen w-full">
-            {/* Top Bar */}
+           
             <div className="flex justify-center sticky top-[50px] z-40">
-                <div className="flex items-center px-6 py-4 border-b  w-[1462px] h-[40px] border  border-gray-200 justify-between shadow">
-                    <h2 className="text-red-600 font-bold text-[20px] leading-[148%] font-source">
+                <div className="flex items-center px-6 py-4 border-b  w-[1462px] h-[40px] border  border-gray-200 justify-between bg-white">
+                    <h2 className="text-red-600 font-bold text-[20px] leading-[148%] font-source ">
                         Designation
                     </h2>
                     <div className="flex items-center gap-6">
@@ -293,20 +395,29 @@ function EmployeeDesignation() {
                                         <td className="px-2 py-1">{row.designation}</td>
                                         <td className="px-2 py-1 text-center">
                                             <div className="flex gap-2 justify-center">
-                                                <button
+                                                {(userData?.isAdmin||permissions?.Master?.find(
+  item => item.name === "Employee Designation"
+)?.edit) && (
+     <button
                                                     title="Edit"
                                                     onClick={() => handleEditClick(row)}
                                                     className="bg-green-500 p-1.5 rounded text-white hover:bg-green-600"
                                                 >
                                                     <FiEdit />
                                                 </button>
-                                                <button
+)}
+                                              {(userData?.isAdmin||permissions?.Master?.find(
+  item => item.name === "Employee Designation"
+)?.delete) && (
+      <button
                                                     title="Delete"
                                                     onClick={() => handleDeleteClick(row.id)}
                                                     className="bg-red-600 p-1.5 rounded text-white hover:bg-red-700"
                                                 >
                                                     <FiTrash2 />
                                                 </button>
+)}
+                                               
                                             </div>
                                         </td>
                                     </tr>
@@ -316,13 +427,12 @@ function EmployeeDesignation() {
                     )}
                 </div>
             </div>
-
+          <div className="flex justify-center items-center gap-2 mt-4 flex-wrap">
+  {renderPaginationButtons()}
+</div>
+{loading && <Loader />}
             {/* Pagination */}
-            <Pagination
-                currentPage={currentPage}
-                totalPages={totalPages}
-                onPageChange={handlePageChange}
-            />
+           
         </div>
     );
 }

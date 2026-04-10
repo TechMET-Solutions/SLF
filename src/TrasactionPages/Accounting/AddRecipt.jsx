@@ -833,13 +833,14 @@ import {
 import { useEffect, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import { API } from "../../api";
+import Loader from "../../Component/Loader";
 
 const AddRecipt = () => {
   const navigate = useNavigate();
   const location = useLocation();
   const expenseId = location.state?.expenseId;
   const isViewMode = location.state?.view;
-
+  const [loading, setLoading] = useState(false);
   // Modals State
 
   const [isModalOpen, setIsModalOpen] = useState(false); // Party Modal
@@ -848,51 +849,8 @@ const AddRecipt = () => {
   const [employeeList, setEmployeeList] = useState([]);
   const [showDropdownForEmployee, setShowDropdownForemployee] = useState(false);
 
-  // const fetchExpenseById = async (id) => {
-  //   try {
-  //     const res = await axios.get(
-  //       `${API}/api/Receipt/Receipt-details/${id}`,
-  //     );
-
-  //     if (res.data.success) {
-  //       const { master, details } = res.data;
-
-  //       // 🔹 Set Main Voucher Row
-  //       setVoucherRows([
-  //         {
-  //           subLedgerCode: details[0]?.sub_ledger_code || "",
-  //           ledgerName: details[0]?.ledger_name || "",
-  //           date: master.expense_date,
-  //           sign: details[0]?.sign || "C",
-  //           remark: details[0]?.remark || "",
-  //           amount: details.reduce(
-  //             (sum, d) => sum + Number(d.bill_amount || 0),
-  //             0,
-  //           ),
-  //         },
-  //       ]);
-
-  //       // 🔹 Convert details into rowDetails format
-  //       setRowDetails({
-  //         0: details.map((d) => ({
-  //           billNumber: d.bill_number,
-  //           billAmount: d.bill_amount,
-  //           billPaidAmount: d.bill_paid_amount,
-  //           payMode: d.pay_mode,
-  //           bankId: d.bank_id,
-  //           billImage: d.bill_image, // URL string
-  //           partyName: d.party_name,
-  //           employeeName: d.employee_name,
-  //           partyId: d.party_id,
-  //           employeeId: d.employee_id,
-  //         })),
-  //       });
-  //     }
-  //   } catch (error) {
-  //     console.error("Fetch Expense Error:", error);
-  //   }
-  // };
   const fetchExpenseById = async (id) => {
+    setLoading(true);
     try {
       const res = await axios.get(`${API}/api/Receipt/Receipt-details/${id}`);
 
@@ -921,6 +879,7 @@ const AddRecipt = () => {
           },
         ]);
         setRowDetails({ 0: [] });
+        setLoading(false);
         return;
       }
 
@@ -930,7 +889,6 @@ const AddRecipt = () => {
         0,
       );
 
-      // ✅ Set Main Voucher Row
       setVoucherRows([
         {
           subLedgerCode: details[0]?.sub_ledger_code || "",
@@ -941,8 +899,6 @@ const AddRecipt = () => {
           amount: totalAmount,
         },
       ]);
-
-      // ✅ Convert details into rowDetails format
       setRowDetails({
         0: details.map((d) => ({
           billNumber: d?.bill_number || "",
@@ -957,11 +913,13 @@ const AddRecipt = () => {
           employeeId: d?.employee_id || "",
         })),
       });
+      setLoading(false);
     } catch (error) {
       console.error(
         "Fetch Expense Error:",
         error?.response?.data || error.message,
       );
+      setLoading(false);
     }
   };
   useEffect(() => {
@@ -969,18 +927,54 @@ const AddRecipt = () => {
       fetchExpenseById(expenseId);
     }
   }, [expenseId]);
+  // useEffect(() => {
+  //   fetchBanks();
+  // }, []);
+
+  // const fetchBanks = async () => {
+  //   try {
+  //     const res = await axios.get(`${API}/api/banks/list`);
+  //     setBanks(res.data); // assuming API returns array
+  //   } catch (err) {
+  //     console.error(err);
+  //   }
+  // };
+
   useEffect(() => {
+    const fetchBanks = async () => {
+      debugger;
+      try {
+        const userData = JSON.parse(sessionStorage.getItem("userData"));
+
+        const branchId =
+          typeof userData?.branchId === "object"
+            ? userData?.branchId?.id
+            : userData?.branchId;
+
+        console.log("BranchId:", branchId);
+
+        if (!branchId) {
+          console.error("BranchId missing!");
+          return;
+        }
+
+        const res = await axios.get(`${API}/api/banks/GetBanklist`, {
+          params: { branchId },
+        });
+
+        const formattedBanks = res.data.map((bank) => ({
+          id: bank.id,
+          name: bank.name,
+        }));
+
+        setBanks(formattedBanks);
+      } catch (error) {
+        console.error("Error fetching banks:", error);
+      }
+    };
+
     fetchBanks();
   }, []);
-
-  const fetchBanks = async () => {
-    try {
-      const res = await axios.get(`${API}/api/banks/list`);
-      setBanks(res.data); // assuming API returns array
-    } catch (err) {
-      console.error(err);
-    }
-  };
   const todayDate = new Date().toISOString().split("T")[0];
   // Main Data State
   const [bankAccounts, setBankAccounts] = useState([]);
@@ -1123,8 +1117,82 @@ const AddRecipt = () => {
       console.error("Failed to fetch bank accounts", error);
     }
   };
+  const validateDetailForm = () => {
+    if (!detailForm.billNumber) {
+      alert("❌ Bill Number is required");
+      return false;
+    }
+
+    if (!detailForm.billAmount) {
+      alert("❌ Bill Amount is required");
+      return false;
+    }
+
+    if (!detailForm.partyName) {
+      alert("❌ Party Name is required");
+      return false;
+    }
+
+    if (!detailForm.employeeName) {
+      alert("❌ Employee Name is required");
+      return false;
+    }
+
+    if (!detailForm.payMode) {
+      alert("❌ Payment Mode is required");
+      return false;
+    }
+
+    if (detailForm.payMode === "Bank" && !detailForm.bankId) {
+      alert("❌ Please select Bank");
+      return false;
+    }
+
+    return true;
+  };
+
+  // const handleSaveDetails = () => {
+  //   setRowDetails((prev) => {
+  //     const existing = prev[currentRowIndex] || [];
+
+  //     let updatedDetails;
+
+  //     if (editingBillIndex !== null) {
+  //       // 🔵 UPDATE existing bill
+  //       updatedDetails = existing.map((item, index) =>
+  //         index === editingBillIndex ? detailForm : item,
+  //       );
+  //     } else {
+  //       // 🟢 ADD new bill
+  //       updatedDetails = [...existing, detailForm];
+  //     }
+
+  //     // 🔥 Recalculate total
+  //     const total = updatedDetails.reduce(
+  //       (sum, item) => sum + Number(item.billAmount || 0),
+  //       0,
+  //     );
+
+  //     handleVoucherChange(currentRowIndex, "amount", total);
+
+  //     return {
+  //       ...prev,
+  //       [currentRowIndex]: updatedDetails,
+  //     };
+  //   });
+
+  //   setEditingBillIndex(null);
+  //   setIsDetailsModalOpen(false);
+  // };
+
+  // --- Main Form Logic ---
 
   const handleSaveDetails = () => {
+    // ✅ VALIDATION FIRST
+    if (!validateDetailForm()) {
+      return; // ⛔ Stop if invalid
+    }
+
     setRowDetails((prev) => {
       const existing = prev[currentRowIndex] || [];
 
@@ -1158,7 +1226,6 @@ const AddRecipt = () => {
     setIsDetailsModalOpen(false);
   };
 
-  // --- Main Form Logic ---
   const handleChange = (e) => {
     const { name, value } = e.target;
     setPartyData((prev) => ({ ...prev, [name]: value }));
@@ -1170,8 +1237,92 @@ const AddRecipt = () => {
     setVoucherRows(updatedRows);
   };
 
+  // const handleMainSave = async () => {
+  //   debugger;
+  //   try {
+  //     const formData = new FormData();
+
+  //     const cleanedExpenses = voucherRows.map((row, index) => ({
+  //       ...row,
+  //       details:
+  //         rowDetails[index]?.map((detail) => ({
+  //           ...detail,
+  //           billImage: undefined,
+  //         })) || [],
+  //     }));
+
+  //     formData.append("expenses", JSON.stringify(cleanedExpenses));
+
+  //     Object.values(rowDetails).forEach((detailsArr) => {
+  //       detailsArr?.forEach((detail) => {
+  //         if (detail.billImage instanceof File) {
+  //           formData.append("billImage", detail.billImage);
+  //         }
+  //       });
+  //     });
+
+  //     const response = await axios.post(
+  //       `${API}/api/Receipt/create-Receipt`,
+  //       formData,
+  //     );
+
+  //     if (response.data.success) {
+  //       alert("Receipt Saved Successfully ✅");
+
+  //       // 🔥 Reset States
+  //       setCurrentRowIndex(null);
+  //       setRowDetails({});
+  //       setDetailForm({
+  //         billNumber: "",
+  //         billAmount: "",
+  //         billPaidAmount: "",
+  //         payMode: "Cash",
+  //         bankId: "",
+  //         billImage: null,
+  //         partyName: "",
+  //         employeeName: "",
+  //       });
+
+  //       // Optional: reset main rows also
+  //       setVoucherRows([
+  //         {
+  //           subLedgerCode: "",
+  //           ledgerName: "",
+  //           date: "",
+  //           sign: "",
+  //           remark: "",
+  //           amount: "",
+  //         },
+  //       ]);
+  //       navigate("/Receipt_List");
+  //     }
+  //   } catch (error) {
+  //     console.error("Save Error:", error);
+  //   }
+  // };
   const handleMainSave = async () => {
     debugger;
+    setLoading(true);
+    // ✅ CHECK: At least one detail exists
+    const hasAnyDetails = Object.values(rowDetails).some(
+      (detailsArr) => detailsArr && detailsArr.length > 0,
+    );
+
+    if (!hasAnyDetails) {
+      alert("❌ Please add at least one detail before saving");
+      setLoading(false);
+      return;
+    }
+
+    // ✅ CHECK: Each row must have details
+    for (let i = 0; i < voucherRows.length; i++) {
+      if (!rowDetails[i] || rowDetails[i].length === 0) {
+        setLoading(false);
+        alert(`❌ Please add details for row ${i + 1}`);
+        return;
+      }
+    }
+
     try {
       const formData = new FormData();
 
@@ -1200,7 +1351,7 @@ const AddRecipt = () => {
       );
 
       if (response.data.success) {
-        alert("Expense Saved Successfully ✅");
+        alert("Receipt Saved Successfully ✅");
 
         // 🔥 Reset States
         setCurrentRowIndex(null);
@@ -1216,7 +1367,6 @@ const AddRecipt = () => {
           employeeName: "",
         });
 
-        // Optional: reset main rows also
         setVoucherRows([
           {
             subLedgerCode: "",
@@ -1227,15 +1377,17 @@ const AddRecipt = () => {
             amount: "",
           },
         ]);
+        setLoading(false);
         navigate("/Receipt_List");
       }
     } catch (error) {
       console.error("Save Error:", error);
+      setLoading(false);
     }
   };
-
   const handleUpdate = async (expenseId) => {
     try {
+      setLoading(true);
       const formData = new FormData();
 
       const cleanedExpenses = [
@@ -1280,11 +1432,13 @@ const AddRecipt = () => {
           partyName: "",
           employeeName: "",
         });
+        setLoading(false);
         navigate("/Receipt_List");
       }
     } catch (error) {
       console.error("Update Error:", error);
       alert("Recepit to update expense ❌");
+      setLoading(false);
     }
   };
 
@@ -1361,9 +1515,9 @@ const AddRecipt = () => {
   };
 
   return (
-    <div className="min-h-screen bg-white font-sans text-[#333] ml-[110px] mr-[110px]">
-      <div className="mx-auto p-2 mt-5">
-        <div className="flex justify-between items-center bg-white p-4 rounded-lg  border border-gray-300 w-[1290px]">
+    <div className="min-h-screen bg-white font-sans text-[#333]  ml-[25px]">
+      <div className="mx-auto ">
+        <div className="flex justify-between items-center bg-white h-[40px]  border border-gray-300 w-[1462px] pl-5 pr-5">
           <h1 className="text-[#D32F2F] text-xl font-bold">Add Receipt</h1>
           <div className="flex space-x-2">
             {!expenseId && !isViewMode && (
@@ -1409,18 +1563,18 @@ const AddRecipt = () => {
         </div>
       </div>
 
-      <div className="p-5">
+      <div className="">
         <div className="border-[#008080] rounded-sm overflow-hidden">
-          <p className="font-[Source_Sans_3] font-bold text-[18px] leading-[100%] tracking-[0.03em] text-[#0A2478] mb-4">
+          <p className="font-[Source_Sans_3] font-bold text-[18px] leading-[100%] tracking-[0.03em] text-[#0A2478] mb-2 mt-2">
             Expense Voucher Details
           </p>
 
           <table className=" text-left border-collapse bg-white">
             <thead>
               <tr className="bg-[#0A2478] text-white text-[11px] uppercase">
-                <th className="p-2 border-r font-bold w-18 text-center">No</th>
-                <th className="p-2 border-r font-bold">Sub Ledger Name</th>
-                <th className="p-2 border-r font-bold w-28 text-center">
+                <th className="p-1 border-r font-bold w-18 text-center">No</th>
+                <th className="p-1 border-r font-bold">Sub Ledger Name</th>
+                <th className="p-1 border-r font-bold w-28 text-center">
                   Date
                 </th>
                 {/* <th className="p-2 border-r font-bold w-28 text-center">
@@ -1438,7 +1592,7 @@ const AddRecipt = () => {
                   <td className="p-1 border-r border-gray-300 text-center">
                     {index + 1}
                   </td>
-                  <td className="p-1 border-r border-gray-300">
+                  <td className="p-1 border-r border-gray-300 text-xs">
                     <select
                       value={row.subLedgerCode}
                       disabled={isViewMode}
@@ -1454,7 +1608,7 @@ const AddRecipt = () => {
                           bank?.name || "",
                         );
                       }}
-                      className="w-full border border-gray-300 rounded-sm px-1 py-1 outline-none bg-white"
+                      className="w-full border border-gray-300 rounded-sm px-1 py-1 outline-none bg-white text-xs"
                     >
                       <option value="">Select Account</option>
                       {bankAccounts?.map((bank) => (
@@ -1476,21 +1630,10 @@ const AddRecipt = () => {
                       onChange={(e) =>
                         handleVoucherChange(index, "date", e.target.value)
                       }
-                      className="w-full bg-white border border-gray-300 rounded-sm px-1 py-0.5 outline-none text-center"
+                      className="w-full bg-white border border-gray-300 rounded-sm px-1 py-1 text-xs outline-none text-center"
                     />
                   </td>
 
-                  {/* <td className="p-1 border-r border-gray-300">
-                    <input
-                      type="text"
-                      disabled={isViewMode}
-                      value={row.amount}
-                      onChange={(e) =>
-                        handleVoucherChange(index, "amount", e.target.value)
-                      }
-                      className="w-full bg-white border border-gray-300 rounded-sm px-1 py-0.5 outline-none text-right"
-                    />
-                  </td> */}
                   <td className="p-1 ">
                     <div className="flex gap-1 items-center">
                       <input
@@ -1500,7 +1643,7 @@ const AddRecipt = () => {
                         onChange={(e) =>
                           handleVoucherChange(index, "remark", e.target.value)
                         }
-                        className="flex-1 bg-white border border-gray-300 rounded-sm px-1 py-0.5 outline-none"
+                        className="flex-1 bg-white border border-gray-300 rounded-sm px-1 py-1 text-xs outline-none"
                         placeholder="Remark"
                       />
 
@@ -1509,14 +1652,14 @@ const AddRecipt = () => {
                         disabled={isViewMode}
                         className="bg-[#0A2478] text-white p-1.5 rounded-sm hover:bg-[#0a2669]"
                       >
-                        <Plus size={12}    />
+                        <Plus size={12} />
                       </button>
                       <button
                         onClick={() => removeRow(index)}
-                         disabled={isViewMode}
+                        disabled={isViewMode}
                         className="bg-red-600  text-white p-1.5 rounded-sm hover:bg-red-700"
                       >
-                        <Trash2 size={12}   />
+                        <Trash2 size={12} />
                       </button>
 
                       <button
@@ -1642,7 +1785,7 @@ const AddRecipt = () => {
                     {banks && banks.length > 0 ? (
                       banks.map((bank) => (
                         <option key={bank.id} value={bank.id}>
-                          {bank.bank_name}
+                          {bank.name}
                         </option>
                       ))
                     ) : (
@@ -2086,6 +2229,8 @@ const AddRecipt = () => {
           </div>
         </div>
       )}
+
+      {loading && <Loader />}
     </div>
   );
 };
