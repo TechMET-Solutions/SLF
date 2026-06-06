@@ -5,27 +5,49 @@ import { decryptData, encryptData } from "../../../utils/cryptoHelper";
 const API_BASE = `${API}/Master/User-Management`;
 
 // 🔹 Fetch All roles Profiles with Pagination
+// export const fetchRolesApi = async (page = 1, limit = 10) => {
+//   try {
+//     const encryptedPayload = encryptData({});
+//     const response = await axios({
+//       method: "get",
+//       url: `${API_BASE}/getAll-roles?page=${page}&limit=${limit}`,
+//       headers: { "Content-Type": "application/json" },
+//       data: { data: encryptedPayload },
+//     });
+
+//     if (response.data?.data) {
+//       return decryptData(response.data.data);
+//     }
+
+//     return { items: [], total: 0, page: 1, showPagination: false };
+//   } catch (error) {
+//     console.error("❌ Error fetching roles profiles:", error);
+//     return { items: [], total: 0, page: 1, showPagination: false };
+//   }
+// };
 export const fetchRolesApi = async (page = 1, limit = 10) => {
   try {
-    const encryptedPayload = encryptData({});
-    const response = await axios({
-      method: "get",
-      url: `${API_BASE}/getAll-roles?page=${page}&limit=${limit}`,
-      headers: { "Content-Type": "application/json" },
-      data: { data: encryptedPayload },
-    });
+    const response = await axios.get(
+      `${API_BASE}/getAll-roles?page=${page}&limit=${limit}`,
+      {
+        headers: { "Content-Type": "application/json" },
+      }
+    );
 
-    if (response.data?.data) {
-      return decryptData(response.data.data);
-    }
+    // ✅ Direct JSON response (no decrypt)
+    return response.data;
 
-    return { items: [], total: 0, page: 1, showPagination: false };
   } catch (error) {
-    console.error("❌ Error fetching roles profiles:", error);
-    return { items: [], total: 0, page: 1, showPagination: false };
+    console.error("❌ Error fetching roles:", error);
+
+    return {
+      roles: [],
+      total: 0,
+      page: 1,
+      limit: 10,
+    };
   }
 };
-
 export const updateRolesStatusApi = async (id, is_active) => {
   try {
     const encryptedPayload = encryptData({ id, is_active });
@@ -44,7 +66,7 @@ export const updateRolesStatusApi = async (id, is_active) => {
 
 // 🔹 Add New roles
 export const addRolesApi = async (formData) => {
-  const res = await fetch(`${API}/Master/User-Management/add-roles`, {
+  const res = await fetch(`${API_BASE}/add-roles`, {
     method: "POST",
     headers: {
       "Content-Type": "application/json",

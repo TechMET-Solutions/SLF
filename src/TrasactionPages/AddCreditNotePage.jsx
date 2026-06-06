@@ -252,7 +252,7 @@ const AddCreditNotePage = () => {
             className="
 bg-[#FFE6E6] p-2 border-gray-300"
           >
-            <h3 className="font-semibold font-weight-600 text-[20px] text-[#0A2478] mb-2">
+            <h3 className="font-semibold font-weight-600 text-[15px] text-[#0A2478] mb-2">
               Credit Note Details
             </h3>
 
@@ -354,7 +354,7 @@ bg-[#FFE6E6] p-2 border-gray-300"
 
           {/* CUSTOMER DETAILS */}
           <section className="bg-[#F7F7FF]  p-2 border-gray-300">
-            <h3 className="font-semibold text-[20px] text-[#0A2478] mb-2">
+            <h3 className="font-semibold text-[15px] text-[#0A2478] mb-2">
               Customer Details
             </h3>
 
@@ -486,7 +486,7 @@ bg-[#FFE6E6] p-2 border-gray-300"
 
           {/* AUTHORIZATION */}
           <section className="bg-[#FFE6E6]  p-2 ">
-            <h3 className="font-semibold text-[20px] text-[#0A2478] mb-2">
+            <h3 className="font-semibold text-[15px] text-[#0A2478] mb-2">
               Authorization & Verification
             </h3>
 
@@ -511,7 +511,7 @@ bg-[#FFE6E6] p-2 border-gray-300"
                   value={formData.designation}
                   placeholder="Enter Designation"
                   onChange={handleChange}
-                  className="w-[263px] border border-gray-300 bg-white px-1 py-1 rounded-[8px] "
+                  className="w-[263px] border border-gray-300 bg-white text-xs px-1 py-1 rounded-[8px] "
                 />
               </div>
 
@@ -524,7 +524,7 @@ bg-[#FFE6E6] p-2 border-gray-300"
                   value={formData.verified_by}
                   placeholder="Enter Verified By"
                   onChange={handleChange}
-                  className="w-[263px] border border-gray-300 bg-white px-1 py-1 rounded-[8px] "
+                  className="w-[263px] border border-gray-300 bg-white px-1 text-xs py-1 rounded-[8px] "
                 />
               </div>
             </div>

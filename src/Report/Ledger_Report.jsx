@@ -277,107 +277,11 @@ const Ledger_Report = () => {
   };
 
   return (
-    // <div className="min-h-screen bg-white text-[12px]">
-    //   <div className="m-2 border border-teal-600 shadow-sm">
-    //     <div className="bg-[#1a8a81] text-white px-3 py-1 font-semibold text-sm">
-    //       Ledger Report
-    //     </div>
-
-    //     {/* Filters */}
-    //     <div className="p-4 border-b">
-    //       <div className="flex gap-6 flex-wrap">
-    //         <div>
-    //           <label>From Date</label>
-    //           <input
-    //             type="date"
-    //             value={fromDate}
-    //             onChange={(e) => setFromDate(e.target.value)}
-    //             className="border ml-2 px-2 py-1"
-    //           />
-    //         </div>
-
-    //         <div>
-    //           <label>To Date</label>
-    //           <input
-    //             type="date"
-    //             value={toDate}
-    //             onChange={(e) => setToDate(e.target.value)}
-    //             className="border ml-2 px-2 py-1"
-    //           />
-    //         </div>
-
-    //         <div>
-    //           <label>Ledger</label>
-    //           <select
-    //             value={selectedLedger}
-    //             onChange={(e) => setSelectedLedger(e.target.value)}
-    //             className="border ml-2 px-2 py-1"
-    //           >
-    //             {ledgerList.map((ledger) => (
-    //               <option key={ledger.id} value={ledger.id}>
-    //                 {ledger.name}
-    //               </option>
-    //             ))}
-    //           </select>
-    //         </div>
-
-    //         <button
-    //           onClick={handleView}
-    //           className="bg-blue-600 text-white px-6 py-1"
-    //         >
-    //           View
-    //         </button>
-    //       </div>
-    //     </div>
-
-    //     {/* Table */}
-    //     <div className="p-2 overflow-x-auto">
-    //       <table className="w-full border text-[11px]">
-    //         <thead className="bg-gray-200">
-    //           <tr>
-    //             <th className="border p-1">Date</th>
-    //             <th className="border p-1">Particulars</th>
-    //             <th className="border p-1 text-right">Deposit</th>
-    //             <th className="border p-1 text-right">Withdrawal</th>
-    //             <th className="border p-1 text-right">Running Total</th>
-    //           </tr>
-    //         </thead>
-    //         <tbody>
-    //           {loading ? (
-    //             <tr>
-    //               <td colSpan="5" className="text-center p-3">
-    //                 Loading...
-    //               </td>
-    //             </tr>
-    //           ) : ledgerData.length === 0 ? (
-    //             <tr>
-    //               <td colSpan="5" className="text-center p-3">
-    //                 No Records Found
-    //               </td>
-    //             </tr>
-    //           ) : (
-    //             ledgerData.map((row, index) => (
-    //               <tr key={index}>
-    //                 <td className="border p-1">{row.date}</td>
-    //                 <td className="border p-1">{row.particulars}</td>
-    //                 <td className="border p-1 text-right">{row.dr}</td>
-    //                 <td className="border p-1 text-right">{row.cr}</td>
-    //                 <td className="border p-1 text-right font-bold">
-    //                   {row.total}
-    //                 </td>
-    //               </tr>
-    //             ))
-    //           )}
-    //         </tbody>
-    //       </table>
-    //     </div>
-    //   </div>
-    // </div>
-
-    <div className="min-h-screen bg-gray-50 p-4 font-sans text-gray-800">
+   
+    <div className="min-h-screen  font-sans text-gray-800">
       {/* 🟦 Single Line Header & Control Bar */}
-      <div className="flex justify-center mt-2 mb-4">
-        <div className="flex items-center justify-between px-6 py-4 w-full max-w-[1400px] min-h-[75px] rounded-[11px] border border-gray-200 shadow-sm bg-white gap-4">
+      <div className="flex justify-center ">
+        <div className="flex items-center justify-between px-6 py-2 w-[1462px] min-h-[45px]  border border-gray-200 shadow-sm bg-white gap-4">
 
           {/* 🔴 Left — Title */}
           <div className="flex-shrink-0">
@@ -475,7 +379,7 @@ const Ledger_Report = () => {
       </div>
 
       {/* 🟢 Table Section */}
-      <div className="flex justify-center">
+      <div className="flex ml-[20px]">
         <div className="w-full max-w-[1400px] bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden">
           <div className="overflow-x-auto min-h-[500px]">
             <table className="w-full text-left border-collapse">

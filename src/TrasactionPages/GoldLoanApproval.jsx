@@ -47,7 +47,7 @@ const GoldLoanApproval = () => {
   const [loanData, setLoanData] = useState(null);
   console.log(loanData, "loandata");
   const [loanSchemeData, setLoanSchemeData] = useState(null);
-  console.log();
+  console.log(loanSchemeData,"loanSchemeData");
   const [coBorrowerBankDetails, setcoBorrowerBankDetails] = useState(null);
   const [BorrowerBankDetails, setBorrowerBankDetails] = useState(null);
   console.log(BorrowerBankDetails, "");
@@ -113,268 +113,35 @@ const GoldLoanApproval = () => {
     }
   }, [loanId]);
 
-  // const generateEMISchedule = (P, annualRate, months, type, firstEmiDate) => {
-  //   const r = annualRate / 12 / 100;
+  // const generateEMISchedule = (
+  //   P,
+  //   annualRate,
+  //   months,
+  //   type, // "Flat" | "Reducing" | "Multiple"
+  //   firstEmiDate,
+  //   slabs = [],
+  // ) => {
   //   const rows = [];
+  //   let balance = P;
+
+  //   const baseDate = new Date(firstEmiDate);
+
+  //   const getEmiDate = (monthIndex) => {
+  //     const d = new Date(baseDate);
+  //     d.setMonth(d.getMonth() + (monthIndex - 1));
+  //     return d.toISOString().split("T")[0];
+  //   };
+
+  //   const r = annualRate / 12 / 100;
 
   //   let emi = 0;
-  //   let balance = P;
 
-  //   // 👉 Convert first EMI date
-  //   const baseDate = new Date(firstEmiDate);
-
-  //   const getEmiDate = (monthIndex) => {
-  //     const d = new Date(baseDate);
-  //     d.setMonth(d.getMonth() + (monthIndex - 1));
-  //     return d.toISOString().split("T")[0]; // yyyy-mm-dd
-  //   };
-
-  //   // ================= FLAT =================
+  
   //   if (type === "Flat") {
-  //     const totalInterest = P * r * months;
+  //     const totalInterest = (P * annualRate * months) / (12 * 100);
   //     const rawEmi = (P + totalInterest) / months;
 
-  //     emi = roundToNext10(rawEmi);
-  //     const monthlyInterest = totalInterest / months;
-
-  //     for (let i = 1; i <= months; i++) {
-  //       const opening = balance;
-  //       const interest = monthlyInterest;
-
-  //       let principal = emi - interest;
-  //       if (i === months) {
-  //         principal = balance;
-  //         emi = principal + interest;
-  //       }
-
-  //       const closing = opening - principal;
-
-  //       rows.push({
-  //         month: i,
-  //         emiDate: getEmiDate(i), // ✅ EMI DATE ADDED
-  //         opening: opening.toFixed(2),
-  //         emi: emi.toFixed(2),
-  //         interest: interest.toFixed(2),
-  //         principal: principal.toFixed(2),
-  //         closing: Math.max(closing, 0).toFixed(2),
-  //         status: "Pending",
-  //       });
-
-  //       balance = closing;
-  //     }
-
-  //     return rows;
-  //   }
-
-  //   // ================= REDUCING =================
-  //   const rawEmi =
-  //     (P * r * Math.pow(1 + r, months)) / (Math.pow(1 + r, months) - 1);
-
-  //   emi = roundToNext10(rawEmi);
-
-  //   for (let i = 1; i <= months; i++) {
-  //     const opening = balance;
-  //     const interest = opening * r;
-
-  //     let principal = emi - interest;
-  //     if (i === months) {
-  //       principal = balance;
-  //       emi = principal + interest;
-  //     }
-
-  //     const closing = opening - principal;
-
-  //     rows.push({
-  //       month: i,
-  //       emiDate: getEmiDate(i), // ✅ EMI DATE ADDED
-  //       opening: opening.toFixed(2),
-  //       emi: emi.toFixed(2),
-  //       interest: interest.toFixed(2),
-  //       principal: principal.toFixed(2),
-  //       closing: Math.max(closing, 0).toFixed(2),
-  //     });
-
-  //     balance = closing;
-  //   }
-
-  //   return rows;
-  // };
-  // const generateEMISchedule = (
-  //   P,
-  //   annualRate,
-  //   months,
-  //   type,
-  //   firstEmiDate,
-  //   calcMethod,
-  //   slabs = []
-  // ) => {
-  //   const rows = [];
-  //   let balance = P;
-
-  //   const baseDate = new Date(firstEmiDate);
-
-  //   const getEmiDate = (monthIndex) => {
-  //     const d = new Date(baseDate);
-  //     d.setMonth(d.getMonth() + (monthIndex - 1));
-  //     return d.toISOString().split("T")[0];
-  //   };
-
-  //   const r = annualRate / 12 / 100;
-
-  //   // ============================
-  //   // ✅ SIMPLE INTEREST
-  //   // ============================
-  //   if (calcMethod === "Simple") {
-  //     const totalInterest = (P * annualRate * months) / (12 * 100);
-  //     let emi = roundToNext10((P + totalInterest) / months);
-
-  //     for (let i = 1; i <= months; i++) {
-  //       const opening = balance;
-  //       const interest = totalInterest / months;
-
-  //       let principal = emi - interest;
-
-  //       if (i === months) {
-  //         principal = balance;
-  //         emi = principal + interest;
-  //       }
-
-  //       const closing = opening - principal;
-
-  //       rows.push({
-  //         month: i,
-  //         emiDate: getEmiDate(i),
-  //         opening: opening.toFixed(2),
-  //         emi: emi.toFixed(2),
-  //         interest: interest.toFixed(2),
-  //         principal: principal.toFixed(2),
-  //         closing: Math.max(closing, 0).toFixed(2),
-  //         status: "Pending",
-  //       });
-
-  //       balance = closing;
-  //     }
-
-  //     return rows;
-  //   }
-
-  //   // ============================
-  //   // ✅ COMPOUND (REDUCING EMI)
-  //   // ============================
-  //   if (calcMethod === "Compound") {
-  //     let emi =
-  //       (P * r * Math.pow(1 + r, months)) /
-  //       (Math.pow(1 + r, months) - 1);
-
-  //     emi = roundToNext10(emi);
-
-  //     for (let i = 1; i <= months; i++) {
-  //       const opening = balance;
-  //       const interest = opening * r;
-
-  //       let principal = emi - interest;
-
-  //       if (i === months) {
-  //         principal = balance;
-  //         emi = principal + interest;
-  //       }
-
-  //       const closing = opening - principal;
-
-  //       rows.push({
-  //         month: i,
-  //         emiDate: getEmiDate(i),
-  //         opening: opening.toFixed(2),
-  //         emi: emi.toFixed(2),
-  //         interest: interest.toFixed(2),
-  //         principal: principal.toFixed(2),
-  //         closing: Math.max(closing, 0).toFixed(2),
-  //         status: "Pending",
-  //       });
-
-  //       balance = closing;
-  //     }
-
-  //     return rows;
-  //   }
-
-  //   // ============================
-  //   // ✅ MULTIPLE (SLAB BASED)
-  //   // ============================
-  //   if (calcMethod === "Multiple") {
-  //     let emi = roundToNext10(
-  //       (P + (P * annualRate * months) / (12 * 100)) / months
-  //     );
-
-  //     for (let i = 1; i <= months; i++) {
-  //       const slab = slabs.find(
-  //         (s) => i >= s.fromMonth && i <= s.toMonth
-  //       );
-
-  //       const rate = slab ? Number(s.rate) : annualRate;
-  //       const monthlyRate = rate / 12 / 100;
-
-  //       const opening = balance;
-  //       const interest = opening * monthlyRate;
-
-  //       let principal = emi - interest;
-
-  //       if (i === months) {
-  //         principal = balance;
-  //         emi = principal + interest;
-  //       }
-
-  //       const closing = opening - principal;
-
-  //       rows.push({
-  //         month: i,
-  //         emiDate: getEmiDate(i),
-  //         opening: opening.toFixed(2),
-  //         emi: emi.toFixed(2),
-  //         interest: interest.toFixed(2),
-  //         principal: principal.toFixed(2),
-  //         closing: Math.max(closing, 0).toFixed(2),
-  //         status: "Pending",
-  //       });
-
-  //       balance = closing;
-  //     }
-
-  //     return rows;
-  //   }
-
-  //   return rows;
-  // };
-
-  // const generateEMISchedule = (
-  //   P,
-  //   annualRate,
-  //   months,
-  //   type,
-  //   firstEmiDate,
-  //   calcMethod,
-  //   slabs = []
-  // ) => {
-  //   const rows = [];
-  //   let balance = P;
-
-  //   const baseDate = new Date(firstEmiDate);
-
-  //   const getEmiDate = (monthIndex) => {
-  //     const d = new Date(baseDate);
-  //     d.setMonth(d.getMonth() + (monthIndex - 1));
-  //     return d.toISOString().split("T")[0];
-  //   };
-
-  //   const r = annualRate / 12 / 100;
-
-  //   // ============================
-  //   // ✅ 1. SIMPLE (FLAT)
-  //   // ============================
-  //   if (calcMethod === "Simple") {
-  //     const totalInterest = (P * annualRate * months) / (12 * 100);
-  //     const emi = roundToNext10((P + totalInterest) / months);
-
+  //     emi = rawEmi; // ❗ no rounding in logic
   //     const monthlyInterest = totalInterest / months;
 
   //     for (let i = 1; i <= months; i++) {
@@ -394,7 +161,7 @@ const GoldLoanApproval = () => {
   //         month: i,
   //         emiDate: getEmiDate(i),
   //         opening: opening.toFixed(2),
-  //         emi: emi.toFixed(2),
+  //         emi: Math.round(emi).toFixed(2),
   //         interest: interest.toFixed(2),
   //         principal: principal.toFixed(2),
   //         closing: Math.max(closing, 0).toFixed(2),
@@ -407,20 +174,17 @@ const GoldLoanApproval = () => {
   //     return rows;
   //   }
 
-  //   // ============================
-  //   // ✅ 2. COMPOUND (REDUCING)
-  //   // ============================
-  //   if (calcMethod === "Compound") {
-  //     let emi =
-  //       (P * r * Math.pow(1 + r, months)) /
-  //       (Math.pow(1 + r, months) - 1);
+ 
+  //   if (type === "Reducing") {
+  //     const rawEmi =
+  //       (P * r * Math.pow(1 + r, months)) / (Math.pow(1 + r, months) - 1);
 
-  //     emi = roundToNext10(emi);
+  //     emi = rawEmi;
 
   //     for (let i = 1; i <= months; i++) {
   //       const opening = balance;
 
-  //       let interest = opening * r; // ✅ CHANGING EACH MONTH
+  //       let interest = opening * r;
   //       let principal = emi - interest;
 
   //       if (i === months) {
@@ -435,7 +199,7 @@ const GoldLoanApproval = () => {
   //         month: i,
   //         emiDate: getEmiDate(i),
   //         opening: opening.toFixed(2),
-  //         emi: emi.toFixed(2),
+  //         emi: Math.round(emi).toFixed(2),
   //         interest: interest.toFixed(2),
   //         principal: principal.toFixed(2),
   //         closing: Math.max(closing, 0).toFixed(2),
@@ -448,235 +212,379 @@ const GoldLoanApproval = () => {
   //     return rows;
   //   }
 
-  //   // ============================
-  //   // ✅ 3. MULTIPLE (SLAB - REDUCING)
-  //   // ============================
-  //   if (calcMethod === "Multiple") {
-  //     let emi =
-  //       (P * r * Math.pow(1 + r, months)) /
-  //       (Math.pow(1 + r, months) - 1);
+  //   // if (type === "Multiple") {
+  //   //   const rawEmi =
+  //   //     (P * r * Math.pow(1 + r, months)) / (Math.pow(1 + r, months) - 1);
 
-  //     emi = roundToNext10(emi);
+  //   //   emi = rawEmi;
 
-  //     for (let i = 1; i <= months; i++) {
-  //       const slab = slabs.find(
-  //         (s) => i >= s.fromMonth && i <= s.toMonth
-  //       );
+  //   //   for (let i = 1; i <= months; i++) {
+  //   //     const slab = slabs.find((s) => i >= s.fromMonth && i <= s.toMonth);
 
-  //       const rate = slab ? Number(s.addInt) : annualRate;
-  //       const monthlyRate = rate / 12 / 100;
+  //   //     const rate = slab ? Number(s.addInt) : annualRate;
+  //   //     const monthlyRate = rate / 12 / 100;
 
-  //       const opening = balance;
+  //   //     const opening = balance;
 
-  //       let interest = opening * monthlyRate; // ✅ slab applied
-  //       let principal = emi - interest;
+  //   //     let interest = opening * monthlyRate;
+  //   //     let principal = emi - interest;
 
-  //       if (i === months) {
-  //         principal = balance;
-  //         interest = opening * monthlyRate;
-  //         emi = principal + interest;
-  //       }
+  //   //     if (i === months) {
+  //   //       principal = balance;
+  //   //       interest = opening * monthlyRate;
+  //   //       emi = principal + interest;
+  //   //     }
 
-  //       const closing = opening - principal;
+  //   //     const closing = opening - principal;
 
-  //       rows.push({
-  //         month: i,
-  //         emiDate: getEmiDate(i),
-  //         opening: opening.toFixed(2),
-  //         emi: emi.toFixed(2),
-  //         interest: interest.toFixed(2),
-  //         principal: principal.toFixed(2),
-  //         closing: Math.max(closing, 0).toFixed(2),
-  //         status: "Pending",
-  //       });
+  //   //     rows.push({
+  //   //       month: i,
+  //   //       emiDate: getEmiDate(i),
+  //   //       opening: opening.toFixed(2),
+  //   //       emi: Math.round(emi).toFixed(2),
+  //   //       interest: interest.toFixed(2),
+  //   //       principal: principal.toFixed(2),
+  //   //       closing: Math.max(closing, 0).toFixed(2),
+  //   //       status: "Pending",
+  //   //     });
 
-  //       balance = closing;
-  //     }
+  //   //     balance = closing;
+  //   //   }
 
-  //     return rows;
-  //   }
+  //   //   return rows;
+  //   // }
 
   //   return rows;
   // };
 
-  const generateEMISchedule = (
-    P,
-    annualRate,
-    months,
-    type, // "Flat" | "Reducing" | "Multiple"
-    firstEmiDate,
-    slabs = [],
-  ) => {
-    const rows = [];
-    let balance = P;
+  // useEffect(() => {
+  //   debugger;
+  //   if (!loanData) return;
 
-    const baseDate = new Date(firstEmiDate);
+  //   const P = Number(loanData.Net_Payable);
+  //   const tenure = Number(loanData.Loan_Tenure);
+  //   const type = loanData.interestType;
+  //   const payDate = loanData.Pay_Date;
 
-    const getEmiDate = (monthIndex) => {
-      const d = new Date(baseDate);
-      d.setMonth(d.getMonth() + (monthIndex - 1));
-      return d.toISOString().split("T")[0];
-    };
+  //   // ✅ STOP if payDate is not available
+  //   if (!payDate) return;
 
-    const r = annualRate / 12 / 100;
+  //   const slabs = loanData.Effective_Interest_Rates || [];
+  //   const annualRate = slabs.length ? Number(slabs[0].addInt) : 0;
+  //   const calcMethod = loanData.calcMethod || "Simple";
+  //   const rows = generateEMISchedule(
+  //     P,
+  //     annualRate,
+  //     tenure,
+  //     type,
+  //     payDate,
+  //     calcMethod,
+  //     slabs,
+  //   );
 
-    let emi = 0;
+  //   setEmiTable(rows);
+  // }, [loanData]);
+//   const generateEMISchedule = (
+    
+//   P,
+//   annualRate,
+//   months,
+//   type,
+//   firstEmiDate,
+//   slabs = []
+// ) => {
+//   debugger
+//   const rows = [];
+//   let balance = P;
 
-    // ============================
-    // ✅ 1. FLAT (SIMPLE)
-    // ============================
-    if (type === "Flat") {
-      const totalInterest = (P * annualRate * months) / (12 * 100);
-      const rawEmi = (P + totalInterest) / months;
+//   const baseDate = new Date(firstEmiDate);
 
-      emi = rawEmi; // ❗ no rounding in logic
-      const monthlyInterest = totalInterest / months;
+//   const getEmiDate = (monthIndex) => {
+//     const d = new Date(baseDate);
+//     d.setMonth(d.getMonth() + (monthIndex - 1));
+//     return d.toISOString().split("T")[0];
+//   };
 
-      for (let i = 1; i <= months; i++) {
-        const opening = balance;
+//   const r = annualRate / 12 / 100;
 
-        let interest = monthlyInterest;
-        let principal = emi - interest;
+//   let emi = 0;
 
-        if (i === months) {
-          principal = balance;
-          interest = monthlyInterest;
-        }
+//   // ============================
+//   // ✅ FLAT INTEREST
+//   // ============================
+//   if (type === "Flat") {
+//     const totalInterest = (P * annualRate * months) / (12 * 100);
+//     emi = (P + totalInterest) / months;
 
-        const closing = opening - principal;
+//     const monthlyInterest = totalInterest / months;
 
-        rows.push({
-          month: i,
-          emiDate: getEmiDate(i),
-          opening: opening.toFixed(2),
-          emi: Math.round(emi).toFixed(2),
-          interest: interest.toFixed(2),
-          principal: principal.toFixed(2),
-          closing: Math.max(closing, 0).toFixed(2),
-          status: "Pending",
-        });
+//     for (let i = 1; i <= months; i++) {
+//       const opening = balance;
 
-        balance = closing;
+//       let interest = monthlyInterest;
+//       let principal = emi - interest;
+
+//       if (i === months) {
+//         principal = balance;
+//       }
+
+//       const closing = opening - principal;
+
+//       rows.push({
+//         month: i,
+//         emiDate: getEmiDate(i),
+//         opening: opening.toFixed(2),
+//         emi: (Math.round(emi / 10) * 10).toFixed(2),
+//         interest: interest.toFixed(2),
+//         principal: principal.toFixed(2),
+//         closing: Math.max(closing, 0).toFixed(2),
+//         status: "Pending",
+//       });
+
+//       balance = closing;
+//     }
+
+//     return rows;
+//   }
+
+//   // ============================
+//   // ✅ REDUCING INTEREST
+//   // ============================
+//   if (type === "Reducing") {
+//     emi =
+//       (P * r * Math.pow(1 + r, months)) /
+//       (Math.pow(1 + r, months) - 1);
+
+//     for (let i = 1; i <= months; i++) {
+//       const opening = balance;
+
+//       let interest = opening * r;
+//       let principal = emi - interest;
+
+//       if (i === months) {
+//         principal = balance;
+//         emi = principal + interest;
+//       }
+
+//       const closing = opening - principal;
+
+//       rows.push({
+//         month: i,
+//         emiDate: getEmiDate(i),
+//         opening: opening.toFixed(2),
+//         emi: Math.round(emi).toFixed(2),
+//         interest: interest.toFixed(2),
+//         principal: principal.toFixed(2),
+//         closing: Math.max(closing, 0).toFixed(2),
+//         status: "Pending",
+//       });
+
+//       balance = closing;
+//     }
+
+//     return rows;
+//   }
+
+//   return rows;
+// };
+
+const generateEMISchedule = (
+  P,
+  annualRate,
+  months,
+  type,
+  firstEmiDate,
+  slabs = []
+) => {
+  const rows = [];
+
+  let balance = Number(P);
+
+  const baseDate = new Date(firstEmiDate);
+
+  const getEmiDate = (monthIndex) => {
+    const d = new Date(baseDate);
+    d.setMonth(d.getMonth() + (monthIndex - 1));
+    return d.toISOString().split("T")[0];
+  };
+
+  // Monthly Interest Rate
+  const r = annualRate / 12 / 100;
+
+  // =========================================================
+  // ✅ FLAT INTEREST
+  // =========================================================
+  if (type === "Flat") {
+    const totalInterest = (P * annualRate * months) / (12 * 100);
+
+    const exactEmi = (P + totalInterest) / months;
+
+    // ✅ Round EMI Up
+    const roundedEmi = Math.ceil(exactEmi / 10) * 10;
+
+    // Extra collected because of rounding
+    const extraPerMonth = roundedEmi - exactEmi;
+
+    // Total extra collected before last EMI
+    const totalExtra = extraPerMonth * (months - 1);
+
+    const monthlyInterest = totalInterest / months;
+
+    for (let i = 1; i <= months; i++) {
+      const opening = balance;
+
+      let emiToUse = roundedEmi;
+
+      // ✅ Last EMI Adjustment
+      if (i === months) {
+        emiToUse = roundedEmi - totalExtra;
       }
 
-      return rows;
-    }
+      let interest = monthlyInterest;
 
-    // ============================
-    // ✅ 2. REDUCING (COMPOUND)
-    // ============================
-    if (type === "Reducing") {
-      const rawEmi =
-        (P * r * Math.pow(1 + r, months)) / (Math.pow(1 + r, months) - 1);
+      // Principal = EMI - Interest
+      let principal = emiToUse - interest;
 
-      emi = rawEmi;
-
-      for (let i = 1; i <= months; i++) {
-        const opening = balance;
-
-        let interest = opening * r;
-        let principal = emi - interest;
-
-        if (i === months) {
-          principal = balance;
-          interest = opening * r;
-          emi = principal + interest;
-        }
-
-        const closing = opening - principal;
-
-        rows.push({
-          month: i,
-          emiDate: getEmiDate(i),
-          opening: opening.toFixed(2),
-          emi: Math.round(emi).toFixed(2),
-          interest: interest.toFixed(2),
-          principal: principal.toFixed(2),
-          closing: Math.max(closing, 0).toFixed(2),
-          status: "Pending",
-        });
-
-        balance = closing;
+      // Safety
+      if (principal > balance) {
+        principal = balance;
+        emiToUse = principal + interest;
       }
 
-      return rows;
-    }
+      const closing = opening - principal;
 
-    // ============================
-    // ✅ 3. MULTIPLE (SLAB BASED)
-    // ============================
-    if (type === "Multiple") {
-      const rawEmi =
-        (P * r * Math.pow(1 + r, months)) / (Math.pow(1 + r, months) - 1);
+      rows.push({
+        month: i,
+        emiDate: getEmiDate(i),
 
-      emi = rawEmi;
+        opening: opening.toFixed(2),
 
-      for (let i = 1; i <= months; i++) {
-        const slab = slabs.find((s) => i >= s.fromMonth && i <= s.toMonth);
+        emi: emiToUse.toFixed(2),
 
-        const rate = slab ? Number(s.addInt) : annualRate;
-        const monthlyRate = rate / 12 / 100;
+        interest: interest.toFixed(2),
 
-        const opening = balance;
+        principal: principal.toFixed(2),
 
-        let interest = opening * monthlyRate;
-        let principal = emi - interest;
+        closing: Math.max(closing, 0).toFixed(2),
 
-        if (i === months) {
-          principal = balance;
-          interest = opening * monthlyRate;
-          emi = principal + interest;
-        }
+        status: "Pending",
+      });
 
-        const closing = opening - principal;
-
-        rows.push({
-          month: i,
-          emiDate: getEmiDate(i),
-          opening: opening.toFixed(2),
-          emi: Math.round(emi).toFixed(2),
-          interest: interest.toFixed(2),
-          principal: principal.toFixed(2),
-          closing: Math.max(closing, 0).toFixed(2),
-          status: "Pending",
-        });
-
-        balance = closing;
-      }
-
-      return rows;
+      balance = closing;
     }
 
     return rows;
-  };
+  }
 
+  // =========================================================
+  // ✅ REDUCING INTEREST
+  // =========================================================
+  if (type === "Reducing") {
+    // Exact EMI
+    const exactEmi =
+      (P * r * Math.pow(1 + r, months)) /
+      (Math.pow(1 + r, months) - 1);
+
+    // ✅ Rounded EMI
+    const roundedEmi = Math.ceil(exactEmi / 10) * 10;
+
+    // Example:
+    // exact EMI = 17986
+    // rounded EMI = 17990
+    // extra = 4
+
+    const extraPerMonth = roundedEmi - exactEmi;
+
+    // Total extra adjusted in last EMI
+    const totalExtra = extraPerMonth * (months - 1);
+
+    for (let i = 1; i <= months; i++) {
+      const opening = balance;
+
+      // ✅ Interest calculated on Opening Balance
+      let interest = opening * r;
+
+      let emiToUse = roundedEmi;
+
+      // ✅ Adjust Last EMI
+      if (i === months) {
+        emiToUse = roundedEmi - totalExtra;
+      }
+
+      // ✅ Principal = EMI - Interest
+      let principal = emiToUse - interest;
+
+      // Safety check
+      if (principal > balance) {
+        principal = balance;
+        emiToUse = principal + interest;
+      }
+
+      const closing = opening - principal;
+
+      rows.push({
+        month: i,
+
+        emiDate: getEmiDate(i),
+
+        opening: opening.toFixed(2),
+
+        // Rounded EMI
+        emi: emiToUse.toFixed(2),
+
+        // Exact Interest
+        interest: interest.toFixed(2),
+
+        // Principal after minus interest
+        principal: principal.toFixed(2),
+
+        closing: Math.max(closing, 0).toFixed(2),
+
+        status: "Pending",
+      });
+
+      balance = closing;
+    }
+
+    return rows;
+  }
+
+  return rows;
+};
   useEffect(() => {
-    debugger;
-    if (!loanData) return;
+  if (!loanData || !loanSchemeData) return;
 
-    const P = Number(loanData.Net_Payable);
-    const tenure = Number(loanData.Loan_Tenure);
-    const type = loanData.interestType;
-    const payDate = loanData.Pay_Date;
+  const P = Number(loanData.Net_Payable);
+  const payDate = loanData.Pay_Date;
+  const type = loanSchemeData.interestType;
 
-    // ✅ STOP if payDate is not available
-    if (!payDate) return;
+  if (!P || !payDate) return;
 
-    const slabs = loanData.Effective_Interest_Rates || [];
-    const annualRate = slabs.length ? Number(slabs[0].addInt) : 0;
-    const calcMethod = loanData.calcMethod || "Simple";
-    const rows = generateEMISchedule(
-      P,
-      annualRate,
-      tenure,
-      type,
-      payDate,
-      calcMethod,
-      slabs,
-    );
+  let annualRate = 0;
+  let tenure = 0;
+  let slabs = [];
 
-    setEmiTable(rows);
-  }, [loanData]);
+  // ✅ 🔥 SWITCH BASED ON SCHEME
+  if (loanSchemeData.calcBasisOn === "Monthly") {
+    annualRate = Number(loanSchemeData.monthlyInterestRate); // already yearly %
+    tenure = Number(loanSchemeData.loanPeriod);
+  } else {
+    slabs = loanData.Effective_Interest_Rates || [];
+    annualRate = slabs.length ? Number(slabs[0].addInt) : 0;
+    tenure = Number(loanData.Loan_Tenure);
+  }
+
+  const rows = generateEMISchedule(
+    P,
+    annualRate,
+    tenure,
+    type,
+    payDate,
+    slabs
+  );
+  setEmiTable(rows);
+}, [loanData, loanSchemeData]);
+  
   const fetchLoanData = async () => {
     try {
       setLoading(true);
@@ -717,14 +625,7 @@ const GoldLoanApproval = () => {
     }
   };
 
-  // Format date
-  const formatDate = (dateString) => {
-    if (!dateString) return "-";
-    const date = new Date(dateString);
-    return date.toLocaleDateString("en-GB");
-  };
-
-  // Format currency
+ 
   const formatCurrency = (amount) => {
     if (!amount || isNaN(amount)) return "0.00";
     const numAmount = typeof amount === "string" ? parseFloat(amount) : amount;
@@ -740,57 +641,110 @@ const GoldLoanApproval = () => {
   const { loginUser } = useAuth();
 
   const approveLoan = async () => {
-    setLoading(true)
-    if (!loanData || !loanData.id) return setError("Loan ID missing");
+  setLoading(true);
 
-    const loanAmount = Number(loanData.Loan_amount || 0);
+  if (!loanData || !loanData.id) {
+    setError("Loan ID missing");
+    setLoading(false);
+    return;
+  }
 
-    if (totalAmount !== loanAmount) {
-      alert(
-        `Total Payment Details amount (${totalAmount}) must be equal to Loan Amount (${loanAmount})`,
-      );
+  const loanAmount = Number(loanData.Loan_amount || 0);
+
+  if (totalAmount !== loanAmount) {
+    alert(
+      `Total Payment Details amount (${totalAmount}) must be equal to Loan Amount (${loanAmount})`
+    );
+    setLoading(false);
+    return;
+  }
+
+  // ✅ NEW VALIDATION FOR ROWS
+  for (let i = 0; i < rows.length; i++) {
+  const row = rows[i];
+
+  if (!row.paidBy) {
+    alert(`Row ${i + 1}: Payment mode is required`);
+    setLoading(false);
+    return;
+  }
+
+  if (!row.customerAmount || Number(row.customerAmount) <= 0) {
+    alert(`Row ${i + 1}: Amount is required`);
+    setLoading(false);
+    return;
+  }
+
+  // 👉 Payment types requiring bank + UTR
+  const onlineModes = ["Bank Transfer", "UPI", "Online Gateway"];
+
+  if (onlineModes.includes(row.paidBy)) {
+
+    if (!row.utrNumber) {
+      alert(`Row ${i + 1}: UTR Number is required`);
+      setLoading(false);
       return;
     }
 
-    const confirmApprove = window.confirm("Approve this loan application?");
-    if (!confirmApprove) return;
-
-    try {
-      setApproving(true);
-      const approved_by = loginUser;
-
-      const payload = {
-        id: loanData.id,
-        approved_by,
-        rows,
-        emi: loanSchemeData?.calcBasisOn === "Monthly" ? emiTable : null,
-      };
-
-      const res = await axios.put(
-        `${API}/Transactions/goldloan/approve-loan`,
-        payload,
-      );
-
-      if (res.data && res.data.success) {
-        alert("Loan approved successfully.");
-        setLoading(false)
-        navigate("/Loan-Application");
-      } else {
-        const msg = (res.data && res.data.message) || "Failed to approve loan";
-        setError(msg);
-          setLoading(false)
-      }
-    } catch (err) {
-      console.error("❌ Error approving loan:", err);
-      setError("Server error while approving loan");
-        setLoading(false)
-    } finally {
-      setApproving(false);
-        setLoading(false)
+    if (!row.bankId) {
+      alert(`Row ${i + 1}: Bank is required`);
+      setLoading(false);
+      return;
     }
-  };
+
+    if (!row.bankName) {
+      alert(`Row ${i + 1}: Bank name is required`);
+      setLoading(false);
+      return;
+    }
+    
+    if (!row.customerBank) {
+      alert(`Row ${i + 1}: Customer Bank is required`);
+      setLoading(false);
+      return;
+    }
+
+  }
 
   
+}
+
+  const confirmApprove = window.confirm("Approve this loan application?");
+  if (!confirmApprove) {
+    setLoading(false);
+    return;
+  }
+
+  try {
+    const approved_by = loginUser;
+
+    const payload = {
+      id: loanData.id,
+      approved_by,
+      rows,
+      emi: loanSchemeData?.calcBasisOn === "Monthly" ? emiTable : null,
+    };
+
+    const res = await axios.put(
+      `${API}/Transactions/goldloan/approve-loan`,
+      payload
+    );
+
+    if (res.data && res.data.success) {
+      alert("Loan approved successfully.");
+      navigate("/Loan-Application");
+    } else {
+      const msg = res.data?.message || "Failed to approve loan";
+      setError(msg);
+    }
+  } catch (err) {
+    console.error("❌ Error approving loan:", err);
+    setError("Server error while approving loan");
+  } finally {
+    setApproving(false);
+    setLoading(false);
+  }
+};
 
   if (error) {
     return (
@@ -830,6 +784,7 @@ const GoldLoanApproval = () => {
     0,
   );
 
+const formatWeight = (val) => Number(val || 0).toFixed(3);
   return (
     <div className="min-h-screen w-full">
       {/* ===== Top Bar ===== */}
@@ -845,7 +800,7 @@ const GoldLoanApproval = () => {
             }}
             className="text-red-600"
           >
-            Gold Loan Approval - {loanData.id || "N/A"}
+             Loan Application - {loanData.id || "N/A"}
           </h2>
 
           <div className="flex gap-2 mr-6">
@@ -874,11 +829,11 @@ const GoldLoanApproval = () => {
 
       {/* ===== FORM SECTIONS ===== */}
       <div className="min-h-screen space-t-8 w-[1462px] ml-[25px]">
-        <div className="flex items-start gap-4 bg-[#FFE6E6] py-4 px-4 w-full border-b border-gray-200">
+        <div className="flex items-start gap-4 bg-[#FFE6E6] px-4 w-full border-b border-gray-200">
           {/* 1. Left Column: Input Fields */}
-          <div className="flex flex-col gap-3 w-[350px]">
+          <div className="flex flex-col gap-1 w-[350px]">
             <div>
-              <label className="block  font-semibold text-sm mb-1">
+              <label className="block  font-semibold text-sm">
                 Borrower Name<span className="text-red-500">*</span>
               </label>
               <div className="flex h-8">
@@ -886,7 +841,7 @@ const GoldLoanApproval = () => {
                   type="text"
                   value={
                     loanData.Print_Name
-                      ? `${loanData.Print_Name} (${loanData.BorrowerId || ""})`
+                      ? `${loanData.Print_Name} Id-(${loanData.BorrowerId || ""})`
                       : "N/A"
                   }
                   readOnly
@@ -894,14 +849,12 @@ const GoldLoanApproval = () => {
                   placeholder="Borrower Name (ID)"
                   className="w-full border border-gray-300 px-1 py-1 rounded-l text-[11px] outline-none bg-white"
                 />
-                {/* <button className="bg-[#002855] text-white px-2 rounded-r flex items-center justify-center">
-                  <History size={14} />
-                </button> */}
+                
               </div>
             </div>
 
             <div>
-              <label className="block  font-semibold text-sm mb-1">
+              <label className="block  font-semibold text-sm ">
                 Co - Borrower Name<span className="text-red-500">*</span>
               </label>
               <div className="flex h-8 ">
@@ -909,7 +862,7 @@ const GoldLoanApproval = () => {
                   type="text"
                   value={
                     loanData.Print_Name
-                      ? `${loanData.coborrower_printName} (${loanData.CoBorrowerId || ""})`
+                      ? `${loanData.coborrower_printName} Id- (${loanData.CoBorrowerId || ""})`
                       : "N/A"
                   }
                   readOnly
@@ -924,7 +877,7 @@ const GoldLoanApproval = () => {
             </div>
 
             <div>
-              <label className="block font-semibold text-sm mb-1">
+              <label className="block font-semibold text-sm ">
                 Scheme<span className="text-red-500">*</span>
               </label>
               <div className="flex h-8 ">
@@ -942,20 +895,20 @@ const GoldLoanApproval = () => {
 
           {/* 2. Middle Column: Borrower Details */}
           <div className="flex flex-col">
-            <label className="block  font-semibold text-sm mb-1">
+            <label className="block  font-semibold text-sm ">
               Borrower Details<span className="text-red-500">*</span>
             </label>
 
             <div className="w-[350px] h-[160px] border border-gray-900 p-2 text-xs flex flex-col justify-between">
               {/* Main Borrower Info Group */}
-              <div className="space-y-1 text-gray-500">
+              <div className="space-y-1 text-gray-800">
                 <div className="flex gap-2 items-center justify-start">
                   <p className="font-mediam ">{loanData.Print_Name || "N/A"}</p>
                 </div>
 
                 <div className="flex gap-2 items-center justify-start">
                   <p className="font-mediam ">
-                    +91 {loanData.Mobile_Number || "N/A"} | +91{" "}
+                   {loanData.Mobile_Number || "N/A"} | {" "}
                     {loanData.Alternate_Number || "N/A"}
                   </p>
                 </div>
@@ -981,13 +934,13 @@ const GoldLoanApproval = () => {
 
           {/* 3. Middle Column: Co-Borrower Details */}
           <div className="flex flex-col">
-            <label className="block  font-semibold text-sm mb-1">
+            <label className="block  font-semibold text-sm ">
               Co-Borrower Details<span className="text-red-500">*</span>
             </label>
 
             <div className="w-[350px] h-[160px] border border-gray-900 p-2 text-xs flex flex-col justify-between">
               {/* Main Borrower Info Group */}
-              <div className="space-y-1 text-gray-500">
+              <div className="space-y-1 text-gray-800">
                 <div className="flex gap-2 items-center justify-start">
                   <p className="font-mediam ">
                     {loanData?.coborrower_printName || "N/A"}
@@ -996,7 +949,7 @@ const GoldLoanApproval = () => {
 
                 <div className="flex gap-2 items-center justify-start">
                   <p className="font-mediam ">
-                    +91 {loanData.coBorrower_mobile || "N/A"} | +91{" "}
+                    {loanData.coBorrower_mobile || "N/A"} |{" "}
                     {loanData.coBorrower_altMobile || "N/A"}
                   </p>
                 </div>
@@ -1118,20 +1071,35 @@ const GoldLoanApproval = () => {
                   <p className="text-gray-400 text-[9px]">No signature</p>
                 )}
               </div>
+              <div className="w-24 h-7 border border-blue-200 bg-white rounded flex items-center justify-center italic text-gray-300 text-[10px]">
+                {loanData.Signature_Image2 ? (
+                  <img
+                    src={loanData.Signature_Image2}
+                    alt="Borrower Signature"
+                    className="w-full h-full object-contain"
+                    onError={(e) => {
+                      e.target.style.display = "none";
+                      e.target.nextSibling.style.display = "block";
+                    }}
+                  />
+                ) : (
+                  <p className="text-gray-400 text-[9px]">No signature</p>
+                )}
+              </div>
             </div>
           </div>
         </div>
         {/* Loan Amount Section */}
 
-        <div className=" bg-[#E9E9FF] p-4">
+        <div className=" bg-[#E9E9FF] pl-4 pr-4">
           <div className="w-full text-xs border border-gray-300 overflow-x-auto">
             {/* Header */}
             <div className="flex bg-[#0A2478] text-white font-semibold min-w-max">
-              <div className="flex-1 p-2 py-3 border-r border-white/20">
+              <div className="flex-1 p-1 py-1 border-r border-white/20">
                 Particulars (Pledge Items)
               </div>
               <div className="w-16 p-2 border-r border-white/20 text-center">
-                Nos.
+               Qty
               </div>
               <div className="w-24 p-2 border-r border-white/20 text-center">
                 Gross
@@ -1149,7 +1117,7 @@ const GoldLoanApproval = () => {
                 Rate
               </div>
               <div className="w-28 p-2 border-r border-white/20 text-center">
-                Valuation
+               Loan Amount 
               </div>
               <div className="w-32 p-2 text-center">Remark</div>
             </div>
@@ -1164,31 +1132,32 @@ const GoldLoanApproval = () => {
                       index % 2 === 0 ? "bg-gray-50" : "bg-white"
                     }`}
                   >
-                    <div className="flex-1 p-2 border-r border-gray-300">
+                    <div className="flex-1 p-1 border-r border-gray-300">
                       {item.particular || "Gold"}
                     </div>
-                    <div className="w-16 p-2 border-r border-gray-300 text-center">
+                    <div className="w-16 p-1 border-r border-gray-300 text-center">
                       {item.nos || 1}
                     </div>
-                    <div className="w-24 p-2 border-r border-gray-300 text-center">
-                      {formatCurrency(item.gross)}
-                    </div>
-                    <div className="w-24 p-2 border-r border-gray-300 text-center">
-                      {formatCurrency(item.netWeight)}
-                    </div>
-                    <div className="w-28 p-2 border-r border-gray-300 text-center">
+                   <div className="w-24 p-2 border-r border-gray-300 text-center">
+  {formatWeight(item?.gross)}
+</div>
+
+<div className="w-24 p-2 border-r border-gray-300 text-center">
+  {formatWeight(item?.netWeight)}
+</div>
+                    <div className="w-28 p-1 border-r border-gray-300 text-center">
                       {item.purity || ""}
                     </div>
-                    <div className="w-32 p-2 border-r border-gray-300 text-center">
+                    <div className="w-32 p-1 border-r border-gray-300 text-center">
                       {item.Calculated_Purity || ""}
                     </div>
-                    <div className="w-24 p-2 border-r border-gray-300 text-center">
+                    <div className="w-24 p-1 border-r border-gray-300 text-center">
                       {formatCurrency(item.rate)}
                     </div>
-                    <div className="w-28 p-2 border-r border-gray-300 text-center">
+                    <div className="w-28 p-1 border-r border-gray-300 text-center">
                       {formatCurrency(item.valuation)}
                     </div>
-                    <div className="w-32 p-2 text-center">
+                    <div className="w-32 p-1 text-center">
                       {item.remark || "-"}
                     </div>
                   </div>
@@ -1202,12 +1171,13 @@ const GoldLoanApproval = () => {
                   <div className="w-16 p-2 border-r border-gray-300 text-center font-bold">
                     {totalNos}
                   </div>
-                  <div className="w-24 p-2 border-r border-gray-300 text-center font-bold">
-                    {formatCurrency(totalGross)}
-                  </div>
-                  <div className="w-24 p-2 border-r border-gray-300 text-center font-bold">
-                    {formatCurrency(totalNetWeight)}
-                  </div>
+                 <div className="w-24 p-2 border-r border-gray-300 text-center">
+  {formatWeight(totalGross)}
+</div>
+
+<div className="w-24 p-2 border-r border-gray-300 text-center">
+  {formatWeight(totalNetWeight)}
+</div>
                   <div className="w-28 p-2 border-r border-gray-300"></div>
                   <div className="w-32 p-2 border-r border-gray-300"></div>
                   <div className="w-24 p-2 border-r border-gray-300"></div>
@@ -1225,12 +1195,12 @@ const GoldLoanApproval = () => {
           </div>
         </div>
 
-        <div className="flex gap-4 bg-[#FFE6E6] p-4 w-full items-start">
-          <div className="w-1/2 space-y-4">
+        <div className="flex gap-4 bg-[#FFE6E6] pl-4 pr-4 w-full items-start mt-1">
+          <div className="w-1/2 space-y-2">
             {/* Row 1 */}
-            <div className="grid grid-cols-4 gap-2">
+            <div className="grid grid-cols-4 gap-1">
               <div className="flex flex-col">
-                <label className="text-[11px] font-bold mb-1">
+                <label className="text-[14px] ">
                   Loan Amount <span className="text-red-500">*</span>
                 </label>
                 <input
@@ -1242,7 +1212,7 @@ const GoldLoanApproval = () => {
                 />
               </div>
               <div className="flex flex-col">
-                <label className="text-[11px] font-bold mb-1">
+                <label className="text-[14px]  ">
                   Admin Charges
                 </label>
                 <input
@@ -1254,7 +1224,7 @@ const GoldLoanApproval = () => {
                 />
               </div>
               <div className="flex flex-col">
-                <label className="text-[11px] font-bold mb-1">
+                <label className="text-[14px]  ">
                   Doc Charges
                 </label>
                 <input
@@ -1266,8 +1236,8 @@ const GoldLoanApproval = () => {
                 />
               </div>
               <div className="flex flex-col">
-                <label className="text-[11px] font-bold mb-1">
-                  Net Payable
+                <label className="text-[14px] ">
+                 Loan + Charges
                 </label>
                 <input
                   type="text"
@@ -1282,7 +1252,7 @@ const GoldLoanApproval = () => {
             {/* Row 2 */}
             <div className="grid grid-cols-4 gap-2">
               <div className="flex flex-col">
-                <label className="text-[11px] font-bold mb-1">Valuer 1</label>
+                <label className="text-[14px]  ">Valuer 1</label>
                 <input
                   type="text"
                   value={loanData.Valuer1_Name || "Not Assigned"}
@@ -1292,7 +1262,7 @@ const GoldLoanApproval = () => {
                 />
               </div>
               <div className="flex flex-col">
-                <label className="text-[11px] font-bold mb-1">Valuer 2</label>
+                <label className="text-[14px]  ">Valuer 2</label>
                 <input
                   type="text"
                   value={loanData.Valuer2_Name || "Not Assigned"}
@@ -1301,42 +1271,56 @@ const GoldLoanApproval = () => {
                   className="border border-gray-300 rounded px-1 py-1 text-xs bg-white"
                 />
               </div>
-              {loanData?.Scheme_type === "Monthly" && (
-                <div className="flex flex-col">
-                  <label className="text-[11px] font-bold mb-1">Pay Date</label>
-                  <input
-                    type="text"
-                    value={loanData.Pay_Date || "Not Assigned"}
-                    readOnly
-                    disabled
-                    className="border border-gray-300 rounded px-1 py-1 text-xs bg-white"
-                  />
-                </div>
-              )}
+             <div className="flex flex-col">
+  <label className="text-[14px]">
+    {loanData?.Scheme_type === "Monthly"
+      ? "EMI Start Date"
+      : "Loan Date"}
+  </label>
+
+  <input
+    type="text"
+    value={
+      loanData?.Pay_Date
+        ? new Date(loanData.Pay_Date).toLocaleDateString("en-IN", {
+            day: "2-digit",
+            month: "long",
+            year: "numeric",
+          })
+        : "Not Assigned"
+    }
+    readOnly
+    disabled
+    className="border border-gray-300 rounded px-1 py-1 text-xs bg-white"
+  />
+</div>
             </div>
           </div>
 
-          <div className="w-1/2">
+          <div className="w-[900px]">
             <div className="border border-gray-300 rounded overflow-hidden">
               <table className="w-full text-[11px] border-collapse">
                 <thead>
                   <tr className="bg-[#0A2478] text-white">
-                    <th className="border-r border-white/20 py-1.5 px-1 w-12">
+                    <th className="border-r border-white/20  px-1 w-12">
                       Sr No
                     </th>
-                    <th className="border-r border-white/20 py-1.5 px-2">
+                    <th className="border-r border-white/20  px-1">
                       Paid by
                     </th>
-                    <th className="border-r border-white/20 py-1.5 px-2">
+                    <th className="border-r border-white/20  px-1">
+                     UTR Number
+                    </th>
+                    <th className="border-r border-white/20 px-1">
                       Bank
                     </th>
-                    <th className="border-r border-white/20 py-1.5 px-2">
+                    <th className="border-r border-white/20  px-1">
                       Borrower Bank
                     </th>
-                    <th className="border-r border-white/20 py-1.5 px-2">
+                    <th className="border-r border-white/20  px-1">
                       Amount
                     </th>
-                    <th className="py-1.5 px-2 w-16">Action</th>
+                    <th className=" px-1 w-16">Action</th>
                   </tr>
                 </thead>
                 <tbody className="bg-white">
@@ -1345,15 +1329,27 @@ const GoldLoanApproval = () => {
                       key={index}
                       className={index % 2 === 0 ? "bg-white" : "bg-white"}
                     >
-                      <td className="py-1 p-1">{index + 1}</td>
-                      <td className="py-1">
+                      <td className=" p-1">{index + 1}</td>
+                      <td className="">
                         <select
-                          value={row.paidBy}
-                          onChange={(e) =>
-                            handleRowChange(index, "paidBy", e.target.value)
-                          }
-                          className="border border-gray-300 rounded-md px-1 py-1 w-[120px] bg-white"
-                        >
+  value={row.paidBy}
+  onChange={(e) => {
+    const value = e.target.value;
+
+    // ✅ Check if already any row has Cash
+    const cashExists = rows.some(
+      (r, i) => r.paidBy === "Cash" && i !== index
+    );
+
+    if (value === "Cash" && cashExists) {
+      alert("Only one Cash entry is allowed");
+      return;
+    }
+
+    handleRowChange(index, "paidBy", value);
+  }}
+  className="border border-gray-300 rounded-md px-1 py-1 w-[120px] bg-white"
+>
                           <option value="">Select</option>
                           {paidByOptions.map((option, i) => (
                             <option key={i} value={option}>
@@ -1363,37 +1359,33 @@ const GoldLoanApproval = () => {
                         </select>
                       </td>
 
-                      <td className="py-2 p-2">
+                      <td className=" ">
                         {row.paidBy === "Cash" ? (
-                          <td className="py-2">
-                            <select
-                              value={row.bankId}
-                              onChange={(e) => {
-                                const selectedBank = dummyBanks.find(
-                                  (b) => String(b.id) === e.target.value,
-                                );
-
-                                const updatedRows = [...rows];
-
-                                updatedRows[index].bankId =
-                                  selectedBank?.id || "";
-                                updatedRows[index].bankName =
-                                  selectedBank?.name || "";
-
-                                setRows(updatedRows);
-                              }}
-                              className="border border-gray-300 rounded-md px-1 py-1 w-[140px] bg-white"
-                            >
-                              <option value="">Select Bank</option>
-                              {dummyBanks.map((b) => (
-                                <option key={b.id} value={b.id}>
-                                  {b.name}
-                                </option>
-                              ))}
-                            </select>
-                          </td>
+                         
+                          <p>--</p>
                         ) : (
                           <td className="py-2 p-2">
+                            <input
+        type="text"
+        placeholder="Enter UTR"
+        value={row.utrNumber}
+        onChange={(e) => {
+          const updatedRows = [...rows];
+          updatedRows[index].utrNumber = e.target.value;
+          setRows(updatedRows);
+        }}
+        className="border border-gray-300 rounded-md px-1 py-1 w-[120px]"
+      />
+                          </td>
+                        )}
+                      </td>
+
+                        <td className=" ">
+                        {row.paidBy === "Cash" ? (
+                         
+                          <p>--</p>
+                        ) : (
+                          <td className="py-1 p-1">
                             <select
                               value={row.bankId}
                               onChange={(e) => {
@@ -1410,7 +1402,7 @@ const GoldLoanApproval = () => {
 
                                 setRows(updatedRows);
                               }}
-                              className="border border-gray-300 rounded-md px-1 py-1 w-[140px] bg-white"
+                              className="border border-gray-300 rounded-md px-1 py-1 w-[100px] bg-white"
                             >
                               <option value="">Select Bank</option>
                               {dummyBanks.map((b) => (
@@ -1423,7 +1415,7 @@ const GoldLoanApproval = () => {
                         )}
                       </td>
 
-                      <td className="py-2 p-2">
+                      <td className="">
                         {row.paidBy === "Cash" ? (
                           <p>--</p>
                         ) : (
@@ -1436,7 +1428,7 @@ const GoldLoanApproval = () => {
                                 e.target.value,
                               )
                             }
-                            className="border border-gray-300 rounded-md px-1 py-1 w-[100px] bg-white"
+                            className="border border-gray-300 rounded-md px-1 py-1 w-[150px] bg-white"
                           >
                             <option value="">Select Customer Bank</option>
 
@@ -1452,25 +1444,26 @@ const GoldLoanApproval = () => {
                         )}
                       </td>
 
-                      <td className="py-2">
-                        <input
-                          type="number"
-                          value={row.customerAmount}
-                          onChange={(e) =>
-                            handleRowChange(
-                              index,
-                              "customerAmount",
-                              e.target.value,
-                            )
-                          }
-                          style={{
-                            MozAppearance: "textfield",
-                          }}
-                          onWheel={(e) => e.target.blur()}
-                          className="border border-gray-300 rounded-md px-1 py-1 w-[120px] bg-white"
-                        />
+                      <td className="">
+                       <input
+  type="number"
+  value={row.customerAmount}
+  onChange={(e) => {
+    let value = Number(e.target.value);
+
+    // ✅ If Cash → max 19999
+    if (row.paidBy === "Cash" && value > 19999) {
+      value = 19999;
+    }
+
+    handleRowChange(index, "customerAmount", value);
+  }}
+  style={{ MozAppearance: "textfield" }}
+  onWheel={(e) => e.target.blur()}
+  className="border border-gray-300 rounded-md px-1 py-1 w-[120px] bg-white"
+/>
                       </td>
-                      <td className="py-2 flex justify-center items-center gap-2">
+                      <td className=" flex justify-center items-center gap-2 mt-2">
                         <button
                           onClick={handleAddRow}
                           className="bg-[#0A2478] text-white px-1 py-1 rounded hover:bg-blue-700"
@@ -1499,8 +1492,8 @@ const GoldLoanApproval = () => {
           </div>
         </div>
 
-        <div className="  bg-[#E9E9FF] p-4 ">
-          {loanSchemeData.calcBasisOn === "Monthly" && (
+        <div className="  bg-[#E9E9FF] pl-4 ">
+          {loanSchemeData?.calcBasisOn === "Monthly" && (
             <>
               <h3 className="font-semibold  text-[#0A2478] text-lg ">
                 Loan Details table
@@ -1520,37 +1513,98 @@ const GoldLoanApproval = () => {
                   </tr>
                 </thead>
 
-                <tbody>
-                  {emiTable.map((row) => {
-                    const isPaid =
-                      Number(loanData?.EMIPaidCount || 0) >= row.month;
+<tbody>
+  {emiTable.map((row) => {
+    const isPaid =
+      Number(loanData?.EMIPaidCount || 0) >= row.month;
 
-                    return (
-                      <tr key={row.month} className="text-center bg-white">
-                        <td className="p-1 border">{row.month}</td>
+    return (
+      <tr key={row.month} className="text-center bg-white">
+        <td className="p-1 border">{row.month}</td>
 
-                        {/* ✅ EMI DATE */}
-                        <td className="p-1 border">
-                          {new Date(row.emiDate).toLocaleDateString("en-IN")}
-                        </td>
+        {/* EMI DATE */}
+        <td className="p-1 border">
+          {new Date(row.emiDate).toLocaleDateString("en-IN")}
+        </td>
 
-                        <td className="p-1 border">₹{row.opening}</td>
-                        <td className="p-1 border">₹{row.emi}</td>
-                        <td className="p-1 border">₹{row.interest}</td>
-                        <td className="p-1 border">₹{row.principal}</td>
-                        <td className="p-1 border">₹{row.closing}</td>
+        <td className="p-1 border">
+          ₹{Number(row.opening).toLocaleString("en-IN")}
+        </td>
 
-                        <td
-                          className={`p-1 border font-medium ${
-                            isPaid ? "text-green-600" : "text-gray-400"
-                          }`}
-                        >
-                          {isPaid ? "Paid" : row.status}
-                        </td>
-                      </tr>
-                    );
-                  })}
-                </tbody>
+        <td className="p-1 border font-medium">
+          ₹{Number(row.emi).toLocaleString("en-IN")}
+        </td>
+
+        <td className="p-1 border">
+          ₹{Number(row.interest).toLocaleString("en-IN")}
+        </td>
+
+        <td className="p-1 border">
+          ₹{Number(row.principal).toLocaleString("en-IN")}
+        </td>
+
+        <td className="p-1 border">
+          ₹{Number(row.closing).toLocaleString("en-IN")}
+        </td>
+
+        <td
+          className={`p-1 border font-medium ${
+            isPaid ? "text-green-600" : "text-gray-400"
+          }`}
+        >
+          {isPaid ? "Paid" : row.status}
+        </td>
+      </tr>
+    );
+  })}
+
+  {/* ✅ TOTAL ROW */}
+  <tr className="bg-[#0A2478] text-white font-semibold text-center">
+    <td colSpan={3} className="p-2 border">
+      Total
+    </td>
+
+    <td className="p-2 border">
+      ₹
+      {emiTable
+        .reduce((sum, row) => sum + Number(row.emi), 0)
+        .toLocaleString("en-IN", {
+          minimumFractionDigits: 2,
+        })}
+    </td>
+
+    <td className="p-2 border">
+      ₹
+      {emiTable
+        .reduce((sum, row) => sum + Number(row.interest), 0)
+        .toLocaleString("en-IN", {
+          minimumFractionDigits: 2,
+        })}
+    </td>
+
+    <td className="p-2 border">
+      ₹
+      {emiTable
+        .reduce((sum, row) => sum + Number(row.principal), 0)
+        .toLocaleString("en-IN", {
+          minimumFractionDigits: 2,
+        })}
+    </td>
+
+    <td className="p-2 border">
+      ₹
+      {emiTable.length > 0
+        ? Number(
+            emiTable[emiTable.length - 1].closing
+          ).toLocaleString("en-IN", {
+            minimumFractionDigits: 2,
+          })
+        : "0.00"}
+    </td>
+
+    <td className="p-2 border">-</td>
+  </tr>
+</tbody>
               </table>
             </>
           )}
@@ -1561,7 +1615,7 @@ const GoldLoanApproval = () => {
         <div className="flex bg-[#FFE6E6] px-4 gap-6 text-xs mb-5 py-2 w-full">
           {/* Scheme Details Table */}
           <div className="w-1/2">
-            <h2 className="font-semibold text-[20px] mb-2 text-[#0A2478]">
+            <h2 className="font-semibold text-[15px] mb-2 text-[#0A2478]">
               Scheme Details
             </h2>
 
@@ -1591,8 +1645,9 @@ const GoldLoanApproval = () => {
           </div>
 
           {/* Effective Interest Rates Table */}
-          <div className="w-1/2 ">
-            <h2 className="font-semibold text-[20px] mb-2 text-[#0A2478]">
+          {}
+          {/* <div className="w-1/2 ">
+            <h2 className="font-semibold text-[15px] mb-2 text-[#0A2478]">
               Effective Interest Rates
             </h2>
 
@@ -1627,7 +1682,77 @@ const GoldLoanApproval = () => {
                 </div>
               )}
             </div>
+          </div> */}
+
+          {loanSchemeData?.calcBasisOn !== "Monthly" && (
+  <div className="w-1/2">
+    <h2 className="font-semibold text-[15px] mb-2 text-[#0A2478]">
+      Effective Interest Rates
+    </h2>
+
+    <div className="border border-gray-300 rounded overflow-hidden">
+      <div className="flex bg-[#0A2478] text-white font-semibold">
+        <div className="flex-1 p-2 border-r border-white text-center">
+          Terms
+        </div>
+        <div className="flex-1 p-2 text-center">
+          Interest Rate
+        </div>
+      </div>
+
+      {interestRates?.length > 0 ? (
+        interestRates.map((rate, index) => (
+          <div
+            key={index}
+            className={`flex ${
+              index % 2 === 0 ? "bg-gray-50" : "bg-white"
+            }`}
+          >
+            <div className="flex-1 p-2 border-r text-center">
+              {rate.from} To {rate.to} DAYS
+            </div>
+            <div className="flex-1 p-2 text-center">
+              {Number(rate.addInt).toFixed(2)}%
+            </div>
           </div>
+        ))
+      ) : (
+        <div className="flex bg-[#FFCDCD]">
+          <div className="flex-1 p-3 text-center">
+            No rates available
+          </div>
+        </div>
+      )}
+    </div>
+  </div>
+          )}
+          {loanSchemeData?.calcBasisOn === "Monthly" && (
+  <div className="w-1/2">
+    <h2 className="font-semibold text-[15px] mb-2 text-[#0A2478]">
+      Effective Interest Rates
+    </h2>
+
+    <div className="border border-gray-300 rounded overflow-hidden">
+      <div className="flex bg-[#0A2478] text-white font-semibold">
+        <div className="flex-1 p-2 border-r border-white text-center">
+          Terms
+        </div>
+        <div className="flex-1 p-2 text-center">
+          Interest Rate
+        </div>
+      </div>
+
+      <div className="flex bg-gray-50">
+        <div className="flex-1 p-2 border-r text-center">
+          {loanSchemeData?.loanPeriod} Months
+        </div>
+        <div className="flex-1 p-2 text-center">
+          {Number(loanSchemeData?.monthlyInterestRate).toFixed(2)}%
+        </div>
+      </div>
+    </div>
+  </div>
+)}
         </div>
       </div>
 

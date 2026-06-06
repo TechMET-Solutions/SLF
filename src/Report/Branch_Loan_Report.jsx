@@ -52,8 +52,8 @@ const Branch_Loan_Report = () => {
   return (
     <div className="min-h-screen bg-white text-[12px] text-gray-800">
 
-      <div className="flex justify-center my-5 px-4">
-        <div className="flex items-center justify-between px-6 py-4 w-full max-w-[1290px] min-h-[70px] rounded-[11px] border border-gray-200 shadow-sm bg-white gap-6">
+      <div className="flex ">
+        <div className="flex items-center justify-between px-6   w-[1462px] ml-[18px]  min-h-[40px] border border-gray-200 shadow-sm bg-white gap-6">
 
           {/* 🔴 Left — Title */}
           <div className="flex-shrink-0">
@@ -110,9 +110,9 @@ const Branch_Loan_Report = () => {
       </div>
 
 
-      <div className="m-2 mx-28">
+      <div className="w-[1462px] ml-[15px]">
         {/* Table */}
-        <div className="overflow-x-auto mt-2 max-w-4xl h-[500px]">
+        <div className="overflow-x-auto mt-2 mb-5">
           <table className="w-full border-collapse text-[12px]">
             <thead className="bg-[#0A2478] text-white text-sm">
               <tr>

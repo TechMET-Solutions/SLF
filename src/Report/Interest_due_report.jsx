@@ -10,14 +10,12 @@ const InterestDueReport = () => {
   const [loanNumbers, setLoanNumbers] = useState([]);
   const [selectedLoan, setSelectedLoan] = useState("");
   const [reportRows, setReportRows] = useState([]);
-
+  console.log(reportRows, "reportRows");
   // Fetch Schemes
   useEffect(() => {
     const fetchSchemes = async () => {
       try {
-        const response = await fetch(
-          `${API}/Scheme/getAllSchemes?page=1&limit=10`,
-        );
+        const response = await fetch(`${API}/Scheme/active?page=1&limit=10`);
         const result = await response.json();
         setSchemes(result.data || []);
         setLoading(false);
@@ -56,16 +54,21 @@ const InterestDueReport = () => {
       console.error("Error loading report:", err);
     }
   };
+
+  const formatDate = (date) => {
+  if (!date) return "-";
+  return new Date(date).toLocaleString("en-IN", {
+    day: "2-digit",
+    month: "short",
+    year: "numeric",
+  });
+};
   return (
-      <div className="min-h-screen w-full">
+    <div className="min-h-screen w-full">
       <div className="">
         {/* Top Bar */}
-        <div className="flex sticky top-[80px] z-40 w-full px-8">
-          <div className="flex items-center px-6 py-4 border-b w-full max-w-[1462px] h-[50px] border rounded-[11px] border-gray-200 justify-between">
-
-
-
-
+        <div className="flex sticky top-[50px] z-40 w-full px-8">
+          <div className="flex items-center px-6 py-4 border-b w-full max-w-[1462px] h-[40px] border  border-gray-200 justify-between bg-white">
             {/* 🔴 Left — Title */}
             <div className="flex-shrink-0">
               <h2 className="text-red-600 font-bold text-[18px] whitespace-nowrap">
@@ -75,10 +78,11 @@ const InterestDueReport = () => {
 
             {/* 🟡 Middle — Filters (Single Line) */}
             <div className="hidden lg:flex items-center gap-6 flex-1 justify-center">
-
               {/* As On Section */}
               <div className="flex items-center gap-2">
-                <label className="text-[12px] font-bold text-gray-600 whitespace-nowrap">As On</label>
+                <label className="text-[12px] font-bold text-gray-600 whitespace-nowrap">
+                  As On
+                </label>
                 <input
                   type="date"
                   className="border border-gray-300 p-1 rounded text-xs w-[130px] bg-white outline-none focus:border-[#0A2478]"
@@ -88,7 +92,9 @@ const InterestDueReport = () => {
 
               {/* Schemes Section */}
               <div className="flex items-center gap-2">
-                <label className="text-[12px] font-bold text-gray-600 whitespace-nowrap">Schemes</label>
+                <label className="text-[12px] font-bold text-gray-600 whitespace-nowrap">
+                  Schemes
+                </label>
                 <select
                   className="border border-gray-300 p-1 rounded text-xs w-[160px] bg-white outline-none focus:border-[#0A2478]"
                   onChange={(e) => setSelectedScheme(e.target.value)}
@@ -108,7 +114,9 @@ const InterestDueReport = () => {
 
               {/* Loan No Section (Combined Input/Select) */}
               <div className="flex items-center gap-2">
-                <label className="text-[12px] font-bold text-gray-600 whitespace-nowrap">Loan No</label>
+                <label className="text-[12px] font-bold text-gray-600 whitespace-nowrap">
+                  Loan No
+                </label>
                 <div className="flex items-center">
                   <input
                     type="text"
@@ -122,7 +130,9 @@ const InterestDueReport = () => {
                   >
                     <option value=""></option>
                     {loanNumbers.map((l) => (
-                      <option key={l.id} value={l.id}>{l.id}</option>
+                      <option key={l.id} value={l.id}>
+                        {l.id}
+                      </option>
                     ))}
                   </select>
                 </div>
@@ -130,7 +140,9 @@ const InterestDueReport = () => {
 
               {/* Due Days Section */}
               <div className="flex items-center gap-2">
-                <label className="text-[12px] font-bold text-gray-600 whitespace-nowrap">Due Days</label>
+                <label className="text-[12px] font-bold text-gray-600 whitespace-nowrap">
+                  Due Days
+                </label>
                 <input
                   type="number"
                   className="border border-gray-300 p-1 rounded text-xs w-[60px] text-center outline-none"
@@ -163,107 +175,104 @@ const InterestDueReport = () => {
           </div>
         </div>
 
-        <div className="">
-    
-          {/* Table */}
-          <div className="flex mx-[32px] my-4">            
-            <table className="w-full text-left  rounded-lg border-collapse min-w-[1500px]">
-              <thead className="bg-[#0A2478] text-white text-xs">
-                <tr className="">
-                  <th className="border p-1">SI No</th>
-                  <th className="border p-1">Loan No</th>
-                  <th className="border p-1">Loan Date</th>
-                  <th className="border p-1">Scheme</th>
-                  <th className="border p-1">Customer ID</th>
-                  <th className="border p-1">Customer Name</th>
-                  <th className="border p-1">Customer Address</th>
-                  <th className="border p-1">Mobile No</th>
-                  <th className="border p-1">Loan Amount</th>
-                  <th className="border p-1">Interest Due Amt.</th>
-                  <th className="border p-1">Interest Due Days</th>
-                  <th className="border p-1">Last Reciept No.</th>
-                  <th className="border p-1">Last Reciept Date</th>
-                  <th className="border p-1">Last Receipt Amt</th>
-                  <th className="border p-1">Interest Paid Upto</th>
-                </tr>
-              </thead>
-              <tbody>
-                {reportRows.map((row, i) => (
-                  <tr key={row.id} className="text-[11px]">
-                    <td className="border p-1 text-center">{i + 1}</td>
-                    <td className="border p-1">{row.id}</td>
+        {/* Table */}
+        <div className="flex w-[1462px] overflow-auto ml-[25px] p-2">
+          <table className="w-full text-left  rounded-lg border-collapse min-w-[1500px]">
+            <thead className="bg-[#0A2478] text-white text-xs">
+              <tr className="">
+                <th className="border p-1">Sr No</th>
+                <th className="border p-1">Loan No</th>
+                <th className="border p-1">Loan Date</th>
+                <th className="border p-1">Scheme</th>
+                <th className="border p-1">Customer ID</th>
+                <th className="border p-1">Customer Name</th>
+                <th className="border p-1">Customer Address</th>
+                <th className="border p-1">Mobile No</th>
+                <th className="border p-1">Loan Amount</th>
+                <th className="border p-1">Interest Due Amt.</th>
+                {/* <th className="border p-1">Interest Due Days</th> */}
+                <th className="border p-1">Last Reciept No.</th>
+                <th className="border p-1">Last Reciept Date</th>
+                <th className="border p-1">Last Receipt Amt</th>
+                <th className="border p-1">Interest Paid Upto</th>
+              </tr>
+            </thead>
+            <tbody>
+              {reportRows.map((row, i) => (
+                <tr key={row.id} className="text-[11px]">
+                  <td className="border p-1 text-center">{i + 1}</td>
+                  <td className="border p-1">{row.id}</td>
 
-                    {/* Loan Date */}
-                    <td className="border p-1">
-                      {row.created_at
-                        ? new Date(row.created_at).toLocaleDateString()
-                        : ""}
-                    </td>
-
-                    <td className="border p-1">{row.Scheme}</td>
-
-                    {/* Customer ID */}
-                    <td className="border p-1">{row.BorrowerId}</td>
-
-                    {/* Customer Name */}
-                    <td className="border p-1">{row.Borrower}</td>
-
-                    {/* Address नाहीये API मध्ये */}
-                    <td className="border p-1">-</td>
-
-                    <td className="border p-1">{row.Mobile_Number}</td>
-
-                    {/* Loan Amount */}
-                    <td className="border p-1 text-right">
-                      {row.Loan_amount}
-                    </td>
-
-                    {/* Interest Due Amount */}
-                    <td className="border p-1 text-right">
-                      {row.InterestDueAmount ?? 0}
-                    </td>
-
-                    {/* Interest Due Days */}
-                    <td className="border p-1 text-center">
-                      {row.InterestPaidDayCount ?? 0}
-                    </td>
-
-                    {/* Last Receipt No – data नाही */}
-                    <td className="border p-1">-</td>
-
-                    {/* Last Receipt Date */}
-                    <td className="border p-1">
-                      {row.LastEmiPaidDate || "-"}
-                    </td>
-
-                    {/* Last Receipt Amount */}
-                    <td className="border p-1 text-right">
-                      {row.LoanEmiAmountpaid || 0}
-                    </td>
-
-                    {/* Interest Paid Upto */}
-                    <td className="border p-1">
-                      {row.InterestPaidUpto || "-"}
-                    </td>
-                  </tr>
-                ))}
-
-                <tr className="bg-[#F2EBE3] font-bold text-[11px]">
-                  <td className="border p-1" colSpan="9">
-                    Total
+                  {/* Loan Date */}
+                  <td className="border p-1">
+                    {row.created_at
+                      ? new Date(row.created_at).toLocaleDateString()
+                      : ""}
                   </td>
+
+                  <td className="border p-1">{row.Scheme}</td>
+
+                  {/* Customer ID */}
+                  <td className="border p-1">{row.BorrowerId}</td>
+
+                  {/* Customer Name */}
+                  <td className="border p-1">{row.Borrower}</td>
+
+                  {/* Address नाहीये API मध्ये */}
+                  <td className="border p-1">-</td>
+
+                  <td className="border p-1">{row.Mobile_Number}</td>
+
+                  {/* Loan Amount */}
+                  <td className="border p-1 text-right">{row.Net_Payable}</td>
+
+                  {/* Interest Due Amount */}
                   <td className="border p-1 text-right">
-                    {reportRows.reduce(
-                      (s, r) => s + Number(r.InterestDueAmount || 0),
-                      0
-                    )}
+                    {row.InterestDueAmount ?? 0}
                   </td>
-                  <td className="border p-1" colSpan="5"></td>
-                </tr>
-              </tbody>
 
-            </table>
-          </div>
+                  {/* Interest Due Days */}
+                  {/* <td className="border p-1 text-center">
+                    {row.InterestPaidDayCount ?? 0}
+                  </td> */}
+
+                 
+                  <td className="border p-1">{row?.latestInstallment?.receiptNumber
+ ?? ""}</td>
+
+                 
+                <td className="border p-1">
+  {formatDate(
+    row?.latestInstallment?.transaction_date ||
+    row?.latestInstallment?.created_at
+  )}
+</td>
+
+                  {/* Last Receipt Amount */}
+                  <td className="border p-1 text-right">
+                    {row?.latestInstallment?.pay_amount||row?.latestInstallment?.loanAmountPaid
+}
+                  </td>
+
+                  {/* Interest Paid Upto */}
+                  <td className="border p-1">{row?.latestInstallment?.intPaidUpto || "-"}</td>
+                </tr>
+              ))}
+
+              <tr className="bg-[#F2EBE3] font-bold text-[11px]">
+                <td className="border p-1" colSpan="9">
+                  Total
+                </td>
+                <td className="border p-1 text-right">
+                  {reportRows.reduce(
+                    (s, r) => s + Number(r.InterestDueAmount || 0),
+                    0,
+                  )}
+                </td>
+                <td className="border p-1" colSpan="5"></td>
+              </tr>
+            </tbody>
+          </table>
         </div>
       </div>
     </div>

@@ -159,7 +159,7 @@ const Bank_Branch_Mapping = () => {
                   Branch Name
                 </th>
                 <th className="px-2 py-2 text-center border-r border-gray-300 text-[13px] w-[280px]">
-                  Address 1
+                  Address
                 </th>
                 {/* <th className="px-2 py-2 text-center border-r border-gray-300 text-[13px] w-[280px]">
                   Address 2

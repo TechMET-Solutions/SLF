@@ -225,7 +225,7 @@ const EditLoanDetails = () => {
               <thead className="bg-[#0A2478] text-white">
                 <tr>
                   <th className="px-4 py-2 border-r border-gray-200">Particulars</th>
-                  <th className="px-4 py-2 border-r border-gray-200">Nos.</th>
+                  <th className="px-4 py-2 border-r border-gray-200">Qty</th>
                   <th className="px-4 py-2 border-r border-gray-200">Gross</th>
                   <th className="px-4 py-2 border-r border-gray-200">Net Weight</th>
                   <th className="px-4 py-2 border-r border-gray-200">Purity</th>

@@ -23,7 +23,7 @@ const [statement, setStatement] = useState(null);
     const fetchSchemes = async () => {
       try {
         const response = await fetch(
-          `${API}/Scheme/getAllSchemes?page=1&limit=10`,
+          `${API}/Scheme/active?page=1&limit=10`,
         );
         const result = await response.json();
         setSchemes(result.data || []);
@@ -100,154 +100,13 @@ const [statement, setStatement] = useState(null);
 };
 
   return (
-//     <div className="min-h-screen bg-[#f0f2f5] font-sans text-[12px]">
-//       <div className="m-3 border border-gray-300 bg-white shadow-md">
-//         <div className="bg-[#008282] text-white px-3 py-1.5 font-bold text-[13px]">
-//           Loan Statement
-//         </div>
-
-//         {/* Dates */}
-//         <div className="p-4 bg-white border-b border-gray-200 flex items-center gap-8">
-//           <div className="flex items-center gap-2">
-//             <label className="font-medium">From Date</label>
-//             <input
-//               type="date"
-//               value={fromDate}
-//               onChange={(e) => setFromDate(e.target.value)}
-//               className="border px-2 py-1 w-32"
-//             />
-//           </div>
-
-//           <div className="flex items-center gap-2">
-//             <label className="font-medium">To Date</label>
-//             <input
-//               type="date"
-//               value={toDate}
-//               onChange={(e) => setToDate(e.target.value)}
-//               className="border px-2 py-1 w-32"
-//             />
-//           </div>
-//         </div>
-
-//         {/* Scheme & Loan */}
-//         <div className="p-4 bg-white border-b border-gray-200 flex flex-wrap items-center gap-6">
-//           <div className="flex items-center gap-2">
-//             <label className="font-medium">Scheme</label>
-//             <select
-//               className="border px-2 py-1 w-40"
-//               value={selectedScheme}
-//               onChange={(e) => setSelectedScheme(e.target.value)}
-//             >
-//               {loading ? (
-//                 <option>Loading...</option>
-//               ) : (
-//                 schemes.map((s) => (
-//                   <option key={s.id} value={s.id}>
-//                     {s.schemeName}
-//                   </option>
-//                 ))
-//               )}
-//             </select>
-//           </div>
-
-//           <div className="flex items-center gap-2">
-//             <label className="font-medium">
-//               Loan No <span className="text-red-500">*</span>
-//             </label>
-//             <select
-//               className="border px-2 py-1 w-48"
-//               value={loanNo}
-//               onChange={(e) => handleLoanChange(e.target.value)}
-//             >
-//               <option value="">Select Loan No</option>
-//               {loanList.map((l) => (
-//                 <option key={l.loanNo} value={l.loanNo}>
-//                   {l.loanNo}
-//                 </option>
-//               ))}
-//             </select>
-//           </div>
-
-//           <div className="flex items-center gap-2">
-//             <label className="font-medium">Customer</label>
-//             <input
-//               type="text"
-//               value={customerName}
-//               readOnly
-//               className="border px-2 py-1 w-64 bg-gray-100"
-//             />
-//           </div>
-//         </div>
-
-//         {/* Buttons */}
-//         <div className="px-3 py-2 flex gap-2 border-b">
-//           <button
-//             className="bg-[#005da3] text-white px-8 py-1"
-//             onClick={handleView}
-//           >
-//             💾 View
-//           </button>
-//           <button className="bg-[#005da3] text-white px-8 py-1">✖ Exit</button>
-//         </div>
-
-//         {/* Table (same as your design – static for now) */}
-//         <div className="overflow-x-auto">
-//           <table className="w-full border-collapse text-[11px]">
-//             <thead className="bg-[#e9e4db] border-b border-gray-400">
-//               <tr>
-//                 <th className="border p-1">Date</th>
-//                 <th className="border p-1">Particulars</th>
-//                 <th className="border p-1 text-right">Withdrawal</th>
-//                 <th className="border p-1 text-right">Payment</th>
-//                 <th className="border p-1 text-right">Running Total</th>
-//               </tr>
-//             </thead>
-//            <tbody>
-//   {statement ? (
-//     <tr className="border-b border-gray-200 hover:bg-blue-50">
-//       <td className="border p-1">
-//         {statement.approval_date
-//           ? new Date(statement.approval_date).toLocaleDateString()
-//           : ""}
-//       </td>
-
-//       <td className="border p-1 text-xs uppercase">
-//         Loan Control A/C ({statement.Print_Name})
-//       </td>
-
-//       <td className="border p-1 text-right">
-//         {Number(statement.Loan_amount || 0).toFixed(2)}
-//       </td>
-
-//       <td className="border p-1 text-right">
-//         {Number(statement.LoanAmountPaid || 0).toFixed(2)}
-//       </td>
-
-//       <td className="border p-1 text-right font-medium">
-//         {Number(statement.LoanPendingAmount || 0).toFixed(2)}
-//       </td>
-//     </tr>
-//   ) : (
-//     <tr>
-//       <td colSpan="5" className="p-4 text-center text-gray-500">
-//         Select filters and Loan No, then click View
-//       </td>
-//     </tr>
-//   )}
-// </tbody>
-
-//           </table>
-//         </div>
-//       </div>
-    //     </div>
-    
-    <div className="min-h-screen bg-gray-50 p-4 font-sans">
+    <div className="min-h-screen font-sans">
       {/* 🟦 Top Header/Filter Bar */}
-      <div className="flex justify-center mt-2 mb-4">
-        <div className="flex flex-col w-full max-w-[1290px] rounded-[11px] border border-gray-200 shadow-sm bg-white overflow-hidden">
+      <div className="flex justify-center ">
+        <div className="flex flex-col w-[1462px] border border-gray-200 shadow-sm bg-white overflow-hidden">
 
           {/* Upper Section: Title & Dates */}
-          <div className="flex items-center justify-between px-6 py-3 border-b border-gray-100 gap-4">
+          <div className="flex items-center justify-between px-6 border-b border-gray-100 gap-4 p-1">
             <div className="flex-shrink-0">
               <h2 className="text-red-600 font-bold text-[18px] whitespace-nowrap uppercase tracking-tight">
                 Loan Statement
@@ -278,13 +137,13 @@ const [statement, setStatement] = useState(null);
             <div className="flex items-center gap-2">
               <button
                 onClick={handleView}
-                className="w-[100px] h-[34px] rounded bg-[#0A2478] text-white text-[12px] font-bold hover:bg-[#071d45] transition-all shadow-sm active:scale-95"
+                className="w-[100px] h-[30px] rounded bg-[#0A2478] text-white text-[12px] font-bold hover:bg-[#071d45] transition-all shadow-sm active:scale-95"
               >
                 View
               </button>
               <button
                 onClick={() => window.history.back()}
-                className="w-[85px] h-[34px] rounded bg-[#C1121F] text-white text-[12px] font-bold hover:bg-[#a0101a] transition-all shadow-sm active:scale-95"
+                className="w-[85px] h-[30px] rounded bg-[#C1121F] text-white text-[12px] font-bold hover:bg-[#a0101a] transition-all shadow-sm active:scale-95"
               >
                 Exit
               </button>
@@ -292,7 +151,7 @@ const [statement, setStatement] = useState(null);
           </div>
 
           {/* Lower Section: Loan Selectors */}
-          <div className="flex items-center px-6 py-3 bg-gray-50/50 gap-8">
+          <div className="flex items-center px-6 py-3  gap-8">
             <div className="flex items-center gap-2">
               <label className="text-[11px] font-bold text-gray-500 uppercase">Scheme</label>
               <select
@@ -338,35 +197,35 @@ const [statement, setStatement] = useState(null);
 
       {/* 🟢 Table Section */}
       <div className="flex justify-center">
-        <div className="w-full max-w-[1290px] bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden">
+        <div className="w-[1462px] bg-white overflow-hidden">
           <div className="overflow-x-auto min-h-[400px]">
             <table className="w-full text-left border-collapse">
               <thead>
                 <tr className="bg-[#0A2478] text-gray-100 text-[10px] font-bold">
-                  <th className="border border-gray-300 p-3 w-32 uppercase text-center">Date</th>
-                  <th className="border border-gray-300 p-3 uppercase">Particulars</th>
-                  <th className="border border-gray-300 p-3 text-right uppercase w-48">Withdrawal (Dr)</th>
-                  <th className="border border-gray-300 p-3 text-right uppercase w-48">Payment (Cr)</th>
-                  <th className="border border-gray-300 p-3 text-right uppercase w-48 ">Running Total</th>
+                  <th className="border border-gray-300 p-1 w-32 uppercase text-center">Date</th>
+                  <th className="border border-gray-300 p-1 uppercase">Particulars</th>
+                  <th className="border border-gray-300 p-1 text-right uppercase w-48">Withdrawal (Dr)</th>
+                  <th className="border border-gray-300 p-1 text-right uppercase w-48">Payment (Cr)</th>
+                  <th className="border border-gray-300 p-1 text-right uppercase w-48 ">Running Total</th>
                 </tr>
               </thead>
               <tbody className="text-[11px] text-gray-700">
                 {statement ? (
                   <tr className="hover:bg-blue-50/30 transition-colors border-b border-gray-200">
-                    <td className="border border-gray-300 p-3 text-center">
+                    <td className="border border-gray-300 p-1 text-center">
                       {statement.approval_date ? new Date(statement.approval_date).toLocaleDateString('en-GB') : ""}
                     </td>
-                    <td className="border border-gray-300 p-3">
+                    <td className="border border-gray-300 p-1">
                       <div className="font-bold text-gray-800 uppercase">Loan Control A/C</div>
                       <div className="text-[10px] text-blue-600 tracking-tight">{statement.Print_Name}</div>
                     </td>
-                    <td className="border border-gray-300 p-3 text-right font-mono text-red-600">
+                    <td className="border border-gray-300 p-1 text-right font-mono text-red-600">
                       {Number(statement.Loan_amount || 0).toLocaleString(undefined, { minimumFractionDigits: 2 })}
                     </td>
-                    <td className="border border-gray-300 p-3 text-right font-mono text-green-700">
-                      {Number(statement.LoanAmountPaid || 0).toLocaleString(undefined, { minimumFractionDigits: 2 })}
+                    <td className="border border-gray-300 p-1 text-right font-mono text-green-700">
+                      {Number(statement.LoanAmountPaid || statement.LoanEmiAmountpaid || 0).toLocaleString(undefined, { minimumFractionDigits: 2 })}
                     </td>
-                    <td className="border border-gray-300 p-3 text-right font-mono font-bold text-[#0A2478] bg-blue-50/20">
+                    <td className="border border-gray-300 p-1 text-right font-mono font-bold text-[#0A2478] bg-blue-50/20">
                       {Number(statement.LoanPendingAmount || 0).toLocaleString(undefined, { minimumFractionDigits: 2 })}
                     </td>
                   </tr>

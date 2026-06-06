@@ -56,7 +56,7 @@ const AccountGroupList = () => {
   const [searchHeaders, setSearchHeaders] = useState([]); // Array of active headers
   const [searchQuery, setSearchQuery] = useState("");
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
-
+const [isCleared, setIsCleared] = useState(false);
   const toggleHeader = (headerId) => {
     setSearchHeaders((prev) =>
       prev.includes(headerId)
@@ -149,19 +149,40 @@ const AccountGroupList = () => {
   };
 
   // 🔹 UPDATED: Handle Search (Reset to page 1)
-  const handleSearch = () => {
-    setIsDropdownOpen(false);
-    setCurrentPage(1);
-    getAccountGroups(1);
-  };
+ const handleSearch = () => {
+  // ❌ Check if no header selected
+  if (!searchHeaders || searchHeaders.length === 0) {
+    alert("Please select at least one header before searching");
+    return;
+  }
+
+  setIsDropdownOpen(false);
+  setCurrentPage(1);
+
+  // ✅ Call API only when valid
+  getAccountGroups(1);
+};
 
   // 🔹 UPDATED: Handle Clear
-  const handleClear = () => {
-    setSearchQuery("");
-    setSearchHeaders([]);
-    setCurrentPage(1);
-    getAccountGroups(1);
+const handleClear = () => {
+  const hasData =
+    searchQuery !== "" ||
+    searchHeaders.length > 0 ||
+    currentPage !== 1;
+
+  if (!hasData) return; // already cleared → no API call
+
+  setSearchQuery("");
+  setSearchHeaders([]);
+  setCurrentPage(1);
+  setIsCleared(true); // trigger API after reset
   };
+  useEffect(() => {
+  if (isCleared) {
+    getAccountGroups(1, "", []);
+    setIsCleared(false);
+  }
+}, [isCleared]);
 
   // Initial Load
   useEffect(() => {
@@ -205,7 +226,7 @@ const AccountGroupList = () => {
             }}
             className="text-red-600"
           >
-            Group Ledger List
+            Group Ledger
           </h2>
 
           {/* Right section (search + buttons) */}

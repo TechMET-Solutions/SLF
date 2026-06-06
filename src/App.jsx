@@ -55,6 +55,7 @@ import Accounts_Opening_Balance from "./Miscellaneous/Accounts_Opening_Balance.j
 // import AdvSettingsAddEdit from "./Miscellaneous/AdvSettingsAddEdit.jsx";
 import axios from "axios";
 import { useEffect, useState } from "react";
+import AttendanceReport from "./MasterPages/AttendanceReport.jsx";
 import PartyType from "./MasterPages/PartyType.jsx";
 import Application_Setting from "./Miscellaneous/Application_Setting.jsx";
 import Bank_Branch_Mapping from "./Miscellaneous/Bank_Branch_Mapping.jsx";
@@ -142,6 +143,7 @@ import LoanRepayment from "./TrasactionPages/LoanRepayment.jsx";
 import LoanRepaymentDetails from "./TrasactionPages/LoanRepaymentDetails.jsx";
 import NOC from "./TrasactionPages/NOC";
 import PaymentSuccess from "./TrasactionPages/PaymentSuccess.jsx";
+import PaymentSuccessEMI from "./TrasactionPages/PaymentSucessEmi.jsx";
 import PrintCreditNote from "./TrasactionPages/PrintCreditNote";
 import PrintLoanApplication from "./TrasactionPages/PrintLoanApplication";
 import ViewBidderDetails from "./TrasactionPages/ViewBidderDetails";
@@ -157,20 +159,34 @@ function LayoutWithNavbar({ children }) {
   const [showDayEndModal, setShowDayEndModal] = useState(false);
   const [DayEndProcessDate, setDayEndProcessDate] = useState("");
   const [dayEndMessage, setDayEndMessage] = useState("");
+
+  const [BranchData, setBranchData] = useState("");
+  console.log(BranchData, "BranchData");
   console.log(
     "SHOW DAY END MODAL:",
     showDayEndModal,
     "MESSAGE:",
     dayEndMessage,
   );
+
+  useEffect(() => {
+    const userData = JSON.parse(sessionStorage.getItem("userData"));
+
+    if (userData && userData.branchId) {
+      setBranchData(
+        userData.branchId.id || "", // ✅ store only ID
+      );
+    }
+  }, []);
+
   useEffect(() => {
     const checkDayEnd = async () => {
-      const user = JSON.parse(sessionStorage.getItem("userData"));
-      if (!user) return;
+      // ✅ Stop if branchId not available
+      if (!BranchData) return;
 
       try {
         const res = await axios.get(`${API}/Master/checkPreviousDayEnd`, {
-          params: { userId: user.id, isAdmin: user.isAdmin },
+          params: { branch_id: BranchData },
         });
 
         const data = res.data;
@@ -189,12 +205,13 @@ function LayoutWithNavbar({ children }) {
           ? new Date(data.lastDayEnd).toLocaleDateString("en-CA")
           : null;
 
+        console.log("Branch ID:", BranchData);
         console.log("Today:", todayStr);
         console.log("Yesterday:", yesterdayStr);
         console.log("Last:", lastDate);
 
         // =========================
-        // ✅ TODAY → SHOW MESSAGE ONLY
+        // ✅ TODAY
         // =========================
         if (lastDate === todayStr) {
           setDayEndMessage("✅ Today's day-end process is already completed.");
@@ -204,7 +221,7 @@ function LayoutWithNavbar({ children }) {
         }
 
         // =========================
-        // ✅ YESTERDAY → DO NOTHING
+        // ✅ YESTERDAY
         // =========================
         if (lastDate === yesterdayStr) {
           setDayEndMessage("");
@@ -213,12 +230,11 @@ function LayoutWithNavbar({ children }) {
         }
 
         // =========================
-        // ❌ OLDER → SHOW MODAL
+        // ❌ OLDER
         // =========================
         if (window.location.pathname !== "/Day-End-Process") {
           setDayEndMessage("");
           setDayEndProcessDate("older");
-
           setShowDayEndModal(true);
         }
       } catch (err) {
@@ -227,12 +243,12 @@ function LayoutWithNavbar({ children }) {
     };
 
     checkDayEnd();
-  }, []);
+  }, [BranchData]);
 
   const handleLogout = () => {
-  sessionStorage.clear();
-  window.location.href = "/login";
-};
+    sessionStorage.clear();
+    window.location.href = "/login";
+  };
   return (
     <>
       {!hideNavbar && <Navbar />}
@@ -243,79 +259,89 @@ function LayoutWithNavbar({ children }) {
         </div>
       )}
       {showDayEndModal && (
-  <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
-    
-    <div className="absolute inset-0 bg-slate-900/40 backdrop-blur-sm" />
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+          <div className="absolute inset-0 bg-slate-900/40 backdrop-blur-sm" />
 
-    <div className="relative bg-white rounded-2xl shadow-2xl w-full max-w-md border overflow-hidden">
-      
-      {/* Top Bar */}
-      <div className={`h-2 w-full ${DayEndProcessDate === "today" ? "bg-green-600" : "bg-red-600"}`} />
+          <div className="relative bg-white rounded-2xl shadow-2xl w-full max-w-md border overflow-hidden">
+            {/* Top Bar */}
+            <div
+              className={`h-2 w-full ${DayEndProcessDate === "today" ? "bg-green-600" : "bg-red-600"}`}
+            />
 
-      <div className="p-8 text-center">
-        
-        {/* Icon */}
-        <div className={`mx-auto flex items-center justify-center h-16 w-16 rounded-full mb-6 
-          ${DayEndProcessDate === "today" ? "bg-green-50" : "bg-red-50"}`}>
-          
-          <svg
-            className={`h-8 w-8 ${DayEndProcessDate === "today" ? "text-green-600" : "text-red-600"}`}
-            fill="none"
-            viewBox="0 0 24 24"
-            strokeWidth="2"
-            stroke="currentColor"
-          >
-            {DayEndProcessDate === "today" ? (
-              <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
-            ) : (
-              <path strokeLinecap="round" strokeLinejoin="round" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
-            )}
-          </svg>
-        </div>
+            <div className="p-8 text-center">
+              {/* Icon */}
+              <div
+                className={`mx-auto flex items-center justify-center h-16 w-16 rounded-full mb-6 
+          ${DayEndProcessDate === "today" ? "bg-green-50" : "bg-red-50"}`}
+              >
+                <svg
+                  className={`h-8 w-8 ${DayEndProcessDate === "today" ? "text-green-600" : "text-red-600"}`}
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  strokeWidth="2"
+                  stroke="currentColor"
+                >
+                  {DayEndProcessDate === "today" ? (
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      d="M5 13l4 4L19 7"
+                    />
+                  ) : (
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"
+                    />
+                  )}
+                </svg>
+              </div>
 
-        {/* TITLE */}
-        <h2 className="text-2xl font-extrabold text-gray-900 mb-2">
-          {DayEndProcessDate === "today" ? "Day Ending Done" : "Day-End Pending"}
-        </h2>
+              {/* TITLE */}
+              <h2 className="text-2xl font-extrabold text-gray-900 mb-2">
+                {DayEndProcessDate === "today"
+                  ? "Day Ending Done"
+                  : "Day-End Pending"}
+              </h2>
 
-        {/* MESSAGE */}
-        <p className="text-gray-500 mb-8 leading-relaxed">
-          {dayEndMessage || "Your previous day-end process is pending. Please complete it."}
-        </p>
+              {/* MESSAGE */}
+              <p className="text-gray-500 mb-8 leading-relaxed">
+                {dayEndMessage ||
+                  "Your previous day-end process is pending. Please complete it."}
+              </p>
 
-        {/* ACTION BUTTONS */}
-        {DayEndProcessDate === "older" && (
-          <div className="flex flex-col gap-3">
-            <button
-              onClick={() => (window.location.href = "/Day-End-Process")}
-              className="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 px-6 rounded-xl shadow-lg transition-all active:scale-95"
-            >
-              Go to Day-End Process
-            </button>
+              {/* ACTION BUTTONS */}
+              {DayEndProcessDate === "older" && (
+                <div className="flex flex-col gap-3">
+                  <button
+                    onClick={() => (window.location.href = "/Day-End-Process")}
+                    className="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 px-6 rounded-xl shadow-lg transition-all active:scale-95"
+                  >
+                    Go to Day-End Process
+                  </button>
 
-            <button
-              onClick={() => window.location.reload()}
-              className="text-gray-400 text-sm hover:text-gray-600"
-            >
-              Check Status Again
-            </button>
-          </div>
+                  <button
+                    onClick={() => window.location.reload()}
+                    className="text-gray-400 text-sm hover:text-gray-600"
+                  >
+                    Check Status Again
+                  </button>
+                </div>
               )}
               {DayEndProcessDate === "today" && (
-  <div className="flex flex-col gap-3">
-    <button
-      onClick={handleLogout}
-      className="w-full bg-red-600 hover:bg-red-700 text-white font-bold py-3 px-6 rounded-xl shadow-lg transition-all active:scale-95"
-    >
-      Logout
-    </button>
-  </div>
-)}
-
-      </div>
-    </div>
-  </div>
-)}
+                <div className="flex flex-col gap-3">
+                  <button
+                    onClick={handleLogout}
+                    className="w-full bg-red-600 hover:bg-red-700 text-white font-bold py-3 px-6 rounded-xl shadow-lg transition-all active:scale-95"
+                  >
+                    Logout
+                  </button>
+                </div>
+              )}
+            </div>
+          </div>
+        </div>
+      )}
     </>
   );
 }
@@ -333,6 +359,7 @@ function App() {
           <Route path="/terms-of-use" element={<TermsOfService />} />
           <Route path="/contact-us" element={<Contactus />} />
           <Route path="/Refund-and-Cancellation" element={<Refund />} />
+
           {/* PROTECTED ROUTES */}
           <Route
             path="/*"
@@ -468,6 +495,7 @@ function App() {
                     path="/Loan-Application"
                     element={<LoanApplication />}
                   />
+                  <Route path="*" element={<h1>404 Not Found</h1>} />
                   <Route
                     path="/loan_application_history"
                     element={<Loan_application_history />}
@@ -590,6 +618,10 @@ function App() {
                   <Route path="/Party-Type" element={<PartyType />} />
                   <Route path="/add-loan-charge" element={<AddLoanCharges />} />
                   <Route
+                    path="/AttendanceReport"
+                    element={<AttendanceReport />}
+                  />
+                  <Route
                     path="/view-loan-charge"
                     element={<ViewLoanCharges />}
                   />
@@ -628,8 +660,12 @@ function App() {
                   />
 
                   <Route
-                    path="/Add-Loan-Repayment/:loanId/paymentsuccess"
+                    path="/Add-Loan-Repayment/paymentsuccess/:loanId"
                     element={<PaymentSuccess />}
+                  />
+                  <Route
+                    path="/Loan-Repayment-Emi/paymentsuccess/:loanId"
+                    element={<PaymentSuccessEMI />}
                   />
 
                   <Route path="/Generate_Bill" element={<GenrateBill />} />

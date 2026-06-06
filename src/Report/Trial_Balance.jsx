@@ -600,10 +600,10 @@ useEffect(() => {
     //   </div>
     // </div>
 
-    <div className="min-h-screen bg-gray-50 p-4 font-sans text-gray-800">
+    <div className="min-h-screen  font-sans text-gray-800">
       {/* 🟦 Single Line Header & Control Bar */}
-      <div className="flex justify-center mt-2 mb-4">
-        <div className="flex items-center justify-between px-6 py-4 w-full max-w-[1400px] min-h-[85px] rounded-[11px] border border-gray-200 shadow-sm bg-white gap-4">
+      <div className="flex justify-center ">
+        <div className="flex items-center justify-between px-6  w-full max-w-[1462px] min-h-[40px]  border border-gray-200 shadow-sm bg-white gap-4">
 
           {/* 🔴 Left — Title */}
           <div className="flex-shrink-0">
@@ -679,11 +679,11 @@ useEffect(() => {
           <div className="flex items-center gap-2">
             <button
               onClick={handleViewClick}
-              className="h-[34px] px-8 rounded bg-[#0A2478] text-white text-[12px] font-bold hover:bg-[#004a80] transition-all shadow-sm active:scale-95 uppercase tracking-wider"
+              className="h-[30px] px-8 rounded bg-[#0A2478] text-white text-[12px] font-bold hover:bg-[#004a80] transition-all shadow-sm active:scale-95 uppercase tracking-wider"
             >
               View
             </button>
-            <button className="h-[34px] px-6 rounded bg-red-600 text-white text-[12px] font-bold hover:bg-red-50 transition-all uppercase tracking-wider">
+            <button className="h-[30px] px-6 rounded bg-red-600 text-white text-[12px] font-bold hover:bg-red-50 transition-all uppercase tracking-wider">
               Exit
             </button>
           </div>
@@ -691,17 +691,17 @@ useEffect(() => {
       </div>
 
       {/* 🟢 Table Section */}
-      <div className="flex justify-center mb-10">
+      <div className="flex ml-[15px] mb-10">
         <div className="w-full max-w-[1400px] bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden">
           <div className="overflow-x-auto">
             <table className="w-full text-left border-collapse table-fixed min-w-[1100px]">
               <thead>
                 <tr className="bg-[#0A2478] text-gray-100 text-[10px] font-bold uppercase tracking-wider">
                   <th className="border border-gray-300 p-3 w-[30%]">Account Name</th>
-                  <th className="border border-gray-300 p-3 text-right">Debit Balance</th>
-                  <th className="border border-gray-300 p-3 text-right">Credit Balance</th>
-                  <th className="border border-gray-300 p-3 text-right bg-gray-100/50">Closing Debit</th>
-                  <th className="border border-gray-300 p-3 text-right bg-gray-100/50">Closing Credit</th>
+                  <th className="border border-gray-300 p-3 text-right"> Withdrawal Balance</th>
+<th className="border border-gray-300 p-3 text-right">Deposit Balance</th>
+                  <th className="border border-gray-300 p-3 text-right bg-gray-100/50">Closing  Withdrawal</th>
+                  <th className="border border-gray-300 p-3 text-right bg-gray-100/50">Closing  Deposit</th>
                 </tr>
               </thead>
               <tbody className="text-[11px] text-gray-700">

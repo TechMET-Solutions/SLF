@@ -99,7 +99,7 @@ const { permissions, userData } = usePermission();
 
   return (
     <div className="min-h-screen bg-white font-sans text-gray-800 ">
-      <div className="flex justify-center ">
+      <div className="flex justify-center sticky top-[50px] bg-white ">
         <div className="flex items-center px-6 py-4 border-b  w-[1462px] h-[40px] border  border-gray-200 justify-between ">
           {/* Left heading */}
           <h2

@@ -17,7 +17,7 @@ const Loan_Repay_Register = () => {
   useEffect(() => {
     const fetchSchemes = async () => {
       try {
-        const response = await axios.get(`${API}/Scheme/getAllSchemes`);
+        const response = await axios.get(`${API}/Scheme/active`);
 
         const fetchedSchemes = response.data.data.map((item) => ({
           ...item,
@@ -71,10 +71,10 @@ const Loan_Repay_Register = () => {
 
   return (
     <div className="min-h-screen bg-white text-[12px] text-gray-800">
-      <div className="m-2 ">
+      <div className="">
 
-        <div className="flex justify-center my-5 px-4">
-          <div className="flex items-center justify-between px-6 py-2 w-full max-w-[1290px] min-h-[70px] rounded-[11px] border border-gray-200 shadow-sm bg-white gap-4">
+        <div className="flex justify-center ">
+          <div className="flex items-center justify-between px-6 w-[1462px] min-h-[40px]  border border-gray-200 shadow-sm bg-white gap-4">
 
             {/* 🔴 Left — Title */}
             <div className="flex-shrink-0">
@@ -153,7 +153,7 @@ const Loan_Repay_Register = () => {
         </div>
 
         {/* Table Section */}
-        <div className="overflow-x-auto bg-white mx-28">
+        <div className="overflow-x-auto bg-white ml-[18px]">
 
           {/* Loading */}
           {loading && (
@@ -162,7 +162,7 @@ const Loan_Repay_Register = () => {
             </div>
           )}
 
-          <table className="w-full border-collapse text-[10px]">
+          <table className="w-[1462px] border-collapse ">
             <thead className="bg-[#0A2478] text-gray-100 font-bold">
               <tr>
                 {[
@@ -176,7 +176,7 @@ const Loan_Repay_Register = () => {
                   "Scheme Name",
                   "Party Name",
                   "Loan Amount",
-                  "Amount",
+                  "Pay Amount",
                   "Loan Adj",
                   "Interest Adj",
                   "Charges",
@@ -232,22 +232,39 @@ const Loan_Repay_Register = () => {
               {/* Total Row */}
               {data.length > 0 && (
                 <tr className="font-bold bg-gray-100">
-                  <td className="border p-1">Total</td>
-                  <td colSpan="8" className="border"></td>
-                  <td className="border p-1 text-right">
-                    {totals.amount.toFixed(2)}
-                  </td>
-                  <td className="border p-1 text-right">
-                    {totals.loanAdj.toFixed(2)}
-                  </td>
-                  <td className="border p-1 text-right">
-                    {totals.interestAdj.toFixed(2)}
-                  </td>
-                  <td className="border p-1 text-right">
-                    {totals.charges.toFixed(2)}
-                  </td>
-                  <td colSpan="2" className="border"></td>
-                </tr>
+  <td className="border p-1">Total</td>
+
+  {/* Empty columns till Loan Amount */}
+  <td colSpan="8" className="border"></td>
+
+  {/* Loan Amount Total */}
+  <td className="border p-1 text-right">
+    {totals.loanAmount?.toFixed(2)}
+  </td>
+
+  {/* Amount */}
+  <td className="border p-1 text-right">
+    {totals.amount?.toFixed(2)}
+  </td>
+
+  {/* Loan Adj */}
+  <td className="border p-1 text-right">
+    {totals.loanAdj?.toFixed(2)}
+  </td>
+
+  {/* Interest Adj */}
+  <td className="border p-1 text-right">
+    {totals.interestAdj?.toFixed(2)}
+  </td>
+
+  {/* Charges */}
+  <td className="border p-1 text-right">
+    {totals.charges?.toFixed(2)}
+  </td>
+
+  {/* Remaining columns */}
+  <td colSpan="2" className="border"></td>
+</tr>
               )}
             </tbody>
           </table>

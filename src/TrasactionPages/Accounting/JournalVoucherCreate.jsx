@@ -13,7 +13,7 @@ const JournalVoucherCreate = () => {
   // Data States
   const [accountList, setAccountList] = useState([]);
   const [banks, setBanks] = useState([]);
-const [loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState(false);
   // Modal & Metadata States
   const [isDetailsModalOpen, setIsDetailsModalOpen] = useState(false);
   const [currentRowIndex, setCurrentRowIndex] = useState(null);
@@ -28,7 +28,18 @@ const [loading, setLoading] = useState(false);
   const location = useLocation();
   const passedId = location.state?.id || null;
   const mode = location.state?.mode || "create";
-const isViewMode = mode === "view";
+  const isViewMode = mode === "view";
+
+  console.log(passedId, mode, isViewMode);
+  const getTitle = () => {
+    if (mode === "view") {
+      return ` View Journal Voucher${passedId ? ` - ${passedId}` : ""}`;
+    }
+    if (mode === "edit") {
+      return `Edit Journal Voucher ${passedId ? ` - ${passedId}` : ""}`;
+    }
+    return "Journal Voucher Create";
+  };
   useEffect(() => {
     if (!passedId) return;
 
@@ -71,11 +82,11 @@ const isViewMode = mode === "view";
           });
 
           setRowDetails(extraDetailsObj);
-           setLoading(false);
+          setLoading(false);
         }
       } catch (error) {
         console.error("Fetch Journal Error:", error);
-         setLoading(false);
+        setLoading(false);
       } finally {
         setLoading(false);
       }
@@ -165,52 +176,116 @@ const isViewMode = mode === "view";
     setIsDetailsModalOpen(false);
   };
 
-  const handleSaveVoucher = async () => {
-    setLoading(true);
-    try {
-      if (voucherData.diffAmount !== 0) {
-        return alert("Deposit and Withdrawal must match");
-      }
+  // const handleSaveVoucher = async () => {
+  //   debugger
+  //   setLoading(true);
+  //   try {
+  //     if (voucherData.diffAmount !== 0) {
+  //        setLoading(false);
+  //       return alert("Deposit and Withdrawal must match");
+  //     }
 
-      const payload = {
-        ...voucherData,
-        rows: rows.map((row, index) => ({
-          ...row,
-          extraDetails: rowDetails[index] || null,
-        })),
-      };
+  //     const payload = {
+  //       ...voucherData,
+  //       rows: rows.map((row, index) => ({
+  //         ...row,
+  //         extraDetails: rowDetails[index] || null,
+  //       })),
+  //     };
 
-      let response;
+  //     let response;
 
-      if (mode === "edit") {
-        response = await axios.put(
-          `${API}/api/journalVoucher/update/${passedId}`,
-          payload,
-        );
-      } else {
-        response = await axios.post(
-          `${API}/api/journalVoucher/create`,
-          payload,
-        );
-      }
+  //     if (mode === "edit") {
+  //       response = await axios.put(
+  //         `${API}/api/journalVoucher/update/${passedId}`,
+  //         payload,
+  //       );
+  //     } else {
+  //       response = await axios.post(
+  //         `${API}/api/journalVoucher/create`,
+  //         payload,
+  //       );
+  //     }
 
-      if (response.data.success) {
-        alert(
-          `Journal Voucher ${mode === "edit" ? "Updated" : "Saved"} Successfully ✅`,
-        );
-        setLoading(false);
-        navigate("/JournalVoucher/list");
-      }
-    } catch (error) {
-      console.error("Save Voucher Error:", error);
+  //     if (response.data.success) {
+  //       alert(
+  //         `Journal Voucher ${mode === "edit" ? "Updated" : "Saved"} Successfully ✅`,
+  //       );
+  //       setLoading(false);
+  //       navigate("/JournalVoucher/list");
+  //     }
+  //   } catch (error) {
+  //     console.error("Save Voucher Error:", error);
+  //     setLoading(false);
+  //     alert(
+  //       error.response?.data?.message || "Failed to save Journal Voucher ❌",
+  //     );
+  //     setLoading(false);
+  //   }
+  // };
+const handleSaveVoucher = async () => {
+  debugger;
+  setLoading(true);
+
+  try {
+    // ✅ Check diff amount
+    if (voucherData.diffAmount !== 0) {
       setLoading(false);
-      alert(
-        error.response?.data?.message || "Failed to save Journal Voucher ❌",
-      );
-      setLoading(false);
+      return alert("Deposit and Withdrawal must match");
     }
-  };
 
+    // ✅ Check if rows have valid data
+    // const hasValidRow = rows.some(
+    //   (row) =>
+    //     row.accountName || row.debit || row.credit // adjust fields as per your structure
+    // );
+
+    // if (!hasValidRow) {
+    //   setLoading(false);
+    //   return alert("Add the details in the Journal Voucher");
+    // }
+
+    // ✅ Remove diffAmount if 0
+    const { diffAmount, ...restVoucherData } = voucherData;
+
+    const payload = {
+      ...restVoucherData,
+      ...(diffAmount !== 0 && { diffAmount }),
+      rows: rows.map((row, index) => ({
+        ...row,
+        extraDetails: rowDetails[index] || null,
+      })),
+    };
+
+    let response;
+
+    if (mode === "edit") {
+      response = await axios.put(
+        `${API}/api/journalVoucher/update/${passedId}`,
+        payload
+      );
+    } else {
+      response = await axios.post(
+        `${API}/api/journalVoucher/create`,
+        payload
+      );
+    }
+
+    if (response.data.success) {
+      alert(
+        `Journal Voucher ${mode === "edit" ? "Updated" : "Saved"} Successfully ✅`
+      );
+      navigate("/JournalVoucher/list");
+    }
+  } catch (error) {
+    console.error("Save Voucher Error:", error);
+    alert(
+      error.response?.data?.message || "Failed to save Journal Voucher"
+    );
+  } finally {
+    setLoading(false);
+  }
+};
   const navyBlue = "bg-[#0A2478] ";
   const tealHeader = "bg-[#008b8b]";
   const inputClass =
@@ -219,7 +294,7 @@ const isViewMode = mode === "view";
   return (
     <div className="min-h-screen text-gray-800 flex justify-center ">
       <div className=" w-full space-y-4">
-        <div className="flex justify-center sticky top-[50px] z-40">
+        <div className="flex justify-center sticky top-[50px] z-40 bg-white">
           <div className="flex items-center px-6 py-4 border-b  w-[1462px] h-[40px] border  border-gray-200 justify-between">
             <h2
               style={{
@@ -231,7 +306,7 @@ const isViewMode = mode === "view";
               }}
               className="text-red-600"
             >
-              Journal Voucher Create
+              {getTitle()}
             </h2>
 
             <div className="flex gap-3">
@@ -293,7 +368,7 @@ const isViewMode = mode === "view";
             <input
               type="date"
               className={inputClass}
-              disabled={isViewMode} 
+              disabled={isViewMode}
               value={voucherData.voucherDate}
               onChange={(e) =>
                 setVoucherData({
@@ -308,7 +383,7 @@ const isViewMode = mode === "view";
         <div className="bg-white    overflow-hidden ml-[25px]">
           <table className=" text-[15px] border-collapse">
             <thead className={`${navyBlue} text-white `}>
-              <tr >
+              <tr>
                 <th className="p-2 border-r border-blue-800 w-10 text-center">
                   SI
                 </th>
@@ -335,7 +410,7 @@ const isViewMode = mode === "view";
                     <select
                       className={inputClass}
                       value={row.accountId}
-                      disabled={isViewMode} 
+                      disabled={isViewMode}
                       onChange={(e) => {
                         const selectedId = e.target.value;
 
@@ -368,7 +443,7 @@ const isViewMode = mode === "view";
                     <select
                       className={`${inputClass} text-center`}
                       value={row.type}
-                      disabled={isViewMode} 
+                      disabled={isViewMode}
                       onChange={(e) =>
                         handleRowChange(i, "type", e.target.value)
                       }
@@ -383,7 +458,7 @@ const isViewMode = mode === "view";
                       type="number"
                       className={`${inputClass} text-right font-bold text-blue-800`}
                       placeholder="0.00"
-                      disabled={isViewMode} 
+                      disabled={isViewMode}
                       value={row.amount}
                       onChange={(e) =>
                         handleRowChange(i, "amount", e.target.value)
@@ -394,7 +469,7 @@ const isViewMode = mode === "view";
                     <div className="flex gap-2">
                       <input
                         className={inputClass}
-                        disabled={isViewMode} 
+                        disabled={isViewMode}
                         placeholder="Remark..."
                         value={row.remark}
                         onChange={(e) =>
@@ -418,7 +493,7 @@ const isViewMode = mode === "view";
                         onClick={() => handleAddRow(i)}
                         className="bg-[#0A2478]  text-white p-1 rounded"
                         title="Copy & Add Row"
-                        disabled={isViewMode} 
+                        disabled={isViewMode}
                       >
                         <Plus size={18} strokeWidth={3} />
                       </button>
@@ -426,7 +501,7 @@ const isViewMode = mode === "view";
                         onClick={() => removeRow(i)}
                         className="bg-red-600 text-white p-1 rounded"
                         title="Delete Row"
-                        disabled={isViewMode} 
+                        disabled={isViewMode}
                       >
                         <Trash2 size={18} />
                       </button>

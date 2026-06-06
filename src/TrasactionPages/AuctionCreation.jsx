@@ -2,15 +2,16 @@ import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { API } from "../api";
 import { usePermission } from "../API/Context/PermissionContext";
+import Loader from "../Component/Loader";
 
 function AuctionCreation() {
   useEffect(() => {
     document.title = "SLF | Auction Creation";
   }, []);
-
+  const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
   const [selectedDate, setSelectedDate] = useState("");
-const { permissions, userData } = usePermission();
+  const { permissions, userData } = usePermission();
   const [formData, setFormData] = useState({
     venue: "",
     date: "",
@@ -38,9 +39,9 @@ const { permissions, userData } = usePermission();
     fetchAuctions();
   }, []);
 
-
   const fetchAuctions = async () => {
     try {
+      setLoading(true);
       const params = new URLSearchParams();
 
       if (searchQuery.trim()) {
@@ -67,17 +68,15 @@ const { permissions, userData } = usePermission();
       const json = await res.json();
       if (json.success) {
         setData(json.data);
+        setLoading(false);
       }
     } catch (error) {
       console.log("Error fetching auctions:", error);
+      setLoading(false);
     }
   };
 
-  const allHeaderIds = [
-    "id",
-    "venue",
-    "loanIds"
-  ];
+  const allHeaderIds = ["id", "venue", "loanIds"];
 
   const handleSelectAll = () => {
     if (searchHeaders.length === allHeaderIds.length) {
@@ -108,14 +107,15 @@ const { permissions, userData } = usePermission();
 
                   {isDropdownOpen && (
                     <div className="absolute top-[35px] left-[-8px] bg-white border border-gray-300 shadow-xl rounded-md z-[100] w-[160px] p-2">
-                     
-                     <button
+                      <button
                         onClick={handleSelectAll}
                         className="flex items-center gap-2 p-2 hover:bg-blue-50 cursor-pointer rounded border-b border-gray-200 mb-1"
                       >
                         <input
                           type="checkbox"
-                          checked={allHeaderIds.every((id) => searchHeaders.includes(id))}
+                          checked={allHeaderIds.every((id) =>
+                            searchHeaders.includes(id),
+                          )}
                           onChange={handleSelectAll}
                           className="w-3 h-3 accent-[#0A2478]"
                         />
@@ -173,47 +173,44 @@ const { permissions, userData } = usePermission();
               onChange={(e) => setSelectedDate(e.target.value)}
               className="hidden lg:flex ml-2 border border-gray-300 text-[11px] px-2 h-[px] rounded-[3px] outline-none"
             />
-<div className="flex gap-2 mt-0.5">
-            <button
+            <div className="flex gap-2 mt-0.5">
+              <button
                 className="hidden lg:flex ml-2 bg-[#0b2c69] cursor-pointer text-white text-[11px] px-4 h-[28px] rounded-[3px] font-source hover:bg-[#071d45]"
-              onClick={() => {
-                setIsDropdownOpen(false);
-                fetchAuctions();
-              }}
+                onClick={() => {
+                  setIsDropdownOpen(false);
+                  fetchAuctions();
+                }}
               >
-                <span className="mt-1.5">
-                  Search
-                </span>
-            </button>
+                <span className="mt-1.5">Search</span>
+              </button>
 
-            <button
+              <button
                 className="bg-[#0b2c69] hidden lg:flex cursor-pointer text-white text-[11px] px-4 h-[28px] rounded-[3px]  hover:bg-[#071d45]"
-              onClick={() => {
-                setSearchQuery("");
-                setSearchHeaders([]);
-                setSelectedDate("");
-                setIsDropdownOpen(false);
-                fetchAuctions();
-              }}
+                onClick={() => {
+                  setSearchQuery("");
+                  setSearchHeaders([]);
+                  setSelectedDate("");
+                  setIsDropdownOpen(false);
+                  fetchAuctions();
+                }}
               >
-                <span className="mt-1.5">
-                  Clear
-                </span>
+                <span className="mt-1.5">Clear</span>
               </button>
             </div>
 
             <div className="flex gap-2 mt-0.5">
-              {(userData?.isAdmin||permissions?.Transaction?.find(
-  item => item.name === "Auction Lis"
-)?.add) && (
-   <button
-                onClick={() => navigate("/Add-Auction-Creation")}
-                className="bg-[#0A2478] text-white text-[11px] px-4  h-[28px] rounded-[3px] cursor-pointer"
-              >
-                Add
-              </button>
-)}
-             
+              {(userData?.isAdmin ||
+                permissions?.Transaction?.find(
+                  (item) => item.name === "Auction Lis",
+                )?.add) && (
+                <button
+                  onClick={() => navigate("/Add-Auction-Creation")}
+                  className="bg-[#0A2478] text-white text-[11px] px-4  h-[28px] rounded-[3px] cursor-pointer"
+                >
+                  Add
+                </button>
+              )}
+
               <button
                 onClick={() => navigate("/")}
                 className="bg-[#C1121F] text-white text-[11px] px-4 h-[28px] rounded-[3px] cursor-pointer"
@@ -254,34 +251,34 @@ const { permissions, userData } = usePermission();
                     className={`${index % 2 === 0 ? "bg-gray-50" : "bg-white"} hover:bg-gray-100 transition`}
                   >
                     {/* Auction ID + Navigation */}
-                   <td
-  className={`px-1 py-1 ${
-    (userData?.isAdmin ||
-      permissions?.Transaction?.find(
-        item => item.name === "Auction List"
-      )?.Auction_Details)
-      ? "cursor-pointer text-blue-400"
-      : "cursor-not-allowed text-gray-400"
-  }`}
-  onClick={() => {
-    const hasAccess =
-      userData?.isAdmin ||
-      permissions?.Transaction?.find(
-        item => item.name === "Auction List"
-      )?.Auction_Details;
+                    <td
+                      className={`px-1 py-1 ${
+                        userData?.isAdmin ||
+                        permissions?.Transaction?.find(
+                          (item) => item.name === "Auction List",
+                        )?.Auction_Details
+                          ? "cursor-pointer text-blue-400"
+                          : "cursor-not-allowed text-gray-400"
+                      }`}
+                      onClick={() => {
+                        const hasAccess =
+                          userData?.isAdmin ||
+                          permissions?.Transaction?.find(
+                            (item) => item.name === "Auction List",
+                          )?.Auction_Details;
 
-    if (!hasAccess) return; // ❌ रोक दो navigation
+                        if (!hasAccess) return; // ❌ रोक दो navigation
 
-    navigate("/Auction-Items-List", {
-      state: {
-        loanIds: row.loanDetails.map((d) => d.loanId),
-        AuctionData: row,
-      },
-    });
-  }}
->
-  {row.id}
-</td>
+                        navigate("/Auction-Items-List", {
+                          state: {
+                            loanIds: row.loanDetails.map((d) => d.loanId),
+                            AuctionData: row,
+                          },
+                        });
+                      }}
+                    >
+                      {row.id}
+                    </td>
                     <td className="px-1 py-1">
                       {row.loanDetails && row.loanDetails.length > 0
                         ? row.loanDetails.map((d) => d.loanId).join(", ")
@@ -303,10 +300,11 @@ const { permissions, userData } = usePermission();
 
                     {/* Status */}
                     <td
-                      className={`px-1 py-1 ${row.status === "OPEN"
+                      className={`px-1 py-1 ${
+                        row.status === "OPEN"
                           ? "text-green-600"
                           : "text-red-600"
-                        }`}
+                      }`}
                     >
                       {row.status}
                     </td>
@@ -317,6 +315,7 @@ const { permissions, userData } = usePermission();
           </div>
         </div>
       </div>
+      {loading && <Loader />}
     </div>
   );
 }

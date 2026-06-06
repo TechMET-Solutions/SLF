@@ -3,7 +3,6 @@ import { useEffect, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import { API } from "../api";
 import { formatIndianDate } from "../utils/Helpers";
-import Loader from "../Component/Loader";
 
 export default function Cust_Form() {
   const location = useLocation();
@@ -62,7 +61,7 @@ const [loading, setLoading] = useState(false);
             }}
             className="text-red-600"
           >
-            Customer Profile Form
+            Customer Profile - {data.id}
           </h2>
 
           <div className="flex gap-3 ">
@@ -83,13 +82,13 @@ const [loading, setLoading] = useState(false);
           </div>
         </div>
       </div>
-      <div className="flex  mt-5   ">
+      <div className="flex    ">
         <div className="">
           {/* Personal Information */}
-          <div className="mr-[110px] ml-[110px]">
+          <div className="mr-[110px] ml-[25px]">
             {" "}
-            <section className="bg-[#FFE6E6] p-5 border border-gray-300 text-[16px]">
-              <h3 className="font-semibold text-[20px] text-[#0A2478] mb-3">
+            <section className="bg-[#FFE6E6] pl-5 border border-gray-300 text-[16px]">
+              <h3 className="font-semibold text-[20px] text-[#0A2478] ">
                 Personal Information
               </h3>
               <div className="flex justify-between items-start">
@@ -186,7 +185,7 @@ const [loading, setLoading] = useState(false);
                     <div className=" text-gray-600">
                       Politically Exposed Person?
                     </div>
-                    <p className="font-medium">{data.pep}</p>
+                    <p className="font-medium uppercase">{data.pep}</p>
                   </div>
                 </div>
 
@@ -212,7 +211,7 @@ const [loading, setLoading] = useState(false);
                       alt="Customer"
                       className="w-50 h-10 rounded object-cover"
                     />
-                    <p className="text-sm mt-2">Customer signature</p>
+                    {/* <p className="text-sm mt-2">Customer signature</p> */}
                   </div>
                 </div>
               </div>
@@ -221,12 +220,12 @@ const [loading, setLoading] = useState(false);
 
           {/* Permanent Address */}
 
-          <div className="mr-[110px] ml-[110px]">
-            <section className="bg-[#F7F7FF] p-5  border-gray-300 text-[16px]">
-              <h3 className="font-semibold text-[20px] text-[#0A2478] mb-3">
+          <div className="mr-[110px] ml-[25px]">
+            <section className="bg-[#F7F7FF] pl-5  border-gray-300 text-[16px]">
+              <h3 className="font-semibold text-[20px] text-[#0A2478]">
                 Permanent Address
               </h3>
-              <div className="flex flex-wrap gap-5 text-sm">
+              <div className="flex flex-wrap gap-2 text-sm">
                 <div>
                   <div className=" text-gray-600">Address</div>
                   <p className="font-medium">{data.Permanent_Address}</p>
@@ -279,9 +278,9 @@ const [loading, setLoading] = useState(false);
             </section>
           </div>
 
-          <div className="mr-[110px] ml-[110px]">
-            <section className="bg-[#FFE6E6] p-5  border-gray-300 text-[16px]">
-              <h3 className="font-semibold text-[20px] text-[#0A2478] mb-3">
+          <div className="mr-[110px] ml-[25px]">
+            <section className="bg-[#F7F7FF] pl-5  border-gray-300 text-[16px]">
+              <h3 className="font-semibold text-[20px] text-[#0A2478] pt-1">
                 Current Address
               </h3>
               <div className="flex flex-wrap gap-5 text-sm">
@@ -312,9 +311,9 @@ const [loading, setLoading] = useState(false);
               </div>
             </section>
           </div>
-          <div className="mr-[110px] ml-[110px]">
-            <section className="bg-[#FFE6E6] p-5  border-gray-300 text-[16px]">
-              <h3 className="font-semibold text-[20px] text-[#0A2478] mb-3">
+          <div className="mr-[110px] ml-[25px]">
+            <section className="bg-[#FFE6E6] pl-5  border-gray-300 text-[16px]">
+              <h3 className="font-semibold text-[20px] text-[#0A2478] pt-1">
                 Nominee Details
               </h3>
               <div className="flex flex-wrap gap-5 text-sm">
@@ -342,12 +341,12 @@ const [loading, setLoading] = useState(false);
             </section>
           </div>
 
-          <div className="mr-[110px] ml-[110px]"></div>
+          <div className="mr-[110px] ml-[25px]"></div>
 
         
-          <div className='mr-[110px] ml-[110px]'>
-  <section className="bg-[#F7F7FF] p-5  border-gray-300 text-[16px]">
-            <h3 className="font-semibold text-[20px] text-[#0A2478] mb-3">
+          <div className='mr-[110px] ml-[25px]'>
+  <section className="bg-[#F7F7FF] pl-5  border-gray-300 text-[16px]">
+            <h3 className="font-semibold text-[20px] text-[#0A2478] pt-1">
               Remark
             </h3>
             <div className="flex flex-wrap gap-5 text-sm">
@@ -363,30 +362,30 @@ const [loading, setLoading] = useState(false);
           </section>
           </div>
         
-          <div className='mr-[110px] ml-[110px]'>
-              <section className="p-5 border-gray-300 text-[16px] bg-[#FFE6E6]">
-            <h3 className="font-semibold text-[20px] text-[#0A2478] mb-3 ">
+          <div className='mr-[110px] ml-[25px]'>
+              <section className="pl-5 border-gray-300 text-[16px] bg-[#FFE6E6]">
+            <h3 className="font-semibold text-[20px] text-[#0A2478] pt-1">
               Bank Details
             </h3>
             <table className=" text-sm border text-center">
               <thead className="bg-[#0c0e87] text-white">
                 <tr>
-                  <th className="p-2 border-r w-[150px]">Bank Name</th>
-                  <th className="p-2 border-r w-[200px]">Customer Name</th>
-                  <th className="p-2 border-r w-[200px]">Account No</th>
-                  <th className="p-2 border-r w-[200px]">IFSC</th>
-                  <th className="p-2 border-r w-[200px]">Updated On</th>
+                  <th className="p-1 border-r w-[150px]">Bank Name</th>
+                  <th className="p-1 border-r w-[200px]">Customer Name</th>
+                  <th className="p-1 border-r w-[200px]">Account No</th>
+                  <th className="p-1 border-r w-[200px]">IFSC</th>
+                  <th className="p-1 border-r w-[200px]">Updated On</th>
                 </tr>
               </thead>
               <tbody>
                 {data?.bankData?.length > 0 ? (
                   data.bankData.map((bank, index) => (
                     <tr key={index} className={index % 2 === 0 ? "bg-gray-50" : "bg-white"}>
-                      <td className="p-2">{bank.bankName || "-"}</td>
-                      <td className="p-2">{bank.Customer_Name || "-"}</td>
-                      <td className="p-2">{bank.Account_No || "-"}</td>
-                      <td className="p-2">{bank.IFSC || "-"}</td>
-                      <td className="p-2">
+                      <td className="p-1">{bank.bankName || "-"}</td>
+                      <td className="p-1">{bank.Customer_Name || "-"}</td>
+                      <td className="p-1">{bank.Account_No || "-"}</td>
+                      <td className="p-1">{bank.IFSC || "-"}</td>
+                      <td className="p-1">
                         {bank.Update_On
                           ? (() => {
                               const [day, month, year] =
@@ -417,7 +416,7 @@ const [loading, setLoading] = useState(false);
         
         </div>
       </div>
-      {loading && <Loader />}
+      
     </div>
   );
 }

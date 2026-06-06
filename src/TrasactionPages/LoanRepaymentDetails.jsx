@@ -83,7 +83,7 @@ const LoanRepaymentDetails = () => {
     <div className="min-h-screen bg-white font-sans text-[11px] pb-10">
       <div className="flex justify-between items-center px-2 py-1 border w-[1462px] ml-[25px] sticky-top">
         <h1 className="text-red-600 font-bold text-lg">
-          Loan-Repayment Details
+          Loan-Repayment Details - {selectedPayment?.receiptNumber}
         </h1>
 
         <button
@@ -96,13 +96,13 @@ const LoanRepaymentDetails = () => {
 
       <div className="ml-[25px] w-[1462px]">
         {/* Section 1: Loan Information */}
-        <div className="bg-[#FFEFEF] p-4 border border-pink-100 flex gap-4">
+        <div className="bg-[#FFEFEF] pl`  -4 border border-pink-100 flex gap-4">
           <div>
- <h2 className="text-[#3F51B5] font-bold mb-3 text-lg">
+ <h2 className="text-[#3F51B5] font-bold  text-[15px]">
             Loan Information
           </h2>
           <div className="flex gap-4">
-            <div className="flex-1 grid grid-cols-7 gap-3">
+            <div className="flex gap-3">
               <InputField label="Loan No" value={loanApplication.id} />
               <InputField
   label="Borrower Name"
@@ -168,8 +168,8 @@ const LoanRepaymentDetails = () => {
 
         {/* Section 2: Payment */}
         {loanType === "Bullet" && (
-          <div className="bg-[#F5F8FF] p-4 rounded-sm border border-blue-50">
-            <h2 className="text-[#3F51B5] font-bold mb-3 text-lg">
+          <div className="bg-[#F5F8FF] rounded-sm border border-blue-50">
+            <h2 className="text-[#3F51B5] font-bold mb-3 text-[15px]">
               Payment Details
             </h2>
 
@@ -226,28 +226,20 @@ const LoanRepaymentDetails = () => {
 
               {/* Row 2: Financial Breakdown using InputFields */}
               <div className="flex  gap-3 border-t border-blue-100 pt-3">
-                <div className="flex flex-col">
-                  <label className="text-gray-600 mb-0.5">
-                    Mode of Payment <span className="text-red-500">*</span>
-                  </label>
-                  <select
-                    className="border border-gray-300 p-1 bg-white outline-none"
-                    value={selectedPayment?.paymentInfo?.mode || ""}
-                    disabled
-                  >
-                    <option value="">--Select--</option>
-                    <option value="Cash">Cash</option>
-                    <option value="Bank/Online">Bank/Online</option>
-                  </select>
-                </div>
+               
+                  <InputField
+                  label=" Mode of Payment"
+                  value={selectedPayment?.paymentInfo?.mode}
+                  isEditable={false}
+                />
 
                 <InputField
-                  label="Payment Ref. No *"
+                  label="Payment Ref. No"
                   value={selectedPayment?.paymentInfo?.refNo}
                   isEditable={false}
                 />
                 <InputField
-                  label="Payment Made By *"
+                  label="Payment Made By"
                   value={selectedPayment?.paymentInfo?.madeBy}
                   isEditable={false}
                 />
@@ -256,14 +248,22 @@ const LoanRepaymentDetails = () => {
                   value={selectedPayment?.receiptNumber}
                   isEditable={false}
                 />
+                {selectedPayment?.paymentInfo?.discount !== "" && (
+                   <InputField
+                  label="Discount"
+                  value={selectedPayment?.paymentInfo?.discount}
+                  isEditable={false}
+                />
+)}
+                
               </div>
             </div>
           </div>
         )}
 
      {loanType === "EMI" && (
-  <div className="bg-[#F5F8FF] p-4 rounded-sm border border-blue-50">
-    <h2 className="text-[#3F51B5] font-bold mb-3 text-lg">
+  <div className="bg-[#F5F8FF]  rounded-sm border border-blue-50">
+    <h2 className="text-[#3F51B5] font-bold mb-3 text-[15px]">
       Payment Details (EMI Receipt)
     </h2>
 
@@ -312,20 +312,11 @@ const LoanRepaymentDetails = () => {
 
       {/* Row 2: Transaction Info */}
       <div className="flex gap-3 border-t border-blue-100 pt-3">
-        <div className="flex flex-col w-40">
-          <label className="text-gray-600 mb-0.5">
-            Mode of Payment 
-          </label>
-          <select
-            className="border border-gray-300 p-1 bg-white outline-none"
-            value={selectedPayment?.payment_mode || ""}
-            disabled
-          >
-            <option value="">--Select--</option>
-            <option value="Cash">Cash</option>
-            <option value="Bank/Online">Bank/Online</option>
-          </select>
-        </div>
+        <InputField
+                  label=" Mode of Payment"
+                  value={selectedPayment?.payment_mode}
+                  isEditable={false}
+                />
 
         <InputField
           label="Payment Ref. No "
@@ -346,7 +337,14 @@ const LoanRepaymentDetails = () => {
           label="Bank Name"
           value={selectedPayment?.bank_name}
           isEditable={false}
-        />
+                />
+                 {selectedPayment?.discount !== "" && (
+                   <InputField
+                  label="Discount"
+                  value={selectedPayment?.discount}
+                  isEditable={false}
+                />
+)}
       </div>
     </div>
   </div>
@@ -360,7 +358,7 @@ const LoanRepaymentDetails = () => {
                 <th className="py-1 px-2 font-normal">
                   Particulars( Pledge Item )
                 </th>
-                <th className="py-1 px-2 font-normal">Nos.</th>
+                <th className="py-1 px-2 font-normal">Qty</th>
                 <th className="py-1 px-2 font-normal">Gross</th>
                 <th className="py-1 px-2 font-normal">Net Weight</th>
                 <th className="py-1 px-2 font-normal">Actual Purity</th>
@@ -450,8 +448,8 @@ const LoanRepaymentDetails = () => {
         </div>
         )}
         {loanType === "EMI" && (
-  <div className="space-y-2 mt-2">
-    <h2 className="text-[#3F51B5] font-bold text-lg">Installment History (EMI)</h2>
+  <div className="space-y-2 ">
+    <h2 className="text-[#3F51B5] font-bold text-[15px]">Installment History (EMI)</h2>
     <div className="border border-gray-200">
       <table className="w-full text-center border-collapse">
         <thead className="bg-[#00215E] text-white text-[10px]">

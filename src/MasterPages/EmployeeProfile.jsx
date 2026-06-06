@@ -5,6 +5,7 @@ import { FaPaperclip } from "react-icons/fa";
 import { FiEdit, FiTrash2 } from "react-icons/fi";
 import { useNavigate } from "react-router-dom";
 import { API } from "../api";
+import Select from "react-select";
 import {
   deleteEmployeeApi,
   fetchEmployeeProfileApi,
@@ -14,10 +15,10 @@ import Pagination from "../Component/Pagination";
 import { encryptData } from "../utils/cryptoHelper";
 
 import { FaSort, FaSortDown, FaSortUp } from "react-icons/fa";
-import profileempty from "../assets/profileempty.png";
-import MultiSelect from "../Component/MultiSelect";
 import { usePermission } from "../API/Context/PermissionContext";
+import profileempty from "../assets/profileempty.png";
 import Loader from "../Component/Loader";
+import MultiSelect from "../Component/MultiSelect";
 
 const EmployeeProfile = () => {
   useEffect(() => {
@@ -94,6 +95,11 @@ const EmployeeProfile = () => {
   };
 
   const [roles, setRoles] = useState([]);
+  const [roles2, setRoles2] = useState([]);
+  const [selectedRole, setSelectedRole] = useState("");
+  const [statusFilter, setStatusFilter] = useState("");
+
+
   const [branches, setBranches] = useState([]);
   const [designations, setDesignations] = useState([]);
 
@@ -205,6 +211,13 @@ const EmployeeProfile = () => {
   const [searchQuery, setSearchQuery] = useState("");
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
 
+const [branchSearch, setBranchSearch] = useState("");
+
+  const filteredBranches = branches.filter((branch) =>
+  `${branch.branch_name} ${branch.branch_code}`
+    .toLowerCase()
+    .includes(branchSearch.toLowerCase())
+);
   const toggleHeader = (headerId) => {
     setSearchHeaders((prev) =>
       prev.includes(headerId)
@@ -240,7 +253,65 @@ const EmployeeProfile = () => {
     setFormData((prev) => ({ ...prev, emp_id_prof: file.name }));
   };
 
-  const fetchEmployee = async (page = 1, searchQuery, searchHeaders) => {
+  const fetchRoles = async () => {
+  try {
+    const res = await fetch("https://slunawat.co.in/Master/User-Management/getAll-roles?page=1&limit=100");
+    const data = await res.json();
+    setRoles2(data.roles || []);
+  } catch (err) {
+    console.error("Error fetching roles", err);
+  }
+};
+
+useEffect(() => {
+  fetchRoles();
+}, []);
+
+//  const fetchEmployee = async (page = 1, searchQuery, searchHeaders, roleId = "") => {
+//     setLoading(true);
+
+//     const filters = {
+//       search: searchQuery,
+//       keys: searchHeaders,
+//     };
+
+//     try {
+//       const result = await fetchEmployeeProfileApi(
+//         page,
+//         itemsPerPage,
+//         filters,
+//         sortConfig.key,
+//         sortConfig.direction,
+//         roleId   // ✅ NEW
+//       );
+
+//       if (result?.items) {
+//         setEmployeeList(result.items);
+//         setTotalItems(result.total || 0);
+//         setCurrentPage(result.page);
+//         setShowPagination(result.showPagination || false);
+//         setLoading(false);
+//       } else {
+//         setEmployeeList([]);
+//         setShowPagination(false);
+//         setLoading(false);
+//       }
+//     } catch (error) {
+//       console.error("❌ Error fetching employees:", error);
+//       setLoading(false);
+//     } finally {
+//       setIsLoading(false);
+//       setLoading(false);
+//     }
+//   };
+const fetchEmployee = async (
+  page = 1,
+  searchQuery,
+  searchHeaders,
+  roleId = "",
+  status = ""
+) => {
+  try {
     setLoading(true);
 
     const filters = {
@@ -248,38 +319,42 @@ const EmployeeProfile = () => {
       keys: searchHeaders,
     };
 
-    try {
-      const result = await fetchEmployeeProfileApi(
-        page,
-        itemsPerPage,
-        filters,
-        sortConfig.key,
-        sortConfig.direction,
-      );
+    const result = await fetchEmployeeProfileApi(
+      page,
+      itemsPerPage,
+      filters,
+      sortConfig.key,
+      sortConfig.direction,
+      roleId,
+      status
+    );
 
-      if (result?.items) {
-        setEmployeeList(result.items);
-        setTotalItems(result.total || 0);
-        setCurrentPage(result.page);
-        setShowPagination(result.showPagination || false);
-        setLoading(false);
-      } else {
-        setEmployeeList([]);
-        setShowPagination(false);
-        setLoading(false);
-      }
-    } catch (error) {
-      console.error("❌ Error fetching employees:", error);
-      setLoading(false);
-    } finally {
-      setIsLoading(false);
-      setLoading(false);
+    if (result?.items) {
+      setEmployeeList(result.items);
+      setTotalItems(result.total || 0);
+      setCurrentPage(result.page || 1);
+      setShowPagination(result.showPagination || false);
+    } else {
+      setEmployeeList([]);
+      setShowPagination(false);
     }
-  };
-
-  useEffect(() => {
-    fetchEmployee(searchQuery, searchHeaders);
-  }, [sortConfig]);
+  } catch (error) {
+    console.error("❌ Error fetching employees:", error);
+    setEmployeeList([]);
+  } finally {
+    setLoading(false);
+    setIsLoading(false);
+  }
+};
+ useEffect(() => {
+  fetchEmployee(
+    currentPage,
+    searchQuery,
+    searchHeaders,
+    selectedRole,
+    statusFilter
+  );
+}, [sortConfig, selectedRole, statusFilter, currentPage]);
 
   const updateEmployeeStatus = async (id, status) => {
     setLoading(true);
@@ -336,20 +411,6 @@ const EmployeeProfile = () => {
     }
   };
 
-  // const handleView = (employee) => {
-  //   setMode("view");
-
-  //   setFormData({
-  //     ...employee,
-  //     branch_id: Array.isArray(employee.branch_id)
-  //       ? employee.branch_id
-  //       : employee.branch_id
-  //         ? [employee.branch_id]
-  //         : [],
-  //   });
-
-  //   setIsModalOpen(true);
-  // };
   const handleView = (employee) => {
     setLoading(true);
     debugger;
@@ -725,7 +786,7 @@ const EmployeeProfile = () => {
     debugger;
     try {
       if (!validateForm()) return;
- setLoading(true);
+      setLoading(true);
       const payload = {
         id: formData.id,
         pan_card: formData.pan_card,
@@ -778,7 +839,7 @@ const EmployeeProfile = () => {
 
         setIsModalOpen(false); // ✅ CLOSE MODAL
         fetchEmployee(currentPage, searchQuery, searchHeaders);
-         setLoading(false);
+        setLoading(false);
       }
     } catch (err) {
       console.error("❌ Error updating employee:", err);
@@ -788,19 +849,8 @@ const EmployeeProfile = () => {
           err.response?.data?.error ||
           "Error updating employee",
       );
-       setLoading(false);
+      setLoading(false);
     }
-  };
-
-  // 🔍 Handle Search
-  const handleSearch = () => {
-    setCurrentPage(1); // Reset to first page when searching
-    const filters = {};
-
-    if (searchTerm.empId) filters.id = searchTerm.empId;
-    if (searchTerm.empName) filters.name = searchTerm.empName;
-
-    fetchEmployee(currentPage, searchQuery, searchHeaders);
   };
 
   const handleClearSearch = () => {
@@ -1091,8 +1141,8 @@ const EmployeeProfile = () => {
           permanent_address: panDetails.address?.full || prev.permanent_address,
 
           // Jar tula corresponding address madhe pan toch pahije asel tar:
-          corresponding_address:
-            panDetails.address?.full || prev.corresponding_address,
+          // corresponding_address:
+          //   panDetails.address?.full || prev.corresponding_address,
         }));
         alert("PAN Verified Successfully!");
       }
@@ -1136,6 +1186,79 @@ const EmployeeProfile = () => {
     userData?.isAdmin ||
     permissions?.Master?.find((item) => item.name === "Employee Profile")
       ?.valuation;
+  const getImageName = (filePath) => {
+    if (!filePath) return "";
+    return filePath.split("/").pop();
+  };
+const getFileName = (filePath) => {
+  if (!filePath) return "";
+  const name = filePath.split("/").pop();
+  return name.replace(/^\d+-/, ""); // remove timestamp (optional)
+};
+  // ✅ Optional (remove timestamp)
+// ✅ Clean File Name
+const getCleanImageName = (file) => {
+  if (!file) return "";
+
+  let filePath = "";
+
+  if (typeof file === "string") {
+    filePath = file;
+  } else if (typeof file === "object" && file !== null) {
+    filePath = file.path || file.url || "";
+  }
+
+  if (!filePath) return "";
+
+  const name = filePath.split("/").pop();
+  if (!name) return "";
+
+  // remove timestamp (supports _ and -)
+  return name.replace(/^\d+[-_]/, "");
+};
+
+// ✅ Get Upload Date & Time
+const getFileDateTime = (file) => {
+  if (!file) return "";
+
+  let filePath = "";
+
+  if (typeof file === "string") {
+    filePath = file;
+  } else if (typeof file === "object" && file !== null) {
+    filePath = file.path || "";
+  }
+
+  const name = filePath.split("/").pop();
+  if (!name) return "";
+
+  // extract timestamp safely
+  const match = name.match(/^(\d+)[-_]/);
+  if (!match) return "";
+
+  const timestamp = Number(match[1]);
+  if (isNaN(timestamp)) return "";
+
+  const date = new Date(timestamp);
+  if (isNaN(date.getTime())) return "";
+
+  return date.toLocaleString("en-IN", {
+    day: "2-digit",
+    month: "short",
+    year: "numeric",
+    hour: "2-digit",
+    minute: "2-digit",
+  });
+};
+const options = branches.map((branch) => ({
+    value: branch.id,
+    label: `${branch.branch_name} (${branch.branch_code})`,
+  }));
+
+   const selectedOptions = options.filter((opt) =>
+    formData.branch_id.includes(opt.value)
+  );
+
 
   return (
     <div className="min-h-screen w-full">
@@ -1241,8 +1364,35 @@ const EmployeeProfile = () => {
                 </button>
               </div>
             </div>
-
-            {canDoValuation && (
+<select
+  value={selectedRole}
+  onChange={(e) => {
+    setSelectedRole(e.target.value);
+    fetchEmployee(1, searchQuery, searchHeaders, e.target.value);
+  }}
+  className="border border-gray-400 rounded px-2 h-[32px] text-[11px]"
+>
+  <option value="">All Roles</option>
+  {roles2.map((role) => (
+    <option key={role.id} value={role.id}>
+      {role.role_name}
+    </option>
+  ))}
+            </select>
+            <select
+  value={statusFilter}
+  onChange={(e) => {
+    const value = e.target.value;
+    setStatusFilter(value);
+    setCurrentPage(1);
+  }}
+  className="border border-gray-400 rounded px-2 h-[32px] text-[11px]"
+>
+  <option value="">All Status</option>
+  <option value="1">Active</option>
+  <option value="0">Inactive</option>
+</select>
+            {/* {canDoValuation && (
               <div className="flex gap-3">
                 <button
                   onClick={handleValuationClick}
@@ -1251,7 +1401,7 @@ const EmployeeProfile = () => {
                   Valuation
                 </button>
               </div>
-            )}
+            )} */}
 
             <div className="flex gap-3">
               {(userData?.isAdmin ||
@@ -1274,6 +1424,8 @@ const EmployeeProfile = () => {
               </button>
             </div>
           </div>
+
+          
         </div>
       </div>
 
@@ -1612,7 +1764,7 @@ const EmployeeProfile = () => {
 
                 {/* Branch, Joining Date, Designation, DOB */}
                 <div className="flex gap-2">
-                  <div className="flex flex-col  gap-1">
+                  {/* <div className="flex flex-col  gap-1">
                     <label className="text-gray-700 font-medium">
                       Branch <span className="text-red-500">*</span>
                     </label>
@@ -1638,8 +1790,134 @@ const EmployeeProfile = () => {
                       placeholder="Branch"
                       disabled={mode === "view"}
                     />
-                  </div>
+                  </div> */}
+{/* <div className="flex flex-col gap-1">
+  <label className="text-gray-700 font-medium">
+    Branch <span className="text-red-500">*</span>
+  </label>
 
+ 
+  <input
+    type="text"
+    placeholder="Search Branch..."
+    value={branchSearch}
+    onChange={(e) => setBranchSearch(e.target.value)}
+    className="border px-2 py-1 rounded"
+  />
+
+  
+  <MultiSelect
+    options={filteredBranches.map((branch) => ({
+      value: branch.id,
+      label: `${branch.branch_name} (${branch.branch_code})`,
+    }))}
+    selectedValues={formData.branch_id || []}
+    onChange={(newValues) => {
+      const selectedBranchNames = branches
+        .filter((branch) => newValues.includes(branch.id))
+        .map((branch) => branch.branch_name)
+        .join(", ");
+
+      setFormData((prev) => ({
+        ...prev,
+        branch_id: newValues,
+        branch: selectedBranchNames,
+      }));
+    }}
+    placeholder="Branch"
+    disabled={mode === "view"}
+  />
+</div> */}
+
+{/* <div className="flex flex-col gap-1">
+  <label className="text-gray-700 font-medium">
+    Branch <span className="text-red-500">*</span>
+  </label>
+
+  <MultiSelect
+    options={branches.map((branch) => ({
+      value: branch.id,
+      label: `${branch.branch_name} (${branch.branch_code})`,
+    }))}
+
+    selectedValues={formData.branch_id || []}
+
+    onChange={(newValues) => {
+      const selectedBranchNames = branches
+        .filter((branch) => newValues.includes(branch.id))
+        .map((branch) => branch.branch_name)
+        .join(", ");
+
+      setFormData((prev) => ({
+        ...prev,
+        branch_id: newValues,
+        branch: selectedBranchNames,
+      }));
+    }}
+
+    placeholder="Search & Select Branch"
+    hasSelectAll={false}
+    disableSearch={false}   // ✅ enable search inside dropdown
+    disabled={mode === "view"}
+  />
+</div> */}
+                   <div className="flex flex-col gap-1">
+      <label className="text-gray-700 font-medium">
+        Branch <span className="text-red-500">*</span>
+      </label>
+
+      <Select
+        options={options}
+        value={selectedOptions}
+        isMulti
+        isDisabled={mode === "view"}
+        placeholder="Search & Select Branch"
+
+        // 🔍 Built-in search works automatically
+        onChange={(selected) => {
+          const values = selected ? selected.map((s) => s.value) : [];
+
+          const names = branches
+            .filter((b) => values.includes(b.id))
+            .map((b) => b.branch_name)
+            .join(", ");
+
+          setFormData((prev) => ({
+            ...prev,
+            branch_id: values,
+            branch: names,
+          }));
+        }}
+
+        // 🎨 Optional styling (Tailwind feel)
+        styles={{
+          control: (base) => ({
+            ...base,
+            minHeight: "38px",
+            borderColor: "#d1d5db",
+            boxShadow: "none",
+            "&:hover": { borderColor: "#9ca3af" },
+          }),
+          multiValue: (base) => ({
+            ...base,
+            backgroundColor: "#E5E7EB",
+          }),
+          multiValueLabel: (base) => ({
+            ...base,
+            color: "#111827",
+          }),
+          multiValueRemove: (base) => ({
+            ...base,
+            color: "#374151",
+            ":hover": {
+              backgroundColor: "#EF4444",
+              color: "white",
+            },
+          }),
+                      }}
+                      className='w-[200px]'
+      />
+    </div>
                   <div className="flex flex-col gap-1">
                     <label className="text-gray-700 font-medium">
                       Designation <span className="text-red-500">*</span>
@@ -1944,67 +2222,65 @@ const EmployeeProfile = () => {
                 <div className="flex-1">
                   <h3 className="text-base font-semibold text-gray-900 mb-3 flex items-center flex-wrap gap-2">
                     🏠 Address Proof
-                    {formData.addressProfiletype && (
-                      <span className="text-xs bg-blue-100 text-blue-800 px-2 py-1 rounded">
-                        {formData.addressProfiletype}
-                      </span>
-                    )}
+                    
                   </h3>
-
-                  {formData.emp_add_prof ? (
-                    <div className="space-y-4">
-                      <div className="flex items-center justify-between">
-                        {/* <p className="text-xs text-gray-600">
-                          Status:{" "}
-                          <span className="text-green-600 font-semibold">
-                            ✓ Uploaded
-                          </span>
-                        </p> */}
-                        {Array.isArray(formData.emp_add_prof) && (
+ {/* {Array.isArray(formData.emp_add_prof) && (
                           <span className="text-xs bg-gray-100 text-gray-700 px-2 py-1 rounded">
                             {formData.emp_add_prof.length} file(s)
                           </span>
-                        )}
-                      </div>
+                        )} */}
+                 
+<div className="space-y-2 mt-4">
+  {Array.isArray(formData.emp_add_prof) ? (
+    formData.emp_add_prof.map((file, index) => (
+      <button
+        key={index}
+        onClick={() =>
+          handleForceDownload(file, `Address_Proof_${index + 1}`)
+        }
+        className="w-full bg-[#0A2478] text-white text-sm px-4 py-2 rounded hover:bg-[#081c5b] transition-colors flex items-center justify-between"
+      >
+        {/* LEFT SIDE */}
+        <div className="flex flex-col text-left">
+          <span className="truncate max-w-[200px]">
+            {getCleanImageName(file)}
+          </span>
 
-                      <div className="space-y-2">
-                        {Array.isArray(formData.emp_add_prof) ? (
-                          formData.emp_add_prof.map((file, index) => (
-                            <button
-                              key={index}
-                              onClick={() =>
-                                handleForceDownload(
-                                  file,
-                                  `Address_Proof_${index + 1}`,
-                                )
-                              }
-                              className="w-full bg-[#0A2478] text-white text-sm font-medium px-4 py-2 rounded hover:bg-[#081c5b] transition-colors flex items-center justify-between"
-                            >
-                              <span>Download </span>
-                            </button>
-                          ))
-                        ) : (
-                          <button
-                            onClick={() =>
-                              handleForceDownload(
-                                formData.emp_add_prof,
-                                `Address_Proof_${formData.addressProfiletype || "Document"}`,
-                              )
-                            }
-                            className="w-full bg-[#0A2478] text-white text-sm font-medium px-4 py-2 rounded hover:bg-[#081c5b] transition-colors flex items-center justify-center"
-                          >
-                            🔽 Download Document
-                          </button>
-                        )}
-                      </div>
-                    </div>
-                  ) : (
-                    <div className="flex flex-col items-center justify-center py-6 border-2 border-dashed border-gray-100 rounded">
-                      <span className="text-sm text-gray-400 italic">
-                        No file uploaded
-                      </span>
-                    </div>
-                  )}
+          <span className="text-xs text-gray-300">
+            {getFileDateTime(file)}
+          </span>
+        </div>
+
+        {/* RIGHT SIDE */}
+        <span>⬇</span>
+      </button>
+    ))
+  ) : formData.emp_add_prof ? (
+    <button
+      onClick={() =>
+        handleForceDownload(
+          formData.emp_add_prof,
+          `Address_Proof_${formData.addressProfiletype || "Document"}`
+        )
+      }
+      className="w-full bg-[#0A2478] text-white text-sm px-4 py-2 rounded flex items-center justify-between"
+    >
+      <div className="flex flex-col text-left">
+        <span>{getCleanImageName(formData.emp_add_prof)}</span>
+        <span className="text-xs text-gray-300">
+          {getFileDateTime(formData.emp_add_prof)}
+        </span>
+      </div>
+
+      <span>⬇</span>
+    </button>
+  ) : (
+    <div className="text-gray-400 text-sm text-center py-4">
+      No file uploaded
+    </div>
+  )}
+</div>
+                 
                 </div>
               </div>
 
@@ -2021,59 +2297,63 @@ const EmployeeProfile = () => {
                   </h3>
 
                   {formData.emp_id_prof ? (
-                    <div className="space-y-4">
-                      <div className="flex items-center justify-between">
-                        {/* <p className="text-xs text-gray-600">
-                          Status:{" "}
-                          <span className="text-green-600 font-semibold">
-                            ✓ Uploaded
-                          </span>
-                        </p> */}
-                        {Array.isArray(formData.emp_id_prof) && (
-                          <span className="text-xs bg-gray-100 text-gray-700 px-2 py-1 rounded">
-                            {formData.emp_id_prof.length} file(s)
-                          </span>
-                        )}
-                      </div>
+  <div className="space-y-2">
+  {Array.isArray(formData.emp_id_prof) ? (
+    formData.emp_id_prof.map((file, index) => (
+      <button
+        key={index}
+        onClick={() =>
+          handleForceDownload(file, `ID_Proof_${index + 1}`)
+        }
+        className="w-full bg-[#0A2478] text-white text-sm px-4 py-2 rounded hover:bg-[#081c5b] transition-colors flex items-center justify-between"
+      >
+        {/* LEFT SIDE */}
+        <div className="flex flex-col text-left">
+          <span className="truncate max-w-[220px]">
+            {getCleanImageName(file)}
+          </span>
 
-                      <div className="space-y-2">
-                        {Array.isArray(formData.emp_id_prof) ? (
-                          formData.emp_id_prof.map((file, index) => (
-                            <button
-                              key={index}
-                              onClick={() =>
-                                handleForceDownload(
-                                  file,
-                                  `ID_Proof_${index + 1}`,
-                                )
-                              }
-                              className="w-full bg-[#0A2478] text-white text-sm font-medium px-4 py-2 rounded hover:bg-[#081c5b] transition-colors flex items-center justify-between"
-                            >
-                              <span> Download </span>
-                            </button>
-                          ))
-                        ) : (
-                          <button
-                            onClick={() =>
-                              handleForceDownload(
-                                formData.emp_id_prof,
-                                `ID_Proof_${formData.IdProoftype || "Document"}`,
-                              )
-                            }
-                            className="w-full bg-[#0A2478] text-white text-sm font-medium px-4 py-2 rounded hover:bg-[#081c5b] transition-colors flex items-center justify-center"
-                          >
-                            Download Document
-                          </button>
-                        )}
-                      </div>
-                    </div>
-                  ) : (
-                    <div className="flex flex-col items-center justify-center py-6 border-2 border-dashed border-gray-100 rounded">
-                      <span className="text-sm text-gray-400 italic">
-                        No file uploaded
-                      </span>
-                    </div>
-                  )}
+          <span className="text-xs text-gray-300">
+            {getFileDateTime(file)}
+          </span>
+        </div>
+
+        {/* RIGHT SIDE */}
+        <span>⬇</span>
+      </button>
+    ))
+  ) : formData.emp_id_prof ? (
+    <button
+      onClick={() =>
+        handleForceDownload(
+          formData.emp_id_prof,
+          `ID_Proof_${formData.IdProoftype || "Document"}`
+        )
+      }
+      className="w-full bg-[#0A2478] text-white text-sm px-4 py-2 rounded flex items-center justify-between"
+    >
+      <div className="flex flex-col text-left">
+        <span>{getCleanImageName(formData.emp_id_prof)}</span>
+        <span className="text-xs text-gray-300">
+          {getFileDateTime(formData.emp_id_prof)}
+        </span>
+      </div>
+
+      <span>⬇</span>
+    </button>
+  ) : (
+    <div className="text-gray-400 text-sm text-center py-4">
+      No file uploaded
+    </div>
+  )}
+</div>
+) : (
+  <div className="flex flex-col items-center justify-center py-6 border-2 border-dashed border-gray-100 rounded">
+    <span className="text-sm text-gray-400 italic">
+      No file uploaded
+    </span>
+  </div>
+)}
                 </div>
               </div>
             </div>
@@ -2167,20 +2447,18 @@ const EmployeeProfile = () => {
                   <th className="px-1 py-1 text-left border-r w-[111px]">
                     Mobile
                   </th>
-                  {/* <th className="px-1 py-1 text-left border-r">DOJ</th>
-                  <th className="px-1 py-1 text-left border-r">DOB</th> */}
                   <th className="px-1 py-1 text-left border-r w-[313px]">
                     Address
                   </th>
-                  {(userData?.isAdmin ||
+                  {/* {(userData?.isAdmin ||
                     permissions?.Master?.find(
                       (item) => item.name === "Employee Profile",
                     )?.valuation) && (
                     <th className="px-1 py-1 text-left border-r w-[81px]">
                       Valuation
                     </th>
-                  )}
-
+                  )} */}
+                   <th className="px-1 py-1 text-left border-r">Employee Role</th>
                   <th className="px-1 py-1 text-left border-r">Action</th>
                   <th className="px-1 py-1 text-left border-r">Active</th>
                 </tr>
@@ -2235,18 +2513,7 @@ const EmployeeProfile = () => {
                       >
                         {emp.permanent_address}
                       </td>
-                      {(userData?.isAdmin ||
-                        permissions?.Master?.find(
-                          (item) => item.name === "Employee Profile",
-                        )?.valuation) && (
-                        <td
-                          className="px-1 py-1 text-blue-700 cursor-pointer underline"
-                          onClick={() => openValuationModal(emp)}
-                        >
-                          {emp.Valuer_Valuation?.trim() || "---"}
-                        </td>
-                      )}
-
+ <td className="px-1 py-1">{emp.assign_role}</td>
                       <td className="px-1 py-1">
                         <div className="flex gap-2 justify-center">
                           {(userData?.isAdmin ||

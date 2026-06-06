@@ -56,33 +56,7 @@ const handleGlobalReset = () => {
 };
 
   console.log("Logged in user:", loginUser);
-  // 🔹 Fetch gold rates with pagination
-  // const fetchGoldRates = async (page = 1) => {
-  //   debugger;
-  //   setIsLoading(true);
-  //   try {
-  //     const result = await fetchGoldRatesApi(
-  //       page,
-  //       itemsPerPage,
-  //       filterDateGold,
-  //     );
-  //     if (result?.items) {
-  //       setData(result.items);
-  //       setTotalItems(result.total);
-  //       setCurrentPage(result.page);
-  //       setShowPagination(result.showPagination || false);
-  //     } else {
-  //       setData([]);
-  //       setShowPagination(false);
-  //     }
-  //   } catch (err) {
-  //     console.error("❌ Fetch Error:", err);
-  //     setData([]);
-  //     setShowPagination(false);
-  //   } finally {
-  //     setIsLoading(false);
-  //   }
-  // };
+ 
 
   const fetchGoldRates = async (page = 1, from = "", to = "") => {
  setLoading(true);
@@ -115,32 +89,7 @@ const handleGlobalReset = () => {
     setLoading(false);
   }
 };
-  // const fetchSilverRates = async (page = 1) => {
-  //   debugger;
-  //   setIsLoading(true);
-  //   try {
-  //     const result = await fetchSilverRatesApi(
-  //       page,
-  //       itemsPerPage,
-  //       filterDateSilver,
-  //     );
-  //     if (result?.items) {
-  //       setSilverData(result.items);
-  //       setTotalItemsForSilver(result.total);
-  //       setCurrentPageForSilver(result.page);
-  //       setShowPaginationForSilver(result.showPagination || false);
-  //     } else {
-  //       setSilverData([]);
-  //       setShowPaginationForSilver(false);
-  //     }
-  //   } catch (err) {
-  //     console.error("❌ Fetch Error:", err);
-  //     setSilverData([]);
-  //     setShowPaginationForSilver(false);
-  //   } finally {
-  //     setIsLoading(false);
-  //   }
-  // };
+ 
 const fetchSilverRates = async (page = 1, from = "", to = "") => {
   setLoading(true);
   try {
@@ -178,42 +127,6 @@ const fetchSilverRates = async (page = 1, from = "", to = "") => {
   fetchSilverRates(1, from, to);
 };
 
-  
-  // const handleSave = async () => {
-  //   debugger;
-  //   if (!pushDate || !goldRate) return;
-
-  //   const payload = {
-  //     push_date: pushDate,
-  //     gold_rate: goldRate,
-  //     actual_rate: actualRate,
-  //     metalType: metalType,
-  //     added_on: new Date().toISOString(),
-  //     added_by: loginUser,
-  //   };
-
-  //   try {
-  //     if (metalType === "Gold") {
-  //       // Save gold
-  //       await addGoldRateApi(payload);
-  //       fetchGoldRates(currentPage); // refresh gold table
-  //     } else {
-  //       // Save silver
-  //       await addSilverRateApi(payload);
-  //       fetchSilverRates(currentPage); // refresh silver table
-  //     }
-
-  //     // Reset fields
-  //     setGoldRate("");
-  //     setPushDate("");
-  //     setActualRate("");
-  //     setMetalType("Gold");
-  //   } catch (err) {
-  //     console.error("❌ Save Error:", err.response?.data || err.message);
-  //   }
-  // };
-
-  // 🔹 Pagination Controls
  
  const handleSave = async () => {
   debugger;
@@ -248,6 +161,19 @@ const fetchSilverRates = async (page = 1, from = "", to = "") => {
     alert("Please select Metal Type");
     return;
   }
+if (Number(goldRate) > Number(actualRate)) {
+  alert(
+    `Funding Rate (${goldRate}) cannot be greater than Valuation Rate (${actualRate})`
+  );
+  return;
+}
+   const confirmSave = window.confirm(
+    `Are you sure you want to push ${metalType} rate?\n\nFunding: ${goldRate}\nValuation: ${actualRate}\nDate: ${pushDate}`
+  );
+
+  if (!confirmSave) return; // ❌ Stop if user cancels
+
+   
  setLoading(true);
   const payload = {
     push_date: pushDate,

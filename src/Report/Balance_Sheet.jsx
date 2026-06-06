@@ -69,7 +69,12 @@ const Balance_Sheet = () => {
                 <div className="col-span-6"></div>
                 <div className="col-span-4 flex flex-col items-end">
                   <div className="w-full border-t border-dashed border-black mt-1"></div>
-                  <div className="text-right font-bold py-0.5 font-mono">{parseFloat(group.groupTotal).toFixed(2)}</div>
+                <div className="text-right font-bold py-0.5 font-mono">
+  {Number(group.total || 0).toLocaleString("en-IN", {
+    minimumFractionDigits: 2,
+    maximumFractionDigits: 2,
+  })}
+</div>
                   <div className="w-full border-t border-dashed border-black"></div>
                 </div>
               </div>
@@ -155,10 +160,10 @@ const Balance_Sheet = () => {
     //   </div>
     // </div>
 
-    <div className="min-h-screen bg-gray-50 p-4 font-sans text-gray-800">
+    <div className="min-h-screen   font-sans text-gray-800">
       {/* 🟦 Single Line Header & Control Bar */}
-      <div className="flex justify-center mt-2 mb-4">
-        <div className="flex items-center justify-between px-6 py-4 w-full max-w-[1400px] min-h-[75px] rounded-[11px] border border-gray-200 shadow-sm bg-white gap-4">
+      <div className="flex justify-center ">
+        <div className="flex items-center justify-between px-6  w-[1462px] min-h-[40px] border border-gray-200 shadow-sm bg-white gap-4">
 
           {/* 🔴 Left — Title */}
           <div className="flex-shrink-0">

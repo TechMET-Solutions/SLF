@@ -215,7 +215,7 @@ function AuctionItemsList() {
       {/* Header */}
       <div className="flex justify-center sticky top-[50px] z-40">
         <div className="flex items-center px-6 py-4 border-b  w-[1462px] h-[40px] border  border-gray-200 justify-between bg-white">
-          <h2 className="text-red-600 font-bold text-[20px]">Auction ID: {AuctionData.id} — Loans Details</h2>
+          <h2 className="text-red-600 font-bold text-[20px]">Auction ID {AuctionData.id} — Loans Details</h2>
 
           <div className="flex gap-3">
             <button

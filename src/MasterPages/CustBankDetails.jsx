@@ -2,18 +2,28 @@ import axios from "axios";
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { API } from "../api";
+import { useAuth } from "../API/Context/AuthContext";
 import GroupData from "../assets/Group 124.svg";
 import File from "../assets/text.png";
 import Vectorimg from "../assets/Vectorimg.png";
-const CustBankDetails = ({ bankData, setBankData, mode, setMode,updatemode }) => {
+import Loader from "../Component/Loader";
+const CustBankDetails = ({
+  bankData,
+  setBankData,
+  mode,
+  setMode,
+  updatemode,
+  formDataFromParents,
+}) => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editIndex, setEditIndex] = useState(null);
   const [previewUrls, setPreviewUrls] = useState({});
-
+  const [loading, setLoading] = useState(false);
   const [showChequeModal, setShowChequeModal] = useState(false);
-const [selectedCheque, setSelectedCheque] = useState(null);
-
-const navigate = useNavigate();
+  const [selectedCheque, setSelectedCheque] = useState(null);
+  const { loginUser } = useAuth();
+  console.log("User Data in loginUser:", loginUser);
+  const navigate = useNavigate();
   const [formData, setFormData] = useState({
     bankName: "",
     customerName: "",
@@ -22,47 +32,60 @@ const navigate = useNavigate();
     bankAddress: "",
     cancelCheque: null,
   });
-    
-    console.log(formData,"formData in the update bank")
+
+  console.log(formData, "formData in the update bank");
 
   // Handle input field changes
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFormData((prev) => ({ ...prev, [name]: value }));
   };
-const verifyBankDetails = async () => {
-  // 1. Basic Validation
-  if (!formData.accountNo || !formData.ifsc) {
-    alert("Please enter both Account Number and IFSC code.");
-    return;
-  }
-
-  try {
-    // 2. API Call to your backend
-    const response = await axios.post(`${API}/kyc/bank/verify`, {
-      account_number: formData.accountNo,
-      ifsc: formData.ifsc
-    });
-
-    if (response.data.status) {
-      const bankInfo = response.data.data.data; // Path from Surepass response
-
-      // 3. Auto-fill the form fields
-      setFormData((prev) => ({
-        ...prev,
-        customerName: bankInfo.full_name || prev.customerName,
-        bankName: bankInfo.ifsc_details?.bank_name || prev.bankName,
-        bankAddress: `${bankInfo.ifsc_details?.branch}, ${bankInfo.ifsc_details?.city}` || prev.bankAddress,
-        isBankVerified: true // Helpful for disabling fields later
-      }));
-      
-      alert("Bank Details Verified Successfully!");
+  const verifyBankDetails = async () => {
+    setLoading(true);
+    // 1. Basic Validation
+    if (!formData.accountNo || !formData.ifsc) {
+      alert("Please enter both Account Number and IFSC code.");
+      setLoading(false);
+      return;
     }
-  } catch (error) {
-    console.error("Verification Error:", error);
-    alert(error.response?.data?.message || "Verification failed. Please check details.");
-  }
-};
+
+    try {
+      // 2. API Call to your backend
+      const response = await axios.post(`${API}/kyc/bank/verify`, {
+        account_number: formData.accountNo,
+        ifsc: formData.ifsc,
+      });
+
+      if (response.data.status) {
+        const bankInfo = response.data.data.data; // Path from Surepass response
+
+        // 3. Auto-fill the form fields
+        setFormData((prev) => ({
+          ...prev,
+          customerName: bankInfo.full_name || prev.customerName,
+          bankName: bankInfo.ifsc_details?.bank_name || prev.bankName,
+          bankAddress:
+            `${bankInfo.ifsc_details?.branch}, ${bankInfo.ifsc_details?.city}` ||
+            prev.bankAddress,
+          isBankVerified: true, // Helpful for disabling fields later
+        }));
+
+        alert("Bank Details Verified Successfully!");
+        setLoading(false);
+      }
+    } catch (error) {
+      console.error("Verification Error:", error);
+
+      const errMsg =
+        error.response?.data?.message?.message || // ✅ correct path
+        error.response?.data?.message || // fallback if string
+        "Verification failed. Please check details.";
+
+      alert(errMsg);
+
+      setLoading(false);
+    }
+  };
   // Handle file upload
   const handleFileChange = (e) => {
     const file = e.target.files[0];
@@ -96,6 +119,7 @@ const verifyBankDetails = async () => {
 
   // 🧩 Save or Update Bank Data
   const handleSave = () => {
+    debugger;
     if (
       !formData.bankName ||
       !formData.customerName ||
@@ -114,7 +138,7 @@ const verifyBankDetails = async () => {
         IFSC: formData.ifsc,
         Bank_Address: formData.bankAddress,
         cancelCheque: formData.cancelCheque,
-        Update_By: "Admin",
+        Update_By: loginUser,
         Update_On: new Date().toLocaleDateString(),
       };
       setBankData((prev) => [...prev, newEntry]);
@@ -128,7 +152,7 @@ const verifyBankDetails = async () => {
         IFSC: formData.ifsc,
         Bank_Address: formData.bankAddress,
         cancelCheque: formData.cancelCheque, // ✅ keep latest file or URL
-        Update_By: "Admin",
+        Update_By: loginUser,
         Update_On: new Date().toLocaleDateString(),
       };
       setBankData(updatedData);
@@ -179,15 +203,15 @@ const verifyBankDetails = async () => {
       bankAddress: data.Bank_Address,
       cancelCheque: data.cancelCheque,
       customerId: data.customerId,
-      id:data.id
+      id: data.id,
     });
     setMode("edit");
     setEditIndex(index);
     setIsModalOpen(true);
   };
 
-    
-   const updateBankDetails = async () => {
+  const updateBankDetails = async () => {
+    debugger;
     try {
       const formDataToSend = new FormData();
       formDataToSend.append("bankData", JSON.stringify(formData));
@@ -197,15 +221,18 @@ const verifyBankDetails = async () => {
         formDataToSend.append("cancelCheque", formData.cancelCheque);
       }
 
-      const response = await axios.put(`${API}/bank/updateBankDetails`, formDataToSend, {
-        headers: { "Content-Type": "multipart/form-data" },
-      });
+      const response = await axios.put(
+        `${API}/bank/updateBankDetails`,
+        formDataToSend,
+        {
+          headers: { "Content-Type": "multipart/form-data" },
+        },
+      );
 
       console.log("✅ Bank details updated:", response.data);
 
       // 🟢 Navigate after success
       navigate("/Customer-Profile-List");
-
     } catch (error) {
       console.error("❌ Error updating bank details:", error);
       alert("Failed to update bank details. Please try again.");
@@ -215,16 +242,13 @@ const verifyBankDetails = async () => {
   return (
     <div className="flex">
       <div className="overflow-x-auto w-full h-auto ">
-        
-        <div className="flex justify-between">
-         
-           <p className="font-[Source_Sans_3] font-bold text-[24px] leading-[100%] tracking-[0.03em] text-[#0A2478] mb-4 ">
-             Bank Details
+        <div className="flex justify-between p-2">
+          <p className="font-[Source_Sans_3] font-bold text-[15px] leading-[100%] tracking-[0.03em] text-[#0A2478]  ">
+            Bank Details
           </p>
-                  {
-                      updatemode !== "edit" && (
-                           <button
-            className="w-[72.7px] h-[33.7px] bg-[#0A2478] text-white rounded-[3.12px] flex items-center justify-center text-[14px] font-[Source_Sans_3] font-semibold"
+
+          <button
+            className="w-[72.7px] h-[33.7px] bg-[#0A2478] text-white rounded-[3.12px] flex items-center justify-center text-[14px] font-[Source_Sans_3] font-semibold "
             onClick={() => {
               setMode("add");
               setIsModalOpen(true);
@@ -232,9 +256,6 @@ const verifyBankDetails = async () => {
           >
             Add New
           </button>
-                      )
-                  }
-         
         </div>
 
         {/* Table */}
@@ -245,10 +266,10 @@ const verifyBankDetails = async () => {
               <th className="px-1 py-1 border-r">Customer Name</th>
               <th className="px-1 py-1 border-r">Account No</th>
               <th className="px-1 py-1 border-r w-[150px]">IFSC</th>
-              <th className="px-1 py-1 border-r">Cancelled Cheque</th>
+              {/* <th className="px-1 py-1 border-r">Cancelled Cheque</th> */}
               <th className="px-1 py-1 border-r">Bank Address</th>
-              <th className="px-1 py-1 border-r">Update By</th>
-              <th className="px-1 py-1 border-r">Update On</th>
+              <th className="px-1 py-1 border-r">Added By</th>
+              <th className="px-1 py-1 border-r">Added On</th>
               <th className="px-1 py-1">Action</th>
             </tr>
           </thead>
@@ -289,47 +310,46 @@ const verifyBankDetails = async () => {
                       <img src={Vectorimg} alt="view" />
                     </div>
 
-                     <div
+                    <div
                       className="w-[17px] h-[17px] bg-[#C5644E] rounded flex items-center justify-center p-0.5 cursor-pointer"
-                     onClick={() => {
-    setSelectedCheque(previewUrls[index]); // or row.cancelCheque URL
-    setShowChequeModal(true);
-  }}
+                      onClick={() => {
+                        setSelectedCheque(previewUrls[index]); // or row.cancelCheque URL
+                        setShowChequeModal(true);
+                      }}
                       title="View"
                     >
-                     <img src={File} alt="view" />
+                      <img src={File} alt="view" />
                     </div>
-
                   </div>
                 </td>
               </tr>
             ))}
           </tbody>
         </table>
-{showChequeModal && (
-  <div className="fixed inset-0 bg-black/40 flex items-center justify-center z-50">
-    <div className="bg-white rounded-lg p-4 w-[400px] relative">
-      <button
-        onClick={() => setShowChequeModal(false)}
-        className="absolute top-2 right-2 text-gray-500 hover:text-black"
-      >
-        ✕
-      </button>
+        {showChequeModal && (
+          <div className="fixed inset-0 bg-black/40 flex items-center justify-center z-50">
+            <div className="bg-white rounded-lg p-4 w-[400px] relative">
+              <button
+                onClick={() => setShowChequeModal(false)}
+                className="absolute top-2 right-2 text-gray-500 hover:text-black"
+              >
+                ✕
+              </button>
 
-      <h3 className="text-sm font-semibold mb-3">Cancelled Cheque</h3>
+              <h3 className="text-sm font-semibold mb-3">Cancelled Cheque</h3>
 
-      {selectedCheque ? (
-        <img
-          src={selectedCheque}
-          alt="Cheque"
-          className="w-full h-[200px] border rounded"
-        />
-      ) : (
-        <p className="text-sm text-gray-500">No image available</p>
-      )}
-    </div>
-  </div>
-)}
+              {selectedCheque ? (
+                <img
+                  src={selectedCheque}
+                  alt="Cheque"
+                  className="w-full h-[200px] border rounded"
+                />
+              ) : (
+                <p className="text-sm text-gray-500">No image available</p>
+              )}
+            </div>
+          </div>
+        )}
 
         {/* Modal */}
         {isModalOpen && (
@@ -342,150 +362,174 @@ const verifyBankDetails = async () => {
                 {mode === "add"
                   ? "Add Bank Details"
                   : mode === "view"
-                  ? "View Bank Details"
-                  : "Edit Bank Details"}
+                    ? "View Bank Details"
+                    : "Edit Bank Details"}
               </h2>
 
               <div className="gap-4">
                 {/* Bank Name / Holder / Account No */}
                 <div className="flex flex-row items-end gap-3">
-  {/* Account Number */}
-  <div className="flex flex-col">
-    <label className="text-[13px] font-medium mb-1">Account No <span className="text-red-500">*</span></label>
-    <input
-      name="accountNo"
-      value={formData.accountNo}
-      onChange={handleChange}
-      type="text"
-      disabled={mode === "view"}
-      placeholder="Enter Account No"
-      className="border border-gray-300 rounded w-[250px] h-[32px] px-3 text-xs focus:outline-none focus:ring-1 focus:ring-blue-500 disabled:bg-gray-100"
-    />
-  </div>
+                  {/* Account Number */}
+                  <div className="flex flex-col">
+                    <label className="text-[13px] font-medium mb-1">
+                      Account No <span className="text-red-500">*</span>
+                    </label>
+                    <input
+                      name="accountNo"
+                      value={formData.accountNo}
+                      onChange={handleChange}
+                      type="text"
+                      disabled={mode === "view"}
+                      placeholder="Enter Account No"
+                      className="border border-gray-300 rounded w-[250px] h-[32px] px-3 text-xs focus:outline-none focus:ring-1 focus:ring-blue-500 disabled:bg-gray-100"
+                    />
+                  </div>
 
-  {/* IFSC Code + Verify Button */}
-  <div className="flex flex-col">
-    <label className="text-[13px] font-medium mb-1">IFSC Code <span className="text-red-500">*</span></label>
-    <div className="flex">
-      <input
-        name="ifsc"
-        value={formData.ifsc}
-        onChange={handleChange}
-        type="text"
-        disabled={mode === "view"}
-        placeholder="IFSC Code"
-        className="border border-gray-300 rounded-l w-[130px] h-[32px] px-3 text-xs border-r-0 focus:outline-none focus:ring-1 focus:ring-blue-500 uppercase disabled:bg-gray-100"
-      />
-      <button
-        type="button"
-        onClick={verifyBankDetails}
-        className="bg-[#0A2478] text-white px-3 h-[32px] rounded-r text-[11px] font-bold hover:bg-[#081c5b] transition-colors"
-      >
-        Verify
-      </button>
-    </div>
-  </div>
+                  <div className="flex flex-col">
+                    <label className="text-[13px] font-medium mb-1">
+                      IFSC Code <span className="text-red-500">*</span>
+                    </label>
+                    <div className="flex">
+                      <input
+                        name="ifsc"
+                        value={formData.ifsc}
+                        onChange={handleChange}
+                        type="text"
+                        disabled={mode === "view"}
+                        placeholder="IFSC Code"
+                        className="border border-gray-300 rounded-l w-[130px] h-[32px] px-3 text-xs border-r-0 focus:outline-none focus:ring-1 focus:ring-blue-500 uppercase disabled:bg-gray-100"
+                      />
+                      <button
+                        type="button"
+                        onClick={verifyBankDetails}
+                        disabled={mode === "view"}
+                        className={`px-3 h-[32px] rounded-r text-[11px] font-bold transition-colors
+    ${
+      mode === "view"
+        ? "bg-gray-400 cursor-not-allowed text-white"
+        : "bg-[#0A2478] hover:bg-[#081c5b] text-white"
+    }`}
+                      >
+                        Verify
+                      </button>
+                    </div>
+                  </div>
 
-  {/* Bank Name */}
-  <div className="flex flex-col">
-    <label className="text-[13px] font-medium mb-1">Bank Name <span className="text-red-500">*</span></label>
-    <input
-      name="bankName"
-      value={formData.bankName}
-      onChange={handleChange}
-      type="text"
-      disabled={mode === "view"}
-      placeholder="Bank Name"
-      className="border border-gray-300 rounded w-[280px] h-[32px] px-3 text-xs focus:outline-none focus:ring-1 focus:ring-blue-500 disabled:bg-gray-100"
-    />
-  </div>
-</div>
+                  {/* Bank Name */}
+                  <div className="flex flex-col">
+                    <label className="text-[13px] font-medium mb-1">
+                      Bank Name <span className="text-red-500">*</span>
+                    </label>
+                    <input
+                      name="bankName"
+                      value={formData.bankName}
+                      onChange={handleChange}
+                      type="text"
+                      disabled
+                      placeholder="Bank Name"
+                      className="border border-gray-300 rounded w-[280px] h-[32px] px-3 text-xs focus:outline-none focus:ring-1 focus:ring-blue-500 disabled:bg-gray-100"
+                    />
+                  </div>
+                </div>
 
                 {/* IFSC / Address / Cheque */}
-               <div className="flex flex-row items-start mt-4 gap-4">
-  {/* Account Holder Name */}
-  <div className="flex flex-col">
-    <label className="text-[13px] font-medium mb-1">Account Holder Name <span className="text-red-500">*</span></label>
-    <input
-      name="customerName"
-      value={formData.customerName}
-      onChange={handleChange}
-      type="text"
-      disabled={mode === "view"}
-      placeholder="Holder Name"
-      className="border border-gray-300 rounded w-[220px] h-[32px] px-3 text-xs focus:outline-none focus:ring-1 focus:ring-blue-500 disabled:bg-gray-100"
-    />
-  </div>
+                <div className="flex flex-row items-start mt-4 gap-4">
+                  {/* Account Holder Name */}
+                  <div className="flex flex-col">
+                    <label className="text-[13px] font-medium mb-1">
+                      Account Holder Name{" "}
+                      <span className="text-red-500">*</span>
+                    </label>
+                    <input
+                      name="customerName"
+                      value={formData.customerName}
+                      onChange={handleChange}
+                      type="text"
+                      disabled
+                      placeholder="Holder Name"
+                      className="border border-gray-300 rounded w-[220px] h-[32px] px-3 text-xs focus:outline-none focus:ring-1 focus:ring-blue-500 disabled:bg-gray-100"
+                    />
+                  </div>
 
-  {/* Bank Address */}
-  <div className="flex flex-col">
-    <label className="text-[13px] font-medium mb-1">Bank Address <span className="text-red-500">*</span></label>
-    <input
-      name="bankAddress"
-      value={formData.bankAddress}
-      onChange={handleChange}
-      type="text"
-      disabled={mode === "view"}
-      placeholder="Address"
-      className="border border-gray-300 rounded w-[250px] h-[32px] px-3 text-xs focus:outline-none focus:ring-1 focus:ring-blue-500 disabled:bg-gray-100"
-    />
-  </div>
+                  {/* Bank Address */}
+                  <div className="flex flex-col">
+                    <label className="text-[13px] font-medium mb-1">
+                      Bank Address <span className="text-red-500">*</span>
+                    </label>
+                    <input
+                      name="bankAddress"
+                      value={formData.bankAddress}
+                      onChange={handleChange}
+                      type="text"
+                      disabled
+                      placeholder="Address"
+                      className="border border-gray-300 rounded w-[250px] h-[32px] px-3 text-xs focus:outline-none focus:ring-1 focus:ring-blue-500 disabled:bg-gray-100"
+                    />
+                  </div>
 
-  {/* File Upload Component */}
-  <div className="flex flex-col">
-    <label className="text-[13px] font-medium mb-1">Attach Cancel Cheque</label>
-    <div className="flex items-center">
-      <div className={`flex items-center border border-gray-300 rounded h-[32px] w-[240px] bg-white overflow-hidden ${mode === "view" ? "bg-gray-50" : ""}`}>
-        <label
-          htmlFor="uploadFile"
-          className={`${
-            mode === "view"
-              ? "bg-gray-200 cursor-not-allowed text-gray-500"
-              : "bg-gray-100 cursor-pointer text-[#0A2478] hover:bg-gray-200"
-          } px-3 h-full flex items-center text-[11px] font-bold border-r border-gray-300 transition-colors`}
-        >
-          Choose File
-        </label>
-        <input
-          id="uploadFile"
-          type="file"
-          className="hidden"
-          disabled={mode === "view"}
-          onChange={handleFileChange}
-        />
-        <span className="px-3 text-[11px] text-gray-500 truncate flex-1">
-          {formData.cancelCheque
-            ? typeof formData.cancelCheque === "object"
-              ? formData.cancelCheque.name
-              : "Cheque Attached"
-            : "No file chosen"}
-        </span>
-      </div>
+                  {/* File Upload Component */}
+                  <div className="flex flex-col">
+                    <label className="text-[13px] font-medium mb-1">
+                      Attach Cancel Cheque
+                    </label>
+                    <div className="flex items-center">
+                      <div
+                        className={`flex items-center border border-gray-300 rounded h-[32px] w-[240px] bg-white overflow-hidden ${mode === "view" ? "bg-gray-50" : ""}`}
+                      >
+                        <label
+                          htmlFor="uploadFile"
+                          className={`${
+                            mode === "view"
+                              ? "bg-gray-200 cursor-not-allowed text-gray-500"
+                              : "bg-gray-100 cursor-pointer text-[#0A2478] hover:bg-gray-200"
+                          } px-3 h-full flex items-center text-[11px] font-bold border-r border-gray-300 transition-colors`}
+                        >
+                          Choose File
+                        </label>
+                        <input
+                          id="uploadFile"
+                          type="file"
+                          className="hidden"
+                          disabled={mode === "view"}
+                          onChange={handleFileChange}
+                        />
+                        <span className="px-3 text-[11px] text-gray-500 truncate flex-1">
+                          {formData.cancelCheque
+                            ? typeof formData.cancelCheque === "object"
+                              ? formData.cancelCheque.name
+                              : "Cheque Attached"
+                            : "No file chosen"}
+                        </span>
+                      </div>
 
-      {/* Small Preview Thumbnail (Inline) */}
-      {formData.cancelCheque && (
-        <div className="ml-2 group relative">
-          <img
-            src={
-              typeof formData.cancelCheque === "object"
-                ? URL.createObjectURL(formData.cancelCheque)
-                : formData.cancelCheque
-            }
-            alt="Preview"
-            className="w-[32px] h-[32px] object-cover border rounded shadow-sm cursor-pointer"
-          />
-          {/* Tooltip on hover for larger view */}
-          <div className="hidden group-hover:block absolute bottom-10 left-0 z-50 p-1 bg-white border rounded shadow-lg">
-             <img 
-               src={typeof formData.cancelCheque === "object" ? URL.createObjectURL(formData.cancelCheque) : formData.cancelCheque}
-               className="w-40 h-auto rounded"
-             />
-          </div>
-        </div>
-      )}
-    </div>
-  </div>
-</div>
+                      {/* Small Preview Thumbnail (Inline) */}
+                      {formData.cancelCheque && (
+                        <div className="ml-2 group relative">
+                          <img
+                            src={
+                              typeof formData.cancelCheque === "object"
+                                ? URL.createObjectURL(formData.cancelCheque)
+                                : formData.cancelCheque
+                            }
+                            alt="Preview"
+                            className="w-[32px] h-[32px] object-cover border rounded shadow-sm cursor-pointer"
+                          />
+                          {/* Tooltip on hover for larger view */}
+                          <div className="hidden group-hover:block absolute bottom-10 left-0 z-50 p-1 bg-white border rounded shadow-lg">
+                            <img
+                              src={
+                                typeof formData.cancelCheque === "object"
+                                  ? URL.createObjectURL(formData.cancelCheque)
+                                  : formData.cancelCheque
+                              }
+                              className="w-40 h-auto rounded"
+                            />
+                          </div>
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                </div>
               </div>
 
               {/* Buttons */}
@@ -493,8 +537,7 @@ const verifyBankDetails = async () => {
                 {mode === "add" && (
                   <button
                     className="bg-[#0A2478] text-white w-[92.66px] h-[30.57px] rounded"
-                                      onClick={handleSave}
-                                       
+                    onClick={handleSave}
                   >
                     {mode === "edit" ? "Update" : "Save"}
                   </button>
@@ -502,8 +545,7 @@ const verifyBankDetails = async () => {
                 {mode === "edit" && (
                   <button
                     className="bg-[#0A2478] text-white w-[92.66px] h-[30.57px] rounded"
-                                     
-                                        onClick={() => updateBankDetails(formData)}
+                    onClick={() => updateBankDetails(formData)}
                   >
                     {mode === "edit" ? "Update" : "Save"}
                   </button>
@@ -519,6 +561,8 @@ const verifyBankDetails = async () => {
           </div>
         )}
       </div>
+
+      {loading && <Loader />}
     </div>
   );
 };

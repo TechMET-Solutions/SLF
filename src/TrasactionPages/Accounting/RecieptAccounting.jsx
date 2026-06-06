@@ -372,7 +372,7 @@ const RecieptAccounting = () => {
         {/* HEADER */}
 
         <div className="flex sticky top-[50px] z-40 w-full ml-[25px]">
-          <div className="flex items-center px-6 py-4 border-b w-full max-w-[1462px] h-[40px] border  border-gray-200 justify-between  ">
+          <div className="flex items-center px-6 py-4 border-b w-full max-w-[1462px] h-[40px] border  border-gray-200 justify-between bg-white ">
             <h2 className="text-red-600 font-bold text-[20px] leading-[148%]">
               Receipt List
             </h2>
@@ -444,7 +444,7 @@ const RecieptAccounting = () => {
                     value={searchQuery}
                     onClick={() => setIsDropdownOpen(false)}
                     onChange={(e) => setSearchQuery(e.target.value)}
-                    placeholder="Search multiple items..."
+                    placeholder="Search by Receipt No."
                     className="flex-grow text-[11px] outline-none h-full bg-transparent"
                   />
                 </div>

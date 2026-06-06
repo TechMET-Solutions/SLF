@@ -5,9 +5,9 @@ import { API } from "../api";
 
 const DayEndProcess = () => {
   const [dayEndDate, setDayEndDate] = useState("");
-const [originalDate, setOriginalDate] = useState("");
+  const [originalDate, setOriginalDate] = useState("");
   const user = JSON.parse(sessionStorage.getItem("userData"));
-
+  const [BranchData, setBranchData] = useState("");
   const getFormattedToday = () => {
     const date = new Date();
     const dd = String(date.getDate()).padStart(2, "0");
@@ -16,79 +16,87 @@ const [originalDate, setOriginalDate] = useState("");
     return `${dd}/${mm}/${yyyy}`;
   };
 
+
+useEffect(() => {
+  const userData = JSON.parse(sessionStorage.getItem("userData"));
+
+  if (userData && userData.branchId) {
+    setBranchData(
+      userData.branchId.id || "",   // ✅ store only ID
+      );
+  }
+}, []);
+  
+
+  
   const today = getFormattedToday();
-const getTomorrow = () => {
-  const date = new Date();
-  date.setDate(date.getDate() + 1);
+  const getTomorrow = () => {
+    const date = new Date();
+    date.setDate(date.getDate() + 1);
 
-  const dd = String(date.getDate()).padStart(2, "0");
-  const mm = String(date.getMonth() + 1).padStart(2, "0");
-  const yyyy = date.getFullYear();
+    const dd = String(date.getDate()).padStart(2, "0");
+    const mm = String(date.getMonth() + 1).padStart(2, "0");
+    const yyyy = date.getFullYear();
 
-  return `${dd}/${mm}/${yyyy}`;
-};
+    return `${dd}/${mm}/${yyyy}`;
+  };
 
-const tomorrow = getTomorrow();
+  const tomorrow = getTomorrow();
   // 2. Strict Comparison
   const isAlreadyProcessed = dayEndDate === tomorrow;
   useEffect(() => {
     fetchDate();
-  }, []);
+  }, [BranchData]);
   const fetchDate = async () => {
-  try {
-    const res = await axios.get(`${API}/Master/getDayEndDate`, {
-      params: {
-        userId: user.id,
-        isAdmin: user.isAdmin,
-      },
-    });
-
-    const apiDate = res.data.date;
-    setOriginalDate(apiDate); // ✅ store original
-
-    if (apiDate) {
-      const [day, month, year] = apiDate.split("/");
-      const dateObj = new Date(year, month - 1, day);
-
-      dateObj.setDate(dateObj.getDate() + 1);
-
-      const dd = String(dateObj.getDate()).padStart(2, "0");
-      const mm = String(dateObj.getMonth() + 1).padStart(2, "0");
-      const yyyy = dateObj.getFullYear();
-
-      setDayEndDate(`${dd}/${mm}/${yyyy}`);
-    }
-  } catch (err) {
-    console.log(err);
-  }
-};
-
-  // =========================
-  // UPDATE DAY END
-  // =========================
-  const handleUpdate = async () => {
     try {
-      const res = await axios.post(`${API}/Master/updateDayEnd`, {
-        userId: user.id,
-        isAdmin: user.isAdmin,
-        dayEndDate: originalDate, // ✅ pass here
+      const res = await axios.get(`${API}/Master/getDayEndDate`, {
+        params: {
+          branch_id: BranchData,
+        },
       });
 
-      alert("Day End Completed ✅");
+      const apiDate = res.data.date;
+      setOriginalDate(apiDate); // ✅ store original
 
-      const updatedUser = {
-        ...user,
-        dayEndProcess: res.data.date,
-      };
+      if (apiDate) {
+        const [day, month, year] = apiDate.split("/");
+        const dateObj = new Date(year, month - 1, day);
 
-      sessionStorage.setItem("userData", JSON.stringify(updatedUser));
-      fetchDate();
-      // window.location.href = "/";
+        dateObj.setDate(dateObj.getDate() + 1);
+
+        const dd = String(dateObj.getDate()).padStart(2, "0");
+        const mm = String(dateObj.getMonth() + 1).padStart(2, "0");
+        const yyyy = dateObj.getFullYear();
+
+        setDayEndDate(`${dd}/${mm}/${yyyy}`);
+      }
     } catch (err) {
-      alert("Failed ❌");
+      console.log(err);
     }
   };
 
+  const handleUpdate = async () => {
+  try {
+    const res = await axios.post(`${API}/Master/updateDayEnd`, {
+      branch_id: BranchData,     // ✅ must be ID
+      dayEndDate: originalDate,  // ✅ string (DD/MM/YYYY or YYYY-MM-DD)
+    });
+
+    alert("Day End Completed ✅");
+
+    const updatedUser = {
+      ...user,
+      dayEndProcess: res.data.date,
+    };
+
+    sessionStorage.setItem("userData", JSON.stringify(updatedUser));
+
+    fetchDate();
+    window.location.href = "/";
+  } catch (err) {
+    alert("Failed ❌");
+  }
+};
   return (
     <div className="min-h-screen">
       <div className="flex w-[1462px] ml-[25px]">
@@ -97,9 +105,9 @@ const tomorrow = getTomorrow();
         </div>
       </div>
 
-      <main className="p-5">
+      <main className="pl-[25px] w-[1462px]">
         <div className="border bg-white">
-          <div className="bg-blue-900 text-white p-2">Day-End Process</div>
+          <div className="bg-blue-900 text-white p-1">Day-End Process</div>
 
           <div className="p-6">
             <div className="flex items-center gap-4 mb-6">

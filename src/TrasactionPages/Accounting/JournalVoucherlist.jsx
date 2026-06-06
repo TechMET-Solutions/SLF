@@ -287,16 +287,16 @@ const { permissions, userData } = usePermission();
             <table className="text-left border-collapse ">
               <thead className="bg-[#0A2478] text-white text-sm">
                 <tr className="font-bold border-b">
-                  <th className="p-2 border border-r w-[160px]">Voucher No</th>
+                  <th className="p-1 border border-r w-[160px]">Voucher No</th>
 
-                  <th className="p-2 border border-r w-[100px]">Deposit</th>
-                  <th className="p-2 border border-r w-[100px]">Withdrawal</th>
+                  <th className="p-1 border border-r w-[100px]">Deposit</th>
+                  <th className="p-1 border border-r w-[100px]">Withdrawal</th>
                   {/* <th className="p-2 border border-r w-[120px]">Date</th> */}
-                  <th className="p-2 border border-r w-[100px]">
+                  <th className="p-1 border border-r w-[100px]">
                     Voucher Date
                   </th>
                   {/* Added Action Header */}
-                  <th className="p-2 border w-[150px] ">Action</th>
+                  <th className="p-1 border w-[150px] ">Action</th>
                 </tr>
               </thead>
 

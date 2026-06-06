@@ -1,10 +1,49 @@
 import { useEffect, useState } from "react";
 import { API } from "../api";
+import axios from "axios";
 
 const LoanApplicationHistory = () => {
   const [schemes, setSchemes] = useState([]);
   const [loading, setLoading] = useState(true);
+const [bankList, setBankList] = useState([]);
+  console.log(bankList,"bankList")
 
+
+   useEffect(() => {
+    const fetchBanks = async () => {
+      debugger;
+      try {
+        const userData = JSON.parse(sessionStorage.getItem("userData"));
+
+        const branchId =
+          typeof userData?.branchId === "object"
+            ? userData?.branchId?.id
+            : userData?.branchId;
+
+        console.log("BranchId:", branchId);
+
+        if (!branchId) {
+          console.error("BranchId missing!");
+          return;
+        }
+
+        const res = await axios.get(`${API}/api/banks/GetBanklist`, {
+          params: { branchId },
+        });
+
+        const formattedBanks = res.data.map((bank) => ({
+          id: bank.id,
+          name: bank.name,
+        }));
+
+        setBankList(formattedBanks);
+      } catch (error) {
+        console.error("Error fetching banks:", error);
+      }
+    };
+
+    fetchBanks();
+  }, []);
   const [fromDate, setFromDate] = useState("2025-04-01");
 const [toDate, setToDate] = useState(
   new Date().toISOString().split("T")[0]
@@ -14,6 +53,7 @@ const [toDate, setToDate] = useState(
   const [status, setStatus] = useState("Approved");
 
   const [rows, setRows] = useState([]);
+  console.log(rows,"rows")
   const [tableLoading, setTableLoading] = useState(false);
 
   // Fetch Schemes
@@ -21,7 +61,7 @@ const [toDate, setToDate] = useState(
     const fetchSchemes = async () => {
       try {
         const response = await fetch(
-          `${API}/Scheme/getAllSchemes?page=1&limit=50`,
+          `${API}/Scheme/active?page=1&limit=50`,
         );
         const result = await response.json();
         setSchemes(result.data || []);
@@ -59,13 +99,13 @@ const show = (val) =>
   return (
     <div className="min-h-screen w-full">
       {/* Top Bar */}
-      <div className="flex sticky top-[80px] z-40 w-full px-8">
-        <div className="flex items-center px-6 py-4 border-b w-full max-w-[1462px] h-[50px] border rounded-[11px] border-gray-200 justify-between">
+      <div className="flex sticky top-[50px] z-40 w-full ml-[25px]">
+        <div className="flex items-center px-2 py-4 border-b w-full max-w-[1462px] h-[40px] border  border-gray-200 justify-between bg-white">
 
           {/* 🔴 Left — Title */}
           <div className="flex-shrink-0">
             <h2 className="text-red-600  font-bold text-[18px] whitespace-nowrap">
-              Advance Setting List  
+              Loan Application History
             </h2>
           </div>
 
@@ -124,10 +164,13 @@ const show = (val) =>
                 onChange={(e) => setStatus(e.target.value)}
               >
                 <option value="">All</option>
-                <option value="Approved">Approved</option>
-                <option value="Pending">Pending</option>
-                <option value="Cancel">Cancel</option>
-                <option value="Closed">Closed</option>
+                 <option value="Pending">Pending</option>
+                <option value="Approved">Active</option>
+               
+               <option value="Cancelled">Cancelled</option>
+    <option value="Closed">Closed</option>
+                <option value="Auction">Auction</option>
+                <option value="Auctioned">Auctioned</option>
               </select>
             </div>
           </div>
@@ -159,178 +202,99 @@ const show = (val) =>
 
 
 
-      <div className=" mt-6">
+      <div className=" ml-[25px]  overflow-auto">
        <div className="">
-          {/* Filters */}
-          {/* <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6 items-end border p-4 rounded bg-gray-50">
-            <div>
-              <label className="block mb-1">From Date</label>
-              <input
-                type="date"
-                className="w-full border p-1 rounded"
-                value={fromDate}
-                onChange={(e) => setFromDate(e.target.value)}
-              />
-            </div>
+          <div className="flex">
+            <div className="overflow-x-auto  h-[800px]">
+             <table className="w-full border-collapse">
+  <thead className="bg-[#0A2478] text-white text-[10px] sm:text-[12px] md:text-sm">
+    <tr>
+      <th className="border p-2">SNo</th>
+      <th className="border p-2">Loan No</th>
+      <th className="border p-2">Loan Date</th>
+      <th className="border p-2">Product</th>
+      <th className="border p-2">Scheme</th>
+      <th className="border p-2">Customer ID</th>
+      <th className="border p-2">Customer Name</th>
+      <th className="border p-2">Mobile No</th>
+      <th className="border p-2">Status</th>
+      <th className="border p-2">Ref No</th>
+      <th className="border p-2">Approval Date</th>
+      <th className="border p-2">Eligible Amt</th>
+      <th className="border p-2">Loan Amt</th>
 
-            <div>
-              <label className="block mb-1">To Date</label>
-              <input
-                type="date"
-                className="w-full border p-1 rounded"
-                value={toDate}
-                onChange={(e) => setToDate(e.target.value)}
-              />
-            </div>
+      <th className="border p-2">Cash</th>
 
-            <div>
-              <label className="block mb-1 font-semibold text-gray-700">
-                Scheme
-              </label>
-              <select
-                className="w-full border p-1 rounded bg-white"
-                value={schemeId}
-                onChange={(e) => setSchemeId(e.target.value)}
-              >
-                <option value="">-- Select Scheme --</option>
-                {loading ? (
-                  <option>Loading...</option>
-                ) : (
-                  schemes.map((s) => (
-                    <option key={s.id} value={s.id}>
-                      {s.schemeName} ({s.product})
-                    </option>
-                  ))
-                )}
-              </select>
-            </div>
+      {/* ✅ Dynamic Bank Headers */}
+      {bankList.map((bank) => (
+        <th key={bank.id} className="border p-2">
+          {bank.name}
+        </th>
+      ))}
+    </tr>
+  </thead>
 
-            <div>
-              <label className="block mb-1 font-semibold text-gray-700">
-                Status
-              </label>
-              <select
-                className="w-full border p-1 rounded bg-white"
-                value={status}
-                onChange={(e) => setStatus(e.target.value)}
-              >
-                <option value="Approved">Approve</option>
-                <option value="Pending">Pending</option>
-                <option value="Cancel">Cancel</option>
-                <option value="Closed">Close</option>
-              </select>
-            </div>
-          </div> */}
+  <tbody>
+    {tableLoading ? (
+      <tr>
+        <td colSpan={14 + bankList.length} className="p-4 text-center">
+          Loading...
+        </td>
+      </tr>
+    ) : rows.length === 0 ? (
+      <tr>
+        <td colSpan={14 + bankList.length} className="p-4 text-center">
+          No Records Found
+        </td>
+      </tr>
+    ) : (
+      rows.map((row, index) => (
+        <tr
+          key={row.id}
+          className="hover:bg-blue-50 odd:bg-white even:bg-gray-50 text-[11px]"
+        >
+          <td className="border p-2">{index + 1}</td>
+          <td className="border p-2">{show(row.id)}</td>
+          <td className="border p-2">
+            {show(row.created_at?.slice(0, 10))}
+          </td>
+          <td className="border p-2">{show(row.Product_Name)}</td>
+          <td className="border p-2">{show(row.Scheme)}</td>
+          <td className="border p-2">{show(row.BorrowerId)}</td>
+          <td className="border p-2">{show(row.Borrower)}</td>
+          <td className="border p-2">{show(row.Mobile_Number)}</td>
+          <td className="border p-2">{show(row.status)}</td>
+          <td className="border p-2">{show(row.Loan)}</td>
+          <td className="border p-2">
+            {show(row.approval_date?.slice(0, 10))}
+          </td>
+          <td className="border p-2">{show(row.Min_Loan)}</td>
+          <td className="border p-2">{show(row.Loan_amount)}</td>
 
-          {/* Actions */}
-          {/* <div className="flex gap-2 mb-4 border-b pb-4">
-            <button
-              onClick={handleView}
-              className="bg-blue-800 text-white px-6 py-1 rounded flex items-center gap-2"
-            >
-              <span>💾</span> View
-            </button>
-          </div> */}
+          {/* ✅ CASH COLUMN */}
+          <td className="border p-2 text-center">
+            {row.payments_Details
+              ?.filter((p) => p.paidBy === "Cash")
+              .reduce((sum, p) => sum + (p.customerAmount || 0), 0)}
+          </td>
 
-          {/* Table */}
-          <div className="flex mx-[32px]">
-            <div className="overflow-x-auto  h-[500px]">
-              <table className="w-full border-collapse">
-                <thead className="bg-[#0A2478] text-white text-[10px] sm:text-[12px] md:text-sm">
-                <tr>
-                  <th className="border p-2">SNo</th>
-                  <th className="border p-2">Loan No</th>
-                  <th className="border p-2">Loan Date</th>
-                  <th className="border p-2">Product</th>
-                  <th className="border p-2">Scheme</th>
-                  <th className="border p-2">Customer ID</th>
-                  <th className="border p-2">Customer Name</th>
-                  <th className="border p-2">Mobile No</th>
-                  <th className="border p-2">Status</th>
-                  <th className="border p-2">Ref No</th>
-                  <th className="border p-2">Approval Date</th>
-                  <th className="border p-2">Eligible Amt</th>
-                  <th className="border p-2">Loan Amt</th>
-                  
-                  <th className="border p-2">Cash</th>
+          {/* ✅ BANK WISE DYNAMIC VALUES */}
+          {bankList.map((bank) => {
+            const total = row.payments_Details
+              ?.filter((p) => p.bankId === bank.id)
+              .reduce((sum, p) => sum + (p.customerAmount || 0), 0);
 
-                  <th className="border p-2">Bandhan Bank</th>
-                  <th className="border p-2">MGB Bhagur</th>
-                  <th className="border p-2">UBI Bhagur</th>
-                  <th className="border p-2">Yes Bank</th>
-                  <th className="border p-2">HO HDFC</th>
-                  <th className="border p-2">Federal Bank</th>
-                  <th className="border p-2">Nrd_Cor</th>
-                  <th className="border p-2">Cidco_Cor</th>
-                  <th className="border p-2">Payment Gateway</th>
-                  <th className="border p-2">B1 HDFC</th>
-                  <th className="border p-2">B2 HDFC</th>
-                  <th className="border p-2">B3 HDFC</th>
-                  <th className="border p-2">V1 Patsanstha</th>
-                </tr>
-              </thead>
-
-              <tbody>
-                {tableLoading ? (
-                  <tr>
-                    <td colSpan="28" className="p-4 text-center">
-                      Loading...
-                    </td>
-                  </tr>
-                ) : rows.length === 0 ? (
-                  <tr>
-                    <td colSpan="28" className="p-4 text-center">
-                      No Records Found
-                    </td>
-                  </tr>
-                ) : (
-                  rows.map((row, index) => (
-                    <tr
-                      key={row.id}
-                      className="hover:bg-blue-50 odd:bg-white even:bg-gray-50 text-[11px]"
-                    >
-                      <td className="border p-2">{index + 1}</td>
-                      <td className="border p-2">{show(row.id)}</td>
-                      <td className="border p-2">
-                        {show(row.created_at?.slice(0, 10))}
-                      </td>
-                      <td className="border p-2">{show(row.Product_Name)}</td>
-                      <td className="border p-2">{show(row.Scheme)}</td>
-                      <td className="border p-2">{show(row.BorrowerId)}</td>
-                      <td className="border p-2">{show(row.Borrower)}</td>
-                      <td className="border p-2">{show(row.Mobile_Number)}</td>
-                      <td className="border p-2">{show(row.status)}</td>
-                      <td className="border p-2">{show(row.Loan)}</td>
-                      <td className="border p-2">
-                        {show(row.approval_date?.slice(0, 10))}
-                      </td>
-                      <td className="border p-2">{show(row.Min_Loan)}</td>
-                      <td className="border p-2">{show(row.Loan_amount)}</td>
-                 
-
-                      {/* Example for payment columns */}
-                      <td className="border p-2">
-                        {show(row.payments_Details?.[0]?.paidBy)}
-                      </td>
-
-                      <td className="border p-2">0</td>
-                      <td className="border p-2">0</td>
-                      <td className="border p-2">0</td>
-                      <td className="border p-2">0</td>
-                      <td className="border p-2">0</td>
-                      <td className="border p-2">0</td>
-                      <td className="border p-2">0</td>
-                      <td className="border p-2">0</td>
-                      <td className="border p-2">0</td>
-                      <td className="border p-2">0</td>
-                      <td className="border p-2">0</td>
-                      <td className="border p-2">0</td>
-                      <td className="border p-2">0</td>
-                    </tr>
-                  ))
-                )}
-              </tbody>
-              </table>
+            return (
+              <td key={bank.id} className="border p-2 text-center">
+                {total || 0}
+              </td>
+            );
+          })}
+        </tr>
+      ))
+    )}
+  </tbody>
+</table>
             </div>
           </div>
         </div>

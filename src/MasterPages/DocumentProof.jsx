@@ -52,12 +52,40 @@ const [loading, setLoading] = useState(false);
   // const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const handleChange = (e) => {
-    const { name, value, type, checked } = e.target;
+  const { name, value } = e.target;
+
+  // 👉 Handle validation_value separately
+  if (name === "validation_value") {
+    let filteredValue = value;
+
+    // 🔹 Apply format filter
+    if (formData.format_type === "A") {
+      filteredValue = value.replace(/[^A-Za-z]/g, ""); // only letters
+    } else if (formData.format_type === "1") {
+      filteredValue = value.replace(/[^0-9]/g, ""); // only numbers
+    } else if (formData.format_type === "A-1") {
+      filteredValue = value.replace(/[^A-Za-z0-9]/g, ""); // alphanumeric
+    }
+
+    // 🔹 Apply max length
+    if (formData.max_length) {
+      filteredValue = filteredValue.slice(0, formData.max_length);
+    }
+
     setFormData((prev) => ({
       ...prev,
-      [name]: type === "checkbox" ? checked : value,
+      validation_value: filteredValue,
     }));
-  };
+
+    return;
+  }
+
+  // 👉 Normal fields
+  setFormData((prev) => ({
+    ...prev,
+    [name]: value,
+  }));
+};
   const [searchFilters, setSearchFilters] = useState({
     type: "",
     name: "",

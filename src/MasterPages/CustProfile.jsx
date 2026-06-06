@@ -35,7 +35,25 @@ const { permissions, userData } = usePermission();
 
 const [loading, setLoading] = useState(false);
 
+const [financial_year, setFinancialYear] = useState("");
+const [branch, setBranch] = useState("");
+ const [branchId, setBranchId] = useState("");
 
+
+  useEffect(() => {
+    try {
+      const data = sessionStorage.getItem("userData");
+      const userData = data ? JSON.parse(data) : null;
+
+      if (userData) {
+        setBranch(userData.branchName || "");
+        setBranchId(userData.branchId || "");
+        setFinancialYear(userData.financialYear || "");
+      }
+    } catch (err) {
+      console.error("Error parsing userData:", err);
+    }
+  }, []);
   
   const toggleHeader = (headerId) => {
     setSearchHeaders((prev) =>
@@ -50,38 +68,22 @@ const [loading, setLoading] = useState(false);
   });
 
  
-  // const fetchCustomers = async (pageNumber = 1) => {
-  //   try {
-  //     const params = {
-  //       page: pageNumber,
-  //       limit: 10,
-  //       headers: searchHeaders.join(","), // 👈 multiple headers
-  //       search: searchQuery, // 👈 search value
-  //     };
+ 
 
-  //     const response = await axios.get(`${API}/Master/doc/searchCustomers`, {
-  //       params,
-  //     });
+const fetchCustomers = async (pageNumber = 1) => {
 
-  //     setData(response.data.data);
-  //     setTotalPages(response.data.totalPages);
-  //     setPage(response.data.currentPage);
-  //   } catch (error) {
-  //     console.error("❌ Error fetching customers:", error);
-  //   }
-  // };
-
-  const fetchCustomers = async (pageNumber = 1) => {
-     setLoading(true);
+  
+  setLoading(true);
 
   try {
     const params = {
       page: pageNumber,
-      limit: 10,
+      limit: 15,
+      branchId: branchId.id,
       headers: searchHeaders.join(","),
       search: searchQuery,
-      sortKey: sortConfig.key,          // ✅ send column
-      sortDirection: sortConfig.direction, // ✅ send asc/desc
+      sortKey: sortConfig.key,
+      sortDirection: sortConfig.direction,
     };
 
     const response = await axios.get(`${API}/Master/doc/searchCustomers`, {
@@ -91,11 +93,11 @@ const [loading, setLoading] = useState(false);
     setData(response.data.data);
     setTotalPages(response.data.totalPages);
     setPage(response.data.currentPage);
-     setLoading(false);
 
   } catch (error) {
     console.error("❌ Error fetching customers:", error);
-     setLoading(false);
+  } finally {
+    setLoading(false); // ✅ better practice
   }
 };
 
@@ -112,19 +114,19 @@ const [loading, setLoading] = useState(false);
   const [pendingRow, setPendingRow] = useState(null);
 
   // Handle search
-  const handleSearch = () => {
-    setPage(1); // Reset to first page when searching
-    fetchCustomers(1, searchValue, searchField);
-  };
+  // const handleSearch = () => {
+  //   setPage(1); // Reset to first page when searching
+  //   fetchCustomers(1, searchValue, searchField);
+  // };
 
-  useEffect(() => {
-    fetchCustomers(page);
-  }, [page]);
+  // useEffect(() => {
+  //   fetchCustomers(page);
+  // }, [page,branchId]);
 
   useEffect(() => {
     document.title = "SLF | Customer List";
-    fetchCustomers();
-  }, []);
+    fetchCustomers(page);
+  }, [page, branchId]);
 
   const handleCheckboxChange = async (row, checked) => {
     if (checked) {
@@ -620,13 +622,13 @@ const [loading, setLoading] = useState(false);
 
       {/* Table */}
       <div className="flex ml-[25px]">
-        <div className="overflow-x-auto  w-[1300px] h-[500px]">
+        <div className="overflow-x-auto  w-[1300px] h-[550px]">
           <table className="w-full border-collapse">
             <thead className="bg-[#0A2478] text-white text-sm">
               <tr>
-                <th className="px-1 py-1 text-left border-r border-gray-300 text-[13px]">
+                {/* <th className="px-1 py-1 text-left border-r border-gray-300 text-[13px]">
                   Customer
-                </th>
+                </th> */}
 
                 <th
                   onClick={() => handleSort("id")}
@@ -714,17 +716,7 @@ const [loading, setLoading] = useState(false);
                 >
                   <div className="flex items-center gap-2">
                  City
-                    {/* {sortConfig.key !== "lastName" && (
-                      <FaSort className="text-gray-400 text-xs" />
-                    )}
-                    {sortConfig.key === "lastName" &&
-                      sortConfig.direction === "asc" && (
-                        <FaSortUp className="text-blue-600 text-xs" />
-                      )}
-                    {sortConfig.key === "lastName" &&
-                      sortConfig.direction === "desc" && (
-                        <FaSortDown className="text-blue-600 text-xs" />
-                      )} */}
+                   
                   </div>
                 </th>
                 <th className="px-1 py-1 text-left border-r border-gray-300 text-[13px]">
@@ -758,14 +750,14 @@ const [loading, setLoading] = useState(false);
               }
             `}
                 >
-                  <td className="px-1 py-1 flex items-center gap-3">
+                  {/* <td className="px-1 py-1 flex items-center gap-3">
                     <img
                       src={row.profileImage}
                       alt={row.customer}
                       className="w-10 h-10 rounded-full object-cover border border-gray-300"
                     />
                     <span className="font-medium">{row.customer}</span>
-                  </td>
+                  </td> */}
 
                   <td className="px-1 py-1">{row.id}</td>
                   <td className="px-1 py-1">{row.firstName}</td>

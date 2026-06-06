@@ -3,7 +3,9 @@ import { useEffect, useState } from "react";
 import { API } from "../api";
 
 const Day_Book = () => {
-  const [selectedDate, setSelectedDate] = useState("2026-02-07");
+ const today = new Date().toISOString().split("T")[0];
+
+const [selectedDate, setSelectedDate] = useState(today);
   const [loading, setLoading] = useState(false);
 
   const [options, setOptions] = useState({
@@ -55,13 +57,31 @@ const Day_Book = () => {
   }, []); // Empty array means this runs once on mount.
   // Subsequent calls only happen via the "View" button.
 
-  const calculateTotal = (data, key) => {
-    if (!data || !Array.isArray(data)) return "0.00";
+ const calculateTotal = (data) => {
+  if (!data || !Array.isArray(data)) return "0.00";
 
-    return data
-      .reduce((sum, row) => sum + (parseFloat(row[key]) || 0), 0)
-      .toFixed(2);
-  };
+  return data
+    .reduce((sum, row) => {
+      const value = parseFloat(row.totalAmount ?? row.amount ?? 0);
+      return sum + (isNaN(value) ? 0 : value);
+    }, 0)
+    .toFixed(2);
+};
+
+  const calculateJournalTotal = (data, type) => {
+  if (!data || !Array.isArray(data)) return "0.00";
+
+  return data
+    .reduce((sum, row) => {
+      const value =
+        type === "deposit"
+          ? parseFloat(row.deposit_amount || 0)
+          : parseFloat(row.withdrawal_amount || 0);
+
+      return sum + (isNaN(value) ? 0 : value);
+    }, 0)
+    .toFixed(2);
+};
 
   const renderCell = (val) => {
     if (val === null || val === undefined) return "-";
@@ -150,13 +170,13 @@ const Day_Book = () => {
   const checkboxList = [
     { label: "Loan Approve", key: "loanApprove" },
     { label: "Loan Repayment", key: "loanRepayment" },
-    { label: "Receipt/Payment", key: "receiptPayment" },
+    { label: "Receipt/Expense", key: "receiptPayment" },
     { label: "Journal Voucher", key: "journalVoucher" },
     { label: "Cash Balances", key: "cashBalances" },
   ];
 
   return (
-    <div className="min-h-screen bg-white font-sans text-[12px] p-2">
+    <div className="min-h-screen bg-white font-sans text-[12px] w-[1462px] ml-[18px]">
       <div className="relative">
         {loading && (
           <div className="absolute inset-0 bg-white/50 flex items-center justify-center z-10">
@@ -165,69 +185,11 @@ const Day_Book = () => {
             </span>
           </div>
         )}
+        <div className="flex ">
+          <div className="flex flex-col w-full max-w-[1462px] border border-gray-200 shadow-sm bg-white overflow-hidden">
 
-        {/* <div className="bg-[#1a8a81] text-white px-3 py-1 font-semibold flex justify-between items-center">
-          <span>Day Book</span>
-          <span className="text-[10px] font-normal">
-            Financial Year : 2025-2026
-          </span>
-        </div>
-
-        <div className="p-4 bg-white border-b border-gray-200">
-          <div className="flex gap-2 mb-3 items-center">
-            <label className="font-semibold">For Date</label>
-            <input
-              type="date"
-              value={selectedDate}
-              onChange={(e) => setSelectedDate(e.target.value)}
-              className="border border-gray-300 px-2 py-0.5 outline-none focus:border-teal-500"
-            />
-          </div>
-
-          <div className="grid grid-cols-5 gap-2 mb-4">
-            {checkboxList.map(({ label, key }) => (
-              <label
-                key={key}
-                className="flex items-center gap-2 cursor-pointer select-none"
-              >
-                <input
-                  type="checkbox"
-                  checked={options[key]}
-                  onChange={() => handleCheckboxChange(key)}
-                  className="accent-[#005a9c] w-3.5 h-3.5"
-                />
-                <span className="text-gray-700">{label}</span>
-              </label>
-            ))}
-          </div>
-
-          <div className="flex gap-1 pt-2 border-t">
-            <button
-              onClick={fetchDayBook}
-              disabled={loading}
-              className="bg-[#005a9c] text-white px-8 py-1 border border-blue-900 text-xs hover:bg-blue-800 active:bg-blue-900 disabled:opacity-50"
-            >
-              {loading ? "Loading..." : "View"}
-            </button>
-            <button className="bg-[#005a9c] text-white px-8 py-1 border border-blue-900 text-xs hover:bg-red-700">
-              Exit
-            </button>
-          </div>
-        </div> */}
-
-        <div className="flex justify-center mt-5 px-4">
-          <div className="flex flex-col w-full max-w-[1320px] rounded-[11px] border border-gray-200 shadow-sm bg-white overflow-hidden">
-
-            {/* top Teal Bar (Title & FY) */}
-            {/* <div className="bg-[#1a8a81] text-white px-6 py-2 font-semibold flex justify-between items-center">
-              <span className="text-red-600 font-bold text-[18px] whitespace-nowrap">Day Book</span>
-              <span className="text-[12px] font-normal opacity-90">
-                Financial Year : 2025-2026
-              </span>
-            </div> */}
-
-            {/* Main Header Row */}
-            <div className="flex items-center justify-between px-6 py-4 gap-6">
+           
+            <div className="flex items-center justify-between px-6  py-1 gap-6">
 
               <div className="flex-shrink-0">
                 <h2 className="text-red-600 font-bold text-[18px] whitespace-nowrap">
@@ -282,13 +244,11 @@ const Day_Book = () => {
         </div>
 
         {options.loanApprove && (
-          <div className="overflow-x-auto mt-4  mx-24">
+          <div className="overflow-x-auto mt-5">
            
             <div className="flex items-center gap-2 mb-2 text-[14px] font-bold text-red-600 pb-1">
               <span>Loan Approve</span>
-              <span className="text-[11px] font-semibold text-gray-700">
-                Bhagur B1 [01]
-              </span>
+             
             </div>
 
 
@@ -410,54 +370,30 @@ const Day_Book = () => {
           </div>
         )}
 
-        {/* {options.loanRepayment && (
-          <TableSection
-            title="Loan Repayment"
-            headers={[
-              "SNo",
-              "Receipt No",
-              "Date",
-              "Paymode",
-              "Scheme",
-              "Loan Date",
-              "Loan No",
-              "Party Name",
-              "Amount",
-              "Loan Adj",
-              "Charges",
-              "Interest",
-              "Receipt By",
-              "Remarks",
-            ]}
-            rows={apiData.loanRepayment}
-            totals={{ Amount: calculateTotal(apiData.loanRepayment, "amount") }}
-          />
-        )} */}
+       
         {options.loanRepayment && (
           <div className="mb-6">
 
             {/* 🔹 Table */}
             {options.loanRepayment && (
-              <div className="overflow-x-auto mt-4  mx-24">
+              <div className="overflow-x-auto ">
                 {/* Branch & Section Header */}
                  <div className="flex items-center gap-2 mb-2 text-[14px] font-bold text-red-600  pb-1">
                   <span> Loan Repayment</span>
-                  <span className="text-[11px] font-semibold text-gray-700">
-                    Bhagur B1 [01]
-                  </span>
+                  
                 </div>
 
 
                 <table className="w-full text-left bt-2 rounded-lg border-collapse min-w-[1500px]">
                   <thead className="bg-[#0A2478] text-white text-xs">
                     <tr >
-                      <th className="border border-gray-400 p-1 font-bold text-center w-8">
+                      <th className="border border-gray-400 p-1 font-bold text-left w-8">
                         SNo
                       </th>
                       <th className="border border-gray-400 p-1 font-bold text-left">
                         Receipt No
                       </th>
-                      <th className="border border-gray-400 p-1 font-bold text-center">
+                      <th className="border border-gray-400 p-1 font-bold text-left">
                         Date
                       </th>
                       <th className="border border-gray-400 p-1 font-bold text-left">
@@ -466,14 +402,14 @@ const Day_Book = () => {
                       <th className="border border-gray-400 p-1 font-bold text-left">
                         Scheme
                       </th>
-                      <th className="border border-gray-400 p-1 font-bold text-center">
+                      <th className="border border-gray-400 p-1 font-bold text-left">
                         Loan Date
                       </th>
                       <th className="border border-gray-400 p-1 font-bold text-left">
                         Loan No
                       </th>
                       <th className="border border-gray-400 p-1 font-bold text-left">
-                        Party Name
+                        Customer Name
                       </th>
                       <th className="border border-gray-400 p-1 font-bold text-right">
                         Amount
@@ -496,36 +432,9 @@ const Day_Book = () => {
                     </tr>
                   </thead>
 
-                  {/* <tbody className="bg-white">
-        {apiData.loanRepayment?.length === 0 ? (
-          <tr>
-            <td colSpan={14} className="border border-gray-300 text-center py-6 text-gray-400 italic bg-gray-50">
-              No repayment records found for the selected date.
-            </td>
-          </tr>
-        ) : (
-          apiData.loanRepayment?.map((row, index) => (
-            <tr key={index} className="hover:bg-blue-50 transition-colors">
-              <td className="border border-gray-300 p-1 text-center text-gray-600">{index + 1}</td>
-              <td className="border border-gray-300 p-1 text-blue-800 font-medium">{row.receiptNo}</td>
-              <td className="border border-gray-300 p-1 text-center whitespace-nowrap">{row.date}</td>
-              <td className="border border-gray-300 p-1 capitalize">{row.paymode?.toLowerCase()}</td>
-              <td className="border border-gray-300 p-1">{row.scheme}</td>
-              <td className="border border-gray-300 p-1 text-center whitespace-nowrap">{row.loanDate}</td>
-              <td className="border border-gray-300 p-1 font-medium">{row.loanNo}</td>
-              <td className="border border-gray-300 p-1 uppercase text-[10px]">{row.partyName}</td>
-              <td className="border border-gray-300 p-1 text-right font-semibold">{parseFloat(row.amount).toFixed(2)}</td>
-              <td className="border border-gray-300 p-1 text-right text-green-700">{parseFloat(row.loanAdj).toFixed(2)}</td>
-              <td className="border border-gray-300 p-1 text-right">{parseFloat(row.charges).toFixed(2)}</td>
-              <td className="border border-gray-300 p-1 text-right">{parseFloat(row.interest).toFixed(2)}</td>
-              <td className="border border-gray-300 p-1 text-gray-600 italic">{row.receiptBy}</td>
-              <td className="border border-gray-300 p-1 max-w-[150px] truncate" title={row.remarks}>{row.remarks || "-"}</td>
-            </tr>
-          ))
-        )}
-      </tbody> */}
+                
                   <tbody className="bg-white">
-                    {apiData.loanRepayment?.length === 0 ? (
+                    {apiData?.loanRepayment?.length === 0 ? (
                       <tr>
                         <td
                           colSpan={14}
@@ -535,7 +444,7 @@ const Day_Book = () => {
                         </td>
                       </tr>
                     ) : (
-                      apiData.loanRepayment?.map((row, index) => {
+                      apiData?.loanRepayment?.map((row, index) => {
                         const { installment, loan } = row;
 
                         return (
@@ -550,62 +459,66 @@ const Day_Book = () => {
 
                             {/* Receipt No (use installment id) */}
                             <td className="border p-1 font-medium text-blue-700">
-                              RCP-{installment.id}
+                              {installment?.receiptNo}
                             </td>
 
                             {/* Date */}
                             <td className="border p-1 text-center whitespace-nowrap">
                               {new Date(
-                                installment.transactionDate,
+                                installment?.date,
                               ).toLocaleDateString()}
                             </td>
 
                             {/* Paymode */}
                             <td className="border p-1 capitalize">
-                              {installment.paymentInfo?.mode || "-"}
+                              {installment?.paymentMode || "-"}
                             </td>
 
                             {/* Scheme */}
-                            <td className="border p-1">{loan.Scheme}</td>
+                            <td className="border p-1">{loan?.Scheme}</td>
 
                             {/* Loan Date */}
-                            <td className="border p-1 text-center whitespace-nowrap">
-                              {loan.Pay_Date}
-                            </td>
+                           <td className="border p-1 text-center whitespace-nowrap">
+  {loan?.created_at
+    ? new Date(loan.created_at).toLocaleDateString("en-GB")
+    : "-"}
+</td>
 
                             {/* Loan No */}
                             <td className="border p-1 font-medium">
-                              LN-{loan.id}
+                              LN-{loan?.id}
                             </td>
 
                             {/* Party Name */}
                             <td className="border p-1 uppercase text-[11px]">
-                              {loan.Borrower}
+                              {loan?.Borrower}
                             </td>
 
                             {/* Amount */}
                             <td className="border p-1 text-right font-semibold">
-                              {Number(installment.payAmount).toFixed(2)}
+                              {Number(installment?.payAmount).toFixed(2)}
                             </td>
 
                             {/* Loan Adj */}
                             <td className="border p-1 text-right text-green-700">
-                              {Number(installment.loanAmountPaid).toFixed(2)}
+                              {Number(installment?.loanAmountPaid || installment?.interestAmount).toFixed(2)}
                             </td>
 
                             {/* Charges */}
                             <td className="border p-1 text-right">
-                              {Number(installment.chargesAdjusted).toFixed(2)}
+                              {Number(installment?.chargesAdjusted 
+                                || 0
+                              ).toFixed(2)}
                             </td>
 
                             {/* Interest */}
                             <td className="border p-1 text-right">
-                              {Number(installment.pendingInt).toFixed(2)}
+                              {Number(installment?.interestAmount || installment?.pendingInterest).toFixed(2)}
                             </td>
 
                             {/* Receipt By */}
                             <td className="border p-1 text-gray-600 italic">
-                              {installment.paymentInfo?.madeBy || "-"}
+                              {installment?.paymentInfo?.madeBy || "-"}
                             </td>
 
                             {/* Remarks */}
@@ -613,7 +526,7 @@ const Day_Book = () => {
                               className="border p-1 max-w-[150px] truncate"
                               title={installment.paymentInfo?.refNo}
                             >
-                              {installment.paymentInfo?.refNo || "-"}
+                              {installment?.paymentInfo?.refNo || "-"}
                             </td>
                           </tr>
                         );
@@ -655,15 +568,13 @@ const Day_Book = () => {
         )}
 
         {options.receiptPayment && (
-          <div className="overflow-x-auto mt-4  mx-24">
+          <div className="overflow-x-auto ">
 
             
 
             <div className="flex items-center gap-2 mb-2 text-[14px] font-bold text-red-600 pb-1">
-              <span> Receipt/Payment</span>
-              <span className="text-[11px] font-semibold text-gray-700">
-                Bhagur B1 [01]
-              </span>
+              <span> Receipt/Expense</span>
+             
             </div>
 
             <table className="w-full border-collapse border border-gray-400 text-[11px]">
@@ -698,10 +609,10 @@ const Day_Book = () => {
                       {/* <td className="border border-gray-300 p-1 font-medium">{row.trans_Type || row.type || "N/A"}</td> */}
                       <td className="border border-gray-300 p-1 text-blue-900">{row.docNo || row.id}</td>
                       <td className="border border-gray-300 p-1 text-center whitespace-nowrap">
-                        {new Date(row.docDate).toLocaleDateString("en-GB")}
+                        {new Date(row.created_at).toLocaleDateString("en-GB")}
                       </td>
 
-                      <td className="border border-gray-300 p-1 uppercase">{row.partyName || row.name}</td>
+                      <td className="border border-gray-300 p-1 uppercase">{row.party_name || row.name}</td>
 
                       <td className="border border-gray-300 p-1">{row.bankName || "-"}</td>
                       <td className="border border-gray-300 p-1">{row.bankBranch || "-"}</td>
@@ -709,16 +620,16 @@ const Day_Book = () => {
                         {parseFloat(row.totalAmount || row.amount || 0).toFixed(2)}
                       </td>
                       <td className="border border-gray-300 p-1 italic text-gray-600 max-w-[150px] truncate" title={row.remarks || row.narration}>
-                        {row.remarks || row.narration || "-"}
+                        {row.remark || row.remark || "-"}
                       </td>
                       <td className="border border-gray-300 p-1">Main Branch</td>
-                      <td className="border border-gray-300 p-1 text-[10px] text-gray-500">{row.createdBy || "Admin"}</td>
+                      <td className="border border-gray-300 p-1 text-[10px] text-gray-500">{row.employee_name || "--"}</td>
                     </tr>
                   ))
                 )}
               </tbody>
 
-              {/* 🔹 Financial Style Total Footer */}
+             
               <tfoot>
                 <tr className="bg-[#fff9e6] font-bold text-gray-900">
                   <td colSpan={9} className="border border-gray-400 px-2 py-1 text-right text-[12px]">
@@ -735,13 +646,11 @@ const Day_Book = () => {
         )}
 
         {options.journalVoucher && (
-          <div className="overflow-x-auto mt-4  mx-24">
+          <div className="overflow-x-auto ">
             {/* Section Header */}
             <div className="flex items-center gap-2 mb-2 text-[14px] font-bold text-red-600 pb-1">
               <span> Journal Voucher</span>
-              <span className="text-[11px] font-semibold text-gray-700">
-                Bhagur B1 [01]
-              </span>
+             
             </div>
 
             <table className="w-full text-left bt-2">
@@ -751,12 +660,11 @@ const Day_Book = () => {
                   <th className="border border-gray-400 p-1 font-bold text-left">Doc No</th>
                   <th className="border border-gray-400 p-1 font-bold text-center">Date</th>
                   {/* <th className="border border-gray-400 p-1 font-bold text-left">Name</th> */}
-                  <th className="border border-gray-400 p-1 font-bold text-right ">Dr Amount</th>
-                  <th className="border border-gray-400 p-1 font-bold text-right ">Cr Amount</th>
+                  <th className="border border-gray-400 p-1 font-bold text-right ">Deposit Amount</th>
+                  <th className="border border-gray-400 p-1 font-bold text-right ">withdrawal Amount</th>
                   <th className="border border-gray-400 p-1 font-bold text-left">Narration</th>
-                  <th className="border border-gray-400 p-1 font-bold text-center">Sign</th>
-                  <th className="border border-gray-400 p-1 font-bold text-left">Branch</th>
-                  <th className="border border-gray-400 p-1 font-bold text-left">Created By</th>
+                 
+                  
                 </tr>
               </thead>
 
@@ -771,44 +679,50 @@ const Day_Book = () => {
                   apiData.journalVoucher?.map((row, index) => (
                     <tr key={index} className="hover:bg-blue-50 transition-colors">
                       <td className="border border-gray-300 p-1 text-center text-gray-600">{index + 1}</td>
-                      <td className="border border-gray-300 p-1 text-blue-900 font-medium">{row.doc_No || row.id}</td>
+                      <td className="border border-gray-300 p-1 text-blue-900 font-medium">{row.voucher_no || row.id}</td>
                       <td className="border border-gray-300 p-1 text-center whitespace-nowrap">
-                        {new Date(row.doc_Date || row.voucherDate).toLocaleDateString("en-GB")}
+                        {new Date(row.doc_Date || row.voucher_date).toLocaleDateString("en-GB")}
                       </td>
 
                       {/* <td className="border border-gray-300 p-1 uppercase font-medium">{row.party_Name || row.name || "-"}</td> */}
                       <td className="border border-gray-300 p-1 text-right font-semibold">
-                        {parseFloat(row.dr_Amount || row.debitAmount || 0).toFixed(2)}
+                        {parseFloat(row.deposit_amount || 0).toFixed(2)}
                       </td>
                       <td className="border border-gray-300 p-1 text-right font-semibold">
-                        {parseFloat(row.cr_Amount || row.creditAmount || 0).toFixed(2)}
+                        {parseFloat(row.withdrawal_amount || row.creditAmount || 0).toFixed(2)}
                       </td>
                       <td className="border border-gray-300 p-1 italic text-gray-600 max-w-[200px] truncate" title={row.narration}>
-                        {row.narration || "-"}
+                        {row.remark || "-"}
                       </td>
-                      <td className="border border-gray-300 p-1 text-center text-gray-300 italic">______</td>
-                      <td className="border border-gray-300 p-1">{row.branch_Name || row.branch || "Main"}</td>
-                      <td className="border border-gray-300 p-1 text-[10px] text-gray-500 uppercase">{row.created_By || row.createdBy}</td>
+                      {/* <td className="border border-gray-300 p-1 text-center text-gray-300 italic">______</td> */}
+                      
                     </tr>
                   ))
                 )}
               </tbody>
 
-              {/* 🔹 Accounting Total Footer */}
-              <tfoot>
-                <tr className="bg-[#fff9e6] font-bold text-gray-900">
-                  <td colSpan={4} className="border border-gray-400 px-2 py-1 text-right text-[12px]">
-                    VOUCHER TOTAL:
-                  </td>
-                  <td className="border border-gray-400 px-2 py-1 text-right text-red-900">
-                    {calculateTotal(apiData.journalVoucher, "dr_Amount")}
-                  </td>
-                  <td className="border border-gray-400 px-2 py-1 text-right text-green-900">
-                    {calculateTotal(apiData.journalVoucher, "cr_Amount")}
-                  </td>
-                  <td colSpan={4} className="border border-gray-400 bg-gray-100"></td>
-                </tr>
-              </tfoot>
+       
+            <tfoot>
+  <tr className="bg-[#fff9e6] font-bold text-gray-900">
+    {/* Empty columns */}
+    <td colSpan={3} className="border border-gray-400 px-2 py-1 text-right text-[12px]">
+      VOUCHER TOTAL:
+    </td>
+
+    {/* Deposit Total */}
+    <td className="border border-gray-400 px-2 py-1 text-right text-blue-900">
+      {calculateJournalTotal(apiData.journalVoucher, "deposit")}
+    </td>
+
+    {/* Withdrawal Total */}
+    <td className="border border-gray-400 px-2 py-1 text-right text-red-900">
+      {calculateJournalTotal(apiData.journalVoucher, "withdrawal")}
+    </td>
+
+    {/* Narration empty */}
+    <td className="border border-gray-400 bg-gray-100"></td>
+  </tr>
+</tfoot>
             </table>
           </div>
         )}

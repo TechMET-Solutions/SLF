@@ -71,28 +71,28 @@ const ViewCreditNote = () => {
       <div className="flex justify-center">
         <div className="w-[1462px] bg-white">
           {/* CREDIT NOTE DETAILS */}
-          <section className="bg-[#ECECF6] p-4  border-gray-300 ">
-            <h3 className="font-semibold text-[20px] text-[#0A2478] mb-3">
+          <section className="bg-[#ECECF6] pl-4  border-gray-300 ">
+            <h3 className="font-semibold text-[18px] text-[#0A2478] pt-2">
               Credit Note Details
             </h3>
 
             <div className="flex gap-5 text-sm">
               <div>
-                <div className="font-semibold text-xs mb-1">
+                <div className="font-semibold  mb-1">
                   Credit Note No.
                 </div>
                 <p className=" py-1 mt-2">{data.credit_note_id}</p>
               </div>
 
               <div>
-                <div className="text-xs font-semibold mb-1">Date Of Issue</div>
+                <div className="font-semibold mb-1">Date Of Issue</div>
                 <p className=" py-1 mt-2">
                   {formatIndianDate(data.date_of_issue)}
                 </p>
               </div>
 
               <div>
-                <div className="text-xs font-semibold mb-1">
+                <div className=" font-semibold mb-1">
                   Reference Invoice/Receipt No.
                 </div>
                 <p className=" py-1 mt-2">
@@ -104,14 +104,14 @@ const ViewCreditNote = () => {
               </div>
 
               <div>
-                <div className="text-xs font-semibold mb-1">
+                <div className=" font-semibold mb-1">
                   Reason for credit Note
                 </div>
                 <p className=" py-1 mt-2">Surplus Amount After Auction</p>
               </div>
 
               <div>
-                <div className="text-xs font-semibold mb-1">
+                <div className=" font-semibold mb-1">
                   Description / Remarks
                 </div>
                 <p className=" py-1 mt-2">
@@ -119,13 +119,13 @@ const ViewCreditNote = () => {
                 </p>
               </div>
               <div>
-                <div className="text-xs font-semibold mb-1">
+                <div className="font-semibold mb-1">
                   Credit Amount (₹)
                 </div>
                 <p className=" py-1 mt-2">{data.CreditAmount}</p>
               </div>
               <div>
-                <div className="text-xs font-semibold mb-1">Reference Date</div>
+                <div className=" font-semibold mb-1">Reference Date</div>
                 <p className=" py-1 mt-2">
                   {formatIndianDate(data.reference_date)}
                 </p>
@@ -135,46 +135,46 @@ const ViewCreditNote = () => {
           </section>
 
           {/* CUSTOMER DETAILS */}
-          <section className="bg-[#FFE6E6] p-4  border-gray-300">
-            <h3 className="font-semibold text-[20px] text-[#0A2478] mb-3">
+          <section className="bg-[#FFE6E6] pl-4  border-gray-300 ">
+            <h3 className="font-semibold text-[18px] text-[#0A2478] pt-1 ">
               Customer Details
             </h3>
 
             <div className="flex flex-wrap gap-10 text-sm">
               <div>
-                <div className="text-xs font-semibold mb-1">Customer Id</div>
+                <div className=" font-semibold mb-1">Customer Id</div>
                 <p className=" py-1 mt-2">{data.customer_id}</p>
               </div>
 
               <div>
-                <div className="text-xs font-semibold mb-1">Customer Name</div>
+                <div className=" font-semibold mb-1">Customer Name</div>
                 <p className=" py-1 mt-2">{data.customer_name}</p>
               </div>
               <div>
-                <div className="text-xs font-semibold mb-1">Address</div>
+                <div className=" font-semibold mb-1">Address</div>
                 <p className=" py-1 mt-2">{data.address}</p>
               </div>
 
               <div>
-                <div className="text-xs font-semibold mb-1">City</div>
+                <div className=" font-semibold mb-1">City</div>
                 <p className=" py-1 mt-2">{data.city}</p>
               </div>
 
               <div>
-                <div className="text-xs font-semibold mb-1">State</div>
+                <div className=" font-semibold mb-1">State</div>
                 <p className=" py-1 mt-2">{data.state}</p>
               </div>
 
               <div>
-                <div className="text-xs font-semibold mb-1">Pin code</div>
+                <div className=" font-semibold mb-1">Pin code</div>
                 <p className=" py-1 mt-2">{data.pin_code}</p>
               </div>
               <div>
-                <div className="text-xs font-semibold mb-1">Mobile Number</div>
+                <div className=" font-semibold mb-1">Mobile Number</div>
                 <p className=" py-1 mt-2">{data.mobile_number}</p>
               </div>
               <div>
-                <div className="text-xs font-semibold mb-1">Email ID</div>
+                <div className=" font-semibold mb-1">Email ID</div>
                 <p className=" py-1 mt-2">{data.email_id}</p>
               </div>
             </div>
@@ -183,24 +183,24 @@ const ViewCreditNote = () => {
           {/* PAYMENT DETAILS */}
 
           {/* AUTHORIZATION */}
-          <section className="bg-[#EEF2FF] p-4 ">
-            <h3 className="font-semibold text-[20px] text-[#0A2478] mb-3">
+          <section className="bg-[#EEF2FF] pl-4 ">
+            <h3 className="font-semibold text-[18px] text-[#0A2478] pt-1">
               Authorization & Verification
             </h3>
 
-            <div className="flex flex-wrap gap-5 text-sm mt-5 ">
+            <div className="flex flex-wrap gap-5 text-sm  ">
               <div>
-                <div className="text-xs font-semibold mb-1">Prepared By</div>
+                <div className=" font-semibold mb-1">Prepared By</div>
                 <p className="w-[200px] py-1">{data.prepared_by}</p>
               </div>
 
               <div>
-                <div className="text-xs font-semibold mb-1">Designation</div>
+                <div className=" font-semibold mb-1">Designation</div>
                 <p className="w-[200px] py-1">{data.designation}</p>
               </div>
 
               <div>
-                <div className="text-xs font-semibold mb-1">Verified By</div>
+                <div className=" font-semibold mb-1">Verified By</div>
                 <p className="w-[200px] py-1">{data.verified_by}</p>
               </div>
             </div>

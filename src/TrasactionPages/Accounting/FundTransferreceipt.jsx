@@ -202,12 +202,11 @@ const FundTransferReceipt = () => {
   // useEffect(() => {
   //   fetchFundTransfers();
   // }, []);
-const [loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState(false);
   // const [selectedBranch, setSelectedBranch] = useState("");
   const [selectedBranchid, setSelectedBranchid] = useState("");
-const { permissions, userData } = usePermission();
+  const { permissions, userData } = usePermission();
 
-  
   const [searchHeaders, setSearchHeaders] = useState([]); // Array of active headers
   const [searchQuery, setSearchQuery] = useState("");
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
@@ -254,7 +253,7 @@ const { permissions, userData } = usePermission();
 
   const fetchFundTransfers = async (selectedBranchid) => {
     debugger;
-    setLoading(true)
+    setLoading(true);
     try {
       if (!selectedBranchid) return; // wait until branchId is set
 
@@ -270,32 +269,32 @@ const { permissions, userData } = usePermission();
       });
 
       setList(res.data.data);
-      setLoading(false)
+      setLoading(false);
     } catch (error) {
       console.error("Error fetching list:", error);
-      setLoading(false)
+      setLoading(false);
     }
   };
 
   // Exact system colors from screenshots
 
   const handleDelete = async (id) => {
-    setLoading(true)
+    setLoading(true);
     if (!window.confirm("Are you sure you want to delete this record?")) return;
 
     try {
       await axios.delete(`${API}/api/FundTransfer/Delete/${id}`);
 
       alert("Deleted Successfully ✅");
-      setLoading(false)
+      setLoading(false);
       fetchFundTransfers(); // refresh list
     } catch (error) {
       console.error("Delete error:", error);
-      setLoading(false)
+      setLoading(false);
     }
   };
   const handleApprove = async () => {
-    setLoading(true)
+    setLoading(true);
     try {
       const response = await fetch(
         `${API}/api/FundTransfer/status/${selectedItem.id}`,
@@ -315,16 +314,16 @@ const { permissions, userData } = usePermission();
       if (data.success) {
         alert("Fund Transfer Accepted Successfully");
         setIsModalOpen(false);
-        setLoading(false)
+        setLoading(false);
         fetchFundTransfers(); // refresh table
       }
     } catch (error) {
       console.error("Approve Error:", error);
-      setLoading(false)
+      setLoading(false);
     }
   };
   const handleReject = async () => {
-     setLoading(true)
+    setLoading(true);
     try {
       const response = await fetch(
         `${API}/api/FundTransfer/status/${selectedItem.id}`,
@@ -344,18 +343,18 @@ const { permissions, userData } = usePermission();
       if (data.success) {
         alert("Fund Transfer Rejected Successfully");
         setIsModalOpen(false);
-        setLoading(false)
+        setLoading(false);
         fetchFundTransfers(); // refresh table
       }
     } catch (error) {
       console.error("Reject Error:", error);
-      setLoading(false)
+      setLoading(false);
     }
   };
   return (
-    <div className="min-h-screen bg-white font-sans text-gray-800 ">
-      <div className="flex justify-center  ">
-        <div className="flex items-center px-6 py-4 border-b  w-[1462px] h-[40px] border border-gray-200 justify-between ">
+    <div className="min-h-screen font-sans text-gray-800 ">
+      <div className="flex justify-center sticky top-[50px] bg-white z-40">
+        <div className="flex items-center px-6 py-4 border-b  w-[1462px] h-[40px] border border-gray-200 justify-between  ">
           {/* Left heading */}
           <h2
             style={{
@@ -482,7 +481,6 @@ const { permissions, userData } = usePermission();
               </select>
             </div>
 
-           
             <div>
               <button
                 onClick={() => {
@@ -497,10 +495,10 @@ const { permissions, userData } = usePermission();
                 onClick={() => {
                   setSearchQuery("");
                   setSearchHeaders([]);
-                  setSelectedMOP(""),
+                  (setSelectedMOP(""),
                     setSelectedDate(""),
                     setSelectedStatus(""),
-                  fetchFundTransfers(selectedbranchid);
+                    fetchFundTransfers(selectedbranchid));
                 }}
                 className="ml-2 bg-[#0A2478] text-white text-[11px] px-4 h-[24px] rounded-[3px]"
               >
@@ -544,14 +542,15 @@ const { permissions, userData } = usePermission();
                 <th className="p-1 border-r border-gray-300 w-[70px] sm:w-[100px] hidden sm:table-cell">
                   FT Date
                 </th>
-                 {(userData?.isAdmin||permissions?.Transaction?.find(
-  item => item.name === "FT Receipt"
-)?.add) && (
-    <th className="p-1 border-r border-gray-300 w-[80px] sm:w-[120px]">
-                  Status
-                </th>
-)}
-                
+                {(userData?.isAdmin ||
+                  permissions?.Transaction?.find(
+                    (item) => item.name === "FT Receipt",
+                  )?.add) && (
+                  <th className="p-1 border-r border-gray-300 w-[80px] sm:w-[120px]">
+                    Status
+                  </th>
+                )}
+
                 <th className="p-1 text-center w-[70px] sm:w-[100px]">
                   Action
                 </th>
@@ -594,59 +593,58 @@ const { permissions, userData } = usePermission();
                     <td className="p-1 hidden lg:table-cell">
                       {new Date(item.doc_date).toLocaleDateString("en-GB")}
                     </td>
-                    {(userData?.isAdmin||permissions?.Transaction?.find(
-  item => item.name === "Group Ledger"
-)?.add) && (
-    <td
-                      onClick={() => {
-                        if (item.status === "Pending") {
-                          setSelectedItem(item);
-                          setIsModalOpen(true);
-                        }
-                      }}
-                      className={`p-1 font-bold cursor-pointer text-[9px] sm:text-[11px] ${
-                        item.status === "Pending"
-                          ? "text-yellow-600 underline"
-                          : item.status === "Accepted"
-                            ? "text-green-700"
-                            : "text-red-600"
-                      }`}
-                    >
-                      {item.status}
-                    </td>
-)}
-
-                  
+                    {(userData?.isAdmin ||
+                      permissions?.Transaction?.find(
+                        (item) => item.name === "Group Ledger",
+                      )?.add) && (
+                      <td
+                        onClick={() => {
+                          if (item.status === "Pending") {
+                            setSelectedItem(item);
+                            setIsModalOpen(true);
+                          }
+                        }}
+                        className={`p-1 font-bold cursor-pointer text-[9px] sm:text-[11px] ${
+                          item.status === "Pending"
+                            ? "text-yellow-600 underline"
+                            : item.status === "Accepted"
+                              ? "text-green-700"
+                              : "text-red-600"
+                        }`}
+                      >
+                        {item.status}
+                      </td>
+                    )}
 
                     <td className="p-1 text-center">
                       <div className="flex justify-center gap-1 sm:gap-2">
-                        
-{(userData?.isAdmin||permissions?.Transaction?.find(
-  item => item.name === "Group Ledger"
-)?.view) && (
-   <span
-                          className="bg-blue-500 hover:bg-blue-600 text-white p-1 rounded cursor-pointer transition"
-                          onClick={() =>
-                            navigate("/FundTransfer/create", {
-                              state: { fundData: item },
-                            })
-                          }
-                        >
-                          <Eye size={14} />
-                        </span>
-)}
-                       
-{(userData?.isAdmin||permissions?.Transaction?.find(
-  item => item.name === "Group Ledger"
-)?.delete) && (
-   <span
-                          className="bg-red-600 hover:bg-red-700 text-white p-1 rounded cursor-pointer transition"
-                          onClick={() => handleDelete(item.id)}
-                        >
-                          <Trash2 size={14} />
-                        </span>
-)}
-                       
+                        {(userData?.isAdmin ||
+                          permissions?.Transaction?.find(
+                            (item) => item.name === "Group Ledger",
+                          )?.view) && (
+                          <span
+                            className="bg-blue-500 hover:bg-blue-600 text-white p-1 rounded cursor-pointer transition"
+                            onClick={() =>
+                              navigate("/FundTransfer/create", {
+                                state: { fundData: item },
+                              })
+                            }
+                          >
+                            <Eye size={14} />
+                          </span>
+                        )}
+
+                        {(userData?.isAdmin ||
+                          permissions?.Transaction?.find(
+                            (item) => item.name === "Group Ledger",
+                          )?.delete) && (
+                          <span
+                            className="bg-red-600 hover:bg-red-700 text-white p-1 rounded cursor-pointer transition"
+                            onClick={() => handleDelete(item.id)}
+                          >
+                            <Trash2 size={14} />
+                          </span>
+                        )}
                       </div>
                     </td>
                   </tr>
@@ -700,8 +698,6 @@ const { permissions, userData } = usePermission();
         {/* <div className={`${navyBlue} text-white text-[10px] text-center py-1.5 mt-2 rounded-sm uppercase`}>
           © Copyright Maraekat Infotech Ltd, 2015. All rights reserved.
         </div> */}
-
-
       </div>
       {loading && <Loader />}
     </div>

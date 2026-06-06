@@ -80,27 +80,42 @@ const [loading, setLoading] = useState(false);
   return (
     <div className="">
       {/* Header */}
-      <div className="flex justify-center sticky top-[50px] z-40">
-        <div className="flex items-center px-6 py-4  w-[1462px] h-[40px] border  border-gray-200 justify-between shadow">
-          <h2
-            style={{
-              fontFamily: "Source Sans 3, sans-serif",
-              fontWeight: 700,
-              fontSize: "20px",
-            }}
-            className="text-red-600"
-          >
-            Employee Attendance
-          </h2>
+     <div className="flex justify-center sticky top-[50px] z-40 bg-white">
+  <div className="flex items-center px-2 py-1 w-full max-w-[1462px] border border-gray-200 justify-between shadow ">
 
-          <button
-            onClick={() => navigate("/")}
-            className="text-white px-[6px] py-[6px] rounded bg-[#C1121F] w-[74px] h-[24px] text-[10px]"
-          >
-            Exit
-          </button>
-        </div>
-      </div>
+    {/* Title */}
+    <h2
+      style={{
+        fontFamily: "Source Sans 3, sans-serif",
+        fontWeight: 700,
+        fontSize: "20px",
+      }}
+      className="text-red-600"
+    >
+      Employee Attendance
+    </h2>
+
+    {/* Buttons */}
+    <div className="flex items-center gap-4">
+      
+      <button
+        onClick={() => navigate("/AttendanceReport")}
+        className="bg-[#C1121F] text-white px-2 py-1 rounded-md text-sm hover:bg-red-700 transition"
+      >
+        All Employee Attendance
+      </button>
+
+      <button
+        onClick={() => navigate("/")}
+        className="bg-gray-500 text-white px-2 py-1 rounded-md text-sm hover:bg-gray-600 transition"
+      >
+        Exit
+      </button>
+
+    </div>
+
+  </div>
+</div>
 
       {/* Table */}
       <div className="flex   mx-auto w-[1462px] ">

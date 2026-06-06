@@ -85,10 +85,10 @@ const hasMiscAccess =
               <table className="w-full border-collapse text-[12px]">
                 <thead className="bg-[#0A2478] text-white text-sm">
                 <tr>
-                    <th className="px-2 py-2 text-center border-r border-gray-300 text-[13px] w-[50px]">ID</th>
-                    <th className="px-2 py-2 text-center border-r border-gray-300 text-[13px] w-[130px]">Group Ledger</th>
-                    <th className="px-2 py-2 text-center border-r border-gray-300 text-[13px] w-[150px]">Ledger</th>
-                    <th className="px-2 py-2 text-center border-r border-gray-300 text-[13px] w-[150px]">Opening Balance</th>
+                    <th className="px-2 py-1 text-center border-r border-gray-300 text-[13px] w-[50px]">ID</th>
+                    <th className="px-2 py-1 text-center border-r border-gray-300 text-[13px] w-[130px]">Group Ledger</th>
+                    <th className="px-2 py-1 text-center border-r border-gray-300 text-[13px] w-[150px]">Ledger</th>
+                    <th className="px-2 py-1 text-center border-r border-gray-300 text-[13px] w-[150px]">Opening Balance</th>
                 </tr>
               </thead>
               <tbody>

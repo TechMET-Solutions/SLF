@@ -3,12 +3,14 @@ import { FiEdit } from "react-icons/fi";
 import { useNavigate } from "react-router-dom";
 import { fetchBidderApi } from "../API/Transaction/Auction/BidderApi";
 import { usePermission } from "../API/Context/PermissionContext";
+import Loader from "../Component/Loader";
 
 const BidderRegistrationList = () => {
   const navigate = useNavigate();
   const [data, setData] = useState([]);
   const [loading, setLoading] = useState(true);
-const { permissions, userData } = usePermission();
+  const { permissions, userData } = usePermission();
+  
   // 🔹 Fetch bidders from backend
   useEffect(() => {
     const getBidders = async () => {
@@ -18,6 +20,7 @@ const { permissions, userData } = usePermission();
         setData(res?.bidders || []); // set result
       } catch (err) {
         console.error("❌ Error fetching bidders:", err);
+         setLoading(false);
       } finally {
         setLoading(false);
       }
@@ -29,7 +32,7 @@ const { permissions, userData } = usePermission();
   return (
     <div className="min-h-screen w-full flex flex-col ml-[25px]">
       {/* Header Section */}
-        <div className="flex items-center px-6 py-4 border-b w-full max-w-[1462px] h-[40px] border border-gray-200 justify-between  ">
+        <div className="flex items-center px-6 py-4 border-b w-full max-w-[1462px] h-[40px] border border-gray-200 justify-between bg-white sticky top-[50px] z-40 ">
         <h2 className="text-red-600 font-semibold text-xl">
           Bidder Registration List 
         </h2>
@@ -53,7 +56,8 @@ const { permissions, userData } = usePermission();
 
       {/* Loading and Error States */}
       {loading ? (
-        <div className="mt-8 text-gray-600">Loading bidders...</div>
+        <>
+        </>
       ) : (
         <div className="bg-white max-w-[1462px] w-full overflow-x-auto">
           <table className=" text-sm border-collapse">
@@ -66,7 +70,7 @@ const { permissions, userData } = usePermission();
                 <th className="px-1 py-1 text-left border-r w-[120px]">
                   Mobile No
                 </th>
-                <th className="px-1 py-2 text-left border-r w-[250px]">
+                <th className="px-1 py-1 text-left border-r w-[250px]">
                   Shop Address
                 </th>
                 <th className="px-1 py-1 text-left border-r">Landline No</th>
@@ -178,7 +182,9 @@ const { permissions, userData } = usePermission();
           </table>
         </div>
       )}
+       {loading && <Loader />}
     </div>
+    
   );
 };
 

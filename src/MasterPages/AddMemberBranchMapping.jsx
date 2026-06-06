@@ -144,7 +144,7 @@ setLoading(false);
   return (
     <div className="min-h-screen w-full">
       <div className="flex justify-center sticky top-[50px] z-40">
-        <div className="flex items-center px-6 py-4 border-b w-[1462px] h-[40px] border  border-gray-200 justify-between shadow">
+        <div className="flex items-center px-6 py-4 border-b w-[1462px] h-[40px] border  border-gray-200 justify-between shadow bg-white">
           <h2 className="text-red-600 font-bold text-[20px]">
             Member Branch Mapping
           </h2>

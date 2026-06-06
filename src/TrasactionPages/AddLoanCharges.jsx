@@ -29,19 +29,25 @@ function AddLoanCharges() {
     const today = new Date();
     return today.toISOString().split("T")[0]; // YYYY-MM-DD
   };
-  const [rows, setRows] = useState([
-    {
-      charges: "",
-      account: "",
-      date: getTodayDate(),
-      grossAmount: "",
-      cgstPercent: "",
-      cgstAmount: "",
-      sgstPercent: "",
-      sgstAmount: "",
-      netPayable: "",
-    },
-  ]);
+ const [rows, setRows] = useState([
+  {
+    charges: "",
+    account: "",
+    date: "",
+    grossAmount: "",
+
+    cgstPercent: 0,
+    cgstAmount: 0,
+
+    sgstPercent: 0,
+    sgstAmount: 0,
+
+    igstPercent: 0,
+    igstAmount: 0,
+
+    netPayable: 0,
+  },
+]);
 
   const [searchResults, setSearchResults] = useState([]);
   const [loading, setLoading] = useState(false);
@@ -155,33 +161,201 @@ function AddLoanCharges() {
   };
 
   // ✅ Handle table row changes
-  const handleRowChange = (index, field, value) => {
-    const updatedRows = [...rows];
-    updatedRows[index][field] = value;
+  // const handleRowChange = (index, field, value) => {
+  //   const updatedRows = [...rows];
+  //   updatedRows[index][field] = value;
 
-    if (field === "charges") {
-      const selected = chargesList.find((ch) => ch.id === parseInt(value));
-      if (selected) {
-        updatedRows[index].account = selected.account || "";
-        updatedRows[index].grossAmount = selected.amount || "";
-      }
+  //   if (field === "charges") {
+  //     const selected = chargesList.find((ch) => ch.id === parseInt(value));
+  //     if (selected) {
+  //       updatedRows[index].account = selected.account || "";
+  //       updatedRows[index].grossAmount = selected.amount || "";
+  //     }
+  //   }
+
+  //   const gross = parseFloat(updatedRows[index].grossAmount) || 0;
+  //   const cgstPercent = parseFloat(updatedRows[index].cgstPercent) || 0;
+  //   const sgstPercent = parseFloat(updatedRows[index].sgstPercent) || 0;
+
+  //   const cgstAmount = (gross * cgstPercent) / 100;
+  //   const sgstAmount = (gross * sgstPercent) / 100;
+  //   const netPayable = gross + cgstAmount + sgstAmount;
+
+  //   updatedRows[index].cgstAmount = cgstAmount.toFixed(2);
+  //   updatedRows[index].sgstAmount = sgstAmount.toFixed(2);
+  //   updatedRows[index].netPayable = netPayable.toFixed(2);
+
+  //   setRows(updatedRows);
+  // };
+// const handleRowChange = (index, field, value) => {
+//   const updatedRows = [...rows];
+//   updatedRows[index][field] = value;
+
+//   // 🔥 WHEN CHARGE SELECTED
+//   if (field === "charges") {
+//     const selected = chargesList.find((c) => c.id == value);
+
+//     if (selected) {
+//       // ✅ BASIC
+//       updatedRows[index].account = selected.account;
+//       updatedRows[index].grossAmount = Number(selected.amount);
+
+//       // ✅ GST PERCENT (from DB)
+//       updatedRows[index].cgstPercent = selected.isCgst ? Number(selected.cgst) : 0;
+//       updatedRows[index].sgstPercent = selected.isSgst ? Number(selected.sgst) : 0;
+//       updatedRows[index].igstPercent = selected.isIgst ? Number(selected.igst) : 0;
+//     }
+//   }
+
+//   // 🔥 CALCULATION
+//   const gross = Number(updatedRows[index].grossAmount) || 0;
+
+//   const cgstP = Number(updatedRows[index].cgstPercent) || 0;
+//   const sgstP = Number(updatedRows[index].sgstPercent) || 0;
+//   const igstP = Number(updatedRows[index].igstPercent) || 0;
+
+//   // ❗ GST RULE
+//   if (igstP > 0) {
+//     updatedRows[index].cgstPercent = 0;
+//     updatedRows[index].sgstPercent = 0;
+//   }
+
+//   const cgstAmt = (gross * cgstP) / 100;
+//   const sgstAmt = (gross * sgstP) / 100;
+//   const igstAmt = (gross * igstP) / 100;
+
+//   updatedRows[index].cgstAmount = cgstAmt.toFixed(2);
+//   updatedRows[index].sgstAmount = sgstAmt.toFixed(2);
+//   updatedRows[index].igstAmount = igstAmt.toFixed(2);
+
+//   updatedRows[index].netPayable = (
+//     gross +
+//     cgstAmt +
+//     sgstAmt +
+//     igstAmt
+//   ).toFixed(2);
+
+//   setRows(updatedRows);
+// };
+
+const handleRowChange = (index, field, value) => {
+  const updatedRows = [...rows];
+
+  // =====================================================
+  // ✅ UPDATE FIELD VALUE
+  // =====================================================
+
+  updatedRows[index][field] = value;
+
+  // =====================================================
+  // ✅ WHEN CHARGE SELECTED
+  // =====================================================
+
+  if (field === "charges") {
+    const selected = chargesList.find((c) => c.id == value);
+
+    if (selected) {
+      // ✅ BASIC DETAILS
+      updatedRows[index].account = selected.account || "";
+
+      updatedRows[index].grossAmount = Number(
+        selected.amount || 0
+      );
+
+      // ✅ GST PERCENTAGES
+      updatedRows[index].cgstPercent = selected.isCgst
+        ? Number(selected.cgst || 0)
+        : 0;
+
+      updatedRows[index].sgstPercent = selected.isSgst
+        ? Number(selected.sgst || 0)
+        : 0;
+
+      updatedRows[index].igstPercent = selected.isIgst
+        ? Number(selected.igst || 0)
+        : 0;
     }
+  }
 
-    const gross = parseFloat(updatedRows[index].grossAmount) || 0;
-    const cgstPercent = parseFloat(updatedRows[index].cgstPercent) || 0;
-    const sgstPercent = parseFloat(updatedRows[index].sgstPercent) || 0;
+  // =====================================================
+  // ✅ GST RULES
+  // =====================================================
 
-    const cgstAmount = (gross * cgstPercent) / 100;
-    const sgstAmount = (gross * sgstPercent) / 100;
-    const netPayable = gross + cgstAmount + sgstAmount;
+  // 🔥 IF IGST ENTERED → CGST & SGST = 0
+  if (field === "igstPercent") {
+    const igstValue = Number(value) || 0;
 
-    updatedRows[index].cgstAmount = cgstAmount.toFixed(2);
-    updatedRows[index].sgstAmount = sgstAmount.toFixed(2);
-    updatedRows[index].netPayable = netPayable.toFixed(2);
+    if (igstValue > 0) {
+      // updatedRows[index].cgstPercent = 0;
+      // updatedRows[index].sgstPercent = 0;
 
-    setRows(updatedRows);
-  };
+      // updatedRows[index].cgstAmount = "0.00";
+      // updatedRows[index].sgstAmount = "0.00";
+    }
+  }
 
+  // 🔥 IF CGST OR SGST ENTERED → IGST = 0
+  if (field === "cgstPercent" || field === "sgstPercent") {
+    const cgstValue =
+      Number(updatedRows[index].cgstPercent) || 0;
+
+    const sgstValue =
+      Number(updatedRows[index].sgstPercent) || 0;
+
+    if (cgstValue > 0 || sgstValue > 0) {
+      updatedRows[index].igstPercent = 0;
+      updatedRows[index].igstAmount = "0.00";
+    }
+  }
+
+  // =====================================================
+  // ✅ CALCULATIONS
+  // =====================================================
+
+  const gross =
+    Number(updatedRows[index].grossAmount) || 0;
+
+  const cgstP =
+    Number(updatedRows[index].cgstPercent) || 0;
+
+  const sgstP =
+    Number(updatedRows[index].sgstPercent) || 0;
+
+  const igstP =
+    Number(updatedRows[index].igstPercent) || 0;
+
+  // ✅ GST AMOUNTS
+
+  const cgstAmt = (gross * cgstP) / 100;
+
+  const sgstAmt = (gross * sgstP) / 100;
+
+  const igstAmt = (gross * igstP) / 100;
+
+  updatedRows[index].cgstAmount =
+    cgstAmt.toFixed(2);
+
+  updatedRows[index].sgstAmount =
+    sgstAmt.toFixed(2);
+
+  updatedRows[index].igstAmount =
+    igstAmt.toFixed(2);
+
+  // ✅ NET PAYABLE
+
+  updatedRows[index].netPayable = (
+    gross +
+    cgstAmt +
+    sgstAmt +
+    igstAmt
+  ).toFixed(2);
+
+  // =====================================================
+  // ✅ UPDATE STATE
+  // =====================================================
+
+  setRows(updatedRows);
+};
   const handleAddRow = () => {
     setRows([
       ...rows,
@@ -208,53 +382,59 @@ function AddLoanCharges() {
     (sum, r) => sum + (parseFloat(r.netPayable) || 0),
     0,
   );
-  const validateCharges = () => {
-    const validRows = rows.filter(
-      (row) =>
-        row.charges &&
-        row.date &&
-        row.grossAmount &&
-        Number(row.grossAmount) > 0,
-    );
+ const validateCharges = () => {
+  let errors = [];
 
-    if (validRows.length === 0) {
-      return "At least one valid charge entry is required!";
+  rows.forEach((r, i) => {
+    const isEmpty =
+      !r.charges &&
+      !r.date &&
+      (!r.grossAmount || Number(r.grossAmount) === 0);
+
+    // ✅ Skip fully empty row
+    if (isEmpty) return;
+
+    // ❌ If ANY field missing → error
+    if (!r.charges) {
+      errors.push(`Row ${i + 1}: Please select charge`);
     }
 
-    for (let i = 0; i < rows.length; i++) {
-      const r = rows[i];
-
-      // Skip fully empty row
-      if (!r.charges && !r.date && !r.grossAmount) {
-        continue;
-      }
-
-      if (!r.charges) {
-        return `Row ${i + 1}: Please select charge`;
-      }
-
-      if (!r.date) {
-        return `Row ${i + 1}: Date is required`;
-      }
-
-      if (!r.grossAmount || Number(r.grossAmount) <= 0) {
-        return `Row ${i + 1}: Enter valid gross amount`;
-      }
+    if (!r.date) {
+      errors.push(`Row ${i + 1}: Date is required`);
     }
 
-    return null;
-  };
+    if (!r.grossAmount || Number(r.grossAmount) <= 0) {
+      errors.push(`Row ${i + 1}: Enter valid gross amount`);
+    }
+  });
+
+  // ✅ Check at least one valid row
+  const hasValidRow = rows.some(
+    (r) =>
+      r.charges &&
+      r.date &&
+      r.grossAmount &&
+      Number(r.grossAmount) > 0
+  );
+
+  if (!hasValidRow) {
+    errors.push("At least one valid charge entry is required!");
+  }
+
+  return errors.length > 0 ? errors : null;
+};
 
   // ✅ Submit handler
   const handleSubmit = async () => {
-    if (!formData.remark.trim()) {
-      setRemarkError("Remark is required");
-      return;
-    }
+    // if (!formData.remark.trim()) {
+    //   setRemarkError("Remark is required");
+    //   return;
+    // }
 
     const errorMsg = validateCharges();
     if (errorMsg) {
       alert(`❌ ${errorMsg}`);
+       setLoading(false);
       return;
     }
  setLoading(true);
@@ -302,6 +482,7 @@ function AddLoanCharges() {
     const errorMsg = validateCharges();
     if (errorMsg) {
       alert(`❌ ${errorMsg}`);
+       setLoading(false);
       return;
     }
 
@@ -344,10 +525,10 @@ function AddLoanCharges() {
     <div className="min-h-screen w-full">
       {/* Header */}
       <div className="flex justify-center">
-        <div className="flex items-center px-6 py-4 border-b w-[1462px] h-[40px] border  border-gray-200 justify-between">
+        <div className="flex items-center px-3 py-4 border-b w-[1462px] h-[40px] border  border-gray-200 justify-between">
           <h2 className="text-red-600 font-bold text-[20px]">
             {isView
-              ? "View Loan Charges"
+              ? `View Loan Charges `
               : isEdit
                 ? "Edit Loan Charges"
                 : "Add Loan Charges"}
@@ -378,12 +559,24 @@ function AddLoanCharges() {
 
       {/* 🔹 Search Section */}
       <div className=" w-[1462px] ml-[25px]">
-        <div className="bg-[#FFE6E6] mt-2 p-3  w-full  ">
-          <p className="font-bold text-[20px] text-[#0A2478] ">Loan Details</p>
+        <div className="bg-[#FFE6E6] pl-3 pb-1  w-full  ">
+          <p className="font-bold text-[15px] text-[#0A2478] ">Loan Details</p>
 
           {/* 🔹 Search Fields Row */}
           <div className="flex items-end justify-start gap-6 flex-wrap">
             {/* Party Name Field */}
+             <div className="flex flex-col">
+              <label className="text-[14px] font-medium mb-1">Loan No</label>
+              <input
+                type="text"
+                name="loanNo"
+                disabled={isView}
+                value={formData.loanNo}
+                onChange={handleChange}
+                placeholder="Enter Loan No"
+                className="border border-gray-300 px-3 py-2 w-[200px] bg-white rounded-[8px] text-xs"
+              />
+            </div>
             <div className="flex flex-col">
               <label className="text-[14px] font-medium mb-1">Party Name</label>
               <input
@@ -398,18 +591,7 @@ function AddLoanCharges() {
             </div>
 
             {/* Loan No Field */}
-            <div className="flex flex-col">
-              <label className="text-[14px] font-medium mb-1">Loan No</label>
-              <input
-                type="text"
-                name="loanNo"
-                disabled={isView}
-                value={formData.loanNo}
-                onChange={handleChange}
-                placeholder="Enter Loan No"
-                className="border border-gray-300 px-3 py-2 w-[200px] bg-white rounded-[8px] text-xs"
-              />
-            </div>
+           
 
             <div className="flex flex-col">
               <label className="text-[14px] font-medium mb-1">Loan Date</label>
@@ -510,32 +692,19 @@ function AddLoanCharges() {
       </div>
 
       <div className=" w-[1462px] ml-[25px]">
-        <div className="bg-[#F7F7FF] p-3  w-full ">
+        <div className="bg-[#F7F7FF] pl-3  w-full ">
           {/* Section Title */}
           {/* <p className="font-bold text-[20px] text-[#0A2478] ">Loan Details</p> */}
 
           {/* Loan Fields Row */}
-          <div className="flex  gap-2">
-            {/* Loan No */}
-            {/* <div className="flex flex-col">
-            <label className="text-[14px] font-medium mb-1">Loan No</label>
-            <input
-              type="text"
-              name="loanNo"
-              value={formData.loanNo}
-              onChange={handleChange}
-              placeholder="Loan No"
-              className="border border-gray-300 px-3 py-2 w-[180px] bg-white rounded-[8px] text-xs"
-            />
-          </div> */}
-
-            {/* Loan Date */}
+          <div className="flex gap-2">
+            
           </div>
 
           {/* Remark Section */}
           <div className="flex flex-col ">
-            <label className="text-[14px] font-medium mb-1">
-              Remark <span className="text-red-600">*</span>
+            <label className="text-[14px] font-medium ">
+              Remark
             </label>
             <textarea
               name="remark"
@@ -558,14 +727,14 @@ function AddLoanCharges() {
       {/* 🔹 Loan Details Section */}
 
       <div
-        className="   w-[1462px] ml-[25px] p-2
+        className="   w-[1462px] ml-[25px] pl-4
 bg-[#FFE6E6]"
       >
-        <h1 className="font-bold text-[20px] text-[#0A2478] mb-2 ">
+        <h1 className="font-bold text-[15px] text-[#0A2478]  ">
           Charges Details
         </h1>
 
-        <div className="p-2">
+        <div className="">
           <div className="border border-gray-300 rounded-md overflow-hidden shadow-sm">
             <table className="w-full border-collapse text-xs">
               <thead>
@@ -579,6 +748,8 @@ bg-[#FFE6E6]"
                   <th className="py-1 border">CGST Amt</th>
                   <th className="py-1 border">SGST(%)</th>
                   <th className="py-1 border">SGST Amt</th>
+                  <th className="py-1 border">IGST(%)</th>
+<th className="py-1 border">IGST Amt</th>
                   <th className="py-1 border">Net Payable</th>
                   <th className="py-1 border">Action</th>
                 </tr>
@@ -695,6 +866,26 @@ bg-[#FFE6E6]"
                         className="border border-gray-300 rounded-md px-2 py-1 w-[90px] bg-gray-100"
                       />
                     </td>
+                    <td className="py-2">
+  <input
+    type="number"
+    value={row.igstPercent}
+    disabled={isView}
+    onChange={(e) =>
+      handleRowChange(index, "igstPercent", e.target.value)
+    }
+    className="border rounded px-2 py-1 w-[70px]"
+  />
+</td>
+
+<td className="py-2">
+  <input
+    type="number"
+    value={row.igstAmount}
+    readOnly
+    className="border rounded px-2 py-1 w-[90px] bg-gray-100"
+  />
+</td>
                     <td className="py-2">
                       <input
                         type="number"

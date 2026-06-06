@@ -18,6 +18,14 @@ const PledgeItemList = ({ rows, setRows, selectedScheme }) => {
   const [selectedValue, setSelectedValue] = useState(null);
 
   const { permissions, userData } = usePermission();
+
+  useEffect(() => {
+    const hasPurity = rows.some(
+      (row) => row.Calculated_Purity && row.Calculated_Purity.trim() !== "",
+    );
+
+    setIsEditing(hasPurity);
+  }, [rows]);
   useEffect(() => {
     // Fetch latest gold rate
     const fetchGoldRate = async () => {
@@ -42,7 +50,7 @@ const PledgeItemList = ({ rows, setRows, selectedScheme }) => {
     const fetchPledgeItems = async () => {
       try {
         const response = await axios.get(
-          `${API}/Master/Master_Profile/all_Item`,
+          `${API}/Master/Master_Profile/all_Item_Application`,
         );
 
         if (response.data?.data) {
@@ -76,7 +84,7 @@ const PledgeItemList = ({ rows, setRows, selectedScheme }) => {
     const newRow = {
       id: Date.now(),
       particular: "",
-      nos: rows.length + 1,
+      nos: 1,
       gross: "",
       netWeight: "",
       purity: "",
@@ -175,16 +183,8 @@ const PledgeItemList = ({ rows, setRows, selectedScheme }) => {
     0,
   );
 
-  const finalData = {
-    rows,
-    totals: {
-      gross: totalGross,
-      netWeight: totalNetWeight,
-      valuation: totalValuation,
-    },
-  };
- 
   const handleChange = (index, field, value) => {
+   
     debugger;
     const updatedRows = [...rows];
 
@@ -197,21 +197,28 @@ const PledgeItemList = ({ rows, setRows, selectedScheme }) => {
       ? parseFloat(value) || 0
       : value;
 
-    // ❌ Validation: Net weight > gross
     if (field === "netWeight" && updatedValue > (currentRow.gross || 0)) {
       alert("Net Weight cannot be greater than Gross");
       return;
     }
 
-    // ✅ Handle purity separately (OBJECT SUPPORT)
+    // ✅ Handle Actual Purity
     if (field === "purity") {
       currentRow.purity = value?.purity_name || "";
       currentRow.purityPercent = parseFloat(value?.purity_percent) || 0;
-    } else {
+    }
+
+    // ✅ Handle Assigned Purity (IMPORTANT FIX)
+    else if (field === "Calculated_Purity") {
+      currentRow.Calculated_Purity = value?.purity_name || "";
+      currentRow.assignedPurityPercent = parseFloat(value?.purity_percent) || 0;
+    }
+
+    // ✅ Other fields
+    else {
       currentRow[field] = updatedValue;
     }
 
-    // ✅ Recalculate when needed
     if (field === "purity" || field === "netWeight" || field === "nos") {
       const purityPercent = currentRow.purityPercent || 0;
 
@@ -227,11 +234,60 @@ const PledgeItemList = ({ rows, setRows, selectedScheme }) => {
       const quantity = parseFloat(currentRow.nos) || 0;
       const weight = parseFloat(currentRow.netWeight) || 0;
 
-      updatedRows[index].valuation = Math.round(quantity * weight * actualRate);
+      updatedRows[index].valuation = Math.round(quantity * weight * rate);
       updatedRows[index].actualValuation = Math.round(
         quantity * weight * actualRate,
       );
     }
+
+    // if (
+    //   field === "netWeight" ||
+    //   field === "nos" ||
+    //   field === "Calculated_Purity"
+    // ) {
+    //   const purityPercent =
+    //     value.assignedPurityPercent > 0
+    //       ? value.assignedPurityPercent
+    //       : value.purity_percent || 0;
+
+    //   const { rate = 0, actualRate = 0 } =
+    //     purityPercent > 0
+    //       ? calculateRate(purityPercent)
+    //       : { rate: 0, actualRate: 0 };
+
+    //   currentRow.rate = rate;
+    //   currentRow.actualRate = actualRate;
+
+    //   const quantity = parseFloat(currentRow.nos) || 0;
+    //   const weight = parseFloat(currentRow.netWeight) || 0;
+
+    //   currentRow.valuation = Math.round(quantity * weight * rate);
+    //   currentRow.actualValuation = Math.round(quantity * weight * actualRate);
+    // }
+
+    if (
+  (field === "netWeight" ||
+    field === "nos" ||
+    field === "Calculated_Purity") &&
+  currentRow.assignedPurityPercent !== undefined &&
+  currentRow.assignedPurityPercent > 0
+) {
+  const purityPercent = currentRow.assignedPurityPercent;
+
+  const { rate = 0, actualRate = 0 } =
+    purityPercent > 0
+      ? calculateRate(purityPercent)
+      : { rate: 0, actualRate: 0 };
+
+  currentRow.rate = rate;
+  currentRow.actualRate = actualRate;
+
+  const quantity = parseFloat(currentRow.nos) || 0;
+  const weight = parseFloat(currentRow.netWeight) || 0;
+
+  currentRow.valuation = Math.round(quantity * weight * rate);
+  currentRow.actualValuation = Math.round(quantity * weight * actualRate);
+}
 
     setRows(updatedRows);
   };
@@ -239,9 +295,7 @@ const PledgeItemList = ({ rows, setRows, selectedScheme }) => {
   return (
     <div className="flex ">
       <div className="">
-        {/* <h3 className="font-semibold mb-4 text-blue-900 text-lg">
-         
-        </h3> */}
+       
 
         <table className="   text-xs">
           <thead className="bg-[#0A2478] text-white">
@@ -251,7 +305,7 @@ const PledgeItemList = ({ rows, setRows, selectedScheme }) => {
                 Pledge Item List For Gold
               </th>
               <th className="px-4 py-2 border-r border-gray-200 w-[100px]">
-                Nos.
+                Qty
               </th>
               <th className="px-4 py-2 border-r border-gray-200  w-[100px]">
                 Gross
@@ -272,11 +326,11 @@ const PledgeItemList = ({ rows, setRows, selectedScheme }) => {
               <th className="px-4 py-2 border-r border-gray-200">
                 Funding Rate
               </th>
-              <th className="px-4 py-2 border-r border-gray-200">
+              {/* <th className="px-4 py-2 border-r border-gray-200">
                 {" "}
                 Actual Rate
-              </th>
-              <th className="px-4 py-2 border-r border-gray-200">Valuation</th>
+              </th> */}
+              <th className="px-4 py-2 border-r border-gray-200">Loan Amount</th>
               <th className="px-4 py-2">Remark</th>
             </tr>
           </thead>
@@ -314,19 +368,32 @@ const PledgeItemList = ({ rows, setRows, selectedScheme }) => {
                 </td>
 
                 <td className="px-4 py-2">
-                  <input
-                    type="number"
-                    value={row.gross}
-                    onChange={(e) =>
-                      handleChange(index, "gross", e.target.value)
-                    }
-                    style={{
-                      MozAppearance: "textfield",
-                    }}
-                    onWheel={(e) => e.target.blur()}
-                    className="border border-gray-300 rounded-md px-2 py-1  w-[80px] focus:outline-none focus:ring-1 focus:ring-blue-500 bg-white"
-                  />
-                </td>
+  <input
+    type="number"
+    step="0.001"
+    value={row.gross ?? ""}
+    onChange={(e) =>
+      handleChange(index, "gross", e.target.value)
+    }
+
+    // ✅ add this
+    onBlur={(e) => {
+      const value = e.target.value;
+      if (value !== "" && !isNaN(value)) {
+        handleChange(index, "gross", Number(value).toFixed(3));
+      }
+    }}
+
+    onFocus={(e) => {
+      const value = e.target.value;
+      if (value) {
+        handleChange(index, "gross", parseFloat(value));
+      }
+    }}
+
+    className="border border-gray-300 bg-white rounded-md px-2 py-1 w-[80px]"
+  />
+</td>
 
                 <td className="px-4 py-2">
                   <input
@@ -376,11 +443,19 @@ const PledgeItemList = ({ rows, setRows, selectedScheme }) => {
 
                 {isEditing && (
                   <td className="px-4 py-2 flex justify-center">
+                    
                     <select
-                      value={selectedValue}
-                      autoFocus
+                      value={row.Calculated_Purity || ""}
                       onChange={(e) => {
-                        setSelectedValue(e.target.value);
+                        const selectedPurity = purities.find(
+                          (p) => p.purity_name === e.target.value,
+                        );
+
+                        handleChange(
+                          index,
+                          "Calculated_Purity",
+                          selectedPurity,
+                        );
                       }}
                       className="border border-gray-300 rounded-md px-2 py-1 w-[120px] h-[30px] text-xs bg-white"
                     >
@@ -396,14 +471,9 @@ const PledgeItemList = ({ rows, setRows, selectedScheme }) => {
                 <td className="px-4 py-2 text-center">
                   {row.rate ? row.rate.toFixed(2) : "—"}
                 </td>
-
-                <td className="px-4 py-2 text-center">
-                  {row.actualRate ? row.actualRate.toFixed(2) : "—"}
-                </td>
                 <td className="px-4 py-2 text-center">
                   {row.valuation ? row.valuation.toLocaleString() : "—"}
                 </td>
-
                 <td className="px-4 py-2 flex justify-between items-center">
                   <input
                     type="text"
@@ -435,9 +505,9 @@ const PledgeItemList = ({ rows, setRows, selectedScheme }) => {
             <tr className="border-t border-gray-200 font-semibold bg-gray-100">
               <td className="px-4 py-2">Total</td>
               <td className="px-4 py-2 text-center">{rows.length}</td>
-              <td className="px-4 py-2 text-center">{totalGross.toFixed(2)}</td>
+              <td className="px-4 py-2 text-center">{totalGross.toFixed(3)}</td>
               <td className="px-4 py-2 text-center">
-                {totalNetWeight.toFixed(2)}
+                {totalNetWeight.toFixed(3)}
               </td>
               {isEditing && <td className="px-4 py-2"></td>}
 

@@ -64,58 +64,11 @@ const Profit_Loss_Report = () => {
   };
 
   return (
-    // <div className="min-h-screen bg-white font-sans text-[11px] text-gray-800">
-    //   <div className="m-2 border border-teal-600">
-    //     <div className="bg-[#1a8a81] text-white px-3 py-1 font-semibold text-sm">
-    //       Profit and Loss Report
-    //     </div>
-
-    //     {/* Filters Section */}
-    //     <div className="p-4 bg-white border-b border-gray-200">
-    //       <div className="flex items-center gap-8 mb-4">
-    //         <div className="flex border border-gray-300">
-    //           <input type="date" value={fromDate} onChange={(e) => setFromDate(e.target.value)} className="w-32 px-2 py-0.5 outline-none" />
-    //           {/* <span className="px-2 text-xs bg-gray-100 flex items-center">{formatDisplayDate(fromDate)}</span> */}
-    //         </div>
-    //         <div className="flex border border-gray-300">
-    //           <input type="date" value={toDate} onChange={(e) => setToDate(e.target.value)} className="w-32 px-2 py-0.5 outline-none" />
-    //           {/* <span className="px-2 text-xs bg-gray-100 flex items-center">{formatDisplayDate(toDate)}</span> */}
-    //         </div>
-    //         <label className="flex items-center gap-2 cursor-pointer">
-    //           <input 
-    //             type="checkbox" 
-    //             checked={isGrouped} 
-    //             onChange={(e) => setIsGrouped(e.target.checked)} 
-    //             className="accent-blue-600" 
-    //           />
-    //           Group By Financial Head
-    //         </label>
-    //       </div>
-
-    //       <div className="flex justify-between items-center pt-2 border-t border-gray-100">
-    //         <div className="flex gap-0.5">
-    //           <button onClick={handleView} className="bg-[#005a9c] text-white px-10 py-1 border border-blue-800 shadow-sm hover:bg-blue-700">View</button>
-    //           <button className="bg-[#005a9c] text-white px-10 py-1 border border-blue-800 shadow-sm hover:bg-red-700">Exit</button>
-    //         </div>
-    //       </div>
-    //     </div>
-
-    //     {/* Profit & Loss Table */}
-    //     {viewData && (
-    //       <div className="grid grid-cols-2 border-t border-gray-300 min-h-[400px]">
-    //         {/* Debit Side */}
-    //         <SideTable title="Dr. Amount" data={viewData.debit} grouped={viewData.grouped} />
-    //         {/* Credit Side */}
-    //         <SideTable title="Cr. Amount" data={viewData.credit} borderLeft={true} grouped={viewData.grouped} />
-    //       </div>
-    //     )}
-    //   </div>
-    // </div>
-    
-    <div className="min-h-screen bg-gray-50 p-4 font-sans text-gray-800">
+   
+    <div className="min-h-screen font-sans text-gray-800">
       {/* 🟦 Single Line Header & Control Bar */}
-      <div className="flex justify-center mt-2 mb-4">
-        <div className="flex items-center justify-between px-6 py-4 w-full max-w-[1400px] min-h-[75px] rounded-[11px] border border-gray-200 shadow-sm bg-white gap-4">
+      <div className="flex justify-center">
+        <div className="flex items-center justify-between w-[1462px] px-6 py-2 min-h-[40px]  border border-gray-200 shadow-sm bg-white gap-4">
 
           {/* 🔴 Left — Title */}
           <div className="flex-shrink-0">

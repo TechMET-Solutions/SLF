@@ -36,6 +36,39 @@ const [loading, setLoading] = useState(false);
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const [appFrom, setAppFrom] = useState("");
   const [appTo, setAppTo] = useState("");
+const [partyTypes, setPartyTypes] = useState([]);
+const [selectedPartyTypes, setSelectedPartyTypes] = useState([]);
+const [isPartyDropdownOpen, setIsPartyDropdownOpen] = useState(false);
+
+useEffect(() => {
+  const fetchPartyTypes = async () => {
+    try {
+      const res = await axios.get(
+        "https://slunawat.co.in/api/party-types/list"
+      );
+
+      if (res.data.success) {
+        setPartyTypes(res.data.data);
+      }
+    } catch (err) {
+      console.error("Error fetching party types", err);
+    }
+  };
+
+  fetchPartyTypes();
+}, []);
+
+const togglePartyType = (type) => {
+  setSelectedPartyTypes((prev) => {
+    if (prev.includes(type)) {
+      return prev.filter((item) => item !== type);
+    } else {
+      return [...prev, type];
+    }
+  });
+};
+
+// ✅ Sync with formData
 
   // Update your handleClearSearch to include these
   const handleClearSearch = () => {
@@ -90,6 +123,9 @@ const fetchSchemes = async (page = 1) => {
         sortKey: sortConfig.key,
         sortOrder: sortConfig.direction,
         loginUser: loginUserValue, // ✅ updated here
+         partyType: selectedPartyTypes.length
+          ? selectedPartyTypes.join(",")
+          : undefined,
       },
     });
 
@@ -108,7 +144,7 @@ const fetchSchemes = async (page = 1) => {
   if (userData && (userData.isAdmin || userData.id)) {
     fetchSchemes(currentPage);
   }
-}, [sortConfig, userData]);
+}, [sortConfig, userData, selectedPartyTypes]);
 
   const handleSort = (key) => {
     setSortConfig((prev) => {
@@ -299,7 +335,75 @@ const fetchSchemes = async (page = 1) => {
                 </button>
               </div>
             </div>
+<div className="flex flex-col relative w-[250px]">
 
+
+  {/* Dropdown Button */}
+  <div
+    onClick={() => setIsPartyDropdownOpen(!isPartyDropdownOpen)}
+    className="border border-gray-300 rounded-[8px] px-2 h-[32px] text-xs flex items-center justify-between cursor-pointer bg-white"
+  >
+    <span className="truncate">
+      {selectedPartyTypes.length > 0
+        ? selectedPartyTypes.join(", ")
+        : "Select Party Type"}
+    </span>
+    <span className="text-[10px]">▼</span>
+  </div>
+
+  {/* Dropdown List */}
+  {isPartyDropdownOpen && (
+    <div className="absolute top-[60px] left-0 w-full bg-white border shadow-lg rounded-md z-50 max-h-[200px] overflow-auto">
+      
+      {/* Select All */}
+      <div className="p-2 border-b">
+        <label className="flex items-center gap-2 text-xs">
+          <input
+            type="checkbox"
+            checked={
+              selectedPartyTypes.length === partyTypes.length
+            }
+            onChange={() => {
+              if (selectedPartyTypes.length === partyTypes.length) {
+                setSelectedPartyTypes([]);
+              } else {
+                setSelectedPartyTypes(
+                  partyTypes.map((p) => p.party_type)
+                );
+              }
+            }}
+          />
+          Select All
+        </label>
+      </div>
+
+      {/* List */}
+      {partyTypes.map((item) => (
+        <label
+          key={item.id}
+          className="flex items-center gap-2 p-2 text-xs hover:bg-gray-50 cursor-pointer"
+        >
+          <input
+            type="checkbox"
+            checked={selectedPartyTypes.includes(item.party_type)}
+            onChange={() => togglePartyType(item.party_type)}
+          />
+          {item.party_type}
+        </label>
+      ))}
+
+      {/* Apply Button */}
+      <div className="p-2 border-t text-center">
+        <button
+          onClick={() => setIsPartyDropdownOpen(false)}
+          className="text-[11px] text-blue-700 font-semibold"
+        >
+          Apply
+        </button>
+      </div>
+    </div>
+  )}
+</div>
             <div className="flex items-center gap-3">
               <button
                 onClick={() => {
@@ -387,6 +491,14 @@ const fetchSchemes = async (page = 1) => {
                 )?.RoleMapping) && (
                 <th className="px-1 py-1 border w-[110px]">Role Mapping</th>
               )}
+
+                {(userData?.isAdmin ||
+                permissions?.Master?.find(
+                  (item) => item.name === "Scheme Details",
+                )?.RoleMapping) && (
+                <th className="px-1 py-1 border w-[110px]">Branch Mapping</th>
+              )}
+               
                
                 <th className="px-1 py-1 border w-[120px]">Action</th>
               </tr>
@@ -439,7 +551,19 @@ const fetchSchemes = async (page = 1) => {
                   </td>
               )}
                  
-                  
+                   {(userData?.isAdmin ||
+                permissions?.Master?.find(
+                  (item) => item.name === "Scheme Details",
+                )?.RoleMapping) && (
+                <td
+                    className="px-1 py-1 text-[#1883EF] cursor-pointer"
+                    onClick={() =>
+                      navigate("/Branch-Scheme-Mapping-List", { state: { data: row } })
+                    }
+                  >
+                    Branch Mapping
+                  </td>
+              )}
 
                   {/* Toggle */}
                   <td className="px-1 py-1 w-[120px]">

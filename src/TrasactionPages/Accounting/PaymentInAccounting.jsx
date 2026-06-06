@@ -100,7 +100,7 @@ const [loading, setLoading] = useState(false);
     <div className="min-h-screen bg-white font-sans text-[#333]">
       <div className="mx-auto  ">
         <div className="flex sticky top-[40px] z-40 w-full ml-[25px]">
-          <div className="flex items-center px-6 py-4 border-b  w-full max-w-[1462px] h-[40px] border  border-gray-200 justify-between  ">
+          <div className="flex items-center px-6 py-4 border-b  w-full max-w-[1462px] h-[40px] border  border-gray-200 justify-between bg-white ">
             <h2 className="text-red-600 font-bold text-[20px] leading-[148%]">
               Expense List
             </h2>
@@ -172,7 +172,7 @@ const [loading, setLoading] = useState(false);
                     value={searchQuery}
                     onClick={() => setIsDropdownOpen(false)}
                     onChange={(e) => setSearchQuery(e.target.value)}
-                    placeholder="Search multiple items..."
+                    placeholder="Search by Expense No."
                     className="flex-grow text-[11px] outline-none h-full bg-transparent"
                   />
                 </div>
@@ -250,6 +250,8 @@ const [loading, setLoading] = useState(false);
             <thead>
               <tr className="bg-[#0D3082] text-white text-[12px]">
                 <th className="p-1 border-r text-left">Expense No</th>
+
+                
                 <th className="p-1 border-r text-left">Expense Date</th>
                 <th className="p-1 text-left">Action</th>
               </tr>

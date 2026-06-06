@@ -466,7 +466,7 @@ const { permissions, userData } = usePermission();
         );
       } else if (status === "pending" || status === "approved") {
         response = await axios.get(
-          `${API}/Transactions/Customer/remark/${row.BorrowerId}`,
+          `${API}/Transactions/Customer/remark/${row.Loan_No}`,
         );
       }
 
@@ -1050,30 +1050,7 @@ const { permissions, userData } = usePermission();
       )}
 
       {/* Active Filters Display */}
-      {(selectedDate || selectedScheme || filters.status) && (
-        <div className="flex justify-center mt-2">
-          <div className="w-[1290px] bg-blue-50 border border-blue-200 rounded p-2 text-sm">
-            <span className="font-semibold text-blue-800">
-              Active Filters:{" "}
-            </span>
-            {selectedDate && (
-              <span className="bg-blue-100 text-blue-800 px-2 py-1 rounded mx-1 text-xs">
-                Date: {selectedDate.toLocaleDateString()}
-              </span>
-            )}
-            {selectedScheme && (
-              <span className="bg-blue-100 text-blue-800 px-2 py-1 rounded mx-1 text-xs">
-                Scheme: {selectedScheme}
-              </span>
-            )}
-            {filters.status && (
-              <span className="bg-blue-100 text-blue-800 px-2 py-1 rounded mx-1 text-xs">
-                Status: {filters.status}
-              </span>
-            )}
-          </div>
-        </div>
-      )}
+      
 
       <div className="flex ml-[32px]">
         <div className="overflow-x-auto  w-[1400px] min-h-[500px]">
@@ -1114,7 +1091,7 @@ const { permissions, userData } = usePermission();
                     Scheme
                   </th>
                   <th className="px-1 py-1 border-r border-gray-300 text-[14px] w-[170px]">
-                    Loan Amount
+                    Loan Amount ₹
                   </th>
                   <th className="px-1 py-1 border-r border-gray-300 text-[14px] w-[180px]">
                     <select
@@ -1129,7 +1106,7 @@ const { permissions, userData } = usePermission();
                         Pending
                       </option>
                       <option value="Approved" className="text-black bg-white">
-                        Approved
+                        Active
                       </option>
                       <option value="Cancelled" className="text-black bg-white">
                         Cancelled
@@ -1139,7 +1116,10 @@ const { permissions, userData } = usePermission();
                       </option>
                       <option value="Auction" className="text-black bg-white">
                         Auction
-                      </option>
+                        </option>
+                         <option value="Auctioned" className="text-black bg-white">
+                        Auctioned
+                        </option>
                     </select>
                   </th>
                   <th className="px-1 py-1 border-r border-gray-300 text-[14px] w-[100px]">
@@ -1176,15 +1156,15 @@ const { permissions, userData } = usePermission();
                       {formatIndianDate(row.Loan_Date)}
                     </td>
                     <td className="px-1 py-1">{row.Scheme}</td>
-                    <td className="px-1 py-1 font-medium">
-                      ₹{row.Net_Payable?.toLocaleString("en-IN")}
-                    </td>
+                 <td className="px-1 py-1 font-medium">
+  {Math.round(Number(row?.Net_Payable || 0)).toLocaleString("en-IN")}
+</td>
                     <td
                       className={`px-1 py-1 font-semibold ${getStatusColor(
                         row.Status,
                       )}`}
                     >
-                      {getStatusText(row.Status)}
+                     {row.Status === "Approved" ? "Active" : getStatusText(row.Status)}
                     </td>
                     <td className="px-1 py-1">{row.added_by || "N/A"}</td>
                     <td className="px-1 py-1">{row.Approved_By || "N/A"}</td>
@@ -1444,7 +1424,7 @@ const { permissions, userData } = usePermission();
     );
 
     // 👉 NA statuses
-    const disabledStatuses = ["closed", "cancelled", "auction"];
+    const disabledStatuses = ["closed", "cancelled", "auction","auctioned","defaulter"];
 
     if (disabledStatuses.includes(st)) {
       return <span className="text-gray-500">NA</span>;
@@ -1495,23 +1475,23 @@ const { permissions, userData } = usePermission();
     }
 
     // 👉 Default → View
-    if (userData?.isAdmin || permission?.view) {
-      return (
-        <span
-          className="text-blue-600 cursor-pointer hover:underline"
-          onClick={() =>
-            navigate(`/Loan-Enquiry`, {
-              state: {
-                loanId: row.Loan_No,
-                loanData: row,
-              },
-            })
-          }
-        >
-          View
-        </span>
-      );
-    }
+    // if (userData?.isAdmin || permission?.view) {
+    //   return (
+    //     <span
+    //       className="text-blue-600 cursor-pointer hover:underline"
+    //       onClick={() =>
+    //         navigate(`/Loan-Enquiry`, {
+    //           state: {
+    //             loanId: row.Loan_No,
+    //             loanData: row,
+    //           },
+    //         })
+    //       }
+    //     >
+    //       View
+    //     </span>
+    //   );
+    // }
 
     return null;
   })()}
@@ -1677,22 +1657,24 @@ const { permissions, userData } = usePermission();
             </div>
 
             <div className="mt-6">
-              <label className="text-[19px] font-medium text-[#0A2478] mb-2 block">
-                Add Remark
-              </label>
-              <div className="border border-[#BEBEBE] rounded-md overflow-hidden">
-                <JoditEditor
-                  ref={editor}
-                  value={cancelRemark}
-                  config={editorConfig}
-                  onBlur={(newContent) => setCancelRemark(newContent)}
-                  onChange={(newContent) => {}}
-                />
-              </div>
-              <p className="text-xs text-gray-500 mt-1">
-                Please provide a detailed reason for cancellation
-              </p>
-            </div>
+  <label className="text-[19px] font-medium text-[#0A2478] mb-2 block">
+    Add Remark
+  </label>
+
+  <div className="border border-[#BEBEBE] rounded-md overflow-hidden">
+    <textarea
+      value={cancelRemark}
+      onChange={(e) => setCancelRemark(e.target.value)}
+      rows={5}
+      placeholder="Enter cancellation remark..."
+      className="w-full p-3 outline-none resize-none text-sm"
+    />
+  </div>
+
+  <p className="text-xs text-gray-500 mt-1">
+    Please provide a detailed reason for cancellation
+  </p>
+</div>
 
             <div className="mt-5 flex justify-center gap-4">
               <button

@@ -157,28 +157,28 @@ const checkTodayPunch = async () => {
 
           <div className="flex items-center gap-3">
             {!window.userIsAdmin && (
-              <>
-                <button
-  onClick={handlePunchIn}
-  disabled={isPunchedIn}
-  className={`px-4 py-2 rounded text-white 
-    ${isPunchedIn ? "bg-gray-400 cursor-not-allowed" : "bg-green-600"}`}
->
-  {isPunchedIn ? "Punched In" : "Punch In"}
-            </button>
-            
-            <button
-  onClick={handlePunchOut}
-  disabled={isPunchedOut}
-  className={`px-4 py-2 rounded text-white 
-    ${isPunchedOut ? "bg-gray-400 cursor-not-allowed" : "bg-green-600"}`}
->
-  {isPunchedOut ? "Punched Out" : "Punch Out"}
-</button>
-              </>
-         
+  <>
+    {/* Punch In */}
+    <button
+      onClick={handlePunchIn}
+      disabled={isPunchedIn}
+      className={`px-4 py-2 rounded text-white 
+        ${isPunchedIn ? "bg-gray-400 cursor-not-allowed" : "bg-green-600"}`}
+    >
+      {isPunchedIn ? "Punched In" : "Punch In"}
+    </button>
 
-            )}
+    {/* Punch Out */}
+    <button
+      onClick={handlePunchOut}
+      disabled={!isPunchedIn || isPunchedOut}   // ✅ MAIN FIX
+      className={`px-4 py-2 rounded text-white 
+        ${!isPunchedIn || isPunchedOut ? "bg-gray-400 cursor-not-allowed" : "bg-red-600"}`}
+    >
+      {isPunchedOut ? "Punched Out" : "Punch Out"}
+    </button>
+  </>
+)}
             <div className="relative">
               <input className="border rounded-lg px-3 py-2 w-64 bg-white" placeholder="Search transactions, accounts..." />
               <span className="absolute right-3 top-2.5 text-slate-400">🔍</span>

@@ -15,7 +15,14 @@ const { permissions, userData } = usePermission();
   const [totalItems, setTotalItems] = useState(0);
   const [totalPages, setTotalPages] = useState(1);
   const [data, setData] = useState([]);
+
+
   const [loading, setLoading] = useState(false);
+const [financial_year, setFinancialYear] = useState("");
+const [branch, setBranch] = useState("");
+ const [branchId, setBranchId] = useState("");
+
+
 
   const itemsPerPage = 20;
 const [fromDate, setFromDate] = useState("");
@@ -27,7 +34,20 @@ const [toDate, setToDate] = useState("");
         : [...prev, headerId],
     );
   };
+ useEffect(() => {
+    try {
+      const data = sessionStorage.getItem("userData");
+      const userData = data ? JSON.parse(data) : null;
 
+      if (userData) {
+        setBranch(userData.branchName || "");
+        setBranchId(userData.branchId || "");
+        setFinancialYear(userData.financialYear || "");
+      }
+    } catch (err) {
+      console.error("Error parsing userData:", err);
+    }
+  }, []);
   // ✅ API CALL
   // const fetchLoanRepayments = async (page = 1, search = "") => {
   //   try {
@@ -55,10 +75,12 @@ const [toDate, setToDate] = useState("");
       params: {
         page,
         limit: itemsPerPage,
+        branchId: branchId.id,
         search: searchQuery,
         fields: searchHeaders.join(","),
-        fromDate,   // ✅ NEW
-        toDate      // ✅ NEW
+        fromDate,
+        toDate,
+         // ✅ ADD THIS
       },
     });
 
@@ -66,7 +88,6 @@ const [toDate, setToDate] = useState("");
     setTotalItems(response?.data.pagination.total);
     setTotalPages(response?.data.pagination.totalPages);
     setCurrentPage(page);
-    setLoading(false);
   } catch (error) {
     console.error("Error fetching repayments:", error);
   } finally {
@@ -75,7 +96,7 @@ const [toDate, setToDate] = useState("");
 };
   useEffect(() => {
     fetchLoanRepayments(1);
-  }, []);
+  }, [branchId]);
   const getPageNumbers = () => {
     if (totalPages <= 7) {
       return [...Array(totalPages)].map((_, i) => i + 1);
@@ -261,31 +282,31 @@ const [toDate, setToDate] = useState("");
           <table className="w-full text-left border-collapse">
             <thead className="bg-[#0A2478] text-white  text-[11px]">
               <tr>
-                <th className="p-2 border-r font-semibold  w-[200px]">
+                <th className="p-1 border-r font-semibold  w-[200px]">
                   Receipt No
                 </th>
-                <th className="p-2 border-r font-semibold  w-[150px]">
+                <th className="p-1 border-r font-semibold  w-[150px]">
                   Loan No
                 </th>
-                <th className="p-2 border-r font-semibold  w-[180px]">Name</th>
-                <th className="p-2 border-r font-semibold  w-[100px]">
+                <th className="p-1 border-r font-semibold  w-[180px]">Name</th>
+                <th className="p-1 border-r font-semibold  w-[100px]">
                   Loan type
                 </th>
-                <th className="p-2 border-r font-semibold  w-[100px]">
+                <th className="p-1 border-r font-semibold  w-[100px]">
                   Receipt Date
                 </th>
-                <th className="p-2 border-r font-semibold  w-[130px]">
+                <th className="p-1 border-r font-semibold  w-[130px]">
                   Loan Branch
                 </th>
-                <th className="p-2 border-r font-semibold  w-[120px]">
+                <th className="p-1 border-r font-semibold  w-[120px]">
                   Amount
                 </th>
 
-                <th className="p-2 border-r font-semibold ">PayMode</th>
-                <th className="p-2 border-r font-semibold  w-[180px]">
+                <th className="p-1 border-r font-semibold ">PayMode</th>
+                <th className="p-1 border-r font-semibold  w-[180px]">
                   Add By
                 </th>
-                <th className="p-2 text-center">Action</th>
+                <th className="p-1 text-center">Action</th>
               </tr>
             </thead>
 
@@ -321,7 +342,7 @@ const [toDate, setToDate] = useState("");
                     <td className="p-2">{row.amount}</td>
 
                     <td className="p-2">{row.payment_mode}</td>
-                    <td className="p-2 text-xs text-blue-600">
+                    <td className="p-2 text-xs ">
                       {row.made_by || "-"}
                     </td>
                     <td className="p-2 text-center flex gap-2 justify-center">

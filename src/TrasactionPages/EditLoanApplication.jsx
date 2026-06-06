@@ -2636,7 +2636,7 @@ const EditLoanApplication = () => {
             <div className="">
               <div>
                 <label className="text-[14px] font-medium">
-                  Pay Date<span className="text-red-500">*</span>
+                  Loan Date<span className="text-red-500">*</span>
                 </label>
               </div>
 

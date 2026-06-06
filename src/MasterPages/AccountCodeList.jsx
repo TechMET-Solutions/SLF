@@ -9,10 +9,9 @@ import { formatIndianDate } from "../utils/Helpers";
 import Pagination from "../Component/Pagination";
 import { usePermission } from "../API/Context/PermissionContext";
 import Loader from "../Component/Loader";
-
 const AccountCodeList = () => {
-  const navigate = useNavigate();
-  const { loginUser } = useAuth();
+const navigate = useNavigate();
+const { loginUser } = useAuth();
 const { permissions, userData } = usePermission();
   const [loading, setLoading] = useState(false);
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -31,7 +30,10 @@ const { permissions, userData } = usePermission();
   const [totalItems, setTotalItems] = useState(0);
   const [showPagination, setShowPagination] = useState(false);
   const itemsPerPage = 10;
+const [isCleared, setIsCleared] = useState(false);
 
+  
+  
   const [formData, setFormData] = useState({
     name: "",
     accountGroup: "",
@@ -45,8 +47,34 @@ const initialFormState = {
   financialDate: "",
   type: "Sub Ledger",
   addedBy: loginUser,
+  };
+  
+const [types, setTypes] = useState([]);
+const [isTypeModalOpen, setIsTypeModalOpen] = useState(false);
+const [newType, setNewType] = useState("");
+
+  const fetchTypes = async () => {
+  const res = await fetch(`${API}/account-code/all`);
+  const data = await res.json();
+  setTypes(data);
 };
 
+useEffect(() => {
+  fetchTypes();
+}, []);
+  const handleAddType = async () => {
+  if (!newType) return alert("Enter type");
+
+  await fetch(`${API}/account-code/add`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ type_name: newType }),
+  });
+
+  setNewType("");
+  setIsTypeModalOpen(false);
+  fetchTypes(); // refresh dropdown
+};
   useEffect(() => {
     document.title = "SLF | Account Code List";
     fetchAccountGroups();
@@ -81,8 +109,30 @@ const initialFormState = {
       console.error("Error fetching account groups:", error);
     }
   };
+const handleClear = () => {
+  const hasData =
+    searchQuery !== "" ||
+    searchHeaders.length > 0 ||
+    currentPage !== 1;
 
-  // 🔹 FIXED: API Call with Pagination
+  if (!hasData) return; // already cleared → no API call
+
+  // Reset state
+  setSearchQuery("");
+  setSearchHeaders([]);
+  setCurrentPage(1);
+setIsCleared(true);
+ 
+  // getAccountGroups(1, "", []);
+};
+
+  useEffect(() => {
+  if (isCleared) {
+      fetchData(1);   // 🔥 API CALL
+    setIsCleared(false);
+  }
+  }, [isCleared]);
+ 
   const fetchData = async (page = 1) => {
     setLoading(true);
     try {
@@ -260,17 +310,11 @@ const initialFormState = {
                 </button>
 
                 <button
-
-                  onClick={() => {
-                    setSearchQuery("");
-                    setSearchHeaders([]);
-                    setCurrentPage(1);
-                    fetchData(1);
-                  }}
-                  className="ml-2 bg-[#0b2c69] text-white text-[11px] px-4 h-[24px] rounded-[3px] font-source hover:bg-[#071d45]"
-                >
-                  Clear
-                </button>
+  onClick={handleClear}
+  className="ml-2 bg-[#0b2c69] text-white text-[11px] px-4 h-[24px] rounded-[3px] font-source hover:bg-[#071d45]"
+>
+  Clear
+</button>
               </div>
 
               <div className="flex items-center gap-3 pl-4 border-gray-200">
@@ -331,23 +375,36 @@ const initialFormState = {
 
              
 
-              <div>
-                <label className="text-sm font-medium text-gray-700 mb-2 block">Type</label>
-                <select
-                  value={formData.type}
-                  onChange={(e) => setFormData({ ...formData, type: e.target.value })}
-                  className="w-full h-10 px-3 rounded-lg border border-gray-300 text-sm bg-white"
-                  required
-                >
-                  <option value="">Select Type</option>
-                  <option value="General">General</option>
-                  <option value="Sub Ledger">Sub Ledger</option>
-                  <option value="Cash">Cash</option>
-                   <option value="Petty Cash">Petty Cash</option>
-                   <option value="Card">Card</option>
-                  <option value="Bank">Bank</option>
-                </select>
-              </div>
+             <div>
+  <label className="text-sm font-medium text-gray-700 mb-2 block">
+    Type
+  </label>
+
+  <div className="flex gap-2">
+    <select
+      value={formData.type}
+      onChange={(e) => setFormData({ ...formData, type: e.target.value })}
+      className="w-full h-10 px-3 rounded-lg border border-gray-300 text-sm bg-white"
+    >
+      <option value="">Select Type</option>
+
+      {types.map((t) => (
+        <option key={t.id} value={t.type_name}>
+          {t.type_name}
+        </option>
+      ))}
+    </select>
+
+    {/* ➕ Add Button */}
+    <button
+      type="button"
+      onClick={() => setIsTypeModalOpen(true)}
+      className="px-3 bg-blue-900 text-white rounded-lg"
+    >
+      +
+    </button>
+  </div>
+</div>
             </div>
 
             <div className="flex justify-center gap-3">
@@ -365,7 +422,37 @@ const initialFormState = {
           </div>
         </div>
       )}
+{isTypeModalOpen && (
+  <div className="fixed inset-0 flex items-center justify-center z-50 bg-black/50">
+    <div className="bg-white p-6 rounded-lg w-[300px]">
+      <h2 className="text-lg font-semibold mb-4">Add Type</h2>
 
+      <input
+        type="text"
+        value={newType}
+        onChange={(e) => setNewType(e.target.value)}
+        placeholder="Enter type name"
+        className="w-full border px-3 py-2 rounded mb-4"
+      />
+
+      <div className="flex justify-end gap-2">
+        <button
+          onClick={() => setIsTypeModalOpen(false)}
+          className="px-4 py-2 bg-gray-400 text-white rounded"
+        >
+          Cancel
+        </button>
+
+        <button
+          onClick={handleAddType}
+          className="px-4 py-2 bg-blue-600 text-white rounded"
+        >
+          Save
+        </button>
+      </div>
+    </div>
+  </div>
+)}
       {/* Table - Uses filteredData */}
       <div className="flex ml-[22px]  ">
         <div className="overflow-x-auto w-[1290px] h-[500px]">

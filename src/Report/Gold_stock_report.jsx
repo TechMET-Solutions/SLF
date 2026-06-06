@@ -20,7 +20,7 @@ const GoldStockReport = () => {
     const fetchSchemes = async () => {
       try {
         const response = await fetch(
-          `${API}/Scheme/getAllSchemes?page=1&limit=10`,
+          `${API}/Scheme/active?page=1&limit=10`,
         );
         const result = await response.json();
         setSchemes(result.data || []);
@@ -214,10 +214,10 @@ const GoldStockReport = () => {
     //   </div>
     // </div>
 
-    <div className="min-h-screen bg-gray-50 p-4 font-sans">
+    <div className="min-h-screen   font-sans">
   {/* 🟦 Top Header/Filter Bar */}
-  <div className="flex justify-center mt-2 mb-4">
-    <div className="flex items-center justify-between px-6 py-4 w-full max-w-[1290px] min-h-[75px] rounded-[11px] border border-gray-200 shadow-sm bg-white gap-4">
+  <div className="flex justify-center">
+    <div className="flex items-center justify-between px-6 w-[1462px] min-h-[40px] border border-gray-200 shadow-sm bg-white gap-4">
       
       {/* 🔴 Left — Title */}
       <div className="flex-shrink-0">
@@ -264,19 +264,19 @@ const GoldStockReport = () => {
       <div className="flex items-center gap-2 flex-shrink-0">
         <button
           onClick={handleView}
-          className="w-[85px] h-[34px] rounded bg-[#0A2478] text-white text-[12px] font-bold hover:bg-[#071d45] transition-all shadow-sm active:scale-95 flex items-center justify-center gap-1"
+          className="w-[85px] h-[30px] rounded bg-[#0A2478] text-white text-[12px] font-bold hover:bg-[#071d45] transition-all shadow-sm active:scale-95 flex items-center justify-center gap-1"
         >
           View
         </button>
         <button
           onClick={handleView}
-              className="w-[85px] h-[34px] rounded bg-green-600 text-white text-[12px] font-bold hover:bg-green-700 transition-all shadow-sm active:scale-95 flex items-center justify-center gap-1"
+              className="w-[85px] h-[30px] rounded bg-green-600 text-white text-[12px] font-bold hover:bg-green-700 transition-all shadow-sm active:scale-95 flex items-center justify-center gap-1"
         >
           Excel
         </button>
         <button
           onClick={() => window.history.back()}
-          className="w-[85px] h-[34px] rounded bg-[#C1121F] text-white text-[12px] font-bold hover:bg-[#a0101a] transition-all shadow-sm active:scale-95 flex items-center justify-center gap-1"
+          className="w-[85px] h-[30px] rounded bg-[#C1121F] text-white text-[12px] font-bold hover:bg-[#a0101a] transition-all shadow-sm active:scale-95 flex items-center justify-center gap-1"
         >
           Exit
         </button>
@@ -287,9 +287,9 @@ const GoldStockReport = () => {
 
   {/* 🟢 Table Section */}
   <div className="flex justify-center">
-    <div className="w-full max-w-[1290px] bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden">
+    <div className=" w-[1462px] bg-white    border-gray-200 overflow-hidden">
       <div className="overflow-x-auto min-h-[450px]">
-        <table className="w-full text-left border-collapse min-w-[1300px]">
+        <table className="text-left border-collapse w-[1462px]">
           <thead>
                 <tr className="bg-[#0A2478] text-gray-100 text-[10px] font-bold">
               <th className="border border-gray-300 p-2 w-12 text-center uppercase">S.No.</th>
@@ -329,9 +329,14 @@ const GoldStockReport = () => {
                     <td className="border border-gray-300 p-2 text-gray-500">{r.BorrowerId}</td>
                     <td className="border border-gray-300 p-2 font-medium">{r.Borrower}</td>
                     <td className="border border-gray-300 p-2">{r.Mobile_Number}</td>
-                    <td className="border border-gray-300 p-2 text-right font-mono bg-blue-50/10">
-                      {Number(r.Max_Loan || 0).toLocaleString()}
-                    </td>
+                   <td className="border border-gray-300 p-2 text-right font-mono bg-blue-50/10">
+  {(
+    r.Pledge_Item_List?.reduce(
+      (sum, item) => sum + Number(item.valuation || 0),
+      0
+    ) || 0
+  ).toLocaleString()}
+</td>
                     <td className="border border-gray-300 p-2 text-right font-mono font-bold text-blue-800 bg-blue-50/10">
                       {Number(r.Loan_amount || 0).toLocaleString()}
                     </td>

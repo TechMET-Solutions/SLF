@@ -18,11 +18,11 @@ const BankBookReport = () => {
     useState(false);
   const PAYMENT_OPTIONS = [
     "Expenses",
-    "Payment Gateway",
+    // "Payment Gateway",
     "Receipt",
     "Journal Voucher",
-    "FT Issue",
-    "FT Receipt",
+    // "FT Issue",
+    // "FT Receipt",
     "Loan Repayment",
   ];
 
@@ -42,18 +42,58 @@ const BankBookReport = () => {
   };
 
   // ✅ Fetch bank list
-  useEffect(() => {
-    fetchBanks();
-  }, []);
+  // useEffect(() => {
+  //   fetchBanks();
+  // }, []);
 
-  const fetchBanks = async () => {
-    try {
-      const res = await axios.get(`${API}/api/banks/list`);
-      setBanks(res.data);
-    } catch (err) {
-      console.log(err);
-    }
-  };
+  // const fetchBanks = async () => {
+  //   try {
+  //     const res = await axios.get(`${API}/api/banks/list`);
+  //     setBanks(res.data);
+  //   } catch (err) {
+  //     console.log(err);
+  //   }
+  // };
+
+  useEffect(() => {
+      const fetchBanks = async () => {
+        debugger;
+        try {
+         
+          const userData = JSON.parse(sessionStorage.getItem("userData"));
+  
+          const branchId =
+            typeof userData?.branchId === "object"
+              ? userData?.branchId?.id
+              : userData?.branchId;
+  
+          console.log("BranchId:", branchId);
+  
+          if (!branchId) {
+            console.error("BranchId missing!");
+          
+            return;
+          }
+  
+          const res = await axios.get(`${API}/api/banks/GetBanklist`, {
+            params: { branchId },
+          });
+  
+          const formattedBanks = res.data.map((bank) => ({
+            id: bank.id,
+            name: bank.name,
+          }));
+  
+          setBanks(formattedBanks);
+         
+        } catch (error) {
+          console.error("Error fetching banks:", error);
+         
+        }
+      };
+  
+      fetchBanks();
+    }, []);
 
   // ✅ Checkbox select
   // const handleBankSelect = (bankName) => {
@@ -111,7 +151,7 @@ const BankBookReport = () => {
         toDate,
         banks: selectedBanks.length
           ? banks
-              .filter((bank) => selectedBanks.includes(bank.bank_name))
+              .filter((bank) => selectedBanks.includes(bank.name))
               .map((bank) => bank.id)
           : [],
         paymentTypes,
@@ -155,8 +195,8 @@ const BankBookReport = () => {
   return (
     <div className="min-h-screen text-sm">
 
-      <div className="flex justify-center mt-5 px-4">
-        <div className="flex items-center justify-between px-6 py-4 w-full max-w-[1290px] min-h-[80px] rounded-[11px] border border-gray-200 shadow-sm bg-white gap-4">
+      <div className="flex justify-center ">
+        <div className="flex items-center justify-between px-6 w-full max-w-[1462px] min-h-[50px]  border border-gray-200 shadow-sm bg-white gap-4">
 
           {/* 1. Title */}
           <div className="flex-shrink-0">
@@ -202,7 +242,7 @@ const BankBookReport = () => {
                     setIsPaymentModeDropdownOpen(false);
                   }
                 }}
-                className={`border rounded px-3 py-1.5 text-sm min-h-[38px] flex items-center flex-wrap gap-1 ${isCashSelected ? "bg-gray-100 cursor-not-allowed" : "cursor-pointer bg-white"
+                className={`border rounded px-3 py-1.5 text-sm min-h-[30px] flex items-center flex-wrap gap-1 ${isCashSelected ? "bg-gray-100 cursor-not-allowed" : "cursor-pointer bg-white"
                   }`}
               >
                 {isCashSelected ? (
@@ -224,10 +264,10 @@ const BankBookReport = () => {
                     <label key={bank.id} className="flex items-center gap-2 px-3 py-1.5 hover:bg-gray-100 cursor-pointer text-sm">
                       <input
                         type="checkbox"
-                        checked={selectedBanks.includes(bank.bank_name)}
-                        onChange={() => handleBankSelect(bank.bank_name)}
+                        checked={selectedBanks.includes(bank.name)}
+                        onChange={() => handleBankSelect(bank.name)}
                       />
-                      {bank.bank_name}
+                      {bank.name}
                     </label>
                   ))}
                 </div>
@@ -244,7 +284,7 @@ const BankBookReport = () => {
                   setIsBankDropdownOpen(false);
                   setIsPaymentModeDropdownOpen(false);
                 }}
-                className="border rounded px-3 py-1.5 text-sm cursor-pointer bg-white flex items-center flex-wrap gap-1 min-h-[38px]"
+                className="border rounded px-3 py-1.5 text-sm cursor-pointer bg-white flex items-center flex-wrap gap-1 min-h-[30px]"
               >
                 {paymentTypes.length === 0 ? (
                   <span className="text-gray-400">Payment Type</span>
@@ -282,7 +322,7 @@ const BankBookReport = () => {
                   setIsBankDropdownOpen(false);
                   setIsPaymentDropdownOpen(false);
                 }}
-                className="border rounded px-3 py-1.5 text-sm cursor-pointer bg-white flex items-center flex-wrap gap-1 min-h-[38px]"
+                className="border rounded px-3 py-1.5 text-sm cursor-pointer bg-white flex items-center flex-wrap gap-1 min-h-[30px]"
               >
                 {paymentModeTypes.length === 0 ? (
                   <span className="text-gray-400">Payment Mode</span>
@@ -322,17 +362,17 @@ const BankBookReport = () => {
         </div>
       </div>
 
-      <div className="overflow-x-auto mt-6 mx-28">
+      <div className="overflow-x-auto ml-[20px]">
         
           {/* Table */}
-        <table className="w-full text-left  rounded-lg border-collapse max-w-3xl">
+        <table className="w-full text-left rounded-lg border-collapse max-w-3xl">
           <thead className="bg-[#0A2478] text-white text-xs">
               <tr >
-                <th className="border p-2 w-[120px]">Date</th>
-                <th className="border p-2">Particulars</th>
-                <th className="border p-2">Deposite</th>
-                <th className="border p-2">Withdrawal</th>
-              <th className="border p-2 w-[120px]">Running Total</th>
+                <th className="border p-1 w-[120px]">Date</th>
+                <th className="border p-1">Particulars</th>
+                <th className="border p-1">Deposite</th>
+                <th className="border p-1">Withdrawal</th>
+              <th className="border p-1 w-[120px]">Running Total</th>
               </tr>
             </thead>
             <tbody>

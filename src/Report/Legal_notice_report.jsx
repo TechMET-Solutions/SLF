@@ -20,7 +20,7 @@ const Legal_notice_report = () => {
     const fetchSchemes = async () => {
       try {
         const response = await fetch(
-          `${API}/Scheme/getAllSchemes?page=1&limit=10`,
+          `${API}/Scheme/active?page=1&limit=10`,
         );
         const result = await response.json();
         setSchemes(result.data || []);
@@ -44,7 +44,7 @@ const Legal_notice_report = () => {
     const fetchParties = async () => {
       try {
         const res = await fetch(
-          `${API}/api/Reports/legal-parties?schemeId=${selectedScheme}&q=${partyQuery}`,
+          `${API}/api/Reports/legal-parties?schemeId=${selectedScheme}&party=${partyQuery}`,
         );
         const data = await res.json();
         setPartyList(data.data || []);
@@ -260,10 +260,10 @@ const Legal_notice_report = () => {
     //   </div>
     // </div>
 
-    <div className="min-h-screen bg-gray-50 p-4 font-sans">
+    <div className="min-h-screen  font-sans">
       {/* 🟦 Top Header/Filter Bar */}
-      <div className="flex justify-center mt-2 mb-4">
-        <div className="flex items-center justify-between px-6 py-4 w-full max-w-[1400px] min-h-[75px] rounded-[11px] border border-gray-200 shadow-sm bg-white gap-4">
+      <div className="flex justify-center ">
+        <div className="flex items-center justify-between px-6 py-2 w-[1462px] min-h-[40px]  border border-gray-200 shadow-sm bg-white gap-4">
 
           {/* 🔴 Left — Title */}
           <div className="flex-shrink-0">
@@ -309,7 +309,7 @@ const Legal_notice_report = () => {
 
             {/* Party Search */}
             <div className="flex items-center gap-2 relative flex-1 max-w-[280px]">
-              <label className="text-[10px] font-bold text-gray-400 uppercase">Party</label>
+              <label className="text-[10px] font-bold text-gray-400 uppercase">Customer</label>
               <div className="relative w-full">
                 <input
                   type="text"
@@ -347,11 +347,11 @@ const Legal_notice_report = () => {
             <button
               onClick={handleView}
               disabled={searching}
-              className="w-[100px] h-[34px] rounded bg-[#0A2478] text-white text-[12px] font-bold hover:bg-[#071d45] transition-all shadow-sm active:scale-95"
+              className="w-[100px] h-[30px] rounded bg-[#0A2478] text-white text-[12px] font-bold hover:bg-[#071d45] transition-all shadow-sm active:scale-95"
             >
               {searching ? "..." : "View"}
             </button>
-            <button className="w-[85px] h-[34px] rounded bg-[#C1121F] text-white text-[12px] font-bold hover:bg-[#a0101a] transition-all">
+            <button className="w-[85px] h-[30px] rounded bg-[#C1121F] text-white text-[12px] font-bold hover:bg-[#a0101a] transition-all">
               Exit
             </button>
           </div>
@@ -359,8 +359,8 @@ const Legal_notice_report = () => {
       </div>
 
       {/* 🟢 Table Section */}
-      <div className="flex justify-center">
-        <div className="w-full max-w-[1400px] bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden">
+      <div className="flex pl-[15px]">
+        <div className="w-full max-w-[1462px] bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden">
           <div className="overflow-x-auto min-h-[500px]">
             <table className="w-full text-left border-collapse min-w-[1600px]">
               <thead>

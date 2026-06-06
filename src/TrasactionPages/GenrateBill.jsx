@@ -59,16 +59,7 @@ export default function GenerateBill() {
       const res = await axios.get(`${API}/Master/doc/get-customer/${id}`);
       const customer = res.data.data;
 
-      // setFormData((prev) => ({
-      //   ...prev,
-      //   customer_name: customer.name,
-      //   address: customer.address,
-      //   city: customer.city,
-      //   state: customer.state,
-      //   pin_code: customer.pincode,
-      //   mobile_number: customer.mobile,
-      //   email_id: customer.email,
-      // }));
+
 
       setCustomerData(customer);
     } catch (error) {
@@ -230,33 +221,7 @@ export default function GenerateBill() {
     }
   };
 
-  //  const handleSubmit = async () => {
-  //     try {
-  //         const payload = {
-  //             formData,
-  //             pledgeItems,
-  //             summary,
-  //             docChargeAmount,
-  //             docChargeDesc
-  //         };
-
-  //         const response = await axios.post(
-  //             "http://localhost:5000/generate-bill/create-bill",
-  //             payload
-  //         );
-
-  //         if (response.data.status) {
-  //             alert("Bill Generated Successfully!");
-  //            navigate('/Auction-Creation')
-  //         } else {
-  //             alert("Failed to generate bill");
-  //         }
-
-  //     } catch (error) {
-  //         console.log("Error submitting bill:", error);
-  //         alert("Something went wrong");
-  //     }
-  // };
+  
 
   const handleSubmitfordocument = () => {
     const docCharges = {
@@ -295,7 +260,25 @@ export default function GenerateBill() {
   Number(docChargeAmount || 0)
 );
 
+const handleSubmitClick = () => {
+  // 🔴 Check bidder selected
+  if (!formData.bidderId) {
+    alert("Please select a bidder");
+    return;
+  }
 
+  // 🔴 Check bidding close amount
+  if (
+    !formData.biddingCloseAmount ||
+    Number(formData.biddingCloseAmount) === 0
+  ) {
+    alert("Bidding Close Amount must be greater than 0");
+    return;
+  }
+
+  // ✅ If all valid → open modal
+  setIsModalOpen(true);
+};
   return (
     <div className="w-full min-h-screen bg-white">
       {/* Header */}
@@ -306,11 +289,11 @@ export default function GenerateBill() {
           <div className="flex gap-3">
             
             <button
-              className="bg-[#0A2478] text-white text-xs rounded px-4 py-1 cursor-pointer"
-              onClick={() => setIsModalOpen(true)}
-            >
-              Submit
-            </button>
+  className="bg-[#0A2478] text-white text-xs rounded px-4 py-1 cursor-pointer"
+  onClick={handleSubmitClick}
+>
+  Submit
+</button>
 
             <button
               className="bg-[#C1121F] text-white text-xs rounded px-4 py-1 cursor-pointer"
@@ -353,9 +336,10 @@ export default function GenerateBill() {
                 <input
                   type="text"
                   name="loanNo"
+                    disabled
                   value={formData.loanNo}
                   onChange={handleChange}
-                  className="w-[150px] h-[30px] p-1 border rounded-md bg-white border-gray-300 text-xs"
+                  className="w-[150px] h-[30px] p-1 border disabled:bg-gray-200 rounded-md bg-white border-gray-300 text-xs"
                   placeholder="00000000000"
                 />
               </div>
@@ -366,8 +350,9 @@ export default function GenerateBill() {
                   type="date"
                   name="auctionDate"
                   value={formData.auctionDate}
+                    disabled
                   onChange={handleChange}
-                  className="w-[100px] p-1 border rounded-md bg-white border-gray-300 text-xs"
+                  className="w-[100px] p-1 disabled:bg-gray-200 border rounded-md bg-white border-gray-300 text-xs"
                 />
               </div>
             </div>
@@ -413,7 +398,7 @@ export default function GenerateBill() {
                           setSuggestions([]);
                         }}
                       >
-                        {item.bidder_name}
+                        {item.bidder_name} ({item.mobile_no})
                       </li>
                     ))}
                   </ul>
@@ -738,7 +723,7 @@ disabled
 
               <div className="flex gap-5 mt-2">
                 <div>
-                  <p>Auction ID:</p> <p>{AuctionData?.id}</p>
+                  <p>Auction ID-</p> <p>{AuctionData?.id}</p>
                 </div>
 
                 <div>

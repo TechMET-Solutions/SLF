@@ -213,6 +213,7 @@ const fetchBanks = async () => {
     try {
       if (!partyData.partyName) {
         alert("Party Name is required");
+         setIsModalOpen(false);
         return;
       }
 

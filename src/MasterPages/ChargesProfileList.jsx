@@ -18,14 +18,29 @@ const ChargesProfileList = () => {
   const [isview, setIsview] = useState(null);
   const [accountList, setAccountList] = useState([]);
   const [loading, setLoading] = useState(false);
+  // const [formData, setFormData] = useState({
+  //   code: "",
+  //   description: "",
+  //   amount: "",
+  //   account: "",
+  //   isActive: true,
+  //   addedBy: "",
+  // });
+
   const [formData, setFormData] = useState({
-    code: "",
-    description: "",
-    amount: "",
-    account: "",
-    isActive: true,
-    addedBy: "",
-  });
+  code: "",
+  description: "",
+  amount: "",
+  account: "",
+  isActive: true,
+  addedBy: "",
+  cgst: 0,
+  sgst: 0,
+  igst: 0,
+  isCgst: false,
+  isSgst: false,
+  isIgst: false,
+});
   const { loginUser } = useAuth();
 
   const [searchFilters, setSearchFilters] = useState({
@@ -41,6 +56,7 @@ const ChargesProfileList = () => {
       [name]: value,
     }));
   };
+
 
   // 3. Define the missing handleKeyPress function
   const handleKeyPress = (e) => {
@@ -120,13 +136,22 @@ const ChargesProfileList = () => {
   };
 
   // Handle input changes
+  // const handleChange = (e) => {
+  //   const { name, value, type, checked } = e.target;
+  //   setFormData((prev) => ({
+  //     ...prev,
+  //     [name]: type === "checkbox" ? checked : value,
+  //   }));
+  // };
+
   const handleChange = (e) => {
-    const { name, value, type, checked } = e.target;
-    setFormData((prev) => ({
-      ...prev,
-      [name]: type === "checkbox" ? checked : value,
-    }));
-  };
+  const { name, value, type, checked } = e.target;
+
+  setFormData((prev) => ({
+    ...prev,
+    [name]: type === "checkbox" ? checked : value,
+  }));
+};
   const validateForm = () => {
     const { code, description, amount, account } = formData;
 
@@ -137,106 +162,200 @@ const ChargesProfileList = () => {
 
     return null;
   };
-  const handleSave = async () => {
-      setLoading(true);
-    try {
-      const errorMsg = validateForm();
-      if (errorMsg) {
-        alert(`❌ ${errorMsg}`);
-         setLoading(false);
-        return;
-      }
+  // const handleSave = async () => {
+  //     setLoading(true);
+  //   try {
+  //     const errorMsg = validateForm();
+  //     if (errorMsg) {
+  //       alert(`❌ ${errorMsg}`);
+  //        setLoading(false);
+  //       return;
+  //     }
 
-      let payloadObj;
+  //     let payloadObj;
 
-      if (editingId) {
-        payloadObj = {
-          ...formData,
-          id: editingId,
-        };
-      } else {
-        payloadObj = {
-          ...formData,
-          addedBy: loginUser,
-        };
-      }
+  //     if (editingId) {
+  //       payloadObj = {
+  //         ...formData,
+  //         id: editingId,
+  //       };
+  //     } else {
+  //       payloadObj = {
+  //         ...formData,
+  //         addedBy: loginUser,
+  //       };
+  //     }
 
-      // 🔐 Keep request encrypted
-      const encryptedPayload = encryptData(JSON.stringify(payloadObj));
+  //     // 🔐 Keep request encrypted
+  //     const encryptedPayload = encryptData(JSON.stringify(payloadObj));
 
-      let response;
+  //     let response;
 
-      if (editingId) {
-        response = await axios.put(`${API}/Master/updateChargesProfile`, {
-          data: encryptedPayload,
-        });
-      } else {
-        response = await axios.post(`${API}/Master/ChargesProfile/add`, {
-          data: encryptedPayload,
-        });
-      }
+  //     if (editingId) {
+  //       response = await axios.put(`${API}/Master/updateChargesProfile`, {
+  //         data: encryptedPayload,
+  //       });
+  //     } else {
+  //       response = await axios.post(`${API}/Master/ChargesProfile/add`, {
+  //         data: encryptedPayload,
+  //       });
+  //     }
 
-      // ✅ NOW RESPONSE IS NORMAL JSON (NO DECRYPT)
-      if (response.status === 200 || response.status === 201) {
-        alert(` ${response.data.message}`);
+  //     // ✅ NOW RESPONSE IS NORMAL JSON (NO DECRYPT)
+  //     if (response.status === 200 || response.status === 201) {
+  //       alert(` ${response.data.message}`);
 
-        setIsModalOpen(false);
-        setEditingId(null);
+  //       setIsModalOpen(false);
+  //       setEditingId(null);
 
-        setFormData({
-          code: "",
-          description: "",
-          amount: "",
-          account: "",
-          isActive: true,
-          addedBy: "",
-        });
+  //       setFormData({
+  //         code: "",
+  //         description: "",
+  //         amount: "",
+  //         account: "",
+  //         isActive: true,
+  //         addedBy: "",
+  //       });
     
-        fetchChargeProfiles();
-          setLoading(false);
-      }
-    } catch (error) {
-      console.error("❌ Error saving/updating charge profile:", error);
+  //       fetchChargeProfiles();
+  //         setLoading(false);
+  //     }
+  //   } catch (error) {
+  //     console.error("❌ Error saving/updating charge profile:", error);
 
-      // ✅ Show backend error message
-      const message =
-        error.response?.data?.message ||
-        "❌ Failed to save/update. Please try again.";
+  //     // ✅ Show backend error message
+  //     const message =
+  //       error.response?.data?.message ||
+  //       "❌ Failed to save/update. Please try again.";
 
-      alert(message);
-        setLoading(false);
+  //     alert(message);
+  //       setLoading(false);
+  //   }
+  // };
+const handleSave = async () => {
+  setLoading(true);
+
+  try {
+    const errorMsg = validateForm();
+    if (errorMsg) {
+      alert(`❌ ${errorMsg}`);
+      setLoading(false);
+      return;
     }
-  };
 
+    let payloadObj;
+
+    if (editingId) {
+      payloadObj = {
+        ...formData,
+        id: editingId,
+      };
+    } else {
+      payloadObj = {
+        ...formData,
+        addedBy: loginUser,
+      };
+    }
+
+    const encryptedPayload = encryptData(JSON.stringify(payloadObj));
+
+    let response;
+
+    if (editingId) {
+      response = await axios.put(`${API}/Master/updateChargesProfile`, {
+        data: encryptedPayload,
+      });
+    } else {
+      response = await axios.post(`${API}/Master/ChargesProfile/add`, {
+        data: encryptedPayload,
+      });
+    }
+
+    if (response.status === 200 || response.status === 201) {
+      alert(`${response.data.message}`);
+
+      setIsModalOpen(false);
+      setEditingId(null);
+
+      // ✅ RESET WITH GST
+      setFormData({
+        code: "",
+        description: "",
+        amount: "",
+        account: "",
+        isActive: true,
+        addedBy: "",
+        cgst: 0,
+        sgst: 0,
+        igst: 0,
+        isCgst: false,
+        isSgst: false,
+        isIgst: false,
+      });
+
+      fetchChargeProfiles();
+    }
+  } catch (error) {
+    console.error("❌ Error saving/updating:", error);
+
+    const message =
+      error.response?.data?.message ||
+      "❌ Failed to save/update. Please try again.";
+
+    alert(message);
+  } finally {
+    setLoading(false);
+  }
+};
  useEffect(() => {
   fetchChargeProfiles(currentPage);
 }, [searchFilters, currentPage]);
 
   // ✅ Edit a profile
   const handleEdit = (profile) => {
-    setEditingId(profile.id);
-    setFormData({
-      code: profile.code,
-      description: profile.description,
-      amount: profile.amount,
-      account: profile.account,
-      isActive: profile.isActive,
-      addedBy: profile.addedBy || "",
-    });
-    setIsModalOpen(true);
-  };
+  setEditingId(profile.id);
+
+  setFormData({
+    code: profile.code,
+    description: profile.description,
+    amount: profile.amount,
+    account: profile.account,
+    isActive: profile.isActive,
+    addedBy: profile.addedBy || "",
+
+    // ✅ ADD THIS
+    cgst: profile.cgst || 0,
+    sgst: profile.sgst || 0,
+    igst: profile.igst || 0,
+    isCgst: !!profile.isCgst,
+    isSgst: !!profile.isSgst,
+    isIgst: !!profile.isIgst,
+  });
+
+  setIsModalOpen(true);
+};
   const handleView = (profile) => {
-    setIsview(true);
-    setFormData({
-      code: profile.code,
-      description: profile.description,
-      amount: profile.amount,
-      account: profile.account,
-      isActive: profile.isActive,
-      addedBy: profile.addedBy || "",
-    });
-    setIsModalOpen(true);
-  };
+  setIsview(true);
+
+  setFormData({
+    code: profile.code,
+    description: profile.description,
+    amount: profile.amount,
+    account: profile.account,
+    isActive: profile.isActive,
+    addedBy: profile.addedBy || "",
+
+    // ✅ ADD THIS
+    cgst: profile.cgst || 0,
+    sgst: profile.sgst || 0,
+    igst: profile.igst || 0,
+    isCgst: !!profile.isCgst,
+    isSgst: !!profile.isSgst,
+    isIgst: !!profile.isIgst,
+  });
+
+  setIsModalOpen(true);
+};
   const handleDelete = async (profile) => {
     debugger;
 
@@ -431,7 +550,7 @@ const ChargesProfileList = () => {
       {/* Modal */}
       {isModalOpen && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-sm">
-          <div className="bg-white w-[500px] rounded-lg shadow-lg h-[320px] p-10">
+          <div className="bg-white w-[500px] rounded-lg shadow-lg h-[420px] p-10">
             <h2 className="text-[#0A2478] text-[20px] font-semibold font-source mb-4">
               {isview
                 ? "View Charges Profile"
@@ -508,8 +627,83 @@ const ChargesProfileList = () => {
                   ))}
                 </select>
               </div>
-            </div>
 
+              
+            </div>
+<div className="mt-5">
+  <p className="text-[14px] font-medium mb-2">GST</p>
+
+  <div className="flex gap-4">
+    {/* CGST */}
+    <div className="flex items-center gap-2">
+      <input
+        type="checkbox"
+        name="isCgst"
+        checked={formData.isCgst}
+        disabled={isview}
+        onChange={handleChange}
+      />
+      <span>CGST</span>
+
+      {formData.isCgst && (
+        <input
+          type="number"
+          name="cgst"
+          value={formData.cgst}
+          onChange={handleChange}
+          placeholder="%"
+          className="border w-[60px] h-[30px] px-2 rounded"
+        />
+      )}
+    </div>
+
+    {/* SGST */}
+    <div className="flex items-center gap-2">
+      <input
+        type="checkbox"
+        name="isSgst"
+        checked={formData.isSgst}
+        disabled={isview}
+        onChange={handleChange}
+      />
+      <span>SGST</span>
+
+      {formData.isSgst && (
+        <input
+          type="number"
+          name="sgst"
+          value={formData.sgst}
+          onChange={handleChange}
+          placeholder="%"
+          className="border w-[60px] h-[30px] px-2 rounded"
+        />
+      )}
+    </div>
+
+    {/* IGST */}
+    <div className="flex items-center gap-2">
+      <input
+        type="checkbox"
+        name="isIgst"
+        checked={formData.isIgst}
+        disabled={isview}
+        onChange={handleChange}
+      />
+      <span>IGST</span>
+
+      {formData.isIgst && (
+        <input
+          type="number"
+          name="igst"
+          value={formData.igst}
+          onChange={handleChange}
+          placeholder="%"
+          className="border w-[60px] h-[30px] px-2 rounded"
+        />
+      )}
+    </div>
+  </div>
+</div>
             <div className="flex justify-center gap-3 my-6 mt-10">
               {!isview && (
                 <button

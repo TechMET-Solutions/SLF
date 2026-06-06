@@ -10,7 +10,9 @@ const ExpenceCreate = () => {
   const location = useLocation();
   const expenseId = location.state?.expenseId;
   const isViewMode = location.state?.view;
-
+console.log(isViewMode,expenseId)
+const isEditMode = expenseId && !isViewMode;
+const isAddMode = !expenseId;
   // Modals State
 const [loading, setLoading] = useState(false);
   const [isModalOpen, setIsModalOpen] = useState(false); // Party Modal
@@ -538,7 +540,13 @@ setLoading(true)
     <div className="min-h-screen bg-white font-sans text-[#333] ">
       <div className="mx-auto ml-[25px]">
         <div className="flex items-center justify-between px-6 py-4 border-b w-[1462px] h-[40px] border  border-gray-200 bg-white">
-          <h1 className="text-[#D32F2F] text-xl font-bold">Add Expenses</h1>
+       <h1 className="text-[#D32F2F] text-xl font-bold">
+  {isViewMode
+    ? `View Expense - ${expenseId}`
+    : isEditMode
+    ? `Edit Expense- ${expenseId}`
+    : "Add Expenses"}
+</h1>
           <div className="flex space-x-2">
             {!expenseId && !isViewMode && (
               <button
@@ -746,6 +754,7 @@ setLoading(true)
                   <input
                     className="border border-gray-300 p-2 rounded outline-none focus:border-[#008080]"
                     value={detailForm.billNumber}
+                    disabled={isViewMode}
                     onChange={(e) =>
                       setDetailForm({
                         ...detailForm,

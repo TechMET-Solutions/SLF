@@ -10,9 +10,9 @@ import { useAuth } from "../API/Context/AuthContext";
 import { fetchAreasApi } from "../API/Master/Master_Profile/Area_Details";
 import profileempty from "../assets/profileempty.png";
 import righttick from "../assets/righttick.png";
+import Loader from "../Component/Loader";
 import { encryptData } from "../utils/cryptoHelper";
 import CustBankDetails from "./CustBankDetails";
-import Loader from "../Component/Loader";
 
 const AddCustProfile = () => {
   const navigate = useNavigate();
@@ -21,7 +21,7 @@ const AddCustProfile = () => {
   const editor = useRef(null);
   const signatureCanvasRef = useRef(null);
 
-const [loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState(false);
   const customerData = location.state?.customerData;
   const modedata = location.state?.type;
   console.log(customerData, "customerData");
@@ -33,18 +33,7 @@ const [loading, setLoading] = useState(false);
   console.log(mode, "mode");
   const [bankData, setBankData] = useState([]);
   console.log(bankData, "bankData");
-  const config = {
-    readonly: false,
-    height: 90, // Sets the total height
-    minHeight: 90, // Prevents shrinking
-    maxHeight: 90, // Prevents expanding
-    width: "auto",
-    toolbar: false, // Hides toolbar to allow space for text at 40px
-    showPlaceholder: true,
-    placeholder: "Enter Remark...",
-    statusbar: false, // Hides the bottom bar
-    spellcheck: false,
-  };
+
   const [formData, setFormData] = useState({
     panNo: "",
     panFile: null, // store selected file here
@@ -55,6 +44,7 @@ const [loading, setLoading] = useState(false);
     mobile: "",
     otp: "",
     MobileNumberOtp: "",
+    // MobileNumberOtp2: "",
     GSTNumberOtp: "",
     altMobile: "",
     dob: "",
@@ -137,6 +127,7 @@ const [loading, setLoading] = useState(false);
   const [badDebtorReason, setBadDebtorReason] = useState("");
   // Adding verified status to your state
   const [isMobileVerified, setIsMobileVerified] = useState(false);
+  const [isMobileVerified2, setIsMobileVerified2] = useState(false);
   console.log(formData, "formData");
   const [BankformData, setBankFormData] = useState({
     bankName: "",
@@ -150,8 +141,11 @@ const [loading, setLoading] = useState(false);
   const [documents, setDocuments] = useState([]); // main list from API
   const [idProofList, setIdProofList] = useState([]); // filtered only id proof
   const [addrProofList, setAddrProofList] = useState([]); // filtered only address proof
+
+  console.log(idProofList, "-idProofList-");
   const [areas, setAreas] = useState([]); // areas list from API
   const [errors, setErrors] = useState({});
+  console.log(errors, "errors");
   const [isOtpSent, setIsOtpSent] = useState(false);
   const [isGstVerified, setIsGstVerified] = useState(false);
 
@@ -196,6 +190,7 @@ const [loading, setLoading] = useState(false);
   }, []);
 
   useEffect(() => {
+    setLoading(true);
     if (customerData) {
       // ✅ Set formData (customer details)
       setFormData((prev) => ({
@@ -214,6 +209,7 @@ const [loading, setLoading] = useState(false);
         setBankData(customerData.bankData);
       }
     }
+    setLoading(false);
   }, [customerData]);
 
   const handleProfileUpload = (e) => {
@@ -222,16 +218,6 @@ const [loading, setLoading] = useState(false);
       setFormData((prev) => ({
         ...prev,
         profileImage: file,
-      }));
-    }
-  };
-
-  const handleSignatureUpload = (e) => {
-    const file = e.target.files[0];
-    if (file) {
-      setFormData((prev) => ({
-        ...prev,
-        signature: file,
       }));
     }
   };
@@ -272,46 +258,422 @@ const [loading, setLoading] = useState(false);
   const panFileInputRef = useRef(null);
   const aadharFileInputRef = useRef(null);
 
-  const handleChange = (e) => {
-    const { name, value } = e.target;
+  // const handleChange = (e) => {
+  //   const { name, value } = e.target;
 
-    setFormData((prev) => ({
+  //   setFormData((prev) => ({
+  //     ...prev,
+  //     [name]: value,
+  //   }));
+
+  //   if (errors[name]) {
+  //     setErrors((prev) => ({
+  //       ...prev,
+  //       [name]: "",
+  //     }));
+  //   }
+
+  //   // PAN validation
+  //   if (name === "panNo") {
+  //     const panRegex = /^[A-Z]{5}[0-9]{4}[A-Z]{1}$/;
+
+  //     if (value.trim() !== "" && !panRegex.test(value)) {
+  //       setErrors((prev) => ({
+  //         ...prev,
+  //         panNo: "Please enter a valid PAN number",
+  //       }));
+  //     }
+  //   }
+
+  //   // Email validation
+  //   if (name === "email") {
+  //     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+  //     if (value.trim() !== "" && !emailRegex.test(value)) {
+  //       setErrors((prev) => ({
+  //         ...prev,
+  //         email: "Please enter a valid email address",
+  //       }));
+  //     }
+  //   }
+  // };
+  // const handleChange = (e) => {
+  //   const { name, value } = e.target;
+
+  //   setFormData((prev) => ({
+  //     ...prev,
+  //     [name]: value,
+  //   }));
+
+  //   // Clear existing error
+  //   if (errors[name]) {
+  //     setErrors((prev) => ({
+  //       ...prev,
+  //       [name]: "",
+  //     }));
+  //   }
+
+  //   // =========================
+  //   // ✅ PAN VALIDATION
+  //   // =========================
+  //   if (name === "panNo") {
+  //     const panRegex = /^[A-Z]{5}[0-9]{4}[A-Z]{1}$/;
+
+  //     if (value.trim() !== "" && !panRegex.test(value)) {
+  //       setErrors((prev) => ({
+  //         ...prev,
+  //         panNo: "Please enter a valid PAN number",
+  //       }));
+  //     }
+  //   }
+
+  //   // =========================
+  //   // ✅ EMAIL VALIDATION
+  //   // =========================
+  //   if (name === "email") {
+  //     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+  //     if (value.trim() !== "" && !emailRegex.test(value)) {
+  //       setErrors((prev) => ({
+  //         ...prev,
+  //         email: "Please enter a valid email address",
+  //       }));
+  //     }
+  //   }
+
+  //   // =========================
+  //   // ✅ ADDRESS PROOF VALIDATION 🔥
+  //   // =========================
+  //   if (name === "Additional_AnyDetails1") {
+  //     const selectedProof = addrProofList.find(
+  //       (item) => item.proof_type === formData.Additional_AddressProof,
+  //     );
+
+  //     if (!selectedProof) return;
+
+  //     const { min_length, max_length, format_type, validation_value } =
+  //       selectedProof;
+
+  //     // ✅ Length Check
+  //     if (value.length < min_length) {
+  //       return setErrors((prev) => ({
+  //         ...prev,
+  //         Additional_AnyDetails1: `Minimum ${min_length} characters required`,
+  //       }));
+  //     }
+
+  //     if (value.length > max_length) {
+  //       return setErrors((prev) => ({
+  //         ...prev,
+  //         Additional_AnyDetails1: `Maximum ${max_length} characters allowed`,
+  //       }));
+  //     }
+
+  //     // ✅ Format Check
+  //     if (format_type === "A" && !/^[A-Za-z]+$/.test(value)) {
+  //       return setErrors((prev) => ({
+  //         ...prev,
+  //         Additional_AnyDetails1: "Only alphabets allowed",
+  //       }));
+  //     }
+
+  //     if (format_type === "1" && !/^[0-9]+$/.test(value)) {
+  //       return setErrors((prev) => ({
+  //         ...prev,
+  //         Additional_AnyDetails1: "Only numbers allowed",
+  //       }));
+  //     }
+
+  //     if (format_type === "A-1" && !/^[A-Za-z0-9]+$/.test(value)) {
+  //       return setErrors((prev) => ({
+  //         ...prev,
+  //         Additional_AnyDetails1: "Only alphanumeric allowed",
+  //       }));
+  //     }
+
+  //     // ✅ Sequence Check (IMPORTANT)
+  //     if (validation_value) {
+  //       let seqIndex = 0;
+
+  //       for (let char of value) {
+  //         seqIndex = validation_value.indexOf(char, seqIndex);
+
+  //         if (seqIndex === -1) {
+  //           return setErrors((prev) => ({
+  //             ...prev,
+  //             Additional_AnyDetails1: "Invalid sequence",
+  //           }));
+  //         }
+
+  //         seqIndex++;
+  //       }
+  //     }
+  //   }
+  //   if (name === "Additional_AnyDetails2") {
+  //     const selectedProof = idProofList.find(
+  //       (item) =>
+  //         item.proof_type ===
+  //         (name === "Additional_IDProof" ? value : formData.Additional_IDProof),
+  //     );
+
+  //     if (!selectedProof) return;
+
+  //     const { min_length, max_length, format_type, validation_value } =
+  //       selectedProof;
+
+  //     // ✅ Length Check
+  //     if (value.length < min_length) {
+  //       return setErrors((prev) => ({
+  //         ...prev,
+  //         Additional_AnyDetails2: `Minimum ${min_length} characters required`,
+  //       }));
+  //     }
+
+  //     if (value.length > max_length) {
+  //       return setErrors((prev) => ({
+  //         ...prev,
+  //         Additional_AnyDetails2: `Maximum ${max_length} characters allowed`,
+  //       }));
+  //     }
+
+  //     // ✅ Format Check
+  //     if (format_type === "A" && !/^[A-Za-z]+$/.test(value)) {
+  //       return setErrors((prev) => ({
+  //         ...prev,
+  //         Additional_AnyDetails2: "Only alphabets allowed",
+  //       }));
+  //     }
+
+  //     if (format_type === "1" && !/^[0-9]+$/.test(value)) {
+  //       return setErrors((prev) => ({
+  //         ...prev,
+  //         Additional_AnyDetails2: "Only numbers allowed",
+  //       }));
+  //     }
+
+  //     if (format_type === "A-1" && !/^[A-Za-z0-9]+$/.test(value)) {
+  //       return setErrors((prev) => ({
+  //         ...prev,
+  //         Additional_AnyDetails2: "Only alphanumeric allowed",
+  //       }));
+  //     }
+
+  //     // ✅ Sequence Check
+  //     if (validation_value) {
+  //       let seqIndex = 0;
+
+  //       for (let char of value) {
+  //         seqIndex = validation_value.indexOf(char, seqIndex);
+
+  //         if (seqIndex === -1) {
+  //           return setErrors((prev) => ({
+  //             ...prev,
+  //             Additional_AnyDetails2: "Invalid sequence",
+  //           }));
+  //         }
+
+  //         seqIndex++;
+  //       }
+  //     }
+  //   }
+  // };
+
+  const handleChange = (e) => {
+  const { name, value } = e.target;
+
+  setFormData((prev) => {
+    const updatedData = {
       ...prev,
       [name]: value,
-    }));
+    };
 
-    if (errors[name]) {
-      setErrors((prev) => ({
+    // =========================
+    // ✅ AUTO PRINT NAME
+    // =========================
+    if (["firstName", "middleName", "lastName"].includes(name)) {
+      updatedData.printName = [
+        updatedData.firstName,
+        updatedData.middleName,
+        updatedData.lastName,
+      ]
+        .filter((val) => val && val.trim() !== "")
+        .join(" ");
+    }
+
+    return updatedData;
+  });
+
+  // =========================
+  // ✅ CLEAR ERROR
+  // =========================
+  if (errors[name]) {
+    setErrors((prev) => ({
+      ...prev,
+      [name]: "",
+    }));
+  }
+
+  // =========================
+  // ✅ PAN VALIDATION
+  // =========================
+  if (name === "panNo") {
+    const panRegex = /^[A-Z]{5}[0-9]{4}[A-Z]{1}$/;
+
+    if (value.trim() !== "" && !panRegex.test(value)) {
+      return setErrors((prev) => ({
         ...prev,
-        [name]: "",
+        panNo: "Please enter a valid PAN number",
+      }));
+    }
+  }
+
+  // =========================
+  // ✅ EMAIL VALIDATION
+  // =========================
+  if (name === "email") {
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+    if (value.trim() !== "" && !emailRegex.test(value)) {
+      return setErrors((prev) => ({
+        ...prev,
+        email: "Please enter a valid email address",
+      }));
+    }
+  }
+
+  // =========================
+  // ✅ ADDRESS PROOF VALIDATION
+  // =========================
+  if (name === "Additional_AnyDetails1") {
+    const selectedProof = addrProofList.find(
+      (item) => item.proof_type === formData.Additional_AddressProof
+    );
+
+    if (!selectedProof) return;
+
+    const { min_length, max_length, format_type, validation_value } =
+      selectedProof;
+
+    if (value.length < min_length) {
+      return setErrors((prev) => ({
+        ...prev,
+        Additional_AnyDetails1: `Minimum ${min_length} characters required`,
       }));
     }
 
-    // PAN validation
-    if (name === "panNo") {
-      const panRegex = /^[A-Z]{5}[0-9]{4}[A-Z]{1}$/;
-
-      if (value.trim() !== "" && !panRegex.test(value)) {
-        setErrors((prev) => ({
-          ...prev,
-          panNo: "Please enter a valid PAN number",
-        }));
-      }
+    if (value.length > max_length) {
+      return setErrors((prev) => ({
+        ...prev,
+        Additional_AnyDetails1: `Maximum ${max_length} characters allowed`,
+      }));
     }
 
-    // Email validation
-    if (name === "email") {
-      const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (format_type === "A" && !/^[A-Za-z]+$/.test(value)) {
+      return setErrors((prev) => ({
+        ...prev,
+        Additional_AnyDetails1: "Only alphabets allowed",
+      }));
+    }
 
-      if (value.trim() !== "" && !emailRegex.test(value)) {
-        setErrors((prev) => ({
-          ...prev,
-          email: "Please enter a valid email address",
-        }));
+    if (format_type === "1" && !/^[0-9]+$/.test(value)) {
+      return setErrors((prev) => ({
+        ...prev,
+        Additional_AnyDetails1: "Only numbers allowed",
+      }));
+    }
+
+    if (format_type === "A-1" && !/^[A-Za-z0-9]+$/.test(value)) {
+      return setErrors((prev) => ({
+        ...prev,
+        Additional_AnyDetails1: "Only alphanumeric allowed",
+      }));
+    }
+
+    if (validation_value) {
+      let seqIndex = 0;
+
+      for (let char of value) {
+        seqIndex = validation_value.indexOf(char, seqIndex);
+
+        if (seqIndex === -1) {
+          return setErrors((prev) => ({
+            ...prev,
+            Additional_AnyDetails1: "Invalid sequence",
+          }));
+        }
+
+        seqIndex++;
       }
     }
-  };
+  }
 
+  // =========================
+  // ✅ ID PROOF VALIDATION
+  // =========================
+  if (name === "Additional_AnyDetails2") {
+    const selectedProof = idProofList.find(
+      (item) =>
+        item.proof_type === formData.Additional_IDProof
+    );
+
+    if (!selectedProof) return;
+
+    const { min_length, max_length, format_type, validation_value } =
+      selectedProof;
+
+    if (value.length < min_length) {
+      return setErrors((prev) => ({
+        ...prev,
+        Additional_AnyDetails2: `Minimum ${min_length} characters required`,
+      }));
+    }
+
+    if (value.length > max_length) {
+      return setErrors((prev) => ({
+        ...prev,
+        Additional_AnyDetails2: `Maximum ${max_length} characters allowed`,
+      }));
+    }
+
+    if (format_type === "A" && !/^[A-Za-z]+$/.test(value)) {
+      return setErrors((prev) => ({
+        ...prev,
+        Additional_AnyDetails2: "Only alphabets allowed",
+      }));
+    }
+
+    if (format_type === "1" && !/^[0-9]+$/.test(value)) {
+      return setErrors((prev) => ({
+        ...prev,
+        Additional_AnyDetails2: "Only numbers allowed",
+      }));
+    }
+
+    if (format_type === "A-1" && !/^[A-Za-z0-9]+$/.test(value)) {
+      return setErrors((prev) => ({
+        ...prev,
+        Additional_AnyDetails2: "Only alphanumeric allowed",
+      }));
+    }
+
+    if (validation_value) {
+      let seqIndex = 0;
+
+      for (let char of value) {
+        seqIndex = validation_value.indexOf(char, seqIndex);
+
+        if (seqIndex === -1) {
+          return setErrors((prev) => ({
+            ...prev,
+            Additional_AnyDetails2: "Invalid sequence",
+          }));
+        }
+
+        seqIndex++;
+      }
+    }
+  }
+};
   const handleFileChange1 = (e) => {
     const { name, files } = e.target;
     setFormData((prev) => ({
@@ -342,8 +704,8 @@ const [loading, setLoading] = useState(false);
               Corresponding_Pincode: prevData.Permanent_Pincode,
               Corresponding_State: prevData.Permanent_State,
               Corresponding_City: prevData.Permanent_City,
-            Corresponding_Country: prevData.Permanent_Country,
-              Corresponding_Area: prevData.Permanent_Area
+              Corresponding_Country: prevData.Permanent_Country,
+              Corresponding_Area: prevData.Permanent_Area,
             }
           : {
               // ❌ Clear Corresponding when unchecked (optional)
@@ -374,22 +736,150 @@ const [loading, setLoading] = useState(false);
 
   console.log("Logged in user:", loginUser);
 
-  const requiredFields = {
+  // const requiredFields = {
+  //   // 🔴 Personal Info
+  //   // panNo: "PAN No",
+  //   aadhar: "Aadhar Number",
+  //   printName: "Print Name",
+  //   email: "Email Id",
+  //   mobile: "Mobile No",
+  //   dob: "Date of Birth",
+  //   gender: "Gender",
+  //   partyType: "partyType",
+  //   occupation: "occupation",
+  //   firstName: "firstName",
+  //   lastName: "lastName",
+  //   pep: "PEP Status",
+
+  //   // 🔴 Permanent Address
+  //   Permanent_Address: "Permanent Address",
+  //   Permanent_Area: "Area",
+  //   Permanent_City: "City",
+  //   Permanent_State: "State",
+  //   Permanent_Pincode: "Pincode",
+
+  //   Corresponding_Address: "Current Address",
+  //   Corresponding_Area: "Area",
+  //   Corresponding_City: "City",
+  //   Corresponding_State: "State",
+  //   Corresponding_Pincode: "Pincode",
+
+  //   // 🔴 Nominee
+  //   Nominee_NomineeName: "Nominee Name",
+  //   Nominee_Relation: "Nominee Relation",
+  //   Nominee_Address: "Nominee Address",
+  //   Nominee_State: "Nominee State",
+  //   Nominee_City: "Nominee City",
+
+  //   // 🔴 Additional Docs
+  //   Additional_AddressProof: "Address Proof",
+  //   Additional_IDProof: "ID Proof",
+  //   Additional_UploadDocumentFile1: "Address Proof Document",
+  //   Additional_UploadDocumentFile2: "ID Proof Document",
+  // };
+
+  // const validateRequiredFields = () => {
+  //   let errors = {};
+  //   let messages = [];
+
+  //   // 🔹 Required fields check
+  //   Object.entries(requiredFields).forEach(([field, label]) => {
+  //     if (!formData[field] || formData[field].toString().trim() === "") {
+  //       errors[field] = `${label} is required`;
+  //       messages.push(`${label} is required`);
+  //     }
+  //   });
+
+  //   // 🔹 Email validation
+  //   if (formData.email) {
+  //     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+  //     if (!emailRegex.test(formData.email)) {
+  //       errors.email = "Invalid email format";
+  //       messages.push("Invalid email format");
+  //     }
+  //   }
+
+  //   // 🔹 Mobile validation
+  //   if (formData.mobile) {
+  //     const mobileRegex = /^[6-9]\d{9}$/;
+  //     if (!mobileRegex.test(formData.mobile)) {
+  //       errors.mobile = "Invalid mobile number";
+  //       messages.push("Mobile must be 10 digits & start with 6-9");
+  //     }
+  //   }
+
+  //   if (
+  //     formData.mobile &&
+  //     formData.altMobile &&
+  //     formData.mobile === formData.altMobile
+  //   ) {
+  //     errors.altMobile = "Alternate mobile must be different from mobile";
+  //     messages.push("Mobile and Alternate Mobile cannot be the same");
+  //   }
+
+  //   // 🔹 PAN validation
+  //   if (formData.panNo) {
+  //     const panRegex = /^[A-Z]{5}[0-9]{4}[A-Z]{1}$/;
+  //     if (!panRegex.test(formData.panNo)) {
+  //       errors.panNo = "Invalid PAN format";
+  //       messages.push("Invalid PAN format (ABCDE1234F)");
+  //     }
+  //   }
+
+  //   // 🔹 Aadhar validation
+  //   if (formData.aadhar) {
+  //     const aadharRegex = /^\d{12}$/;
+  //     if (!aadharRegex.test(formData.aadhar)) {
+  //       errors.aadhar = "Aadhar must be 12 digits";
+  //       messages.push("Aadhar must be 12 digits");
+  //     }
+  //   }
+
+  //   // 🔹 File validations
+  //   if (!formData.profileImage) {
+  //     errors.profileImage = "Customer photo required";
+  //     messages.push("Customer photo is required");
+  //   }
+
+  //   if (!formData.signature) {
+  //     errors.signature = "Signature required";
+  //     messages.push("Customer signature is required");
+  //   }
+
+  //   // 🔹 PEP restriction
+  //   if (formData.pep === "yes") {
+  //     errors.pep = "PEP not allowed";
+  //     messages.push("PEP customers are not allowed");
+  //   }
+
+  //   setErrors(errors);
+
+  //   // 🔥 Focus first error
+  //   const firstErrorField = Object.keys(errors)[0];
+  //   if (firstErrorField) {
+  //     document.querySelector(`[name="${firstErrorField}"]`)?.focus();
+  //   }
+
+  //   return {
+  //     isValid: Object.keys(errors).length === 0,
+  //     messages,
+  //   };
+  // };
+
+
+const requiredFields = {
   // 🔴 Personal Info
-  // panNo: "PAN No",
   aadhar: "Aadhar Number",
   printName: "Print Name",
   email: "Email Id",
   mobile: "Mobile No",
   dob: "Date of Birth",
   gender: "Gender",
-  marital: "marital",
-  partyType: "partyType",
-  occupation: "occupation",
-  firstName: "firstName",
-  lastName: "lastName",
-    pep: "PEP Status",
-  
+  partyType: "Party Type",
+  occupation: "Occupation",
+  firstName: "First Name",
+  lastName: "Last Name",
+  pep: "PEP Status",
 
   // 🔴 Permanent Address
   Permanent_Address: "Permanent Address",
@@ -398,6 +888,7 @@ const [loading, setLoading] = useState(false);
   Permanent_State: "State",
   Permanent_Pincode: "Pincode",
 
+  // 🔴 Corresponding Address
   Corresponding_Address: "Current Address",
   Corresponding_Area: "Area",
   Corresponding_City: "City",
@@ -418,213 +909,498 @@ const [loading, setLoading] = useState(false);
   Additional_UploadDocumentFile2: "ID Proof Document",
 };
 
-  const validateRequiredFields = () => {
-  let errors = {};
-  let messages = [];
 
-  // 🔹 Required fields check
+//   const validateRequiredFields = () => {
+//   let errors = {};
+
+//   // 🔹 Required fields
+//   Object.entries(requiredFields).forEach(([field, label]) => {
+//     if (!formData[field] || formData[field].toString().trim() === "") {
+//       errors[field] = `${label} is required`;
+//     }
+//   });
+
+//   // 🔹 Email validation
+//   if (formData.email) {
+//     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+//     if (!emailRegex.test(formData.email)) {
+//       errors.email = "Invalid email format";
+//     }
+//   }
+
+//   // 🔹 Mobile validation
+//   if (formData.mobile) {
+//     const mobileRegex = /^[6-9]\d{9}$/;
+
+//     if (!mobileRegex.test(formData.mobile)) {
+//       errors.mobile = "Mobile must be 10 digits & start with 6-9";
+//     }
+//   }
+
+//   // 🔹 Alternate mobile validation
+//   if (
+//     formData.mobile &&
+//     formData.altMobile &&
+//     formData.mobile === formData.altMobile
+//   ) {
+//     errors.altMobile =
+//       "Alternate mobile must be different from mobile";
+//   }
+
+//   // 🔹 PAN validation
+//   if (formData.panNo) {
+//     const panRegex = /^[A-Z]{5}[0-9]{4}[A-Z]{1}$/;
+
+//     if (!panRegex.test(formData.panNo)) {
+//       errors.panNo = "Invalid PAN format";
+//     }
+//   }
+
+//   // 🔹 Aadhar validation
+//   if (formData.aadhar) {
+//     const aadharRegex = /^\d{12}$/;
+
+//     if (!aadharRegex.test(formData.aadhar)) {
+//       errors.aadhar = "Aadhar must be 12 digits";
+//     }
+//   }
+
+//   // 🔹 File validations
+//   if (!formData.profileImage) {
+//     errors.profileImage = "Customer photo required";
+//   }
+
+//   if (!formData.signature) {
+//     errors.signature = "Signature required";
+//   }
+
+//   // 🔹 PEP validation
+//   if (formData.pep === "yes") {
+//     errors.pep = "PEP customers are not allowed";
+//   }
+
+//   setErrors(errors);
+
+//   return Object.keys(errors).length === 0;
+// };
+ 
+const validateRequiredFields = () => {
+  let errors = {};
+
+  // 🔹 Required field validation
   Object.entries(requiredFields).forEach(([field, label]) => {
-    if (!formData[field] || formData[field].toString().trim() === "") {
+    const value = formData[field];
+
+    if (
+      value === undefined ||
+      value === null ||
+      value.toString().trim() === ""
+    ) {
       errors[field] = `${label} is required`;
-      messages.push(`${label} is required`);
     }
   });
 
   // 🔹 Email validation
   if (formData.email) {
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
     if (!emailRegex.test(formData.email)) {
       errors.email = "Invalid email format";
-      messages.push("Invalid email format");
     }
   }
 
   // 🔹 Mobile validation
   if (formData.mobile) {
     const mobileRegex = /^[6-9]\d{9}$/;
+
     if (!mobileRegex.test(formData.mobile)) {
-      errors.mobile = "Invalid mobile number";
-      messages.push("Mobile must be 10 digits & start with 6-9");
+      errors.mobile =
+        "Mobile must be 10 digits & start with 6-9";
     }
-    }
-    
-    if (
-  formData.mobile &&
-  formData.altMobile &&
-  formData.mobile === formData.altMobile
-) {
-  errors.altMobile = "Alternate mobile must be different from mobile";
-  messages.push("Mobile and Alternate Mobile cannot be the same");
-}
+  }
+
+  // 🔹 Alternate mobile validation
+  if (
+    formData.mobile &&
+    formData.altMobile &&
+    formData.mobile === formData.altMobile
+  ) {
+    errors.altMobile =
+      "Alternate mobile must be different from mobile";
+  }
 
   // 🔹 PAN validation
   if (formData.panNo) {
     const panRegex = /^[A-Z]{5}[0-9]{4}[A-Z]{1}$/;
+
     if (!panRegex.test(formData.panNo)) {
       errors.panNo = "Invalid PAN format";
-      messages.push("Invalid PAN format (ABCDE1234F)");
     }
   }
 
   // 🔹 Aadhar validation
   if (formData.aadhar) {
     const aadharRegex = /^\d{12}$/;
+
     if (!aadharRegex.test(formData.aadhar)) {
       errors.aadhar = "Aadhar must be 12 digits";
-      messages.push("Aadhar must be 12 digits");
     }
   }
+
+  // 🔹 Pincode validation
+  [
+    "Permanent_Pincode",
+    "Corresponding_Pincode",
+  ].forEach((field) => {
+    if (formData[field]) {
+      const pincodeRegex = /^\d{6}$/;
+
+      if (!pincodeRegex.test(formData[field])) {
+        errors[field] = "Pincode must be 6 digits";
+      }
+    }
+  });
 
   // 🔹 File validations
   if (!formData.profileImage) {
     errors.profileImage = "Customer photo required";
-    messages.push("Customer photo is required");
   }
 
   if (!formData.signature) {
     errors.signature = "Signature required";
-    messages.push("Customer signature is required");
   }
 
-  // 🔹 PEP restriction
+  // 🔹 Party Type validation
+  if (!formData.partyType) {
+    errors.partyType = "Party Type is required";
+  }
+
+  // 🔹 PEP validation
   if (formData.pep === "yes") {
-    errors.pep = "PEP not allowed";
-    messages.push("PEP customers are not allowed");
+    errors.pep = "PEP customers are not allowed";
   }
 
   setErrors(errors);
 
-  // 🔥 Focus first error
-  const firstErrorField = Object.keys(errors)[0];
-  if (firstErrorField) {
-    document.querySelector(`[name="${firstErrorField}"]`)?.focus();
-  }
-
-  return {
-    isValid: Object.keys(errors).length === 0,
-    messages,
-  };
+  return Object.keys(errors).length === 0;
 };
 
-  
-  const handleSubmit = async () => {
-    debugger;
-      setLoading(true);
-    try {
-      // Validate all required fields before submission
-     const validation = validateRequiredFields();
 
-if (!validation.isValid) {
-  alert("❌ " + validation.messages[0]); // ✅ show FIRST error only
-  return;
-}
-      if (!formData.profileImage) {
-        alert("❌ Customer photo is required");
-        return;
-      }
+// const handleSubmit = async () => {
+//     debugger;
+//     setLoading(true);
+//     try {
+//        const isValid = validateRequiredFields();
 
-      // ✅ 🆕 Signature validation
-      if (!formData.signature) {
-        alert("❌ Customer signature is required");
-        return;
-      }
+//     if (!isValid) {
+//       setLoading(false);
+//       return;
+//     }
+//       if (!formData.profileImage) {
+//         alert("❌ Customer photo is required");
+//         return;
+//       }
 
-      if (formData.pep === "yes") {
-        alert(
-          "❌ Politically Exposed Persons (PEP) cannot be added as customers.",
-        );
-        return; // ⛔ STOP execution
-      }
-      const { bankData, ...rest } = formData;
+//       // ✅ 🆕 Signature validation
+//       if (!formData.signature) {
+//         alert("❌ Customer signature is required");
+//         return;
+//       }
 
-      // 🧩 Step 2: Prepare the payload without bankData
-      const payloadToEncrypt = {
-        ...rest,
-        Added_On: rest.Added_On ? formatDateToMySQL(rest.Added_On) : null,
-        createdAt: rest.createdAt ? formatDateToMySQL(rest.createdAt) : null,
-        // 🗓️ Date field conversion (IMPORTANT)
-        dob: formatDateToMySQL(rest.dob),
-        Remark: content,
-        Added_By: loginUser,
-      };
+//       if (formData.pep === "yes") {
+//         alert(
+//           "❌ Politically Exposed Persons (PEP) cannot be added as customers.",
+//         );
+//         return; // ⛔ STOP execution
+//       }
+//       const { bankData, ...rest } = formData;
 
-      // 🔒 Step 3: Encrypt only the filtered data
-      const encrypted = encryptData(payloadToEncrypt);
-      const formDataToSend = new FormData();
-      formDataToSend.append("data", encrypted);
+//       // 🧩 Step 2: Prepare the payload without bankData
+//       const payloadToEncrypt = {
+//         ...rest,
+//         Added_On: rest.Added_On ? formatDateToMySQL(rest.Added_On) : null,
+//         createdAt: rest.createdAt ? formatDateToMySQL(rest.createdAt) : null,
+//         // 🗓️ Date field conversion (IMPORTANT)
+//         dob: formatDateToMySQL(rest.dob),
+//         Remark: content,
+//         Added_By: loginUser,
+//       };
 
-      // Append uploaded files only if present
-      if (formData.panFile) formDataToSend.append("panFile", formData.panFile);
-      if (formData.aadharFile)
-        formDataToSend.append("aadharFile", formData.aadharFile);
-      if (formData.profileImage)
-        formDataToSend.append("profileImage", formData.profileImage);
-      if (formData.signature)
-        formDataToSend.append("signature", formData.signature);
-      if (formData.Additional_UploadDocumentFile1)
-        formDataToSend.append(
-          "Additional_UploadDocumentFile1",
-          formData.Additional_UploadDocumentFile1,
-        );
-      if (formData.Additional_UploadDocumentFile2)
-        formDataToSend.append(
-          "Additional_UploadDocumentFile2",
-          formData.Additional_UploadDocumentFile2,
-        );
+//       // 🔒 Step 3: Encrypt only the filtered data
+//       const encrypted = encryptData(payloadToEncrypt);
+//       const formDataToSend = new FormData();
+//       formDataToSend.append("data", encrypted);
 
-      let response;
+//       // Append uploaded files only if present
+//       if (formData.panFile) formDataToSend.append("panFile", formData.panFile);
+//       if (formData.aadharFile)
+//         formDataToSend.append("aadharFile", formData.aadharFile);
+//       if (formData.profileImage)
+//         formDataToSend.append("profileImage", formData.profileImage);
+//       if (formData.signature)
+//         formDataToSend.append("signature", formData.signature);
+//       if (formData.Additional_UploadDocumentFile1)
+//         formDataToSend.append(
+//           "Additional_UploadDocumentFile1",
+//           formData.Additional_UploadDocumentFile1,
+//         );
+//       if (formData.Additional_UploadDocumentFile2)
+//         formDataToSend.append(
+//           "Additional_UploadDocumentFile2",
+//           formData.Additional_UploadDocumentFile2,
+//         );
 
-      if (mode === "edit") {
-        // ✳️ Update existing customer
-        response = await axios.post(
-          `${API}/Master/doc/updateCustomer`,
-          formDataToSend,
-          { headers: { "Content-Type": "multipart/form-data" } },
-        );
-      } else {
-        // 🆕 Add new customer
-        response = await axios.post(`${API}/Master/doc/add`, formDataToSend, {
-          headers: { "Content-Type": "multipart/form-data" },
-        });
-      }
+//       let response;
 
-      console.log("✅ Customer API Response:", response.data);
+//       if (mode === "edit") {
+//         // ✳️ Update existing customer
+//         response = await axios.post(
+//           `${API}/Master/doc/updateCustomer`,
+//           formDataToSend,
+//           { headers: { "Content-Type": "multipart/form-data" } },
+//         );
+//       } else {
+//         // 🆕 Add new customer
+//         response = await axios.post(`${API}/Master/doc/add`, formDataToSend, {
+//           headers: { "Content-Type": "multipart/form-data" },
+//         });
+//       }
 
-      if (response.data.status && response.data.statuscode === 200) {
-        const customerId =
-          mode === "edit" ? formData.id : response.data.customerId;
+//       console.log("✅ Customer API Response:", response.data);
 
-        alert(response.data.message);
+//       if (response.data.status && response.data.statuscode === 200) {
+//         const customerId =
+//           mode === "edit" ? formData.id : response.data.customerId;
 
-        // Step 2️⃣: Call add or update bank details API
-        if (mode === "edit") {
-          await updateBankDetails(customerId);
-        } else {
-          await addBankDetails(customerId);
+//         alert(response.data.message);
+
+//         // Step 2️⃣: Call add or update bank details API
+//         if (mode === "edit") {
+//           await updateBankDetails(customerId);
+//         } else {
+//           await addBankDetails(customerId);
+//         }
+//         setLoading(false);
+//         navigate("/Customer-Profile-List");
+//       } else {
+//         alert(
+//           " Something went wrong: " +
+//             (response.data.message || "Unknown error"),
+//         );
+//         setLoading(false);
+//       }
+//     } catch (error) {
+//       console.error("❌ Error submitting form:", error);
+
+//       // ✅ Extract backend message safely
+//       const backendMessage =
+//         error?.response?.data?.message ||
+//         error?.response?.data?.error ||
+//         "An error occurred while saving the customer.";
+
+//       alert("❌ " + backendMessage);
+//       setLoading(false);
+//     }
+//   };
+const handleSubmit = async () => {
+  debugger;
+
+  setLoading(true);
+
+  try {
+    // ✅ Validate required fields
+    const isValid = validateRequiredFields();
+
+    if (!isValid) {
+      setLoading(false);
+      return;
+    }
+
+    // ✅ Profile image validation
+    if (!formData.profileImage && mode !== "edit") {
+      alert("❌ Customer photo is required");
+      setLoading(false);
+      return;
+    }
+
+    // ✅ Signature validation
+    if (!formData.signature && mode !== "edit") {
+      alert("❌ Customer signature is required");
+      setLoading(false);
+      return;
+    }
+
+    // ✅ PEP validation
+    if (formData.pep === "yes") {
+      alert(
+        "❌ Politically Exposed Persons (PEP) cannot be added as customers."
+      );
+      setLoading(false);
+      return;
+    }
+
+    // ✅ Remove bankData from customer payload
+    const { bankData: removedBankData, ...rest } = formData;
+
+    // ✅ Prepare payload
+    const payloadToEncrypt = {
+      ...rest,
+      Added_On: rest.Added_On
+        ? formatDateToMySQL(rest.Added_On)
+        : null,
+
+      createdAt: rest.createdAt
+        ? formatDateToMySQL(rest.createdAt)
+        : null,
+
+      dob: rest.dob
+        ? formatDateToMySQL(rest.dob)
+        : null,
+
+      Remark: content,
+      Added_By: loginUser,
+    };
+
+    // ✅ Encrypt data
+    const encrypted = encryptData(payloadToEncrypt);
+
+    // ✅ Create FormData
+    const formDataToSend = new FormData();
+
+    formDataToSend.append("data", encrypted);
+
+    // ✅ Append files
+    if (formData.panFile) {
+      formDataToSend.append("panFile", formData.panFile);
+    }
+
+    if (formData.aadharFile) {
+      formDataToSend.append("aadharFile", formData.aadharFile);
+    }
+
+    if (formData.profileImage) {
+      formDataToSend.append(
+        "profileImage",
+        formData.profileImage
+      );
+    }
+
+    if (formData.signature) {
+      formDataToSend.append(
+        "signature",
+        formData.signature
+      );
+    }
+
+    if (formData.Additional_UploadDocumentFile1) {
+      formDataToSend.append(
+        "Additional_UploadDocumentFile1",
+        formData.Additional_UploadDocumentFile1
+      );
+    }
+
+    if (formData.Additional_UploadDocumentFile2) {
+      formDataToSend.append(
+        "Additional_UploadDocumentFile2",
+        formData.Additional_UploadDocumentFile2
+      );
+    }
+
+    let response;
+
+    // ✅ Add / Update Customer
+    if (mode === "edit") {
+      response = await axios.post(
+        `${API}/Master/doc/updateCustomer`,
+        formDataToSend,
+        {
+          headers: {
+            "Content-Type": "multipart/form-data",
+          },
         }
-       setLoading(false);
-        navigate("/Customer-Profile-List");
-      } else {
-        alert(
-          " Something went wrong: " +
-            (response.data.message || "Unknown error"),
-        );
-        setLoading(false);
-      }
-    }catch (error) {
-  console.error("❌ Error submitting form:", error);
+      );
+    } else {
+      response = await axios.post(
+        `${API}/Master/doc/add`,
+        formDataToSend,
+        {
+          headers: {
+            "Content-Type": "multipart/form-data",
+          },
+        }
+      );
+    }
 
-  // ✅ Extract backend message safely
-  const backendMessage =
-    error?.response?.data?.message ||
-    error?.response?.data?.error ||
-    "An error occurred while saving the customer.";
+    console.log(
+      "✅ Customer API Response:",
+      response.data
+    );
 
-      alert("❌ " + backendMessage);
-        setLoading(false);
+    // ✅ Success
+    if (
+      response.data.status &&
+      response.data.statuscode === 200
+    ) {
+      const customerId =
+        mode === "edit"
+          ? formData.id
+          : response.data.customerId;
+
+      // ✅ Prepare latest bank data
+      const updatedBankData = bankData.map((item) => ({
+        ...item,
+        customerId: customerId,
+        Update_By: loginUser,
+      }));
+
+      console.log(
+        updatedBankData,
+        "updatedBankData"
+      );
+
+      // ✅ Save bank details
+     if (updatedBankData.length > 0) {
+  const customerId = updatedBankData[0]?.customerId;
+
+  if (mode === "edit") {
+    await updateBankDetails(customerId);
+  } else {
+    await addBankDetails(customerId);
+  }
 }
-  };
 
+      alert(response.data.message);
+
+      setLoading(false);
+
+      navigate("/Customer-Profile-List");
+    } else {
+      alert(
+        "❌ Something went wrong: " +
+          (response.data.message ||
+            "Unknown error")
+      );
+
+      setLoading(false);
+    }
+  } catch (error) {
+    console.error(
+      "❌ Error submitting form:",
+      error
+    );
+
+    // ✅ Backend error message
+    const backendMessage =
+      error?.response?.data?.message ||
+      error?.response?.data?.error ||
+      "An error occurred while saving the customer.";
+
+    alert("❌ " + backendMessage);
+
+    setLoading(false);
+  }
+};
   const addBankDetails = async (customerId) => {
     try {
       const formData = new FormData();
@@ -650,31 +1426,51 @@ if (!validation.isValid) {
     }
   };
 
-  const updateBankDetails = async (customerId) => {
-    debugger;
-    try {
-      const formData = new FormData();
-      formData.append("bankData", JSON.stringify(bankData));
-      formData.append("customerId", customerId);
+const updateBankDetails = async (customerId) => {
+  debugger
+  try {
+    const formData = new FormData();
 
-      // Append cheque files (only new ones)
-      bankData.forEach((bank) => {
-        if (bank.cancelCheque && bank.cancelCheque instanceof File) {
-          formData.append("cancelCheque", bank.cancelCheque);
-        }
-      });
+    // ✅ Send proper JSON string
+    formData.append(
+      "bankData",
+      JSON.stringify(bankData)
+    );
 
-      const res = await axios.put(`${API}/bank/update`, formData, {
-        headers: { "Content-Type": "multipart/form-data" },
-      });
+    formData.append(
+      "customerId",
+      String(customerId)
+    );
 
-      console.log("✅ Bank Update Response:", res.data);
-    } catch (error) {
-      console.error("❌ Error updating bank details:", error);
-    }
-  };
+    // ✅ Upload only new files
+    bankData.forEach((bank) => {
+      if (
+        bank.cancelCheque &&
+        bank.cancelCheque instanceof File
+      ) {
+        formData.append(
+          "cancelCheque",
+          bank.cancelCheque
+        );
+      }
+    });
 
-  
+    const res = await axios.put(
+      `${API}/bank/updateBankDetails`,
+      formData,
+      {
+        headers: {
+          "Content-Type":
+            "multipart/form-data",
+        },
+      }
+    );
+
+    console.log(res.data);
+  } catch (error) {
+    console.log(error);
+  }
+};
 
   const verifyPan = async () => {
     debugger;
@@ -682,7 +1478,7 @@ if (!validation.isValid) {
       alert("Enter PAN Number");
       return;
     }
-   setLoading(true);
+    setLoading(true);
     try {
       const res = await axios.post(`${API}/kyc/pan/verify`, {
         pan: formData.panNo,
@@ -735,7 +1531,7 @@ if (!validation.isValid) {
     } catch (error) {
       console.error("Verification Error:", error);
       alert("PAN Verification Failed");
-       setLoading(false);
+      setLoading(false);
     }
   };
 
@@ -825,6 +1621,37 @@ if (!validation.isValid) {
     }
   };
 
+  const sendMobileOTP2 = async () => {
+    const mobile = String(formData.altMobile || "").trim();
+
+    if (!mobile) {
+      alert("Enter mobile number");
+      return;
+    }
+
+    // ✅ Check 10-digit Indian mobile number
+    if (!/^[6-9]\d{9}$/.test(mobile)) {
+      alert("Enter a valid 10-digit mobile number");
+      return;
+    }
+
+    try {
+      const res = await axios.post(`${API}/otp/send-otp`, {
+        mobile: String(formData.altMobile).trim(),
+      });
+
+      if (res.data.success) {
+        alert("OTP sent successfully");
+        setIsOtpSent(true);
+        // setFormData((prev) => ({ ...prev, MobileNumberOtp2: "" }));
+      } else {
+        alert(res.data.message || "Failed to send OTP");
+      }
+    } catch (err) {
+      alert("OTP send failed");
+    }
+  };
+
   // 2. Function to Verify OTP
   const verifyMobileOTP = async () => {
     if (!formData.MobileNumberOtp) {
@@ -871,10 +1698,15 @@ if (!validation.isValid) {
       alert(err?.response?.data?.error || "GST verification failed");
     }
   };
-
-  // ===============================
-  // Party Types – dynamic (active only)
-  // ===============================
+const getFileName = (file) => {
+  if (file instanceof File) {
+    return file.name;
+  }
+  if (typeof file === "string") {
+    return file.split("/").pop();
+  }
+  return "";
+};
   const [partyTypeList, setPartyTypeList] = useState([]);
 
   useEffect(() => {
@@ -895,7 +1727,7 @@ if (!validation.isValid) {
   return (
     <div>
       <div className="flex justify-center sticky top-0 md:top-[50px] z-40 px-4">
-        <div className="flex flex-col md:flex-row items-center justify-between w-full max-w-[1462px] min-h-[40px]  md:py-0  md:px-6 border  border-gray-200  bg-white gap-4">
+        <div className="flex flex-col md:flex-row items-center justify-between w-full max-w-[1462px] min-h-[40px]  md:py-0  md:px-2 border  border-gray-200  bg-white gap-4">
           {/* Left heading */}
           <h2
             style={{
@@ -907,13 +1739,12 @@ if (!validation.isValid) {
             className="text-red-600 whitespace-nowrap"
           >
             {modedata === "edit"
-              ? "Edit Customer Profile Form"
-              : "Add Customer Profile Form"}
+              ? `Edit Customer Profile - ${customerData.id}`
+              : "Create Customer Profile "}
           </h2>
 
           {/* Right section (search + buttons) */}
           <div className="flex flex-wrap items-center justify-center md:justify-end gap-4 md:gap-6 w-full md:w-auto">
-            {/* Bad Debtor Checkbox */}
             <label className="flex items-center gap-2 font-['Roboto'] text-xs">
               <span className="font-['Roboto'] text-xs text-[#000000]">
                 Mobile access
@@ -956,7 +1787,7 @@ if (!validation.isValid) {
                     });
                   }
                 }}
-                className="w-5 h-5 accent-red-600 cursor-pointer"
+                className=" accent-red-600 cursor-pointer"
               />
             </div>
 
@@ -983,7 +1814,7 @@ if (!validation.isValid) {
       {/* personal information */}
       <div className="flex mx-auto  w-[1462px]">
         <div className="bg-[#FFE6E6] pl-2 pr-2  w-full mx-auto ">
-          <p className="font-[Source_Sans_3] font-bold text-[24px] leading-[100%] tracking-[0.03em] text-[#0A2478] mt-1">
+          <p className="font-[Source_Sans_3] font-bold text-[15px] leading-[100%] tracking-[0.03em] text-[#0A2478] mt-1">
             Personal Information
           </p>
 
@@ -1001,7 +1832,7 @@ if (!validation.isValid) {
                         name="panNo"
                         value={formData.panNo}
                         onChange={handleChange}
-                        className={`border border-r-0 rounded-l-[8px] px-2 w-full h-full focus:outline-none focus:ring-1 focus:ring-blue-500 bg-white text-xs `}
+                        className={`border-gray-200 border-r-0 rounded-l-[8px] px-2 w-full h-full focus:outline-none focus:ring-1 focus:ring-blue-500 bg-white text-xs `}
                       />
                       <FaPaperclip
                         className="absolute right-2 top-1/2 -translate-y-1/2 text-gray-400 cursor-pointer"
@@ -1035,9 +1866,19 @@ if (!validation.isValid) {
                         type="number"
                         placeholder="Enter Aadhar"
                         name="aadhar"
+                        max={12}
                         value={formData.aadhar}
                         onChange={handleChange}
-                        className={`border border-r-0 rounded-l-[8px] px-2 w-full h-full focus:outline-none focus:ring-1 focus:ring-blue-500 bg-white text-xs `}
+                        // className={`border-gray-200 border-r-0 rounded-l-[8px] px-2 w-full h-full focus:outline-none focus:ring-1 focus:ring-blue-500 bg-white text-xs `}
+
+                          className={`border rounded-l-[8px] bg-white px-2 w-full h-full focus:outline-none text-xs
+    ${
+      errors.aadhar
+        ? "border-red-500"
+        : "border-gray-200"
+    }
+  `}
+
                       />
                       <FaPaperclip
                         className="absolute right-2 top-1/2 -translate-y-1/2 text-gray-400 cursor-pointer"
@@ -1068,10 +1909,11 @@ if (!validation.isValid) {
                   <input
                     type="text"
                     name="printName"
+                    disabled
                     value={formData.printName}
                     onChange={handleChange}
                     placeholder="Customer Full Name"
-                    className={`border px-2  w-[180px] h-[30px] rounded-[8px] bg-white text-xs focus:outline-none `}
+                    className={`border-gray-200 px-2 w-[180px] h-[30px] rounded-[8px] bg-gray-200 text-xs focus:outline-none `}
                   />
                   {/* {errors.printName && (
                     <p className="text-red-500 text-[11px] mt-1">
@@ -1091,64 +1933,29 @@ if (!validation.isValid) {
                     value={formData.email}
                     onChange={handleChange}
                     placeholder="Enter Email"
-                    className={`border rounded-[8px] px-2  w-[150px] h-[30px] bg-white text-xs focus:outline-none `}
+                    // className={`border-gray-200 rounded-[8px] px-2  w-[150px] h-[30px] bg-white text-xs focus:outline-none `}
+
+                     className={`rounded-[8px] px-2 w-[150px] bg-white h-[30px] bg-white text-xs focus:outline-none border
+    ${
+      errors.email
+        ? "border-red-500"
+        : "border-gray-200"
+    }
+  `}
                   />
-                  {/* {errors.email && (
-                    <p className="text-red-500 text-[11px] mt-1">
-                      {errors.email}
-                    </p>
-                  )} */}
+                 
                 </div>
 
                 {/* 5. DOB */}
-                {/* <div className="flex flex-col flex-shrink-0">
-                  <label className="text-[14px] font-medium">
-                    DOB <span className="text-red-500">*</span>
-                  </label>
-                  <input
-                    type="date"
-                    name="dob"
-                    value={formData.dob}
-                    onChange={handleChange}
-                    className={`border rounded-[8px] px-2  w-[120px] h-[30px] bg-white text-xs uppercase focus:outline-none ${
-                      errors.dob ? "border-red-500" : "border-gray-300"
-                    }`}
-                  />
-                  {errors.dob && (
-                    <p className="text-red-500 text-[11px] mt-1">
-                      {errors.dob}
-                    </p>
-                  )}
-                </div> */}
-                <div className="flex flex-col flex-shrink-0">
-                  <label className="text-[14px] font-medium">
-                    Date of Birth <span className="text-red-500">*</span>
-                  </label>
-
-                  <input
-                    type="date"
-                    name="dob"
-                    value={
-                      formData.dob
-                        ? formData.dob.split("T")[0] // ✅ convert here directly
-                        : ""
-                    }
-                    onChange={handleChange}
-                    className={`border rounded-[8px] px-2 w-[120px] h-[30px] bg-white text-xs focus:outline-none `}
-                  />
-
-                  {/* {errors?.dob && (
-                    <p className="text-red-500 text-[11px] mt-1">
-                      {errors.dob}
-                    </p>
-                  )} */}
-                </div>
+               
+                 
+              
                 <div className="flex flex-col flex-shrink-0">
                   <label className="text-[14px] font-medium">
                     Mobile No <span className="text-red-500">*</span>
                   </label>
 
-                  <div className="flex items-stretch  w-[150px] h-[30px]">
+                  <div className="flex items-stretch  w-[130px] h-[30px]">
                     <input
                       type="text"
                       name="mobile"
@@ -1157,12 +1964,19 @@ if (!validation.isValid) {
                       onChange={handleChange}
                       maxLength={10}
                       placeholder="Mobile Number"
-                      // Added rounded-l and removed py-1 for exact 30px height
-                      className={`border border-r-0 rounded-l-[8px] px-2 w-full focus:outline-none focus:ring-1 focus:ring-blue-500 text-xs transition-colors ${
-                        isMobileVerified
-                          ? "bg-gray-100 cursor-not-allowed"
-                          : "bg-white"
-                      } `}
+                      
+                      className={`border rounded-l-[8px] px-2 w-full focus:outline-none text-xs
+    ${
+      errors.mobile
+        ? "border-red-500"
+        : "border-gray-200"
+    }
+    ${
+      isMobileVerified
+        ? "bg-gray-100 cursor-not-allowed"
+        : "bg-white"
+    }
+  `}
                     />
 
                     <button
@@ -1170,7 +1984,7 @@ if (!validation.isValid) {
                       onClick={sendMobileOTP}
                       disabled={isMobileVerified}
                       // Fixed height via h-full, rounded-r only, and centered text
-                      className={`bg-[#0A2478] text-white px-3 rounded-r-[8px] border border-[#0A2478] text-xs font-medium w-[64px] h-full flex justify-center items-center transition-opacity ${
+                      className={`bg-[#0A2478] text-white px-3 rounded-r-[8px] border-gray-200 border-[#0A2478] text-xs font-medium w-[64px] h-full flex justify-center items-center transition-opacity ${
                         isMobileVerified
                           ? "opacity-50 cursor-not-allowed"
                           : "hover:bg-[#081c5b]"
@@ -1180,16 +1994,12 @@ if (!validation.isValid) {
                     </button>
                   </div>
 
-                  {/* {errors.mobile && (
-                    <p className="text-red-500 text-[11px] mt-1 font-medium">
-                      {errors.mobile}
-                    </p>
-                  )} */}
+                 
                 </div>
 
                 <div className="flex flex-col flex-shrink-0">
                   <label className=" text-[14px] font-medium">Verify OTP</label>
-                  <div className="relative  w-[110px]">
+                  <div className="relative  w-[80px]">
                     <input
                       type="number"
                       placeholder="Enter OTP"
@@ -1197,7 +2007,7 @@ if (!validation.isValid) {
                       disabled={isMobileVerified} // Disable if verified
                       value={formData.MobileNumberOtp}
                       onChange={handleChange}
-                      className={`border border-gray-300 rounded-[8px] px-1 py-1 w-[110px] h-[30px] text-xs focus:outline-none ${isMobileVerified ? "bg-gray-100 cursor-not-allowed" : "bg-white"}`}
+                      className={`border-gray-200 rounded-[8px] px-1 py-1 w-[80px] h-[30px] text-xs focus:outline-none ${isMobileVerified ? "bg-gray-100 cursor-not-allowed" : "bg-white"}`}
                       style={{ MozAppearance: "textfield" }}
                     />
 
@@ -1216,6 +2026,76 @@ if (!validation.isValid) {
                     )}
                   </div>
                 </div>
+
+                 <div className="flex flex-col flex-shrink-0">
+                  <label className="text-[14px] font-medium">
+                   Alt Mobile No 
+                  </label>
+
+                  <div className="flex items-stretch  w-[130px] h-[30px]">
+                    <input
+                      type="text"
+                      name="altMobile"
+                      disabled={isMobileVerified2}
+                      value={formData.altMobile}
+                      onChange={handleChange}
+                      maxLength={10}
+                      placeholder="Mobile Number"
+                      // Added rounded-l and removed py-1 for exact 30px height
+                      className={`border-gray-200 border-r-0 rounded-l-[8px] px-2 w-full focus:outline-none focus:ring-1 focus:ring-blue-500 text-xs transition-colors ${
+                        isMobileVerified2
+                          ? "bg-gray-100 cursor-not-allowed"
+                          : "bg-white"
+                      } `}
+                    />
+
+                    <button
+                      type="button"
+                      onClick={sendMobileOTP2}
+                      disabled={isMobileVerified2}
+                      // Fixed height via h-full, rounded-r only, and centered text
+                      className={`bg-[#0A2478] text-white px-3 rounded-r-[8px] border-gray-200 border-[#0A2478] text-xs font-medium w-[64px] h-full flex justify-center items-center transition-opacity ${
+                        isMobileVerified2
+                          ? "opacity-50 cursor-not-allowed"
+                          : "hover:bg-[#081c5b]"
+                      }`}
+                    >
+                      <span>{isOtpSent ? "Resend" : "OTP"}</span>
+                    </button>
+                  </div>
+
+                 
+                </div>
+
+                {/* <div className="flex flex-col flex-shrink-0">
+                  <label className=" text-[14px] font-medium">Verify OTP</label>
+                  <div className="relative  w-[80px]">
+                    <input
+                      type="number"
+                      placeholder="Enter OTP"
+                      name="MobileNumberOtp2"
+                      disabled={isMobileVerified} 
+                      value={formData.MobileNumberOtp2}
+                      onChange={handleChange}
+                      className={`border-gray-200 rounded-[8px] px-1 py-1 w-[80px] h-[30px] text-xs focus:outline-none ${isMobileVerified ? "bg-gray-100 cursor-not-allowed" : "bg-white"}`}
+                      style={{ MozAppearance: "textfield" }}
+                    />
+
+                   
+                    {!isMobileVerified ? (
+                      <img
+                        src={righttick}
+                        alt="tick"
+                        onClick={verifyMobileOTP}
+                        className="absolute right-3 top-1/2 -translate-y-1/2 w-[13px] h-[13px] cursor-pointer hover:scale-110"
+                      />
+                    ) : (
+                      <span className="absolute right-3 top-1/2 -translate-y-1/2 text-green-600 font-bold text-xs">
+                        ✓
+                      </span>
+                    )}
+                  </div>
+                </div> */}
               </div>
 
               <div className="flex items-end gap-4 w-full ">
@@ -1224,29 +2104,34 @@ if (!validation.isValid) {
                 {/* OTP Verification */}
 
                 {/* Alternate Mobile */}
-                <div className="flex flex-col">
+                 <div className="flex flex-col flex-shrink-0">
                   <label className="text-[14px] font-medium">
-                    Alternate Mobile No
+                    Date of Birth <span className="text-red-500">*</span>
                   </label>
+
                   <input
-                    type="text"
-                    name="altMobile"
-                    value={formData.altMobile}
-                    maxLength={10}
+                    type="date"
+                    name="dob"
+                    value={
+                      formData.dob
+                        ? formData.dob.split("T")[0] // ✅ convert here directly
+                        : ""
+                    }
                     onChange={handleChange}
-                    placeholder="Alternate Mobile"
-                    className={`border rounded-[8px] text-xs h-[30px] px-1  w-[120px] bg-white ${
-                      errors.altMobile ? "border-red-500" : "border-gray-300"
-                    }`}
+                    // className={`border-gray-200 rounded-[8px] px-2 w-[120px] h-[30px] bg-white text-xs focus:outline-none `}
+                     className={`rounded-[8px] px-2 w-[120px] h-[30px] bg-white text-xs focus:outline-none border
+    ${
+      errors.dob
+        ? "border-red-500"
+        : "border-gray-200"
+    }
+  `}
                   />
-                  {/* {errors.altMobile && (
-                    <p className="text-red-500 text-xs mt-1">
-                      {errors.altMobile}
-                    </p>
-                  )} */}
+
+                  
                 </div>
 
-                <div className="flex flex-col">
+                {/* <div className="flex flex-col">
                   <label className="text-[14px] font-medium">
                     Landline Number
                   </label>
@@ -1256,13 +2141,13 @@ if (!validation.isValid) {
                     value={formData.landline}
                     onChange={handleChange}
                     placeholder="Landline Number"
-                    className="border border-gray-300 rounded-[8px] px-1 h-[30px]  w-[130px] text-xs bg-white"
+                    className="border-gray-200 rounded-[8px] px-1 h-[30px]  w-[130px] text-xs bg-white"
                     style={{
                       MozAppearance: "textfield",
                     }}
                     onWheel={(e) => e.target.blur()}
                   />
-                </div>
+                </div> */}
 
                 <div className="flex flex-col">
                   <label className="text-[14px] font-medium">
@@ -1272,33 +2157,38 @@ if (!validation.isValid) {
                     name="gender"
                     value={formData.gender}
                     onChange={handleChange}
-                    className={`border rounded-[8px] px-1 text-xs h-[30px]  w-[100px] bg-white `}
+                    // className={`border-gray-200 rounded-[8px] px-1 text-xs h-[30px]  w-[100px] bg-white `}
+
+                     className={`rounded-[8px] px-1 text-xs h-[30px] w-[100px] bg-white border focus:outline-none
+    ${
+      errors.gender
+        ? "border-red-500"
+        : "border-gray-200"
+    }
+  `}
                   >
                     <option value="">Select</option>
                     <option value="Male">Male</option>
                     <option value="Female">Female</option>
                     <option value="Other">Other</option>
                   </select>
-                  {/* {errors.gender && (
-                    <p className="text-red-500 text-xs mt-1">{errors.gender}</p>
-                  )} */}
                 </div>
                 <div className="flex flex-col">
                   <label className="text-[14px] font-medium">
-                    Marital Status <span className="text-red-500">*</span>
+                    Marital Status 
                   </label>
                   <select
                     name="marital"
                     value={formData.marital}
                     onChange={handleChange}
-                    className="border border-gray-300 rounded-[8px]  px-1 text-xs h-[30px] w-[100px] bg-white"
+                    className="border-gray-200 rounded-[8px]  px-1 text-xs h-[30px] w-[100px] bg-white"
                   >
                     <option value="">Select</option>
                     <option value="Single">Single</option>
                     <option value="Married">Married</option>
                   </select>
                 </div>
-                <div className="flex flex-col">
+                {/* <div className="flex flex-col">
                   <label className="text-[14px] font-medium">
                     Party Type <span className="text-red-500">*</span>
                   </label>
@@ -1306,7 +2196,15 @@ if (!validation.isValid) {
                     name="partyType"
                     value={formData.partyType}
                     onChange={handleChange}
-                    className="border border-gray-300 rounded-[8px] px-1 h-[30px] text-xs  w-[120px] bg-white"
+                    // className="border-gray-200 rounded-[8px] px-1 h-[30px] text-xs  w-[120px] bg-white"
+
+                     className={`rounded-[8px] px-1 h-[30px] bg-white text-xs w-[120px] bg-white border focus:outline-none
+    ${
+      errors.partyType
+        ? "border-red-500"
+        : "border-gray-200"
+    }
+  `}
                   >
                     <option value="">Select Type</option>
                     {partyTypeList.map((pt) => (
@@ -1315,7 +2213,41 @@ if (!validation.isValid) {
                       </option>
                     ))}
                   </select>
-                </div>
+                </div> */}
+
+                <div className="flex flex-col">
+  <label className="text-[14px] font-medium">
+    Party Type <span className="text-red-500">*</span>
+  </label>
+
+  <select
+    name="partyType"
+    value={formData.partyType}
+    onChange={handleChange}
+    className={`rounded-[8px] px-2 h-[35px] text-xs w-[160px] bg-white border focus:outline-none
+      ${
+        errors.partyType
+          ? "border-red-500"
+          : "border-gray-200"
+      }
+    `}
+  >
+    <option value="">Select Type</option>
+
+    {partyTypeList.map((pt) => (
+      <option key={pt.id} value={pt.party_type}>
+        {pt.party_type}
+      </option>
+    ))}
+  </select>
+
+  {/* 🔴 Error Message */}
+  {/* {errors.partyType && (
+    <span className="text-red-500 text-[11px] mt-1">
+      {errors.partyType}
+    </span>
+  )} */}
+</div>
                 <div className="flex flex-col">
                   <label className="text-[14px] font-medium">
                     Religious Belief
@@ -1324,7 +2256,7 @@ if (!validation.isValid) {
                     name="religion"
                     value={formData.religion}
                     onChange={handleChange}
-                    className="border border-gray-300 rounded-[8px]  px-1 text-xs h-[30px] w-[130px] bg-white"
+                    className="border-gray-200 rounded-[8px]  px-1 text-xs h-[30px] w-[130px] bg-white"
                   >
                     <option value="">Select Religion</option>
                     <option value="Hindu">Hindu</option>
@@ -1353,7 +2285,7 @@ if (!validation.isValid) {
                           onChange={handleChange}
                           disabled={isGstVerified}
                           // Changed to rounded-l only and removed py-1
-                          className={`border border-r-0 rounded-l-[8px] px-2 w-full h-full focus:outline-none focus:ring-1 focus:ring-blue-500 text-xs transition-colors ${
+                          className={`border-gray-200 border-r-0 rounded-l-[8px] px-2 w-full h-full focus:outline-none focus:ring-1 focus:ring-blue-500 text-xs transition-colors ${
                             isGstVerified
                               ? "bg-gray-100 cursor-not-allowed"
                               : "bg-white"
@@ -1389,7 +2321,7 @@ if (!validation.isValid) {
                     name="education"
                     value={formData.education}
                     onChange={handleChange}
-                    className="border border-gray-300 rounded-[8px] px-1  text-xs h-[30px]  w-[150px] bg-white"
+                    className="border-gray-200 rounded-[8px] px-1  text-xs h-[30px]  w-[150px] bg-white"
                   >
                     <option value="">Select Education</option>
                     <option value="No Formal Education">
@@ -1415,19 +2347,32 @@ if (!validation.isValid) {
               </div>
 
               <div className="flex items-end gap-4 w-full mt-2">
-                <div className="flex flex-col ">
-                  <label className="text-[14px] font-medium">
-                    Occupation <span className="text-red-500">*</span>
-                  </label>
-                  <input
-                    type="text"
-                    name="occupation"
-                    value={formData.occupation}
-                    onChange={handleChange}
-                    placeholder="Eg.Employee."
-                    className="border border-gray-300 rounded-[8px] px-1 text-xs h-[30px]  w-[158px] bg-white"
-                  />
-                </div>
+               <div className="flex flex-col">
+  <label className="text-[14px] font-medium">
+    Occupation <span className="text-red-500">*</span>
+  </label>
+
+  <input
+    type="text"
+    name="occupation"
+    value={formData.occupation}
+    onChange={handleChange}
+    placeholder="Eg.Employee."
+    className={`px-1 text-xs h-[30px] w-[158px] bg-white rounded-[8px] border focus:outline-none
+      ${
+        errors.occupation
+          ? "border-red-500"
+          : "border-gray-200"
+      }
+    `}
+  />
+
+  {/* {errors.occupation && (
+    <p className="text-red-500 text-xs mt-1">
+      {errors.occupation}
+    </p>
+  )} */}
+</div>
 
                 <div className="flex flex-col">
                   <label className="text-[14px] font-medium">
@@ -1437,26 +2382,39 @@ if (!validation.isValid) {
                     name="riskCategory"
                     value={formData.riskCategory}
                     onChange={handleChange}
-                    className="border border-gray-300 rounded-[8px] px-1 text-xs h-[30px]  w-[80px] bg-white"
+                    className="border-gray-200 rounded-[8px] px-1 text-xs h-[30px]  w-[80px] bg-white"
                   >
                     <option value="Low">Low</option>
                     <option value="High">High</option>
                   </select>
                 </div>
 
-                <div className="flex flex-col ">
-                  <label className="text-[14px] font-medium">
-                    First Name <span className="text-red-500">*</span>
-                  </label>
-                  <input
-                    type="text"
-                    name="firstName"
-                    value={formData.firstName}
-                    onChange={handleChange}
-                    placeholder="First Name"
-                    className="border border-gray-300 rounded-[8px] text-xs h-[30px] px-1  w-[130px] bg-white"
-                  />
-                </div>
+                <div className="flex flex-col">
+  <label className="text-[14px] font-medium">
+    First Name <span className="text-red-500">*</span>
+  </label>
+
+  <input
+    type="text"
+    name="firstName"
+    value={formData.firstName}
+    onChange={handleChange}
+    placeholder="First Name"
+    className={`text-xs h-[30px] px-1 w-[130px] bg-white rounded-[8px] border focus:outline-none
+      ${
+        errors.firstName
+          ? "border-red-500"
+          : "border-gray-200"
+      }
+    `}
+  />
+
+  {/* {errors.firstName && (
+    <p className="text-red-500 text-xs mt-1">
+      {errors.firstName}
+    </p>
+  )} */}
+</div>
 
                 <div className="flex flex-col">
                   <label className="text-[14px] font-medium">Middle Name</label>
@@ -1466,23 +2424,36 @@ if (!validation.isValid) {
                     value={formData.middleName}
                     onChange={handleChange}
                     placeholder="Middle Name"
-                    className="border border-gray-300 rounded-[8px] px-1 text-xs h-[30px]  w-[130px] bg-white"
+                    className="border-gray-200 rounded-[8px] px-1 text-xs h-[30px]  w-[130px] bg-white"
                   />
                 </div>
 
-                <div className="flex flex-col">
-                  <label className="text-[14px] font-medium">
-                    Last Name <span className="text-red-500">*</span>
-                  </label>
-                  <input
-                    type="text"
-                    name="lastName"
-                    value={formData.lastName}
-                    onChange={handleChange}
-                    placeholder="Last Name"
-                    className="border border-gray-300 rounded-[8px] px-1 text-xs h-[30px]  w-[130px] bg-white"
-                  />
-                </div>
+               <div className="flex flex-col">
+  <label className="text-[14px] font-medium">
+    Last Name <span className="text-red-500">*</span>
+  </label>
+
+  <input
+    type="text"
+    name="lastName"
+    value={formData.lastName}
+    onChange={handleChange}
+    placeholder="Last Name"
+    className={`px-1 text-xs h-[30px] w-[130px] bg-white rounded-[8px] border focus:outline-none
+      ${
+        errors.lastName
+          ? "border-red-500"
+          : "border-gray-200"
+      }
+    `}
+  />
+
+  {/* {errors.lastName && (
+    <p className="text-red-500 text-xs mt-1">
+      {errors.lastName}
+    </p>
+  )} */}
+</div>
 
                 <div className="flex gap-6 ">
                   {/* Father/Husband's Last Name */}
@@ -1496,41 +2467,57 @@ if (!validation.isValid) {
                       value={formData.fatherFirstName}
                       onChange={handleChange}
                       placeholder="Father/Husbands First Name"
-                      className="border border-gray-300 rounded-[8px] px-1 text-xs h-[30px]  w-[260px] bg-white"
+                      className="border-gray-200 rounded-[8px] px-1 text-xs h-[30px]  w-[260px] bg-white"
                     />
                   </div>
 
                   {/* Politically Exposed Person */}
-                  <div className="flex flex-col ">
-                    <label className="text-[14px] font-medium">
-                      Politically Exposed Person?{" "}
-                      <span className="text-red-500">*</span>
-                    </label>
+                  <div className="flex flex-col">
+  <label className="text-[14px] font-medium">
+    Politically Exposed Person?{" "}
+    <span className="text-red-500">*</span>
+  </label>
 
-                    <div className="flex items-center gap-4 ">
-                      <label className="flex items-center gap-2">
-                        <input
-                          type="radio"
-                          name="pep"
-                          value="yes"
-                          checked={formData.pep === "yes"}
-                          onChange={handleChange}
-                        />
-                        Yes
-                      </label>
+  <div
+    className={`flex items-center gap-4 mt-1 border rounded-[8px] px-3 h-[35px] w-fit bg-white
+      ${
+        errors.pep
+          ? "border-red-500"
+          : "border-gray-200"
+      }
+    `}
+  >
+    <label className="flex items-center gap-2 text-sm cursor-pointer">
+      <input
+        type="radio"
+        name="pep"
+        value="yes"
+        checked={formData.pep === "yes"}
+        onChange={handleChange}
+        className="cursor-pointer"
+      />
+      Yes
+    </label>
 
-                      <label className="flex items-center gap-2">
-                        <input
-                          type="radio"
-                          name="pep"
-                          value="no"
-                          checked={formData.pep === "no"}
-                          onChange={handleChange}
-                        />
-                        No
-                      </label>
-                    </div>
-                  </div>
+    <label className="flex items-center gap-2 text-sm cursor-pointer">
+      <input
+        type="radio"
+        name="pep"
+        value="no"
+        checked={formData.pep === "no"}
+        onChange={handleChange}
+        className="cursor-pointer"
+      />
+      No
+    </label>
+  </div>
+
+  {/* {errors.pep && (
+    <p className="text-red-500 text-xs mt-1">
+      {errors.pep}
+    </p>
+  )} */}
+</div>
                 </div>
               </div>
 
@@ -1682,7 +2669,7 @@ if (!validation.isValid) {
         <div>
           <div className="flex mx-auto w-[745px]">
             <div className="bg-[#F7F7FF] p-1  w-full mx-auto ">
-              <p className="font-[Source_Sans_3] font-bold text-[24px] leading-[100%] tracking-[0.03em] text-[#0A2478]  ">
+              <p className="font-[Source_Sans_3] font-bold text-[15px] leading-[100%] tracking-[0.03em] text-[#0A2478]  ">
                 Permanent Address
               </p>
 
@@ -1690,25 +2677,32 @@ if (!validation.isValid) {
                 <div>
                   <div>
                     <div className="">
-                      <div>
-                        <label className="text-[14px] font-medium">
-                          Address <span className="text-red-500">*</span>
-                        </label>
-                      </div>
+  <div>
+    <label className="text-[14px] font-medium">
+      Address <span className="text-red-500">*</span>
+    </label>
+  </div>
 
-                      <textarea
-                        name="Permanent_Address"
-                        value={formData.Permanent_Address}
-                        onChange={handleChange}
-                        placeholder="Address"
-                        className={`border px-1 text-xs h-[87px]  w-[312px] bg-white rounded-[8px] `}
-                      />
-                      {/* {errors.Permanent_Address && (
-                        <p className="text-red-500 text-xs mt-1">
-                          {errors.Permanent_Address}
-                        </p>
-                      )} */}
-                    </div>
+  <textarea
+    name="Permanent_Address"
+    value={formData.Permanent_Address}
+    onChange={handleChange}
+    placeholder="Address"
+    className={`px-1 text-xs h-[87px] w-[312px] bg-white rounded-[8px] border focus:outline-none
+      ${
+        errors.Permanent_Address
+          ? "border-red-500"
+          : "border-gray-300"
+      }
+    `}
+  />
+
+  {/* {errors.Permanent_Address && (
+    <p className="text-red-500 text-xs mt-1">
+      {errors.Permanent_Address}
+    </p>
+  )} */}
+</div>
                   </div>
                 </div>
                 <div>
@@ -1726,7 +2720,13 @@ if (!validation.isValid) {
                         value={formData.Permanent_Area}
                         onChange={handleChange}
                         placeholder="Area"
-                        className={`border px-1 text-xs h-[30px]  w-[160px] rounded-[8px] bg-white `}
+                        className={`px-1 text-xs h-[30px] w-[160px] rounded-[8px] bg-white border focus:outline-none
+        ${
+          errors.Permanent_Area
+            ? "border-red-500"
+            : "border-gray-300"
+        }
+      `}
                       />
                       {/* {errors.Permanent_Area && (
                         <p className="text-red-500 text-xs mt-1">
@@ -1748,13 +2748,14 @@ if (!validation.isValid) {
                           value={formData.Permanent_City}
                           onChange={handleChange}
                           placeholder="City"
-                          className={`border px-1 text-xs h-[30px]  w-[110px] rounded-[8px] bg-white `}
+                          className={`px-1 text-xs h-[30px] w-[110px] rounded-[8px] bg-white border focus:outline-none
+        ${
+          errors.Permanent_City
+            ? "border-red-500"
+            : "border-gray-300"
+        }
+      `}
                         />
-                        {/* {errors.Permanent_City && (
-                          <p className="text-red-500 text-xs mt-1">
-                            {errors.Permanent_City}
-                          </p>
-                        )} */}
                       </div>
                     </div>
 
@@ -1772,259 +2773,161 @@ if (!validation.isValid) {
                           value={formData.Permanent_Pincode}
                           onChange={handleChange}
                           placeholder="Pincode"
-                          className={`border px-1 text-xs h-[30px]  w-[100px] rounded-[8px] bg-white `}
-                        />
-                        {/* {errors.Permanent_Pincode && (
-                          <p className="text-red-500 text-xs mt-1">
-                            {errors.Permanent_Pincode}
-                          </p>
-                        )} */}
-                      </div>
-                    </div>
-                  </div>
-                  <div className="flex gap-2">
-                    <div>
-                      <div className="">
-                        <div>
-                          <label className="text-[14px] font-medium">
-                            State <span className="text-red-500">*</span>
-                          </label>
-                        </div>
-
-                        <select
-                          name="Permanent_State"
-                          value={formData.Permanent_State}
-                          onChange={handleChange}
-                          className={`border px-1 text-xs h-[30px]  w-[150px] bg-white rounded-[8px] `}
-                        >
-                          <option value="">Select State</option>
-                          <option value="Andhra Pradesh">Andhra Pradesh</option>
-                          <option value="Arunachal Pradesh">
-                            Arunachal Pradesh
-                          </option>
-                          <option value="Assam">Assam</option>
-                          <option value="Bihar">Bihar</option>
-                          <option value="Chhattisgarh">Chhattisgarh</option>
-                          <option value="Goa">Goa</option>
-                          <option value="Gujarat">Gujarat</option>
-                          <option value="Haryana">Haryana</option>
-                          <option value="Himachal Pradesh">
-                            Himachal Pradesh
-                          </option>
-                          <option value="Jharkhand">Jharkhand</option>
-                          <option value="Karnataka">Karnataka</option>
-                          <option value="Kerala">Kerala</option>
-                          <option value="Madhya Pradesh">Madhya Pradesh</option>
-                          <option value="Maharashtra">Maharashtra</option>
-                          <option value="Manipur">Manipur</option>
-                          <option value="Meghalaya">Meghalaya</option>
-                          <option value="Mizoram">Mizoram</option>
-                          <option value="Nagaland">Nagaland</option>
-                          <option value="Odisha">Odisha</option>
-                          <option value="Punjab">Punjab</option>
-                          <option value="Rajasthan">Rajasthan</option>
-                          <option value="Sikkim">Sikkim</option>
-                          <option value="Tamil Nadu">Tamil Nadu</option>
-                          <option value="Telangana">Telangana</option>
-                          <option value="Tripura">Tripura</option>
-                          <option value="Uttar Pradesh">Uttar Pradesh</option>
-                          <option value="Uttarakhand">Uttarakhand</option>
-                          <option value="West Bengal">West Bengal</option>
-                          <option value="Andaman and Nicobar Islands">
-                            Andaman and Nicobar Islands
-                          </option>
-                          <option value="Chandigarh">Chandigarh</option>
-                          <option value="Dadra and Nagar Haveli and Daman and Diu">
-                            Dadra and Nagar Haveli and Daman and Diu
-                          </option>
-                          <option value="Delhi">Delhi</option>
-                          <option value="Jammu and Kashmir">
-                            Jammu and Kashmir
-                          </option>
-                          <option value="Ladakh">Ladakh</option>
-                          <option value="Lakshadweep">Lakshadweep</option>
-                          <option value="Puducherry">Puducherry</option>
-                        </select>
-                        {/* {errors.Permanent_State && (
-                          <p className="text-red-500 text-xs mt-1">
-                            {errors.Permanent_State}
-                          </p>
-                        )} */}
-                      </div>
-                    </div>
-                    <div>
-                      <div className="">
-                        <div>
-                          <label className="text-[14px] font-medium">
-                            Resi. Status
-                          </label>
-                        </div>
-
-                        <select
-                          name="Permanent_ResiStatus"
-                          value={formData.Permanent_ResiStatus}
-                          onChange={handleChange}
-                          className="border border-gray-300 px-1 text-xs h-[30px]  w-[120px] bg-white rounded-[8px]"
-                        >
-                          <option value="">Select Status</option>
-                          <option value="Owner">Owner</option>
-                          <option value="Rented">Rented</option>
-                          <option value="Company Provided">
-                            Company Provided
-                          </option>
-                          <option value="Parents">Parents</option>
-                          <option value="Other">Other</option>
-                        </select>
-                      </div>
-                    </div>
-                    <div>
-                      <div className="">
-                        <div>
-                          <label className="text-[14px] font-medium">
-                            Resi.since(in yr)
-                          </label>
-                        </div>
-
-                        <input
-                          type="text"
-                          name="Permanent_Resisince"
-                          value={formData.Permanent_Resisince}
-                          onChange={handleChange}
-                          placeholder="Eg.10"
-                          className="border border-gray-300 px-1 text-xs h-[30px] w-[100px] rounded-[8px] bg-white"
+                          className={`px-1 text-xs h-[30px] w-[100px] rounded-[8px] bg-white border focus:outline-none
+        ${
+          errors.Permanent_Pincode
+            ? "border-red-500"
+            : "border-gray-300"
+        }
+      `}
                         />
                       </div>
                     </div>
-
-                    <div></div>
                   </div>
+                 <div className="flex gap-2">
+  {/* State */}
+  <div>
+    <div>
+      <label className="text-[14px] font-medium">
+        State <span className="text-red-500">*</span>
+      </label>
+    </div>
+
+    <select
+      name="Permanent_State"
+      value={formData.Permanent_State}
+      onChange={handleChange}
+      className={`px-1 text-xs h-[30px] w-[150px] bg-white rounded-[8px] border focus:outline-none
+        ${
+          errors.Permanent_State
+            ? "border-red-500"
+            : "border-gray-300"
+        }
+      `}
+    >
+      <option value="">Select State</option>
+      <option value="Andhra Pradesh">Andhra Pradesh</option>
+      <option value="Arunachal Pradesh">
+        Arunachal Pradesh
+      </option>
+      <option value="Assam">Assam</option>
+      <option value="Bihar">Bihar</option>
+      <option value="Chhattisgarh">Chhattisgarh</option>
+      <option value="Goa">Goa</option>
+      <option value="Gujarat">Gujarat</option>
+      <option value="Haryana">Haryana</option>
+      <option value="Himachal Pradesh">
+        Himachal Pradesh
+      </option>
+      <option value="Jharkhand">Jharkhand</option>
+      <option value="Karnataka">Karnataka</option>
+      <option value="Kerala">Kerala</option>
+      <option value="Madhya Pradesh">Madhya Pradesh</option>
+      <option value="Maharashtra">Maharashtra</option>
+      <option value="Manipur">Manipur</option>
+      <option value="Meghalaya">Meghalaya</option>
+      <option value="Mizoram">Mizoram</option>
+      <option value="Nagaland">Nagaland</option>
+      <option value="Odisha">Odisha</option>
+      <option value="Punjab">Punjab</option>
+      <option value="Rajasthan">Rajasthan</option>
+      <option value="Sikkim">Sikkim</option>
+      <option value="Tamil Nadu">Tamil Nadu</option>
+      <option value="Telangana">Telangana</option>
+      <option value="Tripura">Tripura</option>
+      <option value="Uttar Pradesh">Uttar Pradesh</option>
+      <option value="Uttarakhand">Uttarakhand</option>
+      <option value="West Bengal">West Bengal</option>
+      <option value="Andaman and Nicobar Islands">
+        Andaman and Nicobar Islands
+      </option>
+      <option value="Chandigarh">Chandigarh</option>
+      <option value="Dadra and Nagar Haveli and Daman and Diu">
+        Dadra and Nagar Haveli and Daman and Diu
+      </option>
+      <option value="Delhi">Delhi</option>
+      <option value="Jammu and Kashmir">
+        Jammu and Kashmir
+      </option>
+      <option value="Ladakh">Ladakh</option>
+      <option value="Lakshadweep">Lakshadweep</option>
+      <option value="Puducherry">Puducherry</option>
+    </select>
+
+    {/* {errors.Permanent_State && (
+      <p className="text-red-500 text-xs mt-1">
+        {errors.Permanent_State}
+      </p>
+    )} */}
+  </div>
+
+  {/* Residential Status */}
+  <div>
+    <div>
+      <label className="text-[14px] font-medium">
+        Resi. Status
+      </label>
+    </div>
+
+    <select
+      name="Permanent_ResiStatus"
+      value={formData.Permanent_ResiStatus}
+      onChange={handleChange}
+      className={`px-1 text-xs h-[30px] w-[120px] bg-white rounded-[8px] border focus:outline-none
+        ${
+          errors.Permanent_ResiStatus
+            ? "border-red-500"
+            : "border-gray-300"
+        }
+      `}
+    >
+      <option value="">Select Status</option>
+      <option value="Owner">Owner</option>
+      <option value="Rented">Rented</option>
+      <option value="Company Provided">
+        Company Provided
+      </option>
+      <option value="Parents">Parents</option>
+      <option value="Other">Other</option>
+    </select>
+
+    {/* {errors.Permanent_ResiStatus && (
+      <p className="text-red-500 text-xs mt-1">
+        {errors.Permanent_ResiStatus}
+      </p>
+    )} */}
+  </div>
+
+  {/* Residence Since */}
+  <div>
+    <div>
+      <label className="text-[14px] font-medium">
+        Resi.since(in yr)
+      </label>
+    </div>
+
+    <input
+      type="text"
+      name="Permanent_Resisince"
+      value={formData.Permanent_Resisince}
+      onChange={handleChange}
+      placeholder="Eg.10"
+      className={`px-1 text-xs h-[30px] w-[100px] rounded-[8px] bg-white border focus:outline-none
+        ${
+          errors.Permanent_Resisince
+            ? "border-red-500"
+            : "border-gray-300"
+        }
+      `}
+    />
+
+    
+  </div>
+</div>
                 </div>
               </div>
 
-              <div className="flex gap-3 ">
-                <div>
-                  <div className="">
-                    <div>
-                      <label className="text-[14px] font-medium">
-                        Category
-                      </label>
-                    </div>
-
-                    <select
-                      name="Permanent_Category"
-                      value={formData.Permanent_Category}
-                      onChange={handleChange}
-                      className="border border-gray-300 px-1 text-xs h-[30px] w-[115px] bg-white rounded-[8px]"
-                    >
-                      <option value="">Select Category</option>
-                      <option value="Salaried">Salaried</option>
-                      <option value="Self-Employed (Professional)">
-                        Self-Employed (Professional)
-                      </option>
-                      <option value="Self-Employed (Non-Professional)">
-                        Self-Employed (Non-Professional)
-                      </option>
-                      <option value="Unemployed">Unemployed</option>
-                      <option value="Housewife">Housewife</option>
-                      <option value="Other">Other</option>
-                    </select>
-                  </div>
-                </div>
-                <div>
-                  <div className="">
-                    <div>
-                      <label className="text-[14px] font-medium">
-                        Company Type
-                      </label>
-                    </div>
-
-                    <select
-                      name="Permanent_CompanyType"
-                      value={formData.Permanent_CompanyType}
-                      onChange={handleChange}
-                      className="border border-gray-300 px-1 text-xs h-[30px] w-[130px] bg-white rounded-[8px]"
-                    >
-                      <option value="">Select Company Type</option>
-                      <option value="State Govt">State Govt</option>
-                      <option value="MNC">MNC</option>
-                      <option value="Public Ltd">Public Ltd</option>
-                      <option value="Private Ltd">Private Ltd</option>
-                      <option value="Partnership">Partnership</option>
-                      <option value="Proprietorship">Proprietorship</option>
-                    </select>
-                  </div>
-                </div>
-                <div>
-                  <div className="">
-                    <div>
-                      <label className="text-[14px] font-medium">
-                        Industry Type
-                      </label>
-                    </div>
-
-                    <select
-                      name="Permanent_IndustryType"
-                      value={formData.Permanent_IndustryType}
-                      onChange={handleChange}
-                      className="border border-gray-300 px-1 text-xs h-[30px] w-[150px] bg-white rounded-[8px]"
-                    >
-                      <option value="">Select Industry Type</option>
-                      <option value="Manufacturing">Manufacturing</option>
-                      <option value="Trading">Trading</option>
-                      <option value="Services">Services</option>
-                      <option value="Banking/Finance">Banking/Finance</option>
-                      <option value="Pharma">Pharma</option>
-                      <option value="Other">Other</option>
-                    </select>
-                  </div>
-                </div>
-
-                <div>
-                  <div className="">
-                    <div>
-                      <label className="text-[14px] font-medium">
-                        Business Since
-                      </label>
-                    </div>
-
-                    <input
-                      type="text"
-                      name="Permanent_Businessworkingsince"
-                      value={formData.Permanent_Businessworkingsince}
-                      onChange={handleChange}
-                      placeholder="Eg.10"
-                      className="border border-gray-300 px-1 text-xs h-[30px] w-[120px] rounded-[8px] bg-white"
-                    />
-                  </div>
-                </div>
-                {/* <div>
-                  <div className="">
-                    <div>
-                      <label className="text-[14px] font-medium">
-                        Country <span className="text-red-500">*</span>
-                      </label>
-                    </div>
-
-                    <input
-                      type="text"
-                      name="Permanent_Country"
-                      value={formData.Permanent_Country}
-                      onChange={handleChange}
-                      placeholder="Country"
-                      className={`border px-1 text-xs h-[30px] w-[80px] rounded-[8px] bg-white ${
-                        errors.Permanent_Country
-                          ? "border-red-500"
-                          : "border-gray-300"
-                      }`}
-                    />
-                    {errors.Permanent_Country && (
-                      <p className="text-red-500 text-xs mt-1">
-                        {errors.Permanent_Country}
-                      </p>
-                    )}
-                  </div>
-                </div> */}
-              </div>
+             
 
               <div className="flex gap-3 mt-2"></div>
             </div>
@@ -2032,7 +2935,7 @@ if (!validation.isValid) {
 
           <div className="flex mx-auto  w-[745px]">
             <div className="bg-[#FFE6E6]  p-1  w-full mx-auto ">
-              <p className="font-[Source_Sans_3] font-bold text-[24px] leading-[100%] tracking-[0.03em] text-[#0A2478]  ">
+              <p className="font-[Source_Sans_3] font-bold text-[15px] leading-[100%] tracking-[0.03em] text-[#0A2478]  ">
                 Additional Documents
               </p>
 
@@ -2073,18 +2976,26 @@ if (!validation.isValid) {
 
                 {/* Address Details */}
                 <div className="flex flex-col">
-                  <label className="text-[14px] font-medium">
-                    Any Details 
-                  </label>
-                  <input
-                    type="text"
-                    name="Additional_AnyDetails1"
-                    value={formData.Additional_AnyDetails1}
-                    onChange={handleChange}
-                    placeholder="Any Details"
-                    className="border border-gray-300 px-1 text-xs h-[30px] mt-1 w-[141px] rounded-[8px] bg-white"
-                  />
+                  <div className="flex flex-col">
+                    <label className="text-[14px] font-medium">Number</label>
+                    <input
+                      type="text"
+                      name="Additional_AnyDetails1"
+                      value={formData.Additional_AnyDetails1}
+                      onChange={handleChange}
+                      placeholder=""
+                      className="border border-gray-300 px-1 text-xs h-[30px] w-[141px] rounded-[8px] bg-white"
+                    />
+                  </div>
+                  <div>
+                    {errors.Additional_AnyDetails1 && (
+                      <p className="text-red-500 text-xs mt-1">
+                        {errors.Additional_AnyDetails1}
+                      </p>
+                    )}
+                  </div>
                 </div>
+
                 <div className="mt-6">
                   <label
                     htmlFor="uploadDocument1"
@@ -2102,12 +3013,30 @@ if (!validation.isValid) {
                     className="hidden"
                   />
                   {formData.Additional_UploadDocumentFile1 && (
-                    <p className="text-[13px] text-gray-700">
-                      Selected File:{" "}
-                      <span className="font-medium text-[#0A2478]">
-                        {formData.Additional_UploadDocumentFile1.name}
-                      </span>
-                    </p>
+                    <div className="text-[10px] text-gray-700 flex items-center gap-3">
+                      <p>
+                        <span className="font-medium text-[#0A2478]">
+                          {getFileName(formData.Additional_UploadDocumentFile1)}
+                        </span>
+                      </p>
+
+                      <button
+                        onClick={() => {
+  const file = formData.Additional_UploadDocumentFile1;
+
+  if (file instanceof File) {
+    const fileURL = URL.createObjectURL(file);
+    window.open(fileURL, "_blank");
+  } else if (typeof file === "string") {
+    // already a URL from backend
+    window.open(file, "_blank");
+  }
+}}
+                        className="text-white bg-blue-600 px-2 py-1 rounded text-xs hover:bg-blue-700"
+                      >
+                        View
+                      </button>
+                    </div>
                   )}
                 </div>
                 {/* ID Proof */}
@@ -2158,18 +3087,26 @@ if (!validation.isValid) {
                     })}
                   </select>
                 </div>
+
                 <div className="flex flex-col">
-                  <label className="text-[14px] font-medium">
-                    Any Details 
-                  </label>
-                  <input
-                    type="text"
-                    name="Additional_AnyDetails2"
-                    value={formData.Additional_AnyDetails2}
-                    onChange={handleChange}
-                    placeholder="Any Details"
-                    className="border border-gray-300 px-1 text-xs h-[30px] mt-1 w-[141px] rounded-[8px] bg-white"
-                  />
+                  <div className="flex flex-col">
+                    <label className="text-[14px] font-medium">Number</label>
+                    <input
+                      type="text"
+                      name="Additional_AnyDetails2"
+                      value={formData.Additional_AnyDetails2}
+                      onChange={handleChange}
+                      placeholder=""
+                      className="border border-gray-300 px-1 text-xs h-[30px] mt-1 w-[141px] rounded-[8px] bg-white"
+                    />
+                  </div>
+                  <div>
+                    {errors.Additional_AnyDetails2 && (
+                      <p className="text-red-500 text-xs mt-1">
+                        {errors.Additional_AnyDetails2}
+                      </p>
+                    )}
+                  </div>
                 </div>
 
                 {/* Upload Button */}
@@ -2191,12 +3128,37 @@ if (!validation.isValid) {
                   />
 
                   {formData.Additional_UploadDocumentFile2 && (
-                    <p className="text-[13px] text-gray-700">
-                      Selected File:{" "}
-                      <span className="font-medium text-[#0A2478]">
-                        {formData.Additional_UploadDocumentFile2.name}
-                      </span>
-                    </p>
+                    <div className="text-[10px] text-gray-700 flex items-center gap-3">
+                      <p>
+                        <span className="font-medium text-[#0A2478]">
+                          {getFileName(formData.Additional_UploadDocumentFile2)}
+                        </span>
+                      </p>
+
+                      <button
+                        // onClick={() =>
+                        //   window.open(
+                        //     formData.Additional_UploadDocumentFile2,
+                        //     "_blank",
+                        //   )
+                        // }
+
+                         onClick={() => {
+  const file = formData.Additional_UploadDocumentFile2;
+
+  if (file instanceof File) {
+    const fileURL = URL.createObjectURL(file);
+    window.open(fileURL, "_blank");
+  } else if (typeof file === "string") {
+    // already a URL from backend
+    window.open(file, "_blank");
+  }
+}}
+                        className="text-white bg-blue-600 px-2 py-1 rounded text-xs hover:bg-blue-700"
+                      >
+                        View
+                      </button>
+                    </div>
                   )}
                 </div>
                 {/* <div className="flex flex-col">
@@ -2223,6 +3185,104 @@ if (!validation.isValid) {
                   />
                 </div>
               </div>
+
+               <div className="flex gap-3 ">
+                <div>
+                  <div className="">
+                    <div>
+                      <label className="text-[14px] font-medium">
+                        Category
+                      </label>
+                    </div>
+
+                    <select
+                      name="Permanent_Category"
+                      value={formData.Permanent_Category}
+                      onChange={handleChange}
+                      className="border border-gray-300 px-1 text-xs h-[30px] w-[115px] bg-white rounded-[8px]"
+                    >
+                      <option value="">Select Category</option>
+                      <option value="Salaried">Salaried</option>
+                      <option value="Self-Employed (Professional)">
+                        Self-Employed (Professional)
+                      </option>
+                      <option value="Self-Employed (Non-Professional)">
+                        Self-Employed (Non-Professional)
+                      </option>
+                      <option value="Unemployed">Unemployed</option>
+                      <option value="Housewife">Housewife</option>
+                      <option value="Other">Other</option>
+                    </select>
+                  </div>
+                </div>
+                <div>
+                  <div className="">
+                    <div>
+                      <label className="text-[14px] font-medium">
+                        Company Type
+                      </label>
+                    </div>
+
+                    <select
+                      name="Permanent_CompanyType"
+                      value={formData.Permanent_CompanyType}
+                      onChange={handleChange}
+                      className="border border-gray-300 px-1 text-xs h-[30px] w-[140px] bg-white rounded-[8px]"
+                    >
+                      <option value="">Select Company Type</option>
+                      <option value="State Govt">State Govt</option>
+                      <option value="MNC">MNC</option>
+                      <option value="Public Ltd">Public Ltd</option>
+                      <option value="Private Ltd">Private Ltd</option>
+                      <option value="Partnership">Partnership</option>
+                      <option value="Proprietorship">Proprietorship</option>
+                    </select>
+                  </div>
+                </div>
+                <div>
+                  <div className="">
+                    <div>
+                      <label className="text-[14px] font-medium">
+                        Industry Type
+                      </label>
+                    </div>
+
+                    <select
+                      name="Permanent_IndustryType"
+                      value={formData.Permanent_IndustryType}
+                      onChange={handleChange}
+                      className="border border-gray-300 px-1 text-xs h-[30px] w-[140px] bg-white rounded-[8px]"
+                    >
+                      <option value="">Select Industry Type</option>
+                      <option value="Manufacturing">Manufacturing</option>
+                      <option value="Trading">Trading</option>
+                      <option value="Services">Services</option>
+                      <option value="Banking/Finance">Banking/Finance</option>
+                      <option value="Pharma">Pharma</option>
+                      <option value="Other">Other</option>
+                    </select>
+                  </div>
+                </div>
+
+                <div>
+                  <div className="">
+                    <div>
+                      <label className="text-[14px] font-medium">
+                        Business Since
+                      </label>
+                    </div>
+
+                    <input
+                      type="text"
+                      name="Permanent_Businessworkingsince"
+                      value={formData.Permanent_Businessworkingsince}
+                      onChange={handleChange}
+                      placeholder="Eg.10"
+                      className="border border-gray-300 px-1 text-xs h-[30px] w-[120px] rounded-[8px] bg-white"
+                    />
+                  </div>
+                </div>
+              </div>
             </div>
           </div>
           {/* <div className="flex mx-auto  w-[728px]">
@@ -2238,9 +3298,9 @@ if (!validation.isValid) {
         </div>
         <div>
           <div className="flex mx-auto  w-[710px]">
-            <div className="bg-[#F7F7FF]  p-1  w-full mx-auto ">
+            <div className="bg-[#F7F7FF]    w-full mx-auto ">
               <div className="flex justify-between">
-                <p className="font-[Source_Sans_3] font-bold text-[24px] leading-[100%] tracking-[0.03em] text-[#0A2478]  ">
+                <p className="font-[Source_Sans_3] font-bold text-[15px] leading-[100%] tracking-[0.03em] text-[#0A2478] p-1 ">
                   Current Address
                 </p>
                 <p className="">
@@ -2272,162 +3332,186 @@ if (!validation.isValid) {
                       value={formData.Corresponding_Address}
                       onChange={handleChange}
                       placeholder="Address"
-                      className="border border-gray-300 px-1 text-xs h-[85px] mt-1 w-[375px]  bg-white rounded-[8px]"
+                      className="border border-gray-300 px-1 text-xs h-[85px]  w-[375px]  bg-white rounded-[8px]"
                     />
                   </div>
                 </div>
                 <div>
-                  <div>
-                    <div className="flex gap-2">
-                      {/* <div className="">
-                        <div>
-                          <label className="text-[14px] font-medium">
-                            Area<span className="text-red-500">*</span>
-                          </label>
-                        </div>
+                 <div>
+  {/* Area & City */}
+  <div className="flex gap-2">
+    
+    {/* Area */}
+    <div>
+      <div>
+        <label className="text-[14px] font-medium">
+          Area <span className="text-red-500">*</span>
+        </label>
+      </div>
 
-                        <select
-                          name="Corresponding_Area"
-                          value={formData.Corresponding_Area}
-                          onChange={handleChange}
-                          className="border border-gray-300 px-1 text-xs h-[30px] mt-1 w-[100px] bg-white rounded-[8px]"
-                        >
-                          <option value="">Select Area</option>
-                          {areas.length > 0 ? (
-                            areas.map((area) => (
-                              <option key={area.id} value={area.area_locality}>
-                                {area.area_locality}
-                              </option>
-                            ))
-                          ) : (
-                            <option disabled>Loading areas...</option>
-                          )}
-                        </select>
-                      </div> */}
-                      <div className="">
-                        <div>
-                          <label className="text-[14px] font-medium">
-                            Area <span className="text-red-500">*</span>
-                          </label>
-                        </div>
+      <input
+        type="text"
+        name="Corresponding_Area"
+        value={formData.Corresponding_Area}
+        onChange={handleChange}
+        placeholder="Area"
+        className={`px-1 text-xs h-[30px] w-[150px] rounded-[8px] bg-white border focus:outline-none
+          ${
+            errors.Corresponding_Area
+              ? "border-red-500"
+              : "border-gray-300"
+          }
+        `}
+      />
 
-                        <input
-                          type="text"
-                          name="Corresponding_Area"
-                          value={formData.Corresponding_Area}
-                          onChange={handleChange}
-                          placeholder="Area"
-                          className={`border px-1 text-xs h-[30px]  w-[100px] rounded-[8px] bg-white `}
-                        />
-                        {/* {errors.Corresponding_Area && (
-                          <p className="text-red-500 text-xs mt-1">
-                            {errors.Corresponding_Area}
-                          </p>
-                        )} */}
-                      </div>
+      {/* {errors.Corresponding_Area && (
+        <p className="text-red-500 text-xs mt-1">
+          {errors.Corresponding_Area}
+        </p>
+      )} */}
+    </div>
 
-                      <div className="">
-                        <div>
-                          <label className="text-[14px] font-medium">
-                            City <span className="text-red-500">*</span>
-                          </label>
-                        </div>
+    {/* City */}
+    <div>
+      <div>
+        <label className="text-[14px] font-medium">
+          City <span className="text-red-500">*</span>
+        </label>
+      </div>
 
-                        <input
-                          type="text"
-                          name="Corresponding_City"
-                          value={formData.Corresponding_City}
-                          onChange={handleChange}
-                          placeholder="City"
-                          className="border border-gray-300 px-1 text-xs h-[30px] mt-1 w-[150px] rounded-[8px] bg-white"
-                        />
-                      </div>
-                    </div>
+      <input
+        type="text"
+        name="Corresponding_City"
+        value={formData.Corresponding_City}
+        onChange={handleChange}
+        placeholder="City"
+        className={`px-1 text-xs h-[30px] mt-1 w-[100px] rounded-[8px] bg-white border focus:outline-none
+          ${
+            errors.Corresponding_City
+              ? "border-red-500"
+              : "border-gray-300"
+          }
+        `}
+      />
 
-                    <div className="flex gap-2">
-                      <div>
-                        <div className="">
-                          <div>
-                            <label className="text-[14px] font-medium">
-                              Pincode <span className="text-red-500">*</span>
-                            </label>
-                          </div>
+      {/* {errors.Corresponding_City && (
+        <p className="text-red-500 text-xs mt-1">
+          {errors.Corresponding_City}
+        </p>
+      )} */}
+    </div>
+  </div>
 
-                          <input
-                            type="text"
-                            name="Corresponding_Pincode"
-                            value={formData.Corresponding_Pincode}
-                            onChange={handleChange}
-                            placeholder="Pincode"
-                            className="border border-gray-300 px-1 text-xs h-[30px] mt-1 w-[100px] rounded-[8px] bg-white"
-                          />
-                        </div>
-                      </div>
-                      <div className="">
-                        <div>
-                          {" "}
-                          <label className="text-[14px] font-medium">
-                            State <span className="text-red-500">*</span>
-                          </label>
-                        </div>
+  {/* Pincode & State */}
+  <div className="flex gap-2">
+    
+    {/* Pincode */}
+    <div>
+      <div>
+        <label className="text-[14px] font-medium">
+          Pincode <span className="text-red-500">*</span>
+        </label>
+      </div>
 
-                        <select
-                          name="Corresponding_State"
-                          value={formData.Corresponding_State}
-                          onChange={handleChange}
-                          className="border border-gray-300 px-1 text-xs h-[30px] mt-1 w-[150px] bg-white rounded-[8px]"
-                        >
-                          <option value="">Select State</option>
-                          <option value="Andhra Pradesh">Andhra Pradesh</option>
-                          <option value="Arunachal Pradesh">
-                            Arunachal Pradesh
-                          </option>
-                          <option value="Assam">Assam</option>
-                          <option value="Bihar">Bihar</option>
-                          <option value="Chhattisgarh">Chhattisgarh</option>
-                          <option value="Goa">Goa</option>
-                          <option value="Gujarat">Gujarat</option>
-                          <option value="Haryana">Haryana</option>
-                          <option value="Himachal Pradesh">
-                            Himachal Pradesh
-                          </option>
-                          <option value="Jharkhand">Jharkhand</option>
-                          <option value="Karnataka">Karnataka</option>
-                          <option value="Kerala">Kerala</option>
-                          <option value="Madhya Pradesh">Madhya Pradesh</option>
-                          <option value="Maharashtra">Maharashtra</option>
-                          <option value="Manipur">Manipur</option>
-                          <option value="Meghalaya">Meghalaya</option>
-                          <option value="Mizoram">Mizoram</option>
-                          <option value="Nagaland">Nagaland</option>
-                          <option value="Odisha">Odisha</option>
-                          <option value="Punjab">Punjab</option>
-                          <option value="Rajasthan">Rajasthan</option>
-                          <option value="Sikkim">Sikkim</option>
-                          <option value="Tamil Nadu">Tamil Nadu</option>
-                          <option value="Telangana">Telangana</option>
-                          <option value="Tripura">Tripura</option>
-                          <option value="Uttar Pradesh">Uttar Pradesh</option>
-                          <option value="Uttarakhand">Uttarakhand</option>
-                          <option value="West Bengal">West Bengal</option>
-                          <option value="Andaman and Nicobar Islands">
-                            Andaman and Nicobar Islands
-                          </option>
-                          <option value="Chandigarh">Chandigarh</option>
-                          <option value="Dadra and Nagar Haveli and Daman and Diu">
-                            Dadra and Nagar Haveli and Daman and Diu
-                          </option>
-                          <option value="Delhi">Delhi</option>
-                          <option value="Jammu and Kashmir">
-                            Jammu and Kashmir
-                          </option>
-                          <option value="Ladakh">Ladakh</option>
-                          <option value="Lakshadweep">Lakshadweep</option>
-                          <option value="Puducherry">Puducherry</option>
-                        </select>
-                      </div>
-                    </div>
-                  </div>
+      <input
+        type="text"
+        name="Corresponding_Pincode"
+        value={formData.Corresponding_Pincode}
+        onChange={handleChange}
+        placeholder="Pincode"
+        className={`px-1 text-xs h-[30px] w-[100px] rounded-[8px] bg-white border focus:outline-none
+          ${
+            errors.Corresponding_Pincode
+              ? "border-red-500"
+              : "border-gray-300"
+          }
+        `}
+      />
+
+      {/* {errors.Corresponding_Pincode && (
+        <p className="text-red-500 text-xs mt-1">
+          {errors.Corresponding_Pincode}
+        </p>
+      )} */}
+    </div>
+
+    {/* State */}
+    <div>
+      <div>
+        <label className="text-[14px] font-medium">
+          State <span className="text-red-500">*</span>
+        </label>
+      </div>
+
+      <select
+        name="Corresponding_State"
+        value={formData.Corresponding_State}
+        onChange={handleChange}
+        className={`px-1 text-xs h-[30px] mt-1 w-[150px] bg-white rounded-[8px] border focus:outline-none
+          ${
+            errors.Corresponding_State
+              ? "border-red-500"
+              : "border-gray-300"
+          }
+        `}
+      >
+        <option value="">Select State</option>
+        <option value="Andhra Pradesh">Andhra Pradesh</option>
+        <option value="Arunachal Pradesh">
+          Arunachal Pradesh
+        </option>
+        <option value="Assam">Assam</option>
+        <option value="Bihar">Bihar</option>
+        <option value="Chhattisgarh">Chhattisgarh</option>
+        <option value="Goa">Goa</option>
+        <option value="Gujarat">Gujarat</option>
+        <option value="Haryana">Haryana</option>
+        <option value="Himachal Pradesh">
+          Himachal Pradesh
+        </option>
+        <option value="Jharkhand">Jharkhand</option>
+        <option value="Karnataka">Karnataka</option>
+        <option value="Kerala">Kerala</option>
+        <option value="Madhya Pradesh">Madhya Pradesh</option>
+        <option value="Maharashtra">Maharashtra</option>
+        <option value="Manipur">Manipur</option>
+        <option value="Meghalaya">Meghalaya</option>
+        <option value="Mizoram">Mizoram</option>
+        <option value="Nagaland">Nagaland</option>
+        <option value="Odisha">Odisha</option>
+        <option value="Punjab">Punjab</option>
+        <option value="Rajasthan">Rajasthan</option>
+        <option value="Sikkim">Sikkim</option>
+        <option value="Tamil Nadu">Tamil Nadu</option>
+        <option value="Telangana">Telangana</option>
+        <option value="Tripura">Tripura</option>
+        <option value="Uttar Pradesh">Uttar Pradesh</option>
+        <option value="Uttarakhand">Uttarakhand</option>
+        <option value="West Bengal">West Bengal</option>
+        <option value="Andaman and Nicobar Islands">
+          Andaman and Nicobar Islands
+        </option>
+        <option value="Chandigarh">Chandigarh</option>
+        <option value="Dadra and Nagar Haveli and Daman and Diu">
+          Dadra and Nagar Haveli and Daman and Diu
+        </option>
+        <option value="Delhi">Delhi</option>
+        <option value="Jammu and Kashmir">
+          Jammu and Kashmir
+        </option>
+        <option value="Ladakh">Ladakh</option>
+        <option value="Lakshadweep">Lakshadweep</option>
+        <option value="Puducherry">Puducherry</option>
+      </select>
+
+      {/* {errors.Corresponding_State && (
+        <p className="text-red-500 text-xs mt-1">
+          {errors.Corresponding_State}
+        </p>
+      )} */}
+    </div>
+  </div>
+</div>
                   <div>
                     <div className="flex gap-3 mt-2">
                       {/* <div>
@@ -2453,192 +3537,243 @@ if (!validation.isValid) {
             </div>
           </div>
 
-          <div className="flex mx-auto w-[710px]">
-            <div className="bg-[#FFE6E6] w-full mx-auto p-1">
-              <p className="font-[Source_Sans_3] font-bold text-[24px] leading-[100%] tracking-[0.03em] text-[#0A2478]">
-                Nominee Details
-              </p>
+         <div className="flex mx-auto w-[710px]">
+  <div className="bg-[#FFE6E6] w-full mx-auto p-1">
+    <p className="font-[Source_Sans_3] font-bold text-[15px] leading-[100%] tracking-[0.03em] text-[#0A2478]">
+      Nominee Details
+    </p>
 
-             
-
-              <div className="flex gap-5">
-                <div>
-                  <div className="flex gap-2">
-                    <div>
-                      <div className="">
-                        <div>
-                          <label className="text-[14px] font-medium">
-                            Nominee <span className="text-red-500">*</span>
-                          </label>
-                        </div>
-
-                        <input
-                          type="text"
-                          name="Nominee_NomineeName"
-                          value={formData.Nominee_NomineeName}
-                          onChange={handleChange}
-                          placeholder="Nominee Name"
-                          className="border border-gray-300 px-1 text-xs h-[30px] mt-1 w-[180px]  bg-white rounded-[8px]"
-                        />
-                      </div>
-                    </div>
-
-                    <div>
-                      <div className="">
-                        <div>
-                          <label className="text-[14px] font-medium">
-                            Relation <span className="text-red-500">*</span>
-                          </label>
-                        </div>
-
-                        <input
-                          type="text"
-                          name="Nominee_Relation"
-                          value={formData.Nominee_Relation}
-                          onChange={handleChange}
-                          placeholder="Relation"
-                          className="border border-gray-300 px-1 text-xs h-[30px] mt-1 w-[170px] rounded-[8px] bg-white"
-                        />
-                      </div>
-                    </div>
-                  </div>
-                  <div className="flex gap-2">
-                    <div className=" ">
-                      <div>
-                        <label className="text-[14px] font-medium">
-                          City <span className="text-red-500">*</span>
-                        </label>
-                      </div>
-
-                      <input
-                        type="text"
-                        name="Nominee_City"
-                        value={formData.Nominee_City}
-                        onChange={handleChange}
-                        placeholder="City"
-                        className="border border-gray-300 px-1 text-xs h-[30px] mt-1 w-[131px] rounded-[8px] bg-white"
-                      />
-                    </div>
-                    <div>
-                      <div className="">
-                        <div>
-                          {" "}
-                          <label className="text-[14px] font-medium">
-                            State <span className="text-red-500">*</span>
-                          </label>
-                        </div>
-
-                        <select
-                          name="Nominee_State"
-                          value={formData.Nominee_State}
-                          onChange={handleChange}
-                          className="border border-gray-300 px-1 text-xs h-[30px] mt-1 w-[220px] bg-white rounded-[8px]"
-                        >
-                          <option value="">Select State</option>
-                          <option value="Andhra Pradesh">Andhra Pradesh</option>
-                          <option value="Arunachal Pradesh">
-                            Arunachal Pradesh
-                          </option>
-                          <option value="Assam">Assam</option>
-                          <option value="Bihar">Bihar</option>
-                          <option value="Chhattisgarh">Chhattisgarh</option>
-                          <option value="Goa">Goa</option>
-                          <option value="Gujarat">Gujarat</option>
-                          <option value="Haryana">Haryana</option>
-                          <option value="Himachal Pradesh">
-                            Himachal Pradesh
-                          </option>
-                          <option value="Jharkhand">Jharkhand</option>
-                          <option value="Karnataka">Karnataka</option>
-                          <option value="Kerala">Kerala</option>
-                          <option value="Madhya Pradesh">Madhya Pradesh</option>
-                          <option value="Maharashtra">Maharashtra</option>
-                          <option value="Manipur">Manipur</option>
-                          <option value="Meghalaya">Meghalaya</option>
-                          <option value="Mizoram">Mizoram</option>
-                          <option value="Nagaland">Nagaland</option>
-                          <option value="Odisha">Odisha</option>
-                          <option value="Punjab">Punjab</option>
-                          <option value="Rajasthan">Rajasthan</option>
-                          <option value="Sikkim">Sikkim</option>
-                          <option value="Tamil Nadu">Tamil Nadu</option>
-                          <option value="Telangana">Telangana</option>
-                          <option value="Tripura">Tripura</option>
-                          <option value="Uttar Pradesh">Uttar Pradesh</option>
-                          <option value="Uttarakhand">Uttarakhand</option>
-                          <option value="West Bengal">West Bengal</option>
-                          <option value="Andaman and Nicobar Islands">
-                            Andaman and Nicobar Islands
-                          </option>
-                          <option value="Chandigarh">Chandigarh</option>
-                          <option value="Dadra and Nagar Haveli and Daman and Diu">
-                            Dadra and Nagar Haveli and Daman and Diu
-                          </option>
-                          <option value="Delhi">Delhi</option>
-                          <option value="Jammu and Kashmir">
-                            Jammu and Kashmir
-                          </option>
-                          <option value="Ladakh">Ladakh</option>
-                          <option value="Lakshadweep">Lakshadweep</option>
-                          <option value="Puducherry">Puducherry</option>
-                        </select>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-                <div>
-                  <div>
-                    <div className="">
-                      <div>
-                        <label className="text-[14px] font-medium">
-                          Address <span className="text-red-500">*</span>
-                        </label>
-                      </div>
-
-                      <textarea
-                        type="text"
-                        name="Nominee_Address"
-                        value={formData.Nominee_Address}
-                        onChange={handleChange}
-                        placeholder="Address"
-                        className="border border-gray-300 px-1 text-xs h-[82px] mt-1 w-[322px] rounded-[8px] bg-white"
-                      />
-                    </div>
-                  </div>
-                </div>
-              </div>
+    <div className="flex gap-5">
+      
+      {/* Left Side */}
+      <div>
+        
+        {/* Nominee & Relation */}
+        <div className="flex gap-2">
+          
+          {/* Nominee */}
+          <div>
+            <div>
+              <label className="text-[14px] font-medium">
+                Nominee <span className="text-red-500">*</span>
+              </label>
             </div>
+
+            <input
+              type="text"
+              name="Nominee_NomineeName"
+              value={formData.Nominee_NomineeName}
+              onChange={handleChange}
+              placeholder="Nominee Name"
+              className={`px-1 text-xs h-[30px] mt-1 w-[180px] bg-white rounded-[8px] border focus:outline-none
+                ${
+                  errors.Nominee_NomineeName
+                    ? "border-red-500"
+                    : "border-gray-300"
+                }
+              `}
+            />
+
+            {/* {errors.Nominee_NomineeName && (
+              <p className="text-red-500 text-xs mt-1">
+                {errors.Nominee_NomineeName}
+              </p>
+            )} */}
           </div>
+
+          {/* Relation */}
+          <div>
+            <div>
+              <label className="text-[14px] font-medium">
+                Relation <span className="text-red-500">*</span>
+              </label>
+            </div>
+
+            <input
+              type="text"
+              name="Nominee_Relation"
+              value={formData.Nominee_Relation}
+              onChange={handleChange}
+              placeholder="Relation"
+              className={`px-1 text-xs h-[30px] mt-1 w-[170px] rounded-[8px] bg-white border focus:outline-none
+                ${
+                  errors.Nominee_Relation
+                    ? "border-red-500"
+                    : "border-gray-300"
+                }
+              `}
+            />
+
+            {/* {errors.Nominee_Relation && (
+              <p className="text-red-500 text-xs mt-1">
+                {errors.Nominee_Relation}
+              </p>
+            )} */}
+          </div>
+        </div>
+
+        {/* City & State */}
+        <div className="flex gap-2">
+          
+          {/* City */}
+          <div>
+            <div>
+              <label className="text-[14px] font-medium">
+                City <span className="text-red-500">*</span>
+              </label>
+            </div>
+
+            <input
+              type="text"
+              name="Nominee_City"
+              value={formData.Nominee_City}
+              onChange={handleChange}
+              placeholder="City"
+              className={`px-1 text-xs h-[30px] mt-1 w-[131px] rounded-[8px] bg-white border focus:outline-none
+                ${
+                  errors.Nominee_City
+                    ? "border-red-500"
+                    : "border-gray-300"
+                }
+              `}
+            />
+
+            {/* {errors.Nominee_City && (
+              <p className="text-red-500 text-xs mt-1">
+                {errors.Nominee_City}
+              </p>
+            )} */}
+          </div>
+
+          {/* State */}
+          <div>
+            <div>
+              <label className="text-[14px] font-medium">
+                State <span className="text-red-500">*</span>
+              </label>
+            </div>
+
+            <select
+              name="Nominee_State"
+              value={formData.Nominee_State}
+              onChange={handleChange}
+              className={`px-1 text-xs h-[30px] mt-1 w-[220px] bg-white rounded-[8px] border focus:outline-none
+                ${
+                  errors.Nominee_State
+                    ? "border-red-500"
+                    : "border-gray-300"
+                }
+              `}
+            >
+              <option value="">Select State</option>
+              <option value="Andhra Pradesh">Andhra Pradesh</option>
+              <option value="Arunachal Pradesh">
+                Arunachal Pradesh
+              </option>
+              <option value="Assam">Assam</option>
+              <option value="Bihar">Bihar</option>
+              <option value="Chhattisgarh">Chhattisgarh</option>
+              <option value="Goa">Goa</option>
+              <option value="Gujarat">Gujarat</option>
+              <option value="Haryana">Haryana</option>
+              <option value="Himachal Pradesh">
+                Himachal Pradesh
+              </option>
+              <option value="Jharkhand">Jharkhand</option>
+              <option value="Karnataka">Karnataka</option>
+              <option value="Kerala">Kerala</option>
+              <option value="Madhya Pradesh">Madhya Pradesh</option>
+              <option value="Maharashtra">Maharashtra</option>
+              <option value="Manipur">Manipur</option>
+              <option value="Meghalaya">Meghalaya</option>
+              <option value="Mizoram">Mizoram</option>
+              <option value="Nagaland">Nagaland</option>
+              <option value="Odisha">Odisha</option>
+              <option value="Punjab">Punjab</option>
+              <option value="Rajasthan">Rajasthan</option>
+              <option value="Sikkim">Sikkim</option>
+              <option value="Tamil Nadu">Tamil Nadu</option>
+              <option value="Telangana">Telangana</option>
+              <option value="Tripura">Tripura</option>
+              <option value="Uttar Pradesh">Uttar Pradesh</option>
+              <option value="Uttarakhand">Uttarakhand</option>
+              <option value="West Bengal">West Bengal</option>
+              <option value="Andaman and Nicobar Islands">
+                Andaman and Nicobar Islands
+              </option>
+              <option value="Chandigarh">Chandigarh</option>
+              <option value="Dadra and Nagar Haveli and Daman and Diu">
+                Dadra and Nagar Haveli and Daman and Diu
+              </option>
+              <option value="Delhi">Delhi</option>
+              <option value="Jammu and Kashmir">
+                Jammu and Kashmir
+              </option>
+              <option value="Ladakh">Ladakh</option>
+              <option value="Lakshadweep">Lakshadweep</option>
+              <option value="Puducherry">Puducherry</option>
+            </select>
+
+            {/* {errors.Nominee_State && (
+              <p className="text-red-500 text-xs mt-1">
+                {errors.Nominee_State}
+              </p>
+            )} */}
+          </div>
+        </div>
+      </div>
+
+      {/* Address */}
+      <div>
+        <div>
+          <label className="text-[14px] font-medium">
+            Address <span className="text-red-500">*</span>
+          </label>
+        </div>
+
+        <textarea
+          type="text"
+          name="Nominee_Address"
+          value={formData.Nominee_Address}
+          onChange={handleChange}
+          placeholder="Address"
+          className={`px-1 text-xs h-[82px] mt-1 w-[322px] rounded-[8px] bg-white border focus:outline-none
+            ${
+              errors.Nominee_Address
+                ? "border-red-500"
+                : "border-gray-300"
+            }
+          `}
+        />
+
+        {/* {errors.Nominee_Address && (
+          <p className="text-red-500 text-xs mt-1">
+            {errors.Nominee_Address}
+          </p>
+        )} */}
+      </div>
+    </div>
+  </div>
+</div>
 
           <div className="flex mx-auto  w-[710px]">
             <div className="p-1  w-full bg-[#F7F7FF]  flex gap-2">
-              <p className="font-[Source_Sans_3] font-bold text-[20px] leading-none tracking-[0.03em] text-[#0A2478] mb-3">
+              <p className="font-[Source_Sans_3] font-bold text-[15px] leading-none tracking-[0.03em] text-[#0A2478] mb-3">
                 Remark
               </p>
 
               {/* Wrapper to control editor boundaries */}
               <div className="jodit-wrapper  rounded-md overflow-hidden">
-                {/* <JoditEditor
-        ref={editor}
-        value={content}
-        config={{
-          ...config,
-          readonly: false,
-          height: 50, // Sets the editing area height
-          toolbarAdaptive: false, // Keeps toolbar visible
-          buttons: "bold,italic,underline,strikethrough,ul,ol,font,fontsize,paragraph", // Minimal buttons to save space
-        }}
-        onChange={(newContent) => setContent(newContent)}
-      /> */}
-                <textarea className="bg-white h-[40px] w-[553px]"></textarea>
+               
+                <textarea className="bg-white h-[40px] w-[553px] border border-gray-300"></textarea>
               </div>
             </div>
           </div>
         </div>
       </div>
 
-      <div className="  w-[1470px] ">
-        <div className=" bg-[#FFE6E6] ml-[28px] ">
+      <div className="  w-[1480px] ">
+        <div className=" bg-[#F7F7FF]  ml-[22px] ">
           <div>
             <CustBankDetails
               bankData={bankData}
@@ -2646,6 +3781,7 @@ if (!validation.isValid) {
               mode={modeForBank}
               setMode={setModeForbank}
               updatemode={mode}
+              formDataFromParents={formData}
             />
           </div>
         </div>

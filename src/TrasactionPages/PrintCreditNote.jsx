@@ -54,8 +54,8 @@ const PrintCreditNote = () => {
 
   return (
     <div>
-      <div className="flex justify-center no-print sticky top-[80px] z-40">
-        <div className="flex items-center justify-between border border-gray-300 rounded-[10px] px-4 py-2 mt-4 w-[1290px] h-[62px] shadow-lg bg-white">
+      <div className="flex justify-center no-print sticky top-[50px] z-40">
+        <div className="flex items-center justify-between border border-gray-300  px-2  w-[1462px] h-[40px]  bg-white">
           <h2 className="text-[#C1121F] font-bold text-[20px] whitespace-nowrap mr-4">
             Credit Note
           </h2>
@@ -77,12 +77,12 @@ const PrintCreditNote = () => {
           </div>
         </div>
       </div>
-      <div className="p-2  flex justify-center  mt-2 ml-[110px] mr-[110px]">
+      <div className="p-2  flex justify-center  mt-2 ">
         <div>
           <div className=" bg-white ">
             {/* Credit Note Details */}
             <section className="bg-[#ECECF6] p-4  border-gray-300">
-              <h3 className="font-semibold text-[20px] text-[#0A2478] mb-3">
+              <h3 className="font-semibold text-[15px] text-[#0A2478] mb-3">
                 Credit Note Details
               </h3>
 
@@ -119,7 +119,7 @@ const PrintCreditNote = () => {
 
             {/* Customer Details */}
             <section className="bg-[#FFE6E6] p-4  border-gray-300">
-              <h3 className="font-semibold text-[20px] text-[#0A2478] mb-3">
+              <h3 className="font-semibold text-[15px] text-[#0A2478] mb-3">
                 Customer Details
               </h3>
 
@@ -172,7 +172,7 @@ const PrintCreditNote = () => {
 
             {/* Authorization */}
             <section className="bg-[#eef2ff] p-4 ">
-              <h3 className="font-semibold text-[20px] text-[#0A2478] mb-3">
+              <h3 className="font-semibold text-[15px] text-[#0A2478] mb-3">
                 Authorization & Verification
               </h3>
 
@@ -204,7 +204,7 @@ const PrintCreditNote = () => {
             </div>
 
             {/* Declaration */}
-            <h3 className="font-semibold text-[#0A2478] text-[20px] mb-2">
+            <h3 className="font-semibold text-[#0A2478] text-[15px] mb-2">
               Declaration
             </h3>
             <p>This Credit Note has been issued as per NBFC guidelines…</p>
@@ -217,7 +217,7 @@ const PrintCreditNote = () => {
             </div>
 
             {/* Notes */}
-            <h3 className="font-semibold text-[#0A2478] text-[20px] mt-10 mb-2">
+            <h3 className="font-semibold text-[#0A2478] text-[15px] mt-10 mb-2">
               Notes
             </h3>
             <ul className="list-decimal list-inside">

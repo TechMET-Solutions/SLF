@@ -7,8 +7,12 @@ import Loader from "../Component/Loader";
 const ViewLoanDetails = () => {
   const [loanData, setLoanData] = useState(null);
   console.log(loanData, "loanData");
+  const [SchemeData, setSchemeData] = useState(null);
 
+  console.log(SchemeData,"SchemeData")
   const [emiTable, setEmiTable] = useState([]);
+
+  console.log(emiTable,"emiTable")
 const [loading, setLoading] = useState(false);
   // const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -60,7 +64,9 @@ const [loading, setLoading] = useState(false);
   );
 
   const { loanId } = location.state || {};
+const [emiInfo, setEmiInfo] = useState(null);
 
+  
   useEffect(() => {
     document.title = "SLF | Gold Loan ";
     if (loanId) {
@@ -72,15 +78,17 @@ const [loading, setLoading] = useState(false);
   }, [loanId]);
 
   const fetchLoanData = async () => {
+     setLoading(true);
     debugger;
     try {
-        setLoading(true);
+       
       const response = await axios.get(
         `${API}/Transactions/goldloan/getLoan/${loanId}`,
       );
 
       let data = response.data.loanApplication;
-
+        let schemeData = response.data.schemeData;
+     setEmiInfo(response.data.emiInfo);
       // parse payment
       if (data.payments_Details) {
         try {
@@ -95,6 +103,7 @@ const [loading, setLoading] = useState(false);
       }
 
       setLoanData(data);
+      setSchemeData(schemeData)
       setEmiTable(data.EMI_Details);
       setLoading(false);
       setError(null);
@@ -253,13 +262,7 @@ const [loading, setLoading] = useState(false);
 
   // Approve loan handler
 
-  if (loading) {
-    return (
-      <div className="min-h-screen w-full flex items-center justify-center">
-        <div className="text-lg">Loading loan data...</div>
-      </div>
-    );
-  }
+ 
 
   if (error) {
     return (
@@ -299,6 +302,9 @@ const [loading, setLoading] = useState(false);
     0,
   );
 
+
+  const formatWeight = (val) => Number(val || 0).toFixed(3);
+
   return (
     <div className="min-h-screen w-full">
       {/* ===== Top Bar ===== */}
@@ -314,7 +320,7 @@ const [loading, setLoading] = useState(false);
             }}
             className="text-red-600"
           >
-            Gold Loan - {loanData.id || "N/A"}
+            Loan Application - {loanData.id || "N/A"}
           </h2>
 
           <div className="flex gap-2 mr-6">
@@ -332,46 +338,52 @@ const [loading, setLoading] = useState(false);
       <div className="ml-[10px] min-h-screen px-4">
         {/* ===== Loan Details Section ===== */}
         <div className="flex justify-center  w-[1462px] pl-5 pr-5 bg-[#FFE6E6] ">
-          <div className="mt-2 ">
+          <div className="">
             <div className="flex gap-5">
               <div className="flex gap-10">
                 <div className="space-y-1 ">
                   <div>
-                    <label className="block   text-xs">Borrower Name*</label>
+                    <label className="block font-semibold  text-[14px]">Borrower Name</label>
                     <input
                       type="text"
                       disabled
-                      value={loanData.Borrower || "N/A"}
-                      className="w-[280px] p-2 bg-white border border-gray-200   cursor-not-allowed focus:outline-none rounded-[8px] text-xs px-1 py-1 mt-1"
+                     value={`${loanData?.Borrower || "N/A"} ${
+  loanData?.BorrowerId ? `(Id -${loanData.BorrowerId})` : ""
+}`}
+                      className="w-[280px] p-2 bg-white border border-gray-200   cursor-not-allowed focus:outline-none rounded-[8px] text-xs px-1 py-1 "
                     />
                   </div>
 
                   <div>
-                    <label className="block    text-xs">
-                      Co - Borrower Name*
+                    <label className="block    font-semibold  text-[14px]">
+                      Co - Borrower Name
                     </label>
                     <input
                       type="text"
                       disabled
-                      value={loanData.Co_Borrower || "N/A"}
-                      className="w-[280px] p-2 bg-white border border-gray-200 rounded-[8px]  cursor-not-allowed focus:outline-none text-xs px-1 py-1 mt-1"
+                      // value={loanData.Co_Borrower || "N/A"}
+
+                       value={`${loanData?.Co_Borrower || "N/A"} ${
+  loanData?.CoBorrowerId ? `(Id -${loanData.CoBorrowerId})` : ""
+}`}
+                      className="w-[280px] p-2 bg-white border border-gray-200 rounded-[8px]  cursor-not-allowed focus:outline-none text-xs px-1 py-1 "
                     />
                   </div>
 
                   {/* Address Field */}
                   <div>
-                    <label className="block text-xs">Scheme*</label>
+                    <label className="block font-semibold  text-[14px]">Scheme</label>
                     <input
                       type="text"
                       disabled
                       value={loanData.Scheme || "N/A"}
-                      className="w-full p-2 bg-white border border-gray-200 rounded-[8px]  cursor-not-allowed focus:outline-none text-xs px-1 py-1 mt-1"
+                      className="w-full p-2 bg-white border border-gray-200 rounded-[8px]  cursor-not-allowed focus:outline-none text-xs px-1 py-1 "
                     />
                   </div>
                 </div>
 
                 <div className="text-xs ">
-                  <p>Borrower Details*</p>
+                  <p className="font-semibold  text-[14px]">Borrower Details*</p>
                   <div className="border w-[296px] h-[140px] p-2 mt-1">
                     <p>{loanData.Print_Name}</p>
                     <p>
@@ -386,7 +398,7 @@ const [loading, setLoading] = useState(false);
                   </div>
                 </div>
                 <div className="text-xs ">
-                  <p>Co-Borrower Details*</p>
+                  <p className="font-semibold  text-[14px]">Co-Borrower Details*</p>
                   <div className="border w-[296px] h-[140px] mt-1 p-2">
                     <p>{loanData.coborrower_printName}</p>
                     <p>
@@ -412,7 +424,7 @@ const [loading, setLoading] = useState(false);
           </div>
 
           {/* ===== Ornament & Profile Photos ===== */}
-          <div className="flex mr-17 space-x-[1px] p-2">
+          <div className="flex mr-17 space-x-[1px] ">
             {/* Borrower */}
             <div className="w-[120px] h-auto flex flex-col items-center">
               <p className="font-medium mb-1 ">Borrower</p>
@@ -483,6 +495,22 @@ const [loading, setLoading] = useState(false);
                   <p className="text-gray-400 text-[9px]">No signature</p>
                 )}
               </div>
+
+                <div className="mt-1 border w-[100px] h-[26px] flex items-center justify-center bg-white rounded-[4px]">
+                {loanData.Signature_Image2 ? (
+                  <img
+                    src={loanData.Signature_Image2}
+                    alt="Borrower Signature"
+                    className="w-full h-full object-contain"
+                    onError={(e) => {
+                      e.target.style.display = "none";
+                      e.target.nextSibling.style.display = "block";
+                    }}
+                  />
+                ) : (
+                  <span className="text-gray-400 text-[9px]">No Signature</span>
+                )}
+              </div>
             </div>
 
             {/* Ornament */}
@@ -505,18 +533,18 @@ const [loading, setLoading] = useState(false);
         </div>
 
         {/* ===== Pledge Item List ===== */}
-        <div className="w-[1462px] bg-[#E9E9FF] pl-5 pr-5 pb-5">
+        <div className="w-[1462px] bg-[#E9E9FF] pl-5 pr-2 ">
           <div className=" ">
-            <h3 className="font-semibold  text-[#0A2478] text-lg">
+            {/* <h3 className="font-semibold  text-[#0A2478] text-lg">
               Pledge Item List
-            </h3>
+            </h3> */}
             <div className="w-full text-xs border border-gray-300">
               <div className="flex bg-[#0A2478] text-white font-semibold">
                 <div className="flex-1 p-1 py-1 border-r-2 border-white">
-                  Particulars
+                 Particulars (Pledge Items)
                 </div>
                 <div className="w-16 p-1 border-r-2 border-white text-center">
-                  Nos.
+                  Qty
                 </div>
                 <div className="w-24 p-1 border-r-2 border-white text-center">
                   Gross
@@ -527,6 +555,8 @@ const [loading, setLoading] = useState(false);
                 <div className="w-28 p-1 border-r-2 border-white text-center">
                   Actual Purity
                 </div>
+
+                
                 <div className="w-28 p-1 border-r-2 border-white text-center">
                   Assigned Purity
                 </div>
@@ -534,15 +564,15 @@ const [loading, setLoading] = useState(false);
                   Rate
                 </div>
                 <div className="w-28 p-1 border-r-2 border-white text-center">
-                  Valuation
+                 Loan Amount 
                 </div>
                 <div className="w-28 p-1 text-center">Remark</div>
               </div>
 
               {/* Dynamic Rows */}
-              {pledgeItems.length > 0 ? (
+              {pledgeItems?.length > 0 ? (
                 <>
-                  {pledgeItems.map((item, index) => (
+                  {pledgeItems?.map((item, index) => (
                     <div
                       key={item.id || index}
                       className={`flex border-t border-gray-300 ${
@@ -550,31 +580,32 @@ const [loading, setLoading] = useState(false);
                       }`}
                     >
                       <div className="flex-1 p-2 border-r border-gray-300">
-                        {item.particular || "Gold"}
+                        {item?.particular || "Gold"}
                       </div>
                       <div className="w-16 p-2 border-r border-gray-300 text-center">
-                        {item.nos || 1}
+                        {item?.nos || 1}
                       </div>
-                      <div className="w-24 p-2 border-r border-gray-300 text-center">
-                        {formatCurrency(item.gross)}
-                      </div>
-                      <div className="w-24 p-2 border-r border-gray-300 text-center">
-                        {formatCurrency(item.netWeight)}
+                     <div className="w-24 p-2 border-r border-gray-300 text-center">
+  {formatWeight(item?.gross)}
+</div>
+
+<div className="w-24 p-2 border-r border-gray-300 text-center">
+  {formatWeight(item?.netWeight)}
+</div>
+                      <div className="w-28 p-2 border-r border-gray-300 text-center">
+                        {item?.purity || ""}
                       </div>
                       <div className="w-28 p-2 border-r border-gray-300 text-center">
-                        {item.purity || ""}
-                      </div>
-                      <div className="w-28 p-2 border-r border-gray-300 text-center">
-                        {item.Calculated_Purity || ""}
+                        {item?.Calculated_Purity || "---"}
                       </div>
                       <div className="w-24 p-2 border-r border-gray-300 text-center">
-                        {formatCurrency(item.rate)}
+                        {formatCurrency(item?.rate)}
                       </div>
                       <div className="w-28 p-2 border-r border-gray-300 text-center">
-                        {formatCurrency(item.valuation)}
+                        {formatCurrency(item?.valuation)}
                       </div>
                       <div className="w-28 p-2 text-center">
-                        {item.remark || "-"}
+                        {item?.remark || "-"}
                       </div>
                     </div>
                   ))}
@@ -590,13 +621,20 @@ const [loading, setLoading] = useState(false);
                       {totalNos}
                     </div>
 
-                    <div className="w-24 p-2 border-r border-gray-300 text-center font-semibold">
+                    {/* <div className="w-24 p-2 border-r border-gray-300 text-center font-semibold">
                       {formatCurrency(totalGross)}
                     </div>
 
                     <div className="w-24 p-2 border-r border-gray-300 text-center font-semibold">
                       {formatCurrency(totalNetWeight)}
-                    </div>
+                    </div> */}
+                    <div className="w-24 p-2 border-r border-gray-300 text-center">
+  {formatWeight(totalGross)}
+</div>
+
+<div className="w-24 p-2 border-r border-gray-300 text-center">
+  {formatWeight(totalNetWeight)}
+</div>
 
                     <div className="w-28 p-2 border-r border-gray-300 text-center">
                       {/* purity empty */}
@@ -657,20 +695,20 @@ const [loading, setLoading] = useState(false);
                 <div className="flex flex-col">
                   <label className="text-xs font-semibold">Doc Charges</label>
                   <div className="flex">
-                    <div className="bg-[#0B2B68] text-white px-2 py-1 rounded-l-md text-xs flex items-center justify-center">
+                    {/* <div className="bg-[#0B2B68] text-white px-2 py-1 rounded-l-md text-xs flex items-center justify-center">
                       2%
-                    </div>
+                    </div> */}
                     <input
                       type="text"
-                      value={`₹${formatCurrency(loanData.Doc_Charges)}`}
+                      value={`${formatCurrency(loanData.Doc_Charges)}`}
                       readOnly
-                      className="border border-gray-300 rounded-r-md px-1 py-1  focus:outline-none w-20 bg-gray-50 text-xs"
+                      className="border border-gray-300 rounded-[8px] px-1 py-1  focus:outline-none w-20 bg-gray-50 text-xs"
                     />
                   </div>
                 </div>
 
                 <div className="flex flex-col w-25">
-                  <label className="text-xs font-semibold">Net Payable</label>
+                  <label className="text-xs font-semibold">Loan + Charges</label>
                   <input
                     type="text"
                     value={formatCurrency(loanData.Net_Payable)}
@@ -708,12 +746,12 @@ const [loading, setLoading] = useState(false);
               <table className=" border-collapse text-xs">
                 <thead>
                   <tr className="bg-[#0A2478] text-white text-center">
-                    <th className="py-2 border w-[100px]">Sr No</th>
-                    <th className="py-2 border w-[160px]">Paid By</th>
-                    <th className="py-2 border w-[100px]">UTR Number</th>
-                    <th className="py-2 border w-[200px]">Bank</th>
-                    <th className="py-2 border w-[200px]">Customer Bank</th>
-                    <th className="py-2 border w-[150px]">Customer Amount</th>
+                    <th className="py-1 border w-[100px]">Sr No</th>
+                    <th className="py-1 border w-[160px]">Paid By</th>
+                    <th className="py-1 border w-[100px]">UTR Number</th>
+                    <th className="py-1 border w-[200px]">Bank</th>
+                    <th className="py-1 border w-[200px]">Customer Bank</th>
+                    <th className="py-1 border w-[150px]">Customer Amount</th>
                   </tr>
                 </thead>
 
@@ -808,79 +846,22 @@ const [loading, setLoading] = useState(false);
             </div>
           </div>
         </div>
-
-        <div className="  bg-[#E9E9FF] p-4 ">
-          {loanData.Scheme_type === "Monthly" && (
-            <>
-              <h3 className="font-semibold  text-[#0A2478] text-lg ">
-                Loan Details table
-              </h3>
-
-              <table className="w-full border text-xs ">
-                <thead className="bg-[#0A2478] text-white">
-                  <tr>
-                    <th className="p-2 border">Month</th>
-                    <th className="p-2 border">EMI Date</th> {/* ✅ NEW */}
-                    <th className="p-2 border">Opening Balance</th>
-                    <th className="p-2 border">EMI</th>
-                    <th className="p-2 border">Interest</th>
-                    <th className="p-2 border">Principal</th>
-                    <th className="p-2 border">Closing Balance</th>
-                    <th className="p-2 border">Status</th>
-                  </tr>
-                </thead>
-
-                <tbody>
-                  {emiTable?.map((row) => {
-                    const isPaid =
-                      Number(loanData?.EMIPaidCount || 0) >= row.month;
-
-                    return (
-                      <tr key={row.month} className="text-center bg-white">
-                        <td className="p-1 border">{row.month}</td>
-
-                        <td className="p-1 border">
-                          {new Date(row.emiDate).toLocaleDateString("en-IN")}
-                        </td>
-
-                        <td className="p-1 border">₹{row.opening}</td>
-                        <td className="p-1 border">₹{row.emi}</td>
-                        <td className="p-1 border">₹{row.interest}</td>
-                        <td className="p-1 border">₹{row.principal}</td>
-                        <td className="p-1 border">₹{row.closing}</td>
-
-                       <td
-  className={`p-1 border font-medium ${
-    row.status === "Paid" ? "text-green-600" : "text-gray-400"
-  }`}
->
-  {row.status}
-</td>
-                      </tr>
-                    );
-                  })}
-                </tbody>
-              </table>
-            </>
-          )}
-        </div>
-
-        <div className=" bg-[#F7F7FF] w-[1462px]">
+<div className=" bg-[#F7F7FF] w-[1462px]">
           <div className="flex gap-10 text-xs   pl-5 pr-5">
             {/* Scheme Details Table */}
             <div className="w-[550px]">
-              <h2 className="font-semibold text-[20px] mb-1 text-[#0A2478]">
+              <h2 className="font-semibold text-[15px] mb-1 text-[#0A2478]">
                 Scheme Details
               </h2>
               <div className="border border-gray-300">
                 <div className="flex bg-[#0A2478] text-white font-semibold">
-                  <div className="flex-1 p-2 border-r border-white text-center">
-                    Loan Tenure (Days)
-                  </div>
-                  <div className="w-40 p-2  border-r border-white text-center">
+                 <div className="flex-1 p-1 border-r border-white text-center">
+  Loan Tenure ({loanData?.Scheme_type === "Monthly" ? "Months" : "Days"})
+</div>
+                  <div className="w-40 p-1  border-r border-white text-center">
                     Min Loan
                   </div>
-                  <div className="w-40 p-2  text-center">Max Loan</div>
+                  <div className="w-40 p-1  text-center">Max Loan</div>
                 </div>
                 <div className="flex border-t border-gray-300 bg-gray-50">
                   <div className="flex-1 p-2 py-2 border-r border-gray-300 text-center ">
@@ -901,16 +882,18 @@ const [loading, setLoading] = useState(false);
             </div>
 
             {/* Effective Interest Rates Table */}
-            <div className="w-[700px]">
-              <h2 className="font-semibold text-[20px] mb-1 text-[#0A2478]">
+            {
+              SchemeData.calcBasisOn !== "Monthly" && (
+                <div className="w-[700px]">
+              <h2 className="font-semibold text-[15px] mb-1 text-[#0A2478]">
                 Effective Interest Rates
               </h2>
               <div className="border border-gray-300">
                 <div className="flex bg-[#0A2478] text-white font-semibold">
-                  <div className="flex-1 p-2 border-r border-white text-center">
+                  <div className="flex-1 p-1 border-r border-white text-center">
                     Terms
                   </div>
-                  <div className="w-40 p-2 text-center">
+                  <div className="w-40 p-1 text-center">
                     Effective Interest Rates
                   </div>
                 </div>
@@ -950,8 +933,168 @@ const [loading, setLoading] = useState(false);
                 )}
               </div>
             </div>
+              )
+            }
+            {
+  SchemeData?.calcBasisOn === "Monthly" && (
+    <div className="w-[700px]">
+      <h2 className="font-semibold text-[15px] mb-1 text-[#0A2478]">
+        Effective Interest Rates
+      </h2>
+
+      <div className="border border-gray-300">
+        
+        {/* ✅ Header */}
+        <div className="flex bg-[#0A2478] text-white font-semibold">
+          <div className="flex-1 p-1 border-r border-white text-center">
+            Terms
+          </div>
+          <div className="w-40 p-1 text-center">
+            Effective Interest Rates
           </div>
         </div>
+
+        {/* ✅ Monthly Data Row */}
+        <div className="flex bg-gray-50">
+          <div className="flex-1 p-2 border-r border-white text-center">
+            {SchemeData?.loanPeriod
+              ? `${SchemeData.loanPeriod} Months`
+              : "-"}
+          </div>
+
+          <div className="w-40 p-2 text-center">
+            {SchemeData?.monthlyInterestRate
+              ? `${Number(SchemeData.monthlyInterestRate).toFixed(2)}%`
+              : "-"}
+          </div>
+        </div>
+
+      </div>
+    </div>
+  )
+}
+            
+          </div>
+        </div>
+        <div className="  bg-[#E9E9FF] pl-4 w-[1462px] pr-2 pb-5">
+          {loanData.Scheme_type === "Monthly" && (
+            <>
+              <h3 className="font-semibold  text-[#0A2478] text-[15px] ">
+                Loan Details table
+              </h3>
+
+              <table className="w-full border text-xs ">
+                <thead className="bg-[#0A2478] text-white">
+                  <tr>
+                    <th className="p-2 border">Month</th>
+                    <th className="p-2 border">EMI Date</th> {/* ✅ NEW */}
+                    <th className="p-2 border">Opening Balance</th>
+                    <th className="p-2 border">EMI</th>
+                    <th className="p-2 border">Interest</th>
+                    <th className="p-2 border">Principal</th>
+                    <th className="p-2 border">Closing Balance</th>
+                    <th className="p-2 border">Status</th>
+                  </tr>
+                </thead>
+
+                {/* <tbody>
+                  {emiTable?.map((row) => {
+                    const isPaid =
+                      Number(loanData?.EMIPaidCount || 0) >= row.month;
+
+                    return (
+                      <tr key={row.month} className="text-center bg-white">
+                        <td className="p-1 border">{row.month}</td>
+
+                        <td className="p-1 border">
+                          {new Date(row.emiDate).toLocaleDateString("en-IN")}
+                        </td>
+
+                        <td className="p-1 border">₹{row.opening}</td>
+                        <td className="p-1 border">₹{row.emi}</td>
+                        <td className="p-1 border">₹{row.interest}</td>
+                        <td className="p-1 border">₹{row.principal}</td>
+                        <td className="p-1 border">₹{row.closing}</td>
+
+                       <td
+  className={`p-1 border font-medium ${
+    row.status === "Paid" ? "text-green-600" : "text-gray-400"
+  }`}
+>
+  {row.status}
+</td>
+                      </tr>
+                    );
+                  })}
+                </tbody> */}
+
+               <tbody>
+  {emiTable?.map((row) => {
+    const today = new Date();
+    const emiDate = new Date(row.emiDate);
+
+    let status = row.status;
+
+    // If not paid, check date
+    if (row.status !== "Paid") {
+      if (emiDate < today) {
+        status = "Overdue";
+      } else {
+        status = "Pending";
+      }
+    }
+
+    return (
+      <tr
+        key={row.month}
+        className={`text-center ${
+          status === "Overdue"
+            ? "bg-red-100"
+            : "bg-white"
+        }`}
+      >
+        <td className="p-1 border">{row.month}</td>
+
+        <td className="p-1 border">
+          {new Date(row.emiDate).toLocaleDateString("en-IN")}
+        </td>
+
+        <td className="p-1 border">₹{row.opening}</td>
+        <td className="p-1 border">₹{row.emi}</td>
+        <td className="p-1 border">₹{row.interest}</td>
+        <td className="p-1 border">₹{row.principal}</td>
+        <td className="p-1 border">₹{row.closing}</td>
+
+        <td
+          className={`p-1 border font-medium ${
+            status === "Paid"
+              ? "text-green-600"
+              : status === "Overdue"
+              ? "text-red-600"
+              : "text-gray-400"
+          }`}
+        >
+          {status}
+        </td>
+      </tr>
+    );
+  })}
+</tbody>
+              </table>
+            </>
+          )}
+        </div>
+{emiInfo?.is_closed === "true" && (
+  <div className="bg-green-100 border border-green-400 text-green-800 px-4 py-2 mb-3 rounded-md font-medium">
+    ✅ Loan has been successfully closed. ₹{emiInfo.pay_amount} was paid via {emiInfo.payment_mode} on{" "}
+    {new Date(emiInfo.created_at).toLocaleDateString("en-IN", {
+      day: "2-digit",
+      month: "short",
+      year: "numeric",
+    })}.
+  </div>
+)}
+        
         {/* ===== Scheme Details & Effective Interest Rates ===== */}
       </div>
 

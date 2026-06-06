@@ -221,10 +221,10 @@ const Loan_follow_up = () => {
     //     </div>
     //   </div>
 
-    <div className="min-h-screen bg-gray-50 p-4 font-sans text-gray-800">
+    <div className="min-h-screen  font-sans text-gray-800">
       {/* 🟦 Top Header & Control Bar */}
-      <div className="flex justify-center mt-2 mb-4">
-        <div className="flex items-center w-full max-w-[1400px] rounded-[11px] border border-gray-200 shadow-sm bg-white overflow-hidden px-6 py-3 gap-6">
+      <div className="flex justify-center ">
+        <div className="flex items-center w-[1462px]  border border-gray-200 shadow-sm bg-white overflow-hidden px-6 py-1 gap-6">
 
           {/* Title */}
           <h2 className="text-red-600 font-bold text-[18px] whitespace-nowrap uppercase tracking-tight">
@@ -254,7 +254,7 @@ const Loan_follow_up = () => {
           </div>
 
           {/* Search Type */}
-          <div className="flex items-center gap-2">
+          {/* <div className="flex items-center gap-2">
             <label className="text-[10px] font-bold text-gray-400 uppercase">Search Type</label>
             <select
               className="border border-gray-300 p-1.5 rounded text-[11px] min-w-[160px] bg-white outline-none focus:border-[#1a8a81]"
@@ -267,7 +267,7 @@ const Loan_follow_up = () => {
               <option value="Follow up Date Wise">Follow up Date Wise</option>
               <option value="Next Follow up Date Wise">Next Follow up Date Wise</option>
             </select>
-          </div>
+          </div> */}
 
           {/* Search Button */}
           <button
@@ -278,12 +278,12 @@ const Loan_follow_up = () => {
           </button>
 
           {/* Add Button (right aligned) */}
-          <button
+          {/* <button
             onClick={() => navigate("/add_follow_up")}
             className="ml-auto flex items-center gap-1.5 bg-[#0A2478] text-white px-4 h-[34px] rounded shadow-sm transition-all active:scale-95 text-[12px] font-bold whitespace-nowrap"
           >
             <span className="text-lg leading-none">+</span> ADD NEW
-          </button>
+          </button> */}
 
         </div>
 
@@ -291,9 +291,9 @@ const Loan_follow_up = () => {
 
       {/* 🟢 Table Section */}
       <div className="flex justify-center">
-        <div className="w-full max-w-[1400px] bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden">
+        <div className="w-[1462px] bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden">
           <div className="overflow-x-auto min-h-[500px]">
-            <table className="w-full text-left border-collapse min-w-[1300px]">
+            <table className=" text-left border-collapse w-[1462px]">
               <thead className="sticky top-0 z-10 shadow-sm">
                 <tr className="bg-[#0A2478] text-gray-100 text-[10px] font-bold">
                   <th className="border border-gray-300 p-3">LOAN DETAILS</th>

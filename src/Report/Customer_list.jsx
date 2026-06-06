@@ -83,9 +83,9 @@ const Customer_list = () => {
 
   return (
     <div className="min-h-screen bg-white font-sans text-[12px] text-gray-800">
-      <div className="m-2 border border-[#1a8a81] shadow-sm">
+      <div className=" w-[1462px] ml-[18px] border border-[#1a8a81] shadow-sm">
         {/* Title Bar matching image_4da1dc.jpg */}
-        <div className="bg-[#1a8a81] text-white px-3 py-1 font-semibold text-sm">
+        <div className="bg-blue-900 text-white px-3 py-1 font-semibold text-sm">
           Customer List
         </div>
 
@@ -227,42 +227,6 @@ const Customer_list = () => {
           </div>
         </div>
 
-        {/* 3. Result Table Header Placeholder */}
-        {/* <div className="overflow-x-auto">
-          <table className="w-full border-collapse text-[10px]">
-            <thead className="bg-[#eeeae3] text-gray-700 font-bold border-b border-gray-300">
-              <tr>
-                {[
-                  "SNo",
-                  "Type",
-                  "Customer Id",
-                  "Name",
-                  "Father Name",
-                  "Address",
-                  "City",
-                  "State",
-                  "Pincode",
-                  "Mobile No",
-                  "Status",
-                  "BadDebtors",
-                  "BlackListed",
-                  "Branch",
-                  "Add Doc",
-                  "Id Doc",
-                ].map((head, i) => (
-                  <th
-                    key={i}
-                    className="border border-gray-300 p-1 text-left whitespace-nowrap"
-                  >
-                    {head}
-                  </th>
-                ))}
-              </tr>
-            </thead>
-          </table>
-          <div className="h-[300px] bg-white"></div>
-        </div> */}
-
         <div className="border border-gray-300">
           {/* Header Table */}
          
@@ -272,7 +236,7 @@ const Customer_list = () => {
             <div className="border border-gray-300 overflow-auto">
               <table className="w-full table-fixed border-collapse text-[11px]">
                 {/* Header */}
-                <thead className="bg-[#eeeae3] text-gray-700 font-semibold sticky top-0 z-10">
+                <thead className="bg-blue-900 text-white font-semibold sticky top-0 z-10">
                   <tr>
                     <th className="border p-1 w-12">SNo</th>
                     <th className="border p-1 w-24">Type</th>
@@ -288,8 +252,8 @@ const Customer_list = () => {
                     <th className="border p-1 w-28">BadDebtors</th>
                     <th className="border p-1 w-28">BlackListed</th>
                     <th className="border p-1 w-28">Branch</th>
-                    <th className="border p-1 w-20">Add Doc</th>
-                    <th className="border p-1 w-20">Id Doc</th>
+                    {/* <th className="border p-1 w-20">Add Doc</th>
+                    <th className="border p-1 w-20">Id Doc</th> */}
                   </tr>
                 </thead>
 
@@ -333,9 +297,9 @@ const Customer_list = () => {
                         <td className="border p-1 text-center">
                           {cust.block ? "Yes" : "No"}
                         </td>
-                        <td className="border p-1">{cust.branchId}</td>
-                        <td className="border p-1 text-center">📎</td>
-                        <td className="border p-1 text-center">🆔</td>
+                        <td className="border p-1">{cust.branchName}</td>
+                        {/* <td className="border p-1 text-center">📎</td>
+                        <td className="border p-1 text-center">🆔</td> */}
                       </tr>
                     ))
                   ) : (

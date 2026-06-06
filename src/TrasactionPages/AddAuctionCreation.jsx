@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { API } from "../api";
+import Loader from "../Component/Loader";
 
 function AddAuctionCreation() {
   useEffect(() => {
@@ -16,12 +17,13 @@ function AddAuctionCreation() {
     fees: "",
     charges: "",
   });
+  const [loading, setLoading] = useState(false);
   const [loanData, setLoanData] = useState([]);
   console.log(loanData, "loanData");
   const [page, setPage] = useState(1);
   const [limit] = useState(15);
   const [totalPages, setTotalPages] = useState(1);
-  const [loading, setLoading] = useState(false);
+
   const [search, setSearch] = useState("");
 
   const [searchHeaders, setSearchHeaders] = useState([]); // Array of active headers
@@ -51,42 +53,7 @@ function AddAuctionCreation() {
     );
   };
 
-  // const fetchLoans = async () => {
-  //   try {
-  //     setLoading(true);
-
-  //     const params = new URLSearchParams();
-  //     params.append("page", page);
-  //     params.append("limit", limit);
-
-  //     if (searchQuery.trim()) {
-  //       params.append("search", searchQuery);
-  //     }
-
-  //     if (searchHeaders.length > 0) {
-  //       params.append("headers", searchHeaders.join(","));
-  //     }
-
-  //     if (selectedDate) {
-  //       params.append("loan_date", selectedDate);
-  //     }
-
-  //     const url = `${API}/Transactions/getApprovedLoanApplications/all?${params.toString()}`;
-
-  //     const res = await fetch(url);
-  //     const json = await res.json();
-
-  //     if (json.success) {
-  //       setLoanData(json.data);
-  //       setTotalPages(json.totalPages || 1);
-  //     }
-  //   } catch (err) {
-  //     console.log("Error fetching loans", err);
-  //   }
-
-  //   setLoading(false);
-  // };
-  const fetchLoans = async (pageNo = page) => {
+ const fetchLoans = async (pageNo = page) => {
     try {
       setLoading(true);
 
@@ -116,9 +83,11 @@ function AddAuctionCreation() {
         setTotalPages(json.totalPages || 1);
         setTotalRecords(json.total || 0);
         setPage(json.page || 1);
+        setLoading(false);
       }
     } catch (err) {
       console.log("Error fetching loans", err);
+      setLoading(false);
     }
 
     setLoading(false);
@@ -175,14 +144,17 @@ function AddAuctionCreation() {
   };
 
   const handleSubmitAuction = async () => {
+    setLoading(true);
     debugger;
     if (!formData.venue || !formData.date || !formData.time || !formData.fees) {
       alert("Please fill all fields");
+        setLoading(false);
       return;
     }
 
     if (selectedLoans.length === 0) {
       alert("Please select at least one loan");
+        setLoading(false);
       return;
     }
 
@@ -204,12 +176,16 @@ function AddAuctionCreation() {
       const json = await res.json();
       if (json.success) {
         alert("Auction Created Successfully!");
+        setLoading(false);
         navigate("/Auction-Creation");
+
       } else {
         alert("Error: " + json.message);
+          setLoading(false);
       }
     } catch (err) {
       console.log(err);
+        setLoading(false);
     }
   };
   const allHeaderIds = ["id", "Scheme", "Borrower", "Mobile_Number"];
@@ -294,7 +270,7 @@ function AddAuctionCreation() {
                   )}
                 </div>
 
-                {/* Text Input Field */}
+               
                 <input
                   type="text"
                   value={searchQuery}
@@ -303,7 +279,7 @@ function AddAuctionCreation() {
                   className="flex-grow text-[11px] font-source outline-none h-full"
                 />
 
-                {/* Search Button */}
+               
               </div>
             </div>
             <input
@@ -429,7 +405,7 @@ function AddAuctionCreation() {
           </div>
         </div>
         <div className="w-[1462px] bg-[#E9E9FF] p-2">
-          <h2 className="font-bold text-[20px] text-[#0A2478]  ">Add Loans</h2>
+          <h2 className="font-bold text-[18px] text-[#0A2478]  ">Add Loans</h2>
 
           <div className="flex ">
             <div className="overflow-x-auto mt-2 w-[1300px] h-[500px] ">
@@ -468,53 +444,68 @@ function AddAuctionCreation() {
                   </tr>
                 </thead>
 
-                <tbody className="text-[12px]">
-                  {loanData?.map((row, index) => (
-                    <tr
-                      key={row.id}
-                      className={index % 2 === 0 ? "bg-gray-50" : "bg-white"}
-                    >
-                      <td className="px-1 py-1 flex items-center justify-center">
-                        <input
-                          type="checkbox"
-                          checked={selectedLoans.includes(row.id)}
-                          onChange={() => handleSelectLoan(row.id)}
-                        />
-                      </td>
-                      <td className="px-1 py-1">{row.Scheme}</td>
-                      <td className="px-1 py-1">{row.id}</td>
+              <tbody className="text-[12px]">
+  {loanData && loanData.length > 0 ? (
+    loanData.map((row, index) => (
+      <tr
+        key={row.id}
+        className={index % 2 === 0 ? "bg-gray-50" : "bg-white"}
+      >
+        <td className="px-1 py-1 flex items-center justify-center">
+          <input
+            type="checkbox"
+            checked={selectedLoans.includes(row.id)}
+            onChange={() => handleSelectLoan(row.id)}
+          />
+        </td>
 
-                      <td className="px-1 py-1">
-                        {row.approval_date
-                          ? new Date(row.approval_date).toLocaleDateString(
-                              "en-GB",
-                            )
-                          : "-"}
-                      </td>
+        <td className="px-1 py-1">{row.Scheme}</td>
+        <td className="px-1 py-1">{row.id}</td>
 
-                      <td className="px-1 py-1">-</td>
-                      <td className="px-1 py-1">{row.Print_Name}</td>
-                      <td className="px-1 py-1">
-                        {(() => {
-                          try {
-                            const items = JSON.parse(
-                              JSON.parse(row.Pledge_Item_List),
-                            );
-                            return items[0]?.valuation || "--";
-                          } catch (e) {
-                            return "--";
-                          }
-                        })()}
-                      </td>
+        <td className="px-1 py-1">
+          {row.created_at
+            ? new Date(row.created_at).toLocaleDateString("en-GB")
+            : "-"}
+        </td>
 
-                      <td className="px-1 py-1">{row.Mobile_Number}</td>
-                      <td className="px-1 py-1">{row.Loan_amount}</td>
-                      <td className="px-1 py-1">{row.LoanAmountPaid}</td>
-                      <td className="px-1 py-1">{row.LoanPendingAmount}</td>
-                      <td className="px-1 py-1">{row.branch_id}</td>
-                    </tr>
-                  ))}
-                </tbody>
+        <td className="px-1 py-1">-</td>
+        <td className="px-1 py-1">{row.Print_Name}</td>
+
+        <td className="px-1 py-1">
+          {(() => {
+            try {
+              const parsed = JSON.parse(row?.Pledge_Item_List);
+              const items =
+                typeof parsed === "string" ? JSON.parse(parsed) : parsed;
+
+              return items?.[0]?.valuation || "--";
+            } catch (e) {
+              return "--";
+            }
+          })()}
+        </td>
+
+        <td className="px-1 py-1">{row.Mobile_Number}</td>
+        <td className="px-1 py-1">{row.Net_Payable}</td>
+
+        <td className="px-1 py-1">
+          {row.Scheme_type === "Monthly"
+            ? row.LoanEmiAmountpaid
+            : row.LoanAmountPaid}
+        </td>
+
+        <td className="px-1 py-1">{row.LoanPendingAmount}</td>
+        <td className="px-1 py-1">{row.branchName}</td>
+      </tr>
+    ))
+  ) : (
+    <tr>
+      <td colSpan="13" className="text-center py-4 text-gray-500">
+        No Loan Data Available
+      </td>
+    </tr>
+  )}
+</tbody>
               </table>
               <div className="flex justify-between items-center mt-3 px-2">
                 {/* LEFT INFO */}
@@ -567,6 +558,7 @@ function AddAuctionCreation() {
           </div>
         </div>
       </div>
+      {loading && <Loader />}
     </div>
   );
 }

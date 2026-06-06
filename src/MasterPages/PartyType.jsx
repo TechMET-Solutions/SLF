@@ -119,13 +119,13 @@ const { permissions, userData } = usePermission();
       {/* Top Bar */}
       <div className="flex sticky top-[50px] z-40 w-full ml-[25px]">
         {/* <div className="z-40 bg-white w-full"> */}
-        <div className="flex items-center px-6 py-4 border-b w-full max-w-[1462px] h-[40px] border  border-gray-200 justify-between">
-          {/* Title */}
+        <div className="flex items-center px-6 py-4 border-b w-full max-w-[1462px] h-[40px] border  border-gray-200 justify-between  bg-white">
+        
           <h2 className="text-red-600 font-bold text-[20px] whitespace-nowrap">
             Party Type
           </h2>
 
-          {/* Buttons */}
+         
           <div className="flex items-center gap-4">
             
 {(userData?.isAdmin||permissions?.Master?.find(

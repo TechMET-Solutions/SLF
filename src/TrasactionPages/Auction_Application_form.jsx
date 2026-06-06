@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { API } from "../api";
 import { usePermission } from "../API/Context/PermissionContext";
 import profileempty from "../assets/profileempty.png";
+import Loader from "../Component/Loader";
 function Auction_Application_form() {
   useEffect(() => {
     document.title = "SLF | Auction Application Form";
@@ -34,7 +35,7 @@ function Auction_Application_form() {
   });
 
   console.log(formData, "formData");
-
+const [loading, setLoading] = useState(false);
   const [selecetdbidder, setselecetdbidder] = useState(null);
   console.log(selecetdbidder, "selecetdbidder");
   const [auctions, setAuctions] = useState([]);
@@ -81,8 +82,10 @@ function Auction_Application_form() {
   };
 
   const handleSubmit = async () => {
+     setLoading(true);
     if (!formData.confirm) {
       alert("Please confirm the details");
+       setLoading(false);
       return;
     }
 
@@ -116,8 +119,10 @@ function Auction_Application_form() {
       });
 
       setShowPopup(true);
+       setLoading(false);
     } else {
       alert("Failed");
+       setLoading(false);
     }
   };
 
@@ -436,10 +441,12 @@ function Auction_Application_form() {
 
       </div> */}
 
-      <div className="mx-[28px] bg-[#FFE6E6] p-4">
+      <div className="mx-[28px] bg-[#FFE6E6] pl-4">
         {/* TOP SECTION: AUCTION DETAILS */}
-        <div className="relative mb-6">
-          <h3 className="text-[#0A2478] font-bold text-[15px] mb-2">
+        <div className='flex justify-between'>
+          <div>
+             <div className="relative mb-1">
+          <h3 className="text-[#0A2478] font-bold text-[15px] ">
             Auction Details
           </h3>
           <div className="flex items-start gap-4">
@@ -502,31 +509,14 @@ function Auction_Application_form() {
               </div>
             </div>
 
-            {/* Profile Image (Floating Right) */}
-            <div className="flex flex-col items-center absolute right-120 top-0">
-              <p className="text-[12px] font-semibold mb-1">
-                 Bidder Profile
-              </p>
-              <div className="w-[110px] h-[100px] border border-blue-300 bg-white rounded-md flex items-center justify-center overflow-hidden">
-                <img
-                  src={
-                    formData.bidderimg
-                      ? typeof formData.bidderimg === "string"
-                        ? formData.bidderimg // Already a URL from DB
-                        : URL.createObjectURL(formData.bidderimg) // New file preview
-                      : profileempty
-                  }
-                  alt="Profile"
-                  className="w-full h-full object-cover"
-                />
-              </div>
-            </div>
+        
+           
           </div>
         </div>
 
-        {/* BOTTOM SECTION: BIDDER DETAILS */}
-        <div className="mt-4">
-          <h3 className="text-[#0A2478] font-bold text-[15px] mb-2">
+      
+        <div className="">
+          <h3 className="text-[#0A2478] font-bold text-[15px] mb-1">
             Bidder Details
           </h3>
           <div className="flex flex-wrap gap-x-3 gap-y-4">
@@ -657,8 +647,8 @@ function Auction_Application_form() {
           </div>
         </div>
 
-        {/* CONFIRMATION CHECKBOX */}
-        <div className="mt-4">
+        
+        <div className="mt-2">
           <label className="flex items-center gap-2">
             <input type="checkbox" name="confirm" onChange={onChange} />
             <span className="text-sm">
@@ -666,10 +656,31 @@ function Auction_Application_form() {
             </span>
           </label>
         </div>
+</div>
+           <div className="flex flex-col items-center p-5 ">
+              <p className="text-[12px] font-semibold mb-1">
+                 Bidder Profile
+              </p>
+              <div className="w-[110px] h-[100px] border border-blue-300 bg-white rounded-md flex items-center justify-center overflow-hidden">
+                <img
+                  src={
+                    formData.bidderimg
+                      ? typeof formData.bidderimg === "string"
+                        ? formData.bidderimg // Already a URL from DB
+                        : URL.createObjectURL(formData.bidderimg) // New file preview
+                      : profileempty
+                  }
+                  alt="Profile"
+                  className="w-full h-full object-cover"
+                />
+              </div>
+            </div>
+        </div>
+       
       </div>
 
-      <div className="bg-[#E9E9FF] mx-[28px] p-5  ">
-        <h3 className="text-[#0A2478] font-semibold text-lg  mb-4">Payment</h3>
+      <div className="bg-[#E9E9FF] mx-[28px] pl-5  ">
+        <h3 className="text-[#0A2478] font-semibold text-[15px] pt-1 mb-1">Payment</h3>
 
         <div className="flex gap-5">
           <div>
@@ -845,6 +856,8 @@ function Auction_Application_form() {
           </div>
         </div>
       )}
+
+      {loading && <Loader />}
     </div>
   );
 }

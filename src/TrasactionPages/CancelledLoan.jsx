@@ -251,7 +251,7 @@ const ViewLoanDetails = () => {
             }}
             className="text-red-600"
           >
-            Gold Loan - {loanData.id || "N/A"}
+             Loan Application- {loanData.id || "N/A"}
           </h2>
 
           <div className="flex gap-2 mr-6">
@@ -266,12 +266,12 @@ const ViewLoanDetails = () => {
       </div>
 
       {/* ===== FORM SECTIONS ===== */}
-      <div className=" min-h-screen space-y-8 w-[1462px] ml-[25px]">
+      <div className=" min-h-screen  w-[1462px] ml-[25px]">
         {/* ===== Loan Details Section ===== */}
         <div className="flex bg-[#FFE6E6] p-2 ">
-          <div className="w-[950px] pt-3 ">
+          <div className="w-[950px]  ">
             {/* Remark Section */}
-            <div className="flex mb-5 justify-center ">
+            <div className="flex  justify-center ">
               <div className="flex w-[1050px]  border-2 border-red-500 rounded-md p-3 ">
                 <div className="flex-1">
                   <h3 className="text-blue-900 font-semibold ">Remark</h3>
@@ -294,7 +294,7 @@ const ViewLoanDetails = () => {
             </div>
 
             {/* First Row */}
-            <div className="flex gap-7 text-sm  flex-wrap">
+            <div className="flex gap-5 text-sm  flex-wrap mt-2">
               <div>
                 <p className="font-semibold">Loan No</p>
                 <p>{loanData.id || "N/A"}</p>
@@ -327,7 +327,7 @@ const ViewLoanDetails = () => {
             </div>
 
             {/* Second Row */}
-            <div className="flex gap-13 text-sm flex-wrap">
+            <div className="flex gap-5 text-sm flex-wrap mt-2">
               <div>
                 <p className="font-semibold">Co-Borrower</p>
                 <p>{loanData.Co_Borrower || "N/A"}</p>
@@ -419,7 +419,7 @@ const ViewLoanDetails = () => {
                     : profileempty
                 }
                 alt="Ornament"
-                className="w-[130px] h-[115px] object-cover rounded-[5px] border border-gray-300"
+                className="w-[100px] h-[115px] object-cover rounded-[5px] border border-gray-300"
                 onError={(e) => {
                   e.target.src = profileempty;
                 }}
@@ -429,18 +429,18 @@ const ViewLoanDetails = () => {
         </div>
 
         {/* ===== Pledge Item List ===== */}
-        <div className=" bg-[#F7F7FF] p-2 ">
+        <div className=" bg-[#F7F7FF]  ">
           <div className="w-[1290px]">
-            <h3 className="font-semibold  text-[#0A2478] text-lg">
+            {/* <h3 className="font-semibold  text-[#0A2478] text-lg">
               Pledge Item List
-            </h3>
+            </h3> */}
             <div className="w-full text-xs border border-gray-300">
               <div className="flex bg-[#0A2478] text-white font-semibold">
                 <div className="flex-1 p-2 py-3 border-r-2 border-white">
-                  Particulars
+                Particulars (Pledge Items)
                 </div>
                 <div className="w-16 p-2 border-r-2 border-white text-center">
-                  Nos.
+                 Qty
                 </div>
                 <div className="w-24 p-2 border-r-2 border-white text-center">
                   Gross
@@ -448,19 +448,19 @@ const ViewLoanDetails = () => {
                 <div className="w-24 p-2 border-r-2 border-white text-center">
                   Net Weight
                 </div>
-                <div className="w-28 p-2 border-r-2 border-white text-center">
+                <div className="w-24 p-2 border-r-2 border-white text-center">
                   Actual Purity
                 </div>
-                <div className="w-28 p-2 border-r-2 border-white text-center">
+                <div className="w-24 p-2 border-r-2 border-white text-center">
                   Assigned Purity
                 </div>
                 <div className="w-24 p-2 border-r-2 border-white text-center">
                   Rate
                 </div>
-                <div className="w-28 p-2 border-r-2 border-white text-center">
-                  Valuation
+                <div className="w-24 p-2 border-r-2 border-white text-center">
+                 Loan Amount 
                 </div>
-                <div className="w-28 p-2 text-center">Remark</div>
+                <div className="w-24 p-2 text-center">Remark</div>
               </div>
 
               {/* Dynamic Rows */}
@@ -483,19 +483,19 @@ const ViewLoanDetails = () => {
                       <div className="w-24 p-2 border-r border-gray-300 text-center">
                         {formatCurrency(item.netWeight)}
                       </div>
-                      <div className="w-28 p-2 border-r border-gray-300 text-center">
+                      <div className="w-24 p-2 border-r border-gray-300 text-center">
                         {item.purity || "Gold 20K"}
                       </div>
-                      <div className="w-28 p-2 border-r border-gray-300 text-center">
+                      <div className="w-24 p-2 border-r border-gray-300 text-center">
                         {item.Calculated_Purity || ""}
                       </div>
                       <div className="w-24 p-2 border-r border-gray-300 text-center">
                         {formatCurrency(item.rate)}
                       </div>
-                      <div className="w-28 p-2 border-r border-gray-300 text-center">
+                      <div className="w-24 p-2 border-r border-gray-300 text-center">
                         {formatCurrency(item.valuation)}
                       </div>
-                      <div className="w-28 p-2 text-center">
+                      <div className="w-24 p-2 text-center">
                         {item.remark || "-"}
                       </div>
                     </div>
@@ -515,12 +515,13 @@ const ViewLoanDetails = () => {
                     <div className="w-24 p-2 border-r border-gray-300 text-center font-semibold">
                       {formatCurrency(totalNetWeight)}
                     </div>
-                    <div className="w-28 p-2 border-r border-gray-300 text-center"></div>
                     <div className="w-24 p-2 border-r border-gray-300 text-center"></div>
-                    <div className="w-28 p-2 border-r border-gray-300 text-center font-semibold">
+                    <div className="w-24 p-2 border-r border-gray-300 text-center"></div>
+                     <div className="w-24 p-2 border-r border-gray-300 text-center"></div>
+                    <div className="w-24 p-2 border-r border-gray-300 text-center font-semibold">
                       {formatCurrency(totalValuation)}
                     </div>
-                    <div className="w-28 p-2 text-center"></div>
+                    <div className="w-24 p-2 text-center"></div>
                   </div>
                 </>
               ) : (
@@ -543,7 +544,7 @@ const ViewLoanDetails = () => {
                   type="text"
                   value={formatCurrency(loanData.Loan_amount)}
                   readOnly
-                  className="border border-gray-300 rounded-md px-2 py-1 mt-1 text-sm focus:outline-none bg-gray-50"
+                  className="border border-gray-300 rounded-md px-2 py-1 mt-1 text-xs focus:outline-none bg-gray-50"
                 />
               </div>
 
@@ -558,7 +559,7 @@ const ViewLoanDetails = () => {
                     type="text"
                     value={`₹${formatCurrency(loanData.Doc_Charges)}`}
                     readOnly
-                    className="border border-gray-300 rounded-r-md px-2 py-1 text-sm focus:outline-none w-24 bg-gray-50"
+                    className="border border-gray-300 rounded-r-md px-2 py-1 text-xs focus:outline-none w-24 bg-gray-50"
                   />
                 </div>
               </div>
@@ -570,17 +571,17 @@ const ViewLoanDetails = () => {
                   type="text"
                   value={formatCurrency(loanData.Admin_Charges)}
                   readOnly
-                  className="border border-gray-300 rounded-md px-2 py-1 mt-1 text-sm focus:outline-none bg-gray-50"
+                  className="border border-gray-300 rounded-md px-2 py-1 mt-1 text-xs focus:outline-none bg-gray-50"
                 />
               </div>
               {/* Net Payable */}
               <div className="flex flex-col w-40">
-                <label className="text-[13px] font-semibold">Net Payable</label>
+                <label className="text-[13px] font-semibold">Loan + Charges</label>
                 <input
                   type="text"
                   value={formatCurrency(loanData.Net_Payable)}
                   readOnly
-                  className="border border-gray-300 rounded-md px-2 py-1 mt-1 text-sm focus:outline-none bg-gray-50"
+                  className="border border-gray-300 rounded-md px-2 py-1 mt-1 text-xs focus:outline-none bg-gray-50"
                 />
               </div>
 
@@ -589,8 +590,8 @@ const ViewLoanDetails = () => {
                 <label className="text-[13px] font-semibold">
                   Valuer 1 <span className="text-red-500">*</span>
                 </label>
-                <div className="border border-gray-300 rounded-md px-2 py-1 mt-1 text-sm bg-gray-50">
-                  {loanData.Valuer_1 || "Not Assigned"}
+                <div className="border border-gray-300 rounded-md px-2 py-1 mt-1 text-xs bg-gray-50">
+                  {loanData.Valuer1_Name || "Not Assigned"}
                 </div>
               </div>
 
@@ -599,8 +600,8 @@ const ViewLoanDetails = () => {
                 <label className="text-[13px] font-semibold">
                   Valuer 2 <span className="text-red-500">*</span>
                 </label>
-                <div className="border border-gray-300 rounded-md px-2 py-1 mt-1 text-sm bg-gray-50">
-                  {loanData.Valuer_2 || "Not Assigned"}
+                <div className="border border-gray-300 rounded-md px-2 py-1 mt-1 text-xs bg-gray-50">
+                  {loanData.Valuer2_Name || "Not Assigned"}
                 </div>
               </div>
             </div>
@@ -616,27 +617,27 @@ const ViewLoanDetails = () => {
         <div className="flex gap-8 text-xs mb-5 ">
           {/* Scheme Details Table */}
           <div className="w-[550px]">
-            <h2 className="font-semibold text-[20px] mb-1 text-[#0A2478]">
+            <h2 className="font-semibold text-[15px] mb-1 text-[#0A2478]">
               Scheme Details
             </h2>
             <div className="border border-gray-300">
               <div className="flex bg-[#0A2478] text-white font-semibold">
-                <div className="flex-1 p-2 py-4 border-r border-white text-center">
+                <div className="flex-1 p-1 border-r border-white text-center">
                   Loan Tenure (Days)
                 </div>
-                <div className="w-40 p-2 py-4 border-r border-white text-center">
+                <div className="w-40 p-1 border-r border-white text-center">
                   Min Loan
                 </div>
-                <div className="w-40 p-2 py-4 text-center">Max Loan</div>
+                <div className="w-40 p-1 text-center">Max Loan</div>
               </div>
               <div className="flex border-t border-gray-300 bg-gray-50">
-                <div className="flex-1 p-2 py-4 border-r border-gray-300 text-center">
+                <div className="flex-1 p-1  border-r border-gray-300 text-center">
                   {loanData.Loan_Tenure || loanData.loanPeriod || "N/A"}
                 </div>
-                <div className="w-40 p-2 py-4 border-r border-gray-300 text-center">
+                <div className="w-40 p-1  border-r border-gray-300 text-center">
                   {formatCurrency(loanData.Min_Loan || loanData.minLoanAmount)}
                 </div>
-                <div className="w-40 p-2 py-4 text-center">
+                <div className="w-40 p-1  text-center">
                   {formatCurrency(loanData.Max_Loan || loanData.maxLoanAmount)}
                 </div>
               </div>
@@ -645,15 +646,15 @@ const ViewLoanDetails = () => {
 
           {/* Effective Interest Rates Table */}
           <div className="w-[700px]">
-            <h2 className="font-semibold text-[20px] mb-1 text-[#0A2478]">
+            <h2 className="font-semibold text-[15px] mb-1 text-[#0A2478]">
               Effective Interest Rates
             </h2>
             <div className="border border-gray-300">
               <div className="flex bg-[#0A2478] text-white font-semibold">
-                <div className="flex-1 p-2 border-r border-white text-center">
+                <div className="flex-1 p-1 border-r border-white text-center">
                   Terms
                 </div>
-                <div className="w-40 p-2 text-center">
+                <div className="w-40 p-1 text-center">
                   Effective Interest Rates
                 </div>
               </div>
@@ -671,11 +672,11 @@ const ViewLoanDetails = () => {
 
                       className={index % 2 === 0 ? "bg-gray-50 flex" : "bg-white flex"}
                     >
-                      <div className="flex-1 p-2 border-r border-white text-center">
+                      <div className="flex-1 p-1 border-r border-white text-center">
                         {item.from} - {item.to} {label}
                       </div>
 
-                      <div className="w-40 p-2 text-center">{item.addInt}%</div>
+                      <div className="w-40 p-1 text-center">{item.addInt}%</div>
                     </div>
                   );
                 })

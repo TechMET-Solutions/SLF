@@ -6,20 +6,14 @@ import { useLocation, useNavigate, useParams } from "react-router-dom";
 import { API } from "../api";
 import { usePermission } from "../API/Context/PermissionContext";
 import profileempty from "../assets/profileempty.png";
+import Loader from "../Component/Loader";
 
 const ItemList = [{}];
 function AddLoanRepaymentEmi() {
   useEffect(() => {
     document.title = "SLF | Add Loan Repayment";
   }, []);
-  // ✅ Initialize formData state
-  const [formData, setFormData] = useState({
-    Borrower_ProfileImg: "",
-    Borrower_signature: "",
-    CoBorrower_ProfileImg: "",
-    CoBorrower_signature: "",
-    OrnamentPhoto: "",
-  });
+
   const { permissions, userData } = usePermission();
   const [installments, setInstallments] = useState([]);
   console.log(installments, "installments");
@@ -55,100 +49,162 @@ function AddLoanRepaymentEmi() {
     roundedPayAmount: 0, // e.g. 250
     roundOffAmount: 0,
     chargesAmount: 0,
+    originalPayAmount: 0,
+    discount: 0,
   });
 
-  //   useEffect(() => {
-  //     debugger;
-  //     if (!data?.loanApplication?.EMI_Details) {
-  //       setPendingLoanAmount(0);
-  //       setPendingEmi(0);
-  //       return;
-  //     }
+  // useEffect(() => {
+  //   debugger;
 
-  //     const emiDetails = data.loanApplication.EMI_Details || [];
+  //   if (!data?.loanApplication?.EMI_Details) {
+  //     setPendingLoanAmount(0);
+  //     setPendingEmi(0);
+  //     setPenaltyAmount(0);
+  //     return;
+  //   }
 
-  //     // ✅ Get FIRST pending EMI
-  //     const firstPendingEMI = emiDetails
-  //       .filter((emi) => emi.status === "Pending")
-  //       .sort((a, b) => new Date(a.emiDate) - new Date(b.emiDate))[0];
+  //   const emiDetails = data.loanApplication.EMI_Details || [];
 
-  //     const emiValue = firstPendingEMI ? Number(firstPendingEMI.emi) : 0;
+  //   // ✅ Get all pending EMIs sorted by date
+  //   const pendingEmis = emiDetails
+  //     .filter((emi) => emi.status === "Pending")
+  //     .sort((a, b) => new Date(a.emiDate) - new Date(b.emiDate));
 
-  //     // 👉 Charges from API
-  //     const charges = Number(data?.loanApplication?.total_unpaid_charges || 0);
+  //   // ✅ First pending EMI → Opening balance
+  //   const firstPendingEMI = pendingEmis[0];
 
-  //     // ✅ Set values
-  //     setPendingLoanAmount(firstPendingEMI ? Number(firstPendingEMI.opening) : 0);
+  //   setPendingLoanAmount(firstPendingEMI ? Number(firstPendingEMI.opening) : 0);
 
-  //     // 🔥 EMI + Charges
+  //   // ✅ Get due EMI count
+  //   const dueEmiCount = getDueEMI();
 
-  //    const dueEmiCount = getDueEMI();
+  //   // ✅ If no due EMI → take 1 EMI
+  //   const dueEmiList =
+  //     dueEmiCount > 0
+  //       ? pendingEmis.slice(0, dueEmiCount)
+  //       : pendingEmis.length > 0
+  //         ? [pendingEmis[0]]
+  //         : [];
 
-  // // ✅ EMI multiplied by due count
-  // const totalEmi = emiValue * dueEmiCount;
+  //   // ✅ EMI total (REAL calculation)
+  //   const totalEmi = dueEmiList.reduce(
+  //     (sum, emi) => sum + Number(emi.emi || 0),
+  //     0,
+  //   );
 
-  // // ✅ FINAL (with charges if needed)
-  // const finalEmiWithCharges = totalEmi + charges;
+  //   // 👉 Charges
+  //   const charges = Number(data?.loanApplication?.total_unpaid_charges || 0);
 
-  // setPendingEmi(finalEmiWithCharges);
-  //   }, [data]);
+  //   // 👉 Penalty (FIXED per EMI)
+  //   const penaltyPerEmi = Number(data?.schemeData?.penalty || 0);
 
-  useEffect(() => {
-    debugger;
+  //   const totalPenalty =
+  //     dueEmiCount > 0 ? dueEmiList.length * penaltyPerEmi : 0;
 
-    if (!data?.loanApplication?.EMI_Details) {
-      setPendingLoanAmount(0);
-      setPendingEmi(0);
-      setPenaltyAmount(0);
-      return;
+  //   // ✅ FINAL TOTAL
+  //   const finalEmiWithCharges = totalEmi + totalPenalty + charges;
+
+  //   // ✅ Store values
+  //   setPendingEmi(finalEmiWithCharges);
+  //   setPenaltyAmount(totalPenalty);
+  // }, [data]);
+useEffect(() => {
+  if (!data?.loanApplication?.EMI_Details || !data?.schemeData) {
+    setPendingLoanAmount(0);
+    setPendingEmi(0);
+    setPenaltyAmount(0);
+    return;
+  }
+
+  const emiDetails = data.loanApplication.EMI_Details || [];
+  const scheme = data.schemeData;
+
+  // -------------------------------
+  // ✅ FILTER PENDING EMIs
+  // -------------------------------
+  const pendingEmis = emiDetails
+    .filter((emi) => emi.status === "Pending")
+    .sort((a, b) => new Date(a.emiDate) - new Date(b.emiDate));
+
+  // -------------------------------
+  // ✅ OPENING BALANCE
+  // -------------------------------
+  const firstPendingEMI = pendingEmis[0];
+  setPendingLoanAmount(firstPendingEMI ? Number(firstPendingEMI.opening) : 0);
+
+  // -------------------------------
+  // ✅ DUE EMI COUNT
+  // -------------------------------
+  const dueEmiCount = getDueEMI();
+
+  const dueEmiList =
+    dueEmiCount > 0
+      ? pendingEmis.slice(0, dueEmiCount)
+      : pendingEmis.length > 0
+      ? [pendingEmis[0]]
+      : [];
+
+  // -------------------------------
+  // ✅ EMI TOTAL
+  // -------------------------------
+  const totalEmi = dueEmiList.reduce(
+    (sum, emi) => sum + Number(emi.emi || 0),
+    0
+  );
+
+  // -------------------------------
+  // ✅ CHARGES
+  // -------------------------------
+  const charges = Number(data?.loanApplication?.total_unpaid_charges || 0);
+
+  // -------------------------------
+  // ✅ BOUNCED PENALTY
+  // -------------------------------
+  const bouncedValue = Number(scheme.bounced || 0);
+  const bouncedType = scheme.bouncedType;
+
+  let bouncedPenalty = 0;
+
+  if (dueEmiList.length > 0) {
+    if (bouncedType === "percentage") {
+      bouncedPenalty = dueEmiList.reduce((sum, emi) => {
+        return sum + (Number(emi.emi || 0) * bouncedValue) / 100;
+      }, 0);
+    } else {
+      bouncedPenalty = bouncedValue * dueEmiList.length;
     }
+  }
 
-    const emiDetails = data.loanApplication.EMI_Details || [];
+  // -------------------------------
+  // ✅ TENURE OVER PENALTY (₹1000)
+  // -------------------------------
+  const tenureMonths = Number(data.loanApplication.Loan_Tenure || 0);
+  const approvalDate = new Date(data.loanApplication.approval_date);
+  const today = new Date();
 
-    // ✅ Get all pending EMIs sorted by date
-    const pendingEmis = emiDetails
-      .filter((emi) => emi.status === "Pending")
-      .sort((a, b) => new Date(a.emiDate) - new Date(b.emiDate));
+  const elapsedMonths =
+    (today.getFullYear() - approvalDate.getFullYear()) * 12 +
+    (today.getMonth() - approvalDate.getMonth());
 
-    // ✅ First pending EMI → Opening balance
-    const firstPendingEMI = pendingEmis[0];
+  let extraPenalty = 0;
 
-    setPendingLoanAmount(firstPendingEMI ? Number(firstPendingEMI.opening) : 0);
+  if (elapsedMonths >= tenureMonths) {
+    extraPenalty = Number(scheme.penalty || 0); // ₹1000
+  }
 
-    // ✅ Get due EMI count
-    const dueEmiCount = getDueEMI();
+  // -------------------------------
+  // ✅ FINAL CALCULATION
+  // -------------------------------
+  const finalAmount =
+    totalEmi + bouncedPenalty + extraPenalty + charges;
 
-    // ✅ If no due EMI → take 1 EMI
-    const dueEmiList =
-      dueEmiCount > 0
-        ? pendingEmis.slice(0, dueEmiCount)
-        : pendingEmis.length > 0
-          ? [pendingEmis[0]]
-          : [];
+  // -------------------------------
+  // ✅ SET STATE
+  // -------------------------------
+  setPendingEmi(finalAmount);
+  setPenaltyAmount(bouncedPenalty + extraPenalty);
 
-    // ✅ EMI total (REAL calculation)
-    const totalEmi = dueEmiList.reduce(
-      (sum, emi) => sum + Number(emi.emi || 0),
-      0,
-    );
-
-    // 👉 Charges
-    const charges = Number(data?.loanApplication?.total_unpaid_charges || 0);
-
-    // 👉 Penalty (FIXED per EMI)
-    const penaltyPerEmi = Number(data?.schemeData?.penalty || 0);
-
-    const totalPenalty =
-      dueEmiCount > 0 ? dueEmiList.length * penaltyPerEmi : 0;
-
-    // ✅ FINAL TOTAL
-    const finalEmiWithCharges = totalEmi + totalPenalty + charges;
-
-    // ✅ Store values
-    setPendingEmi(finalEmiWithCharges);
-    setPenaltyAmount(totalPenalty);
-  }, [data]);
-
+}, [data]);
   console.log(loanInfo, "loanInfo");
   const [intrestPercentage, setintrestPercentage] = useState(null);
   console.log(intrestPercentage, "intrestPercentage");
@@ -181,18 +237,7 @@ function AddLoanRepaymentEmi() {
   });
   console.log(paymentInfo, "paymentInfo");
   const [bankList, setBankList] = useState([]);
-  // const fetchBanks = async () => {
-  //   try {
-  //     const res = await axios.get(`${API}/api/banks/list`);
-  //     setBankList(res.data);
-  //   } catch (err) {
-  //     console.error(err);
-  //   }
-  // };
-
-  // useEffect(() => {
-  //   fetchBanks();
-  // }, []);
+  console.log(bankList,"bankList")
 
   useEffect(() => {
     const fetchBanks = async () => {
@@ -267,7 +312,36 @@ function AddLoanRepaymentEmi() {
       console.error("Error fetching credit notes:", error);
     }
   };
+const calculatePayAmount = (data) => {
+  const baseAmount = Number(data.originalPayAmount) || 0;
+  const charges = Number(data.chargesAmount) || 0;
+  const roundOff = Number(data.roundOffAmount) || 0;
+  const discount = Number(data.discount) || 0;
 
+  let finalAmount = baseAmount + charges + roundOff - discount;
+
+  // ❗ Prevent negative
+  if (finalAmount < 0) finalAmount = 0;
+
+  return finalAmount;
+  };
+  const handleDiscountChange = (value) => {
+  const discountValue = Number(value) || 0;
+
+  if (discountValue < 0) return;
+
+  setLoanInfo((prev) => {
+    const updated = {
+      ...prev,
+      discount: discountValue,
+    };
+
+    return {
+      ...updated,
+      payAmount: calculatePayAmount(updated), // ✅ use function
+    };
+  });
+};
   const handleCloseLoanChange = (e) => {
     debugger;
     const checked = e.target.checked;
@@ -323,6 +397,7 @@ function AddLoanRepaymentEmi() {
       return {
         ...prev,
         payAmount: finalPay.toFixed(2),
+        originalPayAmount: finalPay.toFixed(2),
         precloseCharge: precloseCharge.toFixed(2),
         duePenalty: duePenalty.toFixed(2),
       };
@@ -369,7 +444,7 @@ function AddLoanRepaymentEmi() {
   };
 
   const getDueEMI = () => {
-    debugger;
+  
     if (!data?.loanApplication?.EMI_Details) return 0;
 
     const today = new Date();
@@ -386,171 +461,169 @@ function AddLoanRepaymentEmi() {
   };
 
   useEffect(() => {
-    if (!data?.loanApplication || !data?.schemeData) return;
+  if (!data?.loanApplication || !data?.schemeData) return;
 
-    const pending = Number(data.loanApplication.LoanPendingAmount || 0);
+  const loanApp = data.loanApplication;
+  const scheme = data.schemeData;
 
-    // 🔥 If loan is already cleared, everything should be 0
-    if (pending <= 0) {
-      setLoanInfo({
-        emiAmount: "0.00",
-        interestAmount: "0.00",
-        payAmount: "0.00",
-        emiPaidCount: Number(data.loanApplication.EMIPaidCount || 0),
-        interestPaidFor: Number(data.loanApplication.EMIPaidCount || 0),
-        balanceLoanAmt: "0.00",
-        intPaidUptoText: data.loanApplication.LastEmiPaidUpto || "",
-        interestPercent: 0,
-      });
-      return;
-    }
+  const pending = Number(loanApp.LoanPendingAmount || 0);
 
-    // ---- your existing logic continues below ----
+  // 🔥 If loan already closed
+  if (pending <= 0) {
+    setLoanInfo({
+      emiAmount: "0.00",
+      interestAmount: "0.00",
+      payAmount: "0.00",
+      emiPaidCount: Number(loanApp.EMIPaidCount || 0),
+      interestPaidFor: Number(loanApp.EMIPaidCount || 0),
+      balanceLoanAmt: "0.00",
+      intPaidUptoText: loanApp.LastEmiPaidUpto || "",
+      interestPercent: 0,
+      chargesAmount: 0,
+      roundedPayAmount: "0.00",
+      roundOffAmount: "0.00",
+    });
+    return;
+  }
 
-    const P = Number(data.loanApplication.Loan_amount);
-    const tenureMonths = Number(data.loanApplication.Loan_Tenure);
-    const paidCount = Number(data.loanApplication.EMIPaidCount || 0);
+  // -------------------------------
+  // ✅ BASIC VALUES
+  // -------------------------------
+  const P = Number(loanApp.Loan_amount || 0);
+  const tenureMonths = Number(loanApp.Loan_Tenure || 0);
+  const paidCount = Number(loanApp.EMIPaidCount || 0);
+  const charges = Number(loanApp.total_unpaid_charges || 0);
 
-    const approvalDate = new Date(data.loanApplication.approval_date);
-    const today = new Date();
-    const charges = Number(data.loanApplication.total_unpaid_charges || 0);
-    const elapsedMonths =
-      (today.getFullYear() - approvalDate.getFullYear()) * 12 +
-      (today.getMonth() - approvalDate.getMonth());
+  const approvalDate = new Date(loanApp.approval_date);
+  const today = new Date();
 
-    const currentMonth = Math.max(elapsedMonths, 0);
+  const elapsedMonths =
+    (today.getFullYear() - approvalDate.getFullYear()) * 12 +
+    (today.getMonth() - approvalDate.getMonth());
 
-    const slabs = data.schemeData.interestRates || [];
-    const slab = slabs.find(
-      (s) => currentMonth >= Number(s.from) && currentMonth <= Number(s.to),
-    );
+  const currentMonth = Math.max(elapsedMonths, 0);
 
-    const annualRate = slab ? Number(slab.addInt) : 0;
-    setintrestPercentage(annualRate);
+  // -------------------------------
+  // ✅ USE MONTHLY INTEREST RATE
+  // -------------------------------
+  const monthlyRate = Number(scheme.monthlyInterestRate || 0); // 18%
+  const annualRate = monthlyRate * 12; // for EMI function
 
-    const type = data.schemeData.interestType; // Flat / Reducing
+  setintrestPercentage(monthlyRate);
 
-    const { emi, totalInterest, totalPayable } = calculateEMI(
-      P,
-      annualRate,
-      tenureMonths,
-      type,
-    );
+  const type = scheme.interestType; // Flat / Reducing
 
-    let currentInterest = 0;
-    let nextBalance = P;
+  // -------------------------------
+  // ✅ EMI CALCULATION FUNCTION
+  // -------------------------------
+  const calculateEMI = (P, annualRate, tenure, type) => {
+    const r = annualRate / 12 / 100;
 
     if (type === "Reducing") {
-      const r = annualRate / 12 / 100;
+      const emi =
+        (P * r * Math.pow(1 + r, tenure)) /
+        (Math.pow(1 + r, tenure) - 1);
 
-      let balance = P;
-      for (let i = 0; i < paidCount; i++) {
-        const int = balance * r;
-        const principal = emi - int;
-        balance -= principal;
-      }
+      const totalPayable = emi * tenure;
+      const totalInterest = totalPayable - P;
 
-      currentInterest = balance * r;
-      const principal = emi - currentInterest;
-      nextBalance = balance - principal;
+      return { emi, totalInterest, totalPayable };
     } else {
-      currentInterest = totalInterest / tenureMonths;
-      nextBalance = P - paidCount * (emi - currentInterest);
+      // Flat Interest
+      const totalInterest = (P * annualRate * tenure) / (12 * 100);
+      const totalPayable = P + totalInterest;
+      const emi = totalPayable / tenure;
+
+      return { emi, totalInterest, totalPayable };
+    }
+  };
+
+  const { emi, totalInterest } = calculateEMI(
+    P,
+    annualRate,
+    tenureMonths,
+    type,
+  );
+
+  // -------------------------------
+  // ✅ CURRENT INTEREST + BALANCE
+  // -------------------------------
+  let currentInterest = 0;
+  let nextBalance = P;
+
+  if (type === "Reducing") {
+    const r = annualRate / 12 / 100;
+    let balance = P;
+
+    for (let i = 0; i < paidCount; i++) {
+      const int = balance * r;
+      const principal = emi - int;
+      balance -= principal;
     }
 
-    const paidUpto = new Date(approvalDate);
-    paidUpto.setMonth(paidUpto.getMonth() + paidCount + 1);
-    const rawPay = emi.toFixed(2);
-    const { rounded, roundOff } = roundUpAmount(rawPay);
+    currentInterest = balance * r;
+    const principal = emi - currentInterest;
+    nextBalance = balance - principal;
+  } else {
+    currentInterest = totalInterest / tenureMonths;
+    nextBalance = P - paidCount * (emi - currentInterest);
+  }
 
-    const dueEmiCount = getDueEMI();
-    // const emiAmountNum = Number(emi);
-    // const dueEmiAmount = dueEmiCount * emiAmountNum;
+  // -------------------------------
+  // ✅ EMI DUE CALCULATION
+  // -------------------------------
+  const getDueEMI = () => {
+    return Math.max(currentMonth - paidCount, 0);
+  };
 
-    //     const penaltyPerEmi = Number(data?.schemeData?.penalty || 0);
-    //       const totalPenalty = dueEmiCount * penaltyPerEmi;
+  const dueEmiCount = getDueEMI();
+  const pendingEmiAmount = dueEmiCount * emi;
 
-    // const penaltyPerEmi = 100;
-    // const totalPenalty = dueEmiCount * penaltyPerEmi;
+  // -------------------------------
+  // ✅ ROUNDING FUNCTION
+  // -------------------------------
+  const roundUpAmount = (amount) => {
+    const num = Number(amount);
+    const rounded = Math.ceil(num);
+    const roundOff = rounded - num;
 
-    setLoanInfo({
-      emiAmount: emi.toFixed(2),
-      interestAmount: currentInterest.toFixed(2),
-      payAmount: emi.toFixed(2),
-      // 🔥 new stored values
-      // roundedPayAmount: rounded.toFixed(2),
-      chargesAmount: charges,
-      roundedPayAmount: (PendingEmi + charges * dueEmiCount).toFixed(2),
-      roundOffAmount: roundOff.toFixed(2),
-      emiPaidCount: paidCount,
-      interestPaidFor: paidCount,
-      balanceLoanAmt: Math.max(nextBalance, 0).toFixed(2),
-      intPaidUptoText: paidUpto.toISOString().slice(0, 10),
-      interestPercent: annualRate,
-    });
-  }, [data]);
+    return { rounded, roundOff };
+  };
 
-  // const generateEMISchedule = (P, annualRate, months, type) => {
-  //   const r = annualRate / 12 / 100;
-  //   const rows = [];
+  const totalPay = pendingEmiAmount + charges;
+  const { rounded, roundOff } = roundUpAmount(totalPay);
 
-  //   if (type === "Flat") {
-  //     const totalInterest = P * r * months;
-  //     const totalPayable = P + totalInterest;
-  //     const emi = totalPayable / months;
-  //     const monthlyInterest = totalInterest / months;
-  //     const monthlyPrincipal = P / months;
+  // -------------------------------
+  // ✅ PAID UPTO DATE
+  // -------------------------------
+  const paidUpto = new Date(approvalDate);
+  paidUpto.setMonth(paidUpto.getMonth() + paidCount);
 
-  //     let balance = P;
+  // -------------------------------
+  // ✅ FINAL STATE SET
+  // -------------------------------
+  setLoanInfo({
+    emiAmount: emi.toFixed(2),
+    interestAmount: currentInterest.toFixed(2),
+    payAmount: emi.toFixed(2),
 
-  //     for (let i = 1; i <= months; i++) {
-  //       const opening = balance;
-  //       const interest = monthlyInterest;
-  //       const principal = monthlyPrincipal;
-  //       const closing = opening - principal;
+    chargesAmount: charges.toFixed(2),
 
-  //       rows.push({
-  //         month: i,
-  //         opening: opening.toFixed(2),
-  //         emi: emi.toFixed(2),
-  //         interest: interest.toFixed(2),
-  //         principal: principal.toFixed(2),
-  //         closing: Math.max(closing, 0).toFixed(2),
-  //       });
+    roundedPayAmount: rounded.toFixed(2),
+    roundOffAmount: roundOff.toFixed(2),
 
-  //       balance = closing;
-  //     }
+    emiPaidCount: paidCount,
+    interestPaidFor: paidCount,
 
-  //     return rows;
-  //   }
+    balanceLoanAmt: Math.max(nextBalance, 0).toFixed(2),
 
-  //   // 🔹 Reducing
-  //   const emi =
-  //     (P * r * Math.pow(1 + r, months)) / (Math.pow(1 + r, months) - 1);
+    intPaidUptoText: paidUpto.toISOString().slice(0, 10),
 
-  //   let balance = P;
-
-  //   for (let i = 1; i <= months; i++) {
-  //     const opening = balance;
-  //     const interest = opening * r;
-  //     const principal = emi - interest;
-  //     const closing = opening - principal;
-
-  //     rows.push({
-  //       month: i,
-  //       opening: opening.toFixed(2),
-  //       emi: emi.toFixed(2),
-  //       interest: interest.toFixed(2),
-  //       principal: principal.toFixed(2),
-  //       closing: Math.max(closing, 0).toFixed(2),
-  //     });
-
-  //     balance = closing;
-  //   }
-
-  //   return rows;
-  // };
-  // ✅ Round EMI to next 10
+    interestPercent: monthlyRate,
+  });
+}, [data]);
+  
+  
   const roundToNext10 = (num) => Math.ceil(num / 10) * 10;
 
   const generateEMISchedule = (P, annualRate, months, type) => {
@@ -634,8 +707,6 @@ function AddLoanRepaymentEmi() {
     return rows;
   };
 
-  console.log(loanInfo, "loanInfo");
-
   const fetchLoanData = async () => {
     try {
       setLoading(true);
@@ -649,8 +720,10 @@ function AddLoanRepaymentEmi() {
 
       // Store installments properly
       setInstallments(res.data?.loanApplication?.emi_installments || []);
+      setLoading(false);
     } catch (err) {
       setError("Failed to load loan data");
+      setLoading(false);
     } finally {
       setLoading(false);
     }
@@ -725,24 +798,129 @@ function AddLoanRepaymentEmi() {
     // Return YYYY-MM-DD
     return d.toISOString().slice(0, 10);
   };
+ const formatDate2 = (date) => {
+    if (!date) return "";
 
-  const handleRepaymentSubmit = async () => {
+    const d = new Date(date);
+    const day = String(d.getDate()).padStart(2, "0");
+    const month = String(d.getMonth() + 1).padStart(2, "0");
+    const year = d.getFullYear();
+
+    return `${day}-${month}-${year}`;
+  };
+
+
+const handlePaymentGateway = async () => {
+  debugger
+    setLoading(true)
+    try {
+      // ✅ VALIDATION
+      if (!paymentInfo.mode?.trim()) {
+        alert("Please select Payment Mode");
+        setLoading(false)
+        return;
+      }
+
+        if (paymentInfo.mode !== "Cash" && !paymentInfo.refNo?.trim()) {
+  alert("Please enter Reference Number");
+  return;
+}
+
+      if (!paymentInfo.madeBy?.trim()) {
+        alert("Please enter Made By");
+        setLoading(false)
+        return;
+      }
+
+     
+      let finalLoanInfo;
+
+      if (isClose === true) {
+        finalLoanInfo = loanInfo;
+      } else {
+        finalLoanInfo = loanInfo;
+      }
+
+      const finalObject = {
+        loanId: data?.loanApplication?.id,
+        isClose: isClose,
+        AdvanceInt: isAdvInt,
+        paymentInfo: paymentInfo,
+        loanInfo: {
+          ...finalLoanInfo,
+          intPaidUpto: formatDate2(finalLoanInfo?.intPaidUpto),
+        },
+        uptoInterest: loanInfo.intPaidUptoText,
+      };
+
+      console.log("FINAL OBJECT:", finalObject);
+
+      // ✅ PAYMENT GATEWAY PAYLOAD
+      const pgPayload = {
+        merchantId: "100000000007164",
+        aggregatorID: "A100000000007164",
+        amount: String(finalLoanInfo?.payAmount || 0),
+        currencyCode: "356",
+        payType: "0",
+        customerEmailID: "test@gmail.com",
+        customerMobileNo: "9999999999",
+        customerName: paymentInfo.madeBy,
+        // returnURL: `${window.location.origin}/Add-Loan-Repayment/paymentsuccess/${loanId}`,
+         returnURL: `${window.location.origin}/Loan-Repayment-Emi/paymentsuccess/${loanId}`,
+        transactionType: "SALE",
+        addlParam1: data?.loanApplication?.id,
+        addlParam2: "repayment",
+      };
+
+      // ✅ CALL PG INIT API
+      const pgRes = await axios.post(
+        "https://slunawat.co.in/api/icici/initiate",
+        pgPayload,
+      );
+
+      console.log("PG RESPONSE:", pgRes.data);
+
+      if (pgRes.data?.responseCode !== "R1000") {
+        alert("Payment initiation failed!");
+         setLoading(false)
+        return;
+      }
+
+      const { redirectURI, tranCtx } = pgRes.data;
+
+      // ✅ SAVE BEFORE REDIRECT
+      localStorage.setItem("repaymentPayload", JSON.stringify(finalObject));
+
+      // OPTIONAL: prevent duplicate
+      localStorage.removeItem("repaymentDone");
+       setLoading(false)
+      // ✅ REDIRECT TO PG
+      window.open(`${redirectURI}?tranCtx=${tranCtx}`, "_self");
+    } catch (err) {
+      console.error("PG ERROR:", err);
+      alert("Payment gateway error!");
+      setLoading(false)
+    }
+  };
+
+  const handleRepaymentSubmitForAllMode = async () => {
+    debugger;
     if (!data?.loanApplication) return;
     if (!paymentInfo.mode?.trim()) {
       alert("Payment Mode is required");
       return;
     }
 
-    if (!paymentInfo.refNo?.trim()) {
-      alert("Reference Number is required");
-      return;
-    }
+      if (paymentInfo.mode !== "Cash" && !paymentInfo.refNo?.trim()) {
+  alert("Please enter Reference Number");
+  return;
+}
 
     if (!paymentInfo.madeBy?.trim()) {
       alert("Made By is required");
       return;
     }
-
+      setLoading(true);
     const dueEmiCount = getDueEMI();
     const today = new Date().toISOString().slice(0, 10);
 
@@ -775,18 +953,23 @@ function AddLoanRepaymentEmi() {
       LastInterestPaidPercentage: intrestPercentage,
       isCloseLoan,
 
-      paymentInfo: {
-        mode: paymentInfo.mode,
-        type: paymentInfo.type,
-        bankId: paymentInfo.bankId || "",
-        bankName: paymentInfo.bankName || "",
-        refNo: paymentInfo.refNo,
-        madeBy: paymentInfo.madeBy,
-        creditNote: paymentInfo.creditNote,
-        creditNoteAmount: paymentInfo.creditNoteAmount,
-        utilizedAmount: paymentInfo.utilizedAmount,
-        unutilizedAmount: paymentInfo.unutilizedAmount,
-      },
+     paymentInfo: {
+    mode: paymentInfo.mode,
+    type: paymentInfo.type,
+    bankId: paymentInfo.bankId || "",
+    bankName: paymentInfo.bankName || "",
+    refNo: paymentInfo.refNo,
+    madeBy: paymentInfo.madeBy,
+    creditNote: paymentInfo.creditNote,
+    creditNoteAmount: paymentInfo.creditNoteAmount,
+    utilizedAmount: paymentInfo.utilizedAmount,
+    unutilizedAmount: paymentInfo.unutilizedAmount,
+
+    // ✅ ADD THIS 👇
+    ...(isCloseLoan && loanInfo.discount > 0 && {
+      discount: loanInfo.discount,
+    }),
+  },
     };
 
     try {
@@ -808,15 +991,53 @@ function AddLoanRepaymentEmi() {
           unutilizedAmount: 0,
         });
         navigate("/Loan-Application");
+              setLoading(false);
         fetchLoanData();
       } else {
         alert("Failed to save repayment");
+              setLoading(false);
       }
     } catch (err) {
       console.error("Repayment Error:", err);
       alert("Something went wrong while saving repayment");
+            setLoading(false);
     }
   };
+
+  const handleRepaymentSubmit = async () => {
+    debugger;
+
+    // ✅ VALIDATION (common for all modes)
+    if (!paymentInfo.mode?.trim()) {
+      alert("Please select Payment Mode");
+      return;
+    }
+
+       if (paymentInfo.mode !== "Cash" && !paymentInfo.refNo?.trim()) {
+  alert("Please enter Reference Number");
+  return;
+}
+
+    if (!paymentInfo.madeBy?.trim()) {
+      alert("Please enter Made By");
+      return;
+    }
+  if (paymentInfo.mode === "Credit Note") {
+    if (!paymentInfo.creditNote?.trim()) {
+      alert("Please Select Credit Note");
+      return;
+    }
+  }
+    // ✅ CHECK MODE
+    if (paymentInfo.mode === "Payment Getway") {
+      // 👉 CALL PAYMENT GATEWAY FLOW
+      await handlePaymentGateway();
+    } else {
+      // 👉 CALL NORMAL FLOW
+      await handleRepaymentSubmitForAllMode();
+    }
+  };
+
 
   const handleCreditNoteSelect = (creditNoteId) => {
     const selected = creditNotes.find(
@@ -884,7 +1105,7 @@ function AddLoanRepaymentEmi() {
       {/* Header Section */}
       <div className="flex items-center justify-between px-6 w-[1462px] h-[40px] border border-gray-200   sticky top-[50px] z-40 bg-white ml-[35px] ">
         <h2 className="text-red-600 font-bold text-[20px] leading-[1.48] font-['Source_Sans_3']">
-          Add Loan Repayment
+          Add Loan Repayment -{loanId}
         </h2>
 
         <div className="flex items-center gap-5">
@@ -914,11 +1135,11 @@ function AddLoanRepaymentEmi() {
 
         {/* Loan Information Section */}
         <div className="  bg-[#FFE6E6]  pl-5 pr-5 ml-[40px] w-[1462px] ">
-          <h1 className="text-blue-900 font-semibold text-xl mt-2">
+          <h1 className="text-blue-900 font-semibold text-[15px] ">
             Loan Information
           </h1>
 
-          <div className="flex w-full items-start gap-5 mt-2">
+          <div className="flex w-full items-start gap-5 ">
             {/* Left Section - Loan Info */}
             <div className="flex flex-col gap-3 flex-1 text-sm">
               {/* Row 1 */}
@@ -1026,7 +1247,7 @@ function AddLoanRepaymentEmi() {
                   </label>
                   <input
                     type="text"
-                    value={PendingEmi} // 👈 always EMI only
+                    value={PendingEmi.toFixed(2)} // 👈 always EMI only
                     disabled
                     className="border border-gray-300 bg-gray-100 rounded-md px-1 py-1 text-xs"
                   />
@@ -1054,7 +1275,7 @@ function AddLoanRepaymentEmi() {
                     type="text"
                     name="pendingLoanAmount"
                     disabled
-                    value={pendingLoanAmount}
+                    value={pendingLoanAmount.toFixed(2)}
                     className="border border-gray-300 disabled:bg-gray-100 rounded-md px-1 py-1 focus:ring-1 focus:ring-blue-500 focus:outline-none w-[140px] text-xs"
                   />
                 </div>
@@ -1118,7 +1339,7 @@ function AddLoanRepaymentEmi() {
                     type="text"
                     name="chargesDue"
                     disabled
-                    value={data?.loanApplication?.total_unpaid_charges}
+                    value={data?.loanApplication?.total_unpaid_charges.toFixed(2)}
                     onChange={handleChange}
                     className="border border-gray-300 disabled:bg-gray-100 rounded-md px-1 py-1 focus:ring-1 focus:ring-blue-500 focus:outline-none text-xs"
                   />
@@ -1248,10 +1469,10 @@ function AddLoanRepaymentEmi() {
         </div>
 
         {/* Payment Section */}
-        <div className="flex  justify-between ml-[40px] gap-2 bg-[#F7F7FF] p-5 w-[1462px]  ">
+        <div className="flex  justify-between ml-[40px] gap-2 bg-[#F7F7FF] pl-5 w-[1462px]  ">
           <div className=" flex gap-5 rounded-md ">
             <div className="border-r-2 border-gray-400 pr-6">
-              <h1 className="text-blue-900 font-semibold text-xl pb-2">
+              <h1 className="text-blue-900 font-semibold text-[15px] pb-2">
                 Payment
               </h1>
 
@@ -1306,9 +1527,22 @@ function AddLoanRepaymentEmi() {
                     className="border border-gray-300 bg-gray-100 rounded-md px-1 py-1 text-xs"
                   />
                 </div>
+                 {isCloseLoan && (
+  <div className="flex flex-col gap-1 w-[120px]">
+    <label className="text-gray-900 font-medium text-xs">
+      Discount (₹)
+    </label>
+    <input
+      type="number"
+      value={loanInfo.discount}
+      onChange={(e) => handleDiscountChange(e.target.value)}
+      className="border border-gray-300 rounded-md px-1 py-1 text-xs"
+    />
+  </div>
+)}
 
                 {/* EMI Due Penalty */}
-                <div className="flex flex-col gap-1 w-[100px]">
+                <div className="flex flex-col gap-1 w-[90px]">
                   <label className="text-gray-900 font-medium text-xs">
                     EMI Due Penalty
                   </label>
@@ -1323,17 +1557,9 @@ function AddLoanRepaymentEmi() {
                     className="border border-gray-300 bg-gray-100 rounded-md px-1 py-1 text-xs"
                   />
                 </div>
-                {/* <div className="flex flex-col gap-1 w-[80px]  text-xs">
-                  <label className="text-gray-900 font-medium">Round Off</label>
-                  <input
-                    type="text"
-                    disabled
-                    value={loanInfo.roundOffAmount}
-                    className="border border-gray-300 bg-gray-100 rounded-md px-1 py-1 text-xs"
-                  />
-                </div> */}
+               
                 {isReducing && (
-                  <div className="flex flex-col gap-1 w-[120px]">
+                  <div className="flex flex-col gap-1 w-[90px]">
                     <label className="text-gray-900 font-medium text-xs">
                       Interest Amount
                     </label>
@@ -1345,7 +1571,7 @@ function AddLoanRepaymentEmi() {
                     />
                   </div>
                 )}
-                <div className="flex flex-col gap-1 w-[130px]">
+                <div className="flex flex-col gap-1 w-[100px]">
                   <label className="text-gray-900 font-medium text-xs">
                     Mode of Payment <span className="text-red-500"> *</span>
                   </label>
@@ -1360,12 +1586,14 @@ function AddLoanRepaymentEmi() {
                     <option value="Cash">Cash</option>
                     <option value="Net Banking">Net Banking</option>
                     <option value="Credit Note">Credit Note</option>
+                    {/* <option value="Payment Getway">Payment Gateway</option> */}
                   </select>
                 </div>
+                {paymentInfo.mode === "Net Banking" && (
 
-                <div className="flex flex-col gap-1 w-[120px]">
+<div className="flex flex-col gap-1 w-[120px]">
                   <label className="text-gray-900 font-medium text-xs">
-                    Bank Details
+                    Bank Details <span className="text-red-500"> *</span>
                   </label>
 
                   <select
@@ -1379,7 +1607,7 @@ function AddLoanRepaymentEmi() {
                       setPaymentInfo({
                         ...paymentInfo,
                         bankId: selectedBank?.id || "",
-                        bankName: selectedBank?.bank_name || "",
+                        bankName: selectedBank?.name || "",
                       });
                     }}
                   >
@@ -1391,11 +1619,13 @@ function AddLoanRepaymentEmi() {
                     ))}
                   </select>
                 </div>
+                )}
+                
 
                 {paymentInfo.mode === "Credit Note" && (
                   <div className="flex flex-col gap-1 w-[120px]">
                     <label className="text-gray-900 font-medium text-xs">
-                      Select Credit Note
+                      Select Credit Note <span className="text-red-500"> *</span>
                     </label>
 
                     <select
@@ -1445,8 +1675,13 @@ function AddLoanRepaymentEmi() {
                     </div>
                   )}
 
-                {/* Payment Ref. No */}
-                <div className="flex flex-col gap-1 w-[120px]">
+                
+              </div>
+              {/* Payment Ref. No */}
+             
+              <div className="flex gap-4 mt-2 ">
+                 {paymentInfo.mode !== "Cash" && (
+<div className="flex flex-col gap-1 w-[120px]">
                   <label className="text-gray-900 font-medium text-xs">
                     Payment Ref. No <span className="text-red-500"> *</span>
                   </label>
@@ -1460,9 +1695,8 @@ function AddLoanRepaymentEmi() {
                     }
                   />
                 </div>
-
-                {/* Payment Made By */}
-                <div className="flex flex-col gap-1 w-[150px]">
+   )}
+               <div className="flex flex-col gap-1 w-[150px]">
                   <label className="text-gray-900 font-medium text-xs">
                     Payment Made By <span className="text-red-500"> *</span>
                   </label>
@@ -1476,8 +1710,12 @@ function AddLoanRepaymentEmi() {
                     }
                   />
                 </div>
+               
               </div>
 
+           
+              
+                 
               <div className="flex gap-4 mt-2 text-sm"></div>
             </div>
 
@@ -1487,53 +1725,10 @@ function AddLoanRepaymentEmi() {
           </div>
         </div>
 
-        {/* <h3 className="font-semibold mb-4 text-[#0A2478] text-lg mt-5">
-          Loan Details table
-        </h3>
-        <table className="w-full border text-sm">
-          <thead className="bg-[#0A2478] text-white">
-            <tr>
-              <th className="p-2 border">Month</th>
-              <th className="p-2 border">Opening Balance</th>
-              <th className="p-2 border">EMI</th>
-              <th className="p-2 border">Interest</th>
-              <th className="p-2 border">Principal</th>
-              <th className="p-2 border">Closing Balance</th>
-              <th className="p-2 border">Status</th>
-            </tr>
-          </thead>
-          <tbody>
-            {emiTable.map((row) => {
-              const isPaid =
-                Number(data?.loanApplication?.EMIPaidCount || 0) >= row.month;
-
-              return (
-                <tr key={row.month} className="text-center">
-                  <td className="p-2 border">{row.month}</td>
-                  <td className="p-2 border">₹{row.opening}</td>
-                  <td className="p-2 border">₹{row.emi}</td>
-                  <td className="p-2 border">₹{row.interest}</td>
-                  <td className="p-2 border">₹{row.principal}</td>
-                  <td className="p-2 border">₹{row.closing}</td>
-                  <td
-                    className={`p-2 border font-medium ${
-                      isPaid ? "text-green-600" : "text-gray-400"
-                    }`}
-                  >
-                    {isPaid ? "Paid" : "---"}
-                  </td>
-                </tr>
-              );
-            })}
-          </tbody>
-        </table> */}
-
-        {/* Pledge Item List */}
-
-        {/* Installments Table */}
+        
         <div className=" bg-[#FFE6E6] w-[1462px] ml-[40px]">
           <div className="">
-            <div className="flex  pl-5 pr-5 mt-2 mb-2">
+            <div className="flex  pl-5 pr-5  mb-2">
               <div className="w-[1000px]">
                 <h1 className="text-blue-900 font-semibold text-xs "> </h1>
                 <div className="w-[1100px] text-xs border border-gray-300">
@@ -1542,7 +1737,7 @@ function AddLoanRepaymentEmi() {
                       Particulars( Pledge Item)
                     </div>
                     <div className="w-20 p-1 border-r border-white text-center">
-                      Nos.
+                      Qty
                     </div>
                     <div className="w-20 p-1 border-r border-white text-center">
                       Gross
@@ -1646,7 +1841,7 @@ function AddLoanRepaymentEmi() {
         </div>
 
         <div className=" bg-[#F7F7FF] pr-5 pl-5 w-[1462px] ml-[40px] mb-10">
-          <h1 className="text-blue-900 font-semibold text-xl py-2">
+          <h1 className="text-blue-900 font-semibold text-[15px]">
             Installments
           </h1>
           <div className="overflow-x-auto">
@@ -1752,6 +1947,8 @@ function AddLoanRepaymentEmi() {
           </div>
         </div>
       </div>
+
+      {loading && <Loader />}
     </div>
   );
 }

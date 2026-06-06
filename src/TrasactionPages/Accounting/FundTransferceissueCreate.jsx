@@ -129,27 +129,99 @@ const [loading, setLoading] = useState(false);
     updatedRows[index][field] = value;
     setRows(updatedRows);
   };
+const validateRows = () => {
+  for (let i = 0; i < rows.length; i++) {
+    const row = rows[i];
 
-  const handleSave = async () => {
-    setLoading(true)
-    if (totalAmount <= 0) return alert("Please enter at least one amount");
-    const finalData = { ...formData, transferDetails: rows };
-    try {
-      const res = await axios.post(
-        `${API}/api/FundTransfer/create`,
-        finalData,
-      );
-      if (res.data.success) {
-        alert("Fund Transfer Saved Successfully ✅");
-        setLoading(false)
-        navigate("/FundTransfer/issue");
-      }
-    } catch (error) {
-      alert("Error while saving data ❌");
-      setLoading(false)
+    if (!row.FromBrachId) {
+      alert(` Please select From Branch`);
+      return false;
     }
-  };
 
+    if (!row.ToBrachId) {
+      alert(` Please select To Branch`);
+      return false;
+    }
+
+    if (row.FromBrachId === row.ToBrachId) {
+      alert(`From Branch and To Branch cannot be same`);
+      return false;
+    }
+
+    if (!row.amount || Number(row.amount) <= 0) {
+      alert(`Please enter valid amount`);
+      return false;
+    }
+
+    // if (Number(row.amount) > 19999) {
+    //   alert(`Amount cannot exceed 19,999`);
+    //   return false;
+    // }
+
+    if (!row.remark || row.remark.trim() === "") {
+      alert(`Please enter remark`);
+      return false;
+    }
+  }
+
+  return true;
+};
+//   const handleSave = async () => {
+//     setLoading(true)
+//    if (totalAmount <= 0) {
+//   setLoading(false);
+//   return alert("Please enter at least one amount");
+// }
+//     const finalData = { ...formData, transferDetails: rows };
+//     try {
+//       const res = await axios.post(
+//         `${API}/api/FundTransfer/create`,
+//         finalData,
+//       );
+//       if (res.data.success) {
+//         alert("Fund Transfer Saved Successfully ✅");
+//         setLoading(false)
+//         navigate("/FundTransfer/issue");
+//       }
+//     } catch (error) {
+//       alert("Error while saving data ❌");
+//       setLoading(false)
+//     }
+//   };
+const handleSave = async () => {
+  setLoading(true);
+
+  // Total amount validation
+  // if (totalAmount <= 0) {
+  //   setLoading(false);
+  //   return alert("Please enter at least one amount");
+  // }
+
+  // Row validation
+  const isValid = validateRows();
+  if (!isValid) {
+    setLoading(false);
+    return;
+  }
+
+  const finalData = { ...formData, transferDetails: rows };
+
+  try {
+    const res = await axios.post(
+      `${API}/api/FundTransfer/create`,
+      finalData
+    );
+
+    if (res.data.success) {
+      alert("Fund Transfer Saved Successfully ✅");
+      setLoading(false);
+      navigate("/FundTransfer/issue");
+    }
+  } catch (error) {
+    alert("Error while saving data ❌");
+    setLoading(false);
+  }
+};
   return (
     <div className="min-h-screen  flex justify-center ">
       <div className="space-y-2  w-[1462px]">

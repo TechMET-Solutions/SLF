@@ -82,7 +82,7 @@ const handleStatusClick = (row) => {
       <div className="flex justify-center sticky top-[50px] z-40">
         <div className="flex items-center px-6 py-4 border-b w-[1462px] h-[40px] border  border-gray-200 justify-between bg-white">
           <h2 className="text-red-600 font-bold text-[20px] ">
-            Auction Bidder List (Auction ID: {auctionId})
+            Auction Bidder List (Auction ID- {auctionId})
           </h2>
 
           <div className="flex gap-3">
@@ -93,12 +93,12 @@ const handleStatusClick = (row) => {
              Auction Application
             </button> */}
 
-            {/* <button
-              onClick={() => navigate("/")}
-              className="bg-[#C1121F] text-white text-sm rounded px-4 py-2 cursor-pointer"
+            <button
+              onClick={() => navigate("/Auction-Creation")}
+              className="bg-[#C1121F] text-white text-sm rounded px-4 py-1 cursor-pointer"
             >
               Exit
-            </button> */}
+            </button>
           </div>
         </div>
       </div>

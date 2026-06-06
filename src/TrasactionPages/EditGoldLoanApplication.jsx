@@ -25,30 +25,111 @@ const EditGoldLoanApplication = () => {
   const [activeEmployees, setActiveEmployees] = useState([]);
   console.log(activeEmployees, "activeEmployees");
   const fileInputRef = useRef(null);
+ const fileInputRef3 = useRef(null);
 
+   const [remark, setRemark] = useState("");
+  //  const handleSchemeChange = (e) => {
+  //   const selectedId = parseInt(e.target.value);
+  //   const scheme = schemes.find((s) => s.id === selectedId);
+
+  //   if (!scheme || !selectedCustomer) return;
+
+  //   // ✅ Case-insensitive compare
+  //   const customerType = selectedCustomer.borrower_partyType?.toLowerCase();
+  //   const schemeType = scheme.partyType?.toLowerCase();
+
+  //   // ❌ If mismatch → show popup + stop
+  //   if (customerType !== schemeType) {
+  //     alert(
+  //       `This scheme is for "${scheme.partyType}" only.\nBorrower is "${selectedCustomer.borrower_partyType}".`,
+  //     );
+
+  //     // reset dropdown
+  //     e.target.value = "";
+
+  //     // optional: reset scheme state
+  //     setSelectedScheme(null);
+
+  //     setFormData((prev) => ({
+  //       ...prev,
+  //       schemeId: "",
+  //       schemeName: "",
+  //       schemeType: "",
+  //       interestType: "",
+  //     }));
+
+  //     return;
+  //   }
+
+  //   setSelectedScheme(scheme);
+
+  //   setFormData((prev) => ({
+  //     ...prev,
+  //     schemeId: scheme.id || "",
+  //     schemeName: scheme.schemeName || "",
+  //     schemeType: scheme.calcBasisOn || "",
+  //     interestType: scheme.interestType || "",
+  //   }));
+  // };
+  // const [image, setImage] = useState(null);
+  // 1. Make sure the ref name matches exactly where it is used
+  
   const handleSchemeChange = (e) => {
+    debugger
     const selectedId = parseInt(e.target.value);
     const scheme = schemes.find((s) => s.id === selectedId);
 
-    // store the full scheme in state (optional)
+    if (!scheme || !selectedCustomer) return;
+
+    // ✅ Normalize customer type
+    const customerType = selectedCustomer?.partyType?.toLowerCase();
+
+    // ✅ Normalize scheme party types into array
+    const schemeTypes = scheme?.partyType?.map((type) => type.toLowerCase());
+
+    // ✅ Check if ANY match exists
+    const isMatch = schemeTypes?.includes(customerType);
+
+    // ❌ If mismatch → show popup
+    if (!isMatch) {
+      alert(
+        `This scheme is for "${scheme.partyType.join(", ")}" only.\nBorrower is "${selectedCustomer.partyType}".`,
+      );
+
+      // reset dropdown
+      e.target.value = "";
+
+      setSelectedScheme(null);
+
+      setFormData((prev) => ({
+        ...prev,
+        schemeId: "",
+        schemeName: "",
+        schemeType: "",
+        interestType: "",
+      }));
+
+      return;
+    }
+
+    // ✅ If match → allow selection
     setSelectedScheme(scheme);
 
-    // ✅ update formData to include schemeId (and name if needed)
     setFormData((prev) => ({
       ...prev,
-      schemeId: scheme?.id || "",
-      schemeName: scheme?.schemeName || "",
-      schemeType: scheme?.calcBasisOn || "",
-      interestType: scheme?.interestType || "",
+      schemeId: scheme.id || "",
+      schemeName: scheme.schemeName || "",
+      schemeType: scheme.calcBasisOn || "",
+      interestType: scheme.interestType || "",
     }));
   };
-  // const [image, setImage] = useState(null);
-  // 1. Make sure the ref name matches exactly where it is used
   const fileInputRef2 = useRef(null);
-
+const [preview2, setPreview2] = useState(null);
   const [image, setImage] = useState(null);
   const [preview, setPreview] = useState(null); // optional for UI preview
   console.log(image, "this is uploaded signature image ");
+
+  
   const handleImageChange = (e) => {
     const file = e.target.files[0];
     if (file) {
@@ -61,6 +142,10 @@ const EditGoldLoanApplication = () => {
     // 3. This programmatically clicks the hidden <input>
     fileInputRef2.current.click();
   };
+
+  const triggerUpload2 = () => {
+    fileInputRef3.current.click();
+  };
   const { loginUser } = useAuth();
 
   console.log("Logged in user:", loginUser);
@@ -70,101 +155,22 @@ const EditGoldLoanApplication = () => {
     if (!selectedScheme?.id) return "Scheme is required";
     if (!formData.value1) return "Valuer 1 is required";
     if (!formData.value2) return "Valuer 2 is required";
-    if (!formData.payDate) return "Pay Date is required";
-
+    if (!formData.payDate) return "Loan Date is required";
+// if (!image && !image2) {
+//   return "At least one signature (Borrower or Co-Borrower) is required";
+// }
     if (!formData.Loan_amount || Number(formData.Loan_amount) <= 0) {
       return "Valid Loan Amount is required";
     }
 
     // if (!formData.OrnamentFile) return "Ornament Photo is required";
 
-    if (!preview) return "Signature 2 is required";
-
+    if (!preview && !preview2) {
+  return "Either Borrower or Co-Borrower is required";
+}
     return null;
   };
-  const handleSaveLoan = async () => {
-    debugger;
-    const errorMsg = validateLoanForm();
-    if (errorMsg) {
-      alert(errorMsg);
-      return;
-    }
-
-    try {
-      const formDataToSend = new FormData();
-      formDataToSend.append("BorrowerId", selectedCustomer?.id || "");
-      formDataToSend.append("CoBorrowerId", selectedCoBorrower?.id || "");
-      formDataToSend.append("Borrower", formData.borrowerName || searchTerm);
-      formDataToSend.append("Scheme", formData.schemeName || "");
-      formDataToSend.append("Pay_Date", formData.payDate || "");
-      formDataToSend.append("Scheme_type", formData.schemeType || "");
-      formDataToSend.append("Scheme_ID", selectedScheme?.id || "");
-      formDataToSend.append("Print_Name", formData.printName || "");
-      formDataToSend.append("Mobile_Number", formData.mobile || "");
-      formDataToSend.append("Alternate_Number", formData.altMobile || "");
-      formDataToSend.append(
-        "Co_Borrower",
-        formData.CoBorrowerName || searchTermForCoBorrower,
-      );
-      formDataToSend.append("Relation", formData.CoBorrowerRelation || "");
-      formDataToSend.append("Nominee", formData.Nominee_Name || "");
-      formDataToSend.append("Nominee_Relation", formData.NomineeRelation || "");
-      formDataToSend.append("interestType", formData.interestType || "");
-      formDataToSend.append("branchName", formData.branchName || "");
-      formDataToSend.append("financialYear", formData.financialYear || "");
-      formDataToSend.append("branch_id", Number(formData.branchId));
-      formDataToSend.append("Valuer_1", formData.value1);
-      formDataToSend.append("Valuer_2", formData.value2);
-      if (formData.OrnamentFile) {
-        formDataToSend.append("Ornament_Photo", formData.OrnamentFile);
-      }
-      formDataToSend.append("signature", image);
-      formDataToSend.append(
-        "Pledge_Item_List",
-        JSON.stringify(PledgeItem || []),
-      );
-      formDataToSend.append("Product_Name", selectedScheme.product || 0);
-      // formDataToSend.append("Scheme_type", selectedScheme.calcBasisOn || 0);
-      // 💰 Loan Details
-      formDataToSend.append("Loan_amount", formData.Loan_amount || 0);
-      formDataToSend.append("Doc_Charges", formData.Doc_Charges || 0);
-      formDataToSend.append("Admin_Charges", formData.Admin_Charges || 0);
-      formDataToSend.append("Net_Payable", formData.Net_Payable || 0);
-      formDataToSend.append("Loan_Tenure", selectedScheme?.loanPeriod || "");
-      formDataToSend.append("Min_Loan", selectedScheme?.minLoanAmount || "");
-      formDataToSend.append("Max_Loan", selectedScheme?.maxLoanAmount || "");
-
-      // 🧮 Effective Interest Rates (JSON)
-      const effectiveInterestRates =
-        selectedScheme?.interestRates?.length > 0
-          ? selectedScheme.interestRates
-          : [
-              { term: "0-30", rate: 12 },
-              { term: "31-90", rate: 14 },
-            ]; // fallback default
-      formDataToSend.append(
-        "Effective_Interest_Rates",
-        JSON.stringify(effectiveInterestRates),
-      );
-
-      // 🏢 Misc Info
-      formDataToSend.append("added_by", loginUser);
-
-      axios.put(
-        `${API}/Transactions/goldloan/updateLoan/${loanId}`,
-        formDataToSend,
-        {
-          headers: { "Content-Type": "multipart/form-data" },
-        },
-      );
-
-      alert("✅ Loan Application Upload Successfully!");
-      navigate("/Loan-Application");
-    } catch (error) {
-      console.error("❌ Error saving loan:", error);
-      alert("Failed to Update loan. Check console for details.");
-    }
-  };
+  
 
   useEffect(() => {
     document.title = "SLF | Edit Gold Loan Application ";
@@ -194,6 +200,7 @@ const EditGoldLoanApplication = () => {
   console.log(results, "results");
   const [loading, setLoading] = useState(false);
   const [selectedCustomer, setSelectedCustomer] = useState(null);
+  console.log(selectedCustomer,"selectedCustomer")
   const [CustomerData, setCustomerData] = useState(null);
   console.log(CustomerData, "CustomerData");
   console.log(selectedCustomer, "selectedCustomer");
@@ -255,9 +262,8 @@ const EditGoldLoanApplication = () => {
       }));
     }
   }, []);
+  const userData = JSON.parse(sessionStorage.getItem("userData"));
   useEffect(() => {
-    const userData = JSON.parse(sessionStorage.getItem("userData"));
-
     if (userData) {
       setFormData((prev) => ({
         ...prev,
@@ -272,6 +278,7 @@ const EditGoldLoanApplication = () => {
   const [selectedCoBorrowerRemark, setSelectedCoBorrowerRemark] =
     useState(null);
   const [showCustomerModal, setShowCustomerModal] = useState(false);
+  const [customerType, setCustomerType] = useState("");
   const [PledgeItem, setPledgeItem] = useState([
     {
       id: 1,
@@ -286,11 +293,13 @@ const EditGoldLoanApplication = () => {
       remark: "",
     },
   ]);
+  const [image2, setImage2] = useState(null);
   const [loanData, setLoanData] = useState([]);
   const [bankDetails, setBankDetails] = useState([]);
   console.log(bankDetails, "bankDetails");
   console.log(CustomerData, "CustomerData");
   console.log(loanData, "loanData");
+  const hasFetched = useRef(false);
   const getActiveEmp = async () => {
     try {
       const res = await axios.get(`${API}/Master/getActiveEmployees`, {
@@ -303,6 +312,15 @@ const EditGoldLoanApplication = () => {
       setActiveEmployees(decrypted);
     } catch (error) {
       console.log(error);
+    }
+  };
+
+  
+  const handleImageChange2 = (e) => {
+    const file = e.target.files[0];
+    if (file) {
+      setImage2(file); // ✅ store actual file
+      setPreview2(URL.createObjectURL(file)); // 👈 only for preview
     }
   };
   useEffect(() => {
@@ -356,11 +374,12 @@ const EditGoldLoanApplication = () => {
     // ---------------------------
     // NET PAYABLE
     // ---------------------------
+     const roundedLoan = Math.ceil(loan / 100) * 100;
     const netPayable = loan + adminCharges + docCharges;
 
     setFormData((prev) => ({
       ...prev,
-      Loan_amount: loan.toFixed(2),
+      Loan_amount: roundedLoan.toFixed(2),
       Admin_Charges: adminCharges.toFixed(2),
       Doc_Charges: docCharges.toFixed(2),
       Net_Payable: netPayable.toFixed(2),
@@ -368,30 +387,37 @@ const EditGoldLoanApplication = () => {
   }, [PledgeItem, selectedScheme]);
 
   useEffect(() => {
-    if (!branchId) return; // 🔒 wait until branchId is set
+  if (!branchId || !userData || hasFetched.current) return;
 
-    const fetchSchemes = async () => {
-      try {
-        const response = await axios.get(
-          `${API}/Scheme/getSchemesAccordingToBranch`,
-          {
-            params: { branchId }, // ✅ pass branchId
+  hasFetched.current = true; // 🚫 prevent future calls
+
+  const fetchSchemes = async () => {
+    try {
+      const response = await axios.get(
+        `${API}/Scheme/getSchemesAccordingToBranch`,
+        {
+          params: {
+            branchId,
+            loginUser: userData.isAdmin ? "admin" : userData.id,
           },
-        );
+        }
+      );
 
-        const fetchedSchemes = response.data.items.map((item) => ({
-          ...item,
-          intCompound: item.calcMethod === "Compound",
-        }));
+      const fetchedSchemes = response.data.items.map((item) => ({
+        ...item,
+        intCompound: item.calcMethod === "Compound",
+      }));
 
-        setSchemes(fetchedSchemes);
-      } catch (err) {
-        console.error("❌ Error fetching schemes:", err);
-      }
-    };
+      console.log("setSchemes", fetchedSchemes);
 
-    fetchSchemes();
-  }, [branchId]); // ✅ dependency added
+      setSchemes(fetchedSchemes);
+    } catch (err) {
+      console.error("❌ Error fetching schemes:", err);
+    }
+  };
+
+  fetchSchemes();
+}, [branchId, userData]);
   console.log(formData, "formData");
 
   useEffect(() => {
@@ -449,6 +475,7 @@ const EditGoldLoanApplication = () => {
   };
 
   const handleSelectCustomer = (customer, type) => {
+    debugger
     if (!customer) return;
 
     // 1️⃣ Close dropdown immediately
@@ -456,7 +483,7 @@ const EditGoldLoanApplication = () => {
     setLoading(false);
 
     // 2️⃣ Show selected customer in input
-    setSearchTerm(`${customer.printName} (Id -${customer.id} )`);
+    setSearchTerm(`${customer.printName}`);
 
     // 3️⃣ Update selected customer
     setSelectedCustomer(customer);
@@ -554,6 +581,8 @@ const EditGoldLoanApplication = () => {
       }));
       setImage(null); // no file yet
       setPreview(data.Signature_Image ? `${data.Signature_Image}` : null);
+      setRemark(data.loan_remark)
+       setPreview2(data.Signature_Image2 ? `${data.Signature_Image2}` : null);
       // ✅ Borrower (FIXED 🔥)
       setSelectedCustomer({
         id: data.BorrowerId,
@@ -563,6 +592,7 @@ const EditGoldLoanApplication = () => {
         Permanent_Address: data.Address,
         Nominee_NomineeName: data.Nominee,
         Nominee_Relation: data.Nominee_Relation,
+        partyType: data.borrower_partyType
       });
 
       setSearchTerm(`${data.Print_Name} (Id - ${data.BorrowerId})`);
@@ -593,83 +623,6 @@ const EditGoldLoanApplication = () => {
       setInitialLoading(false);
     }
   };
-
-  // const fetchLoanData = async () => {
-  //     try {
-  //         setInitialLoading(true);
-
-  //         const res = await axios.get(
-  //             `${API}/Transactions/goldloan/getLoan/${loanId}`
-  //         );
-
-  //         const data = res.data.loanApplication;
-
-  //         console.log("Loan Data", data)
-
-  //         // ✅ FORM DATA
-  //         setFormData((prev) => ({
-  //             ...prev,
-  //             borrowerName: data.Print_Name || "",
-  //             printName: data.Print_Name || "",
-  //             mobile: data.Mobile_Number || "",
-  //             CoBorrowerName: data.coborrower_printName || "",
-  //             CoBorrowerRelation: data.Relation || "",
-  //             Nominee_Name: data.Nominee || "",
-  //             NomineeRelation: data.Nominee_Relation || "",
-  //             Loan_amount: data.Loan_amount || "",
-  //             Doc_Charges: data.Doc_Charges || "",
-  //             Admin_Charges: data.Admin_Charges || "",
-  //             Net_Payable: data.Net_Payable || "",
-  //             payDate: data.Pay_Date || "",
-  //         }));
-
-  //         // ✅ Borrower
-  //         // setSelectedCustomer({
-  //         //     id: data.BorrowerId,
-  //         //     printName: data.Borrower,
-  //         //     mobile: data.Mobile_Number,
-  //         // });
-
-  //         // ✅ CoBorrower FULL DATA
-  //         setSelectedCoBorrower({
-  //             id: data.CoBorrowerId,
-  //             printName: data.Co_Borrower,
-  //             mobile: data.coBorrower_mobile,
-  //             altMobile: data.coBorrower_altMobile,
-  //             Permanent_Address: data.coBorrower_Permanent_Address,
-  //             Nominee_NomineeName: data.coBorrower_Nominee_NomineeName,
-  //             Nominee_Relation: data.coBorrower_Nominee_Relation,
-  //         });
-
-  //         setSearchTerm(data.Borrower);
-
-  //         // ✅ CoBorrower
-  //         setSelectedCoBorrower({
-  //             id: data.CoBorrowerId,
-  //             printName: data.Co_Borrower,
-  //         });
-
-  //         setSearchTermForCoBorrower(data.Co_Borrower);
-
-  //         // ✅ Scheme
-  //         setSelectedScheme(res.data.schemeData);
-
-  //         // ✅ Pledge Items
-  //         // if (data.Pledge_Item_List) {
-  //         //     setPledgeItem(JSON.parse(data.Pledge_Item_List));
-  //         // }
-
-  //         if (data.Pledge_Item_List) {
-  //             setPledgeItem(data.Pledge_Item_List);
-  //         }
-
-  //     } catch (err) {
-  //         console.error("❌ Fetch error:", err);
-  //     } finally {
-  //         setInitialLoading(false);
-  //     }
-  // };
-
   const handleSelectCoborrower = (customer, type) => {
     if (!customer) return;
 
@@ -848,19 +801,105 @@ const EditGoldLoanApplication = () => {
     return words.trim() + " only";
   };
 
-  const OpenCustomerModel = async (id) => {
+ const OpenCustomerModel = async (id, type) => {
     try {
       setShowCustomerModal(true);
+
+      // ✅ store type
+      setCustomerType(type);
 
       const res = await axios.get(`${API}/Transactions/loan-by-customer/${id}`);
 
       if (res.data.success) {
         setLoanData(res.data.loanData);
         setBankDetails(res.data.bankDetails);
-        setCustomerData(res.data.loanData[0]); // customer info is same in all
+        setCustomerData(res.data.loanData[0]);
       }
     } catch (err) {
       console.error(err);
+    }
+  };
+  const handleSaveLoan = async () => {
+    debugger;
+    const errorMsg = validateLoanForm();
+    if (errorMsg) {
+      alert(errorMsg);
+      return;
+    }
+
+    try {
+      const formDataToSend = new FormData();
+      formDataToSend.append("BorrowerId", selectedCustomer?.id || "");
+      formDataToSend.append("CoBorrowerId", selectedCoBorrower?.id || "");
+      formDataToSend.append("Borrower", formData.borrowerName || searchTerm);
+      formDataToSend.append("Scheme", formData.schemeName || "");
+      formDataToSend.append("Pay_Date", formData.payDate || "");
+      formDataToSend.append("Scheme_type", formData.schemeType || "");
+      formDataToSend.append("Scheme_ID", selectedScheme?.id || "");
+      formDataToSend.append("Print_Name", formData.printName || "");
+      formDataToSend.append("Mobile_Number", formData.mobile || "");
+      formDataToSend.append("Alternate_Number", formData.altMobile || "");
+      formDataToSend.append(
+        "Co_Borrower",
+        formData.CoBorrowerName || searchTermForCoBorrower,
+      );
+      formDataToSend.append("remark",remark || "");
+      formDataToSend.append("Relation", formData.CoBorrowerRelation || "");
+      formDataToSend.append("Nominee", formData.Nominee_Name || "");
+      formDataToSend.append("Nominee_Relation", formData.NomineeRelation || "");
+      formDataToSend.append("interestType", formData.interestType || "");
+      formDataToSend.append("branchName", formData.branchName || "");
+      formDataToSend.append("financialYear", formData.financialYear || "");
+      formDataToSend.append("branch_id", Number(formData.branchId));
+      formDataToSend.append("Valuer_1", formData.value1);
+      formDataToSend.append("Valuer_2", formData.value2);
+      if (formData.OrnamentFile) {
+        formDataToSend.append("Ornament_Photo", formData.OrnamentFile);
+      }
+      formDataToSend.append("signature", image);
+      formDataToSend.append("signature2", image2);
+      formDataToSend.append(
+        "Pledge_Item_List",
+        JSON.stringify(PledgeItem || []),
+      );
+      formDataToSend.append("Product_Name", selectedScheme.product || 0);
+      formDataToSend.append("Loan_amount", formData.Loan_amount || 0);
+      formDataToSend.append("Doc_Charges", formData.Doc_Charges || 0);
+      formDataToSend.append("Admin_Charges", formData.Admin_Charges || 0);
+      formDataToSend.append("Net_Payable", formData.Net_Payable || 0);
+      formDataToSend.append("Loan_Tenure", selectedScheme?.loanPeriod || "");
+      formDataToSend.append("Min_Loan", selectedScheme?.minLoanAmount || "");
+      formDataToSend.append("Max_Loan", selectedScheme?.maxLoanAmount || "");
+
+      // 🧮 Effective Interest Rates (JSON)
+      const effectiveInterestRates =
+        selectedScheme?.interestRates?.length > 0
+          ? selectedScheme.interestRates
+          : [
+              { term: "0-30", rate: 12 },
+              { term: "31-90", rate: 14 },
+            ]; // fallback default
+      formDataToSend.append(
+        "Effective_Interest_Rates",
+        JSON.stringify(effectiveInterestRates),
+      );
+
+      // 🏢 Misc Info
+      formDataToSend.append("added_by", loginUser);
+
+      axios.put(
+        `${API}/Transactions/goldloan/updateLoan/${loanId}`,
+        formDataToSend,
+        {
+          headers: { "Content-Type": "multipart/form-data" },
+        },
+      );
+
+      alert("✅ Loan Application Upload Successfully!");
+      navigate("/Loan-Application");
+    } catch (error) {
+      console.error("❌ Error saving loan:", error);
+      alert("Failed to Update loan. Check console for details.");
     }
   };
   const today = new Date();
@@ -913,13 +952,42 @@ const EditGoldLoanApplication = () => {
       netPayable,
     };
   };
+ const sortedLoanData = [...(loanData || [])].sort((a, b) => {
+    const order = {
+      Approve: 1,
+      Approved: 1,
+      Pending: 2,
+      Closed: 3,
+    };
 
+    return (order[a.status] || 99) - (order[b.status] || 99);
+  });
+
+  // ================= STATUS UI =================
+  const getStatusUI = (status) => {
+    if (status === "Approve" || status === "Approved") {
+      return {
+        label: "Active",
+        className: "bg-green-100 text-green-700",
+      };
+    }
+    if (status === "Pending") {
+      return {
+        label: "Pending",
+        className: "bg-yellow-100 text-yellow-700",
+      };
+    }
+    return {
+      label: "Closed",
+      className: "bg-red-100 text-red-600",
+    };
+  };
   return (
     <div className="min-h-screen  ml-[25px]">
       <div className="flex sticky top-[50px] z-40">
         <div className="flex items-center px-6 py-4 border-b w-[1462px] h-[40px] border border-gray-200 justify-between  bg-white">
           <h2 className="text-red-600 text-[20px] font-semibold">
-            Edit Gold Loan Application
+            Edit Loan Application -{loanId}
           </h2>
 
           <div className="flex gap-2">
@@ -940,7 +1008,7 @@ const EditGoldLoanApplication = () => {
       </div>
 
       <div className=" ">
-        <div className="flex p-1  gap-5 bg-[#FFE6E6] w-[1462px]">
+        <div className="flex  gap-5 bg-[#FFE6E6] w-[1462px]">
           <div className="flex gap-5">
             <div className="flex flex-col">
               <div className="flex flex-col">
@@ -1028,7 +1096,9 @@ const EditGoldLoanApplication = () => {
                   <button
                     className="bg-[#0A2478] text-white px-2 rounded-r border border-gray-300 border-l-0 hover:bg-[#081c5b] h-[30px]"
                     type="button"
-                    onClick={() => OpenCustomerModel(selectedCustomer.id)}
+                     onClick={() =>
+                      OpenCustomerModel(selectedCustomer.id, "borrower")
+                    }
                   >
                     <img src={timesvg} alt="eye" />
                   </button>
@@ -1135,7 +1205,9 @@ const EditGoldLoanApplication = () => {
                   <button
                     className="bg-[#0A2478] text-white px-2 rounded-r border border-gray-300 border-l-0 hover:bg-[#081c5b] h-[30px]"
                     type="button"
-                    onClick={() => OpenCustomerModel(selectedCustomer.id)}
+                    onClick={() =>
+                      OpenCustomerModel(selectedCoBorrower.id, "Co-borrower")
+                    }
                   >
                     <img src={timesvg} alt="eye" />
                   </button>
@@ -1148,7 +1220,7 @@ const EditGoldLoanApplication = () => {
                 </label>
                 <select
                   className="border border-gray-300 px-1 py-1 w-[280px] bg-white rounded-[8px] h-[30px] text-xs"
-                  value={selectedScheme?.id || ""}
+                  value={selectedScheme?.id ? Number(selectedScheme.id) : ""}
                   onChange={handleSchemeChange}
                   defaultValue=""
                 >
@@ -1170,45 +1242,45 @@ const EditGoldLoanApplication = () => {
                   <p className="font bold text-[15px]">Borrower Details</p>
                 </div>
                 <div className="border w-[296px] h-[125px] p-2  overflow-auto">
-                  <p className="text-gray-400">
+                  <p className="text-gray-800">
                     {selectedCustomer?.printName}{" "}
                   </p>
-                  <p className="text-gray-400 mt-1">
+                  <p className="text-gray-800 mt-1">
                     {selectedCustomer?.mobile}
                     {selectedCustomer?.altMobile && "/"}
                     {selectedCustomer?.altMobile}
                   </p>
-                  <p className="text-gray-400 mt-1">
+                  <p className="text-gray-800 mt-1">
                     {selectedCustomer?.Permanent_Address}
                   </p>
-                  <p className="text-gray-400 mt-1">
+                  <p className="text-gray-800 mt-1">
                     Nominee Name :{selectedCustomer?.Nominee_NomineeName}
                   </p>
-                  <p className="text-gray-400 mt-1">
+                  <p className="text-gray-800 mt-1">
                     Nominee Relation :{selectedCustomer?.Nominee_Relation}
                   </p>
                 </div>
               </div>
               <div>
                 <div>
-                  <p className="font bold text-[15px]">Borrower Details</p>
+                  <p className="font bold text-[15px]">Co-Borrower Details</p>
                 </div>
                 <div className="border w-[296px] h-[125px] p-2 overflow-auto">
-                  <p className="text-gray-400">
+                  <p className="text-gray-800">
                     {selectedCoBorrower?.printName}{" "}
                   </p>
-                  <p className="text-gray-400 mt-1">
+                  <p className="text-gray-800 mt-1">
                     {selectedCoBorrower?.mobile}
                     {selectedCoBorrower?.altMobile && "/"}
                     {selectedCoBorrower?.altMobile}
                   </p>
-                  <p className="text-gray-400 mt-1">
+                  <p className="text-gray-800 mt-1">
                     {selectedCoBorrower?.Permanent_Address}
                   </p>
-                  <p className="text-gray-400 mt-1">
+                  <p className="text-gray-800 mt-1">
                     Nominee Name :{selectedCoBorrower?.Nominee_NomineeName}
                   </p>
-                  <p className="text-gray-400 mt-1">
+                  <p className="text-gray-800 mt-1">
                     Nominee Relation :{selectedCoBorrower?.Nominee_Relation}
                   </p>
                 </div>
@@ -1329,6 +1401,35 @@ const EditGoldLoanApplication = () => {
                     <span className="text-gray-400 text-xs">No Signature</span>
                   )}
                 </div>
+                 <div className="flex flex-col items-center">
+                  <input
+                    type="file"
+                    ref={fileInputRef3}
+                    onChange={handleImageChange2}
+                    className="hidden"
+                    accept="image/*"
+                  />
+
+                  {!preview2 ? (
+                    <div
+                      onClick={triggerUpload2}
+                      className="mt-2 border w-[100px] h-[20px] rounded-[8px] flex items-center justify-center bg-[#0A2478] text-white cursor-pointer"
+                    >
+                      <span className="text-xs">Upload</span>
+                    </div>
+                  ) : (
+                    <div
+                      onClick={triggerUpload2}
+                      className="mt-2 cursor-pointer"
+                    >
+                      <img
+  src={`${preview2}`}
+  alt="preview"
+  className="w-[100px] h-[20px] object-cover rounded-[8px]"
+/>
+                    </div>
+                  )}
+                </div>
               </div>
             </div>
           </div>
@@ -1337,7 +1438,7 @@ const EditGoldLoanApplication = () => {
         <div className=" gap-10 bg-[#F7F7FF] w-full">
           {selectedScheme?.product === "Gold" && (
             <>
-              <div className="flex gap-2  mt-2 ">
+              <div className="flex gap-2  pt-2 ">
                 <PledgeItemList
                   rows={PledgeItem}
                   setRows={setPledgeItem}
@@ -1348,7 +1449,7 @@ const EditGoldLoanApplication = () => {
           )}
           {selectedScheme?.product === "Silver" && (
             <>
-              <div className="flex gap-2 mt-2 ">
+              <div className="flex gap-2 pt-2 ">
                 <PledgeItemListSilver
                   rows={PledgeItem}
                   setRows={setPledgeItem}
@@ -1358,7 +1459,7 @@ const EditGoldLoanApplication = () => {
             </>
           )}
 
-          <div className="flex gap-2 mt-2 p-1">
+          <div className="flex gap-2  p-1">
             <div>
               <p className="text-[14px] font-medium">
                 Loan Amount <span className="text-red-500">*</span>
@@ -1405,7 +1506,7 @@ const EditGoldLoanApplication = () => {
             </div>
 
             <div>
-              <p className="text-[14px] font-medium">Net Payable</p>
+              <p className="text-[14px] font-medium">Loan + Charges</p>
               <input
                 type="text"
                 value={formData.Net_Payable}
@@ -1460,7 +1561,9 @@ const EditGoldLoanApplication = () => {
             <div className="">
               <div>
                 <label className="text-[14px] font-medium">
-                  Pay Date<span className="text-red-500">*</span>
+                 {selectedScheme?.calcBasisOn?.toLowerCase() === "monthly"
+        ? "EMI Start Date"
+        : "Loan Date"}
                 </label>
               </div>
 
@@ -1474,38 +1577,28 @@ const EditGoldLoanApplication = () => {
                 className="border border-gray-300 px-3 text-xs h-[30px] mt-1 w-[136px] rounded-[8px] bg-white"
               />
             </div>
-            {/* {selectedScheme?.calcBasisOn !== "Daily" && (
-  <div>
-    <div>
-      <label className="text-[14px] font-medium">
-        Pay Date<span className="text-red-500">*</span>
-      </label>
-    </div>
+             <div>
+  <p className="text-[14px] font-medium ">Remark</p>
 
-    <input
-      type="date"
-      name="payDate"
-      value={formData.payDate}
-      onChange={handleInputChange}
-      min={minDate}
-      max={maxDate}
-      className="border border-gray-300 px-3 text-xs h-[30px] mt-1 w-[136px] rounded-[8px] bg-white"
-    />
-  </div>
-)} */}
+  <textarea
+    value={remark}
+    onChange={(e) => setRemark(e.target.value)}
+    className="border border-gray-300 w-[400px] h-[40px] text-sm bg-white"
+    placeholder="Enter remark..."
+  />
+</div>
           </div>
-
-          <div className="flex gap-10 mb-2">
-            <p className=" text-xs">
+          <div className="flex gap-10 ">
+            <p className=" text-[12px] px-2">
               {numberToWords(Number(formData.Loan_amount) || 0)}
             </p>
           </div>
         </div>
-        <div className="flex mb-10  w-[1462px] bg-[#FFE6E6]">
-          <div className="flex gap-18 p-2">
+        <div className="flex   w-[1462px] bg-[#FFE6E6]">
+          <div className="flex gap-18 ">
             <div className="flex ">
               <div className="">
-                <h3 className="font-semibold  text-blue-900 text-lg">
+                <h3 className="font-semibold  text-blue-900 text-[15px]">
                   Scheme Details
                 </h3>
 
@@ -1541,7 +1634,7 @@ const EditGoldLoanApplication = () => {
             </div>
             <div className="flex justify-center">
               <div className="">
-                <h3 className="font-semibold  text-blue-900 text-lg">
+                <h3 className="font-semibold  text-blue-900 text-[15px]">
                   Effective Interest Rates
                 </h3>
 
@@ -1592,7 +1685,7 @@ const EditGoldLoanApplication = () => {
           </div>
         </div>
 
-        {showCustomerModal && selectedCustomer && (
+       {showCustomerModal && selectedCustomer && (
           <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-[999]">
             <div className="bg-white rounded-lg p-6 shadow-2xl relative w-[1080px] max-h-[96vh] overflow-auto">
               {/* header */}
@@ -1603,55 +1696,141 @@ const EditGoldLoanApplication = () => {
 
                 <button
                   onClick={() => Handleclosed()}
-                  className="text-red-600 font-bold text-[20px] hover:opacity-70"
+                  className="text-red-600 font-bold text-[40px] hover:opacity-70"
                 >
                   ×
                 </button>
               </div>
 
-              {/* top profile images */}
-              <div className="flex gap-16">
-                {/* profile + signature */}
-                <div className="flex flex-col items-center">
-                  <img
-                    src={selectedCustomer.profileImage}
-                    alt="Customer"
-                    className="w-[112px] h-[112px] border rounded-md object-cover shadow-sm"
-                  />
-                  <img
-                    src={selectedCustomer.signature}
-                    alt="Signature"
-                    className="w-[111px] h-[33px] border rounded-md mt-4 object-contain shadow-sm bg-white"
-                  />
-                </div>
+              {customerType === "borrower" && (
+                <>
+                  <div className="flex gap-16">
+                    <div className="flex flex-col items-center">
+                      <img
+                        src={formData.Borrower_ProfileImg}
+                        alt="Customer"
+                        className="w-[112px] h-[112px] border rounded-md object-cover shadow-sm"
+                      />
+                      <img
+                        src={formData.Borrower_signature}
+                        alt="Signature"
+                        className="w-[111px] h-[33px] border rounded-md mt-4 object-contain shadow-sm bg-white"
+                      />
+                    </div>
 
-                {/* 2 proof images */}
-                <div className="flex flex-col items-center">
-                  {selectedCustomer?.Additional_UploadDocumentFile1 ? (
-                    <img
-                      src={selectedCustomer.Additional_UploadDocumentFile1}
-                      alt="Address Proof"
-                      className="w-[112px] h-[112px] border rounded-md object-cover shadow-sm "
-                    />
-                  ) : (
-                    <p className="text-red-600 text-sm font-semibold">
-                      Address Proof not uploaded..
-                    </p>
-                  )}
+                    <div className="flex flex-col items-center">
+                      {CustomerData?.Additional_UploadDocumentFile1 ? (
+                        <img
+                          src={CustomerData?.Additional_UploadDocumentFile1}
+                          alt="Address Proof"
+                          className="w-[112px] h-[112px] border rounded-md object-cover shadow-sm "
+                        />
+                      ) : (
+                        <p className="text-red-600 text-sm font-semibold">
+                          Address Proof not uploaded..
+                        </p>
+                      )}
 
-                  {selectedCustomer?.Additional_UploadDocumentFile2 ? (
-                    <img
-                      src={selectedCustomer.Additional_UploadDocumentFile2}
-                      alt="ID Proof"
-                      className="w-[111px] h-[33px] border rounded-md mt-4 object-contain shadow-sm bg-white"
-                    />
-                  ) : (
-                    <p className="text-red-600 text-sm font-semibold mt-4">
-                      ID Proof not uploaded..
-                    </p>
-                  )}
-                </div>
-              </div>
+                      {CustomerData?.Additional_UploadDocumentFile2 ? (
+                        <img
+                          src={CustomerData?.Additional_UploadDocumentFile2}
+                          alt="ID Proof"
+                          className="w-[111px] h-[33px] border rounded-md mt-4 object-contain shadow-sm bg-white"
+                        />
+                      ) : (
+                        <p className="text-red-600 text-sm font-semibold mt-4">
+                          ID Proof not uploaded..
+                        </p>
+                      )}
+                    </div>
+
+                    <div className="border w-[296px] h-[160px] p-2  overflow-auto">
+                      <p className="">{selectedCustomer?.printName} </p>
+                      <p className=" mt-1">
+                        {selectedCustomer?.mobile}
+                        {selectedCustomer?.altMobile && "/"}
+                        {selectedCustomer?.altMobile}
+                      </p>
+                      <p className=" mt-1">
+                        {selectedCustomer?.Permanent_Address}
+                      </p>
+                      <p className=" mt-1">
+                        {selectedCustomer?.Nominee_NomineeName}
+                      </p>
+                      <p className=" mt-1">
+                        {selectedCustomer?.Nominee_Relation}
+                      </p>
+                    </div>
+                  </div>
+                </>
+              )}
+
+              {customerType === "Co-borrower" && (
+                <>
+                  <div className="flex gap-16">
+                    <div className="flex flex-col items-center">
+                      <img
+                        src={formData.CoBorrower_ProfileImg}
+                        alt="Customer"
+                        className="w-[112px] h-[112px] border rounded-md object-cover shadow-sm"
+                      />
+                      <img
+                        src={formData.CoBorrower_signature}
+                        alt="Signature"
+                        className="w-[111px] h-[33px] border rounded-md mt-4 object-contain shadow-sm bg-white"
+                      />
+                    </div>
+
+                    <div className="flex flex-col items-center">
+                      {CustomerData?.Additional_UploadDocumentFile1 ? (
+                        <img
+                          src={
+                            CustomerData.Additional_UploadDocumentFile1
+                          }
+                          alt="Address Proof"
+                          className="w-[112px] h-[112px] border rounded-md object-cover shadow-sm "
+                        />
+                      ) : (
+                        <p className="text-red-600 text-sm font-semibold">
+                          Address Proof not uploaded..
+                        </p>
+                      )}
+
+                      {CustomerData?.Additional_UploadDocumentFile2 ? (
+                        <img
+                          src={
+                            CustomerData.Additional_UploadDocumentFile2
+                          }
+                          alt="ID Proof"
+                          className="w-[111px] h-[33px] border rounded-md mt-4 object-contain shadow-sm bg-white"
+                        />
+                      ) : (
+                        <p className="text-red-600 text-sm font-semibold mt-4">
+                          ID Proof not uploaded..
+                        </p>
+                      )}
+                    </div>
+
+                    <div className="border w-[296px] h-[160px] p-2  overflow-auto">
+                      <p className="">{selectedCoBorrower?.printName} </p>
+                      <p className=" mt-1">
+                        {selectedCoBorrower?.mobile}
+                        {selectedCoBorrower?.altMobile && "/"}
+                        {selectedCoBorrower?.altMobile}
+                      </p>
+                      <p className=" mt-1">
+                        {selectedCoBorrower?.Permanent_Address}
+                      </p>
+                      <p className=" mt-1">
+                        {selectedCoBorrower?.Nominee_NomineeName}
+                      </p>
+                      <p className=" mt-1">
+                        {selectedCoBorrower?.Nominee_Relation}
+                      </p>
+                    </div>
+                  </div>
+                </>
+              )}
 
               {/* bank table */}
               <div className="mt-6 border rounded-md shadow-sm overflow-x-auto overflow-y-auto h-auto">
@@ -1691,7 +1870,7 @@ const EditGoldLoanApplication = () => {
                           <td className="px-4 py-2">
                             {b.cancelCheque ? (
                               <img
-                                src={`${API}/uploadDoc/bank_documents/${b.cancelCheque}`}
+                                src={`https://slunawat.co.in/uploadCheque/customer_BankData/${b.cancelCheque}`}
                                 alt="Cancel Cheque"
                                 className="w-[80px] h-[35px] object-cover border rounded"
                               />
@@ -1716,80 +1895,118 @@ const EditGoldLoanApplication = () => {
               </div>
 
               {/* loan table */}
-              <div className="mt-6 border rounded-md shadow-sm overflow-x-auto overflow-y-auto h-auto">
+              <div className="mt-6 border rounded-xl shadow-sm overflow-auto max-h-[500px]">
                 <table className="w-full border-collapse">
-                  <thead className="bg-[#0A2478] text-white text-sm">
+                  {/* ================= HEADER ================= */}
+                  <thead className="bg-[#0A2478] text-white text-sm sticky top-0 z-10">
                     <tr>
-                      <th className="px-4 py-2 text-left text-[13px] border-r">
-                        Loan No
-                      </th>
-                      <th className="px-4 py-2 text-left text-[13px] border-r">
-                        Loan Date
-                      </th>
-                      <th className="px-4 py-2 text-left text-[13px] border-r">
-                        Loan Amount
-                      </th>
-                      <th className="px-4 py-2 text-left text-[13px] border-r">
-                        Scheme
-                      </th>
-                      <th className="px-4 py-2 text-left text-[13px] border-r">
-                        Int. Due Date
-                      </th>
-                      <th className="px-4 py-2 text-left text-[13px] border-r">
-                        Pending Interest
-                      </th>
-                      <th className="px-4 py-2 text-left text-[13px] border-r">
-                        Total Due
-                      </th>
-                      <th className="px-4 py-2 text-left text-[13px] border-r">
-                        Status
-                      </th>
-                      <th className="px-4 py-2 text-left text-[13px]">
-                        Ornaments Image
-                      </th>
+                      {[
+                        "Loan No",
+                        "Loan Date",
+                        "Loan Amount",
+                        "Scheme",
+                        "Int. Due Date",
+                        "Pending Interest",
+                        "Total Due",
+                        "Status",
+                        "Ornaments",
+                      ].map((head, i) => (
+                        <th
+                          key={i}
+                          className="px-4 py-2 text-left text-[13px] border-r last:border-r-0"
+                        >
+                          {head}
+                        </th>
+                      ))}
                     </tr>
                   </thead>
 
-                  <tbody className="text-[12px]">
-                    {loanData?.map((l, i) => (
-                      <tr key={i} className="border-b">
-                        <td className="px-4 py-2">{l.id}</td>
-                        <td className="px-4 py-2">
-                          {new Date(l.created_at).toLocaleDateString()}
-                        </td>
-                        <td className="px-4 py-2">
-                          ₹{Number(l.Loan_amount).toLocaleString()}
-                        </td>
-                        <td className="px-4 py-2">{l.Scheme}</td>
-                        <td className="px-4 py-2">{l.InterestPaidUpto}</td>
-                        <td className="px-4 py-2">
-                          ₹{l.InterestDueAmount || 0}
-                        </td>
-                        <td className="px-4 py-2">
-                          ₹{Number(l.LoanPendingAmount || 0).toLocaleString()}
-                        </td>
+                  {/* ================= BODY ================= */}
+                  <tbody className="text-[12px] bg-white">
+                    {sortedLoanData.length > 0 ? (
+                      sortedLoanData.map((l, i) => {
+                        const status = getStatusUI(l.status);
+
+                        return (
+                          <tr
+                            key={i}
+                            className="border-b hover:bg-gray-50 transition"
+                          >
+                            <td className="px-4 py-2">{l.id}</td>
+
+                            <td className="px-4 py-2">
+                              {new Date(l.created_at).toLocaleDateString(
+                                "en-IN",
+                              )}
+                            </td>
+
+                            <td className="px-4 py-2 font-medium">
+                              ₹
+                              {Number(l.Loan_amount || 0).toLocaleString(
+                                "en-IN",
+                              )}
+                            </td>
+
+                            <td className="px-4 py-2">{l.Scheme}</td>
+
+                            <td className="px-4 py-2">
+                              {l.InterestPaidUpto || "-"}
+                            </td>
+
+                            <td className="px-4 py-2">
+                              ₹
+                              {Number(l.InterestDueAmount || 0).toLocaleString(
+                                "en-IN",
+                              )}
+                            </td>
+
+                            <td className="px-4 py-2 font-semibold">
+                              ₹
+                              {Number(l.LoanPendingAmount || 0).toLocaleString(
+                                "en-IN",
+                              )}
+                            </td>
+
+                            {/* ================= STATUS ================= */}
+                            <td className="px-4 py-2">
+                              <span
+                                className={`px-2 py-1 rounded-full text-[11px] font-semibold ${status.className}`}
+                              >
+                                {status.label}
+                              </span>
+                            </td>
+
+                            {/* ================= IMAGE ================= */}
+                            <td className="px-4 py-2">
+                              {l.Ornament_Photo ? (
+                                <img
+                                  src={`${API}/uploads/ornaments/${l.Ornament_Photo}`}
+                                  alt="Ornament"
+                                  className="w-[70px] h-[45px] object-cover rounded border"
+                                  onError={(e) => {
+                                    e.target.src =
+                                      "https://via.placeholder.com/70x45?text=No+Image";
+                                  }}
+                                />
+                              ) : (
+                                <span className="text-gray-400 text-xs">
+                                  N/A
+                                </span>
+                              )}
+                            </td>
+                          </tr>
+                        );
+                      })
+                    ) : (
+                      <tr>
                         <td
-                          className={`px-4 py-2 font-semibold ${
-                            l.status === "Closed"
-                              ? "text-red-600"
-                              : "text-green-600"
-                          }`}
+                          colSpan="9"
+                          className="text-center py-6 text-gray-400"
                         >
-                          {l.status}
-                        </td>
-                        <td className="px-4 py-2">
-                          {l.Ornament_Photo ? (
-                            <img
-                              src={`https://slfuatbackend.1on1screen.com/uploads/ornaments/${l.Ornament_Photo}`}
-                              alt="Ornament"
-                              className="w-[80px] h-[45px] object-cover border rounded"
-                            />
-                          ) : (
-                            <span className="text-gray-400">N/A</span>
-                          )}
+                          No Loan Data Found
                         </td>
                       </tr>
-                    ))}
+                    )}
                   </tbody>
                 </table>
               </div>

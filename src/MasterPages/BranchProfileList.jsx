@@ -242,7 +242,7 @@ const BranchProfileList = () => {
       ...(isEditMode ? { modified_by: loginUser } : { added_by: loginUser }),
     };
 
-    setIsLoading(true);
+    // setIsLoading(true);
 
     try {
       const encrypted = encryptData(payload);

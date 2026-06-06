@@ -49,20 +49,20 @@ const Navbar = () => {
   console.log(selectedYear, "selectedYear");
   const [tempBranch, setTempBranch] = useState("");
   const [tempYear, setTempYear] = useState("");
-
+console.log(tempBranch, "tempBranch");
   const [selectedBranch, setSelectedBranch] = useState("");
   const [tempLogin, setTempLogin] = useState(null);
   useEffect(() => {
     const userData = JSON.parse(sessionStorage.getItem("userData"));
-    const userPermissions = userData.permissions || {};
+    const userPermissions = userData?.permissions || {};
     setPermissions(userPermissions);
     if (userData) {
-      console.log("Branch ID:", userData.branchId);
-      console.log("Branch Name:", userData.branchName);
+      console.log("Branch ID:", userData?.branchId);
+      console.log("Branch Name:", userData?.branchName);
       setTempLogin(userData);
-      setSelectedYear(userData.financialYear);
-      setSelectedBranch(userData.branchName); // ✅ FIX
-      setTempBranch(userData.branchId); // ✅ FIX
+      setSelectedYear(userData?.financialYear);
+      setSelectedBranch(userData?.branchName); // ✅ FIX
+      setTempBranch(userData?.branchId.id); // ✅ FIX
     }
   }, []);
 
@@ -88,7 +88,7 @@ const Navbar = () => {
         branch_code: selectedBranchObj.branch_code,
         branch_name: selectedBranchObj.branch_name,
       },
-      financialYear: tempYear,
+      // financialYear: tempYear,
     };
 
     // 🔹 Save back to sessionStorage
@@ -194,43 +194,6 @@ const Navbar = () => {
     sessionStorage.clear(); // remove all saved data
     window.location.href = "/login"; // redirect to login
   };
-  // useEffect(() => {
-  //   const SESSION_LIMIT = 10 * 60 * 1000; // 2 minutes
-
-  //   const handleLogout = () => {
-  //     localStorage.clear();
-  //     sessionStorage.clear();
-  //     window.location.href = "/login";
-  //   };
-
-  //   const checkSession = () => {
-  //     const raw = sessionStorage.getItem("userData"); // ✅ FIXED
-
-  //     if (!raw) return;
-
-  //     let userData;
-  //     try {
-  //       userData = JSON.parse(raw);
-  //     } catch {
-  //       return;
-  //     }
-
-  //     if (!userData.loginTime) return;
-
-  //     const loginTime = new Date(userData.loginTime).getTime();
-  //     if (isNaN(loginTime)) return;
-
-  //     const currentTime = Date.now();
-
-  //     if (currentTime - loginTime >= SESSION_LIMIT) {
-  //       handleLogout();
-  //     }
-  //   };
-
-  //   const interval = setInterval(checkSession, 1000);
-
-  //   return () => clearInterval(interval);
-  // }, []); // ✅ VERY IMPORTANT
   
   useEffect(() => {
     const SESSION_LIMIT = 10 * 60 * 1000; // 10 minutes
@@ -293,83 +256,6 @@ const Navbar = () => {
     ? true
     : Object.values(TrasactionPermissions).some((p) => p.view === true);
 
-  const masterProfileItems = [
-    "Account Group",
-    "Account Code",
-    "Branch Details",
-    "Item Profile",
-    "Product Purity Profile",
-    "Document Proof",
-    "Push Gold Rate",
-    "Charges Profile",
-    "Area",
-    "Party Type",
-  ];
-  // const masterProfileList = [
-  //   { name: "Group Ledger", path: "/account-groups" },
-  //   { name: "Ledger ", path: "/account-code-list" },
-  //   { name: "Branch Details", path: "/Branch-Profile-List" },
-  //   { name: "Item Profile", path: "/Item-Profile-List" },
-  //   { name: "Product Purity", path: "/Product-Purity" },
-  //   { name: "Document Proof", path: "/Document-Proof-List" },
-  //   { name: "Push Rate", path: "/Push-Rate-List" },
-  //   { name: "Charges Profile", path: "/Charges-Profile-List" },
-  //   { name: "Area", path: "/Area" },
-  //   { name: "Party Type", path: "/Party-Type" },
-  // ];
-
-  //   const masterProfileList = [
-  //   {
-  //     name: "Group Ledger",
-  //     path: "/account-groups",
-  //     show: permissions?.Master?.find(p => p.name === "Group Ledger")?.view === true
-  //   },
-  //   {
-  //     name: "Ledger",
-  //     path: "/account-code-list",
-  //     show: permissions?.Master?.find(p => p.name === "Ledger")?.view === true
-  //   },
-  //   {
-  //     name: "Branch Details",
-  //     path: "/Branch-Profile-List",
-  //     show: permissions?.Master?.find(p => p.name === "Branch Details")?.view === true
-  //   },
-  //   {
-  //     name: "Item Profile",
-  //     path: "/Item-Profile-List",
-  //     show: permissions?.Master?.find(p => p.name === "Item Profile")?.view === true
-  //   },
-  //   {
-  //     name: "Product Purity",
-  //     path: "/Product-Purity",
-  //     show: permissions?.Master?.find(p => p.name === "Product Purity")?.view === true
-  //   },
-  //   {
-  //     name: "Document Proof",
-  //     path: "/Document-Proof-List",
-  //     show: permissions?.Master?.find(p => p.name === "Document Proof")?.view === true
-  //   },
-  //   {
-  //     name: "Push Rate",
-  //     path: "/Push-Rate-List",
-  //     show: permissions?.Master?.find(p => p.name === "Push Rate")?.view === true
-  //   },
-  //   {
-  //     name: "Charges Profile",
-  //     path: "/Charges-Profile-List",
-  //     show: permissions?.Master?.find(p => p.name === "Charges Profile")?.view === true
-  //   },
-  //   {
-  //     name: "Area",
-  //     path: "/Area",
-  //     show: permissions?.Master?.find(p => p.name === "Area")?.view === true
-  //   },
-  //   {
-  //     name: "Party Type",
-  //     path: "/Party-Type",
-  //     show: permissions?.Master?.find(p => p.name === "Party Type")?.view === true
-  //   },
-  // ];
   const hasNavbarAccess = (name) => {
     return (
       permissions?.Master?.find((item) => item.name === name)?.Navbar === true
@@ -440,6 +326,11 @@ const Navbar = () => {
       path: "/Party-Type",
       show: hasNavbarAccess("Party Type"),
     },
+     {
+      name: "Scheme Details",
+      path: "/Scheme-Details-List",
+      show: hasNavbarAccess("Scheme Details"),
+    },
   ];
 
   const masterMiscellaneousList = [
@@ -462,6 +353,7 @@ const Navbar = () => {
     { name: "NPA Report", path: "/npa-report" },
     { name: "Loan Details", path: "/loan-details" },
     { name: "Legal Notice Report", path: "/legal-notice-report" },
+   
   ];
 
   const filteredMasterProfile = isAdmin
@@ -476,16 +368,12 @@ const Navbar = () => {
     ? masterMiscellaneousList
     : masterMiscellaneousList.filter((item) => item.show);
   const schemeMasterItems = [
-    {
-      name: "Scheme Details",
-      path: "/Scheme-Details-List",
-      show: hasNavbarAccess("Scheme Details"),
-    },
-    {
-      name: "Scheme Branch Mapping",
-      path: "/Branch-Scheme-Mapping-List",
-      show: hasNavbarAccess("Scheme Branch Mapping"),
-    },
+    
+    // {
+    //   name: "Scheme Branch Mapping",
+    //   path: "/Branch-Scheme-Mapping-List",
+    //   show: hasNavbarAccess("Scheme Branch Mapping"),
+    // },
   ];
   const cashBankFinancialReport = [
     { name: "Bank Book Report", path: "/Bank-Book-Report" },
@@ -525,7 +413,7 @@ const Navbar = () => {
       show: hasNavbarAccess("Employee Profile"),
     },
     {
-      name: "Employee Member Details",
+      name: "Employee Details",
       path: "/Member-Details",
       show: hasNavbarAccess("Member Details"),
     },
@@ -694,7 +582,7 @@ const Navbar = () => {
                   </div>
 
                   <div className="relative">
-                    <button
+                    {/* <button
                       className="w-full text-left px-4 py-2 hover:bg-gray-100 flex justify-between items-center"
                       onClick={() => toggleMasterSubMenu("scheme")}
                     >
@@ -704,7 +592,7 @@ const Navbar = () => {
                       ) : (
                         <FiChevronRight />
                       )}
-                    </button>
+                    </button> */}
 
                     {openMasterSubMenu === "scheme" && (
                       <div className="absolute top-0 left-full ml-1 w-[200px] bg-white text-black rounded shadow-lg flex flex-col text-sm">
@@ -1071,7 +959,7 @@ const Navbar = () => {
 
             {/* ================== OTHER BUTTONS ================== */}
 
-            <div className="relative">
+            {/* <div className="relative">
               <button
                 className="hover:underline text-[20px] flex items-center gap-1"
                 onClick={() => toggleMenu("misc")}
@@ -1081,20 +969,9 @@ const Navbar = () => {
               </button>
 
               {openMenu === "misc" && (
-                <div className="absolute top-full left-0 mt-2 w-[200px] bg-white text-black rounded shadow-lg z-50">
-                  {filteredMiscellaneousrasaction.map((item) => (
-                    <Link
-                      key={item.path}
-                      to={item.path}
-                      className="block px-4 py-2 text-sm hover:bg-gray-100"
-                      onClick={() => setOpenMenu(null)}
-                    >
-                      {item.name}
-                    </Link>
-                  ))}
-                </div>
+               
               )}
-            </div>
+            </div> */}
 
             {/* ================== REPORTS ================== */}
             <div className="relative">
@@ -1254,36 +1131,7 @@ const Navbar = () => {
 
               {openMenu === "tools" && (
                 <div className="absolute top-full left-0 mt-2 bg-white text-black rounded shadow-lg w-[220px] z-50">
-                  {/* SETTINGS */}
-                  <div className="relative">
-                    <button
-                      className="w-full text-left px-4 py-2 hover:bg-gray-100 flex justify-between items-center"
-                      onClick={() => toggleSubMenu("settings")}
-                    >
-                      <span>Settings</span>
-                      {openSubMenu === "settings" ? (
-                        <FiChevronDown />
-                      ) : (
-                        <FiChevronRight />
-                      )}
-                    </button>
-
-                    {openSubMenu === "settings" && (
-                      <div className="absolute top-0 left-full ml-1 w-[200px] bg-white text-black rounded shadow-lg flex flex-col z-50">
-                        <Link
-                          to="/Gress-Period"
-                          className="px-4 py-2 hover:bg-gray-100 text-sm"
-                          onClick={() => {
-                            setOpenMenu(null);
-                            setOpenSubMenu(null);
-                          }}
-                        >
-                          Grace Period
-                        </Link>
-                      </div>
-                    )}
-                  </div>
-
+                  
                   {/* SYSTEM TOOLS */}
                   <div className="relative">
                     <button
@@ -1306,7 +1154,7 @@ const Navbar = () => {
                             name: "WhatsApp Config",
                             path: "/WhatsApp-Configuration",
                           },
-                          { name: "Backup utility", path: "/DBBackup" },
+                         
                         ].map((item) => (
                           <Link
                             key={item.path}
@@ -1322,10 +1170,25 @@ const Navbar = () => {
                         ))}
                       </div>
                     )}
+
+                    <div className="absolute top-full left-0   w-[220px] bg-white text-black z-50">
+                  {filteredMiscellaneousrasaction.map((item) => (
+                    <Link
+                      key={item.path}
+                      to={item.path}
+                      className="block px-4 py-2 text-sm hover:bg-gray-100"
+                      onClick={() => setOpenMenu(null)}
+                    >
+                      {item.name}
+                    </Link>
+                  ))}
+                </div>
                   </div>
 
+                   
+
                   {/* BANK DETAILS */}
-                  <Link
+                  {/* <Link
                     to="/Bank_Details"
                     className="px-4 py-2 hover:bg-gray-100 text-sm block"
                     onClick={() => {
@@ -1334,7 +1197,7 @@ const Navbar = () => {
                     }}
                   >
                     Bank Details
-                  </Link>
+                  </Link> */}
                 </div>
               )}
             </div>
@@ -1344,9 +1207,9 @@ const Navbar = () => {
           <div className="flex gap-3">
             <button
               onClick={() => setIsBranchModelOpen(true)}
-              className="w-[150px] h-[40px] flex items-center gap-2 justify-center bg-white rounded-[4.8px] text-[#0b2c69] font-medium border border-gray-300"
+              className="w-[250px] h-[40px] flex items-center gap-2 justify-center bg-white rounded-[4.8px] text-[#0b2c69] font-medium border border-gray-300"
             >
-              {selectedBranch}
+               {userData?.name} - {selectedBranch || userData?.branchName}
               <TfiReload className="text-lg size-5" />
             </button>
             <button
@@ -1388,6 +1251,7 @@ const Navbar = () => {
             {isSidebarOpen ? <FiX /> : <FiMenu />}
           </button>
         </div>
+        
       </div>
 
       {/* Mobile Sidebar */}
@@ -1956,6 +1820,7 @@ const Navbar = () => {
                   <TfiReload className="text-lg size-4" />
                 </button>
               </div>
+              
 
               {/* Mobile Logout */}
               <button

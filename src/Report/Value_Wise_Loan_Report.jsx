@@ -15,7 +15,7 @@ const Value_Wise_Loan_Report = () => {
   const [valuers, setValuers] = useState([]);
   console.log(valuers, "valuers");
   const [selectedValuer, setSelectedValuer] = useState("");
-
+console.log(selectedValuer,"selectedValuer")
   const fetchBranches = async () => {
     try {
       const res = await axios.get(`${API}/Master/Master_Profile/Branchess`);
@@ -57,7 +57,7 @@ const Value_Wise_Loan_Report = () => {
   const [reportData, setReportData] = useState([]);
 
   const handleView = async () => {
-    debugger;
+   
     try {
       const payload = {
         fromDate,
@@ -84,8 +84,8 @@ console.log(payload, "payload");
       {/* 2. Main Content Container */}
       <div className="m-2 ">
 
-        <div className="flex justify-center my-5 px-4">
-          <div className="flex items-center justify-between px-6 py-2 w-full max-w-[1290px] min-h-[70px] rounded-[11px] border border-gray-200 shadow-sm bg-white gap-4">
+        <div className="flex justify-center">
+          <div className="flex items-center justify-between px-6 w-[1462px] min-h-[40px]  border border-gray-200 shadow-sm bg-white gap-4">
 
             {/* 🔴 Left — Title */}
             <div className="flex-shrink-0">
@@ -175,7 +175,7 @@ console.log(payload, "payload");
         </div>
       
         {/* 3. Result Table Section */}
-        <div className="bg-white overflow-x-auto mx-28">
+        <div className="bg-white overflow-x-auto w-[1462px] ml-[12px]">
           <table className="w-full border-collapse text-[10px]">
             <thead className="bg-[#0A2478] text-gray-100 font-bold border-b border-gray-300">
               <tr>
@@ -287,8 +287,8 @@ console.log(payload, "payload");
         </td>
 
         <td className="border border-gray-300 p-1">
-          {row.approval_date}
-        </td>
+  {new Date(row.approval_date).toLocaleDateString("en-IN")}
+</td>
 
         <td className="border border-gray-300 p-1">
           {row.Pay_Date || "-"}

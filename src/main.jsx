@@ -8,10 +8,11 @@ createRoot(document.getElementById("root")).render(
   // <AuthProvider>
   //   <App />
   //  </AuthProvider>
-
+  
 <PermissionProvider>
   <AuthProvider>
     <App />
   </AuthProvider>
 </PermissionProvider>
+
 );

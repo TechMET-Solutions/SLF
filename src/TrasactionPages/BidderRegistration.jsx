@@ -4,10 +4,11 @@ import { MdDelete, MdOutlineFileUpload } from "react-icons/md";
 import { useNavigate } from "react-router-dom";
 import { registerBidderApi } from "../API/Transaction/Auction/BidderApi";
 import profileempty from "../assets/profileempty.png";
+import Loader from "../Component/Loader";
 
 const BidderRegistration = () => {
   const navigate = useNavigate();
-
+const [loading, setLoading] = useState(false);
   const [formData, setFormData] = useState({
     bidder_name: "",
     mobile_no: "",
@@ -33,29 +34,9 @@ const BidderRegistration = () => {
   const panRef = useRef(null);
   const photoRef = useRef(null);
 
-  // File States
   const [aadharFile, setAadharFile] = useState(null);
   const [panFile, setPanFile] = useState(null);
   const [bidderPhoto, setBidderPhoto] = useState(null);
-
-  // const handleChange = (e) => {
-
-  //   if (name === "Alternate_Mobile" || name === "mobile_no") {
-  //     const numericValue = value.replace(/\D/g, "");
-
-  //     if (numericValue.length > 10) {
-  //       alert("Mobile number must be 10 digits only.");
-  //       return;
-  //     }
-
-  //     updatedValue = numericValue;
-  //   }
-
-  //   setFormData({
-  //     ...formData,
-  //     [e.target.name]: e.target.value,
-  //   });
-  // };
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -97,9 +78,11 @@ const BidderRegistration = () => {
 
   // Submit Form
   const handleSubmit = async () => {
+    
     try {
       if (!formData.bidder_name || !formData.mobile_no || !formData.gst_no) {
         alert("Please fill all required fields!");
+        setLoading(false);
         return;
       }
 
@@ -107,24 +90,34 @@ const BidderRegistration = () => {
       const mobileRegex = /^[0-9]{10}$/;
       if (!mobileRegex.test(formData.mobile_no)) {
         alert("Mobile Number must be a valid 10-digit number.");
+        setLoading(false);
         return;
       }
-      if (!mobileRegex.test(formData.alt_mob_no)) {
-        alert("Alt Mobile Number must be a valid 10-digit number.");
-        return;
-      }
-      if (formData.alt_mob_no && formData.mobile_no === formData.alt_mob_no) {
-        alert("Alternate Mobile Number cannot be same as Mobile Number.");
-        return;
-      }
-
+      if (
+  formData.alt_mob_no?.trim() &&
+  !mobileRegex.test(formData.alt_mob_no)
+) {
+  alert("Alt Mobile Number must be a valid 10-digit number.");
+  setLoading(false);
+  return;
+}
+      if (
+  formData.alt_mob_no?.trim() !== "" &&
+  formData.mobile_no === formData.alt_mob_no
+) {
+  alert("Alternate Mobile Number cannot be same as Mobile Number.");
+  setLoading(false);
+  return;
+}
       const aadharRegex = /^[0-9]{12}$/;
       if (!aadharRegex.test(formData.aadhar_no)) {
         alert("Aadhaar Number must be a valid 12-digit number.");
+        setLoading(false);
         return;
       }
   if (!formData.bank_name || formData.bank_name.trim().length < 3) {
-      alert("Bank Name must be at least 3 characters.");
+    alert("Bank Name must be at least 3 characters.");
+    setLoading(false);
       return;
     }
 
@@ -132,6 +125,7 @@ const BidderRegistration = () => {
     const accountRegex = /^[0-9]{9,18}$/;
     if (!accountRegex.test(formData.account_no)) {
       alert("Account Number must be 9 to 18 digits.");
+      setLoading(false);
       return;
     }
 
@@ -139,6 +133,7 @@ const BidderRegistration = () => {
     const ifscRegex = /^[A-Z]{4}0[A-Z0-9]{6}$/;
     if (!ifscRegex.test(formData.ifsc_code.toUpperCase())) {
       alert("Invalid IFSC Code format (e.g., SBIN0001234).");
+      setLoading(false);
       return;
     }
 
@@ -146,15 +141,17 @@ const BidderRegistration = () => {
     const nameRegex = /^[A-Za-z\s]+$/;
     if (!nameRegex.test(formData.account_holder_name)) {
       alert("Account Holder Name must contain only letters.");
+      setLoading(false);
       return;
     }
 
     // Bank Address
     if (!formData.bank_address || formData.bank_address.trim().length < 5) {
       alert("Bank Address is required.");
+      setLoading(false);
       return;
     }
-
+     setLoading(true);
       const data = new FormData();
       Object.entries(formData).forEach(([key, value]) =>
         data.append(key, value),
@@ -168,11 +165,14 @@ const BidderRegistration = () => {
 
       if (res?.message) {
         alert("✅ Bidder Registered Successfully!");
+        setLoading(false);
         navigate("/Bidder-Registration-List");
       }
     } catch (err) {
       console.error("❌ Registration Error:", err);
+      
       alert("Error: " + err.message);
+      setLoading(false);
     }
   };
 
@@ -203,14 +203,14 @@ const BidderRegistration = () => {
 
       <div className="w-[1459px]">
         <div className="">
-          <div className="bg-[#FFE6E6] p-5">
-            <h1 className="text-blue-900 font-semibold text-xl  mb-2">
+          <div className="bg-[#FFE6E6] p-2">
+            <h1 className="text-blue-900 font-semibold text-[15px] px-3 ">
               Bidder Information
             </h1>
             <div className="flex flex-col lg:flex-row gap-4 ">
               <div className="flex-1">
                 <div className="flex flex-wrap ">
-                  <div className="px-3 mb-2 w-[340px]">
+                  <div className="px-3 w-[340px]">
                     <label className="text-gray-900 font-medium">
                       Bidder Name <span className="text-red-600">*</span>
                     </label>
@@ -220,11 +220,11 @@ const BidderRegistration = () => {
                       value={formData.bidder_name}
                       onChange={handleChange}
                       placeholder="Bidder Name"
-                      className="border border-gray-300 rounded-md px-3 py-1.5 w-full bg-white"
+                      className="border border-gray-300 rounded-md px-1 py-1 h-[30px] text-xs w-full bg-white"
                     />
                   </div>
 
-                  <div className="px-3 mb-6 w-[150px]">
+                  <div className="px-3  w-[150px]">
                     <label className="text-gray-900 font-medium">
                       Mobile Number <span className="text-red-600">*</span>
                     </label>
@@ -234,7 +234,7 @@ const BidderRegistration = () => {
                       value={formData.mobile_no}
                       onChange={handleChange}
                       placeholder="Mobile Number"
-                      className="border border-gray-300 rounded-md px-3 py-1.5 w-full bg-white"
+                      className="border border-gray-300 rounded-md px-1 py-1 h-[30px] text-xs w-full bg-white"
                       maxLength={10}
                       style={{
                         MozAppearance: "textfield",
@@ -243,7 +243,7 @@ const BidderRegistration = () => {
                     />
                   </div>
 
-                  <div className="px-3 mb-6 w-[190px]">
+                  <div className="px-3 w-[160px]">
                     <label className="text-gray-900 font-medium">
                       Alt Mobile Number
                     </label>
@@ -253,7 +253,7 @@ const BidderRegistration = () => {
                       value={formData.alt_mob_no}
                       onChange={handleChange}
                       placeholder="Alternate Mobile Number"
-                      className="border border-gray-300 rounded-md px-3 py-1.5 w-full bg-white"
+                      className="border border-gray-300 rounded-md px-1 py-1 h-[30px] text-xs w-full bg-white"
                       style={{
                         MozAppearance: "textfield",
                       }}
@@ -261,7 +261,7 @@ const BidderRegistration = () => {
                     />
                   </div>
 
-                  <div className="px-3 mb-6 w-[350px]">
+                  <div className="px-3  w-[200px]">
                     <label className="text-gray-900 font-medium">
                       Email ID <span className="text-red-600">*</span>
                     </label>
@@ -271,11 +271,11 @@ const BidderRegistration = () => {
                       value={formData.email}
                       onChange={handleChange}
                       placeholder="Email ID"
-                      className="border border-gray-300 rounded-md px-3 py-1.5 w-full bg-white"
+                      className="border border-gray-300 rounded-md px-1 py-1 h-[30px] text-xs w-full bg-white"
                     />
                   </div>
 
-                  <div className="px-3 mb-6 w-[340px]">
+                  <div className="px-3  w-[300px]">
                     <label className="text-gray-900 font-medium">
                       Personal Address <span className="text-red-600">*</span>
                     </label>
@@ -285,11 +285,11 @@ const BidderRegistration = () => {
                       value={formData.personal_address}
                       onChange={handleChange}
                       placeholder="Personal Address"
-                      className="border border-gray-300 rounded-md px-3 py-1.5 w-full bg-white"
+                      className="border border-gray-300 rounded-md px-1 py-1 h-[30px] text-xs w-full bg-white"
                     />
                   </div>
 
-                  <div className="px-3 mb-6 w-[340px]">
+                  <div className="px-3  w-[340px]">
                     <label className="text-gray-900 font-medium">
                       Shop Address <span className="text-red-600">*</span>
                     </label>
@@ -299,11 +299,11 @@ const BidderRegistration = () => {
                       value={formData.shop_address}
                       onChange={handleChange}
                       placeholder="Shop Address"
-                      className="border border-gray-300 rounded-md px-3 py-1.5 w-full bg-white"
+                      className="border border-gray-300 rounded-md px-1 py-1 h-[30px] text-xs w-full bg-white"
                     />
                   </div>
 
-                  <div className="px-3 mb-6 w-[180px]">
+                  <div className="px-3  w-[180px]">
                     <label className="text-gray-900 font-medium">
                       Landline No 1 <span className="text-red-600">*</span>
                     </label>
@@ -313,7 +313,7 @@ const BidderRegistration = () => {
                       value={formData.landline_no}
                       onChange={handleChange}
                       placeholder="Landline No 1"
-                      className="border border-gray-300 rounded-md px-3 py-1.5 w-full bg-white"
+                      className="border border-gray-300 rounded-md px-1 py-1 h-[30px] text-xs w-full bg-white"
                       style={{
                         MozAppearance: "textfield",
                       }}
@@ -321,7 +321,7 @@ const BidderRegistration = () => {
                     />
                   </div>
 
-                  <div className="px-3 mb-6 w-[180px]">
+                  <div className="px-3  w-[180px]">
                     <label className="text-gray-900 font-medium">
                       Landline No 2
                     </label>
@@ -331,7 +331,7 @@ const BidderRegistration = () => {
                       value={formData.landline_no2}
                       onChange={handleChange}
                       placeholder="Landline No 2"
-                      className="border border-gray-300 rounded-md px-3 py-1.5 w-full bg-white"
+                      className="border border-gray-300 rounded-md px-1 py-1 h-[30px] text-xs w-full bg-white"
                       style={{
                         MozAppearance: "textfield",
                       }}
@@ -339,7 +339,7 @@ const BidderRegistration = () => {
                     />
                   </div>
 
-                  <div className="px-3 mb-6 w-[340px]">
+                  <div className="px-3  w-[300px]">
                     <label className="text-gray-900 font-medium">
                       Firm Name <span className="text-red-600">*</span>
                     </label>
@@ -349,11 +349,11 @@ const BidderRegistration = () => {
                       value={formData.firm_name}
                       onChange={handleChange}
                       placeholder="Firm Name"
-                      className="border border-gray-300 rounded-md px-3 py-1.5 w-full bg-white"
+                      className="border border-gray-300 rounded-md px-1 py-1 h-[30px] text-xs w-full bg-white"
                     />
                   </div>
 
-                  <div className="px-3 mb-6 w-[200px]">
+                  <div className="px-3  w-[200px]">
                     <label className="text-gray-900 font-medium">
                       GST No <span className="text-red-600">*</span>
                     </label>
@@ -363,11 +363,11 @@ const BidderRegistration = () => {
                       value={formData.gst_no}
                       onChange={handleChange}
                       placeholder="GST No"
-                      className="border border-gray-300 rounded-md px-3 py-1.5 w-full bg-white"
+                      className="border border-gray-300 rounded-md px-1 py-1 h-[30px] text-xs w-full bg-white"
                     />
                   </div>
 
-                  <div className="px-3 mb-6 w-[220px]">
+                  <div className="px-3  w-[220px]">
                     <label className="text-gray-900 font-medium">
                       Aadhar No <span className="text-red-600">*</span>
                     </label>
@@ -377,7 +377,7 @@ const BidderRegistration = () => {
                       value={formData.aadhar_no}
                       onChange={handleChange}
                       placeholder="Aadhar no"
-                      className="border border-gray-300 rounded-md px-3 py-1.5 w-full bg-white"
+                      className="border border-gray-300 rounded-md px-1 py-1 h-[30px] text-xs w-full bg-white"
                       style={{
                         MozAppearance: "textfield",
                       }}
@@ -385,11 +385,11 @@ const BidderRegistration = () => {
                     />
                   </div>
 
-                  <div className="px-3 mb-6 w-[280px]">
+                  <div className="px-3  w-[280px]">
                     <label className="text-gray-900 font-medium">
                       Aadhar Document
                     </label>
-                    <div className="flex items-center border border-gray-300 rounded-md px-3 py-1.5 bg-white">
+                    <div className="flex items-center border border-gray-300 rounded-md px-1 py-1 h-[30px] text-xs bg-white">
                       <IoMdImage className="text-gray-600 mr-2" size={20} />
                       <input
                         ref={aadharRef}
@@ -421,7 +421,7 @@ const BidderRegistration = () => {
                     </div>
                   </div>
 
-                  <div className="px-3 mb-6 w-[220px]">
+                  <div className="px-3  w-[220px]">
                     <label className="text-gray-900 font-medium">
                       Pan No <span className="text-red-600">*</span>
                     </label>
@@ -431,15 +431,15 @@ const BidderRegistration = () => {
                       value={formData.pan_no}
                       onChange={handleChange}
                       placeholder="Pan no"
-                      className="border border-gray-300 rounded-md px-3 py-1.5 w-full bg-white"
+                      className="border border-gray-300 rounded-md px-1 py-1 h-[30px] text-xs w-full bg-white"
                     />
                   </div>
 
-                  <div className="px-3 mb-6 w-[280px]">
+                  <div className="px-3  w-[280px]">
                     <label className="text-gray-900 font-medium">
                       Pan Document
                     </label>
-                    <div className="flex items-center border border-gray-300 rounded-md px-3 py-1.5 bg-white">
+                    <div className="flex items-center border border-gray-300 rounded-md px-1 py-1 h-[30px] text-xs bg-white">
                       <IoMdImage className="text-gray-600 mr-2" size={20} />
                       <input
                         ref={panRef}
@@ -516,12 +516,12 @@ const BidderRegistration = () => {
           </div>
         </div>
         <div className="">
-          <div className="bg-[#F7F7FF] p-5 ">
-            <h1 className="text-blue-900 font-semibold text-xl pb-4 mb-2">
+          <div className="bg-[#F7F7FF] pl-5 ">
+            <h1 className="text-blue-900 font-semibold text-xl  ">
               Add Bank Details
             </h1>
-            <div className="flex flex-wrap -mx-3">
-              <div className="flex flex-col gap-2 px-3 mb-6 w-[240px]">
+            <div className="flex flex-wrap mb-5">
+              <div className="flex flex-col gap-2  w-[240px]">
                 <label className="text-gray-900 font-medium">
                   Account Number <span className="text-red-600">*</span>
                 </label>
@@ -531,7 +531,7 @@ const BidderRegistration = () => {
                   onChange={handleChange}
                   type="number"
                   placeholder="521753215"
-                  className="border border-gray-300 rounded-md px-3 py-2 w-full bg-white"
+                  className="border border-gray-300 rounded-md px-1 py-1 h-[30px] text-xs w-full bg-white"
                   style={{
                     MozAppearance: "textfield",
                   }}
@@ -539,7 +539,7 @@ const BidderRegistration = () => {
                 />
               </div>
               {/* IFSC Number */}
-              <div className="flex flex-col gap-2 px-3 mb-6 w-[200px]">
+              <div className="flex flex-col gap-2 px-3  w-[200px]">
                 <label className="text-gray-900 font-medium">
                   IFSC Number <span className="text-red-600">*</span>
                 </label>
@@ -549,12 +549,12 @@ const BidderRegistration = () => {
                   onChange={handleChange}
                   type="text"
                   placeholder="IFSC Number"
-                  className="border border-gray-300 rounded-md px-3 py-2 w-full bg-white"
+                  className="border border-gray-300 rounded-md px-1 py-1 h-[30px] text-xs w-full bg-white"
                 />
               </div>
 
               {/* Account Holder Name */}
-              <div className="flex flex-col gap-2 px-3 mb-6 w-[270px]">
+              <div className="flex flex-col gap-2 px-3  w-[270px]">
                 <label className="text-gray-900 font-medium">
                   Account Holder Name <span className="text-red-600">*</span>
                 </label>
@@ -564,12 +564,12 @@ const BidderRegistration = () => {
                   onChange={handleChange}
                   type="text"
                   placeholder="Account Holder Name"
-                  className="border border-gray-300 rounded-md px-3 py-2 w-full bg-white"
+                  className="border border-gray-300 rounded-md px-1 py-1 h-[30px] text-xs w-full bg-white"
                 />
               </div>
 
               {/* Bank Name */}
-              <div className="flex flex-col gap-2 px-3 mb-6 w-[200px]">
+              <div className="flex flex-col gap-2 px-3  w-[200px]">
                 <label className="text-gray-900 font-medium">
                   Bank Name <span className="text-red-600">*</span>
                 </label>
@@ -579,12 +579,12 @@ const BidderRegistration = () => {
                   onChange={handleChange}
                   type="text"
                   placeholder="Bank Name"
-                  className="border border-gray-300 rounded-md px-3 py-2 w-full bg-white"
+                  className="border border-gray-300 rounded-md px-1 py-1 h-[30px] text-xs w-full bg-white"
                 />
               </div>
 
               {/* Bank Address (full width on large screens) */}
-              <div className="flex flex-col gap-2 px-3 mb-6 w-[300px]">
+              <div className="flex flex-col gap-2 px-3  w-[300px]">
                 <label className="text-gray-900 font-medium">
                   Bank Address <span className="text-red-600">*</span>
                 </label>
@@ -594,13 +594,13 @@ const BidderRegistration = () => {
                   onChange={handleChange}
                   type="text"
                   placeholder="Bank Address"
-                  className="border border-gray-300 rounded-md px-3 py-2 w-full bg-white"
+                  className="border border-gray-300 rounded-md px-1 py-1 h-[30px] text-xs w-full bg-white"
                 />
               </div>
             </div>
           </div>
         </div>
-
+{loading && <Loader />}
         {/* Bank Details Section */}
       </div>
     </div>

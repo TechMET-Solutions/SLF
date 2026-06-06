@@ -336,7 +336,7 @@ setLoading(false);
                   letterSpacing: "0%",
                 }}
               >
-                Branch Mapping for {selectedBranch?.branch_name}
+                Scheme Mapping for {selectedBranch?.branch_name} Branch
               </h2>
             </div>
 

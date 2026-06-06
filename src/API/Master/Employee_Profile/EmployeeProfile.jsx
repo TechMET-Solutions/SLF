@@ -37,44 +37,86 @@ const API_BASE = `${API}/Master/Employee_Profile`;
 //   }
 // };
 
-export const fetchEmployeeProfileApi = async (
-  page = 1,
-  limit = 10,
-  filters = {},
-  key,
-  direction
+// export const fetchEmployeeProfileApi = async (
+//   page = 1,
+//   limit = 10,
+//   filters = {},
+//   key,
+//   direction
 
+// ) => {
+//   try {
+//     const queryParams = new URLSearchParams({
+//       page: page.toString(),
+//       limit: limit.toString(),
+//       key,
+//      direction
+//     });
+
+//     // ✅ Search text
+//     if (filters.search) {
+//       queryParams.append("search", filters.search);
+//     }
+
+//     // ✅ Selected columns
+//     if (filters.keys && filters.keys.length > 0) {
+//       queryParams.append("keys", JSON.stringify(filters.keys));
+//     }
+
+//     const response = await axios.get(
+//       `${API_BASE}/getAll-employees?${queryParams.toString()}`
+//     );
+
+//     return response.data;
+
+//   } catch (error) {
+//     console.error("❌ Error fetching employee profiles:", error);
+//     return { items: [], total: 0, page: 1, showPagination: false };
+//   }
+// };
+export const fetchEmployeeProfileApi = async (
+  page,
+  limit,
+  filters,
+  key,
+  direction,
+  roleId,
+  status
 ) => {
   try {
-    const queryParams = new URLSearchParams({
-      page: page.toString(),
-      limit: limit.toString(),
-      key,
-     direction
-    });
+    const params = new URLSearchParams();
 
-    // ✅ Search text
-    if (filters.search) {
-      queryParams.append("search", filters.search);
-    }
+    // ✅ Pagination
+    params.append("page", page);
+    params.append("limit", limit);
 
-    // ✅ Selected columns
-    if (filters.keys && filters.keys.length > 0) {
-      queryParams.append("keys", JSON.stringify(filters.keys));
-    }
+    // ✅ Search
+    if (filters?.search) params.append("search", filters.search);
+    if (filters?.keys?.length)
+      params.append("keys", JSON.stringify(filters.keys));
 
-    const response = await axios.get(
-      `${API_BASE}/getAll-employees?${queryParams.toString()}`
+    // ✅ Sorting
+    if (key) params.append("key", key);
+    if (direction) params.append("direction", direction);
+
+    // ✅ Role Filter
+    if (roleId) params.append("role_id", roleId);
+
+    // ✅ Status Filter (NEW 🔥)
+    if (status !== "" && status !== undefined)
+      params.append("is_active", status);
+
+    const res = await fetch(
+      `https://slunawat.co.in/Master/Employee_Profile/getAll-employees?${params.toString()}`
     );
 
-    return response.data;
-
+    const data = await res.json();
+    return data;
   } catch (error) {
-    console.error("❌ Error fetching employee profiles:", error);
-    return { items: [], total: 0, page: 1, showPagination: false };
+    console.error("❌ API Error:", error);
+    return { items: [], total: 0 };
   }
 };
-
 
 // 🔹 Add New employee
 export const createEmployeeApi = async (payload) => {

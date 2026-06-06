@@ -142,6 +142,10 @@ const { permissions, userData } = usePermission();
   };
 
   const handleSaveCash = async () => {
+      if (physicalCash === 0) {
+      alert("Please enter at least one note or coin.");
+      return;
+    }
     try {
       const cashData = {
         notes: noteCounts,
@@ -167,7 +171,7 @@ const { permissions, userData } = usePermission();
   return (
     <div className="min-h-screen w-full  pb-10 ">
       {/* Top Navbar */}
-      <div className="flex justify-center ">
+      <div className="flex justify-center sticky top-[50px] z-40 ">
         <div className="flex items-center px-5 py-2 w-[1462px] bg-white border border-gray-200 shadow-sm justify-between h-[40px]">
           <h2 className="text-red-600 font-bold text-xl tracking-tight ">
             Cash Balance

@@ -8,74 +8,71 @@ const PaymentSuccess = () => {
   const { loanId } = useParams();
   const location = useLocation();
 
-  useEffect(() => {
-    const processPayment = async () => {
-      try {
-        console.log("Returned from PG");
+ useEffect(() => {
+  // ✅ Step 1: Force reload only once
+  if (!sessionStorage.getItem("paymentReloaded")) {
+    sessionStorage.setItem("paymentReloaded", "true");
+    window.location.reload();
+    return;
+  }
 
-        // ✅ Prevent duplicate execution
-        if (localStorage.getItem("repaymentDone")) return;
+  // ✅ Step 2: Your existing logic runs AFTER reload
+  const processPayment = async () => {
+    try {
+      console.log("Returned from PG");
 
-        // ✅ Get stored data
-        const savedData = localStorage.getItem("repaymentPayload");
+      if (localStorage.getItem("repaymentDone")) return;
 
-        if (!savedData) {
-          alert("No repayment data found!");
-          navigate("/Loan-Application");
-          return;
-        }
+      const savedData = localStorage.getItem("repaymentPayload");
 
-        const finalObject = JSON.parse(savedData);
+      if (!savedData) {
+        alert("No repayment data found!");
+        navigate("/Loan-Application");
+        return;
+      }
 
-        console.log("FINAL OBJECT:", finalObject);
+      const finalObject = JSON.parse(savedData);
 
-        // ✅ OPTIONAL: READ PG RESPONSE PARAMS
-        const queryParams = new URLSearchParams(location.search);
+      const queryParams = new URLSearchParams(location.search);
 
-        // ⚠️ Change based on ICICI response
-        const status =
-          queryParams.get("status") ||
-          queryParams.get("txStatus") ||
-          "SUCCESS";
+      const status =
+        queryParams.get("status") ||
+        queryParams.get("txStatus") ||
+        "SUCCESS";
 
-        console.log("PG STATUS:", status);
+      if (status !== "SUCCESS") {
+        alert("❌ Payment Failed!");
+        localStorage.removeItem("repaymentPayload");
+        navigate("/Loan-Application");
+        return;
+      }
 
-        if (status !== "SUCCESS") {
-          alert("❌ Payment Failed!");
-          localStorage.removeItem("repaymentPayload");
-          navigate("/Loan-Application");
-          return;
-        }
+      const res = await axios.post(
+        `${API}/Transactions/loanRepaymentForAdjLoan`,
+        finalObject
+      );
 
-        // ✅ CALL YOUR BACKEND API
-        const res = await axios.post(
-          `${API}/Transactions/loanRepaymentForAdjLoan`,
-          finalObject
-        );
+      if (res.status === 200) {
+        alert("✅ Repayment Successful!");
 
-        console.log("API RESPONSE:", res.data);
+        localStorage.setItem("repaymentDone", "true");
+        localStorage.removeItem("repaymentPayload");
 
-        if (res.status === 200) {
-          alert("✅ Repayment Successful!");
-
-          // ✅ Mark as done
-          localStorage.setItem("repaymentDone", "true");
-
-          // ✅ Clean storage
-          localStorage.removeItem("repaymentPayload");
-
-          navigate("/Loan-Application");
-        }
-      } catch (err) {
-        console.error("ERROR:", err);
-        alert("Something went wrong!");
+        // ✅ cleanup reload flag (important)
+        sessionStorage.removeItem("paymentReloaded");
 
         navigate("/Loan-Application");
       }
-    };
+    } catch (err) {
+      console.error("ERROR:", err);
 
-    processPayment();
-  }, []);
+      sessionStorage.removeItem("paymentReloaded");
+      navigate("/Loan-Application");
+    }
+  };
+
+  processPayment();
+}, []);
 
   return (
     <div className="flex items-center justify-center h-screen text-lg font-semibold">

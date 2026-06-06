@@ -82,8 +82,8 @@ const Customer_History = () => {
     console.log("Selected Charges for Loan", selectedLoan?.id, selectedCharges);
   return (
     <div className="min-h-screen bg-white font-sans text-[12px] text-gray-800 pb-10">
-      <div className="flex justify-center my-5 px-4">
-        <div className="flex items-center justify-between px-6 py-2 w-full max-w-[1290px] min-h-[70px] rounded-[11px] border border-gray-200 shadow-sm bg-white gap-4">
+      <div className="flex justify-center ">
+        <div className="flex items-center justify-between px-6 w-[1462px] min-h-[40px]  border border-gray-200 shadow-sm bg-white gap-4">
 
           {/* 🔴 Left — Title */}
           <div className="flex-shrink-0">
@@ -174,9 +174,9 @@ const Customer_History = () => {
 
        
 
-        <div className=" space-y-6">
+        <div className=" space-y-6 ">
           {/* 3. Customer Details Section */}
-          <div className="max-w-7xl mx-auto">
+          <div className="ml-[25px] mx-auto">
             <legend className="px-2 text-red-600 mb-2 font-bold text-sm">
               Customer Details
             </legend>
@@ -303,7 +303,7 @@ const Customer_History = () => {
 
 
           {/* 4. Loans Details Table */}
-          <div className=" mx-28 rounded-sm">
+          <div className=" ml-[25px] rounded-sm mx-auto w-[1462px]">
             <div className="px-2 text-red-600 font-bold text-sm">
               Loans Details
             </div>
@@ -326,7 +326,7 @@ const Customer_History = () => {
                       "Pay Mode",
                       "Pend. Amt.",
                       "Loan Close",
-                      "", // Empty header for Buttons
+                      // "", // Empty header for Buttons
                     ].map((h, i) => (
                       <th
                         key={i}
@@ -430,7 +430,7 @@ const Customer_History = () => {
                             {loan.status === "Closed" ? "Yes" : "No"}
                           </td>
                           {/* ACTION BUTTONS COLUMN */}
-                          <td className="p-1 whitespace-nowrap">
+                          {/* <td className="p-1 whitespace-nowrap">
                             <div className="flex gap-1 justify-center">
                               <button className="bg-[#0A2478] text-white px-2 py-0.5 rounded-sm transition-colors border border-blue-900 text-[10px]">
                                 With Interest
@@ -439,7 +439,7 @@ const Customer_History = () => {
                                 Without Interest
                               </button>
                             </div>
-                          </td>
+                          </td> */}
                         </tr>
                       );
                     })

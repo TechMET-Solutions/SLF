@@ -3,6 +3,7 @@ import { IoMdImage } from "react-icons/io";
 import { useLocation } from "react-router-dom";
 import { viewBidderApi } from "../API/Transaction/Auction/BidderApi"; // adjust import path
 import profileempty from "../assets/profileempty.png";
+import Loader from "../Component/Loader";
 
 const ViewBidderDetails = () => {
   const location = useLocation();
@@ -42,12 +43,15 @@ const ViewBidderDetails = () => {
         const res = await viewBidderApi(id);
         if (res?.bidder) {
           setFormData(res.bidder);
+           setLoading(false)
         } else {
           setError("No bidder data found.");
+           setLoading(false)
         }
       } catch (err) {
         console.error(err);
         setError("Failed to fetch bidder details.");
+        setLoading(false)
       } finally {
         setLoading(false);
       }
@@ -56,15 +60,15 @@ const ViewBidderDetails = () => {
     if (id) fetchBidderData();
   }, [id]);
 
-  if (loading) return <p className="text-center mt-10">Loading bidder details...</p>;
+  // if (loading) return <p className="text-center mt-10">Loading bidder details...</p>;
   if (error) return <p className="text-center text-red-500">{error}</p>;
 
   return (
     <div className="flex flex-col items-center">
       {/* Header Section */}
-      <div className="flex items-center justify-between px-6 py-4 w-[1462px] h-[40px] border border-gray-200  shadow-sm sticky top-[50px] z-40">
+      <div className="flex items-center justify-between px-2 py-4 w-[1462px] h-[40px] border border-gray-200  shadow-sm sticky top-[50px] z-40">
         <h2 className="text-red-600 font-bold text-[20px] leading-[1.48] font-['Source_Sans_3'] bg-white">
-          View Bidder Details
+          View Bidder Details - {id}
         </h2>
         <div className="flex items-center gap-5">
           <button
@@ -76,13 +80,13 @@ const ViewBidderDetails = () => {
         </div>
       </div>
 
-      <div className="w-full px-[110px]">
+      <div className="w-[1462px] ">
         {/* Bidder Information Section */}
         <div className="w-full  ">
-  <div className="bg-[#FFE6E6] mt-2 p-6">
+  <div className="bg-[#FFE6E6]  p-2">
 
-    <h1 className="text-blue-900 font-semibold text-xl mb-6">
-      Bidder Information
+    <h1 className="text-blue-900 font-semibold text-[18px] ">
+      Bidder Information 
     </h1>
 
     <div className="flex flex-col lg:flex-row ">
@@ -91,7 +95,7 @@ const ViewBidderDetails = () => {
       <div className="flex-1">
 
         {/* Row 1 */}
-        <div className="flex flex-wrap gap-4 mb-4">
+        <div className="flex flex-wrap gap-2 mb-1">
 
           <div className="w-[180px]">
             <label className="text-gray-900 font-medium">Bidder Name</label>
@@ -156,7 +160,7 @@ const ViewBidderDetails = () => {
         </div>
 
         {/* Row 2 */}
-        <div className="flex flex-wrap gap-4">
+        <div className="flex flex-wrap gap-2">
 
         
 
@@ -227,8 +231,8 @@ const ViewBidderDetails = () => {
 </div>
 
 
-        <div className="bg-[#F7F7FF] p-5 mb-5 ">
-          <h1 className="text-blue-900 font-semibold text-xl mb-6">
+        <div className="bg-[#F7F7FF] p-2 ">
+          <h1 className="text-blue-900 font-semibold text-[18px] ">
             Add Bank Details
           </h1>
 
@@ -270,7 +274,7 @@ const ViewBidderDetails = () => {
           </div>
         </div>
       </div>
-
+{loading && <Loader />}
     </div>
   );
 };

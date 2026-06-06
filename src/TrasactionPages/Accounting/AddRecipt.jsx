@@ -841,8 +841,13 @@ const AddRecipt = () => {
   const expenseId = location.state?.expenseId;
   const isViewMode = location.state?.view;
   const [loading, setLoading] = useState(false);
+  console.log(isViewMode,expenseId)
   // Modals State
-
+const getTitle = () => {
+  if (isViewMode) return `View Receipt - ${expenseId}`;
+  if (!isViewMode && expenseId) return `Edit Receipt - ${expenseId}`;
+  return "Add Receipt";
+};
   const [isModalOpen, setIsModalOpen] = useState(false); // Party Modal
   const [isDetailsModalOpen, setIsDetailsModalOpen] = useState(false); // Details Modal
   const [banks, setBanks] = useState([]);
@@ -1518,7 +1523,9 @@ const AddRecipt = () => {
     <div className="min-h-screen bg-white font-sans text-[#333]  ml-[25px]">
       <div className="mx-auto ">
         <div className="flex justify-between items-center bg-white h-[40px]  border border-gray-300 w-[1462px] pl-5 pr-5">
-          <h1 className="text-[#D32F2F] text-xl font-bold">Add Receipt</h1>
+         <h1 className="text-[#D32F2F] text-xl font-bold">
+  {getTitle()}
+</h1>
           <div className="flex space-x-2">
             {!expenseId && !isViewMode && (
               <button

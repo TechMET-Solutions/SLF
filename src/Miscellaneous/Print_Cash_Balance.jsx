@@ -65,7 +65,7 @@ const Print_Cash_Balance = () => {
             <th className="border px-2 py-1 border-r">SNo</th>
             <th className="border px-2 py-1">Type</th>
             <th className="border px-2 py-1">Denomination</th>
-            <th className="border px-2 py-1">Nos</th>
+            <th className="border px-2 py-1">Qty</th>
             <th className="border px-2 py-1">Total</th>
           </tr>
         </thead>

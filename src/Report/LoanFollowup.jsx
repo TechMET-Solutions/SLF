@@ -9,12 +9,16 @@ const LoanFollowup = () => {
   const loanData = location.state?.loanData;
   const [followupHistory, setFollowupHistory] = useState([]);
   console.log("Received loanData:", loanData);
+
+  const today = new Date().toLocaleDateString("en-CA"); // YYYY-MM-DD
+
+
   const [formData, setFormData] = useState({
     loanNo: "",
     partyName: "",
     mobileNo: "",
     address: "",
-    followUpDate: "",
+     followUpDate: today,   
     nextFollowDate: "",
     followUpBy: "",
     followUpMethod: "",
@@ -144,11 +148,11 @@ const LoanFollowup = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gray-100 font-sans text-sm">
+    <div className="min-h-screen  font-sans text-sm">
       <main className="p-4">
         {/* Form Container */}
         <div className="bg-white border border-gray-300 rounded shadow-sm">
-          <div className="bg-[#008080] text-white px-4 py-2 font-medium rounded-t">
+          <div className="bg-blue-900 text-white px-4 py-2 font-medium rounded-t">
             Add New Follow Up
           </div>
 
@@ -211,13 +215,13 @@ const LoanFollowup = () => {
                 Follow Up Date <span className="text-red-500">*</span>
               </label>
               <div className="col-span-2 flex border rounded overflow-hidden">
-                <input
-                  type="date"
-                  name="followUpDate"
-                  value={formData.followUpDate}
-                  onChange={handleChange}
-                  className="w-full p-1 outline-none"
-                />
+               <input
+            type="date"
+            name="followUpDate"
+            value={formData.followUpDate}
+            onChange={handleChange}
+            className="w-full p-1 outline-none"
+          />
               </div>
             </div>
             <div className="grid grid-cols-3 items-center">
@@ -225,13 +229,14 @@ const LoanFollowup = () => {
                 Next Follow Date <span className="text-red-500">*</span>
               </label>
               <div className="col-span-2 flex border rounded overflow-hidden">
-                <input
-                  type="date"
-                  name="nextFollowDate"
-                  value={formData.nextFollowDate}
-                  onChange={handleChange}
-                  className="w-full p-1 outline-none"
-                />
+               <input
+  type="date"
+  name="nextFollowDate"
+  value={formData.nextFollowDate}
+  onChange={handleChange}
+  min={new Date().toISOString().split("T")[0]}
+  className="w-full p-1 outline-none"
+/>
               </div>
             </div>
 
@@ -306,7 +311,7 @@ const LoanFollowup = () => {
         {/* Data Table */}
         <div className="mt-6 overflow-x-auto border border-gray-300 rounded shadow-sm">
           <table className="w-full text-left border-collapse bg-white">
-            <thead className="bg-gray-200 text-gray-700 text-[12px] uppercase">
+            <thead className="bg-blue-900 text-white text-[12px] uppercase">
               <tr>
                 <th className="p-2 border">Loan No</th>
                 <th className="p-2 border">Customer ID</th>

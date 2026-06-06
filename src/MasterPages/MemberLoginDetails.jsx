@@ -2,11 +2,11 @@ import axios from "axios";
 import { useEffect, useRef, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { API } from "../api";
+import { usePermission } from "../API/Context/PermissionContext";
+import Loader from "../Component/Loader";
 import Pagination from "../Component/Pagination";
 import { TimePicker } from "../Component/TimePicker";
 import { decryptData, encryptData } from "../utils/cryptoHelper";
-import { usePermission } from "../API/Context/PermissionContext";
-import Loader from "../Component/Loader";
 
 const MemberLoginDetails = () => {
   const navigate = useNavigate();
@@ -17,14 +17,24 @@ const MemberLoginDetails = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const [totalItems, setTotalItems] = useState(0);
   const [showPagination, setShowPagination] = useState(false);
-  const itemsPerPage = 10;
+  const itemsPerPage = 1000;
   const totalPages = Math.ceil(totalItems / itemsPerPage);
   const { permissions, userData } = usePermission();
-  
-  
-  // API Base URL
+const [BranchData, setBranchData] = useState(null);
+  console.log(BranchData,"BranchData")
   const API_BASE = `${API}/Master/Employee_Profile`;
 
+
+
+  useEffect(() => {
+    const userData = JSON.parse(sessionStorage.getItem("userData"));
+  
+    if (userData && userData.branchId) {
+      setBranchData(
+        userData.branchId || "",   // ✅ store only ID
+        );
+    }
+  }, []);
   // ✅ Fetch employee list with search
   const fetchEmployeeProfileApi = async (page = 1, limit = 10, search = "") => {
     try {
@@ -43,7 +53,7 @@ const MemberLoginDetails = () => {
       const response = await axios.get(
         `${API_BASE}/getAll-employees-withSearch?${queryParams.toString()}`,
       );
-setLoading(false);
+      setLoading(false);
       return response.data; // direct return
     } catch (error) {
       console.error("❌ Error fetching employee profiles:", error);
@@ -59,7 +69,7 @@ setLoading(false);
   }, []);
 
   const fetchEmployee = async (page = 1, search = "") => {
-   setLoading(true);
+    setLoading(true);
     try {
       const result = await fetchEmployeeProfileApi(page, itemsPerPage, search);
 
@@ -104,7 +114,6 @@ setLoading(false);
     fetchEmployee(page, searchTerm);
   };
 
-
   const updateSender = async (empId, sm1, sm2) => {
     setLoading(true);
     try {
@@ -113,10 +122,10 @@ setLoading(false);
         sender_mobile1: sm1,
         sender_mobile2: sm2,
       });
-       setLoading(false);
+      setLoading(false);
     } catch (e) {
       console.log("Update failed", e);
-       setLoading(false);
+      setLoading(false);
     }
   };
   const handleMobileChange = (empId, field, value, row) => {
@@ -147,7 +156,7 @@ setLoading(false);
 
   // 🔐 Update OTP override
   const updateOTP = async (empId, boolValue) => {
-     setLoading(true);
+    setLoading(true);
     try {
       await axios.post(`${API_BASE}/updateOTP`, {
         empId: empId,
@@ -155,15 +164,16 @@ setLoading(false);
       });
 
       fetchEmployee(currentPage, searchTerm); // refresh with current search
-       setLoading(false);
+      setLoading(false);
     } catch (err) {
       console.log(err);
       alert("Update failed");
-       setLoading(false);
+      setLoading(false);
     }
   };
 
   const [data, setData] = useState([]);
+  console.log(data,"data")
   const [loading, setLoading] = useState(false);
   const [selectedIds, setSelectedIds] = useState([]);
   const [bulkStart, setBulkStart] = useState("");
@@ -213,7 +223,21 @@ setLoading(false);
       console.error("❌ Error fetching member login period:", error);
     }
   };
+  const handleUpdate = async (empId, selectedDate) => {
+    try {
+      const res = await axios.post(`${API}/Master/updateDayEnd-ForAdmin`, {
+        userId: empId, // ✅ employee id
+        isAdmin: false, // ✅ always false
+        dayEndDate: selectedDate, // ✅ selected row date
+      });
 
+      alert("Day End Updated ✅");
+      fetchEmployee(currentPage, searchTerm); // refresh employee list with current search
+      fetchMemberLoginPeriod(currentPage); // refresh current page data
+    } catch (err) {
+      alert("Failed ❌");
+    }
+  };
   // ✅ Update Member Login Period - FIXED
   const updateMemberLoginPeriod = async (payload) => {
     try {
@@ -276,7 +300,8 @@ setLoading(false);
 
   // ✅ Trigger update on blur - FIXED to use ID instead of index
   const handleBlur = async (empId) => {
-    const record = data.find(r => r.id === empId);
+    debugger
+    const record = data.find((r) => r.id === empId);
     if (!record?.id) {
       console.error("❌ Missing Employee ID in record:", record);
       return;
@@ -295,7 +320,7 @@ setLoading(false);
 
   const handleChange = (empId, field, value) => {
     const updated = [...data];
-    const recordIndex = updated.findIndex(r => r.id === empId);
+    const recordIndex = updated.findIndex((r) => r.id === empId);
     if (recordIndex !== -1) {
       updated[recordIndex][field] = value;
       setData(updated);
@@ -336,36 +361,35 @@ setLoading(false);
     alert("Time updated for selected employees");
   };
 
-
   return (
     <div className="min-h-screen w-full">
       {/* Top bar */}
       <div className="flex justify-center sticky top-[50px] z-40">
         <div className="flex items-center px-6 py-4 border-b  w-[1462px] h-[40px] border border-gray-200 justify-between shadow bg-white">
           <h2 className="text-red-600 font-bold text-[20px] leading-[148%] font-source">
-            Member Details
+            Employee Details
           </h2>
 
           {/* Search & Actions */}
           <div className="flex items-center gap-6">
             {/* Search */}
-             <div className="flex  gap-2">
-        <div className='flex gap-2'>
-          <p className="text-xs font-semibold mt-2" >Bulk Start Time</p>
-          <TimePicker
-            initialTime=""
-            onSave={(time) => applyBulkTime("startDate", time)}
-          />
-        </div>
+            <div className="flex  gap-2">
+              <div className="flex gap-2">
+                <p className="text-xs font-semibold mt-2">Bulk Start Time</p>
+                <TimePicker
+                  initialTime=""
+                  onSave={(time) => applyBulkTime("startDate", time)}
+                />
+              </div>
 
-        <div className='flex gap-2'>
-          <p className="text-xs font-semibold mt-2">Bulk End Time</p>
-          <TimePicker
-            initialTime=""
-            onSave={(time) => applyBulkTime("endDate", time)}
-          />
-        </div>
-      </div>
+              <div className="flex gap-2">
+                <p className="text-xs font-semibold mt-2">Bulk End Time</p>
+                <TimePicker
+                  initialTime=""
+                  onSave={(time) => applyBulkTime("endDate", time)}
+                />
+              </div>
+            </div>
             <div className="flex gap-3 items-center">
               <input
                 type="text"
@@ -400,81 +424,81 @@ setLoading(false);
         </div>
       </div>
 
-     
-
       {/* Table */}
 
-      <div className="overflow-x-auto  h-[500px] border-gray-300 mx-auto w-[1462px]">
-        <table className="table-fixed border-collapse ">
+      <div className="overflow-x-auto  h-[550px] border-gray-300 mx-auto w-[1462px]">
+        <table className="table-fixed border-collapse">
           <thead className="bg-[#0A2478] text-white text-sm top-0">
             <tr>
               <th className="px-1 py-1 border-r">Select</th>
               {/* <th className="px-1 py-1 border-r text-left w-[50px]">#</th> */}
+              <th className="px-1 py-1 border-r text-left  w-[200px]">Emp Id</th>
               <th className="px-1 py-1 border-r text-left  w-[200px]">Name</th>
               <th className="px-1 py-1 border-r text-left  w-[200px]">
                 User ID
               </th>
-              {(userData?.isAdmin||permissions?.Master?.find(
-  item => item.name === "Member Details"
-)?.OTPOverride) && (
-  
-                     <th className="px-1 py-1 border-r text-left w-[100px]">
-                OTP Override
-              </th>
-)}
-             {(userData?.isAdmin||permissions?.Master?.find(
-  item => item.name === "Member Details"
-)?.Manager_Mob_No) && (
-  
-                    <th className="px-2 py-2 border-r text-left w-[120px] ">
-                Manager Mob No
-              </th>
-                )}
-              {(userData?.isAdmin||permissions?.Master?.find(
-  item => item.name === "Member Details"
-)?.Admin_Mob_No) && (
-  
-                    <th className="px-2 py-2 border-r text-left w-[120px] ">
-               Admin Mob No
-              </th>
-)}
-              {(userData?.isAdmin||permissions?.Master?.find(
-  item => item.name === "Member Details"
-)?.Start_Time) && (
-  
-                    <th className="px-2 py-2 border-r text-left w-[120px] ">
-             Start Time
-              </th>
-)}
-              {(userData?.isAdmin||permissions?.Master?.find(
-  item => item.name === "Member Details"
-)?.End_Time) && (
-  
-                    <th className="px-2 py-2 border-r text-left w-[120px] ">
-            End Time
-              </th>
-)}
-             
-                {(userData?.isAdmin||permissions?.Master?.find(
-  item => item.name === "Member Details"
-)?.IP_Address) && (
-  
-                    <th className="px-2 py-2 border-r text-left w-[120px] ">
-          IP Address
-              </th>
-)}
-              
-              {(userData?.isAdmin||permissions?.Master?.find(
-  item => item.name === "Member Details"
-)?.BranchMapping) && (
-  
-                    <th className="px-2 py-2 border-r text-left w-[120px] ">
-        Branch Mapping
-              </th>
-)}
-             
-            
-              
+              {(userData?.isAdmin ||
+                permissions?.Master?.find(
+                  (item) => item.name === "Member Details",
+                )?.OTPOverride) && (
+                <th className="px-1 py-1 border-r text-left w-[100px]">
+                  OTP Override
+                </th>
+              )}
+              {(userData?.isAdmin ||
+                permissions?.Master?.find(
+                  (item) => item.name === "Member Details",
+                )?.Manager_Mob_No) && (
+                <th className="px-2 py-2 border-r text-left w-[120px] ">
+                Branch manager
+                </th>
+              )}
+              {(userData?.isAdmin ||
+                permissions?.Master?.find(
+                  (item) => item.name === "Member Details",
+                )?.Admin_Mob_No) && (
+                <th className="px-2 py-2 border-r text-left w-[120px] ">
+                  Area Manager
+                </th>
+              )}
+              {(userData?.isAdmin ||
+                permissions?.Master?.find(
+                  (item) => item.name === "Member Details",
+                )?.Start_Time) && (
+                <th className="px-2 py-2 border-r text-left w-[120px] ">
+                  Start Time
+                </th>
+              )}
+              {(userData?.isAdmin ||
+                permissions?.Master?.find(
+                  (item) => item.name === "Member Details",
+                )?.End_Time) && (
+                <th className="px-2 py-2 border-r text-left w-[120px] ">
+                  End Time
+                </th>
+              )}
+
+              {(userData?.isAdmin ||
+                permissions?.Master?.find(
+                  (item) => item.name === "Member Details",
+                )?.IP_Address) && (
+                <th className="px-2 py-2 border-r text-left w-[120px] ">
+                  IP Address
+                </th>
+              )}
+
+              {/* <th className="px-2 py-2 border-r text-left w-[120px] ">
+                Day End Process
+              </th> */}
+
+              {(userData?.isAdmin ||
+                permissions?.Master?.find(
+                  (item) => item.name === "Member Details",
+                )?.BranchMapping) && (
+                <th className="px-2 py-2 border-r text-left w-[120px] ">
+                  Branch Mapping
+                </th>
+              )}
             </tr>
           </thead>
 
@@ -482,10 +506,10 @@ setLoading(false);
             {employeeList.length > 0 ? (
               employeeList.map((row, index) => {
                 // Find corresponding login period data by ID
-                const loginData = data.find(d => d.id === row.id) || {
+                const loginData = data.find((d) => d.id === row.id) || {
                   startDate: "",
                   endDate: "",
-                  ipAddress: ""
+                  ipAddress: "",
                 };
 
                 return (
@@ -504,139 +528,143 @@ setLoading(false);
                     {/* <td className="px-1 py-1 text-left">
                       {(currentPage - 1) * itemsPerPage + index + 1}
                     </td> */}
-
+ <td className="px-1 py-1 font-medium">{row.id}</td>
                     <td className="px-1 py-1 font-medium">{row.emp_name}</td>
 
                     <td className="px-1 py-1">{row.email}</td>
-{(userData?.isAdmin||permissions?.Master?.find(
-  item => item.name === "Member Details"
-)?.OTPOverride) && (
-  
-                    <td className="px-1 py-1 text-left">
-                      <input
-                        type="checkbox"
-                        checked={row.OTP_Override == 1} // if db stores 0/1
-                        onChange={(e) => updateOTP(row.id, e.target.checked)}
-                        className="w-5 h-5 accent-blue-900 cursor-pointer"
-                      />
-                    </td>
-)}
-{(userData?.isAdmin||permissions?.Master?.find(
-  item => item.name === "Member Details"
-)?.Manager_Mob_No) && (
-  
-                    <td className="">
-                      <div className="flex items-center px-2 gap-2">
+                    {(userData?.isAdmin ||
+                      permissions?.Master?.find(
+                        (item) => item.name === "Member Details",
+                      )?.OTPOverride) && (
+                      <td className="px-1 py-1 flex justify-center">
                         <input
-                          type="text"
-                          maxLength="10"
-                          value={row.sender_mobile1 || ""}
-                          className="py-1 text-sm w-[100px] px-2 border border-gray-300 rounded-sm flex-1 focus:outline-none focus:ring-1 focus:ring-blue-500"
-                          onChange={(e) =>
-                            handleMobileChange(
-                              row.id,
-                              "sender_mobile1",
-                              e.target.value,
-                              row,
-                            )
-                          }
+                          type="checkbox"
+                          checked={row.OTP_Override == 1} // if db stores 0/1
+                          onChange={(e) => updateOTP(row.id, e.target.checked)}
+                          className="w-5 h-5 accent-blue-900 cursor-pointer"
                         />
-                      </div>
-                    </td>
+                      </td>
+                    )}
+                    {(userData?.isAdmin ||
+  permissions?.Master?.find(
+    (item) => item.name === "Member Details",
+  )?.Manager_Mob_No) && (
+  <td className="">
+    <div className="flex items-center px-2 gap-2">
+      <input
+        type="text"
+        maxLength="10"
+        value={BranchData?.mobile_no || ""}
+        disabled
+        className="py-1 text-sm w-[100px] px-2 border border-gray-300 rounded-sm bg-gray-100 cursor-not-allowed"
+      />
+    </div>
+  </td>
 )}
                     {/* Sender Mobile 1 */}
-                   
- {(userData?.isAdmin||permissions?.Master?.find(
-  item => item.name === "Member Details"
-)?.Admin_Mob_No) && (
-  
-                     <td className="">
-                      <div className="flex items-center px-2 gap-2">
-                        <input
-                          type="text"
-                          maxLength="10"
-                          value={row.sender_mobile2 || ""}
-                          className="py-1 text-sm w-[100px] px-2 border border-gray-300 rounded-sm flex-1 focus:outline-none focus:ring-1 focus:ring-blue-500"
-                          onChange={(e) =>
-                            handleMobileChange(
-                              row.id,
-                              "sender_mobile2",
-                              e.target.value,
-                              row,
-                            )
-                          }
+
+                    {(userData?.isAdmin ||
+                      permissions?.Master?.find(
+                        (item) => item.name === "Member Details",
+                      )?.Admin_Mob_No) && (
+                      <td className="">
+                        <div className="flex items-center px-2 gap-2">
+                          <input
+                            type="text"
+                            maxLength="10"
+                            value={row.sender_mobile2 || ""}
+                            className="py-1 text-sm w-[100px] px-2 border border-gray-300 rounded-sm flex-1 focus:outline-none focus:ring-1 focus:ring-blue-500"
+                            onChange={(e) =>
+                              handleMobileChange(
+                                row.id,
+                                "sender_mobile2",
+                                e.target.value,
+                                row,
+                              )
+                            }
+                          />
+                        </div>
+                      </td>
+                    )}
+                    {(userData?.isAdmin ||
+                      permissions?.Master?.find(
+                        (item) => item.name === "Member Details",
+                      )?.Start_Time) && (
+                      <td className="px-1 py-1">
+                        <TimePicker
+                          initialTime={loginData.startDate}
+                          onSave={(newTime) => {
+                            handleChange(row.id, "startDate", newTime);
+                            handleBlur(row.id);
+                          }}
                         />
-                      </div>
-                    </td>
-)}
-                 {(userData?.isAdmin||permissions?.Master?.find(
-  item => item.name === "Member Details"
-)?.Start_Time) && (
-  
-                    <td className="px-1 py-1">
-                      <TimePicker
-                        initialTime={loginData.startDate}
-                        onSave={(newTime) => {
-                          handleChange(row.id, "startDate", newTime);
-                          handleBlur(row.id);
-                        }}
-                      />
-                    </td>
-)}  
+                      </td>
+                    )}
                     {/* Start Time */}
-                    
 
                     {/* End Time */}
-                     {(userData?.isAdmin||permissions?.Master?.find(
-  item => item.name === "Member Details"
-)?.End_Time) && (
-  
-                     <td className="px-1 py-1">
-                      <TimePicker
-                        initialTime={loginData.endDate}
-                        onSave={(newTime) => {
-                          handleChange(row.id, "endDate", newTime);
-                          handleBlur(row.id);
-                        }}
-                      />
-                    </td>
-                      )}  
-                     {(userData?.isAdmin||permissions?.Master?.find(
-  item => item.name === "Member Details"
-)?.IP_Address) && (
-  
-                     <td className="px-1 py-2">
-                      <input
-                        type="text"
-                        value={loginData.ipAddress}
-                        onChange={(e) =>
-                          handleChange(row.id, "ipAddress", e.target.value)
-                        }
-                        onBlur={() => handleBlur(row.id)}
-                        placeholder="Enter IP address"
-                        className="border border-gray-300 w-[80px] rounded px-2 py-1 text-sm focus:outline-none focus:ring-1 focus:ring-blue-500"
-                      />
-                    </td>
-)}  
-                  
-                     {(userData?.isAdmin||permissions?.Master?.find(
-  item => item.name === "Member Details"
-)?.BranchMapping) && (
-  
-                      <td className="px-1 py-1 text-left">
-  <Link
-    to={`/Add-Member-Branch-Mapping?id=${row.id}&name=${encodeURIComponent(row.emp_name)}`}
-    className="text-blue-700"
-  >
-    Branch
-  </Link>
-</td>
-)}  
+                    {(userData?.isAdmin ||
+                      permissions?.Master?.find(
+                        (item) => item.name === "Member Details",
+                      )?.End_Time) && (
+                      <td className="px-1 py-1">
+                        <TimePicker
+                          initialTime={loginData.endDate}
+                          onSave={(newTime) => {
+                            handleChange(row.id, "endDate", newTime);
+                            handleBlur(row.id);
+                          }}
+                        />
+                      </td>
+                    )}
+                    {(userData?.isAdmin ||
+                      permissions?.Master?.find(
+                        (item) => item.name === "Member Details",
+                      )?.IP_Address) && (
+                      <td className="px-1 py-2">
+                        <input
+                          type="text"
+                          value={loginData.ipAddress}
+                          onChange={(e) =>
+                            handleChange(row.id, "ipAddress", e.target.value)
+                          }
+                          onBlur={() => handleBlur(row.id)}
+                          placeholder="Enter IP address"
+                          className="border border-gray-300 w-[120px] rounded px-2 py-1 text-sm focus:outline-none focus:ring-1 focus:ring-blue-500"
+                        />
+                      </td>
+                    )}
+
+                    {/* <input
+                      type="date"
+                      value={row.dayEndProcess?.split("T")[0]}
+                      max={new Date().toISOString().split("T")[0]}
+                      onChange={(e) => {
+                        const value = e.target.value;
+
+                        handleChange(row.id, "dayEndProcess", value);
+
+                        // ✅ call API immediately
+                        handleUpdate(row.id, value);
+                      }}
+                      className="border border-gray-300 w-[140px] rounded px-2 py-1 text-sm focus:outline-none focus:ring-1 focus:ring-blue-500"
+                    /> */}
+
+                    {(userData?.isAdmin ||
+                      permissions?.Master?.find(
+                        (item) => item.name === "Member Details",
+                      )?.BranchMapping) && (
+                      <td className="px-1 py-1 flex justify-center">
+                        <Link
+                          to={`/Add-Member-Branch-Mapping?id=${row.id}&name=${encodeURIComponent(row.emp_name)}`}
+                          className="text-blue-700"
+                        >
+                          Branch
+                        </Link>
+                      </td>
+                    )}
 
                     {/* ✅ Editable IP Address */}
-                   
-                  
-
                   </tr>
                 );
               })
@@ -656,7 +684,6 @@ setLoading(false);
         </table>
       </div>
 
-      {/* Pagination */}
       {showPagination && totalPages > 1 && (
         <div className="flex justify-center mt-4">
           <Pagination

@@ -43,9 +43,9 @@ const LedgerDetailsPage = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gray-100 p-4">
+    <div className="min-h-screen  p-4">
       {/* HEADER */}
-      <div className="bg-[#008080] text-white p-2 text-sm font-semibold rounded-t-md">
+      <div className="bg-blue-900 text-white p-2 text-sm font-semibold rounded-t-md">
         {ledgerName} - Ledger ID: {ledgerId}
       </div>
 

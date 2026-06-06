@@ -54,12 +54,10 @@ const Fund_Transfer_Report = () => {
         fromDate,
         toDate,
         branchId: selectedBranch,
-        viewMode, // Summary / Detail
-        transferType, // Issue / Receipt
       };
 
       const res = await axios.post(
-        `${API}/FundTransfer/getFundTransferReport`, // 🔁 Replace with your actual API
+        `${API}FundTransfer/getFundTransferReport`, // 🔁 Replace with your actual API
         payload,
       );
 
@@ -76,18 +74,15 @@ const Fund_Transfer_Report = () => {
     }
   };
 
-  // ==============================
-  // UI
-  // ==============================
   return (
     <div className="min-h-screen bg-white text-[12px] text-gray-800">
       <div className="m-2 ">
         {/* HEADER */}
-        <div className="flex justify-center mt-5 px-4">
-          <div className="flex flex-col w-full max-w-[1290px] rounded-[11px] border border-gray-200 shadow-sm bg-white overflow-hidden">
+        <div className="flex justify-center ">
+          <div className="flex flex-col w-[1462px]  border border-gray-200 shadow-sm bg-white overflow-hidden">
 
             {/* 2. Filter Bar - Inline Sequence */}
-            <div className="flex items-center justify-between px-4 py-4 gap-4">
+            <div className="flex items-center justify-between px-4 py-2 gap-4">
 
               {/* 1. Title */}
               <div className="flex-shrink-0">
@@ -135,46 +130,7 @@ const Fund_Transfer_Report = () => {
                 </select>
               </div>
 
-              {/* Radio Buttons Group */}
-              <div className="flex items-center gap-6 flex-1 justify-center bg-gray-50 py-1 rounded-md">
-                {/* Summary/Detail */}
-                <div className="flex gap-3">
-                  {["Summary", "Detail"].map((mode) => (
-                    <label key={mode} className="flex items-center gap-1.5 text-sm cursor-pointer select-none">
-                      <input
-                        type="radio"
-                        name="viewMode"
-                        value={mode}
-                        checked={viewMode === mode}
-                        onChange={(e) => setViewMode(e.target.value)}
-                        className="accent-[#0A2478] w-4 h-4"
-                      />
-                      {mode}
-                    </label>
-                  ))}
-                </div>
-
-                <div className="w-[1px] h-6 bg-gray-300"></div>
-
-                {/* Issue/Receipt */}
-                <div className="flex gap-3">
-                  {["Issue", "Receipt"].map((type) => (
-                    <label key={type} className="flex items-center gap-1.5 text-sm cursor-pointer select-none">
-                      <input
-                        type="radio"
-                        name="transferType"
-                        value={type}
-                        checked={transferType === type}
-                        onChange={(e) => setTransferType(e.target.value)}
-                        className="accent-[#0A2478] w-4 h-4"
-                      />
-                      {type}
-                    </label>
-                  ))}
-                </div>
-              </div>
-
-              {/* View Button */}
+            
               <div className="flex-shrink-0 pl-4">
                 <button
                   onClick={handleView}
@@ -292,21 +248,20 @@ const Fund_Transfer_Report = () => {
           </div> */}
 
           {/* TABLE */}
-          <div className="mt-6 overflow-x-auto">
+          <div className=" overflow-x-auto">
             {loading ? (
               <div className="text-center py-4">Loading...</div>
             ) : reportData.length > 0 ? (
               <table className="w-full border border-gray-300">
-                <thead className="bg-gray-200">
+                <thead className="bg-blue-900 text-white">
                   <tr>
                     <th className="border p-2">Doc No</th>
-                    <th className="border p-2">Doc Date</th>
+                      <th className="border p-2">Doc Date</th>
+                      <th className="border p-2">Type</th>
                     <th className="border p-2">Paymode</th>
-                    <th className="border p-2">Account Name</th>
-                    <th className="border p-2">Total Amount</th>
-                    <th className="border p-2">Added By</th>
-                    <th className="border p-2">Branch Name</th>
-                    <th className="border p-2">Beneficiary Branch</th>
+                    
+                    <th className="border p-2">From Branch </th>
+                    <th className="border p-2">To Branch</th>
                     <th className="border p-2">Amount</th>
                   </tr>
                 </thead>
@@ -318,14 +273,11 @@ const Fund_Transfer_Report = () => {
                       <td className="border p-2">
                         {new Date(row.docDate).toLocaleDateString("en-GB")}
                       </td>
-
+  <td className="border p-2">{row.type}</td>
                       <td className="border p-2">{row.paymode}</td>
-                      <td className="border p-2">{row.accountName}</td>
-                      <td className="border p-2">{row.totalAmount}</td>
-                       
-                      <td className="border p-2">{row.addedBy}</td>
-                      <td className="border p-2">{row.branchName}</td>
-                      <td className="border p-2">{row.beneficiaryBranch}</td>
+                     
+                      <td className="border p-2">{row.fromBranch}</td>
+                      <td className="border p-2">{row.toBranch}</td>
                       <td className="border p-2 font-semibold">{row.amount}</td>
                     </tr>
                   ))}
